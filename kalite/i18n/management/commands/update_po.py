@@ -22,7 +22,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.i18n import update_jsi18n_file
+from shared.i18n import lcode_to_django, update_jsi18n_file
 from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 
@@ -125,7 +125,7 @@ def generate_test_files():
         # Once done replacing, rename temp file to overwrite original
         os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
 
-        (out, err, rc) = compile_po_files(lang_code="en")
+        (out, err, rc) = compile_po_files(lang_code=lcode_to_django("en"))
         if err:
             logging.debug("Error executing compilemessages: %s" % err)
 
@@ -135,10 +135,10 @@ def compile_po_files(lang_code="all", failure_ok=True):
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
 
-    if not lang_code or lang_code == "all":
+    if not lang_code or lang_code.lower() == "all":
         (out, err, rc) = call_command_with_output('compilemessages')
     else:
-        (out, err, rc) = call_command_with_output('compilemessages', locale=lang_code)
+        (out, err, rc) = call_command_with_output('compilemessages', locale=lcode_to_django(lang_code))
 
     if err and not failure_ok:
         raise CommandError("Failure compiling po files: %s" % err)

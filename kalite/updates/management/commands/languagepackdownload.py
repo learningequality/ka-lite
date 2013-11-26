@@ -16,7 +16,7 @@ import version
 from .classes import UpdatesStaticCommand
 from i18n.models import LanguagePack
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format, update_jsi18n_file
+from shared.i18n import lcode_to_django, update_jsi18n_file
 from utils.general import ensure_dir
 
 
@@ -51,7 +51,7 @@ class Command(UpdatesStaticCommand):
         if settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on distributed servers server.")
 
-        code = convert_language_code_format(options["lang_code"])
+        code = lcode_to_django(options["lang_code"])
         software_version = options["software_version"]
         if code == settings.LANGUAGE_CODE:
             logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % code)

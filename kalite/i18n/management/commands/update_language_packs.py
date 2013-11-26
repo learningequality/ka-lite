@@ -32,13 +32,13 @@ from django.core.mail import mail_admins
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import get_language_name, convert_language_code_format, LanguageNotFoundError
+from shared.i18n import SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import get_language_name, lcode_to_django, LanguageNotFoundError
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
-LANGUAGE_PACK_AVAILABILITY_FILENAME = "language_pack_availability.json"
 
 class Command(BaseCommand):
     help = 'Updates all language packs'
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         update_srts(days=options["days"], lang_code=options["lang_code"])
 
         # Converted language code for language packs
-        update_language_packs(lang_codes=[convert_language_code_format(options["lang_code"])] if options["lang_code"] != "all" else None)
+        update_language_packs(lang_codes=[lcode_to_django(options["lang_code"])] if options["lang_code"] != "all" else None)
 
 
 def update_srts(days, lang_code):
@@ -115,7 +115,7 @@ def obliterate_old_schema():
             if not os.path.isdir(os.path.join(locale_root, lang)):
                 continue
             # If it isn't crowdin/django format, keeeeeeellllllll
-            if lang != convert_language_code_format(lang):
+            if lang != lcode_to_django(lang):
                 logging.info("Deleting %s directory because it does not fit our language code format standards" % lang)
                 shutil.rmtree(os.path.join(locale_root, lang))
 
@@ -218,7 +218,7 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp"), language_codes
         update_languages = set(update_languages).intersect(set(language_codes))
 
     for lang in update_languages:
-        converted_code = convert_language_code_format(lang)
+        converted_code = lcode_to_django(lang)
         # ensure directory exists in locale folder, and then overwrite local po files with new ones
         ensure_dir(os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES"))
         for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")):
@@ -236,7 +236,8 @@ def generate_metadata(lang_codes=None, broken_langs=None):
 
     # loop through all languages in locale, update master file
     crowdin_meta_dict = get_crowdin_meta()
-    subtitle_counts = json.loads(open(settings.SUBTITLES_DATA_ROOT + "subtitle_counts.json").read())
+    with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
+        subtitle_counts = json.load(fp))
     for lang in os.listdir(LOCALE_ROOT):
 
         # skips anything not a directory
@@ -247,7 +248,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
             logging.info("Skipping %s because it triggered an error during compilemessages. The admins should have received a report about this and must fix it before this pack will be updateed." % lang)
             continue
 
-        crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), {})
+        crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lcode_to_ietf(lang_code=lang)), {})
         try:
             local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
         except:
@@ -256,8 +257,8 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         try:
             # update metadata
             updated_meta = {
-                "code": crowdin_meta.get("code") or convert_language_code_format(lang),
-                "name": crowdin_meta.get("name") or get_language_name(convert_language_code_format(lang)),
+                "code": crowdin_meta.get("code") or lcode_to_django(lang),
+                "name": crowdin_meta.get("name") or get_language_name(lang),
                 "percent_translated": int(crowdin_meta.get("approved_progress", 0)),
                 "phrases": int(crowdin_meta.get("phrases", 0)),
                 "approved_translations": int(crowdin_meta.get("approved", 0)),
@@ -288,8 +289,8 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         master_file.append(local_meta)
 
     # Save updated master
-    ensure_dir(settings.LANGUAGE_PACK_ROOT)
-    with open(os.path.join(settings.LANGUAGE_PACK_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME), 'w') as output:
+    ensure_dir(os.path.dirname(LANGUAGE_PACK_AVAILABILITY_FILEPATH))
+    with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, 'w') as output:
         json.dump(master_file, output)
     logging.info("Local record of translations updated")
 
@@ -336,7 +337,7 @@ def zip_language_packs(lang_codes=None):
         # Create a zipfile for this language
         zip_path = os.path.join(settings.LANGUAGE_PACK_ROOT, version.VERSION)
         ensure_dir(zip_path)
-        z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % convert_language_code_format(lang)), 'w')
+        z = zipfile.ZipFile(os.path.join(zip_path, "%s.zip" % lcode_to_django(lang)), 'w')
 
         # Get every single file in the directory and zip it up
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):

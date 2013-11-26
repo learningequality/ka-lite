@@ -7,8 +7,8 @@ from django.http import HttpResponse, Http404
 
 import settings
 from shared.decorators import central_server_only
+from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, SUBTITLES_DATA_ROOT
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
-from i18n.management.commands.update_language_packs import LANGUAGE_PACK_AVAILABILITY_FILENAME
 
 
 @central_server_only
@@ -21,13 +21,14 @@ def get_subtitle_counts(request):
     """
 
     # Get the subtitles file
-    subtitledata_path = settings.SUBTITLES_DATA_ROOT
-    if not os.path.exists(subtitledata_path):
+    if not os.path.exists(SUBTITLE_COUNTS_FILEPATH):
         # could call-command, but return 404 for now.
         raise Http404
-    subtitle_counts = json.loads(open(subtitledata_path + "subtitle_counts.json").read())
 
-    return JsonResponse(json.dumps(subtitle_counts, sort_keys=True))
+    with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
+        subtitle_counts = json.loads(fp)
+
+    return JsonResponse(subtitle_counts)
 
 
 @central_server_only
@@ -37,9 +38,9 @@ def get_available_language_packs(request):
     """Return dict of available language packs"""
 
     # On central, loop through available language packs in static/language_packs/
-    language_packs_path = settings.LANGUAGE_PACK_ROOT
     try:
-        language_packs_available = json.loads(open(os.path.join(language_packs_path, LANGUAGE_PACK_AVAILABILITY_FILENAME)).read())
+        with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
+            language_packs_available = json.loads(fp)
     except:
         raise Http404
 
