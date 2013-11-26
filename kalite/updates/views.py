@@ -26,12 +26,12 @@ import version
 from .models import VideoFile
 from config.models import Settings
 from control_panel.views import local_device_context, user_management_context
+from i18n.models import LanguagePack
 from main import topicdata
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
-from shared.i18n import get_installed_languages
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
@@ -67,6 +67,12 @@ def update_videos(request):
     return context
 
 
+def get_installed_language_packs():
+    language_packs = LanguagePack.objects \
+        .order_by("name") \
+        .values("name", "subtitle_count", "percent_translated", "language_pack_version", "code")
+    return language_packs
+
 @require_admin
 @render_to("updates/update_languages.html")
 def update_languages(request):
@@ -74,7 +80,7 @@ def update_languages(request):
     context = update_context(request)
 
     context.update({
-        "installed_languages": get_installed_languages(),
+        "installed_languages": list(get_installed_language_packs()),
         "default_language": settings.LANGUAGE_CODE,
     })
 

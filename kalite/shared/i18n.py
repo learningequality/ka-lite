@@ -141,9 +141,11 @@ def convert_language_code_format(lang_code, for_crowdin=False):
     return lang_code
 
 
-def get_installed_languages():
-    """Return dictionary of currently installed languages and meta data"""
-
+def get_languages_on_disk():
+    """
+    On-disk method to show currently installed languages and meta data.
+    """
+    raise Exception("NYI; this needs to validate that all the parts are in the right places (mo and srt), and should be moved into a languagepackscan command--the only place it's relevant.")
     installed_languages = []
 
     # Loop through locale folders
@@ -165,7 +167,7 @@ def get_installed_languages():
     return installed_languages
 
 
-def get_installed_subtitles(youtube_id):
+def get_subtitles_on_disk(youtube_id):
     """
     Returns a list of all language codes that contain subtitles for this video.
     """
