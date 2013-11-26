@@ -27,6 +27,7 @@ def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
         TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
+        validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
 
@@ -66,6 +67,28 @@ def get_flat_topic_tree(force=False):
     return FLAT_TOPIC_TREE
 
 
+def validate_ancestor_ids(topictree=None):
+    """
+    Given the KA Lite topic tree, make sure all parent_id and ancestor_ids are stamped
+    """
+
+    if not topictree:
+        topictree = get_topic_tree()
+
+    def recurse_nodes(node, ancestor_ids=[]):
+        # Add ancestor properties
+        if not "parent_id" in node:
+            node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
+        if not "ancestor_ids" in node:
+            node["ancestor_ids"] = ancestor_ids
+
+        # Do the recursion
+        for child in node.get("children", []):
+            recurse_nodes(child, ancestor_ids=ancestor_ids + [node["id"]])
+    recurse_nodes(topictree)
+
+    return topictree
+
 
 def generate_slug_to_video_id_map(node_cache=None):
     """
@@ -97,7 +120,7 @@ def generate_flat_topic_tree(node_cache=None):
                 'title': node['title'],
                 'path': node['path'],
                 'kind': node['kind'],
-                'available': node.get('on_disk', True) or bool(settings.BACKUP_VIDEO_SOURCE),
+                'available': node.get('available', True),
             }
             result[category_name][node_name] = relevant_data
     return result
@@ -241,12 +264,14 @@ def get_exercise_paths():
     return [n["path"] for exercise in exercises for n in exercise]
 
 
-def get_related_videos(exercises, topics=None, possible_videos=None):
+def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
     """Given a set of exercises, get all of the videos that say they're related.
 
     possible_videos: list of videos to consider.
     topics: if not possible_videos, then get the possible videos from a list of topics.
     """
+    assert bool(topics) + bool(possible_videos) <= 1, "May specify possible_videos or topics, but not both."
+
     related_videos = []
 
     if not possible_videos:
@@ -261,11 +286,34 @@ def get_related_videos(exercises, topics=None, possible_videos=None):
             related_videos.append(video)
     return related_videos
 
-
 def get_video_by_youtube_id(youtube_id):
     # TODO(bcipolli): will need to change for dubbed videos
     video_id = i18n.get_video_id(youtube_id=youtube_id)
     return get_node_cache("Video").get(video_id, [None])[0]
+
+def get_related_videos(exercise, limit_to_available=True):
+    """
+    Return topic tree cached data for each related video,
+    favoring videos that are sibling nodes to the exercises.
+    """
+    def find_most_related_video(videos, exercise):
+        # Search for a sibling video node to add to related exercises.
+        for video in videos:
+            if is_sibling({"path": video["path"], "kind": "Video"}, exercise):
+                return video
+        # failed to find a sibling; just choose the first one.
+        return videos[0] if videos else None
+
+    # Find related videos
+    related_videos = {}
+    for slug in exercise["related_video_slugs"]:
+        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
+
+        # Make sure the IDs are recognized, and are available.
+        if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
+            related_videos[slug] = find_most_related_video(video_nodes, exercise)
+
+    return related_videos
 
 
 def is_sibling(node1, node2):

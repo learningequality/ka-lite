@@ -7,7 +7,7 @@
 {% block title %}{% trans "Update" %}{% endblock %}
 
 
-{% block headjs %}
+{% block headjs %}{{ block.super }}
 <script type="text/javascript" src="{% static "js/jquery-ui.custom.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
 {% endblock headjs %}

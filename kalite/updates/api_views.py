@@ -17,9 +17,10 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .models import UpdateProgressLog, VideoFile
+from .views import get_installed_language_packs
+from i18n.models import LanguagePack
 from main import topicdata
 from shared.decorators import require_admin
-from shared.i18n import get_installed_languages
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
@@ -189,8 +190,7 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    langs = [l for l in get_installed_languages() if l] # filter out empty dictionaries
-    return JsonResponse(langs)
+    return JsonResponse(list(get_installed_language_packs()))
 
 @require_admin
 @api_handle_error_with_json

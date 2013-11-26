@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 {% load i18n %}
 {% load staticfiles %}
-
 <html>
     <head>
         <!--[if lt IE 9]>
@@ -19,7 +18,6 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/search_autocomplete.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
 
-        {% block basecss %}{% endblock basecss %}
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
         {# In some versions of IE, console isn't defined, which can lead to JS errors #}
@@ -67,11 +65,9 @@
         <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}"></script>
 
         {% block headjs %}{% endblock headjs %}
-        {% block extra_head %}{% endblock extra_head %}
-        {% block extrahead %}{% endblock extrahead %}
         {% block analytics %}{% endblock analytics %}
     </head>
-    {% load i18n %}
+
     <body class="light {% block bodyclass %}{% endblock %}">
         <div id="outer-wrapper">
             <div id="page-container">
