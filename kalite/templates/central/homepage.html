@@ -101,8 +101,8 @@
            <div class="row-fluid footer__second-part">
 
                 <div class="span6">
-                    {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
-                <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" ><img src="{% static 'images/creative-commons.png' %}" alt="" class="cc-logo"></a>
+                    {% block attribution %}{{ block.super }}
+                    {% endblock attribution %}
                 </div>
                 <div class="span6">
                    <ul class="list-icons">
