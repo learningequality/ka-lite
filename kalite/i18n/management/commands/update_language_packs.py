@@ -371,7 +371,7 @@ def zip_language_packs(lang_codes=None):
         # Create a zipfile for this language
         zip_filepath = get_language_pack_filepath(lang_code_ietf)
         ensure_dir(os.path.dirname(zip_filepath))
-        z = zipfile.ZipFile(zip_filepath, 'w')
+        z = zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED)
 
         # Get every single file in the directory and zip it up
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
