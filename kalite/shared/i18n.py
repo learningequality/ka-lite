@@ -14,6 +14,8 @@ from utils.general import ensure_dir
 
 DUBBED_VIDEOS_MAPPING_FILE = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
 
+class LanguageNotFoundError(Exception):
+    pass
 
 DUBBED_VIDEO_MAP = None
 def get_dubbed_video_map(lang_code=None, force=False):
@@ -74,10 +76,11 @@ CODE2LANG_MAP = None
 def get_code2lang_map(force=False):
     global lang_lookup_path, CODE2LANG_MAP
     if force or not CODE2LANG_MAP:
-        CODE2LANG_MAP = json.loads(open(lang_lookup_path).read())
+        lmap = json.loads(open(lang_lookup_path).read())
+        CODE2LANG_MAP = {}
         # convert all upper to lower
-        for entry in CODE2LANG_MAP.values():
-            entry = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+        for lang_code, entry in lmap.iteritems():
+            CODE2LANG_MAP[lang_code.lower()] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
     return CODE2LANG_MAP
 
 LANG2CODE_MAP = None
@@ -88,7 +91,7 @@ def get_langcode_map(force=False):
         for code, entries in get_code2lang_map(force=force).iteritems():
             for lang in entries.values():
                 if lang:
-                    LANG2CODE_MAP[lang.lower()] = code
+                    LANG2CODE_MAP[lang.lower()] = code.lower()
     return LANG2CODE_MAP
 
 def get_language_name(lang_code, native=False):
@@ -98,9 +101,9 @@ def get_language_name(lang_code, native=False):
     # Convert code if neccessary
     lang_code = convert_language_code_format(lang_code)
 
-    language_entry = get_langcode_map().get(lang_code.lower())
+    language_entry = get_code2lang_map().get(lang_code.lower())
     if not language_entry:
-       raise Exception("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, lang_lookup_path))
+        raise LanguageNotFoundError("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, lang_lookup_path))
 
     if not native:
         return language_entry["name"]
@@ -114,7 +117,7 @@ def get_language_code(language):
 
     lang_code = get_langcode_map().get(language.lower())
     if not lang_code:
-       raise Exception("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, lang_lookup_path))
+       raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, lang_lookup_path))
     return lang_code
 
 

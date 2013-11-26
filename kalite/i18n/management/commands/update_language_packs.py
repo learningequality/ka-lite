@@ -1,13 +1,13 @@
 """
-This command is the master command for language packs. Based on 
+This command is the master command for language packs. Based on
 command line arguments provided, it calls all i18n commands
-necessary to update language packs. 
+necessary to update language packs.
 
 1. Updates all cached srt files  from Amara
 2. Downloads latest translations from CrowdIn
 3. Generates metadata on language packs (subtitles and UI translations)
 4. Compiles the UI translations
-5. Zips up the packs and exposes them at a static url 
+5. Zips up the packs and exposes them at a static url
 
 Good test cases:
 
@@ -27,13 +27,13 @@ import StringIO
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
-from django.core.mail import mail_admins 
+from django.core.mail import mail_admins
 
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import get_language_name, convert_language_code_format
-from update_po import compile_all_po_files
+from shared.i18n import get_language_name, convert_language_code_format, LanguageNotFoundError
+from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
 
@@ -57,13 +57,13 @@ class Command(BaseCommand):
                     metavar="LANG_CODE",
                     help="Language code to update (default: all)"),
     )
-    
+
     def handle(self, **options):
         if not settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on the central server.")
 
         obliterate_old_schema()
-        
+
         # Raw language code for srts
         update_srts(days=options["days"], lang_code=options["lang_code"])
 
@@ -83,17 +83,21 @@ def update_srts(days, lang_code):
 
 
 def update_language_packs(lang_codes=None):
+    """
+    """
+    assert lang_codes is None or len(lang_codes) == 1, "lang codes must be empty or a list of length 1"
+    lang_code = "all" if not lang_codes else lang_codes[0]
 
     ## Download latest UI translations from CrowdIn
-    download_latest_translations() 
-    
+    download_latest_translations()
+
     ## Compile
-    (out, err, rc) = compile_all_po_files()
+    (out, err, rc) = compile_po_files(lang_code=lang_code)
     broken_langs = handle_po_compile_errors(lang_codes=lang_codes, out=out, err=err, rc=rc)
 
     ## Loop through new UI translations & subtitles, create/update unified meta data
     generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs)
-    
+
     ## Zip
     zip_language_packs(lang_codes=lang_codes)
 
@@ -149,7 +153,7 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
         for code in broken_codes:
             commands += "\npython manage.py compilemessages -l %s" % code
         message =  """The following codes had errors when compiling their po files: %s.
-                   Please rerun the following commands to see specific line numbers 
+                   Please rerun the following commands to see specific line numbers
                    that need to be corrected on CrowdIn, before we can update the language packs.
                    %s""" % (', '.join(broken_codes), commands)
         if not settings.DEBUG:
@@ -215,9 +219,9 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp"), language_codes
 
     for lang in update_languages:
         converted_code = convert_language_code_format(lang)
-        # ensure directory exists in locale folder, and then overwrite local po files with new ones 
+        # ensure directory exists in locale folder, and then overwrite local po files with new ones
         ensure_dir(os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES"))
-        for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")): 
+        for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")):
             if "js" in os.path.basename(po_file):
                 shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "djangojs.po"))
             else:
@@ -234,6 +238,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
     crowdin_meta_dict = get_crowdin_meta()
     subtitle_counts = json.loads(open(settings.SUBTITLES_DATA_ROOT + "subtitle_counts.json").read())
     for lang in os.listdir(LOCALE_ROOT):
+
         # skips anything not a directory
         if not os.path.isdir(os.path.join(LOCALE_ROOT, lang)):
             logging.info("Skipping %s because it is not a directory" % lang)
@@ -241,40 +246,35 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         elif lang in broken_langs:
             logging.info("Skipping %s because it triggered an error during compilemessages. The admins should have received a report about this and must fix it before this pack will be updateed." % lang)
             continue
-        crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), None)
+
+        crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == convert_language_code_format(lang_code=lang, for_crowdin=True)), {})
         try:
             local_meta = json.loads(open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang)).read())
         except:
             local_meta = {}
-        if not crowdin_meta:
-            converted_lang_code = convert_language_code_format(lang)
+
+        try:
+            # update metadata
             updated_meta = {
-                "code": converted_lang_code,
-                "name": get_language_name(converted_lang_code),
-                "percent_translated": 0,
-                "phrases": 0,
-                "approved_translations": 0,
-            }
-        else:
-            updated_meta = {
-                "code": crowdin_meta.get("code"),
-                "name": crowdin_meta.get("name"),
-                "percent_translated": int(crowdin_meta.get("approved_progress")),
-                "phrases": int(crowdin_meta.get("phrases")),
-                "approved_translations": int(crowdin_meta.get("approved")),
+                "code": crowdin_meta.get("code") or convert_language_code_format(lang),
+                "name": crowdin_meta.get("name") or get_language_name(convert_language_code_format(lang)),
+                "percent_translated": int(crowdin_meta.get("approved_progress", 0)),
+                "phrases": int(crowdin_meta.get("phrases", 0)),
+                "approved_translations": int(crowdin_meta.get("approved", 0)),
             }
 
-        # Obtain current number of subtitles
-        entry = subtitle_counts.get(get_language_name(lang))
-        if entry:
-            srt_count = entry.get("count")
-        else:
-            srt_count = 0
+            # Obtain current number of subtitles
+            entry = subtitle_counts.get(get_language_name(lang), {})
+            srt_count = entry.get("count", 0)
 
-        updated_meta.update({
-            "software_version": version.VERSION,
-            "subtitle_count": srt_count,
-        })
+            updated_meta.update({
+                "software_version": version.VERSION,
+                "subtitle_count": srt_count,
+            })
+
+        except LanguageNotFoundError:
+            logging.error("Unrecognized language; must skip: %s" % lang)
+            continue
 
         language_pack_version = increment_language_pack_version(local_meta, updated_meta)
         updated_meta["language_pack_version"] = language_pack_version
@@ -283,14 +283,14 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         # Write locally (this is used on download by distributed server to update it's database)
         with open(os.path.join(LOCALE_ROOT, lang, "%s_metadata.json" % lang), 'w') as output:
             json.dump(local_meta, output)
-        
+
         # Update master (this is used for central server to handle API requests for data)
         master_file.append(local_meta)
 
     # Save updated master
     ensure_dir(settings.LANGUAGE_PACK_ROOT)
     with open(os.path.join(settings.LANGUAGE_PACK_ROOT, LANGUAGE_PACK_AVAILABILITY_FILENAME), 'w') as output:
-        json.dump(master_file, output) 
+        json.dump(master_file, output)
     logging.info("Local record of translations updated")
 
 
@@ -340,7 +340,7 @@ def zip_language_packs(lang_codes=None):
 
         # Get every single file in the directory and zip it up
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
-            z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))    
+            z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))
         for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
             z.write(os.path.join(lang_locale_path, mo_file), arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
         for srt_file in glob.glob('%s/subtitles/*.srt' % lang_locale_path):
