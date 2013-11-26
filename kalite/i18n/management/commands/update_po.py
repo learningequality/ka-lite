@@ -125,19 +125,20 @@ def generate_test_files():
         # Once done replacing, rename temp file to overwrite original
         os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
 
-        (out, err, rc) = compile_po_files(lang_code=lcode_to_django("en"))
+        (out, err, rc) = compile_po_files("en")
         if err:
             logging.debug("Error executing compilemessages: %s" % err)
 
 
-def compile_po_files(lang_code="all", failure_ok=True):
+def compile_po_files(lang_codes=None, failure_ok=True):
     """Compile all po files in locale directory"""
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
 
-    if not lang_code or lang_code.lower() == "all":
+    if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
     else:
+        lang_code = lang_codes if isinstance(lang_codes, basestring) else lang_codes[0]
         (out, err, rc) = call_command_with_output('compilemessages', locale=lcode_to_django(lang_code))
 
     if err and not failure_ok:

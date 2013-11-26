@@ -25,12 +25,10 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
 from shared.i18n import lcode_to_django, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
 from utils.general import convert_date_input, ensure_dir, make_request
 
-
-LOCALE_ROOT = os.path.join(settings.LOCALE_PATHS[0])
 
 class LanguageNameDoesNotExist(Exception):
 
@@ -154,9 +152,9 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
             len(videos), n_videos, date_specified,
         ))
 
-    # Loop over good videos
+    # Loop over videos needing refreshing
     n_loops = 0
-    srt_count = 0
+    srt_count = None
     for youtube_id, entry in videos.items():
         previously_downloaded = entry.get("downloaded")
 
@@ -202,9 +200,11 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
             ))
 
     # Summarize output
-    logging.info("We now have %d subtitles (amara thought they had %d) for language '%s'!" % (
-        srt_count, n_videos, lang_code,
-    ))
+    if srt_count is not None:
+        # only none if nothing was done.
+        logging.info("We now have %d subtitles (amara thought they had %d) for language '%s'!" % (
+            srt_count, n_videos, lang_code,
+        ))
 
 
 def download_subtitle(youtube_id, lang_code, format="srt"):

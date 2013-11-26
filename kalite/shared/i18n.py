@@ -10,6 +10,7 @@ from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
 
 import settings
+import version
 from utils.general import ensure_dir
 
 
@@ -19,12 +20,29 @@ AMARA_HEADERS = {
 }
 
 SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH_SECURE, "subtitles")
+LANGUAGE_PACK_ROOT = os.path.join(settings.MEDIA_ROOT, "language_packs")
+
 LANGUAGE_SRT_SUFFIX = "_download_status.json"
 SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
-LANGUAGE_PACK_AVAILABILITY_FILEPATH = os.path.join(settings.LANGUAGE_PACK_ROOT, "language_pack_availability.json")
+LANGUAGE_PACK_AVAILABILITY_FILEPATH = os.path.join(LANGUAGE_PACK_ROOT, "language_pack_availability.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
+
+LOCALE_ROOT = settings.LOCALE_PATHS[0]
+
+def get_language_pack_metadata_filepath(lang_code):
+    lang_code = lcode_to_django(lang_code)
+    return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
+
+def get_language_pack_filepath(lang_code):
+    return os.path.join(LANGUAGE_PACK_ROOT, version.VERSION, "%s.zip" % lcode_to_ietf(lang_code))
+
+def get_language_pack_url(lang_code):
+    return "http://%s%s" % (
+        settings.CENTRAL_SERVER_HOST,
+        get_language_pack_filepath(language_code)[len(os.path.realpath(os.path.join(settings.PROJECT_PATH, ".."))):],
+    )
 
 class LanguageNotFoundError(Exception):
     pass

@@ -25,7 +25,7 @@ import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
 from shared.i18n import get_language_name, get_lang_map_filepath
-from shared.topic_tools import get_node_cache
+from shared.topic_tools import get_slug2id_map
 from utils.general import convert_date_input, ensure_dir, make_request
 
 
@@ -44,7 +44,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
 
     See the schema in the docstring for fcn update_video_entry.
     """
-    videos = get_node_cache('Video').values()
+    youtube_ids = get_slug2id_map().values()
 
     # Initialize the data
     if not os.path.exists(map_file):
@@ -62,19 +62,18 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             logging.info("Loaded %d mappings." % (len(srts_dict)))
 
         # Set of videos no longer used by KA Lite
-        removed_videos = set(srts_dict.keys()) - set([v[0]["youtube_id"] for v in videos])
+        removed_videos = set(srts_dict.keys()) - set(youtube_ids)
         if removed_videos:
             logging.info("Removing subtitle information for %d videos (no longer used)." % len(removed_videos))
             for vid in removed_videos:
                 del srts_dict[vid]
-    logging.info("Querying %d mappings." % (len(videos) - (0 if (force or date_to_check) else len(srts_dict))))
+    logging.info("Querying %d mappings." % (len(youtube_ids) - (0 if (force or date_to_check) else len(srts_dict))))
 
     # Once we have the current mapping, proceed through logic to update the mapping
     n_new_entries = 0
     n_failures = 0
-    for video_nodes in videos:
+    for youtube_id in youtube_ids:
         # Decide whether or not to update this video based on the arguments provided at the command line
-        youtube_id = video_nodes[0]['youtube_id']
         cached = youtube_id in srts_dict
         if not force and cached:
             # First, check against date
@@ -263,7 +262,7 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
                 lang_map.pop(yt_id, None)
 
         # Write the new file to the correct location
-        logging.info("Writing %s" % lang_map_filepath)
+        logging.debug("Writing %s" % lang_map_filepath)
         ensure_dir(os.path.dirname(lang_map_filepath))
         with open(lang_map_filepath, 'w') as outfile:
             json.dump(lang_map, outfile)
