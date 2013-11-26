@@ -116,6 +116,7 @@
 
 {# sub-pages must embed the navbar within the content, to have it appear. #}
 {% block navbar %}
+
     <div id="navbar" style="padding-bottom:25px">
         <div id="users_link">
         </div>
@@ -125,7 +126,7 @@
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
-                    {% trans "Coach Reports for" %}
+                    {% trans "Coach Reports for" %}&nbsp;
                 {% endblock %}
             </div>
             {% block navbar_facilities %}

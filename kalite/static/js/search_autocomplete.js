@@ -65,7 +65,6 @@ function flattenNodes() {
     for (node_type in nodes) {
         $.extend(flattened_nodes, nodes[node_type]);
     }
-    console.log(flattened_nodes);
     nodes = flattened_nodes;
     for (title in nodes) {
         titles.push(title);
