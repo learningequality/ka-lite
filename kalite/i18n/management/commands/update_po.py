@@ -125,16 +125,21 @@ def generate_test_files():
         # Once done replacing, rename temp file to overwrite original
         os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
 
-        (out, err, rc) = compile_all_po_files()
+        (out, err, rc) = compile_po_files(lang_code="en")
         if err:
             logging.debug("Error executing compilemessages: %s" % err)
 
 
-def compile_all_po_files(failure_ok=True):
+def compile_po_files(lang_code="all", failure_ok=True):
     """Compile all po files in locale directory"""
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
-    (out, err, rc) = call_command_with_output('compilemessages')
+
+    if not lang_code or lang_code == "all":
+        (out, err, rc) = call_command_with_output('compilemessages')
+    else:
+        (out, err, rc) = call_command_with_output('compilemessages', locale=lang_code)
+
     if err and not failure_ok:
         raise CommandError("Failure compiling po files: %s" % err)
     return out, err, rc
