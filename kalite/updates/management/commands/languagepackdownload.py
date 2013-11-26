@@ -16,7 +16,7 @@ import version
 from .classes import UpdatesStaticCommand
 from i18n.models import LanguagePack
 from settings import LOG as logging
-from shared.i18n import LOCALE_ROOT, lcode_to_django, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
+from shared.i18n import LOCALE_ROOT, lcode_to_django, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
 from utils.general import ensure_dir
 
 
@@ -49,9 +49,9 @@ class Command(UpdatesStaticCommand):
         if settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on distributed servers server.")
 
-        lang_code = lcode_to_django(options["lang_code"])
+        lang_code = lcode_to_ietf(options["lang_code"])
         software_version = options["software_version"]
-        if lang_code == settings.LANGUAGE_CODE:
+        if lcode_to_django(lang_code) == settings.LANGUAGE_CODE:
             logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % lang_code)
         if software_version == version.VERSION:
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
@@ -84,6 +84,7 @@ class Command(UpdatesStaticCommand):
 def get_language_pack(lang_code, software_version):
     """Download language pack for specified language"""
 
+    lang_code = lcode_to_ietf(lang_code)
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
     r = requests.get(request_url)
@@ -96,6 +97,7 @@ def get_language_pack(lang_code, software_version):
 
 def unpack_language(lang_code, zip_file):
     """Unpack zipped language pack into locale directory"""
+    lang_code = lcode_to_django(lang_code)
 
     logging.info("Unpacking new translations")
     ensure_dir(os.path.join(LOCALE_ROOT, lang_code, "LC_MESSAGES"))
@@ -108,7 +110,9 @@ def unpack_language(lang_code, zip_file):
 def update_database(lang_code):
     """Create/update LanguagePack table in database based on given languages metadata"""
 
-    metadata = json.loads(open(get_language_pack_metadata_filepath(lang_code)).read())
+    lang_code = lcode_to_ietf(lang_code)
+    with open(get_language_pack_metadata_filepath(lang_code)) as fp:
+        metadata = json.load(fp)
 
     logging.info("Updating database for language pack: %s" % lang_code)
 
@@ -129,6 +133,7 @@ def move_srts(lang_code):
     Srts live in the locale directory, but that's not exposed at any URL.  So instead,
     we have to move the srts out to /static/subtitles/[lang_code]/
     """
+    lang_code = lcode_to_ietf(lang_code)
     subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
     srt_static_dir = os.path.join(subtitles_static_dir, lang_code)
     srt_locale_dir = os.path.join(LOCALE_ROOT, lang_code, "subtitles")
