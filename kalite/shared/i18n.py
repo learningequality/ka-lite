@@ -5,18 +5,41 @@ import json
 import os
 import re 
 
+from django.core.management import call_command
 from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
 
 import settings
 from utils.general import ensure_dir
 
+DUBBED_VIDEOS_MAPPING_FILE = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
 
-def get_srt_url(video_id, code):
-    return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, video_id)
 
-def get_srt_path_on_disk(video_id, code):
-    return os.path.join(settings.STATIC_ROOT, "subtitles", code, video_id + ".srt")
+DUBBED_VIDEO_MAP = None
+def get_dubbed_video_map(force=False):
+    global DUBBED_VIDEO_MAP, DUBBED_VIDEOS_MAPPING_FILE
+    if DUBBED_VIDEO_MAP is None or force:
+        if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILE):
+            call_command("generate_dubbed_video_mappings")
+        lang2vid = json.loads(open(DUBBED_VIDEOS_MAPPING_FILE).read())
+
+        DUBBED_VIDEO_MAP = {}
+        for dic in lang2vid.values():
+            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                DUBBED_VIDEO_MAP[dubbed_youtube_id] = english_youtube_id
+    return DUBBED_VIDEO_MAP
+
+def get_video_id(youtube_id):
+    """
+    Youtube ID is assumed to be the non-english version.
+    """
+    return get_dubbed_video_map().get(youtube_id, youtube_id)
+
+def get_srt_url(youtube_id, code):
+    return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, youtube_id)
+
+def get_srt_path_on_disk(youtube_id, code):
+    return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
 
 def get_language_name(lang_code, native=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
@@ -84,7 +107,7 @@ def get_installed_languages():
     return installed_languages
 
 
-def get_installed_subtitles(video_id):
+def get_installed_subtitles(youtube_id):
     """
     Returns a list of all language codes that contain subtitles for this video.
     """
@@ -96,7 +119,7 @@ def get_installed_subtitles(video_id):
         if not os.path.exists(locale_dir):
             continue
 
-        installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(video_id, lang))]
+        installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
 
     return sorted(installed_subtitles)
 

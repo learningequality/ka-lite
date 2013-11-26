@@ -29,9 +29,11 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
+from shared.i18n import get_installed_subtitles
 from shared.jobs import force_job
 from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
 from utils.internet import is_loopback_connection, JsonResponse
+
 
 def check_setup_status(handler):
     """
@@ -66,6 +68,90 @@ def check_setup_status(handler):
     return wrapper_fn
 
 
+def refresh_topic_cache(handler, force=False):
+    def stamp_urls_on_video(video, force=False):
+        """
+        Stamp all relevant urls onto a video object (if necessary), including:
+        * whether the video is available (on disk or online)
+        * video url
+        * thumbnail url
+        * subtitles_urls
+        """
+        if force or "stream_url" not in video:
+            logging.debug("Adding urls into video %s" % video["path"])
+
+        # Compute video URLs.  Must use videos from topics, as the NODE_CACHE doesn't contain all video objects. :-/
+        video["available"] = video["on_disk"] or bool(settings.BACKUP_VIDEO_SOURCE)
+        language_codes = get_installed_subtitles(video["youtube_id"])
+        (video["stream_url"], video["thumbnail_url"], video["subtitles_urls"]) = get_video_urls(
+            video_id=video["id"],
+            youtube_id=video["youtube_id"],
+            format="mp4",
+            video_on_disk=video["on_disk"],
+            language_codes=language_codes,
+        )
+        return video
+
+    def strip_counts_from_ancestors(node):
+        """
+        Remove relevant counts from all ancestors
+        """
+        parent = node["parent"]
+        while parent:
+            if "nvideos_local" in parent:
+                del parent["nvideos_local"]
+            if "nvideos_known" in parent:
+                del parent["nvideos_known"]
+            parent = parent["parent"]
+        return node
+
+    def recount_videos_and_invalidate_parents(node, force=False):
+        """
+        Call get_video_counts (if necessary); if a change has been detected,
+        then check parents to see if their counts should be invalidated.
+        """
+        do_it = force
+        do_it = do_it or "nvideos_local" not in node
+        do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
+        if do_it:
+            logging.debug("Adding video counts to topic (and all descendants) %s" % node["path"])
+            changed = get_video_counts(topic=node, force=force)
+            if changed and node.get("parent") and "nvideos_local" in node["parent"]:
+                strip_counts_from_ancestors(node)
+        return node
+
+    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, *args, **kwargs):
+        """
+        Centralized logic for how to refresh the topic cache, for each type of object.
+
+        When the object is desired to be used, this code runs to refresh data,
+        balancing between correctness and efficiency.
+        """
+        if not cached_nodes:
+            cached_nodes = {"topics": topicdata.TOPICS}
+
+        for node in cached_nodes.values():
+            if not node:
+                continue
+            has_children = bool(node.get("children"))
+            has_grandchildren = has_children and any(["children" in child for child in node["children"]])
+
+            # Propertes not yet marked
+            if node["kind"] == "Video":
+                if force or "on_disk" not in node:  #
+                    recount_videos_and_invalidate_parents(node["parent"], force=True)
+                stamp_urls_on_video(node, force=force)  # must come second
+
+            elif node["kind"] == "Topic":
+                recount_videos_and_invalidate_parents(node, force=force or not has_grandchildren)
+                if force or not has_grandchildren:
+                    for video in topic_tools.get_topic_videos(path=node["path"]):
+                        stamp_urls_on_video(video, force=force)
+
+        kwargs.update(cached_nodes)
+        return handler(request, *args, **kwargs)
+    return refresh_topic_cache_wrapper_fn
+
 @backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
@@ -99,17 +185,20 @@ def splat_handler(request, splat):
                 raise Http404
             current_node = match
     if current_node["kind"] == "Topic":
-        return topic_handler(request, current_node)
+        return topic_handler(request, cached_nodes={"topic": current_node})
     elif current_node["kind"] == "Video":
-        return video_handler(request, video=current_node, prev=prev, next=next)
+        return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
     elif current_node["kind"] == "Exercise":
-        return exercise_handler(request, current_node)
+        cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
+        cached_nodes["exercise"] = current_node
+        return exercise_handler(request, cached_nodes=cached_nodes)
     else:
         raise Http404
 
 
 @backend_cache_page
 @render_to("topic.html")
+@refresh_topic_cache
 def topic_handler(request, topic):
     return topic_context(topic)
 
@@ -122,13 +211,6 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-
-    # Get video counts if they'll be used, on-demand only.
-    #
-    # Check in this order so that the initial counts are always updated
-    if video_counts_need_update() or not 'nvideos_local' in topic:
-        (topic,_,_) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
-
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
     context = {
@@ -145,12 +227,10 @@ def topic_context(topic):
 
 @backend_cache_page
 @render_to("video.html")
+@refresh_topic_cache
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    video_on_disk = is_video_on_disk(video['youtube_id'])
-    video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
-
-    if not video_exists:
+    if not video["available"]:
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
@@ -161,7 +241,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
     video["stream_type"] = "video/%s" % format
 
-    if video_exists and not video_on_disk:
+    if video["available"] and not video["on_disk"]:
         messages.success(request, "Got video content from %s" % video["stream_url"])
 
     context = {
@@ -177,36 +257,16 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
 @backend_cache_page
 @render_to("exercise.html")
-def exercise_handler(request, exercise):
+@refresh_topic_cache
+def exercise_handler(request, exercise, **related_videos):
     """
     Display an exercise
     """
-    # Find related videos   
-    related_videos = {}
-    for key in exercise["related_video_readable_ids"]:
-        video_nodes = topicdata.NODE_CACHE["Video"].get(key, None)
-        
-        # Make sure the IDs are recognized, and are available.
-        if not video_nodes:
-            continue
-        if not video_nodes[0].get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
-            continue
-        
-        # Search for a sibling video node to add to related exercises.
-        for video in video_nodes:
-            if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
-                related_videos[key] = video
-                break
-    
-        # failed to find a sibling; just choose the first one.
-        if key not in related_videos:
-            related_videos[key] = video_nodes[0]
-
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": "exercises/" + exercise["slug"] + ".html",
-        "related_videos": related_videos.values(),
+        "related_videos": [v for v in related_videos.values() if v["available"]],
     }
     return context
 
@@ -227,8 +287,12 @@ def exercise_dashboard(request):
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
 @render_to("homepage.html")
-def homepage(request):
-    context = topic_context(topicdata.TOPICS)
+@refresh_topic_cache
+def homepage(request, topics):
+    """
+    Homepage.
+    """
+    context = topic_context(topics)
     context.update({
         "title": "Home",
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
@@ -302,7 +366,8 @@ def device_redirect(request):
         raise Http404(_("This device is not on any zone."))
 
 @render_to('search_page.html')
-def search(request):
+@refresh_topic_cache
+def search(request, topics):  # we don't use the topics variable, but this setup will refresh the node cache
     # Inputs
     query = request.GET.get('query')
     category = request.GET.get('category')

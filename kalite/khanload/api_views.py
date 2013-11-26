@@ -38,7 +38,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import settings
 from main.models import ExerciseLog, VideoLog
-from main.topicdata import NODE_CACHE, ID2SLUG_MAP
+from main.topicdata import NODE_CACHE
 from settings import LOG as logging
 from securesync.models import FacilityUser
 from shared.decorators import require_login, distributed_server_only, central_server_only
@@ -158,26 +158,28 @@ def update_all_central_callback(request):
     # Save videos
     video_logs = []
     for video in videos:
-        youtube_id =video.get('video', {}).get('youtube_id', "")
+        # Assume that KA videos are all english-language, not dubbed (for now)
+        video_id = youtube_id = video.get('video', {}).get('youtube_id', "")
 
         # Only save videos with progress
         if not video.get('seconds_watched', None):
             continue
 
         # Only save video logs for videos that we recognize.
-        if youtube_id not in ID2SLUG_MAP:
-            logging.warn("Skipping unknown video %s" % youtube_id)
+        if video_id not in NODE_CACHE["Video"]:
+            logging.warn("Skipping unknown video %s" % video_id)
             continue
 
         try:
             video_logs.append({
+                "video_id": video_id,
                 "youtube_id": youtube_id,
                 "total_seconds_watched": video['seconds_watched'],
                 "points": VideoLog.calc_points(video['seconds_watched'], video['duration']),
                 "complete": video['completed'],
                 "completion_timestamp": convert_ka_date(video['last_watched']) if video['completed'] else None,
             })
-            logging.debug("Got video log for %s: %s" % (youtube_id, video_logs[-1]))
+            logging.debug("Got video log for %s: %s" % (video_id, video_logs[-1]))
         except KeyError:  # 
             logging.error("Could not save video log for data with missing values: %s" % video)
 
@@ -269,18 +271,19 @@ def update_all_distributed_callback(request):
     # Save videos
     n_videos_uploaded = 0
     for video in videos:
-        youtube_id =video['youtube_id']
+        video_id = video['video_id']
+        youtube_id = video['youtube_id']
 
         # Only save video logs for videos that we recognize.
-        if youtube_id not in ID2SLUG_MAP:
-            logging.warn("Skipping unknown video %s" % youtube_id)
+        if video_id not in NODE_CACHE["Video"]:
+            logging.warn("Skipping unknown video %s" % video_id)
             continue
 
         try:
-            (vl, _) = VideoLog.get_or_initialize(user=user, youtube_id=video["youtube_id"])
+            (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id, youtube_id=youtube_id)
             for key,val in video.iteritems():
                 setattr(vl, key, val)
-            logging.debug("Saving video log for %s: %s" % (youtube_id, vl))
+            logging.debug("Saving video log for %s: %s" % (video_id, vl))
             vl.save()
             n_videos_uploaded += 1
         except KeyError:  # 

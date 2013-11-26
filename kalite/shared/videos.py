@@ -7,12 +7,6 @@ from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
 
-def get_video_ids_for_topic(topic_id, topic_tree=None):
-    """Nobody actually calls this, just for utility when using the shell."""
-    topic_tree = topic_tree or get_topic_tree()
-    return utils.videos.get_video_ids_for_topic(topic_id, topic_tree)
-
-
 def download_video(youtube_id, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
 
@@ -24,17 +18,17 @@ def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
 
 
-def get_video_urls(video_id, format, video_on_disk=True, language_codes=[]):
-    video_base_url = settings.CONTENT_URL + video_id
+def get_video_urls(video_id, youtube_id, format, video_on_disk=True, language_codes=[]):
+    video_base_url = settings.CONTENT_URL + youtube_id
     if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
-        dict_vals = {"video_id": video_id, "video_format": format, "thumb_format": "png" }
+        dict_vals = {"video_id": video_id, "youtube_id": youtube_id, "video_format": format, "thumb_format": "png" }
         stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
         thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
     else:
         stream_url = video_base_url + ".%s" % format
         thumbnail_url = video_base_url + ".png"
 
-    subtitles_urls = dict(zip(language_codes, [get_srt_url(video_id, code) for code in language_codes if os.path.exists(get_srt_path_on_disk(video_id, code))]))
+    subtitles_urls = dict(zip(language_codes, [get_srt_url(youtube_id, code) for code in language_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]))
 
     return (stream_url, thumbnail_url, subtitles_urls)
 
@@ -71,7 +65,7 @@ def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
     return need_update
 
 
-def get_video_counts(topic, videos_path, force=False):
+def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
     """ Uses the (json) topic tree to query the django database for which video files exist
 
     Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -83,6 +77,9 @@ def get_video_counts(topic, videos_path, force=False):
     Input Parameters:
     * videos_path: the path to video files
     """
+
+    if not force and "nvideos_local" in topic:
+        return (topic, topic["nvideos_local"], topic["nvideos_known"], False)
 
     nvideos_local = 0
     nvideos_known = 0
@@ -101,7 +98,9 @@ def get_video_counts(topic, videos_path, force=False):
         #              if first child is a leaf, THEY'RE ALL LEAVES
         if "children" in topic["children"][0]:
             for child in topic["children"]:
-                (child, _, _) = get_video_counts(topic=child, videos_path=videos_path)
+                if not force and "nvideos_local" in child:
+                    continue
+                (child, _, _, _) = get_video_counts(topic=child, videos_path=videos_path)
                 nvideos_local += child["nvideos_local"]
                 nvideos_known += child["nvideos_known"]
 
@@ -109,14 +108,14 @@ def get_video_counts(topic, videos_path, force=False):
         # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
         else:
             videos = get_videos(topic)
-            if len(videos) > 0:
-
-                for video in videos:
-                    # Mark all videos as not found
+            for video in videos:
+                if force or "on_disk" not in video:
                     video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path)
-                    nvideos_local += int(video["on_disk"])  # add 1 if video["on_disk"]
-                nvideos_known = len(videos)
+                nvideos_local += int(video["on_disk"])  # add 1 if video["on_disk"]
+            nvideos_known = len(videos)
 
+    changed = topic.get("nvideos_local", -1) != nvideos_local
+    changed = changed or topic.get("nvideos_known", -1) != nvideos_known
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
-    return (topic, nvideos_local, nvideos_known)
+    return (topic, nvideos_local, nvideos_known, changed)

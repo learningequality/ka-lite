@@ -32,7 +32,6 @@
           {% endif %}
           <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}"></link>
 
-          {% block basecss %}{% endblock basecss %}
           {% block headcss %}{% endblock headcss %}
           <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
@@ -58,9 +57,6 @@
             </script>
 
           {% block headjs %}{% endblock headjs %}
-          {% block basejs %}{% endblock basejs %}
-          {% block extra_head %}{% endblock extra_head %}
-          {% block extrahead %}{% endblock extrahead %}
           {% block analytics %}{% include 'central/web_analytics.html' %}{% endblock analytics %}
       </head>
 
@@ -123,8 +119,8 @@
             <div class="row-fluid"> <!-- copyright footer -->
                 <div class="span12 float-right">
                 {% block attribution %}
-                    <p>KA Lite &copy; 2013 Foundation for Learning Equality
-                        <a href="http://opensource.org/licenses/MIT" target="_blank" ><img src="{% static 'images/MIT_logo.png' %}" alt="MIT License" class="cc-logo"></a>
+                    <p>
+                        &copy; 2013 Foundation for Learning Equality, Inc
                     </p>
                 {% endblock attribution %}
                 </div>
