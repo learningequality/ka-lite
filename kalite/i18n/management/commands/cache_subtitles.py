@@ -25,8 +25,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import lcode_to_ietf, get_language_name, get_lang_map_filepath
+from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import lcode_to_django, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
 from utils.general import convert_date_input, ensure_dir, make_request
 
 
@@ -64,15 +64,19 @@ def clear_subtitles_cache(lang_codes=None, locale_root=LOCALE_ROOT):
             shutil.rmtree(srt_path)
 
 
+def get_all_prepped_lang_codes():
+    """Pre-prepped language codes, for downloading srts"""
+    lang_codes = []
+    for filename in get_all_download_status_files():
+        lang_code = os.path.basename(filename).split("_")[0]
+        lang_codes.append(lcode_to_ietf(lang_code))
+    return lang_codes
+
+
 def download_srt_from_3rd_party(lang_codes=None, **kwargs):
     """Download subtitles specified by command line args"""
 
-    if not lang_codes:
-        lang_codes = []
-        for filename in get_all_download_status_files():
-            lang_code = os.path.basename(filename).split("_")[0]
-            lang_codes.append(lang_code)
-
+    lang_codes = lang_codes or get_all_prepped_lang_codes()
     bad_languages = {}
 
     for lang_code in lang_codes:
@@ -99,7 +103,8 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
 
 
 def get_srt_path(lang_code, locale_root=LOCALE_ROOT):
-    return os.path.join(locale_root, lang_code, "subtitles") + "/"
+    "lang_code: since srts are stored for django, must convert to django inside function"""
+    return os.path.join(locale_root, lcode_to_django(lang_code), "subtitles")
 
 
 def get_all_download_status_files():
@@ -221,7 +226,7 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     base_url = "https://amara.org/api2/partners/videos"
 
     resp = make_request(AMARA_HEADERS, "%s/%s/languages/%s/subtitles/?format=srt" % (
-        base_url, amara_code, lang_code,
+        base_url, amara_code, lang_code.lower(),
     ))
     if isinstance(resp, basestring) or not resp:
         return resp
@@ -314,6 +319,25 @@ def write_count_to_json(subtitle_counts, data_path):
         json.dump(current_counts, fp, sort_keys=True)
 
 
+def validate_language_map(lang_codes):
+    """
+    In order to run this command, all srt languages must exist in the
+    language map.  Rather than having errors unexpectedly along the way,
+    we can check up-front.
+    """
+    lang_codes = lang_codes or get_all_prepped_lang_codes()
+    missing_langs = []
+    for lang_code in lang_codes:
+        try:
+            get_language_name(lang_code, error_on_missing=True)
+        except LanguageNotFoundError:
+            missing_langs.append(lang_code)
+
+    if missing_langs:
+        logging.warn("Please add the following language codes to %s:\n\t%s" % (
+            LANG_LOOKUP_FILEPATH, missing_langs,
+        ))
+
 class Command(BaseCommand):
     help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitles/srts_download_status.json"
 
@@ -360,8 +384,12 @@ class Command(BaseCommand):
         del options["lang_code"]
 
         if len(args) == 0:
+            validate_language_map(lang_codes)
+
             logging.info("Downloading...")
             download_srt_from_3rd_party(lang_codes=lang_codes, **options)
+
+            validate_language_map(lang_codes)  # again at the end, so output is visible
 
         elif len(args) > 1:
             raise CommandError("Max 1 arg")

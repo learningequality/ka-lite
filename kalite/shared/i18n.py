@@ -24,6 +24,7 @@ SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
 LANGUAGE_PACK_AVAILABILITY_FILEPATH = os.path.join(settings.LANGUAGE_PACK_ROOT, "language_pack_availability.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
+LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
 
 class LanguageNotFoundError(Exception):
     pass
@@ -82,13 +83,11 @@ def get_srt_path_on_disk(youtube_id, code):
     return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
 
 
-lang_lookup_filename = "languagelookup.json"
-lang_lookup_path = os.path.join(settings.DATA_PATH_SECURE, lang_lookup_filename)
 CODE2LANG_MAP = None
 def get_code2lang_map(force=False):
-    global lang_lookup_path, CODE2LANG_MAP
+    global LANG_LOOKUP_FILEPATH, CODE2LANG_MAP
     if force or not CODE2LANG_MAP:
-        lmap = json.loads(open(lang_lookup_path).read())
+        lmap = json.loads(open(LANG_LOOKUP_FILEPATH).read())
         CODE2LANG_MAP = {}
         # convert all upper to lower
         for lang_code, entry in lmap.iteritems():
@@ -97,7 +96,7 @@ def get_code2lang_map(force=False):
 
 LANG2CODE_MAP = None
 def get_langcode_map(force=False):
-    global lang_lookup_path, LANG2CODE_MAP
+    global LANG_LOOKUP_FILEPATH, LANG2CODE_MAP
     if force or not LANG2CODE_MAP:
         LANG2CODE_MAP = {}
         for code, entries in get_code2lang_map(force=force).iteritems():
@@ -106,16 +105,20 @@ def get_langcode_map(force=False):
                     LANG2CODE_MAP[lang.lower()] = code
     return LANG2CODE_MAP
 
-def get_language_name(lang_code, native=False):
+def get_language_name(lang_code, native=False, error_on_missing=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
-    global lang_lookup_path
+    global LANG_LOOKUP_FILEPATH
 
     # Convert code if neccessary
-    lang_code = lcode_to_django(lang_code)
+    lang_code = lcode_to_ietf(lang_code)
 
     language_entry = get_code2lang_map().get(lang_code)
     if not language_entry:
-        raise LanguageNotFoundError("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, lang_lookup_path))
+        if error_on_missing:
+            raise LanguageNotFoundError("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, LANG_LOOKUP_FILEPATH))
+        else:
+            # Fake it
+            language_entry = {"name": lang_code, "native_name": lang_code}
 
     if not native:
         return language_entry["name"]
@@ -123,14 +126,17 @@ def get_language_name(lang_code, native=False):
         return language_entry["native_name"]
 
 
-def get_language_code(language):
+def get_language_code(language, for_django=False):
     """Return ISO 639-1 language code full English or native language name from ; raise exception if it isn't hardcoded yet"""
-    global lang_lookup_path
+    global LANG_LOOKUP_FILEPATH
 
     lang_code = get_langcode_map().get(language.lower())
     if not lang_code:
-       raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, lang_lookup_path))
-    return lang_code
+       raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, LANG_LOOKUP_FILEPATH))
+    elif for_django:
+        return lcode_to_django(lang_code)
+    else:
+        return lang_code
 
 
 def lcode_to_django(lang_code):
