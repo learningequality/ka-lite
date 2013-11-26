@@ -189,7 +189,12 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    return JsonResponse(list(get_installed_language_packs()))
+    installed = list(get_installed_language_packs())
+    is_en_in_language_packs = filter(lambda l: l['code'] == 'en', installed)
+    if not is_en_in_language_packs:
+        en = {'name': 'English', 'code': 'en', 'subtitle_count': 0, 'percent_translated': 100}
+        installed.insert(0, en)         # prepend so that it's always at the top of the list of languages
+    return JsonResponse(installed)
 
 @require_admin
 @api_handle_error_with_json

@@ -42,7 +42,11 @@ function display_installed_languages() {
         $("div.installed-languages").empty();
         langs.forEach(function(lang, index) {
             if (lang['name']) { // nonempty name
-                var link_text = "(<a href='?set_default_language=" + lang["code"] + "'>" + gettext("set as default") + "</a>)";
+                if (!(lang['code'] === defaultLanguage)) {
+                    var link_text = "(<a href='?set_default_language=" + lang["code"] + "'>" + gettext("set as default") + "</a>)";
+                } else {
+                    var link_text = "(Default)"
+                }
                 var lang_name = "<b>" + gettext(lang['name']) + "</b> (" + lang['code'] + ")";
                 var lang_data = lang['subtitle_count'] + " " + gettext("Subtitles") + " / " + lang['percent_translated'] + "% " + gettext("Translated");
                 $("div.installed-languages").append("<p>" + link_text + " " + lang_name + " - " + lang_data + "</p>");
