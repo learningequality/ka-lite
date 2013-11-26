@@ -258,7 +258,7 @@ def extract_new_po(tmp_dir_path=os.path.join(LOCALE_ROOT, "tmp"), language_codes
     logging.info("Unpacking new translations")
     update_languages = os.listdir(tmp_dir_path)
     if language_codes:  # limit based on passed in limitations
-        update_languages = set(update_languages).intersect(set(language_codes))
+        update_languages = set(update_languages).intersection(set(language_codes))
 
     for lang in update_languages:
         converted_code = convert_language_code_format(lang)
@@ -364,7 +364,7 @@ def increment_language_pack_version(local_meta, updated_meta):
 def zip_language_packs(lang_codes=None):
     """Zip up and expose all language packs"""
 
-    lang_codes = lang_codes or listdir(LOCALE_ROOT)
+    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 
     ensure_dir(settings.LANGUAGE_PACK_ROOT)
