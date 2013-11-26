@@ -5,13 +5,29 @@
     "id": "one_step_inequalities", 
     "display_name": "One step inequalities", 
     "title": "One step inequalities", 
+    "parent_id": "inequalities", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "inequalities"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "inequalities"
+    ], 
     "related_video_slugs": [
       "one-step-inequalities-2", 
       "inequalities-using-multiplication-and-division", 
       "inequalities"
     ], 
     "description": "Solve inequalities in one step.\n", 
+    "parent": "inequalities", 
     "basepoints": 19.0, 
     "h_position": -14, 
     "slug": "one_step_inequalities", 
@@ -30,7 +46,22 @@
     "id": "linear_inequalities", 
     "display_name": "Multi-step linear inequalities", 
     "title": "Multi-step linear inequalities", 
+    "parent_id": "inequalities", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "inequalities"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "inequalities"
+    ], 
     "related_video_slugs": [
       "solving-inequalities", 
       "multi-step-inequalities-3", 
@@ -38,6 +69,7 @@
       "multi-step-inequalities"
     ], 
     "description": "Solve linear inequalities in multiple steps.", 
+    "parent": "inequalities", 
     "basepoints": 24.0, 
     "h_position": -15, 
     "slug": "linear_inequalities", 
@@ -56,7 +88,22 @@
     "id": "compound_inequalities", 
     "display_name": "Compound inequalities", 
     "title": "Compound inequalities", 
+    "parent_id": "compound_absolute_value_inequali", 
     "live": true, 
+    "parents": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "compound_absolute_value_inequali"
+    ], 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "compound_absolute_value_inequali"
+    ], 
     "related_video_slugs": [
       "compund-inequalities", 
       "compund-inequalities", 
@@ -64,6 +111,7 @@
       "compound-inequalities-4"
     ], 
     "description": "Solve compound inequalities.\n", 
+    "parent": "compound_absolute_value_inequali", 
     "basepoints": 23.0, 
     "h_position": -15, 
     "slug": "compound_inequalities", 
