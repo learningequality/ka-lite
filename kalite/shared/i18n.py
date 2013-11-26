@@ -18,7 +18,7 @@ AMARA_HEADERS = {
     "X-apikey": settings.AMARA_API_KEY,
 }
 
-SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH, "subtitles")
+SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH_SECURE, "subtitles")
 LANGUAGE_SRT_SUFFIX = "_download_status.json"
 SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
@@ -83,7 +83,7 @@ def get_srt_path_on_disk(youtube_id, code):
 
 
 lang_lookup_filename = "languagelookup.json"
-lang_lookup_path = os.path.join(settings.DATA_PATH, lang_lookup_filename)
+lang_lookup_path = os.path.join(settings.DATA_PATH_SECURE, lang_lookup_filename)
 CODE2LANG_MAP = None
 def get_code2lang_map(force=False):
     global lang_lookup_path, CODE2LANG_MAP

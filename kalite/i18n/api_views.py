@@ -26,7 +26,7 @@ def get_subtitle_counts(request):
         raise Http404
 
     with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
-        subtitle_counts = json.loads(fp)
+        subtitle_counts = json.load(fp)
 
     return JsonResponse(subtitle_counts)
 
@@ -40,7 +40,7 @@ def get_available_language_packs(request):
     # On central, loop through available language packs in static/language_packs/
     try:
         with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
-            language_packs_available = json.loads(fp)
+            language_packs_available = json.load(fp)
     except:
         raise Http404
 

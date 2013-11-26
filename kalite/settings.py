@@ -134,6 +134,7 @@ STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT
 
 # Other defined paths
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
+DATA_PATH_SECURE = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
 LANGUAGE_PACK_ROOT = os.path.realpath(getattr(local_settings, "LANGUAGE_PACK_ROOT", STATIC_ROOT + "language_packs/")) + "/"
 
  # Make this unique, and don't share it with anybody.

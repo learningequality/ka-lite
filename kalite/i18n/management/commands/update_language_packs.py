@@ -32,8 +32,8 @@ from django.core.mail import mail_admins
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import get_language_name, lcode_to_django, LanguageNotFoundError
+from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import get_language_name, lcode_to_django, lcode_to_ietf, LanguageNotFoundError
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
@@ -237,7 +237,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
     # loop through all languages in locale, update master file
     crowdin_meta_dict = get_crowdin_meta()
     with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
-        subtitle_counts = json.load(fp))
+        subtitle_counts = json.load(fp)
     for lang in os.listdir(LOCALE_ROOT):
 
         # skips anything not a directory
