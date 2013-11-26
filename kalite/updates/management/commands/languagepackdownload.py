@@ -61,24 +61,25 @@ class Command(UpdatesStaticCommand):
         try:
             self.start("Downloading language pack '%s'" % lang_code)
             zip_file = get_language_pack(lang_code, software_version)
-        except CommandError as e: # 404
-            sys.exit('404 Not found: Could not download language pack file %s ' % get_language_pack_url(lang_code, software_version))
 
-        # Unpack into locale directory
-        self.next_stage("Unpacking language pack '%s'" % lang_code)
-        unpack_language(lang_code, zip_file)
+            # Unpack into locale directory
+            self.next_stage("Unpacking language pack '%s'" % lang_code)
+            unpack_language(lang_code, zip_file)
 
-        # Update database with meta info
-        self.next_stage("Updating database for language pack '%s'" % lang_code)
-        update_database(lang_code)
+            # Update database with meta info
+            self.next_stage("Updating database for language pack '%s'" % lang_code)
+            update_database(lang_code)
 
-        #
-        self.next_stage("Creating static files for language pack '%s'" % lang_code)
-        update_jsi18n_file(lang_code)
+            #
+            self.next_stage("Creating static files for language pack '%s'" % lang_code)
+            update_jsi18n_file(lang_code)
 
-        #
-        move_srts(lang_code)
-        self.complete("Finished processing language pack %s" % lang_code)
+            #
+            move_srts(lang_code)
+            self.complete("Finished processing language pack %s" % lang_code)
+        except Exception as e:
+            self.cancel(e)
+            raise
 
 def get_language_pack(lang_code, software_version):
     """Download language pack for specified language"""

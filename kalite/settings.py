@@ -210,8 +210,11 @@ if CENTRAL_SERVER:
     CSRF_COOKIE_NAME        = "csrftoken_central"
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
-    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", "ka-lite")
+
+    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", None)
     CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
+    AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
+    AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
 
 else:
 

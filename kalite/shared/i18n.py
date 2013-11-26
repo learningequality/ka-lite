@@ -14,10 +14,11 @@ import version
 from utils.general import ensure_dir
 
 
-AMARA_HEADERS = {
-    "X-api-username": settings.AMARA_USERNAME,
-    "X-apikey": settings.AMARA_API_KEY,
-}
+if settings.CENTRAL_SERVER:
+    AMARA_HEADERS = {
+        "X-api-username": settings.AMARA_USERNAME,
+        "X-apikey": settings.AMARA_API_KEY,
+    }
 
 SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH_SECURE, "subtitles")
 LANGUAGE_PACK_ROOT = os.path.join(settings.MEDIA_ROOT, "language_packs")
@@ -35,13 +36,13 @@ def get_language_pack_metadata_filepath(lang_code):
     lang_code = lcode_to_django(lang_code)
     return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
 
-def get_language_pack_filepath(lang_code):
-    return os.path.join(LANGUAGE_PACK_ROOT, version.VERSION, "%s.zip" % lcode_to_ietf(lang_code))
+def get_language_pack_filepath(lang_code, version=version.VERSION):
+    return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))
 
-def get_language_pack_url(lang_code):
-    return "http://%s%s" % (
+def get_language_pack_url(lang_code, version=version.VERSION):
+    return "http://%s/%s" % (
         settings.CENTRAL_SERVER_HOST,
-        get_language_pack_filepath(language_code)[len(os.path.realpath(os.path.join(settings.PROJECT_PATH, ".."))):],
+        get_language_pack_filepath(lang_code, version=version)[len(settings.PROJECT_PATH):],
     )
 
 class LanguageNotFoundError(Exception):
