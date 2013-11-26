@@ -108,7 +108,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
     logging.info("Downloading %s language(s)" % lang_code)
 
     ## Download latest UI translations from CrowdIn
-    download_latest_translations(zip_file=zip_file)
+    download_latest_translations(language_code=lang_code, zip_file=zip_file)
 
     ## Download Khan Academy translations too
     if download_ka_translations:
@@ -208,8 +208,10 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
 
     ## Get zip file of translations
     if zip_file:
-        logging.info("Using local zip file at %s" % local_zip_file)
-        z = zipfile.ZipFile(local_zip_file)
+        logging.info("Using local zip file at %s" % zip_file)
+        z = zipfile.ZipFile(zip_file)
+        # use the name of the zip file to infer the language code
+        language_code = os.path.splitext(os.path.basename(zip_file))[0]
     else:
         logging.info("Attempting to download a zip archive of current translations")
         ## Tell CrowdIn to Build latest package
