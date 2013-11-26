@@ -204,7 +204,6 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
     except Exception as e:
         # Must be corrupted; start from scratch!
         logging.warn("Could not open %s for updates; starting from scratch.  Error=%s" % (map_file, e))
-        import pdb; pdb.set_trace()
         api_info_map = {}
 
     # Next we want to iterate through those and create a big srt dictionary organized by language code
