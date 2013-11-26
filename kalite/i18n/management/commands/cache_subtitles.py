@@ -1,9 +1,9 @@
 """
 CENTRAL SERVER ONLY
 
-This command is used to cache srt files on the central server. It uses 
-the mapping generate by generate_subtitle_map to make requests of the 
-Amara API. 
+This command is used to cache srt files on the central server. It uses
+the mapping generate by generate_subtitle_map to make requests of the
+Amara API.
 """
 
 import copy
@@ -67,21 +67,29 @@ def download_srt_from_3rd_party(*args, **kwargs):
     # if language specified, do those, if not do all
     if not lang_code:
         raise CommandError("You must specify a language code or 'all' with -l")
+
     elif lang_code == "all":
+        bad_languages = {}
         for filename in get_all_download_status_files():
             try:
                 videos = json.loads(open(filename).read())
             except Exception as e:
                 logging.error(e)
                 raise CommandError("Unable to open %s. The file might be corrupted. Please re-run the generate_subtitle_map command to regenerate it." % filename)
-            
+
             try:
-                kwargs["lang_code"] = os.path.basename(filename).split("_")[0]
+                lang_code = os.path.basename(filename).split("_")[0]
+                kwargs["lang_code"] = lang_code
                 download_if_criteria_met(videos, *args, **kwargs)
             except Exception as e:
-                logging.error(e)
-                raise CommandError("Error while downloading language srts: %s" % e)
-    else: 
+                logging.error("Error downloading subtitles for %s: %s" % (lang_code, e))
+                bad_languages[lang_code] = e
+                continue
+        # now report final results
+        if bad_languages:
+            raise CommandError("Failed to download subtitles for the following languages: %s" % bad_languages.keys())
+
+    else:
         srt_list_path = get_lang_map_filepath(convert_language_code_format(lang_code))
         try:
             videos = json.loads(open(srt_list_path).read())
@@ -220,7 +228,7 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     """Update language_srt_map to reflect download status"""
     # Open JSON file
     filepath = get_lang_map_filepath(lang_code)
-    try: 
+    try:
         language_srt_map = json.loads(open(filepath).read())
     except Exception as e:
         logging.error("Something went wrong while trying to open the json file (%s): %s" % (filepath, e))

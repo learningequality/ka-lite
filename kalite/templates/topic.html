@@ -14,6 +14,12 @@
            line-height: 23px;
            margin-left: 10px;
         }
+        .subtitle_indicator {
+            background-color: #aaf;
+        }
+        .video_indicator {
+            background-color: #faa;
+        }
     </style>
 {% endblock headcss %}
 
@@ -21,7 +27,7 @@
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
         $(function() {
-            $('.video-unavailable').removeAttr("href"); 
+            $('.video-unavailable').removeAttr("href");
 
             // TODO(bcipolli): use javascript to translate here
             $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
@@ -48,7 +54,7 @@
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if not subtopic.nvideos_local and not backup_vids_available %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
+            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if not subtopic.available %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
                 {% trans subtopic.title %}
             </a>
             <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
@@ -73,12 +79,19 @@
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="v/{{ video.slug }}/" class="video-link client-online-only video-{% if not video.on_disk and not backup_vids_available %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link client-online-only video-{% if not video.available %}un{% endif %}available">
                 {% trans video.title %}
             </a>
-            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.urls %}un{% endif %}available">
                 {% trans video.title %}
             </a>
+
+            {% for lang, urls in video.urls.iteritems %}
+                <span class="video_indicator">{{ lang }}</span>
+                {% if urls.subtitles %}
+                <span class="subtitle_indicator">{{ lang }}</span>
+                {% endif %}
+            {% endfor %}
         </li>
         {% endfor %}
         <br/>
