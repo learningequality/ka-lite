@@ -66,6 +66,7 @@ urlpatterns += patterns('main.views',
     url(r'^search/$', 'search', {}, 'search'),
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+    url(r'^test/', include('student_testing.urls')),
 )
 
 handler403 = 'main.views.handler_403'

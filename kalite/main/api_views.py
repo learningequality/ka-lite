@@ -368,6 +368,7 @@ def flat_topic_tree(request, topic_path=None):
             topic_objects.extend(get_topic_videos(path=topic_path))
         if not leaf_type == "Video":
             topic_objects.extend(get_topic_exercises(path=topic_path))
+        print topic_path
         return JsonResponse(topic_objects)
     else:
         return JsonResponse(get_flat_topic_tree())

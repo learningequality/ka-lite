@@ -474,11 +474,9 @@ class AttemptLog(ExtendedModel):
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     random_seed = models.IntegerField(default=0)
-    streak_progress_at_attempt = models.IntegerField(default=0)
-    attempts = models.IntegerField(default=0)
-    points_awarded = models.IntegerField(default=0)
+    points_awarded = models.IntegerField(blank=True, null=True)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
-    timestamp = models.DateTimeField(blank=True, null=True)
+    timestamp = models.DateTimeField(editable=False, default=datetime.now)
 
     @staticmethod
     def is_enabled():
@@ -488,8 +486,7 @@ class AttemptLog(ExtendedModel):
         if self.end_datetime:
             return u"%s (%s): logged in @ %s; for %s seconds"%(self.user.username, self.language, self.start_datetime, self.total_seconds)
         else:
-            return u"%s (%s): logged in @ %s; last active @ %s"%(self.user.username, self.language, self.start_datetime, self.last_active_datetime)  
-
+            return u"%s (%s): logged in @ %s; last active @ %s"%(self.user.username, self.language, self.start_datetime, self.last_active_datetime)
 
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
