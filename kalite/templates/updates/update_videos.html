@@ -54,8 +54,9 @@
     </div>
 
     <div class="download-actions vertical-shadow">
-        <h2>{% trans "Currently Available Language Packs" %}</h2>
-        <a href="{% url update_languages %}">{% trans "Install more languages" %}</a>
+        <h2>{% trans "Available Language Packs" %}
+          <a href="{% url update_languages %}">({% trans "Install more" %})</a>
+        </h2>
         {{ languages|join:", " }} {% if other_languages_count %}and {{ other_languages_count }} more. {% endif %}
     </div>
 
