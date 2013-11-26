@@ -3,7 +3,7 @@ Utility functions for i18n related tasks on the distributed server
 """
 import json
 import os
-import re 
+import re
 
 from django.core.management import call_command
 from django.http import HttpRequest
@@ -16,24 +16,50 @@ DUBBED_VIDEOS_MAPPING_FILE = os.path.join(settings.STATIC_ROOT, "data", "i18n", 
 
 
 DUBBED_VIDEO_MAP = None
-def get_dubbed_video_map(force=False):
+def get_dubbed_video_map(lang_code=None, force=False):
     global DUBBED_VIDEO_MAP, DUBBED_VIDEOS_MAPPING_FILE
     if DUBBED_VIDEO_MAP is None or force:
         if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILE):
             call_command("generate_dubbed_video_mappings")
-        lang2vid = json.loads(open(DUBBED_VIDEOS_MAPPING_FILE).read())
+        DUBBED_VIDEO_MAP = json.loads(open(DUBBED_VIDEOS_MAPPING_FILE).read())
+    return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
-        DUBBED_VIDEO_MAP = {}
-        for dic in lang2vid.values():
+YT2ID_MAP = None
+def get_file2id_map(force=False):
+    global YT2ID_MAP
+    if YT2ID_MAP is None or force:
+        YT2ID_MAP = {}
+        for dic in get_dubbed_video_map().values():
             for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                DUBBED_VIDEO_MAP[dubbed_youtube_id] = english_youtube_id
-    return DUBBED_VIDEO_MAP
+                YT2ID_MAP[dubbed_youtube_id] = english_youtube_id
+    return YT2ID_MAP
+
+ID2OKLANG_MAP = None
+def get_id2oklang_map(video_id, force=False):
+    global ID2OKLANG_MAP
+    if ID2OKLANG_MAP is None or force:
+        ID2OKLANG_MAP = {}
+        for lang, dic in get_dubbed_video_map().iteritems():
+            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                cur_video_id = get_video_id(english_youtube_id)
+                ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
+                ID2OKLANG_MAP[cur_video_id][lang] = dubbed_youtube_id
+    if video_id:
+        # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
+        return ID2OKLANG_MAP.get(video_id, {"english": get_youtube_id(video_id, None)})
+    else:
+        return ID2OKLANG_MAP
+
+def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
+    if not lang_code:  # looking for the base/default youtube_id
+        return video_id
+    return get_dubbed_video_map().get(video_id, {}).get(lang_code)
 
 def get_video_id(youtube_id):
     """
     Youtube ID is assumed to be the non-english version.
     """
-    return get_dubbed_video_map().get(youtube_id, youtube_id)
+    return get_file2id_map().get(youtube_id, youtube_id)
 
 def get_srt_url(youtube_id, code):
     return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, youtube_id)
@@ -41,37 +67,66 @@ def get_srt_url(youtube_id, code):
 def get_srt_path_on_disk(youtube_id, code):
     return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
 
+
+lang_lookup_filename = "languagelookup.json"
+lang_lookup_path = os.path.join(settings.DATA_PATH, lang_lookup_filename)
+CODE2LANG_MAP = None
+def get_code2lang_map(force=False):
+    global lang_lookup_path, CODE2LANG_MAP
+    if force or not CODE2LANG_MAP:
+        CODE2LANG_MAP = json.loads(open(lang_lookup_path).read())
+        # convert all upper to lower
+        for entry in CODE2LANG_MAP.values():
+            entry = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+    return CODE2LANG_MAP
+
+LANG2CODE_MAP = None
+def get_langcode_map(force=False):
+    global lang_lookup_path, LANG2CODE_MAP
+    if force or not LANG2CODE_MAP:
+        LANG2CODE_MAP = {}
+        for code, entries in get_code2lang_map(force=force).iteritems():
+            for lang in entries.values():
+                if lang:
+                    LANG2CODE_MAP[lang.lower()] = code
+    return LANG2CODE_MAP
+
 def get_language_name(lang_code, native=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
-    # Open lookup dictionary 
-    lang_lookup_filename = "languagelookup.json"
-    lang_lookup_path = os.path.join(settings.DATA_PATH, lang_lookup_filename)
-    LANGUAGE_LOOKUP = json.loads(open(lang_lookup_path).read())
+    global lang_lookup_path
 
-    # Convert code if neccessary 
+    # Convert code if neccessary
     lang_code = convert_language_code_format(lang_code)
 
-    language_entry = LANGUAGE_LOOKUP.get(lang_code)    
+    language_entry = get_langcode_map().get(lang_code.lower())
     if not language_entry:
        raise Exception("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, lang_lookup_path))
 
     if not native:
-        language_name = language_entry["name"]
+        return language_entry["name"]
     else:
-        language_name = language_entry["native_name"]
+        return language_entry["native_name"]
 
-    return language_name
+
+def get_language_code(language):
+    """Return ISO 639-1 language code full English or native language name from ; raise exception if it isn't hardcoded yet"""
+    global lang_lookup_path
+
+    lang_code = get_langcode_map().get(language.lower())
+    if not lang_code:
+       raise Exception("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, lang_lookup_path))
+    return lang_code
 
 
 def convert_language_code_format(lang_code, for_crowdin=False):
     """
-    Return language code for lookup in local dictionary. 
+    Return language code for lookup in local dictionary.
 
-    Note: For language codes with localizations, Django requires the format xx_XX (e.g. Spanish from Spain = es_ES)  
+    Note: For language codes with localizations, Django requires the format xx_XX (e.g. Spanish from Spain = es_ES)
     not: xx-xx, xx-XX, xx_xx.
     """
     lang_code = lang_code.lower()
-    code_parts = re.split('-|_', lang_code)    
+    code_parts = re.split('-|_', lang_code)
     if len(code_parts) >  1:
         assert len(code_parts) == 2
         code_parts[1] = code_parts[1].upper()

@@ -2,7 +2,8 @@ import os
 
 import settings
 import utils.videos  # keep access to all functions
-from shared.i18n import get_srt_path_on_disk, get_srt_url
+from settings import logging
+from shared.i18n import get_srt_path_on_disk, get_srt_url, get_id2oklang_map, get_youtube_id, get_installed_subtitles, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
@@ -18,23 +19,70 @@ def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
 
 
-def get_video_urls(video_id, youtube_id, format, video_on_disk=True, language_codes=[]):
-    video_base_url = settings.CONTENT_URL + youtube_id
-    if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
-        dict_vals = {"video_id": video_id, "youtube_id": youtube_id, "video_format": format, "thumb_format": "png" }
-        stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
-        thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
-    else:
-        stream_url = video_base_url + ".%s" % format
-        thumbnail_url = video_base_url + ".png"
+def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
+    """
+    Returns a dictionary specifying:
+    * All of the available subtitles
+    * For each file available on disk, the stream URL, and thumbnail URL
+    * For each video available through the web, the stream URL and thumbnail URL
+    """
 
-    subtitles_urls = dict(zip(language_codes, [get_srt_url(youtube_id, code) for code in language_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]))
+    def compute_urls(youtube_id, format, thumb_format="png", videos_path=settings.CONTENT_ROOT):
+        video_on_disk = is_video_on_disk(youtube_id, format, videos_path=videos_path)
 
-    return (stream_url, thumbnail_url, subtitles_urls)
+        if not video_on_disk and settings.BACKUP_VIDEO_SOURCE:
+            dict_vals = {"youtube_id": youtube_id, "video_format": format, "thumb_format": thumb_format }
+            stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
+            thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
+        else:
+            video_base_url = settings.CONTENT_URL + youtube_id
+            stream_url = video_base_url + ".%s" % format
+            thumbnail_url = video_base_url + ".png"
+        return {"stream": stream_url, "thumbnail": thumbnail_url, "on_disk": video_on_disk, "stream_type": "video/%s" % format}
 
+    youtube_id = get_youtube_id(video_id, None)
+    urls = {}
 
-def is_video_on_disk(youtube_id, videos_path=settings.CONTENT_ROOT, format="mp4"):
-    return os.path.isfile(videos_path + youtube_id + ".%s" % format)
+    # Get the subtitle urls
+    subtitle_lang_codes = get_installed_subtitles(youtube_id)
+    subtitles_tuple = [(code, get_srt_url(youtube_id, code)) for code in subtitle_lang_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]
+    subtitles_urls = dict(subtitles_tuple)
+    #logging.debug("Subtitles for %s: %s" % (youtube_id, subtitles_urls))
+
+    # Loop over all known dubbed videos
+    for language, youtube_id in get_id2oklang_map(video_id).iteritems():
+        try:
+            lang_code = get_language_code(language)
+        except Exception as e:
+            logging.warn("Skipping unknown language '%s'" % (language))
+            continue
+        urls[lang_code] = compute_urls(youtube_id, format, videos_path=videos_path)
+        urls[lang_code]["subtitles"] = subtitles_urls.get(lang_code)
+
+    # now scrub any values that don't actually exist
+    for lang_code in urls.keys():
+        if not urls[lang_code]["on_disk"]:
+            del urls[lang_code]
+    return urls
+
+def stamp_urls_on_video(video, force=False):
+    """
+    Stamp all relevant urls onto a video object (if necessary), including:
+    * whether the video is available (on disk or online)
+    """
+    if force or "urls" not in video:
+        pass  #logging.debug("Adding urls into video %s" % video["path"])
+
+    # Compute video URLs.  Must use videos from topics, as the NODE_CACHE doesn't contain all video objects. :-/
+    video["urls"] = get_video_urls(
+        video_id=video["id"],
+        format="mp4",
+    )
+    video["available"] = bool(video["urls"]) or bool(settings.BACKUP_VIDEO_SOURCE)
+    return video
+
+def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT):
+    return os.path.isfile(os.path.join(videos_path, youtube_id + ".%s" % format))
 
 
 _vid_last_updated = 0
@@ -109,13 +157,14 @@ def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
         else:
             videos = get_videos(topic)
             for video in videos:
-                if force or "on_disk" not in video:
-                    video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path)
-                nvideos_local += int(video["on_disk"])  # add 1 if video["on_disk"]
+                if force or "urls" not in video:
+                    stamp_urls_on_video(video)
+                nvideos_local += int(bool(video["urls"]))  # add 1 if video["on_disk"]
             nvideos_known = len(videos)
 
     changed = topic.get("nvideos_local", -1) != nvideos_local
     changed = changed or topic.get("nvideos_known", -1) != nvideos_known
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
+    topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
     return (topic, nvideos_local, nvideos_known, changed)

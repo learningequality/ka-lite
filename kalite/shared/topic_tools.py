@@ -120,7 +120,7 @@ def generate_flat_topic_tree(node_cache=None):
                 'title': node['title'],
                 'path': node['path'],
                 'kind': node['kind'],
-                'available': node.get('on_disk', True) or bool(settings.BACKUP_VIDEO_SOURCE),
+                'available': node.get('available', True),
             }
             result[category_name][node_name] = relevant_data
     return result
@@ -306,8 +306,8 @@ def get_related_videos(exercise, limit_to_available=True):
 
     # Find related videos
     related_videos = {}
-    for slug in exercise["related_video_readable_ids"]:
-        video_nodes = get_node_cache("Video").get(get_slug2id_map.get(slug, ""), [])
+    for slug in exercise["related_video_slugs"]:
+        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
 
         # Make sure the IDs are recognized, and are available.
         if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):

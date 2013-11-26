@@ -73,7 +73,8 @@
   },
   "bn":{
     "name":"Bengali",
-    "native_name":"বাংলা"
+    "native_name":"বাংলা",
+    "ka_name":"bangla"
   },
   "bh":{
     "name":"Bihari",
@@ -185,7 +186,8 @@
   },
   "fr":{
     "name":"French",
-    "native_name":"français, langue française"
+    "native_name":"français, langue française",
+    "ka_name":"francais"
   },
   "ff":{
     "name":"Fula; Fulah; Pulaar; Pular",
@@ -205,7 +207,8 @@
   },
   "el":{
     "name":"Greek, Modern",
-    "native_name":"Ελληνικά"
+    "native_name":"Ελληνικά",
+    "ka_name":"greek"
   },
   "gn":{
     "name":"Guaraní",
@@ -225,7 +228,8 @@
   },
   "he":{
     "name":"Hebrew (modern)",
-    "native_name":"עברית"
+    "native_name":"עברית",
+    "ka_name":"Hebrew"
   },
   "hz":{
     "name":"Herero",
@@ -489,7 +493,8 @@
   },
   "pa":{
     "name":"Panjabi, Punjabi",
-    "native_name":"ਪੰਜਾਬੀ, پنجابی‎"
+    "native_name":"ਪੰਜਾਬੀ, پنجابی‎",
+    "ka_name":"punjabi"
   },
   "pi":{
     "name":"Pāli",
@@ -497,7 +502,8 @@
   },
   "fa":{
     "name":"Persian",
-    "native_name":"فارسی"
+    "native_name":"فارسی",
+    "ka_name":"farsi"
   },
   "pl":{
     "name":"Polish",
@@ -509,7 +515,8 @@
   },
   "pt":{
     "name":"Portuguese",
-    "native_name":"Português"
+    "native_name":"Português",
+    "ka_name":"portugues"
   },
   "qu":{
     "name":"Quechua",
@@ -569,7 +576,8 @@
   },
   "si":{
     "name":"Sinhala, Sinhalese",
-    "native_name":"සිංහල"
+    "native_name":"සිංහල",
+    "ka_name":"sinhala"
   },
   "sk":{
     "name":"Slovak",
@@ -649,7 +657,8 @@
   },
   "tr":{
     "name":"Turkish",
-    "native_name":"Türkçe"
+    "native_name":"Türkçe",
+    "native_name_ansi":"Turkce"
   },
   "ts":{
     "name":"Tsonga",
@@ -673,7 +682,8 @@
   },
   "uk":{
     "name":"Ukrainian",
-    "native_name":"українська"
+    "native_name":"українська",
+    "ka_name":"ukranian"
   },
   "ur":{
     "name":"Urdu",
@@ -733,7 +743,8 @@
   },
   "es_ES":{
     "name":"Spanish, Spain",
-    "native_name":"español"
+    "native_name":"español",
+    "ka_name":"espanol"
   },
   "fil":{
     "name":"Filipino",
@@ -749,7 +760,8 @@
   },
   "pt_PT":{
     "name":"Portuguese, Portugal",
-    "native_name":"Português"
+    "native_name":"Português",
+    "ka_name":"portugal portugues"
   },
   "sr_CS":{
     "name":"Serbian, Cyrillic",

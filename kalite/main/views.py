@@ -29,9 +29,8 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
-from shared.i18n import get_installed_subtitles
 from shared.jobs import force_job
-from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
+from shared.videos import get_video_urls, get_video_counts, stamp_urls_on_video
 from utils.internet import is_loopback_connection, JsonResponse
 
 
@@ -69,28 +68,6 @@ def check_setup_status(handler):
 
 
 def refresh_topic_cache(handler, force=False):
-    def stamp_urls_on_video(video, force=False):
-        """
-        Stamp all relevant urls onto a video object (if necessary), including:
-        * whether the video is available (on disk or online)
-        * video url
-        * thumbnail url
-        * subtitles_urls
-        """
-        if force or "stream_url" not in video:
-            logging.debug("Adding urls into video %s" % video["path"])
-
-        # Compute video URLs.  Must use videos from topics, as the NODE_CACHE doesn't contain all video objects. :-/
-        video["available"] = video["on_disk"] or bool(settings.BACKUP_VIDEO_SOURCE)
-        language_codes = get_installed_subtitles(video["youtube_id"])
-        (video["stream_url"], video["thumbnail_url"], video["subtitles_urls"]) = get_video_urls(
-            video_id=video["id"],
-            youtube_id=video["youtube_id"],
-            format="mp4",
-            video_on_disk=video["on_disk"],
-            language_codes=language_codes,
-        )
-        return video
 
     def strip_counts_from_ancestors(node):
         """
@@ -138,15 +115,17 @@ def refresh_topic_cache(handler, force=False):
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or "on_disk" not in node:  #
+                if force or "urls" not in node:  #
+                    #stamp_urls_on_video(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(node["parent"], force=True)
-                stamp_urls_on_video(node, force=force)  # must come second
 
             elif node["kind"] == "Topic":
-                recount_videos_and_invalidate_parents(node, force=force or not has_grandchildren)
-                if force or not has_grandchildren:
+                if not force and (not has_grandchildren or "nvideos_local" not in node):
+                    # if forcing, would do this here, and again below--so skip if forcing.
+                    logging.debug("cache miss: stamping urls on videos")
                     for video in topic_tools.get_topic_videos(path=node["path"]):
                         stamp_urls_on_video(video, force=force)
+                recount_videos_and_invalidate_parents(node, force=force or not has_grandchildren)
 
         kwargs.update(cached_nodes)
         return handler(request, *args, **kwargs)
@@ -239,10 +218,8 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
 
-    video["stream_type"] = "video/%s" % format
-
-    if video["available"] and not video["on_disk"]:
-        messages.success(request, "Got video content from %s" % video["stream_url"])
+    if video["available"] and not any([url["on_disk"] for url in video["urls"].values()]):
+        messages.success(request, "Got video content from %s" % video["urls"]["default"]["stream_url"])
 
     context = {
         "video": video,

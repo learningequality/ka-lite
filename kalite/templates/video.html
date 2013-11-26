@@ -80,26 +80,25 @@
 
     {% if use_mplayer and video.available %}
 
-        <h2 id="video-player"{% if not video.on_disk %} class="client-online-only"{% endif %}>
+        <h2 id="video-player"{% if not video.urls %} class="client-online-only"{% endif %}>
             <a href="" id="launch_mplayer">
-                <img class="video-thumb" src="{{ video.thumbnail_url }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
+                <img class="video-thumb" src="{{ video.urls.english.thumbnail }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
                 <br/><br/>
                 {% trans "Launch video in mplayer!" %}
             </a>
         </h2>
 
     {% elif video.available %}
-
-        <div id="video-player"{% if not video.on_disk %} class="client-online-only"{% endif %}>
-            <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.thumbnail_url %}poster="{{ video.thumbnail_url }}" {% endif %}data-setup="{}">
-                <source src="{{ video.stream_url }}" type="{{ video.stream_type }}" />
-                {% if video.subtitles_urls %}
-                    {% for lang, subtitles_url in video.subtitles_urls.iteritems %}
-                    <track kind="captions" src="{{ subtitles_url }}" srclang="{{ lang }}" label="{{ lang }}" />
-                    {% endfor %}
+        <div id="video-player"{% if not video.urls %} class="client-online-only"{% endif %}>
+            <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.urls.en.thumbnail %}poster="{{ video.urls.en.thumbnail }}" {% endif %}data-setup="{}">
+                <source src="{{ video.urls.en.stream }}" type="{{ video.urls.en.stream_type }}" />
+                {% for lang, urls in video.urls.iteritems %}
+                {% if urls.subtitles %}
+                <track kind="captions" src="{{ urls.subtitles }}" srclang="{{ lang }}" label="{{ lang }}" />
                 {% endif %}
+                {% endfor %}
             </video>
-            {% if video.thumbnail_url %}<img class="video-thumb" src="{{ video.thumbnail_url }}" style="position: absolute; left: -9999999px;">{% endif %}
+            {% if video.urls.en.thumbnail %}<img class="video-thumb" src="{{ video.urls.en.thumbnail }}" style="position: absolute; left: -9999999px;">{% endif %}
         </div>
 
     {% endif %}
