@@ -59,10 +59,16 @@ def update(request):
 def update_videos(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
+    hit_max = 5
+    installed_languages = get_installed_language_packs()
+    languages_to_show = [l['name'] for l in installed_languages[:hit_max]]
+    languages_other = installed_languages[hit_max:]
 
     context = update_context(request)
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
+        "languages": languages_to_show,
+        "other_languages_count": len(languages_other)
     })
     return context
 
