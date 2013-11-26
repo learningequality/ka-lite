@@ -247,17 +247,24 @@ def generate_metadata(lang_codes=None, broken_langs=None):
 
     note: broken_langs must be in django format.
     """
+    logging.info("Generating new language pack metadata")
 
-    logging.info("Generating new po file metadata")
-    master_metadata = []
+    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
+    try:
+        with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
+            master_metadata = json.load(fp)
+    except Exception as e:
+        logging.info("Error opening language pack metadata: %s" % e)
+        master_metadata = []
 
     # loop through all languages in locale, update master file
     crowdin_meta_dict = download_crowdin_metadata()
     with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
         subtitle_counts = json.load(fp)
 
-    for lang_code_django in os.listdir(LOCALE_ROOT):  # in django format
-        lang_code_ietf = lcode_to_ietf(lang_code_django)
+    for lc in lang_codes:
+        lang_code_django = lcode_to_django(lc)
+        lang_code_ietf = lcode_to_ietf(lc)
         lang_name = get_language_name(lang_code_ietf)
 
         # skips anything not a directory, or with errors
