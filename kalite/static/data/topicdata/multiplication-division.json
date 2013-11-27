@@ -7,13 +7,6 @@
     "title": "Number line 1", 
     "parent_id": "multiplication_fun", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multiplication_fun"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -25,7 +18,6 @@
       "number-line-1"
     ], 
     "description": "Drag a dot to a positive integer on the number line", 
-    "parent": "multiplication_fun", 
     "basepoints": 13.0, 
     "h_position": -2, 
     "slug": "number_line", 
@@ -45,13 +37,6 @@
     "title": "Multiplying 1-digit numbers", 
     "parent_id": "multiplication_fun", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multiplication_fun"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -64,7 +49,6 @@
       "multiplication-2--the-multiplication-tables"
     ], 
     "description": "Multiply two 1-digit numbers. Some problems include multiplying by 10.", 
-    "parent": "multiplication_fun", 
     "basepoints": 10.0, 
     "h_position": -1, 
     "slug": "multiplication_0.5", 
@@ -84,13 +68,6 @@
     "title": "Basic division", 
     "parent_id": "delightful_division", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "delightful_division"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -102,7 +79,6 @@
       "division-1"
     ], 
     "description": "Divide by 1, 2, 3, 5, 10. No remainders", 
-    "parent": "delightful_division", 
     "basepoints": 10.0, 
     "h_position": 0, 
     "slug": "division_0.5", 
@@ -122,13 +98,6 @@
     "title": "1-digit division", 
     "parent_id": "delightful_division", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "delightful_division"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -140,7 +109,6 @@
       "division-1"
     ], 
     "description": "Division problems with 1-digit divisors and quotients.", 
-    "parent": "delightful_division", 
     "basepoints": 10.0, 
     "h_position": 0, 
     "slug": "division_1", 
@@ -160,13 +128,6 @@
     "title": "Multiplication and division word problems", 
     "parent_id": "mult-div-word-problems", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "mult-div-word-problems"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -180,7 +141,6 @@
       "division-word-problem-example-1"
     ], 
     "description": "Word problems with multiplication and division of positive numbers.", 
-    "parent": "mult-div-word-problems", 
     "basepoints": 16.0, 
     "h_position": -3, 
     "slug": "arithmetic_word_problems_2", 
@@ -202,13 +162,6 @@
     "title": "Multiplication and division word problems 2", 
     "parent_id": "mult-div-word-problems", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "mult-div-word-problems"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -222,7 +175,6 @@
       "multiplication-word-problem-example-1"
     ], 
     "description": "Word problems with simple multiplication and division. Some problems have remainders.", 
-    "parent": "mult-div-word-problems", 
     "basepoints": 17.0, 
     "h_position": 1, 
     "slug": "arithmetic_word_problems", 
@@ -242,13 +194,6 @@
     "title": "Multiplying by multiples of 10", 
     "parent_id": "multi_digit_multiplication", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multi_digit_multiplication"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -260,7 +205,6 @@
       "multiplying-by-multiples-of-10"
     ], 
     "description": "Multiply a 1-digit number by a multiple of 10.", 
-    "parent": "multi_digit_multiplication", 
     "basepoints": 11.0, 
     "h_position": -1, 
     "slug": "multiplication_1", 
@@ -280,13 +224,6 @@
     "title": "Multiplication without carrying", 
     "parent_id": "multi_digit_multiplication", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multi_digit_multiplication"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -299,7 +236,6 @@
       "3-digit-times-1-digit-example-no-carrying"
     ], 
     "description": "Multiply 2- or 3-digit numbers by 1-digit numbers. No carrying.", 
-    "parent": "multi_digit_multiplication", 
     "basepoints": 12.0, 
     "h_position": -6, 
     "slug": "multiplication_1.5", 
@@ -320,13 +256,6 @@
     "title": "Multiplication with carrying", 
     "parent_id": "multi_digit_multiplication", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multi_digit_multiplication"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -340,7 +269,6 @@
       "4-digit-times-1-digit-example"
     ], 
     "description": "Multiply 3 or 4 digits by 1-digit with carrying.", 
-    "parent": "multi_digit_multiplication", 
     "basepoints": 14.0, 
     "h_position": -6, 
     "slug": "multiplication_2", 
@@ -360,13 +288,6 @@
     "title": "Multiplying 2 digits by 2 digits", 
     "parent_id": "multi_digit_multiplication", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multi_digit_multiplication"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -376,7 +297,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Multiply 2 digits by 2 digits with carrying.", 
-    "parent": "multi_digit_multiplication", 
     "basepoints": 20.0, 
     "h_position": -6, 
     "slug": "multiplication_3", 
@@ -396,13 +316,6 @@
     "title": "Multi-digit multiplication", 
     "parent_id": "multi_digit_multiplication", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "multi_digit_multiplication"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -414,7 +327,6 @@
       "multiplication-6--multiple-digit-numbers"
     ], 
     "description": "Multiply 2-3 digits by 3-4 digits with carrying.", 
-    "parent": "multi_digit_multiplication", 
     "basepoints": 22.0, 
     "h_position": -6, 
     "slug": "multiplication_4", 
@@ -435,13 +347,6 @@
     "title": "Multi-digit division without remainders", 
     "parent_id": "long_division", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "long_division"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -451,7 +356,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "", 
-    "parent": "long_division", 
     "basepoints": 18.0, 
     "h_position": -4, 
     "slug": "division_1.5", 
@@ -471,13 +375,6 @@
     "title": "Division with remainders", 
     "parent_id": "long_division", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "long_division"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -492,7 +389,6 @@
       "division-2"
     ], 
     "description": "Divide 3-digit or 4-digits by 1 digit, with remainder.", 
-    "parent": "long_division", 
     "basepoints": 25.0, 
     "h_position": -5, 
     "slug": "division_2", 
@@ -513,13 +409,6 @@
     "title": "Division by 2 digits", 
     "parent_id": "long_division", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "long_division"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -531,7 +420,6 @@
       "dividing-by-a-two-digit-number"
     ], 
     "description": "Divide 3-digit and 4-digit numbers by a 2-digit number without remainders.", 
-    "parent": "long_division", 
     "basepoints": 21.0, 
     "h_position": -5, 
     "slug": "division_3", 
@@ -552,13 +440,6 @@
     "title": "Multi-digit division", 
     "parent_id": "long_division", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "multiplication-division", 
-      "long_division"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -570,7 +451,6 @@
       "dividing-by-a-two-digit-number"
     ], 
     "description": "Divide multi-digit numbers.", 
-    "parent": "long_division", 
     "basepoints": 27.0, 
     "h_position": -5, 
     "slug": "division_4", 

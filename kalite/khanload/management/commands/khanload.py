@@ -167,6 +167,9 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             elif child[slug_key[child_kind]] in slug_blacklist:
                 children_to_delete.append(i)
                 continue
+            elif not child.get("live", True):  # node is not live
+                children_to_delete.append(i)
+                continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes

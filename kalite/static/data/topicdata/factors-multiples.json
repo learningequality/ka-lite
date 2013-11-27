@@ -7,13 +7,6 @@
     "title": "Divisibility tests", 
     "parent_id": "divisibility_tests", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "divisibility_tests"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -28,7 +21,6 @@
       "the-why-of-the-9-divisibility-rule"
     ], 
     "description": "", 
-    "parent": "divisibility_tests", 
     "basepoints": 13.0, 
     "h_position": 12, 
     "slug": "divisibility_tests", 
@@ -48,13 +40,6 @@
     "title": "Divisibility 0.5", 
     "parent_id": "divisibility_and_factors", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "divisibility_and_factors"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -67,7 +52,6 @@
       "finding-factors-of-a-number"
     ], 
     "description": "", 
-    "parent": "divisibility_and_factors", 
     "basepoints": 15.0, 
     "h_position": 10, 
     "slug": "divisibility_0.5", 
@@ -87,13 +71,6 @@
     "title": "Divisibility intuition", 
     "parent_id": "divisibility_and_factors", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "divisibility_and_factors"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -106,7 +83,6 @@
       "finding-factors-of-a-number"
     ], 
     "description": "", 
-    "parent": "divisibility_and_factors", 
     "basepoints": 15.0, 
     "h_position": 10, 
     "slug": "divisibility_intuition", 
@@ -126,13 +102,6 @@
     "title": "Prime numbers", 
     "parent_id": "prime_numbers", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "prime_numbers"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -145,7 +114,6 @@
       "recognizing-prime-numbers"
     ], 
     "description": "", 
-    "parent": "prime_numbers", 
     "basepoints": 14.0, 
     "h_position": 9, 
     "slug": "prime_numbers", 
@@ -165,13 +133,6 @@
     "title": "Composite numbers", 
     "parent_id": "prime_numbers", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "prime_numbers"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -184,7 +145,6 @@
       "prime-numbers"
     ], 
     "description": "", 
-    "parent": "prime_numbers", 
     "basepoints": 13.0, 
     "h_position": 11, 
     "slug": "composite_numbers", 
@@ -204,13 +164,6 @@
     "title": "Prime factorization", 
     "parent_id": "prime_factorization", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "prime_factorization"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -223,7 +176,6 @@
       "prime-factorization"
     ], 
     "description": "", 
-    "parent": "prime_factorization", 
     "basepoints": 16.0, 
     "h_position": 12, 
     "slug": "prime_factorization", 
@@ -243,13 +195,6 @@
     "title": "The fundamental theorem of arithmetic", 
     "parent_id": "prime_factorization", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "prime_factorization"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -261,7 +206,6 @@
       "the-fundamental-theorem-of-arithmetic"
     ], 
     "description": "", 
-    "parent": "prime_factorization", 
     "basepoints": 16.0, 
     "h_position": 11, 
     "slug": "the_fundamental_theorem_of_arithmetic", 
@@ -281,13 +225,6 @@
     "title": "Divisibility", 
     "parent_id": "prime_factorization", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "prime_factorization"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -299,7 +236,6 @@
       "common-divisibility-examples"
     ], 
     "description": "", 
-    "parent": "prime_factorization", 
     "basepoints": 17.0, 
     "h_position": 13, 
     "slug": "divisibility", 
@@ -319,13 +255,6 @@
     "title": "Least common multiple", 
     "parent_id": "least_common_multiple", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "least_common_multiple"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -339,7 +268,6 @@
       "least-common-multiple--lcm"
     ], 
     "description": "", 
-    "parent": "least_common_multiple", 
     "basepoints": 17.0, 
     "h_position": 10, 
     "slug": "least_common_multiple", 
@@ -359,13 +287,6 @@
     "title": "Greatest common divisor", 
     "parent_id": "greatest_common_divisor", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "greatest_common_divisor"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -378,7 +299,6 @@
       "greatest-common-divisor"
     ], 
     "description": "", 
-    "parent": "greatest_common_divisor", 
     "basepoints": 13.0, 
     "h_position": 9, 
     "slug": "greatest_common_divisor", 
@@ -398,13 +318,6 @@
     "title": "LCM and GCD word problems", 
     "parent_id": "greatest_common_divisor", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "factors-multiples", 
-      "greatest_common_divisor"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -416,7 +329,6 @@
       "lcm-and-gcf-greatest-common-factor--word-problems"
     ], 
     "description": "", 
-    "parent": "greatest_common_divisor", 
     "basepoints": 23.0, 
     "h_position": 10, 
     "slug": "least_common_multiple_and_greatest_common_divisor_word_problems", 

@@ -7,13 +7,6 @@
     "title": "Area of triangles", 
     "parent_id": "perimeter_area_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "perimeter_area_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -26,7 +19,6 @@
       "perimeter-and-area-basics"
     ], 
     "description": "Find the area of right, acute, and obtuse triangles from a diagram.\n", 
-    "parent": "perimeter_area_tutorial", 
     "basepoints": 13.0, 
     "h_position": 3, 
     "slug": "area_of_triangles_1", 
@@ -46,13 +38,6 @@
     "title": "Shaded areas", 
     "parent_id": "perimeter_area_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "perimeter_area_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -65,7 +50,6 @@
       "area-of-an-equilateral-triangle"
     ], 
     "description": "Find the areas of shaded regions which are combinations of squares, triangles, and circles.\n", 
-    "parent": "perimeter_area_tutorial", 
     "basepoints": 24.0, 
     "h_position": -1, 
     "slug": "shaded_areas", 
@@ -86,13 +70,6 @@
     "title": "Triangle inequality theorem", 
     "parent_id": "triangle_inequality_theorem", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "triangle_inequality_theorem"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -104,7 +81,6 @@
       "triangle-inqequality-theorem"
     ], 
     "description": "", 
-    "parent": "triangle_inequality_theorem", 
     "basepoints": 17.0, 
     "h_position": -2, 
     "slug": "triangle_inequality_theorem", 
@@ -124,13 +100,6 @@
     "title": "Heron's formula", 
     "parent_id": "heron_formula_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "heron_formula_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -142,7 +111,6 @@
       "heron-s-formula"
     ], 
     "description": "", 
-    "parent": "heron_formula_tutorial", 
     "basepoints": 27.0, 
     "h_position": -1, 
     "slug": "herons_formula", 
@@ -162,13 +130,6 @@
     "title": "Radius, diameter, and circumference", 
     "parent_id": "circum_area_circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "circum_area_circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -180,7 +141,6 @@
       "circles--radius--diameter-and-circumference"
     ], 
     "description": "", 
-    "parent": "circum_area_circles", 
     "basepoints": 13.0, 
     "h_position": 2, 
     "slug": "radius_diameter_and_circumference", 
@@ -200,13 +160,6 @@
     "title": "Area of a circle", 
     "parent_id": "circum_area_circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "circum_area_circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -218,7 +171,6 @@
       "area-of-a-circle"
     ], 
     "description": "", 
-    "parent": "circum_area_circles", 
     "basepoints": 15.0, 
     "h_position": 1, 
     "slug": "area_of_a_circle", 
@@ -239,13 +191,6 @@
     "title": "Area of parallelograms", 
     "parent_id": "area_non_standard", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "area_non_standard"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -257,7 +202,6 @@
       "area-of-a-parallelogram"
     ], 
     "description": "Find the area of parallelograms given base and height.\n", 
-    "parent": "area_non_standard", 
     "basepoints": 13.0, 
     "h_position": 4, 
     "slug": "area_of_parallelograms", 
@@ -277,13 +221,6 @@
     "title": "Area of trapezoids, rhombi, and kites", 
     "parent_id": "area_non_standard", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "area_non_standard"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -297,7 +234,6 @@
       "area-of-a-parallelogram"
     ], 
     "description": "Find areas of trapezoids, rhombi, and kites given important lengths.\n", 
-    "parent": "area_non_standard", 
     "basepoints": 16.0, 
     "h_position": 3, 
     "slug": "areas_of_trapezoids_rhombi_and_kites", 
@@ -317,13 +253,6 @@
     "title": "Solid geometry", 
     "parent_id": "volume_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "basic-geometry", 
-      "volume_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -337,7 +266,6 @@
       "volume-of-a-sphere"
     ], 
     "description": "", 
-    "parent": "volume_tutorial", 
     "basepoints": 18.0, 
     "h_position": 0, 
     "slug": "solid_geometry", 

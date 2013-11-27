@@ -234,11 +234,13 @@ else:
 ########################
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+logging.basicConfig()
+LOG.setLevel(LOGGING_LEVEL)
+logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
@@ -408,7 +410,7 @@ if CENTRAL_SERVER:
     #   We do this so that we have control over our own key/secret (secretly, of course!)
     KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
     KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
-    
+
     # Postmark settings, to enable sending registration/invitation emails
     POSTMARK_API_KEY = getattr(local_settings, "POSTMARK_API_KEY", "")
     POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", CENTRAL_FROM_EMAIL)
@@ -494,7 +496,7 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
                    ("RPi" if platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l" and not CENTRAL_SERVER
                    else []))
-                        
+
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]

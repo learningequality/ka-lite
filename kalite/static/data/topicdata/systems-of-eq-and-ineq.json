@@ -7,13 +7,6 @@
     "title": "Graphing systems of equations", 
     "parent_id": "systems-of-eq-overview", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-of-eq-overview"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -25,7 +18,6 @@
       "solving-systems-graphically"
     ], 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
-    "parent": "systems-of-eq-overview", 
     "basepoints": 28.0, 
     "h_position": -5, 
     "slug": "graphing_systems_of_equations", 
@@ -45,13 +37,6 @@
     "title": "Systems of equations with simple elimination", 
     "parent_id": "systems-of-eq-overview", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-of-eq-overview"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -68,7 +53,6 @@
       "king-s-cupcakes---solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
-    "parent": "systems-of-eq-overview", 
     "basepoints": 27.0, 
     "h_position": -6, 
     "slug": "systems_of_equations_with_elimination_0.5", 
@@ -88,13 +72,6 @@
     "title": "Systems of equations with elimination", 
     "parent_id": "systems-of-eq-overview", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-of-eq-overview"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -104,7 +81,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Solving systems of equations with elimination.", 
-    "parent": "systems-of-eq-overview", 
     "basepoints": 29.0, 
     "h_position": -8, 
     "slug": "systems_of_equations_with_elimination", 
@@ -124,13 +100,6 @@
     "title": "Systems of equations with substitution", 
     "parent_id": "systems-of-eq-overview", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-of-eq-overview"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -146,7 +115,6 @@
       "solving-systems-by-substitution-3"
     ], 
     "description": "Solve systems of equations using substitution\n", 
-    "parent": "systems-of-eq-overview", 
     "basepoints": 29.0, 
     "h_position": -7, 
     "slug": "systems_of_equations_with_substitution", 
@@ -166,13 +134,6 @@
     "title": "Systems of equations", 
     "parent_id": "systems-of-eq-overview", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-of-eq-overview"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -192,7 +153,6 @@
       "solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equations with substitution and elimination.\n", 
-    "parent": "systems-of-eq-overview", 
     "basepoints": 29.0, 
     "h_position": -7, 
     "slug": "systems_of_equations", 
@@ -214,13 +174,6 @@
     "title": "Systems of equations word problems", 
     "parent_id": "systems-of-eq-overview", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-of-eq-overview"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -233,7 +186,6 @@
       "algebraic-word-problem"
     ], 
     "description": "Word problems with systems of equations.", 
-    "parent": "systems-of-eq-overview", 
     "basepoints": 29.0, 
     "h_position": -4, 
     "slug": "systems_of_equations_word_problems", 
@@ -254,13 +206,6 @@
     "title": "Graphing systems of equations", 
     "parent_id": "fast-systems-of-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "fast-systems-of-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -272,7 +217,6 @@
       "solving-systems-graphically"
     ], 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
-    "parent": "fast-systems-of-equations", 
     "basepoints": 28.0, 
     "h_position": -5, 
     "slug": "graphing_systems_of_equations", 
@@ -292,13 +236,6 @@
     "title": "Systems of equations with substitution", 
     "parent_id": "fast-systems-of-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "fast-systems-of-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -314,7 +251,6 @@
       "solving-systems-by-substitution-3"
     ], 
     "description": "Solve systems of equations using substitution\n", 
-    "parent": "fast-systems-of-equations", 
     "basepoints": 29.0, 
     "h_position": -7, 
     "slug": "systems_of_equations_with_substitution", 
@@ -334,13 +270,6 @@
     "title": "Systems of equations with simple elimination", 
     "parent_id": "fast-systems-of-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "fast-systems-of-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -357,7 +286,6 @@
       "king-s-cupcakes---solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
-    "parent": "fast-systems-of-equations", 
     "basepoints": 27.0, 
     "h_position": -6, 
     "slug": "systems_of_equations_with_elimination_0.5", 
@@ -377,13 +305,6 @@
     "title": "Systems of equations with elimination", 
     "parent_id": "fast-systems-of-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "fast-systems-of-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -393,7 +314,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Solving systems of equations with elimination.", 
-    "parent": "fast-systems-of-equations", 
     "basepoints": 29.0, 
     "h_position": -8, 
     "slug": "systems_of_equations_with_elimination", 
@@ -413,13 +333,6 @@
     "title": "Systems of equations", 
     "parent_id": "fast-systems-of-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "fast-systems-of-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -439,7 +352,6 @@
       "solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equations with substitution and elimination.\n", 
-    "parent": "fast-systems-of-equations", 
     "basepoints": 29.0, 
     "h_position": -7, 
     "slug": "systems_of_equations", 
@@ -461,13 +373,6 @@
     "title": "Solutions to systems of equations", 
     "parent_id": "fast-systems-of-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "fast-systems-of-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -480,7 +385,6 @@
       "consistent-and-inconsistent-systems"
     ], 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
-    "parent": "fast-systems-of-equations", 
     "basepoints": 15.0, 
     "h_position": -5, 
     "slug": "solutions_to_systems_of_equations", 
@@ -500,13 +404,6 @@
     "title": "Graphing systems of equations", 
     "parent_id": "systems-through-examples", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-through-examples"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -518,7 +415,6 @@
       "solving-systems-graphically"
     ], 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
-    "parent": "systems-through-examples", 
     "basepoints": 28.0, 
     "h_position": -5, 
     "slug": "graphing_systems_of_equations", 
@@ -538,13 +434,6 @@
     "title": "Solutions to systems of equations", 
     "parent_id": "systems-solutions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-solutions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -557,7 +446,6 @@
       "consistent-and-inconsistent-systems"
     ], 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
-    "parent": "systems-solutions", 
     "basepoints": 15.0, 
     "h_position": -5, 
     "slug": "solutions_to_systems_of_equations", 
@@ -577,13 +465,6 @@
     "title": "Systems of equations with substitution", 
     "parent_id": "systems-with-substitution", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-with-substitution"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -599,7 +480,6 @@
       "solving-systems-by-substitution-3"
     ], 
     "description": "Solve systems of equations using substitution\n", 
-    "parent": "systems-with-substitution", 
     "basepoints": 29.0, 
     "h_position": -7, 
     "slug": "systems_of_equations_with_substitution", 
@@ -619,13 +499,6 @@
     "title": "Systems of equations with simple elimination", 
     "parent_id": "solving-systems-addition-elimination", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "solving-systems-addition-elimination"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -642,7 +515,6 @@
       "king-s-cupcakes---solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
-    "parent": "solving-systems-addition-elimination", 
     "basepoints": 27.0, 
     "h_position": -6, 
     "slug": "systems_of_equations_with_elimination_0.5", 
@@ -662,13 +534,6 @@
     "title": "Systems of equations with elimination", 
     "parent_id": "solving-systems-addition-elimination", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "solving-systems-addition-elimination"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -678,7 +543,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Solving systems of equations with elimination.", 
-    "parent": "solving-systems-addition-elimination", 
     "basepoints": 29.0, 
     "h_position": -8, 
     "slug": "systems_of_equations_with_elimination", 
@@ -698,13 +562,6 @@
     "title": "Systems of equations word problems", 
     "parent_id": "systems-word-problems", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "systems-word-problems"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -717,7 +574,6 @@
       "algebraic-word-problem"
     ], 
     "description": "Word problems with systems of equations.", 
-    "parent": "systems-word-problems", 
     "basepoints": 29.0, 
     "h_position": -4, 
     "slug": "systems_of_equations_word_problems", 
@@ -738,13 +594,6 @@
     "title": "Graphing systems of inequalities", 
     "parent_id": "system-of-inequalities", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "system-of-inequalities"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -758,7 +607,6 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
     "description": "Graph a system of linear inequalities.\n", 
-    "parent": "system-of-inequalities", 
     "basepoints": 28.0, 
     "h_position": -9, 
     "slug": "graphing_systems_of_inequalities", 
@@ -778,13 +626,6 @@
     "title": "Graphing and solving systems of inequalities", 
     "parent_id": "system-of-inequalities", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "systems-of-eq-and-ineq", 
-      "system-of-inequalities"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -798,7 +639,6 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
     "description": "Graph a system of inequalities, and determine whether ordered pairs are solutions.\n", 
-    "parent": "system-of-inequalities", 
     "basepoints": 29.0, 
     "h_position": -9, 
     "slug": "graphing_systems_of_inequalities_2", 
