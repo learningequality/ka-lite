@@ -40,10 +40,11 @@ def get_language_pack_filepath(lang_code, version=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))
 
 def get_language_pack_url(lang_code, version=version.VERSION):
-    return "http://%s/%s" % (
+    url = "http://%s/%s" % (
         settings.CENTRAL_SERVER_HOST,
         get_language_pack_filepath(lang_code, version=version)[len(settings.PROJECT_PATH):],
     )
+    return url
 
 class LanguageNotFoundError(Exception):
     pass
