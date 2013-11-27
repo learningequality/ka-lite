@@ -41,4 +41,10 @@ class SessionLanguage:
             request.session["django_language"] = request.session["default_language"]
             logging.debug("setting session language to %s" % request.session["django_language"])
 
+        # each request can get the language from the querystring, or from the currently set session language
         request.language = request.session["django_language"]
+
+class VideoLanguage:
+    """SessionLanguage must be called first"""
+    def process_request(self, request):
+        request.video_language = request.GET.get("lang") or request.session["django_language"]
