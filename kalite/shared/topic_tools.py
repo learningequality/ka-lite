@@ -26,7 +26,7 @@ TOPICS          = None
 def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, topics_file, "r") as fp:
+        with open(os.path.join(settings.DATA_PATH, topics_file), "r") as fp:
             TOPICS = json.load(fp)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
