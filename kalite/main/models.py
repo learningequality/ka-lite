@@ -475,6 +475,7 @@ class AttemptLog(ExtendedModel):
     exercise_id = models.CharField(max_length=100, db_index=True)
     random_seed = models.IntegerField(default=0)
     points_awarded = models.IntegerField(blank=True, null=True)
+    correct = models.BooleanField(blank=False, null=False)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
     timestamp = models.DateTimeField(editable=False, default=datetime.now)
 
