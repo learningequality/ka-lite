@@ -242,6 +242,7 @@ def login(request, facility):
                 # Just going back to the homepage?  We can do better than that.
                 landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
                 landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
+                landing_page = reverse("control_flow")
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
 

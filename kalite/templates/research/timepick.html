@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-timepicker.min.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}
+    <script type="text/javascript" src="{% static 'js/bootstrap-timepicker.min.js' %}"></script>
+    <script type="text/javascript">
+    $(function() {
+        $('#time_select').timepicker();
+        $('#date_select').datepicker({
+            dateFormat: "dd-mm-yy",
+        });
+    });
+    </script>
+{% endblock headjs %}
+
+
+{% block content %}
+<div>
+<h2>You will be tested on the material presented on the next page when you login on this date: {{ test_time }}</h2>
+</div>
+{% if condition == 2 %}
+<h2>Choose a date and time to study</h2>
+<form action="?next=true" method="get">
+<span><div class="link bootstrap-timepicker"><input id="time_select" name="time" type="text"></div></span>
+<span class="desc">{% trans "Input time (HH:MM)" %}</span>
+<span><div class="link date"><input id="date_select" name="date" type="text"></div></span>
+<span class="desc">{% trans "Input date (DD-MM-YYYY)" %}</span>
+
+<input class="green_button" type="submit" value="Submit">
+</form>
+{% elif condition == 1 %}
+<h2>Please study at this date and time: {{ time }}</h2>
+<a class="green_button" href="?next=true">Next</a>
+{% elif condition == 0 %}
+<h2>You may study now, or choose to come back later</h2>
+<a class="green_button" href="?next=true">Next</a>
+{% endif %}
+{% endblock content %}

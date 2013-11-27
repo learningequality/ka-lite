@@ -217,7 +217,7 @@ if CENTRAL_SERVER:
 else:
 
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS += ("i18n", "updates", "student_testing",)
+    INSTALLED_APPS += ("i18n", "updates", "student_testing", "research",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
         "securesync.middleware.FacilityCheck",
