@@ -80,7 +80,7 @@ class Command(BaseCommand):
         obliterate_old_schema()
 
         # Raw language code for srts
-        # update_srts(days=options["days"], lang_code=options["lang_code"])
+        update_srts(days=options["days"], lang_code=options["lang_code"])
 
         # Converted language code for language packs
         update_language_packs(
