@@ -30,6 +30,7 @@ from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
 from shared.jobs import force_job
+from shared.topic_tools import get_ancestor, get_parent
 from shared.videos import get_video_urls, get_video_counts, stamp_urls_on_video
 from utils.internet import is_loopback_connection, JsonResponse
 
@@ -74,7 +75,7 @@ def refresh_topic_cache(handler, force=False):
         Remove relevant counts from all ancestors
         """
         for ancestor_id in node.get("ancestor_ids", []):
-            ancestor = topicdata.NODE_CACHE["Topic"][ancestor_id]
+            ancestor = get_ancestor(node, ancestor_id)
             if "nvideos_local" in ancestor:
                 del ancestor["nvideos_local"]
             if "nvideos_known" in ancestor:
@@ -116,7 +117,7 @@ def refresh_topic_cache(handler, force=False):
             if node["kind"] == "Video":
                 if force or "urls" not in node:  #
                     #stamp_urls_on_video(node, force=force)  # will be done by force below
-                    recount_videos_and_invalidate_parents(node["parent_id"], force=True)
+                    recount_videos_and_invalidate_parents(get_parent(node), force=True)
 
             elif node["kind"] == "Topic":
                 if not force and (not has_grandchildren or "nvideos_local" not in node):

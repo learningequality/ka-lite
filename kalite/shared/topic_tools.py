@@ -153,6 +153,21 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
     return node_cache
 
 
+def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
+    potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
+    if not potential_parents:
+        return None
+    elif len(potential_parents) == 1:
+        return potential_parents[0]
+    else:
+        for pp in potential_parents:
+            if node["path"].startswith(pp["path"]):  # find parent by path
+                return pp
+        return None
+
+def get_parent(node, parent_type="Topic"):
+    return get_ancestor(node, ancestor_id=node["parent_id"], ancestor_type=parent_type)
+
 def get_videos(topic):
     """Given a topic node, returns all video node children (non-recursively)"""
     return filter(lambda node: node["kind"] == "Video", topic["children"])
