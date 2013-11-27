@@ -126,8 +126,10 @@
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
-                    {% trans "Coach Reports for" %}&nbsp;
+                    {% trans "Coach Reports" %}
                 {% endblock %}
+                {# Note to translators: The context is the title "Coach Reports *for* Facility X." #}
+                {% trans "for" %}&nbsp;
             </div>
             {% block navbar_facilities %}
             <div id="select-facilities" class="selection">
