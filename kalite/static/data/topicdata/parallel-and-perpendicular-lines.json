@@ -7,13 +7,6 @@
     "title": "Measuring angles", 
     "parent_id": "Angle_basics", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "Angle_basics"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -28,7 +21,6 @@
       "measuring-angles"
     ], 
     "description": "", 
-    "parent": "Angle_basics", 
     "basepoints": 18.0, 
     "h_position": -5, 
     "slug": "measuring_angles", 
@@ -48,13 +40,6 @@
     "title": "Angle types", 
     "parent_id": "Angle_basics", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "Angle_basics"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -67,7 +52,6 @@
       "acute-right-and-obtuse-angles"
     ], 
     "description": "", 
-    "parent": "Angle_basics", 
     "basepoints": 10.0, 
     "h_position": -5, 
     "slug": "angle_types", 
@@ -87,13 +71,6 @@
     "title": "Exploring angle pairs", 
     "parent_id": "Angle_basics", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "Angle_basics"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -105,7 +82,6 @@
       "vertical--adjacent-and-linearly-paired-angles"
     ], 
     "description": "Find vertical angles, adjacent angles, and linearly paired angles.\n", 
-    "parent": "Angle_basics", 
     "basepoints": 18.0, 
     "h_position": -6, 
     "slug": "exploring_angle_pairs_1", 
@@ -125,13 +101,6 @@
     "title": "Vertical angles", 
     "parent_id": "ang_intro", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "ang_intro"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -144,7 +113,6 @@
       "proof-vertical-angles-are-equal"
     ], 
     "description": "", 
-    "parent": "ang_intro", 
     "basepoints": 12.0, 
     "h_position": -8, 
     "slug": "vertical_angles", 
@@ -164,13 +132,6 @@
     "title": "Vertical angles 2", 
     "parent_id": "ang_intro", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "ang_intro"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -183,7 +144,6 @@
       "angles-at-the-intersection-of-two-lines"
     ], 
     "description": "", 
-    "parent": "ang_intro", 
     "basepoints": 23.0, 
     "h_position": -12, 
     "slug": "vertical_angles_2", 
@@ -204,13 +164,6 @@
     "title": "Congruent angles", 
     "parent_id": "ang_intro", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "ang_intro"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -223,7 +176,6 @@
       "figuring-out-angles-between-transversal-and-parallel-lines"
     ], 
     "description": "Determine which angles must be congruent when parallel lines are crossed by a transversal.\n", 
-    "parent": "ang_intro", 
     "basepoints": 12.0, 
     "h_position": -13, 
     "slug": "congruent_angles", 
@@ -243,13 +195,6 @@
     "title": "Parallel lines 1", 
     "parent_id": "ang_intro", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "ang_intro"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -262,7 +207,6 @@
       "figuring-out-angles-between-transversal-and-parallel-lines"
     ], 
     "description": "", 
-    "parent": "ang_intro", 
     "basepoints": 13.0, 
     "h_position": -7, 
     "slug": "parallel_lines_1", 
@@ -282,13 +226,6 @@
     "title": "Parallel lines 2", 
     "parent_id": "ang_intro", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "ang_intro"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -302,7 +239,6 @@
       "angles-formed-by-parallel-lines-and-transversals"
     ], 
     "description": "", 
-    "parent": "ang_intro", 
     "basepoints": 25.0, 
     "h_position": -7, 
     "slug": "parallel_lines_2", 
@@ -322,13 +258,6 @@
     "title": "Angles 1", 
     "parent_id": "triang_prop_tut", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "triang_prop_tut"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -343,7 +272,6 @@
       "finding-more-angles"
     ], 
     "description": "", 
-    "parent": "triang_prop_tut", 
     "basepoints": 20.0, 
     "h_position": -11, 
     "slug": "angles_1", 
@@ -363,13 +291,6 @@
     "title": "Angles 2", 
     "parent_id": "triang_prop_tut", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "triang_prop_tut"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -384,7 +305,6 @@
       "proof---sum-of-measures-of-angles-in-a-triangle-are-180"
     ], 
     "description": "", 
-    "parent": "triang_prop_tut", 
     "basepoints": 20.0, 
     "h_position": -11, 
     "slug": "angles_2", 
@@ -404,13 +324,6 @@
     "title": "Angles of a polygon", 
     "parent_id": "triang_prop_tut", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "triang_prop_tut"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -422,7 +335,6 @@
       "sum-of-interior-angles-of-a-polygon"
     ], 
     "description": "", 
-    "parent": "triang_prop_tut", 
     "basepoints": 13.0, 
     "h_position": -10, 
     "slug": "angles_of_a_polygon", 
@@ -442,13 +354,6 @@
     "title": "Complementary and supplementary angles", 
     "parent_id": "complementary-supplementary-angl", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "complementary-supplementary-angl"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -460,7 +365,6 @@
       "complementary-and-supplementary-angles"
     ], 
     "description": "", 
-    "parent": "complementary-supplementary-angl", 
     "basepoints": 18.0, 
     "h_position": -9, 
     "slug": "complementary_and_supplementary_angles", 
@@ -481,13 +385,6 @@
     "title": "Angle addition postulate", 
     "parent_id": "complementary-supplementary-angl", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "parallel-and-perpendicular-lines", 
-      "complementary-supplementary-angl"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -501,7 +398,6 @@
       "complementary-and-supplementary-angles"
     ], 
     "description": "", 
-    "parent": "complementary-supplementary-angl", 
     "basepoints": 27.0, 
     "h_position": -14, 
     "slug": "angle_addition_postulate", 

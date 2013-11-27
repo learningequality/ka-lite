@@ -7,12 +7,6 @@
     "title": "Circles and arcs", 
     "parent_id": "circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -24,7 +18,6 @@
       "finding-central-angle-measure-given-arc-length"
     ], 
     "description": "Relate the length of an arc to the circumference of a whole circle.\n", 
-    "parent": "circles", 
     "basepoints": 28.0, 
     "h_position": 5, 
     "slug": "circles_and_arcs", 
@@ -46,12 +39,6 @@
     "title": "Areas of circles and sectors", 
     "parent_id": "circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -62,7 +49,6 @@
       "area-of-a-sector-given-a-central-angle"
     ], 
     "description": "Relate the area of a sector to the area of a whole circle.\n", 
-    "parent": "circles", 
     "basepoints": 28.0, 
     "h_position": 4, 
     "slug": "areas_of_circles_and_sectors", 
@@ -84,12 +70,6 @@
     "title": "Inscribed angles 1", 
     "parent_id": "circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -100,7 +80,6 @@
       "inscribed-and-central-angles"
     ], 
     "description": "", 
-    "parent": "circles", 
     "basepoints": 14.0, 
     "h_position": 6, 
     "slug": "inscribed_angles_1", 

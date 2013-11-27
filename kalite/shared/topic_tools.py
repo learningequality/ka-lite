@@ -26,7 +26,8 @@ TOPICS          = None
 def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
+        with open(os.path.join(settings.DATA_PATH, topics_file), "r") as fp:
+            TOPICS = json.load(fp)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
@@ -46,7 +47,8 @@ KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS, map_layout_file
     if KNOWLEDGEMAP_TOPICS is None or force:
-        kmap = json.loads(open(os.path.join(settings.DATA_PATH, map_layout_file)).read())
+        with open(os.path.join(settings.DATA_PATH, map_layout_file), "r") as fp:
+            kmap = json.load(fp)
         KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
     return KNOWLEDGEMAP_TOPICS
 
@@ -152,6 +154,21 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
 
     return node_cache
 
+
+def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
+    potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
+    if not potential_parents:
+        return None
+    elif len(potential_parents) == 1:
+        return potential_parents[0]
+    else:
+        for pp in potential_parents:
+            if node["path"].startswith(pp["path"]):  # find parent by path
+                return pp
+        return None
+
+def get_parent(node, parent_type="Topic"):
+    return get_ancestor(node, ancestor_id=node["parent_id"], ancestor_type=parent_type)
 
 def get_videos(topic):
     """Given a topic node, returns all video node children (non-recursively)"""
@@ -319,24 +336,4 @@ def get_related_videos(exercise, limit_to_available=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
-
-    parent_path1 = parse_path(node1)
-    parent_path2 = parse_path(node2)
-
-    return parent_path1 == parent_path2
-
-
-def delete_parents(node, recurse=True):
-    if isinstance(node, (list, tuple)):
-        for n in node:
-            delete_parents(n, recurse=recurse)
-    if "parent" in node:
-        del node["parent"]
-    if "parents" in node:
-        del node["parents"]
-    if recurse and "children" in node:
-        for child in node["children"]:
-            delete_parents(child, recurse=recurse)
-
-    return node
+    return node1["parent_id"] == node2["parent_id"]

@@ -7,13 +7,6 @@
     "title": "Positive and zero exponents", 
     "parent_id": "world-of-exponents", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "world-of-exponents"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -31,7 +24,6 @@
       "understanding-exponents"
     ], 
     "description": "Integers raised to positive integers. Non-zero integers raised to the zero power. 0, -1, and 1 raised to very large positive integers.", 
-    "parent": "world-of-exponents", 
     "basepoints": 13.0, 
     "h_position": -21, 
     "slug": "exponents_1", 
@@ -51,13 +43,6 @@
     "title": "Square roots of perfect squares", 
     "parent_id": "radical-radicals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "radical-radicals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -70,7 +55,6 @@
       "square-roots-and-real-numbers"
     ], 
     "description": "Find the square root of a perfect square positive integer.\n", 
-    "parent": "radical-radicals", 
     "basepoints": 10.0, 
     "h_position": -20, 
     "slug": "square_roots", 
@@ -90,13 +74,6 @@
     "title": "Estimating square roots", 
     "parent_id": "radical-radicals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "radical-radicals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -108,7 +85,6 @@
       "approximating-square-roots"
     ], 
     "description": "Approximate the square roots of numbers which are not perfect squares.\n", 
-    "parent": "radical-radicals", 
     "basepoints": 15.0, 
     "h_position": -20, 
     "slug": "square_roots_2", 
@@ -128,13 +104,6 @@
     "title": "Simplifying radicals", 
     "parent_id": "radical-radicals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "radical-radicals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -149,7 +118,6 @@
       "simplifying-square-roots"
     ], 
     "description": "Express radicals in simplest form.\n", 
-    "parent": "radical-radicals", 
     "basepoints": 17.0, 
     "h_position": -27, 
     "slug": "simplifying_radicals", 
@@ -170,13 +138,6 @@
     "title": "Simplifying radicals 2", 
     "parent_id": "radical-radicals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "radical-radicals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -189,7 +150,6 @@
       "simplifying-radicals"
     ], 
     "description": "Multiply expressions containing radicals.\n", 
-    "parent": "radical-radicals", 
     "basepoints": 18.0, 
     "h_position": -26, 
     "slug": "multiplying_radicals", 
@@ -209,13 +169,6 @@
     "title": "Adding and subtracting radicals", 
     "parent_id": "radical-radicals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "radical-radicals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -227,7 +180,6 @@
       "more-simplifying-radical-expressions"
     ], 
     "description": "Add and subtract expressions containing radicals.\n", 
-    "parent": "radical-radicals", 
     "basepoints": 21.0, 
     "h_position": -26, 
     "slug": "adding_and_subtracting_radicals", 
@@ -247,13 +199,6 @@
     "title": "Cube roots", 
     "parent_id": "cube-root-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "cube-root-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -267,7 +212,6 @@
       "simplifying-radical-expressions1"
     ], 
     "description": "Find the cube root of a perfect cube positive integer.\n", 
-    "parent": "cube-root-tutorial", 
     "basepoints": 14.0, 
     "h_position": -19, 
     "slug": "cube_roots", 
@@ -287,13 +231,6 @@
     "title": "Cube roots 2", 
     "parent_id": "cube-root-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "cube-root-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -306,7 +243,6 @@
       "finding-cube-roots"
     ], 
     "description": "", 
-    "parent": "cube-root-tutorial", 
     "basepoints": 23.0, 
     "h_position": -19, 
     "slug": "cube_roots_2", 
@@ -326,13 +262,6 @@
     "title": "Exponent rules", 
     "parent_id": "exponent-properties", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "exponent-properties"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -346,7 +275,6 @@
       "exponent-rules-part-2"
     ], 
     "description": "Solve exponent problems by adding, subtracting, or multiplying exponents.", 
-    "parent": "exponent-properties", 
     "basepoints": 14.0, 
     "h_position": -23, 
     "slug": "exponent_rules", 
@@ -367,13 +295,6 @@
     "title": "Negative exponents", 
     "parent_id": "negative-exponents-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "negative-exponents-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -387,7 +308,6 @@
       "zero--negative--and-fractional-exponents"
     ], 
     "description": "Fractional and integer bases raised to negative integer exponents.\n", 
-    "parent": "negative-exponents-tutorial", 
     "basepoints": 15.0, 
     "h_position": -23, 
     "slug": "exponents_2", 
@@ -407,13 +327,6 @@
     "title": "Fractional exponents", 
     "parent_id": "negative-exponents-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "negative-exponents-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -428,7 +341,6 @@
       "zero--negative--and-fractional-exponents"
     ], 
     "description": "Fractional and integer bases raised to positive and negative fractional exponents.\n", 
-    "parent": "negative-exponents-tutorial", 
     "basepoints": 15.0, 
     "h_position": -25, 
     "slug": "exponents_3", 
@@ -449,13 +361,6 @@
     "title": "Fractional exponents 2", 
     "parent_id": "negative-exponents-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "negative-exponents-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -471,7 +376,6 @@
       "zero--negative--and-fractional-exponents"
     ], 
     "description": "Fractional bases raised to primarily negative fractional exponents with non-1 numerators.\n", 
-    "parent": "negative-exponents-tutorial", 
     "basepoints": 21.0, 
     "h_position": -25, 
     "slug": "exponents_4", 
@@ -491,13 +395,6 @@
     "title": "Scientific notation intuition", 
     "parent_id": "scientific-notation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "scientific-notation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -513,7 +410,6 @@
       "scientific-notation-example-2"
     ], 
     "description": "Move a decimal point to express a number in scientific notation.\n", 
-    "parent": "scientific-notation", 
     "basepoints": 12.0, 
     "h_position": -21, 
     "slug": "scientific_notation_intuition", 
@@ -533,13 +429,6 @@
     "title": "Scientific notation", 
     "parent_id": "scientific-notation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "scientific-notation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -555,7 +444,6 @@
       "scientific-notation-example-2"
     ], 
     "description": "Express a number in scientific notation.\n", 
-    "parent": "scientific-notation", 
     "basepoints": 19.0, 
     "h_position": -22, 
     "slug": "scientific_notation", 
@@ -576,13 +464,6 @@
     "title": "Multiplying and dividing scientific notation", 
     "parent_id": "computing-scientific-notation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "exponents-radicals", 
-      "computing-scientific-notation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -597,7 +478,6 @@
       "scientific-notation-3"
     ], 
     "description": "Express a product or quotient in scientific notation.", 
-    "parent": "computing-scientific-notation", 
     "basepoints": 23.0, 
     "h_position": -24, 
     "slug": "multiplying_and_dividing_scientific_notation", 

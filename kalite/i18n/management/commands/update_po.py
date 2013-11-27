@@ -22,7 +22,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.i18n import update_jsi18n_file
+from shared.i18n import lcode_to_django, update_jsi18n_file
 from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 
@@ -125,20 +125,25 @@ def generate_test_files():
         # Once done replacing, rename temp file to overwrite original
         os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
 
-        (out, err, rc) = compile_po_files(lang_code="en")
+        (out, err, rc) = compile_po_files("en")
         if err:
             logging.debug("Error executing compilemessages: %s" % err)
 
 
-def compile_po_files(lang_code="all", failure_ok=True):
-    """Compile all po files in locale directory"""
+def compile_po_files(lang_codes=None, failure_ok=True):
+    """
+    Compile all po files in locale directory.
+
+    First argument (lang_codes) can be None (means all), a list/tuple, or even a string (shh...)
+    """
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
 
-    if not lang_code or lang_code == "all":
+    if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
     else:
-        (out, err, rc) = call_command_with_output('compilemessages', locale=lang_code)
+        lang_code = lang_codes if isinstance(lang_codes, basestring) else lang_codes[0]
+        (out, err, rc) = call_command_with_output('compilemessages', locale=lcode_to_django(lang_code))
 
     if err and not failure_ok:
         raise CommandError("Failure compiling po files: %s" % err)

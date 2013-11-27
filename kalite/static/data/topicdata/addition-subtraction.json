@@ -7,13 +7,6 @@
     "title": "1-digit addition", 
     "parent_id": "basic_addition", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "basic_addition"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -25,7 +18,6 @@
       "basic-addition"
     ], 
     "description": "Add two numbers from 1 to\u00a010", 
-    "parent": "basic_addition", 
     "basepoints": 10.0, 
     "h_position": -5, 
     "slug": "addition_1", 
@@ -43,13 +35,6 @@
     "title": "1-digit subtraction", 
     "parent_id": "basic_addition", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "basic_addition"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -61,7 +46,6 @@
       "basic-subtraction"
     ], 
     "description": "Subtract two 1-digit numbers", 
-    "parent": "basic_addition", 
     "basepoints": 10.0, 
     "h_position": -7, 
     "slug": "subtraction_1", 
@@ -81,13 +65,6 @@
     "title": "2-digit addition", 
     "parent_id": "two_dig_add_sub", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "two_dig_add_sub"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -99,7 +76,6 @@
       "adding-whole-numbers-and-applications-1"
     ], 
     "description": "Add two 2-digit numbers, no carrying\n", 
-    "parent": "two_dig_add_sub", 
     "basepoints": 12.0, 
     "h_position": -5, 
     "slug": "addition_2", 
@@ -119,13 +95,6 @@
     "title": "2 and 3-digit subtraction", 
     "parent_id": "two_dig_add_sub", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "two_dig_add_sub"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -137,7 +106,6 @@
       "subtracting-whole-numbers"
     ], 
     "description": "Subtract two 2-3 digit numbers without borrowing", 
-    "parent": "two_dig_add_sub", 
     "basepoints": 12.0, 
     "h_position": -7, 
     "slug": "subtraction_2", 
@@ -157,13 +125,6 @@
     "title": "Addition with carrying", 
     "parent_id": "addition_carrying", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "addition_carrying"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -177,7 +138,6 @@
       "example-adding-with-carrying"
     ], 
     "description": "Add two 3-digit numbers with carrying", 
-    "parent": "addition_carrying", 
     "basepoints": 14.0, 
     "h_position": -5, 
     "slug": "addition_3", 
@@ -197,13 +157,6 @@
     "title": "4-digit addition with carrying", 
     "parent_id": "addition_carrying", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "addition_carrying"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -215,7 +168,6 @@
       "addition-4"
     ], 
     "description": "Add two 3- or 4-digit numbers with carrying", 
-    "parent": "addition_carrying", 
     "basepoints": 21.0, 
     "h_position": -8, 
     "slug": "addition_4", 
@@ -235,13 +187,6 @@
     "title": "Subtraction with borrowing", 
     "parent_id": "sub_borrowing", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "sub_borrowing"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -258,7 +203,6 @@
       "borrowing-once-example-2"
     ], 
     "description": "Subtract two 3- or 4-digit numbers. Borrow once", 
-    "parent": "sub_borrowing", 
     "basepoints": 19.0, 
     "h_position": -7, 
     "slug": "subtraction_3", 
@@ -278,13 +222,6 @@
     "title": "4-digit subtraction with borrowing", 
     "parent_id": "sub_borrowing", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "sub_borrowing"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -297,7 +234,6 @@
       "alternate-mental-subtraction-method"
     ], 
     "description": "Subtract two 4-digit numbers.", 
-    "parent": "sub_borrowing", 
     "basepoints": 21.0, 
     "h_position": -9, 
     "slug": "subtraction_4", 
@@ -317,13 +253,6 @@
     "title": "Addition and subtraction word problems", 
     "parent_id": "add_sub_word_problems", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "addition-subtraction", 
-      "add_sub_word_problems"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -335,7 +264,6 @@
       "subtraction-word-problem"
     ], 
     "description": "Word problems with addition and subtraction of positive integers. Some carrying and borrowing.", 
-    "parent": "add_sub_word_problems", 
     "basepoints": 18.0, 
     "h_position": -6, 
     "slug": "arithmetic_word_problems_1", 
