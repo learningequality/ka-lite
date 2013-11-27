@@ -13,6 +13,7 @@ class TestAttemptLogForm(forms.Form):
     test = forms.ModelChoiceField(queryset=Test.objects)
     index = forms.IntegerField()
     repeat = forms.IntegerField()
+    complete = forms.BooleanField(required=False)
 
     def clean_exercise_id(self):
         """

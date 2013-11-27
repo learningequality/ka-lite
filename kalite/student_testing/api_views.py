@@ -6,6 +6,7 @@ from api_forms import TestAttemptLogForm
 from models import Test, TestLog, TestAttemptLog
 
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ValidationError
 
 from utils.internet import api_handle_error_with_json, JsonResponse
 
@@ -25,13 +26,9 @@ def save_attempt_log(request):
     user = request.session["facility_user"]
 
     test = Test.objects.get(pk=data["test"])
-    try:
-	    (testlog, was_created) = TestLog.get_or_initialize(user=user, test=data["test"])
-    except:
-    	import pdb; pdb.set_trace()
-    previously_complete = testlog.complete
 
-    print testlog
+    (testlog, was_created) = TestLog.get_or_initialize(user=user, test=test)
+    previously_complete = testlog.complete
 
     testlog.index = data["index"]
     testlog.repeat = data["repeat"]
@@ -40,9 +37,9 @@ def save_attempt_log(request):
     try:
         testlog.full_clean()
         testlog.save()
-    	TestAttemptLog.create(
+    	TestAttemptLog.objects.create(
     		user=user,
-    		test_log=testlog.id,
+    		test_log=testlog,
     		exercise_id=data["exercise_id"],
     		random_seed=data["random_seed"],
     		)

@@ -26,12 +26,12 @@ function nextQuestion() {
 }
 
 function endTest() {
-    console.log("Finished!");
+    window.location.href = "/research/?next=true"
 }
 
 function saveLogNextQuestion(correct) {
 
-complete = (i == exercises.length && j == repeats)
+    complete = (i == exercises.length && j == repeats)
 
     var data = {
         exercise_id: exerciseData.exerciseModel.name,
@@ -40,7 +40,8 @@ complete = (i == exercises.length && j == repeats)
         test: test,
         index: i,
         repeat: j,
-        length: exercises.length
+        length: exercises.length,
+        complete: complete
     };
 
     doRequest("/test/api/save_attempt_log", data)
@@ -86,6 +87,7 @@ $(function() {
             });
     });
     $(Exercises).bind("checkAnswer", function(ev, data) {
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
         saveLogNextQuestion(data.correct);
     });
 });
