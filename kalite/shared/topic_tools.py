@@ -156,12 +156,12 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
 def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
     potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
     if not potential_parents:
-        return potential_parents
-    elif len(potential_parents) == 0:
+        return None
+    elif len(potential_parents) == 1:
         return potential_parents[0]
     else:
         for pp in potential_parents:
-            if pp["path"] in node["path"]:  # find parent by path
+            if node["path"].startswith(pp["path"]):  # find parent by path
                 return pp
         return None
 
