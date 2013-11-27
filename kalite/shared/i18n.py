@@ -54,7 +54,8 @@ def get_dubbed_video_map(lang_code=None, force=False):
     if DUBBED_VIDEO_MAP is None or force:
         if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
             call_command("generate_dubbed_video_mappings")
-        DUBBED_VIDEO_MAP = json.loads(open(DUBBED_VIDEOS_MAPPING_FILEPATH).read())
+        with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
+            DUBBED_VIDEO_MAP = json.load(fp)
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
 YT2ID_MAP = None
@@ -106,7 +107,8 @@ CODE2LANG_MAP = None
 def get_code2lang_map(force=False):
     global LANG_LOOKUP_FILEPATH, CODE2LANG_MAP
     if force or not CODE2LANG_MAP:
-        lmap = json.loads(open(LANG_LOOKUP_FILEPATH).read())
+        with open(LANG_LOOKUP_FILEPATH, "r") as fp:
+            lmap = json.load(fp)
         CODE2LANG_MAP = {}
         # convert all upper to lower
         for lang_code, entry in lmap.iteritems():
@@ -204,7 +206,8 @@ def get_languages_on_disk():
         for lang in os.listdir(locale_dir):
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
-                lang_meta = json.loads(open(os.path.join(locale_dir, lang, "%s_metadata.json" % lang)).read())
+                with open(os.path.join(locale_dir, lang, "%s_metadata.json" % lang), "r") as fp:
+                    lang_meta = json.load(fp)
             except:
                 lang_meta = {}
             lang = lang_meta

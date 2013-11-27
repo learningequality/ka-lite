@@ -285,7 +285,11 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
 
 
 def print_language_availability_table(language_srt_map):
-    """srt map deals with amara, so uses ietf codes (e.g. en-us)"""
+    """
+    Prints the # of srts available for each known language code.
+
+    Note: srt map deals with amara, so uses ietf codes (e.g. en-US)
+    """
 
     logging.info("=============================================")
     logging.info("=\tLanguage\t=\tNum Videos\t=")

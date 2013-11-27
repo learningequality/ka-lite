@@ -26,7 +26,8 @@ TOPICS          = None
 def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
+        with open(os.path.join(settings.DATA_PATH, topics_file, "r") as fp:
+            TOPICS = json.load(fp)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
@@ -46,7 +47,8 @@ KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS, map_layout_file
     if KNOWLEDGEMAP_TOPICS is None or force:
-        kmap = json.loads(open(os.path.join(settings.DATA_PATH, map_layout_file)).read())
+        with open(os.path.join(settings.DATA_PATH, map_layout_file), "r") as fp:
+            kmap = json.load(fp)
         KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
     return KNOWLEDGEMAP_TOPICS
 

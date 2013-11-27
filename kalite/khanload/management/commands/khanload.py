@@ -79,7 +79,8 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 14.0:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
-        data = json.loads(open(debug_cache_file).read())
+        with open(debug_cache_file, "r") as fp:
+            data = json.load(fp)
     else:
         sys.stdout.write("Downloading data from %s..." % url)
         sys.stdout.flush()
