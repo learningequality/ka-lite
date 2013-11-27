@@ -7,13 +7,6 @@
     "title": "Dividing polynomials by binomials 1", 
     "parent_id": "simplifying-rational-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "simplifying-rational-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -26,7 +19,6 @@
       "simplifying-rational-expressions-1"
     ], 
     "description": "Simplify the ratio of a polynomial and a binomial.\n", 
-    "parent": "simplifying-rational-alg", 
     "basepoints": 14.0, 
     "h_position": -11, 
     "slug": "dividing_polynomials_by_binomials_1", 
@@ -47,13 +39,6 @@
     "title": "Dividing polynomials by binomials 2", 
     "parent_id": "simplifying-rational-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "simplifying-rational-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -67,7 +52,6 @@
       "simplifying-rational-expressions-2"
     ], 
     "description": "Simplify the ratio of a polynomial and a binomial.\n", 
-    "parent": "simplifying-rational-alg", 
     "basepoints": 21.0, 
     "h_position": -11, 
     "slug": "dividing_polynomials_by_binomials_2", 
@@ -87,13 +71,6 @@
     "title": "Simplifying rational expressions 2", 
     "parent_id": "simplifying-rational-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "simplifying-rational-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -107,7 +84,6 @@
       "simplifying-rational-expressions-2"
     ], 
     "description": "Simplify the ratio of two polynomials.\n", 
-    "parent": "simplifying-rational-alg", 
     "basepoints": 10.0, 
     "h_position": -10, 
     "slug": "simplifying_rational_expressions_2", 
@@ -127,13 +103,6 @@
     "title": "Dividing polynomials by binomials 3", 
     "parent_id": "simplifying-rational-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "simplifying-rational-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -148,7 +117,6 @@
       "simplifying-rational-expressions-2"
     ], 
     "description": "Simplify the ratio of a polynomial and a binomial.\n", 
-    "parent": "simplifying-rational-alg", 
     "basepoints": 17.0, 
     "h_position": -11, 
     "slug": "dividing_polynomials_by_binomials_3", 
@@ -168,13 +136,6 @@
     "title": "Simplifying rational expressions 3", 
     "parent_id": "simplifying-rational-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "simplifying-rational-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -188,7 +149,6 @@
       "simplifying-rational-expressions-3"
     ], 
     "description": "Simplify the ratio of two polynomials.\n", 
-    "parent": "simplifying-rational-alg", 
     "basepoints": 10.0, 
     "h_position": -10, 
     "slug": "simplifying_rational_expressions_3", 
@@ -208,13 +168,6 @@
     "title": "Simplifying rational expressions 4", 
     "parent_id": "simplifying-rational-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "simplifying-rational-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -229,7 +182,6 @@
       "simplifying-rational-expressions-example-2"
     ], 
     "description": "", 
-    "parent": "simplifying-rational-alg", 
     "basepoints": 10.0, 
     "h_position": -10, 
     "slug": "simplifying_rational_expressions_4", 
@@ -249,13 +201,6 @@
     "title": "Adding and subtracting rational expressions 0.5", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -271,7 +216,6 @@
       "adding-and-subtracting-rational-expressions-3"
     ], 
     "description": "Adding and subtracting two expressions with\u00a0common denominator\u00a0and each of the form Ax/B or A/Bx.\n", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -8, 
     "slug": "adding_and_subtracting_rational_expressions_0.5", 
@@ -293,13 +237,6 @@
     "title": "Adding and subtracting rational expressions 1", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -315,7 +252,6 @@
       "adding-and-subtracting-rational-expressions-3"
     ], 
     "description": "Adding and subtracting expressions with a common denominator, where each is of the form (Ax+B)/(Cx+D).\n", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -8, 
     "slug": "adding_and_subtracting_rational_expressions", 
@@ -335,13 +271,6 @@
     "title": "Adding and subtracting rational expressions 1.5", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -357,7 +286,6 @@
       "adding-and-subtracting-rational-expressions-3"
     ], 
     "description": "Adding and subtracting multiple variable expressions with the same denominators where each is an expression containing up to two terms and four variables.\n", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -8, 
     "slug": "adding_and_subtracting_rational_expressions_1.5", 
@@ -377,13 +305,6 @@
     "title": "Adding and subtracting rational expressions 2", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -399,7 +320,6 @@
       "adding-and-subtracting-rational-expressions-3"
     ], 
     "description": "Adding and subtracting two expressions with different denominators, where each is of the form Ax/B or A/Bx.\n", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -8, 
     "slug": "adding_and_subtracting_rational_expressions_2", 
@@ -419,13 +339,6 @@
     "title": "Adding and subtracting rational expressions 3", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -439,7 +352,6 @@
       "adding-and-subtracting-rational-expressions-3"
     ], 
     "description": "", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -8, 
     "slug": "adding_and_subtracting_rational_expressions_3", 
@@ -459,13 +371,6 @@
     "title": "Multiplying and dividing rational expressions  1", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -479,7 +384,6 @@
       "multiplying-and-dividing-rational-expressions-1"
     ], 
     "description": "Multiplying a rational expression in the form (Ax+B)/(Cx+D) by a constant.\n", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -9, 
     "slug": "multiplying_and_dividing_rational_expressions_1", 
@@ -500,13 +404,6 @@
     "title": "Multiplying and dividing rational expressions 2", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -520,7 +417,6 @@
       "multiplying-and-dividing-rational-expressions-1"
     ], 
     "description": "Multiplying or dividing a rational expression in the form (Ax+B)/C by a variable Dx/E.\n", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -9, 
     "slug": "multiplying_and_dividing_rational_expressions_2", 
@@ -540,13 +436,6 @@
     "title": "Multiplying and dividing rational expressions 3", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -559,7 +448,6 @@
       "multiplying-and-dividing-rational-expressions-3"
     ], 
     "description": "", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -9, 
     "slug": "multiplying_and_dividing_rational_expressions_3", 
@@ -579,13 +467,6 @@
     "title": "Multiplying and dividing rational expressions 4", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -598,7 +479,6 @@
       "multiplying-and-dividing-rational-expressions-3"
     ], 
     "description": "", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -9, 
     "slug": "multiplying_and_dividing_rational_expressions_4", 
@@ -618,13 +498,6 @@
     "title": "Multiplying and dividing rational expressions 5", 
     "parent_id": "rational_expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "rational_expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -637,7 +510,6 @@
       "multiplying-and-dividing-rational-expressions-3"
     ], 
     "description": "", 
-    "parent": "rational_expressions", 
     "basepoints": 10.0, 
     "h_position": -9, 
     "slug": "multiplying_and_dividing_rational_expressions_5", 
@@ -657,13 +529,6 @@
     "title": "Partial fraction expansion", 
     "parent_id": "partial-fraction-expan-alg", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "partial-fraction-expan-alg"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -677,7 +542,6 @@
       "partial-fraction-expansion-3"
     ], 
     "description": "Represent a complicated rational fraction as a sum of simpler fractions using partial fraction expansion.\n", 
-    "parent": "partial-fraction-expan-alg", 
     "basepoints": 29.0, 
     "h_position": -12, 
     "slug": "partial_fraction_expansion_1", 
@@ -697,13 +561,6 @@
     "title": "Solving rational equations 1", 
     "parent_id": "solving-rational-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "solving-rational-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -715,7 +572,6 @@
       "ex-1-multi-step-equation"
     ], 
     "description": "Solve equations with variables in numerator and denominator. Solutions can be fractions.\n", 
-    "parent": "solving-rational-equations", 
     "basepoints": 25.0, 
     "h_position": -13, 
     "slug": "linear_equations_4", 
@@ -735,13 +591,6 @@
     "title": "Solving rational equations 2", 
     "parent_id": "solving-rational-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "solving-rational-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -755,7 +604,6 @@
       "solving-rational-equations-3"
     ], 
     "description": "", 
-    "parent": "solving-rational-equations", 
     "basepoints": 10.0, 
     "h_position": -13, 
     "slug": "solving_rational_equations_2", 
@@ -775,13 +623,6 @@
     "title": "Extraneous solutions to rational equations", 
     "parent_id": "solving-rational-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "rational-expressions", 
-      "solving-rational-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -793,7 +634,6 @@
       "extraneous-solutions-to-rational-equations"
     ], 
     "description": "Solve a rational equation and ignore any extraneous solutions.", 
-    "parent": "solving-rational-equations", 
     "basepoints": 21.0, 
     "h_position": -11, 
     "slug": "extraneous_solutions", 

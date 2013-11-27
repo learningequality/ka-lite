@@ -7,13 +7,6 @@
     "title": "Angle bisector theorem", 
     "parent_id": "angle_bisectors", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "triangle-properties", 
-      "angle_bisectors"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -26,7 +19,6 @@
       "angle-bisector-theorem-proof"
     ], 
     "description": "", 
-    "parent": "angle_bisectors", 
     "basepoints": 23.0, 
     "h_position": -1, 
     "slug": "angle_bisector_theorem", 
@@ -46,13 +38,6 @@
     "title": "Compass constructions", 
     "parent_id": "geometric-constructions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "triangle-properties", 
-      "geometric-constructions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -66,7 +51,6 @@
       "constructing-an-angle-bisector-using-a-compass-and-straightedge"
     ], 
     "description": "Circles and straight-edges, oh my!", 
-    "parent": "geometric-constructions", 
     "basepoints": 23.0, 
     "h_position": 0, 
     "slug": "constructions_1", 

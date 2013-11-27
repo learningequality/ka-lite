@@ -7,12 +7,6 @@
     "title": "Axis of symmetry", 
     "parent_id": "transformations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "transformations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -23,7 +17,6 @@
       "axis-of-symmetry"
     ], 
     "description": "", 
-    "parent": "transformations", 
     "basepoints": 10.0, 
     "h_position": 12, 
     "slug": "axis_of_symmetry", 
@@ -43,12 +36,6 @@
     "title": "Translations of polygons", 
     "parent_id": "transformations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "transformations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -60,7 +47,6 @@
       "determining-a-translation-for-a-shape"
     ], 
     "description": "Applying translations to polygons in the coordinate plane\n", 
-    "parent": "transformations", 
     "basepoints": 18.0, 
     "h_position": 11, 
     "slug": "translations_of_points_and_polygons", 
@@ -78,12 +64,6 @@
     "title": "Rotation of polygons", 
     "parent_id": "transformations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "transformations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -94,7 +74,6 @@
       "rotation-of-polygons-example"
     ], 
     "description": "Applying rotations to polygons in the coordinate plane\n", 
-    "parent": "transformations", 
     "basepoints": 15.0, 
     "h_position": 10, 
     "slug": "rotation_of_polygons", 

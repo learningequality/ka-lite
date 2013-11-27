@@ -7,13 +7,6 @@
     "title": "Understanding function notation", 
     "parent_id": "relationships_functions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "relationships_functions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -28,7 +21,6 @@
       "understanding-function-notation-exercise"
     ], 
     "description": "", 
-    "parent": "relationships_functions", 
     "basepoints": 15.0, 
     "h_position": 15, 
     "slug": "functions_1", 
@@ -48,13 +40,6 @@
     "title": "Domain of a function", 
     "parent_id": "domain_and_range", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "domain_and_range"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -71,7 +56,6 @@
       "domain-and-range-2"
     ], 
     "description": "Given the equation of a function, determine the domain.\n", 
-    "parent": "domain_and_range", 
     "basepoints": 18.0, 
     "h_position": 15, 
     "slug": "domain_of_a_function", 
@@ -92,13 +76,6 @@
     "title": "Range of a function", 
     "parent_id": "domain_and_range", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "domain_and_range"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -114,7 +91,6 @@
       "domain-and-range-2"
     ], 
     "description": "Given the equation of a quadratic function, determine the range.\n", 
-    "parent": "domain_and_range", 
     "basepoints": 18.0, 
     "h_position": 13, 
     "slug": "range_of_a_function", 
@@ -135,13 +111,6 @@
     "title": "Domain and range from graph", 
     "parent_id": "domain_and_range", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "domain_and_range"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -153,7 +122,6 @@
       "domain-and-range-from-graphs"
     ], 
     "description": "Given the graph of a function, determine its domain or range.\n", 
-    "parent": "domain_and_range", 
     "basepoints": 16.0, 
     "h_position": 14, 
     "slug": "domain_and_range_0.5", 
@@ -173,13 +141,6 @@
     "title": "Direct and inverse variation", 
     "parent_id": "direct_inverse_variation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "direct_inverse_variation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -193,7 +154,6 @@
       "proportionality-constant-for-direct-variation"
     ], 
     "description": "Select a function that indicates direct or inverse variation between two variables.\n", 
-    "parent": "direct_inverse_variation", 
     "basepoints": 17.0, 
     "h_position": 12, 
     "slug": "direct_and_inverse_variation", 
@@ -213,13 +173,6 @@
     "title": "Views of a function", 
     "parent_id": "graphing_functions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "graphing_functions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -234,7 +187,6 @@
       "evaluating-functions"
     ], 
     "description": "Representing functions in multiple ways\n", 
-    "parent": "graphing_functions", 
     "basepoints": 26.0, 
     "h_position": 13, 
     "slug": "views_of_a_function", 
@@ -254,13 +206,6 @@
     "title": "Evaluating expressions with function notation", 
     "parent_id": "eval-function-expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "eval-function-expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -272,7 +217,6 @@
       "evaluating-a-function-expression"
     ], 
     "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.\n", 
-    "parent": "eval-function-expressions", 
     "basepoints": 24.0, 
     "h_position": 16, 
     "slug": "functions_2", 
@@ -292,13 +236,6 @@
     "title": "Evaluating composite functions", 
     "parent_id": "eval-function-expressions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "eval-function-expressions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -310,7 +247,6 @@
       "evaluating-composite-functions-example-1"
     ], 
     "description": "Find the function of a function.\n", 
-    "parent": "eval-function-expressions", 
     "basepoints": 29.0, 
     "h_position": 16, 
     "slug": "functions_3", 
@@ -330,13 +266,6 @@
     "title": "Inverses of functions", 
     "parent_id": "function_inverses", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "function_inverses"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -351,7 +280,6 @@
       "introduction-to-function-inverses"
     ], 
     "description": "Determine the inverse of a function based on the equation and graph.\n", 
-    "parent": "function_inverses", 
     "basepoints": 18.0, 
     "h_position": 15, 
     "slug": "inverses_of_functions", 
@@ -372,13 +300,6 @@
     "title": "New operator definitions 1", 
     "parent_id": "new_operators", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "new_operators"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -390,7 +311,6 @@
       "new-operator-definitions"
     ], 
     "description": "Given the definition of a new operator, evaluate an expression that contains that operator.\n", 
-    "parent": "new_operators", 
     "basepoints": 18.0, 
     "h_position": 14, 
     "slug": "new_definitions_1", 
@@ -410,13 +330,6 @@
     "title": "New operator definitions 2", 
     "parent_id": "new_operators", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "algebra-functions", 
-      "new_operators"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -428,7 +341,6 @@
       "new-definitions-2"
     ], 
     "description": "Given the definition of 2 new operators, evaluate an expression that contains that operator.\n", 
-    "parent": "new_operators", 
     "basepoints": 24.0, 
     "h_position": 13, 
     "slug": "new_definitions_2", 

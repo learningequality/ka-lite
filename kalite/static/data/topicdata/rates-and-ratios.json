@@ -7,13 +7,6 @@
     "title": "Expressing ratios as fractions", 
     "parent_id": "ratios_and_proportions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "rates-and-ratios", 
-      "ratios_and_proportions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -27,7 +20,6 @@
       "simplifying-rates-and-ratios"
     ], 
     "description": "", 
-    "parent": "ratios_and_proportions", 
     "basepoints": 17.0, 
     "h_position": 5, 
     "slug": "expressing_ratios_as_fractions", 
@@ -47,13 +39,6 @@
     "title": "Ratio word problems", 
     "parent_id": "ratios_and_proportions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "rates-and-ratios", 
-      "ratios_and_proportions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -66,7 +51,6 @@
       "ratio-word-problem-exercise-example-2"
     ], 
     "description": "", 
-    "parent": "ratios_and_proportions", 
     "basepoints": 17.0, 
     "h_position": 4, 
     "slug": "ratio_word_problems", 
@@ -86,13 +70,6 @@
     "title": "Rate problems 0.5", 
     "parent_id": "rates_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "rates-and-ratios", 
-      "rates_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -106,7 +83,6 @@
       "usain-bolt-s-average-speed"
     ], 
     "description": null, 
-    "parent": "rates_tutorial", 
     "basepoints": 19.0, 
     "h_position": 3, 
     "slug": "rate_problems_0.5", 
@@ -127,13 +103,6 @@
     "title": "Rate problems 2", 
     "parent_id": "rates_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "rates-and-ratios", 
-      "rates_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -145,7 +114,6 @@
       "multiple-rates-word-problem"
     ], 
     "description": "", 
-    "parent": "rates_tutorial", 
     "basepoints": 18.0, 
     "h_position": 6, 
     "slug": "rate_problems_2", 
@@ -165,13 +133,6 @@
     "title": "Units", 
     "parent_id": "unit_conversion", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "rates-and-ratios", 
-      "unit_conversion"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -187,7 +148,6 @@
       "unit-conversion-with-fractions"
     ], 
     "description": "", 
-    "parent": "unit_conversion", 
     "basepoints": 21.0, 
     "h_position": 2, 
     "slug": "units", 
