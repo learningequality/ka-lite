@@ -319,24 +319,4 @@ def get_related_videos(exercise, limit_to_available=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
-
-    parent_path1 = parse_path(node1)
-    parent_path2 = parse_path(node2)
-
-    return parent_path1 == parent_path2
-
-
-def delete_parents(node, recurse=True):
-    if isinstance(node, (list, tuple)):
-        for n in node:
-            delete_parents(n, recurse=recurse)
-    if "parent" in node:
-        del node["parent"]
-    if "parents" in node:
-        del node["parents"]
-    if recurse and "children" in node:
-        for child in node["children"]:
-            delete_parents(child, recurse=recurse)
-
-    return node
+    return node1["parent_id"] == node2["parent_id"]

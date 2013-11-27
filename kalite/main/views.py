@@ -73,13 +73,12 @@ def refresh_topic_cache(handler, force=False):
         """
         Remove relevant counts from all ancestors
         """
-        parent = node["parent"]
-        while parent:
-            if "nvideos_local" in parent:
-                del parent["nvideos_local"]
-            if "nvideos_known" in parent:
-                del parent["nvideos_known"]
-            parent = parent["parent"]
+        for ancestor_id in node.get("ancestor_ids", []):
+            ancestor = NODE_CACHE["Topic"][ancestor_id]
+            if "nvideos_local" in ancestor:
+                del ancestor["nvideos_local"]
+            if "nvideos_known" in ancestor:
+                del ancestor["nvideos_known"]
         return node
 
     def recount_videos_and_invalidate_parents(node, force=False):
@@ -93,7 +92,7 @@ def refresh_topic_cache(handler, force=False):
         if do_it:
             logging.debug("Adding video counts to topic (and all descendants) %s" % node["path"])
             changed = get_video_counts(topic=node, force=force)
-            if changed and node.get("parent") and "nvideos_local" in node["parent"]:
+            if changed:
                 strip_counts_from_ancestors(node)
         return node
 
@@ -117,7 +116,7 @@ def refresh_topic_cache(handler, force=False):
             if node["kind"] == "Video":
                 if force or "urls" not in node:  #
                     #stamp_urls_on_video(node, force=force)  # will be done by force below
-                    recount_videos_and_invalidate_parents(node["parent"], force=True)
+                    recount_videos_and_invalidate_parents(node["parent_id"], force=True)
 
             elif node["kind"] == "Topic":
                 if not force and (not has_grandchildren or "nvideos_local" not in node):
