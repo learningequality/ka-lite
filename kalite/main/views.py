@@ -74,7 +74,7 @@ def refresh_topic_cache(handler, force=False):
         Remove relevant counts from all ancestors
         """
         for ancestor_id in node.get("ancestor_ids", []):
-            ancestor = NODE_CACHE["Topic"][ancestor_id]
+            ancestor = topicdata.NODE_CACHE["Topic"][ancestor_id]
             if "nvideos_local" in ancestor:
                 del ancestor["nvideos_local"]
             if "nvideos_known" in ancestor:
