@@ -329,7 +329,7 @@ def validate_language_map(lang_codes):
     missing_langs = []
     for lang_code in lang_codes:
         try:
-            get_language_name(lang_code, error_on_missing=True)
+            get_language_name(lcode_to_ietf(lang_code), error_on_missing=True)
         except LanguageNotFoundError:
             missing_langs.append(lang_code)
 

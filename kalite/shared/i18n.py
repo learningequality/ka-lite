@@ -110,7 +110,7 @@ def get_code2lang_map(force=False):
         CODE2LANG_MAP = {}
         # convert all upper to lower
         for lang_code, entry in lmap.iteritems():
-            CODE2LANG_MAP[lang_code.lower()] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+            CODE2LANG_MAP[lcode_to_ietf(lang_code)] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
     return CODE2LANG_MAP
 
 LANG2CODE_MAP = None
@@ -121,7 +121,7 @@ def get_langcode_map(force=False):
         for code, entries in get_code2lang_map(force=force).iteritems():
             for lang in entries.values():
                 if lang:
-                    LANG2CODE_MAP[lang.lower()] = code
+                    LANG2CODE_MAP[lang.lower()] = lcode_to_ietf(code)
     return LANG2CODE_MAP
 
 def get_language_name(lang_code, native=False, error_on_missing=False):
