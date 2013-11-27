@@ -123,6 +123,12 @@ $(document).ready(function() {
             var results = [];
             for (idx in titles_filtered) {
                 var node = nodes[titles_filtered[idx]];
+
+                // exclude videos that aren't available
+                if (node.type == "video" && !node.available) {
+                    continue;
+                }
+
                 var label = "<li class='autocomplete " + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</li>";
                 results.push({
                     label: label,
