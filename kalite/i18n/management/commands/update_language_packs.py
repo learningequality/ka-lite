@@ -57,6 +57,21 @@ class Command(BaseCommand):
                     default="all",
                     metavar="LANG_CODE",
                     help="Language code to update (default: all)"),
+        make_option('--no_ka',
+                    action='store_true',
+                    dest='no_ka',
+                    default=False,
+                    help='Do not include Khan Academy content translations.'),
+        make_option('--zip_file',
+                    action='store',
+                    dest='zip_file',
+                    default=None,
+                    help='a local zip file to be used instead of fetching to CrowdIn. Ignores -l if this is used.'),
+        make_option('--ka_zip_file',
+                    action='store',
+                    dest='ka_zip_file',
+                    default=None,
+                    help='a local zip file to be used for KA content instead of fetching to CrowdIn. Ignores -l if this is used.'),
     )
 
     def handle(self, **options):
@@ -73,7 +88,12 @@ class Command(BaseCommand):
         update_srts(days=options["days"], lang_codes=lang_codes)
 
         # Converted language code for language packs
-        update_language_packs(lang_codes=lang_codes)
+        update_language_packs(
+            lang_codes=lang_codes,
+            zip_file=options['zip_file'],
+            ka_zip_file=options['ka_zip_file'],
+            download_ka_translations=not options['no_ka'],
+        )
 
 
 def update_srts(days, lang_codes):
@@ -88,11 +108,24 @@ def update_srts(days, lang_codes):
         call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
 
 
-def update_language_packs(lang_codes=None):
-    """
-    """
+def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None):
+
+    logging.info("Downloading %s language(s)" % lang_codse)
+
     ## Download latest UI translations from CrowdIn
-    download_latest_translations()
+    download_latest_translations(language_code=lang_code, zip_file=zip_file)
+
+    ## Download Khan Academy translations too
+    if download_ka_translations:
+        assert settings.KA_CROWDIN_PROJECT_ID and settings.KA_CROWDIN_PROJECT_KEY
+
+        logging.info("Downloading Khan Academy translations...")
+        download_latest_translations(
+            language_code=lang_code,
+            project_id=settings.KA_CROWDIN_PROJECT_ID,
+            project_key=settings.KA_CROWDIN_PROJECT_KEY,
+            zip_file=ka_zip_file,
+        )
 
     ## Compile
     (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
@@ -174,27 +207,41 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
     return broken_codes
 
 
-def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
-    """Download latest translations from CrowdIn to corresponding locale directory."""
+def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
+                                 project_key=settings.CROWDIN_PROJECT_KEY,
+                                 language_code="all",
+                                 zip_file=None):
+    """
+    Download latest translations from CrowdIn to corresponding locale
+    directory. If zip_file is given, use that as the zip file
+    instead of going through CrowdIn.
 
-    ## Build latest package
-    build_translations()
+    """
 
     ## Get zip file of translations
-    logging.info("Attempting to download a zip archive of current translations")
-    request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, language_code, project_key)
-    r = requests.get(request_url)
-    try:
-        r.raise_for_status()
-    except Exception as e:
-        if r.status_code == 401:
-            raise CommandError("Error: 401 Unauthorized while trying to access the CrowdIn API. Be sure to set CROWDIN_PROJECT_ID and CROWDIN_PROJECT_KEY in local_settings.py.")
-        else:
-            raise CommandError("Error: %s - couldn't connect to CrowdIn API - cannot continue without that zip file!" % e)
-    else:
-        logging.info("Successfully downloaded zip archive")
+    if zip_file:
+        logging.info("Using local zip file at %s" % zip_file)
+        z = zipfile.ZipFile(zip_file)
+        # use the name of the zip file to infer the language code
+        language_code = os.path.splitext(os.path.basename(zip_file))[0]
 
-    ## Unpack into temp dir
+    else:
+        logging.info("Attempting to download a zip archive of current translations")
+        ## Tell CrowdIn to Build latest package
+        build_translations()
+        request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, language_code, project_key)
+        r = requests.get(request_url)
+        try:
+            r.raise_for_status()
+        except Exception as e:
+            if r.status_code == 401:
+                raise CommandError("Error: 401 Unauthorized while trying to access the CrowdIn API. Be sure to set CROWDIN_PROJECT_ID and CROWDIN_PROJECT_KEY in local_settings.py.")
+            else:
+                raise CommandError("Error: %s - couldn't connect to CrowdIn API - cannot continue without that zip file!" % e)
+        else:
+            logging.info("Successfully downloaded zip archive")
+
+    # Unpack into temp dir
     z = zipfile.ZipFile(StringIO.StringIO(r.content))
     tmp_dir_path = tempfile.mkdtemp()
     z.extractall(tmp_dir_path)
@@ -228,7 +275,7 @@ def extract_new_po(tmp_dir_path=None, language_codes=[]):
     logging.info("Unpacking new translations")
     update_languages = os.listdir(tmp_dir_path)
     if language_codes:  # limit based on passed in limitations
-        update_languages = set(update_languages).intersect(set(language_codes))
+        update_languages = set(update_languages).intersection(set(language_codes))
 
     for lang in update_languages:
         converted_code = lcode_to_django(lang)
