@@ -26,12 +26,12 @@ import version
 from .models import VideoFile
 from config.models import Settings
 from control_panel.views import local_device_context, user_management_context
+from i18n.models import LanguagePack
 from main import topicdata
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
-from shared.i18n import get_installed_languages
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
@@ -59,13 +59,25 @@ def update(request):
 def update_videos(request):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
+    hit_max = 5
+    installed_languages = get_installed_language_packs()
+    languages_to_show = [l['name'] for l in installed_languages[:hit_max]]
+    languages_other = installed_languages[hit_max:]
 
     context = update_context(request)
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
+        "languages": languages_to_show,
+        "other_languages_count": len(languages_other)
     })
     return context
 
+
+def get_installed_language_packs():
+    language_packs = LanguagePack.objects \
+        .order_by("name") \
+        .values("name", "subtitle_count", "percent_translated", "language_pack_version", "code")
+    return language_packs
 
 @require_admin
 @render_to("updates/update_languages.html")
@@ -74,8 +86,8 @@ def update_languages(request):
     context = update_context(request)
 
     context.update({
-        "installed_languages": get_installed_languages(),
-        "default_language": settings.LANGUAGE_CODE,
+        "installed_languages": list(get_installed_language_packs()),
+        "default_language": request.session['default_language'],
     })
 
     return context

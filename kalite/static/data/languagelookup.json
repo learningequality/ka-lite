@@ -781,6 +781,142 @@
   },
   "zh_TW":{
     "name":"Chinese, Traditional",
-    "native_name":"正體字/繁體字;"
+    "native_name":"正體字/繁體字"
+  },
+  "aka":{
+    "name":"Akan",
+    "native_name":"Akan"
+  },
+  "bug":{
+    "name":"Buginese",
+    "native_name":"Buginese"
+  },
+  "ceb":{
+    "name":"Cebuano",
+    "native_name":"Cebuano"
+  },
+  "cho":{
+    "name":"Choctaw",
+    "native_name":"Choctaw"
+  },
+  "efi":{
+    "name":"Efik",
+    "native_name":"Efik"
+  },
+  "en-GB":{
+    "name":"English, Britain",
+    "native_name":"English, Britain"
+  },
+  "es-AR":{
+    "name":"Spanish, Argentina",
+    "native_name":"español, argentina"
+  },
+  "es-MX":{
+    "name":"Spanish, Mexico",
+    "native_name":"español, mexico"
+  },
+  "es-NI":{
+    "name":"Spanish, Nicaraguan",
+    "native_name":""
+  },
+  "fr-CA":{
+    "name":"French, Canada",
+    "native_name":"français, canada"
+  },
+  "ful":{
+    "name":"Fula",
+    "native_name":"Fulfulde"
+  },
+  "fy-NL":{
+    "name":"Frisian",
+    "native_name":"Frysk"
+  },
+  "hau":{
+    "name":"Hausa",
+    "native_name":"هَوُسَ"
+  },
+  "ibo":{
+    "name":"Igbo",
+    "native_name":"Asụsụ Igbo"
+  },
+  "kik":{
+    "name":"Kikuyu",
+    "native_name":"Gĩkũyũ"
+  },
+  "kon":{
+    "name":"Kongo",
+    "native_name":"KiKongo"
+  },
+  "lin":{
+    "name":"Lingala",
+    "native_name":"Lingála"
+  },
+  "mlg":{
+    "name":"Malagasy",
+    "native_name":"fiteny malagasy"
+  },
+  "nya":{
+    "name":"Chichewa",
+    "native_name":"chiCheŵa"
+  },
+  "oji":{
+    "name":"Ojibwe",
+    "native_name":"ᐊᓂᔑᓈᐯᒧᐎᓐ"
+  },
+  "pnb":{
+    "name":"Punjabi",
+    "native_name":"ਪੰਜਾਬੀ"
+  },
+  "pt-BR":{
+    "name":"Portuguese, Brazil",
+    "native_name":"português, brasil"
+  },
+  "que":{
+    "name":"Quechua",
+    "native_name":"Runa Simi"
+  },
+  "sna":{
+    "name":"Shona",
+    "native_name":"chiShona"
+  },
+  "som":{
+    "name":"Somali",
+    "native_name":"Soomaaliga"
+  },
+  "sot":{
+    "name":"Southern Sotho",
+    "native_name":"Sesotho"
+  },
+  "sr-LATN":{
+    "name":"Serbian, Latin",
+    "native_name":"српски језик"
+  },
+  "swa":{
+    "name":"Swahili",
+    "native_name":"Kiswahili"
+  },
+  "tir":{
+    "name":"Tigrinya",
+    "native_name":"ትግርኛ"
+  },
+  "tsn":{
+    "name":"Tswana",
+    "native_name":"Setswana"
+  },
+  "wol":{
+    "name":"Wolof",
+    "native_name":"Wollof"
+  },
+  "xho":{
+    "name":"Xhosa",
+    "native_name":"isiXhosa"
+  },
+  "yor":{
+    "name":"Yoruba",
+    "native_name":"Yorùbá"
+  },
+  "zul":{
+    "name":"Zulu",
+    "native_name":"isiZulu"
   }
 }
