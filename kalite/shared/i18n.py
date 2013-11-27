@@ -4,8 +4,8 @@ Utility functions for i18n related tasks on the distributed server
 import json
 import os
 import re
+import requests
 
-from django.core.management import call_command
 from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
 
@@ -25,7 +25,7 @@ LANGUAGE_PACK_ROOT = os.path.join(settings.MEDIA_ROOT, "language_packs")
 
 LANGUAGE_SRT_SUFFIX = "_download_status.json"
 SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
-DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.STATIC_ROOT, "data", "i18n", "dubbed_video_mappings.json")
+DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
 LANGUAGE_PACK_AVAILABILITY_FILEPATH = os.path.join(LANGUAGE_PACK_ROOT, "language_pack_availability.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
@@ -52,10 +52,19 @@ DUBBED_VIDEO_MAP = None
 def get_dubbed_video_map(lang_code=None, force=False):
     global DUBBED_VIDEO_MAP, DUBBED_VIDEOS_MAPPING_FILEPATH
     if DUBBED_VIDEO_MAP is None or force:
-        if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
-            call_command("generate_dubbed_video_mappings")
-        with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
-            DUBBED_VIDEO_MAP = json.load(fp)
+        try:
+            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
+                if settings.CENTRAL_SERVER:
+                    call_command("generate_dubbed_video_mappings")
+                else:
+                    response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
+                    response.raise_for_status()
+                    with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
+                        fp.write(response.content)  # wait until content has been confirmed before opening file.
+            with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
+                DUBBED_VIDEO_MAP = json.load(fp)
+        except:
+            DUBBED_VIDEO_MAP = {}  # setting this will avoid triggering reload on every call
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
 YT2ID_MAP = None
