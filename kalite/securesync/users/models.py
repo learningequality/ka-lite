@@ -114,6 +114,9 @@ class FacilityUser(DeferredCountSyncedModel):
 
         super(FacilityUser, self).save(*args, **kwargs)
 
+        # in case the password was changed on another server, and then synced into here, clear cached password
+        CachedPassword.invalidate_cached_password(user=self)
+
     def check_password(self, raw_password):
         cached_password = CachedPassword.get_cached_password(self)
         cur_password = cached_password or self.password
