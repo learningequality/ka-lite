@@ -11,9 +11,9 @@ from StringIO import StringIO
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from main.topicdata import NODE_CACHE
 from settings import LOG as logging
-from shared.i18n import DUBBED_VIDEOS_MAPPING_FILE
+from shared.i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
+from shared.topic_tools import get_node_cache
 from utils.general import ensure_dir, datediff
 
 
@@ -22,7 +22,7 @@ DUBBED_VIDEOS_SPREADSHEET_CSV_URL = "https://docs.google.com/a/learningequality.
 def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_URL, csv_data=None):
     """
     Function to do the heavy lifting in getting the dubbed videos map.
-    
+
     Could be moved into utils
     """
     if not csv_data:
@@ -88,8 +88,9 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
         pass
 
     # Now, validate the mappings with our topic data
-    missing_videos = set(NODE_CACHE.keys()) - set(video_map["english"].keys())
-    extra_videos = set(video_map["english"].keys()) - set(NODE_CACHE.keys())
+    known_videos = get_node_cache("Video").keys()
+    missing_videos = set(known_videos) - set(video_map["english"].keys())
+    extra_videos = set(video_map["english"].keys()) - set(known_videos)
     if missing_videos:
         logging.warn("There are %d known videos not in the list of dubbed videos" % len(missing_videos))
     if extra_videos:
@@ -111,7 +112,7 @@ class Command(BaseCommand):
             # Use cached data to generate the video map
             csv_data = open(cache_file, "r").read()
             (video_map, _) = generate_dubbed_video_mappings(csv_data=csv_data)
-    
+
         else:
             # Use cached data to generate the video map
             (video_map, csv_data) = generate_dubbed_video_mappings()
@@ -124,7 +125,7 @@ class Command(BaseCommand):
                 logging.error("Failed to make a local cache of the CSV data: %s" % e)
 
         # Now we've built the map.  Save it.
-        out_file = DUBBED_VIDEOS_MAPPING_FILE
+        out_file = DUBBED_VIDEOS_MAPPING_FILEPATH
         ensure_dir(os.path.dirname(out_file))
         logging.info("Saving data to %s" % out_file)
         with open(out_file, "w") as fp:

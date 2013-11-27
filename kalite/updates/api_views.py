@@ -18,7 +18,6 @@ from django.utils.translation import ugettext as _
 import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
-from i18n.models import LanguagePack
 from main import topicdata
 from shared.decorators import require_admin
 from shared.jobs import force_job, job_status

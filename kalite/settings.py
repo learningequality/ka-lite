@@ -134,8 +134,7 @@ STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT
 
 # Other defined paths
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
-SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
-LANGUAGE_PACK_ROOT = os.path.realpath(getattr(local_settings, "LANGUAGE_PACK_ROOT", STATIC_ROOT + "language_packs/")) + "/"
+DATA_PATH_SECURE = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -211,8 +210,11 @@ if CENTRAL_SERVER:
     CSRF_COOKIE_NAME        = "csrftoken_central"
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
-    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", "ka-lite")
+
+    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", None)
     CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
+    AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
+    AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
 
 else:
 
