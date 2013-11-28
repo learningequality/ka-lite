@@ -7,40 +7,23 @@ $(function() {
     var request = $.ajax({
         url: url,
         dataType: "jsonp",
-    }).success(function(languagePacks) {
-        $.ajax({
-            url: installed_languages_url,
-            dataType: "json",
-        }).success(function(installedlangs) {
-            languagePacks.forEach(function(langdata, langindex) {
-                var srtcount = langdata["subtitle_count"];
-                var percent_translated = langdata["percent_translated"];
-                var langcode = langdata["code"];
-
-                // if language already intalled, dont show in dropdown box
-                var installed_languages = installedlangs.map(function(elem) { return elem['code']; });
-                if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
-                    if (percent_translated > 0 || srtcount > 0) {
-                        $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s) %(subtitle_count)d srts / %(percent_translated)d %% translated</option>', langdata));
-                    }
-                }
-            });
-        }).error(function(data, status, error) {
-            handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
-        });
-    }).error(function(data, status, error) {
+    }).success(display_languages).error(function(data, status, error) {
         handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 });
 
-function display_installed_languages() {
+function display_languages(installable) {
+
     $.ajax({
         url: installed_languages_url,
         datatype: "json",
-    }).success(function(langs) {
-        // start from scratch
+    }).success(function(installed) {
+
+        //
+        // show list of installed languages
+        //
         $("div.installed-languages").empty();
-        langs.forEach(function(lang, index) {
+        installed.forEach(function(lang, index) {
             if (lang['name']) { // nonempty name
                 var link_text;
                 if (!(lang['code'] === defaultLanguage)) {
@@ -54,10 +37,25 @@ function display_installed_languages() {
                 $("div.installed-languages").append(lang_description);
             }
         });
+
+        //
+        // show list of installable languages in the dropdown box
+        //
+        installable.forEach(function(langdata, langindex) {
+            var srtcount = langdata["subtitle_count"];
+            var percent_translated = langdata["percent_translated"];
+            var langcode = langdata["code"];
+
+            // if language already installed, dont show in dropdown box
+            var installed_languages = installed.map(function(elem) { return elem['code']; });
+            if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
+                if (percent_translated > 0 || srtcount > 0) {
+                    $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s) %(subtitle_count)d srts / %(percent_translated)d %% translated</option>', langdata));
+                }
+            }
+        });
     });
 }
-
-$(display_installed_languages);
 
 //
 // Messy UI stuff incoming
