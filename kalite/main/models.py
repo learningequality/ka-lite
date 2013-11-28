@@ -483,12 +483,6 @@ class AttemptLog(ExtendedModel):
     def is_enabled():
         return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
 
-    def __unicode__(self):
-        if self.end_datetime:
-            return u"%s (%s): logged in @ %s; for %s seconds"%(self.user.username, self.language, self.start_datetime, self.total_seconds)
-        else:
-            return u"%s (%s): logged in @ %s; last active @ %s"%(self.user.username, self.language, self.start_datetime, self.last_active_datetime)
-
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
     assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
