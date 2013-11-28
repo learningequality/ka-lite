@@ -31,7 +31,7 @@ function endTest() {
 
 function saveLogNextQuestion(correct) {
 
-    complete = (i == exercises.length && j == repeats)
+    complete = (i == exercises.length-1 && j == repeats)
 
     var data = {
         exercise_id: exerciseData.exerciseModel.name,
@@ -68,8 +68,6 @@ function saveLogNextQuestion(correct) {
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
 var exercises = [];
-var i = 0;
-var j = 0;
 var exerciseData = {};
 var complete = false;
 
