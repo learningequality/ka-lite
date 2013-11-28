@@ -18,7 +18,7 @@ def control_flow(request):
 	if request.GET.get("next", "")=="true" and experiment.activity_stage in [0,1,2,7,8]:
 		experiment.activity_stage += 1
 		experiment.save()
-	if request.GET.get("next", "")="test" and experiment.activity_stage in [3,6]:
+	if request.GET.get("next", "")=="test" and experiment.activity_stage in [3,6]:
 		experiment.activity_stage += 1
 		experiment.save()
 	if ((experiment.start_datetime + timedelta(days=4)).replace(hour=0, minute=0) < datetime.now()) and experiment.activity_stage==5:
