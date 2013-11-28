@@ -100,18 +100,11 @@ $(function () {
     });
 });
 
-function languagepack_start_callback(progress, resp) {
-}
-
-function languagepack_check_callback(progress, resp) {
-}
-
 function languagepack_reset_callback(progress, resp) {
     display_installed_languages();
     $("#option-" + language_downloading).remove();
 }
+
 var languagepack_callbacks = {
-    start: languagepack_start_callback,
-    check: languagepack_check_callback,
     reset: languagepack_reset_callback
 };
