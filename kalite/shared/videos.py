@@ -161,7 +161,7 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
                 #import pdb; pdb.set_trace()
                 if stamp_urls and (force or "urls" not in video):
                     stamp_urls_on_video(video)
-                elif not "urls" in video:
+                elif not "urls" in video:  # TODO(bcipolli) this is an intentional bug, until performance can be boosted.
                     video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path=videos_path)
                 nvideos_local += int(video["on_disk"])
 
@@ -169,8 +169,6 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
 
     changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
     changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
-    if changed:
-        import pdb; pdb.set_trace()
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
     topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
