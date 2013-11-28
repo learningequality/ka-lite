@@ -223,6 +223,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
     context = {
         "video": video,
+        "video_urls": video["urls"].get(request.video_language),
         "title": video["title"],
         "prev": prev,
         "next": next,

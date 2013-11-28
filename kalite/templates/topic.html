@@ -86,8 +86,19 @@
                 {% trans video.title %}
             </a>
 
+            {# dubbed videos #}
             {% for lang, urls in video.urls.iteritems %}
-                <span class="video_indicator">{{ lang }}</span>
+                {% if lang != current_language %}
+                <span class="video_indicator">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}" class="video-link video-available">
+                        {{ lang }}
+                    </a>
+                </span>
+                {% endif %}
+            {% endfor %}
+
+            {# subtitles #}
+            {% for lang, urls in video.urls.iteritems %}
                 {% if urls.subtitles %}
                 <span class="subtitle_indicator">{{ lang }}</span>
                 {% endif %}
