@@ -29,7 +29,7 @@
 
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}?{{ BUILD_ID }}">
 {% endblock headcss %}
 
 {% block axis_dropdown %}
