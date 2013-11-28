@@ -56,7 +56,7 @@ def control_flow(request):
 	elif experiment.activity_stage == 9:
 		experiment.end_datetime = datetime.now()
 		experiment.save()
-		return complete(request)
+		return complete(request, user)
 
 @render_to("research/survey1.html")
 def survey1(request, survey):
@@ -103,9 +103,13 @@ def time_pick(request, experiment):
     return context
 
 @render_to("research/complete.html")
-def complete(request):
+def complete(request, user):
 	"""Show as complete"""
-	return {}
+	redirect_url = "https://ucsd.sona-systems.com/webstudy_credit.aspx?experiment_id=469&credit_token=49fc42158dca467d84e438af03608a05&survey_code=%s" % user.username
+	context = {
+		"redirect_url": redirect_url
+	}
+	return context
 
 @render_to("research/instructions.html")
 def instructions(request):

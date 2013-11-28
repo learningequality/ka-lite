@@ -20,10 +20,11 @@
 
 {% block content %}
 <div>
-<h2>You will be tested on the material presented on the next page when you login on this date: {{ test_time }}</h2>
+<p>The URL to access this site for the next two phases is <a href="http://tfle.org:9124">http://tfle.org:9124</a>. Just a reminder, your username is <b>{{ user.username }}</b>, and password is <b>experiment</b>. Please keep this somewhere safe so that you can complete the experiment. Remember that full credit will only be given to those who complete the experiment (complete the final exam).</p>
 </div>
+<h2>You completed phase 2 of the experiment. Your exam is scheduled for {{ test_time }}.</h2>
 {% if condition == 2 %}
-<h2>Choose a date and time to study</h2>
+<h2>You can access the site at any time, but it would be best to plan in advance a time and date to study on. Please choose a time and date below:</h2>
 <form action="?next=true" method="get">
 <span><div class="link bootstrap-timepicker"><input id="time_select" name="time" type="text"></div></span>
 <span class="desc">{% trans "Input time (HH:MM)" %}</span>
@@ -33,10 +34,10 @@
 <input class="green_button" type="submit" value="Submit">
 </form>
 {% elif condition == 1 %}
-<h2>Please study at this date and time: {{ time }}</h2>
+<h2>You can access the site at any time, but we have estimated that the best time for you to study for the exam would be {{ time }}.</h2>
 <a class="green_button" href="?next=true">Next</a>
 {% elif condition == 0 %}
-<h2>You may study now, or choose to come back later</h2>
+<h2>Please study some time in the next few days for this exam.</h2>
 <a class="green_button" href="?next=true">Next</a>
 {% endif %}
 {% endblock content %}
