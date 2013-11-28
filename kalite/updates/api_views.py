@@ -17,9 +17,9 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .models import UpdateProgressLog, VideoFile
+from .views import get_installed_language_packs
 from main import topicdata
 from shared.decorators import require_admin
-from shared.i18n import get_installed_languages
 from shared.jobs import force_job, job_status
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
@@ -189,8 +189,12 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    langs = [l for l in get_installed_languages() if l] # filter out empty dictionaries
-    return JsonResponse(langs)
+    installed = list(get_installed_language_packs())
+    is_en_in_language_packs = filter(lambda l: l['code'] == 'en', installed)
+    if not is_en_in_language_packs:
+        en = {'name': 'English', 'code': 'en', 'subtitle_count': 0, 'percent_translated': 100}
+        installed.insert(0, en)         # prepend so that it's always at the top of the list of languages
+    return JsonResponse(installed)
 
 @require_admin
 @api_handle_error_with_json

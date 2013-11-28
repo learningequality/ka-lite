@@ -3,7 +3,7 @@ import os
 import settings
 import utils.videos  # keep access to all functions
 from settings import logging
-from shared.i18n import get_srt_path_on_disk, get_srt_url, get_id2oklang_map, get_youtube_id, get_installed_subtitles, get_language_code
+from shared.i18n import get_srt_path_on_disk, get_srt_url, get_id2oklang_map, get_youtube_id, get_subtitles_on_disk, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
@@ -44,7 +44,7 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
     urls = {}
 
     # Get the subtitle urls
-    subtitle_lang_codes = get_installed_subtitles(youtube_id)
+    subtitle_lang_codes = get_subtitles_on_disk(youtube_id)
     subtitles_tuple = [(code, get_srt_url(youtube_id, code)) for code in subtitle_lang_codes if os.path.exists(get_srt_path_on_disk(youtube_id, code))]
     subtitles_urls = dict(subtitles_tuple)
     #logging.debug("Subtitles for %s: %s" % (youtube_id, subtitles_urls))

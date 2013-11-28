@@ -7,13 +7,6 @@
     "title": "Congruency postulates", 
     "parent_id": "cong_triangle", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "cong_triangle"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -28,7 +21,6 @@
       "more-on-why-ssa-is-not-a-postulate"
     ], 
     "description": "", 
-    "parent": "cong_triangle", 
     "basepoints": 18.0, 
     "h_position": 1, 
     "slug": "congruency_postulates", 
@@ -48,13 +40,6 @@
     "title": "Congruent triangles 1", 
     "parent_id": "cong_triangle", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "cong_triangle"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -68,7 +53,6 @@
       "other-triangle-congruence-postulates"
     ], 
     "description": "", 
-    "parent": "cong_triangle", 
     "basepoints": 12.0, 
     "h_position": 0, 
     "slug": "congruent_triangles_1", 
@@ -88,13 +72,6 @@
     "title": "Congruent triangles 2", 
     "parent_id": "cong_triangle", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "cong_triangle"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -108,7 +85,6 @@
       "proof---opposite-angles-of-parallelogram-congruent"
     ], 
     "description": "", 
-    "parent": "cong_triangle", 
     "basepoints": 14.0, 
     "h_position": 0, 
     "slug": "congruent_triangles_2", 
@@ -129,13 +105,6 @@
     "title": "Triangle types", 
     "parent_id": "isoscleles_equil", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -149,7 +118,6 @@
       "equilateral-and-isosceles-example-problems"
     ], 
     "description": "", 
-    "parent": "isoscleles_equil", 
     "basepoints": 12.0, 
     "h_position": 2, 
     "slug": "triangle_types", 
@@ -169,13 +137,6 @@
     "title": "Triangle angles 1", 
     "parent_id": "isoscleles_equil", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -190,7 +151,6 @@
       "another-isosceles-example-problem"
     ], 
     "description": "", 
-    "parent": "isoscleles_equil", 
     "basepoints": 17.0, 
     "h_position": -1, 
     "slug": "triangle_angles_1", 
@@ -211,13 +171,6 @@
     "title": "Basic triangle proofs", 
     "parent_id": "isoscleles_equil", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -230,7 +183,6 @@
       "basic-triangle-proofs-module-example-2"
     ], 
     "description": "1 and 2-step triangle congruency proofs.\n", 
-    "parent": "isoscleles_equil", 
     "basepoints": 28.0, 
     "h_position": 1, 
     "slug": "geometry_proofs_intro", 
@@ -252,13 +204,6 @@
     "title": "Fill-in-the-blank triangle proofs", 
     "parent_id": "isoscleles_equil", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -271,7 +216,6 @@
       "fill-in-the-blank-triangle-proofs-example-2"
     ], 
     "description": "Fill in the blanks in a triangle congruency proof.\n", 
-    "parent": "isoscleles_equil", 
     "basepoints": 29.0, 
     "h_position": 1, 
     "slug": "geometry_proofs_1", 
@@ -291,13 +235,6 @@
     "title": "Wrong statements in triangle proofs", 
     "parent_id": "isoscleles_equil", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "congruent-triangles", 
-      "isoscleles_equil"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -309,7 +246,6 @@
       "wrong-statements-in-proofs-example-1"
     ], 
     "description": "Identify the wrong statement in a proof about triangle congruency.\n", 
-    "parent": "isoscleles_equil", 
     "basepoints": 24.0, 
     "h_position": 1, 
     "slug": "geometry_proofs_2", 

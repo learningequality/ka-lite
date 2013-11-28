@@ -13,10 +13,10 @@
         <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
-        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/khan-site.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/khan-lite.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/search_autocomplete.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/khan-site.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/khan-lite.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/search_autocomplete.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
 
         {% block headcss %}{% endblock headcss %}
@@ -59,11 +59,11 @@
             var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
             var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
         </script>
-        <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed-server.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/khan-lite.js' %}?{{ BUILD_ID }}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed-server.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}?{{ BUILD_ID }}"></script>
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
@@ -109,8 +109,8 @@
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                                             <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
                                             <form action="{% url search %}" method="GET" id="search-box">
+                                              <a class="green_button" id="search-button" href="#" />{% trans 'search' %}</a>
                                               <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
-                                              <input type="submit" value="{% trans 'search' %}" />
                                             </form>
                                         {% endblock sitewide_navigation %}
                                     </span>

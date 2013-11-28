@@ -54,7 +54,7 @@
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if not subtopic.available %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
+            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
                 {% trans subtopic.title %}
             </a>
             <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
@@ -86,8 +86,19 @@
                 {% trans video.title %}
             </a>
 
+            {# dubbed videos #}
             {% for lang, urls in video.urls.iteritems %}
-                <span class="video_indicator">{{ lang }}</span>
+                {% if lang != current_language %}
+                <span class="video_indicator">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}" class="video-link video-available">
+                        {{ lang }}
+                    </a>
+                </span>
+                {% endif %}
+            {% endfor %}
+
+            {# subtitles #}
+            {% for lang, urls in video.urls.iteritems %}
                 {% if urls.subtitles %}
                 <span class="subtitle_indicator">{{ lang }}</span>
                 {% endif %}

@@ -79,7 +79,8 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 14.0:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
-        data = json.loads(open(debug_cache_file).read())
+        with open(debug_cache_file, "r") as fp:
+            data = json.load(fp)
     else:
         sys.stdout.write("Downloading data from %s..." % url)
         sys.stdout.flush()
@@ -165,6 +166,9 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 children_to_delete.append(i)
                 continue
             elif child[slug_key[child_kind]] in slug_blacklist:
+                children_to_delete.append(i)
+                continue
+            elif not child.get("live", True):  # node is not live
                 children_to_delete.append(i)
                 continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
@@ -320,8 +324,6 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
         for slug in knowledge_map["topics"].keys():
             nodecache_node = node_cache["Topic"].get(slug, [{}])[0]
-            if not nodecache_node:
-                import pdb; pdb.set_trace()
             topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topictree)
 
             if not nodecache_node or not topictree_node:
