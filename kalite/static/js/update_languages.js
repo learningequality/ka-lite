@@ -21,7 +21,7 @@ $(function() {
                 var installed_languages = installedlangs.map(function(elem) { return elem['code']; });
                 if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
                     if (percent_translated > 0 || srtcount > 0) {
-                        $('#language-packs').append('<option id="option-' + langcode + '" value="' + langcode + '">'+ gettext(langdata['name']) + ' (' + langcode + '); ' + srtcount + " srts / " + percent_translated + '% translated)</option>');
+                        $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s) %(subtitle_count)d srts / %(percent_translated)d %% translated</option>', langdata));
                     }
                 }
             });
@@ -42,14 +42,16 @@ function display_installed_languages() {
         $("div.installed-languages").empty();
         langs.forEach(function(lang, index) {
             if (lang['name']) { // nonempty name
+                var link_text;
                 if (!(lang['code'] === defaultLanguage)) {
-                    var link_text = "(<a href='?set_default_language=" + lang["code"] + "'>" + gettext("set as default") + "</a>)";
+                    link_text = sprintf("<a href='?set_default_language=%(lang.code)s'>(%(link_text)s)</a>", { lang: lang, link_text: gettext("Set as default")});
                 } else {
-                    var link_text = "(Default)"
+                    link_text = "(Default)";
                 }
-                var lang_name = "<b>" + gettext(lang['name']) + "</b> (" + lang['code'] + ")";
-                var lang_data = lang['subtitle_count'] + " " + gettext("Subtitles") + " / " + lang['percent_translated'] + "% " + gettext("Translated");
-                $("div.installed-languages").append("<p>" + link_text + " " + lang_name + " - " + lang_data + "</p>");
+                var lang_name = sprintf("<b>%s</b> (%s)", lang['name'], lang['code']);
+                var lang_data = sprintf(gettext("%d Subtitles / %d%% Translated"), lang['subtitle_count'], lang['percent_translated']);
+                var lang_description = sprintf("<p>%s %s - %s</p>", link_text, lang_name, lang_data);
+                $("div.installed-languages").append(lang_description);
             }
         });
     });
@@ -87,7 +89,7 @@ $(function () {
             );
             show_message(
                 "success",
-                ["Download for language ", language_downloading, " started."].join(" "),  // TODO(bcipolli) @ruimalheiro add sprintf and gettext
+                sprintf(gettext("Download for language %s started."), [language_downloading]),
                 "id_languagepackdownload"
             );
         }).error(function(progress, status, req) {
