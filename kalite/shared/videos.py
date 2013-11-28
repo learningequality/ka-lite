@@ -78,7 +78,8 @@ def stamp_urls_on_video(video, force=False):
         video_id=video["id"],
         format="mp4",
     )
-    video["available"] = bool(video["urls"]) or bool(settings.BACKUP_VIDEO_SOURCE)
+    video["on_disk"]   = any([lang_video["on_disk"] for lang_video in video["urls"].values()])
+    video["available"] = bool(video["on_disk"]) or bool(settings.BACKUP_VIDEO_SOURCE)
     return video
 
 def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT):
@@ -113,7 +114,7 @@ def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
     return need_update
 
 
-def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
+def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, stamp_urls=False):
     """ Uses the (json) topic tree to query the django database for which video files exist
 
     Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -148,7 +149,7 @@ def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
             for child in topic["children"]:
                 if not force and "nvideos_local" in child:
                     continue
-                (child, _, _, _) = get_video_counts(topic=child, videos_path=videos_path)
+                (child, _, _, _) = stamp_video_counts(topic=child, videos_path=videos_path, stamp_urls=stamp_urls)
                 nvideos_local += child["nvideos_local"]
                 nvideos_known += child["nvideos_known"]
 
@@ -157,13 +158,19 @@ def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
         else:
             videos = get_videos(topic)
             for video in videos:
-                if force or "urls" not in video:
+                #import pdb; pdb.set_trace()
+                if stamp_urls and (force or "urls" not in video):
                     stamp_urls_on_video(video)
-                nvideos_local += int(bool(video["urls"]))  # add 1 if video["on_disk"]
+                elif not "urls" in video:
+                    video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path=videos_path)
+                nvideos_local += int(video["on_disk"])
+
             nvideos_known = len(videos)
 
-    changed = topic.get("nvideos_local", -1) != nvideos_local
-    changed = changed or topic.get("nvideos_known", -1) != nvideos_known
+    changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
+    changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
+    if changed:
+        import pdb; pdb.set_trace()
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
     topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
