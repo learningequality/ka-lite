@@ -31,8 +31,8 @@ function display_languages(installable) {
                 } else {
                     link_text = "(Default)";
                 }
-                var lang_name = sprintf("<b>%s</b> (%s)", lang['name'], lang['code']);
-                var lang_data = sprintf(gettext("%d Subtitles / %d%% Translated"), lang['subtitle_count'], lang['percent_translated']);
+                var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+                var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
                 var lang_description = sprintf("<p>%s %s - %s</p>", link_text, lang_name, lang_data);
                 $("div.installed-languages").append(lang_description);
             }
