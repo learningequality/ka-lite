@@ -26,7 +26,7 @@ function nextQuestion() {
 }
 
 function endTest() {
-    window.location.href = "/research/?next=true"
+    window.location.href = "/research/?next=test"
 }
 
 function saveLogNextQuestion(correct) {
