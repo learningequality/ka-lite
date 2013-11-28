@@ -469,6 +469,21 @@ a.green_button:hover,input.green_button:hover{
 
 #search-box {
     float: right;
+}
+
+#search-box input {
     position: relative;
     top: -2px;
+    float: right;
+}
+
+#search-button {
+    padding: 4px 8px 12px 8px;
+    line-height: 12px;
+    height: 5px;
+    float: right;
+}
+
+input#search {
+    width: 180px;
 }

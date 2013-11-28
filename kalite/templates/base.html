@@ -108,8 +108,8 @@
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                                             <a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
                                             <form action="{% url search %}" method="GET" id="search-box">
+                                              <a class="green_button" id="search-button" href="#" />{% trans 'search' %}</a>
                                               <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
-                                              <input type="submit" value="{% trans 'search' %}" />
                                             </form>
                                         {% endblock sitewide_navigation %}
                                     </span>
