@@ -336,4 +336,9 @@ def get_related_videos(exercise, limit_to_available=True):
 def is_sibling(node1, node2):
     """
     """
-    return node1["parent_id"] == node2["parent_id"]
+    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
+
+    parent_path1 = parse_path(node1)
+    parent_path2 = parse_path(node2)
+
+    return parent_path1 == parent_path2
