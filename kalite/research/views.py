@@ -15,40 +15,44 @@ def control_flow(request):
 		experiment.condition = randint(0,2)
 		experiment.save()
 	print experiment.activity_stage
-	if request.GET.get("next", "")=="true" and experiment.activity_stage!=4:
+	if request.GET.get("next", "")=="true" and experiment.activity_stage!=5:
 		experiment.activity_stage += 1
 		experiment.save()
-	if ((experiment.start_datetime + timedelta(days=4)).replace(hour=0, minute=0) < datetime.now()) and experiment.activity_stage==4:
+	if ((experiment.start_datetime + timedelta(days=4)).replace(hour=0, minute=0) < datetime.now()) and experiment.activity_stage==5:
 		experiment.activity_stage += 1
 		experiment.save()
-	if experiment.condition == 2 and request.GET.get("time", "") and request.GET.get("date", ""):
+	if experiment.condition == 3 and request.GET.get("time", "") and request.GET.get("date", ""):
 		time = request.GET.get("time")
 		date = request.GET.get("date")
 		experiment.datacollect = time + " " + date
 		experiment.activity_stage += 1
 		experiment.save()
-	if experiment.activity_stage < 2 or experiment.activity_stage == 7:
+	if experiment.activity_stage == 0:
+		return instructions(request)
+	if 0 < experiment.activity_stage < 3 or experiment.activity_stage == 8:
 		return survey1(request, experiment.activity_stage)
 
-	elif experiment.activity_stage == 6:
+	elif experiment.activity_stage == 7:
 		if experiment.condition == 0:
 			survey = 4
 		else:
 			survey = 3
 		return survey1(request, survey)
 
-	elif experiment.activity_stage == 2:
+	elif experiment.activity_stage == 3:
 		test = 1
 		return HttpResponseRedirect(reverse("test", args=(test,)))
-	elif experiment.activity_stage == 5:
+	elif experiment.activity_stage == 6:
 		test = 2
 		return HttpResponseRedirect(reverse("test", args=(test,)))
-	elif experiment.activity_stage == 3:
-		return time_pick(request, experiment)
 	elif experiment.activity_stage == 4:
-		return HttpResponseRedirect("../math/trigonometry/graphs/")
-	elif experiment.activity_stage == 8:
-		return HttpResponse()
+		return time_pick(request, experiment)
+	elif experiment.activity_stage == 5:
+		return HttpResponseRedirect("../math/trigonometry/polynomial_and_rational/quad_formula_tutorial/")
+	elif experiment.activity_stage == 9:
+		experiment.end_datetime = datetime.now()
+		experiment.save()
+		return complete(request)
 
 @render_to("research/survey1.html")
 def survey1(request, survey):
@@ -97,4 +101,9 @@ def time_pick(request, experiment):
 @render_to("research/complete.html")
 def complete(request):
 	"""Show as complete"""
+	return {}
+
+@render_to("research/instructions.html")
+def instructions(request):
+	"""Show instructions"""
 	return {}
