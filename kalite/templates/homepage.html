@@ -106,35 +106,8 @@
 {% block content %}
     <div class="front-page">
 
-        <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
+        <h2 class="main-headline"><a href="{% url login %}" id="login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Please Login' %}">{% trans "Please Login" %}</a></h2>
 
-        <div class="vertical-shadow suggested-action">
-            <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
-            <p class="topic-list">
-                {% for subtopic in topics %}
-                {% if backup_vids_available and subtopic.nvideos_local == 0 %}
-                    <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{{subtopic.nvideos_known}}/{{subtopic.nvideos_known}} {% trans "video(s) are available." %}">
-                        {% trans subtopic.title %}
-                    </a>
-                {% endif %}
-                <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local == 0 %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
-                    {% trans subtopic.title %}
-                </a>
-                {% endfor %}
-            </p>
-        </div>
-
-        <div class="vertical-shadow suggested-action">
-            <a href="{% url exercise_dashboard %}">
-                <h2 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h2>
-                <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-                <div class="suggested-action-image-link" style="background-image: url({% static 'images/knowledge-map-derivative-intuition.png' %});"></div>
-            </a>
-        </div>
-
-        <div class="clear"></div>
-    </div>
-
-    <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
+    <p><a href="http://kalite.learningequality.org">KA Lite</a> is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection.</p>
 
 {% endblock content %}
