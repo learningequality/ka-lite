@@ -131,7 +131,11 @@ def generate_test_files():
 
 
 def compile_po_files(lang_codes=None, failure_ok=True):
-    """Compile all po files in locale directory"""
+    """
+    Compile all po files in locale directory.
+
+    First argument (lang_codes) can be None (means all), a list/tuple, or even a string (shh...)
+    """
     # before running compilemessages, ensure in correct directory
     move_to_project_root()
 

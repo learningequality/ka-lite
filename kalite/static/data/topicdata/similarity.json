@@ -7,13 +7,6 @@
     "title": "Similar triangles 1", 
     "parent_id": "triangle_similarlity", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "similarity", 
-      "triangle_similarlity"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -26,7 +19,6 @@
       "similarity-postulates"
     ], 
     "description": "", 
-    "parent": "triangle_similarlity", 
     "basepoints": 15.0, 
     "h_position": 8, 
     "slug": "similar_triangles_1", 
@@ -46,13 +38,6 @@
     "title": "Similar triangles 2", 
     "parent_id": "triangle_similarlity", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "similarity", 
-      "triangle_similarlity"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -66,7 +51,6 @@
       "similarity-postulates"
     ], 
     "description": "", 
-    "parent": "triangle_similarlity", 
     "basepoints": 17.0, 
     "h_position": 8, 
     "slug": "similar_triangles_2", 
@@ -86,13 +70,6 @@
     "title": "Solving similar triangles 1", 
     "parent_id": "triangle_similarlity", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "similarity", 
-      "triangle_similarlity"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -105,7 +82,6 @@
       "similarity-example-where-same-side-plays-different-roles"
     ], 
     "description": "", 
-    "parent": "triangle_similarlity", 
     "basepoints": 19.0, 
     "h_position": 8, 
     "slug": "solving_similar_triangles_1", 
@@ -125,13 +101,6 @@
     "title": "Solving similar triangles 2", 
     "parent_id": "triangle_similarlity", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "similarity", 
-      "triangle_similarlity"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -144,7 +113,6 @@
       "similarity-example-where-same-side-plays-different-roles"
     ], 
     "description": "", 
-    "parent": "triangle_similarlity", 
     "basepoints": 22.0, 
     "h_position": 8, 
     "slug": "solving_similar_triangles_2", 

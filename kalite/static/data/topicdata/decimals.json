@@ -7,13 +7,6 @@
     "title": "Money and decimal place value intuition", 
     "parent_id": "decimal_place_value", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimal_place_value"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -27,7 +20,6 @@
       "decimal-place-value-2"
     ], 
     "description": "", 
-    "parent": "decimal_place_value", 
     "basepoints": 22.0, 
     "h_position": -10, 
     "slug": "understanding_decimals_place_value", 
@@ -47,13 +39,6 @@
     "title": "Decimals on the number line 1", 
     "parent_id": "decimals-on-number-line", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimals-on-number-line"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -65,7 +50,6 @@
       "decimals-on-a-number-line"
     ], 
     "description": "", 
-    "parent": "decimals-on-number-line", 
     "basepoints": 12.0, 
     "h_position": -11, 
     "slug": "decimals_on_the_number_line_1", 
@@ -85,13 +69,6 @@
     "title": "Decimals on the number line 2", 
     "parent_id": "decimals-on-number-line", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimals-on-number-line"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -104,7 +81,6 @@
       "points-on-a-number-line"
     ], 
     "description": "", 
-    "parent": "decimals-on-number-line", 
     "basepoints": 12.0, 
     "h_position": -11, 
     "slug": "decimals_on_the_number_line_2", 
@@ -124,13 +100,6 @@
     "title": "Decimals on the number line 3", 
     "parent_id": "decimals-on-number-line", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimals-on-number-line"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -142,7 +111,6 @@
       "positive-and-negative-decimals-on-a-number-line"
     ], 
     "description": "", 
-    "parent": "decimals-on-number-line", 
     "basepoints": 13.0, 
     "h_position": -4, 
     "slug": "decimals_on_the_number_line_3", 
@@ -162,13 +130,6 @@
     "title": "Comparing decimals 1", 
     "parent_id": "comparing-decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "comparing-decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -183,7 +144,6 @@
       "comparing-decimals-4"
     ], 
     "description": "", 
-    "parent": "comparing-decimals", 
     "basepoints": 10.0, 
     "h_position": -10, 
     "slug": "comparing_decimals_1", 
@@ -203,13 +163,6 @@
     "title": "Comparing decimals 2", 
     "parent_id": "comparing-decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "comparing-decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -223,7 +176,6 @@
       "comparing-decimals-2-example"
     ], 
     "description": "", 
-    "parent": "comparing-decimals", 
     "basepoints": 12.0, 
     "h_position": -10, 
     "slug": "comparing_decimals_2", 
@@ -244,13 +196,6 @@
     "title": "Adding decimals 0.5", 
     "parent_id": "adding_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "adding_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -264,7 +209,6 @@
       "adding-decimals"
     ], 
     "description": "", 
-    "parent": "adding_decimals", 
     "basepoints": 17.0, 
     "h_position": -9, 
     "slug": "adding_decimals_0.5", 
@@ -285,13 +229,6 @@
     "title": "Adding decimals 1", 
     "parent_id": "adding_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "adding_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -305,7 +242,6 @@
       "adding-decimals"
     ], 
     "description": "", 
-    "parent": "adding_decimals", 
     "basepoints": 19.0, 
     "h_position": -9, 
     "slug": "adding_decimals", 
@@ -325,13 +261,6 @@
     "title": "Adding decimals 2", 
     "parent_id": "adding_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "adding_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -345,7 +274,6 @@
       "adding-decimals"
     ], 
     "description": "", 
-    "parent": "adding_decimals", 
     "basepoints": 21.0, 
     "h_position": -9, 
     "slug": "adding_decimals_2", 
@@ -365,13 +293,6 @@
     "title": "Subtracting decimals 0.5", 
     "parent_id": "adding_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "adding_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -384,7 +305,6 @@
       "subtracting-decimals--old"
     ], 
     "description": "", 
-    "parent": "adding_decimals", 
     "basepoints": 20.0, 
     "h_position": -8, 
     "slug": "subtracting_decimals_0.5", 
@@ -405,13 +325,6 @@
     "title": "Subtracting decimals", 
     "parent_id": "adding_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "adding_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -424,7 +337,6 @@
       "subtracting-decimals--old"
     ], 
     "description": "", 
-    "parent": "adding_decimals", 
     "basepoints": 19.0, 
     "h_position": -8, 
     "slug": "subtracting_decimals", 
@@ -444,13 +356,6 @@
     "title": "Adding and subtracting decimals word problems", 
     "parent_id": "adding_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "adding_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -463,7 +368,6 @@
       "adding-decimals-word-problem"
     ], 
     "description": "", 
-    "parent": "adding_decimals", 
     "basepoints": 24.0, 
     "h_position": -8, 
     "slug": "adding_and_subtracting_decimals_word_problems", 
@@ -484,13 +388,6 @@
     "title": "Multiplying decimals", 
     "parent_id": "multiplying_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "multiplying_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -504,7 +401,6 @@
       "mulitplication-8--multiplying-decimals--old-video"
     ], 
     "description": "", 
-    "parent": "multiplying_decimals", 
     "basepoints": 23.0, 
     "h_position": -6, 
     "slug": "multiplying_decimals", 
@@ -524,13 +420,6 @@
     "title": "Dividing completely", 
     "parent_id": "dividing_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "dividing_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -543,7 +432,6 @@
       "dividing-completely-to-get-decimal-answer-example-2"
     ], 
     "description": "", 
-    "parent": "dividing_decimals", 
     "basepoints": 17.0, 
     "h_position": -7, 
     "slug": "dividing_decimals_0.5", 
@@ -563,13 +451,6 @@
     "title": "Dividing decimals 1", 
     "parent_id": "dividing_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "dividing_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -583,7 +464,6 @@
       "dividing-completely-to-get-decimal-answer-example-2"
     ], 
     "description": "", 
-    "parent": "dividing_decimals", 
     "basepoints": 15.0, 
     "h_position": -7, 
     "slug": "dividing_decimals_1", 
@@ -603,13 +483,6 @@
     "title": "Dividing decimals 2", 
     "parent_id": "dividing_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "dividing_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -623,7 +496,6 @@
       "dividing-decimal"
     ], 
     "description": "", 
-    "parent": "dividing_decimals", 
     "basepoints": 17.0, 
     "h_position": -7, 
     "slug": "dividing_decimals_2", 
@@ -644,13 +516,6 @@
     "title": "Converting fractions to decimals", 
     "parent_id": "decimal_to_fraction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimal_to_fraction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -665,7 +530,6 @@
       "converting-fractions-to-decimals"
     ], 
     "description": "Convert a fraction to decimal rounded to the nearest thousandth.\n", 
-    "parent": "decimal_to_fraction", 
     "basepoints": 20.0, 
     "h_position": -1, 
     "slug": "converting_fractions_to_decimals", 
@@ -686,13 +550,6 @@
     "title": "Converting decimals to fractions 1", 
     "parent_id": "decimal_to_fraction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimal_to_fraction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -706,7 +563,6 @@
       "converting-decimals-to-fractions-1--ex-3"
     ], 
     "description": "", 
-    "parent": "decimal_to_fraction", 
     "basepoints": 12.0, 
     "h_position": -7, 
     "slug": "converting_decimals_to_fractions_1", 
@@ -727,13 +583,6 @@
     "title": "Converting decimals to fractions 2", 
     "parent_id": "decimal_to_fraction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimal_to_fraction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -746,7 +595,6 @@
       "converting-decimals-to-fractions-2--ex-2"
     ], 
     "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.\n", 
-    "parent": "decimal_to_fraction", 
     "basepoints": 18.0, 
     "h_position": -7, 
     "slug": "converting_decimals_to_fractions_2", 
@@ -766,13 +614,6 @@
     "title": "Converting decimals to percents", 
     "parent_id": "percent_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "percent_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -786,7 +627,6 @@
       "representing-a-number-as-a-decimal--percent--and-fraction"
     ], 
     "description": "", 
-    "parent": "percent_tutorial", 
     "basepoints": 14.0, 
     "h_position": -4, 
     "slug": "converting_decimals_to_percents", 
@@ -806,13 +646,6 @@
     "title": "Converting percents to decimals", 
     "parent_id": "percent_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "percent_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -826,7 +659,6 @@
       "representing-a-number-as-a-decimal--percent--and-fraction"
     ], 
     "description": "", 
-    "parent": "percent_tutorial", 
     "basepoints": 13.0, 
     "h_position": -5, 
     "slug": "converting_percents_to_decimals", 
@@ -846,13 +678,6 @@
     "title": "Finding percents", 
     "parent_id": "percent_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "percent_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -866,7 +691,6 @@
       "percent-word-problems"
     ], 
     "description": "Find a percent of a quantity as a rate per 100; solve problems involving finding the whole, given a part and the percent.", 
-    "parent": "percent_tutorial", 
     "basepoints": 18.0, 
     "h_position": -3, 
     "slug": "finding_percents", 
@@ -887,13 +711,6 @@
     "title": "Discount, tax, and tip word problems", 
     "parent_id": "percent_word_probs", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "percent_word_probs"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -907,7 +724,6 @@
       "solving-percent-problems-3"
     ], 
     "description": "", 
-    "parent": "percent_word_probs", 
     "basepoints": 21.0, 
     "h_position": -2, 
     "slug": "discount_tax_and_tip_word_problems", 
@@ -927,13 +743,6 @@
     "title": "Markup and commission word problems", 
     "parent_id": "percent_word_probs", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "percent_word_probs"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -947,7 +756,6 @@
       "solving-percent-problems-3"
     ], 
     "description": "", 
-    "parent": "percent_word_probs", 
     "basepoints": 22.0, 
     "h_position": -3, 
     "slug": "markup_and_commission_word_problems", 
@@ -967,13 +775,6 @@
     "title": "Rounding numbers", 
     "parent_id": "decimal_rounding_estimation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimal_rounding_estimation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -985,7 +786,6 @@
       "rounding-decimals"
     ], 
     "description": "", 
-    "parent": "decimal_rounding_estimation", 
     "basepoints": 15.0, 
     "h_position": -12, 
     "slug": "rounding_numbers", 
@@ -1005,13 +805,6 @@
     "title": "Estimation with decimals", 
     "parent_id": "decimal_rounding_estimation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimal_rounding_estimation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1023,7 +816,6 @@
       "estimation-with-decimals"
     ], 
     "description": "", 
-    "parent": "decimal_rounding_estimation", 
     "basepoints": 21.0, 
     "h_position": -12, 
     "slug": "estimation_with_decimals", 
@@ -1044,13 +836,6 @@
     "title": "Significant figures", 
     "parent_id": "significant_figures_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "significant_figures_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1063,7 +848,6 @@
       "more-on-significant-figures"
     ], 
     "description": "Determine how many significant figures a given number has.\n", 
-    "parent": "significant_figures_tutorial", 
     "basepoints": 12.0, 
     "h_position": -10, 
     "slug": "significant_figures_1", 
@@ -1083,13 +867,6 @@
     "title": "Understanding moving the decimal", 
     "parent_id": "multiplying-dividing-by-10-decim", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "multiplying-dividing-by-10-decim"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1103,7 +880,6 @@
       "dividing-decimals-2-1"
     ], 
     "description": "", 
-    "parent": "multiplying-dividing-by-10-decim", 
     "basepoints": 13.0, 
     "h_position": -8, 
     "slug": "understanding_moving_the_decimal", 
@@ -1123,13 +899,6 @@
     "title": "Fractions as division by a power of 10", 
     "parent_id": "multiplying-dividing-by-10-decim", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "multiplying-dividing-by-10-decim"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1139,7 +908,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "", 
-    "parent": "multiplying-dividing-by-10-decim", 
     "basepoints": 10.0, 
     "h_position": -9, 
     "slug": "converting_fractions_to_decimals_0.5", 
@@ -1160,13 +928,6 @@
     "title": "Adding and subtracting rational numbers", 
     "parent_id": "decimals-percentages-fractions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "decimals", 
-      "decimals-percentages-fractions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1180,7 +941,6 @@
       "adding-and-subtracting-three-fractions"
     ], 
     "description": "", 
-    "parent": "decimals-percentages-fractions", 
     "basepoints": 10.0, 
     "h_position": -5, 
     "slug": "adding_and_subtracting_rational_numbers", 

@@ -7,13 +7,6 @@
     "title": "Recognizing conic sections", 
     "parent_id": "conic_basics", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_basics"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -25,7 +18,6 @@
       "introduction-to-conic-sections"
     ], 
     "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.\n", 
-    "parent": "conic_basics", 
     "basepoints": 10.0, 
     "h_position": -15, 
     "slug": "recognizing_conic_sections", 
@@ -45,13 +37,6 @@
     "title": "Graphing circles", 
     "parent_id": "conic_circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -64,7 +49,6 @@
       "conic-sections--intro-to-circles"
     ], 
     "description": "Graph circles from equations in standard form\n", 
-    "parent": "conic_circles", 
     "basepoints": 17.0, 
     "h_position": -13, 
     "slug": "graphing_circles", 
@@ -84,13 +68,6 @@
     "title": "Equation of a circle in factored form", 
     "parent_id": "conic_circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -102,7 +79,6 @@
       "radius-and-center-for-a-circle-equation-in-standard-form"
     ], 
     "description": "Find the center and radius of a circle given the equation in factored form.\n", 
-    "parent": "conic_circles", 
     "basepoints": 14.0, 
     "h_position": -16, 
     "slug": "equation_of_a_circle_1", 
@@ -122,13 +98,6 @@
     "title": "Equation of a circle in non-factored form", 
     "parent_id": "conic_circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -142,7 +111,6 @@
       "conic-identification-3"
     ], 
     "description": "Find the center and radius of a circle given the equation in unfactored form.\n", 
-    "parent": "conic_circles", 
     "basepoints": 24.0, 
     "h_position": -16, 
     "slug": "equation_of_a_circle_2", 
@@ -162,13 +130,6 @@
     "title": "Graphing circles 2", 
     "parent_id": "conic_circles", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_circles"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -182,7 +143,6 @@
       "conic-identification-3"
     ], 
     "description": "Graph circles from equations in general form\n", 
-    "parent": "conic_circles", 
     "basepoints": 24.0, 
     "h_position": -13, 
     "slug": "graphing_circles_2", 
@@ -202,13 +162,6 @@
     "title": "Equation of an ellipse", 
     "parent_id": "conic_ellipses", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_ellipses"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -220,7 +173,6 @@
       "conic-sections--intro-to-ellipses"
     ], 
     "description": "Find the center and major and minor radius of an ellipse given its equation.\n", 
-    "parent": "conic_ellipses", 
     "basepoints": 17.0, 
     "h_position": -15, 
     "slug": "equation_of_an_ellipse", 
@@ -240,13 +192,6 @@
     "title": "Parabola intuition 1", 
     "parent_id": "conic_parabolas", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_parabolas"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -259,7 +204,6 @@
       "shifting-and-scaling-parabolas"
     ], 
     "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.\n", 
-    "parent": "conic_parabolas", 
     "basepoints": 19.0, 
     "h_position": -14, 
     "slug": "parabola_intuition_1", 
@@ -279,13 +223,6 @@
     "title": "Parabola intuition 2", 
     "parent_id": "conic_parabolas", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "conic_parabolas"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -295,7 +232,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.\n", 
-    "parent": "conic_parabolas", 
     "basepoints": 25.0, 
     "h_position": -14, 
     "slug": "parabola_intuition_2", 
@@ -315,13 +251,6 @@
     "title": "Equation of a hyperbola", 
     "parent_id": "hyperbolas-conic", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "conic-sections", 
-      "hyperbolas-conic"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -335,7 +264,6 @@
       "conic-sections--hyperbolas-3"
     ], 
     "description": "Find the asymptotes of a hyperbola based on the equation.\n", 
-    "parent": "hyperbolas-conic", 
     "basepoints": 19.0, 
     "h_position": -17, 
     "slug": "equation_of_a_hyperbola", 

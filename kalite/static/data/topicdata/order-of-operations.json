@@ -7,13 +7,6 @@
     "title": "Place value", 
     "parent_id": "place_value", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "place_value"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -27,9 +20,8 @@
       "place-value-3"
     ], 
     "description": "", 
-    "parent": "place_value", 
     "basepoints": 13.0, 
-    "h_position": -14, 
+    "h_position": -15, 
     "slug": "place_value", 
     "kind": "Exercise", 
     "name": "place_value", 
@@ -40,40 +32,6 @@
     "exercise_id": "place_value"
   }, 
   {
-    "v_position": 12, 
-    "path": "/math/arithmetic/order-of-operations/place_value/e/representing_numbers/", 
-    "id": "representing_numbers", 
-    "display_name": "Representing numbers", 
-    "title": "Representing numbers", 
-    "parent_id": "place_value", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "place_value"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "place_value"
-    ], 
-    "related_video_slugs": [], 
-    "description": "Identify the number represented by hundreds, tens, and ones blocks\n", 
-    "parent": "place_value", 
-    "basepoints": 15.0, 
-    "h_position": -15, 
-    "slug": "representing_numbers", 
-    "kind": "Exercise", 
-    "name": "representing_numbers", 
-    "seconds_per_fast_problem": 8.0, 
-    "prerequisites": [], 
-    "exercise_id": "representing_numbers"
-  }, 
-  {
     "v_position": 7, 
     "path": "/math/arithmetic/order-of-operations/rounding_whole_numbers/e/rounding_whole_numbers/", 
     "id": "rounding_whole_numbers", 
@@ -81,13 +39,6 @@
     "title": "Rounding whole numbers", 
     "parent_id": "rounding_whole_numbers", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "rounding_whole_numbers"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -101,9 +52,8 @@
       "rounding-whole-numbers-3"
     ], 
     "description": "", 
-    "parent": "rounding_whole_numbers", 
     "basepoints": 13.0, 
-    "h_position": -14, 
+    "h_position": -15, 
     "slug": "rounding_whole_numbers", 
     "kind": "Exercise", 
     "name": "rounding_whole_numbers", 
@@ -121,13 +71,6 @@
     "title": "Counting 1", 
     "parent_id": "counting tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "counting tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -139,9 +82,8 @@
       "counting-1-exercise"
     ], 
     "description": "", 
-    "parent": "counting tutorial", 
     "basepoints": 13.0, 
-    "h_position": -10, 
+    "h_position": -13, 
     "slug": "counting_1", 
     "kind": "Exercise", 
     "name": "counting_1", 
@@ -159,13 +101,6 @@
     "title": "Order of operations", 
     "parent_id": "order_of_operations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "order_of_operations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -179,9 +114,8 @@
       "more-complicated-order-of-operations-example"
     ], 
     "description": "", 
-    "parent": "order_of_operations", 
     "basepoints": 16.0, 
-    "h_position": -11, 
+    "h_position": -14, 
     "slug": "order_of_operations", 
     "kind": "Exercise", 
     "name": "order_of_operations", 
@@ -200,13 +134,6 @@
     "title": "Distributive property", 
     "parent_id": "ditributive_property", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "ditributive_property"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -220,7 +147,6 @@
       "the-distributive-property-2"
     ], 
     "description": "", 
-    "parent": "ditributive_property", 
     "basepoints": 23.0, 
     "h_position": -16, 
     "slug": "distributive_property", 
@@ -231,107 +157,5 @@
       "equivalent-forms-of-expressions-1"
     ], 
     "exercise_id": "distributive_property"
-  }, 
-  {
-    "v_position": 10, 
-    "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_1/", 
-    "id": "properties_of_numbers_1", 
-    "display_name": "Properties of numbers 1", 
-    "title": "Properties of numbers 1", 
-    "parent_id": "arithmetic_properties", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "arithmetic_properties"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "arithmetic_properties"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "arithmetic_properties", 
-    "basepoints": 13.0, 
-    "h_position": -13, 
-    "slug": "properties_of_numbers_1", 
-    "kind": "Exercise", 
-    "name": "properties_of_numbers_1", 
-    "seconds_per_fast_problem": 6.0, 
-    "prerequisites": [], 
-    "exercise_id": "properties_of_numbers_1"
-  }, 
-  {
-    "v_position": 11, 
-    "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/number_properties_terminology_1/", 
-    "id": "number_properties_terminology_1", 
-    "display_name": "Number properties terminology 1", 
-    "title": "Number properties terminology 1", 
-    "parent_id": "arithmetic_properties", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "arithmetic_properties"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "arithmetic_properties"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "arithmetic_properties", 
-    "basepoints": 13.0, 
-    "h_position": -13, 
-    "slug": "number_properties_terminology_1", 
-    "kind": "Exercise", 
-    "name": "number_properties_terminology_1", 
-    "seconds_per_fast_problem": 6.0, 
-    "prerequisites": [], 
-    "exercise_id": "number_properties_terminology_1"
-  }, 
-  {
-    "v_position": 10, 
-    "path": "/math/arithmetic/order-of-operations/arithmetic_properties/e/properties_of_numbers_2/", 
-    "id": "properties_of_numbers_2", 
-    "display_name": "Properties of numbers 2", 
-    "title": "Properties of numbers 2", 
-    "parent_id": "arithmetic_properties", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "arithmetic_properties"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "order-of-operations", 
-      "arithmetic_properties"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "arithmetic_properties", 
-    "basepoints": 14.0, 
-    "h_position": -12, 
-    "slug": "properties_of_numbers_2", 
-    "kind": "Exercise", 
-    "name": "properties_of_numbers_2", 
-    "seconds_per_fast_problem": 7.0, 
-    "prerequisites": [], 
-    "exercise_id": "properties_of_numbers_2"
   }
 ]

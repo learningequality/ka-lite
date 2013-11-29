@@ -185,8 +185,9 @@ def obliterate_old_schema():
         logging.info("Move completed.")
 
 def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
-    """Return list of languages to not rezip due to errors in compile process. Email admins errors
-
+    """
+    Return list of languages to not rezip due to errors in compile process.
+    Then email admins errors.
     """
 
     broken_codes = re.findall(r'(?<=ka-lite/locale/)\w+(?=/LC_MESSAGES)', err) or []
@@ -317,7 +318,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
             master_metadata = json.load(fp)
     except Exception as e:
-        logging.info("Error opening language pack metadata: %s" % e)
+        logging.warn("Error opening language pack metadata: %s; resetting" % e)
         master_metadata = []
 
     # loop through all languages in locale, update master file

@@ -7,13 +7,6 @@
     "title": "One step equation intuition", 
     "parent_id": "why-of-algebra", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "why-of-algebra"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -27,7 +20,6 @@
       "representing-a-relationship-with-a-simple-equation"
     ], 
     "description": "Explore why we do the same things to both sides of an equation", 
-    "parent": "why-of-algebra", 
     "basepoints": 16.0, 
     "h_position": -16, 
     "slug": "one_step_equation_intuition", 
@@ -40,74 +32,6 @@
     "exercise_id": "one_step_equation_intuition"
   }, 
   {
-    "v_position": 49, 
-    "path": "/math/algebra/solving-linear-equations-and-inequalities/why-of-algebra/e/one_step_equations_0.5/", 
-    "id": "one_step_equations_0.5", 
-    "display_name": "One step equations 0.5", 
-    "title": "One step equations 0.5", 
-    "parent_id": "why-of-algebra", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "why-of-algebra"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "why-of-algebra"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "why-of-algebra", 
-    "basepoints": 12.0, 
-    "h_position": -15, 
-    "slug": "one_step_equations_0.5", 
-    "kind": "Exercise", 
-    "name": "one_step_equations_0.5", 
-    "seconds_per_fast_problem": 5.0, 
-    "prerequisites": [], 
-    "exercise_id": "one_step_equations_0.5"
-  }, 
-  {
-    "v_position": 49, 
-    "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/one_step_equations_0.5/", 
-    "id": "one_step_equations_0.5", 
-    "display_name": "One step equations 0.5", 
-    "title": "One step equations 0.5", 
-    "parent_id": "equations_beginner", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "equations_beginner"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "equations_beginner"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "equations_beginner", 
-    "basepoints": 12.0, 
-    "h_position": -15, 
-    "slug": "one_step_equations_0.5", 
-    "kind": "Exercise", 
-    "name": "one_step_equations_0.5", 
-    "seconds_per_fast_problem": 5.0, 
-    "prerequisites": [], 
-    "exercise_id": "one_step_equations_0.5"
-  }, 
-  {
     "v_position": 39, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/equations_beginner/e/linear_equations_1/", 
     "id": "linear_equations_1", 
@@ -115,13 +39,6 @@
     "title": "One-step equations with multiplication", 
     "parent_id": "equations_beginner", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "equations_beginner"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -136,7 +53,6 @@
       "intuition-why-we-divide-both-sides"
     ], 
     "description": "Solve equations in one step.", 
-    "parent": "equations_beginner", 
     "basepoints": 13.0, 
     "h_position": -16, 
     "slug": "linear_equations_1", 
@@ -156,13 +72,6 @@
     "title": "One step equations", 
     "parent_id": "equations_beginner", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "equations_beginner"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -177,7 +86,6 @@
       "equations-2"
     ], 
     "description": "Solve equations in one step.", 
-    "parent": "equations_beginner", 
     "basepoints": 15.0, 
     "h_position": -15, 
     "slug": "one_step_equations", 
@@ -197,13 +105,6 @@
     "title": "2-step equations", 
     "parent_id": "equations_beginner", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "equations_beginner"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -218,7 +119,6 @@
       "two-step-equations"
     ], 
     "description": "Solve equations in two steps.\n", 
-    "parent": "equations_beginner", 
     "basepoints": 17.0, 
     "h_position": -12, 
     "slug": "linear_equations_2", 
@@ -238,13 +138,6 @@
     "title": "Linear equation and inequality word problems", 
     "parent_id": "linear-equation-word-problems-tu", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "linear-equation-word-problems-tu"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -256,9 +149,8 @@
       "basic-linear-equation-word-problem"
     ], 
     "description": "", 
-    "parent": "linear-equation-word-problems-tu", 
     "basepoints": 23.0, 
-    "h_position": -10, 
+    "h_position": -11, 
     "slug": "linear_equation_word_problems", 
     "kind": "Exercise", 
     "name": "linear_equation_word_problems", 
@@ -276,13 +168,6 @@
     "title": "Equations with variables on both sides", 
     "parent_id": "basic-equation-practice", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "basic-equation-practice"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -297,7 +182,6 @@
       "equation-special-cases"
     ], 
     "description": "Solve equations with a variable on both sides.", 
-    "parent": "basic-equation-practice", 
     "basepoints": 23.0, 
     "h_position": -17, 
     "slug": "linear_equations_3", 
@@ -318,13 +202,6 @@
     "title": "Percentage word problems 1", 
     "parent_id": "percent_word_problems", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "percent_word_problems"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -340,9 +217,8 @@
       "another-percent-word-problem"
     ], 
     "description": "", 
-    "parent": "percent_word_problems", 
     "basepoints": 21.0, 
-    "h_position": -9, 
+    "h_position": -10, 
     "slug": "percentage_word_problems_1", 
     "kind": "Exercise", 
     "name": "percentage_word_problems_1", 
@@ -353,40 +229,6 @@
     "exercise_id": "percentage_word_problems_1"
   }, 
   {
-    "v_position": 50, 
-    "path": "/math/algebra/solving-linear-equations-and-inequalities/percent_word_problems/e/percentage_word_problems_2/", 
-    "id": "percentage_word_problems_2", 
-    "display_name": "Percentage word problems 2", 
-    "title": "Percentage word problems 2", 
-    "parent_id": "percent_word_problems", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "percent_word_problems"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "percent_word_problems"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "percent_word_problems", 
-    "basepoints": 25.0, 
-    "h_position": -11, 
-    "slug": "percentage_word_problems_2", 
-    "kind": "Exercise", 
-    "name": "percentage_word_problems_2", 
-    "seconds_per_fast_problem": 32.0, 
-    "prerequisites": [], 
-    "exercise_id": "percentage_word_problems_2"
-  }, 
-  {
     "v_position": 48, 
     "path": "/math/algebra/solving-linear-equations-and-inequalities/solving_for_variable/e/solving_for_a_variable/", 
     "id": "solving_for_a_variable", 
@@ -394,13 +236,6 @@
     "title": "Solving equations in terms of a variable", 
     "parent_id": "solving_for_variable", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "solving_for_variable"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -415,7 +250,6 @@
       "rearrange-formulas-to-isolate-specific-variables"
     ], 
     "description": "Solve an equation in terms of a variable.\n", 
-    "parent": "solving_for_variable", 
     "basepoints": 29.0, 
     "h_position": -18, 
     "slug": "solving_for_a_variable", 
@@ -435,13 +269,6 @@
     "title": "Converting 1-digit repeating decimals to fractions", 
     "parent_id": "conv_rep_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "conv_rep_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -453,7 +280,6 @@
       "coverting-repeating-decimals-to-fractions-1"
     ], 
     "description": "Convert 1-digit repeating decimals to fractions", 
-    "parent": "conv_rep_decimals", 
     "basepoints": 15.0, 
     "h_position": -13, 
     "slug": "converting_repeating_decimals_to_fractions_1", 
@@ -475,13 +301,6 @@
     "title": "Converting multi-digit repeating decimals to fractions", 
     "parent_id": "conv_rep_decimals", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "conv_rep_decimals"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -493,7 +312,6 @@
       "coverting-repeating-decimals-to-fractions-2"
     ], 
     "description": "Convert multi-digit repeating decimals to fractions\n", 
-    "parent": "conv_rep_decimals", 
     "basepoints": 23.0, 
     "h_position": -14, 
     "slug": "converting_repeating_decimals_to_fractions_2", 
@@ -513,13 +331,6 @@
     "title": "Age word problems", 
     "parent_id": "age_word_problems_tut", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "age_word_problems_tut"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -533,7 +344,6 @@
       "ex-3-age-word-problem"
     ], 
     "description": "Solve age word problems with a system of equations.", 
-    "parent": "age_word_problems_tut", 
     "basepoints": 27.0, 
     "h_position": -19, 
     "slug": "age_word_problems", 
@@ -553,13 +363,6 @@
     "title": "Absolute value equations", 
     "parent_id": "absolute-value-equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "absolute-value-equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -572,7 +375,6 @@
       "absolute-value-equation-with-no-solution"
     ], 
     "description": "Solve absolute value equations. Some have no solution.\n", 
-    "parent": "absolute-value-equations", 
     "basepoints": 26.0, 
     "h_position": -17, 
     "slug": "absolute_value_equations", 
@@ -593,13 +395,6 @@
     "title": "Multistep equations with distribution", 
     "parent_id": "complicated_equations", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "complicated_equations"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -615,7 +410,6 @@
       "solving-equations-with-the-distributive-property-2"
     ], 
     "description": "Solve linear equations like -(5x+1)=9x-5", 
-    "parent": "complicated_equations", 
     "basepoints": 28.0, 
     "h_position": -18, 
     "slug": "multistep_equations_with_distribution", 
@@ -635,13 +429,6 @@
     "title": "Expressions with unknown variables", 
     "parent_id": "exp_unknown_vars", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "exp_unknown_vars"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -654,7 +441,6 @@
       "evaluating-expressions-with-unknown-variables-2"
     ], 
     "description": "Multiplying variable expressions given their sums.", 
-    "parent": "exp_unknown_vars", 
     "basepoints": 17.0, 
     "h_position": -12, 
     "slug": "expressions_with_unknown_variables", 
@@ -675,13 +461,6 @@
     "title": "Expressions with unknown variables 2", 
     "parent_id": "exp_unknown_vars", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "exp_unknown_vars"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -694,7 +473,6 @@
       "evaluating-expressions-with-unknown-variables-2"
     ], 
     "description": "", 
-    "parent": "exp_unknown_vars", 
     "basepoints": 20.0, 
     "h_position": -12, 
     "slug": "expressions_with_unknown_variables_2", 
@@ -714,13 +492,6 @@
     "title": "Integer sums", 
     "parent_id": "More-equation-practice", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "algebra", 
-      "solving-linear-equations-and-inequalities", 
-      "More-equation-practice"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -732,7 +503,6 @@
       "integer-sums"
     ], 
     "description": "Find the nth number in a sequence of consecutive numbers based on the sum.", 
-    "parent": "More-equation-practice", 
     "basepoints": 24.0, 
     "h_position": -17, 
     "slug": "integer_sums", 
