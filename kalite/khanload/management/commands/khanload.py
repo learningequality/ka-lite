@@ -79,7 +79,8 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 14.0:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
-        data = json.loads(open(debug_cache_file).read())
+        with open(debug_cache_file, "r") as fp:
+            data = json.load(fp)
     else:
         sys.stdout.write("Downloading data from %s..." % url)
         sys.stdout.flush()
@@ -129,8 +130,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
         node["ancestor_ids"] = ancestor_ids
 
-        kinds = set([kind])
-
         if kind == "Exercise":
             # For each exercise, need to set the exercise_id
             #   get related videos
@@ -157,6 +156,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         # Recurse through children, remove any blacklisted items
         children_to_delete = []
+        child_kinds = set()
         for i, child in enumerate(node.get("children", [])):
             child_kind = child.get("kind", None)
 
@@ -167,6 +167,9 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             elif child[slug_key[child_kind]] in slug_blacklist:
                 children_to_delete.append(i)
                 continue
+            elif not child.get("live", True):  # node is not live
+                children_to_delete.append(i)
+                continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
@@ -174,15 +177,18 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 children_to_delete.append(i)
                 continue
 
-            kinds = kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
+            child_kinds = child_kinds.union(set([child_kind]))
+            child_kinds = child_kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
+
+        # Delete those marked for completion
         for i in reversed(children_to_delete):
             del node["children"][i]
 
         # Mark on topics whether they contain Videos, Exercises, or both
         if kind == "Topic":
-            node["contains"] = list(kinds)
+            node["contains"] = list(child_kinds)
 
-        return kinds
+        return child_kinds
     recurse_nodes(topictree)
 
 
@@ -320,8 +326,6 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
         for slug in knowledge_map["topics"].keys():
             nodecache_node = node_cache["Topic"].get(slug, [{}])[0]
-            if not nodecache_node:
-                import pdb; pdb.set_trace()
             topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topictree)
 
             if not nodecache_node or not topictree_node:

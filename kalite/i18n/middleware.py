@@ -4,9 +4,8 @@ import settings
 from .models import LanguagePack
 from config.models import Settings
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format
 
-# TODO(dylan): new class that handles finding and setting the language for the session
+
 class SessionLanguage:
     def process_request(self, request):
         """
@@ -17,7 +16,6 @@ class SessionLanguage:
         # Set the set of available languages
         if "language_choices" not in request.session:
             request.session["language_choices"] = list(LanguagePack.objects.all())
-            request.session["language_codes"] = [convert_language_code_format(lp.code) for lp in request.session["language_choices"]]
 
         # Set the current language, and redirect (to clean browser history)
         if request.is_admin and request.GET.get("set_default_language"):
@@ -41,4 +39,10 @@ class SessionLanguage:
             request.session["django_language"] = request.session["default_language"]
             logging.debug("setting session language to %s" % request.session["django_language"])
 
+        # each request can get the language from the querystring, or from the currently set session language
         request.language = request.session["django_language"]
+
+class VideoLanguage:
+    """SessionLanguage must be called first"""
+    def process_request(self, request):
+        request.video_language = request.GET.get("lang") or request.session["django_language"]

@@ -16,11 +16,9 @@ import version
 from .classes import UpdatesStaticCommand
 from i18n.models import LanguagePack
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format, update_jsi18n_file
+from shared.i18n import LOCALE_ROOT, lcode_to_django, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
 from utils.general import ensure_dir
 
-
-LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 class Command(UpdatesStaticCommand):
     help = "Download language pack requested from central server"
@@ -51,42 +49,44 @@ class Command(UpdatesStaticCommand):
         if settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on distributed servers server.")
 
-        code = convert_language_code_format(options["lang_code"])
+        lang_code = lcode_to_ietf(options["lang_code"])
         software_version = options["software_version"]
-        if code == settings.LANGUAGE_CODE:
-            logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % code)
+        if lcode_to_django(lang_code) == settings.LANGUAGE_CODE:
+            logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % lang_code)
         if software_version == version.VERSION:
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
 
 
         # Download the language pack
         try:
-            self.start("Downloading language pack '%s'" % code)
-            zip_file = get_language_pack(code, software_version)
-        except CommandError as e: # 404
-            sys.exit('404 Not found: Could not download language pack file %s ' % _language_pack_url(code, software_version))
+            self.start("Downloading language pack '%s'" % lang_code)
+            zip_file = get_language_pack(lang_code, software_version)
 
-        # Unpack into locale directory
-        self.next_stage("Unpacking language pack '%s'" % code)
-        unpack_language(code, zip_file)
+            # Unpack into locale directory
+            self.next_stage("Unpacking language pack '%s'" % lang_code)
+            unpack_language(lang_code, zip_file)
 
-        # Update database with meta info
-        self.next_stage("Updating database for language pack '%s'" % code)
-        update_database(code)
+            # Update database with meta info
+            self.next_stage("Updating database for language pack '%s'" % lang_code)
+            update_database(lang_code)
 
-        #
-        self.next_stage("Creating static files for language pack '%s'" % code)
-        update_jsi18n_file(code)
+            #
+            self.next_stage("Creating static files for language pack '%s'" % lang_code)
+            update_jsi18n_file(lang_code)
 
-        #
-        move_srts(code)
-        self.complete("Finished processing language pack %s" % code)
+            #
+            move_srts(lang_code)
+            self.complete("Finished processing language pack %s" % lang_code)
+        except Exception as e:
+            self.cancel(e)
+            raise
 
-def get_language_pack(code, software_version):
+def get_language_pack(lang_code, software_version):
     """Download language pack for specified language"""
 
-    logging.info("Retrieving language pack: %s" % code)
-    request_url = _language_pack_url(code, software_version)
+    lang_code = lcode_to_ietf(lang_code)
+    logging.info("Retrieving language pack: %s" % lang_code)
+    request_url = get_language_pack_url(lang_code, software_version)
     r = requests.get(request_url)
     try:
         r.raise_for_status()
@@ -95,29 +95,29 @@ def get_language_pack(code, software_version):
 
     return r.content
 
-def _language_pack_url(code, software_version):
-    return "http://%s/static/language_packs/%s/%s.zip" % (settings.CENTRAL_SERVER_HOST, software_version, code)
-
-def unpack_language(code, zip_file):
+def unpack_language(lang_code, zip_file):
     """Unpack zipped language pack into locale directory"""
+    lang_code = lcode_to_django(lang_code)
 
     logging.info("Unpacking new translations")
-    ensure_dir(os.path.join(LOCALE_ROOT, code, "LC_MESSAGES"))
+    ensure_dir(os.path.join(LOCALE_ROOT, lang_code, "LC_MESSAGES"))
 
     ## Unpack into temp dir
     z = zipfile.ZipFile(StringIO(zip_file))
-    z.extractall(os.path.join(LOCALE_ROOT, code))
+    z.extractall(os.path.join(LOCALE_ROOT, lang_code))
 
 
-def update_database(code):
+def update_database(lang_code):
     """Create/update LanguagePack table in database based on given languages metadata"""
 
-    metadata = json.loads(open(os.path.join(LOCALE_ROOT, code, "%s_metadata.json" % code)).read())
+    lang_code = lcode_to_ietf(lang_code)
+    with open(get_language_pack_metadata_filepath(lang_code)) as fp:
+        metadata = json.load(fp)
 
-    logging.info("Updating database for language pack: %s" % code)
+    logging.info("Updating database for language pack: %s" % lang_code)
 
     pack, created = LanguagePack.objects.get_or_create(
-        code=code,
+        code=lang_code,
         name=metadata["name"],
         software_version=metadata["software_version"]
     )
@@ -128,14 +128,15 @@ def update_database(code):
 
     logging.info("Successfully updated database.")
 
-def move_srts(code):
+def move_srts(lang_code):
     """
     Srts live in the locale directory, but that's not exposed at any URL.  So instead,
-    we have to move the srts out to /static/subtitles/[code]/
+    we have to move the srts out to /static/subtitles/[lang_code]/
     """
+    lang_code = lcode_to_ietf(lang_code)
     subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
-    srt_static_dir = os.path.join(subtitles_static_dir, code)
-    srt_locale_dir = os.path.join(LOCALE_ROOT, code, "subtitles")
+    srt_static_dir = os.path.join(subtitles_static_dir, lang_code)
+    srt_locale_dir = os.path.join(LOCALE_ROOT, lang_code, "subtitles")
 
     ensure_dir(srt_static_dir)
     for fil in glob.glob(os.path.join(srt_locale_dir, "*.srt")):
