@@ -1,3 +1,6 @@
+var installable_languages;
+
+
 // this function doesn't look good. One too many callbacks!
 $(function() {
     // basic flow: check with central server what we can install
@@ -7,12 +10,15 @@ $(function() {
     var request = $.ajax({
         url: url,
         dataType: "jsonp",
-    }).success(display_languages).error(function(data, status, error) {
+    }).success(function(languages) {
+        installable_languages = languages;
+        display_languages(languages);
+    }).error(function(data, status, error) {
         handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 });
 
-function display_languages(installable) {
+function display_languages(installables) {
 
     $.ajax({
         url: installed_languages_url,
@@ -75,33 +81,37 @@ var language_downloading = null;
 $(function () {
     $("#get-language-button").click(function(event) {
         language_downloading = $("#language-packs").val();
-        // tell server to start languagepackdownload job
-        doRequest(
-            start_languagepackdownload_url,
-            { lang: language_downloading }
-        ).success(function(progress, status, req) {
-            updatesStart(
-                "languagepackdownload",
-                2000, // 2 seconds
-                languagepack_callbacks
-            );
-            show_message(
-                "success",
-                sprintf(gettext("Download for language %s started."), [language_downloading]),
-                "id_languagepackdownload"
-            );
-        }).error(function(progress, status, req) {
-            handleFailedAPI(
-                progress,
-                gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
-                "id_languagepackdownload"
-            );
-        });
+        start_languagepack_download(language_downloading);
     });
 });
 
+function start_languagepack_download(lang_code) {
+    // tell server to start languagepackdownload job
+    doRequest(
+        start_languagepackdownload_url,
+        { lang: lang_code }
+    ).success(function(progress, status, req) {
+        updatesStart(
+            "languagepackdownload",
+            2000, // 2 seconds
+            languagepack_callbacks
+        );
+        show_message(
+            "success",
+            sprintf(gettext("Download for language %s started."), [lang_code]),
+            "id_languagepackdownload"
+        );
+    }).error(function(progress, status, req) {
+        handleFailedAPI(
+            progress,
+            gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
+            "id_languagepackdownload"
+        );
+    });
+}
+
 function languagepack_reset_callback(progress, resp) {
-    display_installed_languages();
+    display_languages(installable_languages);
     $("#option-" + language_downloading).remove();
 }
 
