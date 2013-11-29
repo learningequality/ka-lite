@@ -39,7 +39,30 @@ function display_languages(installables) {
                 }
                 var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
                 var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
-                var lang_description = sprintf("<p>%s %s - %s</p>", link_text, lang_name, lang_data);
+                var lang_description = "<p>";
+                lang_description += sprintf("%s %s - %s", link_text, lang_name, lang_data);
+
+                // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
+                // NOTE: N^2 algorithm right here, but meh
+                var matching_installable = installables.filter(function(installable_lang) { return lang.code === installable_lang.code; })[0];
+                if (matching_installable) {
+                    var upgradeable = matching_installable.language_pack_version > lang.language_pack_version;
+                    if (upgradeable) {
+                        //add upgrade link here
+                        var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
+                        var subtitle_count_diff = matching_installable.subtitle_count - lang.subtitle_count;
+                        lang_description += sprintf(
+                            " |<a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>Upgrade </a>(+%(translated)d%% %(translated_text)s / +%(srt)d %(srt_text)s)",
+                            {lang: lang,
+                             translated: percent_translated_diff,
+                             translated_text: gettext("Translated"),
+                             srt: subtitle_count_diff,
+                             srt_text: gettext("Subtitles")
+                            });
+                    }
+                }
+                lang_description += "</p>";
+
                 $("div.installed-languages").append(lang_description);
             }
         });
@@ -47,7 +70,7 @@ function display_languages(installables) {
         //
         // show list of installable languages in the dropdown box
         //
-        installable.forEach(function(langdata, langindex) {
+        installables.forEach(function(langdata, langindex) {
             var srtcount = langdata["subtitle_count"];
             var percent_translated = langdata["percent_translated"];
             var langcode = langdata["code"];
