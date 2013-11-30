@@ -104,9 +104,11 @@ def update_srts(days, lang_codes):
     date = '{0.month}/{0.day}/{0.year}'.format(datetime.date.today() - datetime.timedelta(int(days)))
     logging.info("Updating subtitles that haven't been refreshed since %s" % date)
     call_command("generate_subtitle_map", date_since_attempt=date)
-    for lang_code in lang_codes:
-        call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
-
+    if lang_codes:
+        for lang_code in lang_codes:
+            call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
+    else:
+        call_command("cache_subtitles", date_since_attempt=date)
 
 def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None):
 
