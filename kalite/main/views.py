@@ -32,7 +32,7 @@ from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent
 from shared.videos import get_video_urls, get_video_counts, stamp_urls_on_video
-from utils.internet import is_loopback_connection, JsonResponse
+from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
 
 def check_setup_status(handler):
@@ -287,6 +287,8 @@ def easy_admin(request):
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
         "clock_set": settings.ENABLE_CLOCK_SET,
+        "ips": get_ip_addresses(include_loopback=False),
+        "port": settings.PROXY_PORT or settings.PRODUCTION_PORT,
     }
     return context
 
