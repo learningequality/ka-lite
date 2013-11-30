@@ -117,7 +117,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
     # Download latest UI translations from CrowdIn
     assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
-    for lang_code in (lang_codes or [None]):
+    for lang_code in (lang_codes or ['all']):
         download_latest_translations(
             lang_code=lang_code,
             project_id=settings.CROWDIN_PROJECT_ID,
@@ -266,7 +266,7 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     z.extractall(tmp_dir_path)
 
     # Copy over new translations
-    extract_new_po(tmp_dir_path, lang_codes=[lang_code] if lang_code != "all" else None)
+    extract_new_po(tmp_dir_path)
 
     # Clean up tracks
     if os.path.exists(tmp_dir_path):
@@ -285,26 +285,28 @@ def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=setti
         logging.error(e)
 
 
-def extract_new_po(tmp_dir_path=None, lang_codes=[]):
+def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
     """Move newly downloaded po files to correct location in locale direction"""
 
-    if not tmp_dir_path:
-        tmp_dir_path = tempfile.mkdtemp()
+    if combine_with_po_file:
+        assert os.path.basename(combine_with_po_file) in ["django.po", "djangojs.po"], "File %s does not seem to be either django.po or djangojs.po."
+        assert lang != 'all', "You can only combine a po file with only one other po file. Please select a specific language, not 'all'."
 
-    logging.info("Unpacking new translations")
-    update_languages = os.listdir(tmp_dir_path)
-    if lang_codes:  # limit based on passed in limitations
-        update_languages = set(update_languages).intersection(set(lang_codes))
-
-    for lang in update_languages:
+    if lang == 'all':
+        languages = os.listdir(extract_path)
+        for lang in languages:
+            extract_new_po(extract_path, lang=lang)
+    else:
         converted_code = lcode_to_django(lang)
-        # ensure directory exists in locale folder, and then overwrite local po files with new ones
-        ensure_dir(os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES"))
-        for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")):
-            if "js" in os.path.basename(po_file):
-                shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "djangojs.po"))
+        src_path = os.path.join(extract_path, lang)
+        dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
+        ensure_dir(dest_path)
+        for po_file in glob.glob(os.path.join(src_path, "*/*.po")):
+            if 'js' in os.path.basename(po_file):
+                shutil.copy(po_file, os.path.join(dest_path, 'djangojs.po'))
             else:
-                shutil.copy(po_file, os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES", "django.po"))
+                shutil.copy(po_file, os.path.join(dest_path, 'django.po'))
+
 
 
 def generate_metadata(lang_codes=None, broken_langs=None):
@@ -421,7 +423,7 @@ def zip_language_packs(lang_codes=None):
     converts all into ietf
     """
 
-    lang_codes = lang_codes or listdir(LOCALE_ROOT)
+    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
     lang_codes = [lcode_to_ietf(lc) for lc in lang_codes]
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 
