@@ -26,6 +26,7 @@ import version
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
 from securesync.models import Zone
 from utils.general import get_host_name
+from utils.internet import get_ip_addresses
 from utils.platforms import is_windows, system_script_extension
 
 
@@ -290,7 +291,10 @@ class Command(BaseCommand):
         if install_clean:
             sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
             sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
-            sys.stdout.write("\tthen load 'http://127.0.0.1:%d/' in your browser to complete the device configuration.\n" % settings.user_facing_port())
+            sys.stdout.write("\tthen load one of the following addresses in your browser to complete the configuration:\n")
+            for ip in get_ip_addresses():
+                sys.stdout.write("\t\thttp://%s:%d/\n" % (ip, settings.user_facing_port()))
+
         else:
             sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
             sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)

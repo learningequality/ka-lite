@@ -310,7 +310,7 @@ def easy_admin(request):
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
         "clock_set": settings.ENABLE_CLOCK_SET,
         "ips": get_ip_addresses(include_loopback=False),
-        "port": settings.PROXY_PORT or settings.PRODUCTION_PORT,
+        "port": settings.user_facing_port(),
     }
     return context
 
