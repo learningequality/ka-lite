@@ -82,7 +82,7 @@
             <a href="v/{{ video.slug }}/" class="video-link client-online-only video-{% if not video.available %}un{% endif %}available">
                 {% trans video.title %}
             </a>
-            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.urls %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
                 {% trans video.title %}
             </a>
 

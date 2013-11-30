@@ -130,8 +130,6 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
         node["ancestor_ids"] = ancestor_ids
 
-        kinds = set([kind])
-
         if kind == "Exercise":
             # For each exercise, need to set the exercise_id
             #   get related videos
@@ -158,6 +156,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         # Recurse through children, remove any blacklisted items
         children_to_delete = []
+        child_kinds = set()
         for i, child in enumerate(node.get("children", [])):
             child_kind = child.get("kind", None)
 
@@ -178,15 +177,18 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
                 children_to_delete.append(i)
                 continue
 
-            kinds = kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
+            child_kinds = child_kinds.union(set([child_kind]))
+            child_kinds = child_kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
+
+        # Delete those marked for completion
         for i in reversed(children_to_delete):
             del node["children"][i]
 
         # Mark on topics whether they contain Videos, Exercises, or both
         if kind == "Topic":
-            node["contains"] = list(kinds)
+            node["contains"] = list(child_kinds)
 
-        return kinds
+        return child_kinds
     recurse_nodes(topictree)
 
 
