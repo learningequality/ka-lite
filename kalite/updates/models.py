@@ -67,7 +67,7 @@ class UpdateProgressLog(ExtendedModel):
         #
         # Note that an empty stage_name means this is a pure update to
         #   the current stage, and so all this can be skipped.
-        if self.stage_name and self.stage_name != stage_name:
+        if stage_name and self.stage_name != stage_name:
             if self.stage_name:  # moving to the next stage
                 self.notes = None  # reset notes after each stage
                 self.current_stage += 1
