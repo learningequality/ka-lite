@@ -88,7 +88,7 @@ def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT
 
 _vid_last_updated = 0
 _vid_last_count = 0
-def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
+def video_counts_need_update(videos_path=settings.CONTENT_ROOT, format="mp4"):
     """
     Compare current state to global state variables to check whether video counts need updating.
     """
@@ -98,14 +98,16 @@ def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
     if not os.path.exists(videos_path):
         return False
 
-    files = os.listdir(videos_path)
+    files = glob.glob(os.path.join(videos_path, "*.%s" % format))
 
+    # Have to update count and last_updated together, to make sure that next round
+    #   stores all proper data (if something changed), or to do both checks (in case nothing changed)
     vid_count = len(files)
     if vid_count:
-        # TODO(bcipolli) implement this as a linear search, rather than sort-then-select.
-        vid_last_updated = os.path.getmtime(sorted([(videos_path + f) for f in files], key=os.path.getmtime, reverse=True)[0])
+        vid_last_updated = os.path.getmtime(sorted(files, key=os.path.getmtime, reverse=True)[0])
     else:
         vid_last_updated = 0
+
     need_update = (vid_count != _vid_last_count) or (vid_last_updated != _vid_last_updated)
 
     _vid_last_count = vid_count
@@ -149,7 +151,7 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
             for child in topic["children"]:
                 if not force and "nvideos_local" in child:
                     continue
-                stamp_video_counts(topic=child, videos_path=videos_path, stamp_urls=stamp_urls)
+                stamp_video_counts(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
                 nvideos_local += child["nvideos_local"]
                 nvideos_known += child["nvideos_known"]
 
