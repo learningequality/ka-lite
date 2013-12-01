@@ -130,7 +130,29 @@
                     <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
                 </td>
             </tr>
+
             {% endif %}
+
+            {% if ips %}
+            <tr>
+                <td class="title" colspan="2">
+                    <h2>{% trans "Connection Information" %}</h2>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    {% trans "To connect to this installation of KA Lite from another computer over the network, try these addresses:" %}
+                </td>
+            </tr>
+            {% for ip in ips %}
+            <tr>
+                <td class="desc">http://{{ ip }}:{{ port }}/</td>
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+
+
         </table>
     </div>
 {% endblock content %}
