@@ -59,6 +59,7 @@
             var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
             var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
         </script>
+        <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/distributed-server.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
@@ -180,4 +181,3 @@
         {% comment %}These will disappear with cleanup item #234{% endcomment %}
     </body>
 </html>
-
