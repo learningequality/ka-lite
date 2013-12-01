@@ -84,9 +84,9 @@ function updatesStart_callback(process_name, start_time) {
                     //Set up the recurring callback
                     clearInterval(process_interval_handles[process_name]);
                     process_interval_handles[process_name] = setInterval(
-                        function () { 
+                        function () {
                             updatesStart_callback(
-                                process_name, 
+                                process_name,
                                 new Date(request.getResponseHeader('Date'))
                             );
                         },
@@ -153,11 +153,11 @@ function updatesCheck(process_name, interval) {
             var completed = !progress_log.process_name || progress_log.completed;
             if (completed) {
                 //
-                if (progress_log.process_percent == 1.) {
+                if (progress_log.process_percent == 1. && !progress_log.stage_status) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
                     show_message("success", message, "id_" + process_name);
                     updatesReset(process_name);
-                } else if (progress_log.completed) {
+                } else if (progress_log.completed && progress_log.stage_status == "cancelled") {
                     show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]", "id_" + process_name);
                     updatesReset(process_name);
                 } else if (progress_log.process_name) {
