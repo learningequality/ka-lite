@@ -78,7 +78,7 @@ class Command(BaseCommand):
         if not settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on the central server.")
         if not options["lang_code"] or options["lang_code"].lower() == "all":
-            lang_codes = None
+            lang_codes = ['all']
         else:
             lang_codes = [lcode_to_django(lc) for lc in options["lang_code"].split(",")]
 
@@ -117,7 +117,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
     # Download latest UI translations from CrowdIn
     assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
-    for lang_code in (lang_codes or ['all']):
+    for lang_code in lang_codes:
         download_latest_translations(
             lang_code=lang_code,
             project_id=settings.CROWDIN_PROJECT_ID,
@@ -423,7 +423,7 @@ def zip_language_packs(lang_codes=None):
     converts all into ietf
     """
 
-    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
+    lang_codes = os.listdir(LOCALE_ROOT) if lang_codes == ['all'] else lang_codes
     lang_codes = [lcode_to_ietf(lc) for lc in lang_codes]
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 
