@@ -98,10 +98,8 @@
             {% endfor %}
 
             {# subtitles #}
-            {% for lang, urls in video.urls.iteritems %}
-                {% if urls.subtitles %}
+            {% for lang in video.urls.en.subtitles.keys %}
                 <span class="subtitle_indicator">{{ lang }}</span>
-                {% endif %}
             {% endfor %}
         </li>
         {% endfor %}
