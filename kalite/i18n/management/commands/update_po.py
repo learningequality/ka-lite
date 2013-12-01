@@ -44,7 +44,7 @@ class Command(BaseCommand):
             raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
         # All commands must be run from project root
-        move_to_project_root()
+        change_dir_to_project_root()
 
         # (safety measure) prevent any english or test translations from being uploaded
         delete_current_templates()
@@ -60,7 +60,7 @@ class Command(BaseCommand):
             update_templates()
 
 
-def move_to_project_root():
+def change_dir_to_project_root():
     """Change into the project root directory to run i18n commands"""
     logging.info("Moving to project root directory")
     project_root = os.path.join(settings.PROJECT_PATH, "../")
@@ -69,7 +69,7 @@ def move_to_project_root():
 
 
 def delete_current_templates():
-    """Delete existing en po files"""
+    """Delete existing en po/pot files"""
     logging.info("Deleting English language locale directory")
     english_path = os.path.join(settings.LOCALE_PATHS[0], "en")
     if os.path.exists(english_path):
@@ -137,7 +137,7 @@ def compile_po_files(lang_codes=None, failure_ok=True):
     First argument (lang_codes) can be None (means all), a list/tuple, or even a string (shh...)
     """
     # before running compilemessages, ensure in correct directory
-    move_to_project_root()
+    change_dir_to_project_root()
 
     if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
