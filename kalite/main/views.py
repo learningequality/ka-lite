@@ -31,7 +31,7 @@ from shared.caching import backend_cache_page
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent
-from shared.videos import get_video_urls, stamp_video_counts, stamp_urls_on_video
+from shared.videos import get_video_urls, stamp_video_counts, stamp_urls_on_video, video_counts_need_update
 from utils.internet import is_loopback_connection, JsonResponse
 
 
@@ -128,7 +128,12 @@ def refresh_topic_cache(handler, force=False):
 
             elif node["kind"] == "Topic":
                 bottom_layer_topic =  "Topic" not in node["contains"]
-                recount_videos_and_invalidate_parents(node, force=force or bottom_layer_topic, stamp_urls=bottom_layer_topic)
+                # always run video_counts_need_update(), to make sure the (internal) counts stay up to date.
+                recount_videos_and_invalidate_parents(
+                    node,
+                    force=video_counts_need_update() or force or bottom_layer_topic,
+                    stamp_urls=bottom_layer_topic,
+                )
 
         kwargs.update(cached_nodes)
         return handler(request, *args, **kwargs)
