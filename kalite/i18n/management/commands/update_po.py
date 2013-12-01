@@ -70,10 +70,21 @@ def change_dir_to_project_root():
 
 def delete_current_templates():
     """Delete existing en po/pot files"""
-    logging.info("Deleting English language locale directory")
-    english_path = os.path.join(settings.LOCALE_PATHS[0], "en")
-    if os.path.exists(english_path):
-        shutil.rmtree(english_path)
+    logging.info("Deleting English language po files")
+    for locale_path in settings.LOCALE_PATHS:
+        english_path = os.path.join(locale_path, "en", "LC_MESSAGES")
+        if os.path.exists(english_path):
+            shutil.rmtree(english_path)
+
+    logging.info("Deleting English language pot files")
+    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    if os.path.exists(pot_path):
+        shutil.rmtree(pot_path)
+
+    logging.info("Deleting old English language pot files")
+    old_pot_path = os.path.join(settings.STATIC_ROOT, "pot")
+    if os.path.exists(old_pot_path):
+        shutil.rmtree(old_pot_path)
 
 def run_makemessages():
     """Run makemessages command for english po files"""
@@ -88,12 +99,13 @@ def run_makemessages():
 
 def update_templates():
     """Update template po files"""
-    logging.info("Posting template po files to static/pot/")
-    ## post them to exposed URL
-    static_path = os.path.join(settings.STATIC_ROOT, "pot/")
-    ensure_dir(static_path)
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(static_path, "kalite.pot"))
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(static_path, "kalitejs.pot"))
+    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    logging.info("Copying english po files to %s" % pot_path)
+
+    #  post them to exposed URL
+    ensure_dir(pot_path)
+    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(pot_path, "kalite.pot"))
+    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(pot_path, "kalitejs.pot"))
 
 
 def generate_test_files():
