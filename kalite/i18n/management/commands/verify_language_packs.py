@@ -76,6 +76,11 @@ def validate_srts(lang_codes, forcefully=False):
 
 
     def validate_single_srt(srt_file):
+        """
+        A bunch of conditions to check.
+        Some (via logging.debug) are just nominal checks--indications for manual investigation.
+        Others (via srt_issues.append) are actionable (i.e. delete the srt-able)
+        """
         #logging.debug("Validating %s" % srt_file)
         srt_issues = []
 
@@ -111,13 +116,13 @@ def validate_srts(lang_codes, forcefully=False):
                     between_subtitle_time = datediff(parse_time(times[i][0]), parse_time(times[i-1][1] if i > 0 else "00:00:00,000"))
                     within_subtitle_time  = datediff(parse_time(times[i][1]), parse_time(times[i][0]))
 
-                    if between_subtitle_time > 20.:
+                    if between_subtitle_time > 60.:
                         srt_issues.append("Between-subtitle gap of %5.2f seconds" % between_subtitle_time)
 
-                    if within_subtitle_time > 20.:
+                    if within_subtitle_time > 60.:
                         srt_issues.append("Within-subtitle duration of %5.2f seconds" % within_subtitle_time)
                     elif within_subtitle_time == 0.:
-                        srt_issues.append("Subtitle flies by too fast (%s --> %s)." % times[i])
+                        logging.debug("Subtitle flies by too fast (%s --> %s)." % times[i])
 
                     #print "Start: %s\tB: %5.2f\tW: %5.2f" % (parse_time(times[i][0]), between_subtitle_time, within_subtitle_time)
                 except Exception as e:
@@ -128,7 +133,7 @@ def validate_srts(lang_codes, forcefully=False):
                             if i == 0:
                                 srt_issues.append("No subtitles have a valid starting point.")
                             else:
-                                srt_issues.append("Hit end of movie, but %d (of %d) subtitle(s) remain in the queue." % (len(times) - i - 1, len(times)))
+                                logging.debug("Hit end of movie, but %d (of %d) subtitle(s) remain in the queue." % (len(times) - i - 1, len(times)))
                         break
         validate_times(srt_content, srt_issues)
 
