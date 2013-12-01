@@ -17,6 +17,7 @@ Good test cases:
 NOTE: all language codes internally are assumed to be in django format (e.g. en_US)
 """
 import datetime
+import fnmatch
 import glob
 import json
 import os
@@ -121,6 +122,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
         download_latest_translations(
             lang_code=lang_code,
             project_id=settings.CROWDIN_PROJECT_ID,
+
             project_key=settings.CROWDIN_PROJECT_KEY,
             zip_file=zip_file,
         )
@@ -301,13 +303,19 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         src_path = os.path.join(extract_path, lang)
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
         ensure_dir(dest_path)
-        for po_file in glob.glob(os.path.join(src_path, "*/*.po")):
+        for po_file in all_po_files(src_path):
             if 'js' in os.path.basename(po_file):
                 shutil.copy(po_file, os.path.join(dest_path, 'djangojs.po'))
             else:
                 shutil.copy(po_file, os.path.join(dest_path, 'django.po'))
 
 
+def all_po_files(dir):
+    '''Walks the directory dir and returns an iterable containing all the po files in the given directory.'''
+    # return glob.glob(os.path.join(dir, '*/*.po'))
+    for current_dir, _, filenames in os.walk(dir):
+        for po_file in fnmatch.filter(filenames, '*.po'):
+            yield os.path.join(current_dir, po_file)
 
 def generate_metadata(lang_codes=None, broken_langs=None):
     """
@@ -442,6 +450,7 @@ def zip_language_packs(lang_codes=None):
         z = zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED)
 
         # Get every single file in the directory and zip it up
+        logging.info("Creating zip file in %s" % zip_filepath)
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
             z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))
         for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
