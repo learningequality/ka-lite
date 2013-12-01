@@ -295,7 +295,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         try:
             with open(metadata_filepath) as fp:
                 local_meta = json.load(fp)
-        except:
+        except Exception as e:
             logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
             local_meta = {}
 
