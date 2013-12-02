@@ -370,7 +370,7 @@ def zip_language_packs(lang_codes=None):
     converts all into ietf
     """
 
-    lang_codes = lang_codes or listdir(LOCALE_ROOT)
+    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
     lang_codes = [lcode_to_ietf(lc) for lc in lang_codes]
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 
