@@ -78,7 +78,7 @@ class Command(UpdatesStaticCommand):
             move_srts(lang_code)
             self.complete("Finished processing language pack %s" % lang_code)
         except Exception as e:
-            self.cancel(e)
+            self.cancel(stage_status="error", notes="Error: %s" % e)
             raise
 
 def get_language_pack(lang_code, software_version):

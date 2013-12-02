@@ -1,18 +1,23 @@
 // Callback functions
 
+var lastKey = null;
+var nErrors = 0
+
 function video_start_callback(progress_log, resp) {
     if (!progress_log) {
         //handleFailedAPI(resp, "Error starting updates process");
     }
+    lastKey = null;
+    nErrors = 0;
 }
-
-var lastKey = null;
 
 function video_check_callback(progress_log, resp) {
     // When video status is checked
     if (progress_log) { // check succeeded
         // Determine what changed, and what to update
         var currentKey = progress_log.stage_name;
+
+        // update key
         var keyCompleted = null;
         if (currentKey != lastKey) {
             keyCompleted = lastKey;
@@ -20,10 +25,26 @@ function video_check_callback(progress_log, resp) {
             keyCompleted = currentKey;
         }
 
+        var status = progress_log.stage_status;
+
         if (keyCompleted) {
-            // 100% done with the video
-            setNodeClass(keyCompleted, "complete");
+            if (!status) {
+                setNodeClass(keyCompleted, "complete");
+            } else if (status == "error") {
+                // update # errors
+                nErrors++;
+            }
+
             if (progress_log.process_percent == 1.) {
+            // 100% done with the set of videos.  Display based on the total
+
+                if (nErrors != 0) {
+                    // Redisplay the download message as a warning.
+                    set_message("warning", get_message("id_videodownload"), "id_videodownload");
+                    // could show the retry button, but we'd have to store which videos
+                    //   went poorly.
+                }
+
                 // 100% done with ALL videos.
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
@@ -32,6 +53,7 @@ function video_check_callback(progress_log, resp) {
                     $("#cancel-download").hide();
                 }
                 return;
+
             } else if (lastKey != currentKey) {
                 setNodeClass(currentKey, "partial");
             }
@@ -229,14 +251,14 @@ function unselectAllNodes() {
 
 function getSelectedIncompleteVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return _.uniq($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) {
         return node.data.addClass != "complete" && node.childList == null;
     }));
 }
 
 function getSelectedStartedVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return _.uniq($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) {
         return node.data.addClass != "unstarted" && node.childList == null;
     }));
 }

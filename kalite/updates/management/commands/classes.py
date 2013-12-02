@@ -60,18 +60,17 @@ class UpdatesDynamicCommand(UpdatesCommand):
     def next_stage(self, stage_name=None, notes=None):
         assert self.started(), "Must call start() before moving to a next stage!"
         self.check_if_cancel_requested()
-        self.progress_log.update_stage(stage_name=self.stage_name, stage_percent=1., notes="Completed.")
-        self.stage_name = stage_name
-        self.display_notes(notes or "")
+        self.update_stage(stage_name=stage_name, stage_percent=0., notes=notes)
+        self.display_notes(notes or "")  # blank out old notes, if necessary
 
-    def update_stage(self, stage_name, stage_percent, notes=None):
+    def update_stage(self, stage_name=None, stage_percent=None, stage_status=None, notes=None):
         self.check_if_cancel_requested()
-        self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, notes=notes)
+        self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, stage_status=stage_status, notes=notes)
         self.display_notes(notes)
 
-    def cancel(self, notes=None):
+    def cancel(self, stage_status=None, notes=None):
         self.check_if_cancel_requested()
-        self.progress_log.cancel_progress(notes=notes)
+        self.progress_log.cancel_progress(stage_status=stage_status, notes=notes)
         self.display_notes(notes)
 
     def complete(self, notes=None):
@@ -115,12 +114,12 @@ class UpdatesStaticCommand(UpdatesCommand):
         self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage], stage_percent=0, notes=notes)
         self.display_notes(notes)
 
-    def update_stage(self, stage_percent, notes=None):
-        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage - 1], stage_percent=stage_percent, notes=notes)
+    def update_stage(self, stage_percent, stage_status=None, notes=None):
+        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage - 1], stage_percent=stage_percent, stage_status=stage_status, notes=notes)
         self.display_notes(notes)
 
-    def cancel(self, notes=None):
-        self.progress_log.cancel_progress(notes=notes)
+    def cancel(self, stage_status=None, notes=None):
+        self.progress_log.cancel_progress(stage_status=stage_status, notes=notes)
         self.display_notes(notes)
 
     def complete(self, notes=None):
