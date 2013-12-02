@@ -57,6 +57,12 @@ class Command(BaseCommand):
                     default="all",
                     metavar="LANG_CODE",
                     help="Language code to update (default: all)"),
+        make_option('-o', '--use_local',
+                    action='store_true',
+                    dest='use_local',
+                    default=False,
+                    metavar="USE_LOCAL",
+                    help="Use the local po files, instead of refreshing from online (a way to test translation tweaks)"),
     )
 
     def handle(self, **options):
@@ -73,7 +79,7 @@ class Command(BaseCommand):
         update_srts(days=options["days"], lang_codes=lang_codes)
 
         # Converted language code for language packs
-        update_language_packs(lang_codes=lang_codes)
+        update_language_packs(lang_codes=lang_codes, use_local=options["use_local"])
 
 
 def update_srts(days, lang_codes):
@@ -88,20 +94,21 @@ def update_srts(days, lang_codes):
         call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
 
 
-def update_language_packs(lang_codes=None):
+def update_language_packs(lang_codes=None, use_local=False):
     """
     """
-    ## Download latest UI translations from CrowdIn
-    download_latest_translations()
+    # Download latest UI translations from CrowdIn
+    if not use_local:
+        download_latest_translations()  # always get all
 
-    ## Compile
+    # Compile
     (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
     broken_langs = handle_po_compile_errors(lang_codes=lang_codes, out=out, err=err, rc=rc)
 
-    ## Loop through new UI translations & subtitles, create/update unified meta data
+    # Loop through new UI translations & subtitles, create/update unified meta data
     generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs)
 
-    ## Zip
+    # Zip
     zip_language_packs(lang_codes=lang_codes)
 
 
@@ -178,10 +185,10 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY, language_code="all"):
     """Download latest translations from CrowdIn to corresponding locale directory."""
 
-    ## Build latest package
+    # Build latest package
     build_translations()
 
-    ## Get zip file of translations
+    # Get zip file of translations
     logging.info("Attempting to download a zip archive of current translations")
     request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, language_code, project_key)
     r = requests.get(request_url)
@@ -195,12 +202,12 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID, project
     else:
         logging.info("Successfully downloaded zip archive")
 
-    ## Unpack into temp dir
+    # Unpack into temp dir
     z = zipfile.ZipFile(StringIO.StringIO(r.content))
     tmp_dir_path = tempfile.mkdtemp()
     z.extractall(tmp_dir_path)
 
-    ## Copy over new translations
+    # Copy over new translations
     extract_new_po(tmp_dir_path, language_codes=[language_code] if language_code != "all" else None)
 
     # Clean up tracks
@@ -254,9 +261,15 @@ def generate_metadata(lang_codes=None, broken_langs=None):
     try:
         with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
             master_metadata = json.load(fp)
+        if isinstance(master_metadata, list):
+            logging.info("Code switched from list to dict to support single language LanguagePack updates; converting your old list storage for dictionary storage.")
+            master_list = master_metadata
+            master_metadata = {}
+            for lang_meta in master_list:
+                master_metadata[lang_meta["code"]] = lang_meta
     except Exception as e:
         logging.warn("Error opening language pack metadata: %s; resetting" % e)
-        master_metadata = []
+        master_metadata = {}
 
     # loop through all languages in locale, update master file
     crowdin_meta_dict = download_crowdin_metadata()
@@ -282,7 +295,8 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         try:
             with open(metadata_filepath) as fp:
                 local_meta = json.load(fp)
-        except:
+        except Exception as e:
+            logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
             local_meta = {}
 
         try:
@@ -317,7 +331,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
             json.dump(local_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata.append(local_meta)
+        master_metadata[lang_code_ietf] = local_meta
 
     # Save updated master
     ensure_dir(os.path.dirname(LANGUAGE_PACK_AVAILABILITY_FILEPATH))

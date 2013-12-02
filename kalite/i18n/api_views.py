@@ -45,7 +45,7 @@ def get_available_language_packs(request):
     except:
         raise Http404
 
-    return JsonResponse(language_packs_available)
+    return JsonResponse(language_packs_available.values())
 
 
 @central_server_only

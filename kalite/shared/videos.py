@@ -149,7 +149,7 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
             for child in topic["children"]:
                 if not force and "nvideos_local" in child:
                     continue
-                (child, _, _, _) = stamp_video_counts(topic=child, videos_path=videos_path, stamp_urls=stamp_urls)
+                stamp_video_counts(topic=child, videos_path=videos_path, stamp_urls=stamp_urls)
                 nvideos_local += child["nvideos_local"]
                 nvideos_known += child["nvideos_known"]
 
