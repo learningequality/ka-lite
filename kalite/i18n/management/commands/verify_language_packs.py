@@ -1,18 +1,10 @@
 """
-This command is the master command for language packs. Based on
-command line arguments provided, it calls all i18n commands
-necessary to update language packs.
+This command helps to identify SRT files that are empty or malformed, and
+some translations that are broken and need a-fixin'. 
 
-1. Updates all cached srt files  from Amara
-2. Downloads latest translations from CrowdIn
-3. Generates metadata on language packs (subtitles and UI translations)
-4. Compiles the UI translations
-5. Zips up the packs and exposes them at a static url
-
-Good test cases:
-
-./manage.py -l aa # language with subtitles, no translations
-./manage.py -l ur-PK # language with translations, no subtitles
+When it identifies issues, it will either auto-fix 
+(for example, by deleting rogue SRTs), or halt language pack 
+creation for languages with errors
 
 NOTE: all language codes internally are assumed to be in django format (e.g. en_US)
 """
@@ -70,16 +62,17 @@ class Command(BaseCommand):
 
 def validate_srts(lang_codes, forcefully=False):
     """
-    Run the commands to update subtitles that haven't been updated in the number of days provided.
-    Default is to update all srt files that haven't been requested in 30 days
+    Validate that srt files are not empty or malformed. If invalid, delete or fix them.
     """
 
 
     def validate_single_srt(srt_file):
         """
-        A bunch of conditions to check.
-        Some (via logging.debug) are just nominal checks--indications for manual investigation.
-        Others (via srt_issues.append) are actionable (i.e. delete the srt-able)
+        Validate a single srt file based on the following criteria:
+            - YouTube ID must be in topic tree
+            - line counters in srt file proceed in order and that it isn't empty
+            - the timestamps for the subtitles make sense for the video
+            - basic string validation: the strings aren't duplicate characters 
         """
         #logging.debug("Validating %s" % srt_file)
         srt_issues = []
