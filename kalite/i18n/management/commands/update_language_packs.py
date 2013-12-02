@@ -59,6 +59,11 @@ class Command(BaseCommand):
                     default="all",
                     metavar="LANG_CODE",
                     help="Language code to update (default: all)"),
+        make_option('--no-srts',
+                    action='store_true',
+                    dest='no_srts',
+                    default=False,
+                    help='Do not download and bundle video subtitles.'),
         make_option('--no_ka',
                     action='store_true',
                     dest='no_ka',
@@ -87,7 +92,8 @@ class Command(BaseCommand):
         obliterate_old_schema()
 
         # Raw language code for srts
-        update_srts(days=options["days"], lang_codes=lang_codes)
+        if not options['no_srts']:
+            update_srts(days=options["days"], lang_codes=lang_codes)
 
         # Converted language code for language packs
         update_language_packs(
