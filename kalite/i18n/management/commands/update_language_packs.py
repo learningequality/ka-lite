@@ -24,6 +24,7 @@ import os
 import re
 import requests
 import shutil
+import subprocess
 import tempfile
 import zipfile
 import StringIO
@@ -36,7 +37,7 @@ from django.core.mail import mail_admins
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, LOCALE_ROOT, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH
 from shared.i18n import get_language_name, lcode_to_django, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
@@ -303,25 +304,25 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         src_path = os.path.join(extract_path, lang)
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
         ensure_dir(dest_path)
-        for po_file in all_po_files(src_path):
-            if 'js' in os.path.basename(po_file):
-                shutil.copy(po_file, os.path.join(dest_path, 'djangojs.po'))
-            else:
-                shutil.copy(po_file, os.path.join(dest_path, 'django.po'))
+        subprocess.call(['msgcat', '-o', os.path.join(dest_path, 'django.po')] + list(all_po_files(src_path)))
 
 
 def all_po_files(dir):
-    '''Walks the directory dir and returns an iterable containing all the po files in the given directory.'''
+    '''Walks the directory dir and returns an iterable containing all the
+po files in the given directory.
+    '''
     # return glob.glob(os.path.join(dir, '*/*.po'))
     for current_dir, _, filenames in os.walk(dir):
         for po_file in fnmatch.filter(filenames, '*.po'):
             yield os.path.join(current_dir, po_file)
 
+
 def generate_metadata(lang_codes=None, broken_langs=None):
-    """
-    Loop through locale folder, create or update language specific meta and create or update master file, skipping broken languages
+    """Loop through locale folder, create or update language specific meta
+    and create or update master file, skipping broken languages
 
     note: broken_langs must be in django format.
+
     """
     logging.info("Generating new language pack metadata")
 
@@ -413,7 +414,9 @@ def download_crowdin_metadata(project_id=settings.CROWDIN_PROJECT_ID, project_ke
 
 
 def increment_language_pack_version(local_meta, updated_meta):
-    """Increment language pack version if translations have been updated (start over if software version has incremented)"""
+    """Increment language pack version if translations have been updated
+(start over if software version has incremented)
+    """
     if not local_meta or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
         # set to one for the first time, or if this is the first build of a new software version
         language_pack_version = 1
@@ -422,7 +425,6 @@ def increment_language_pack_version(local_meta, updated_meta):
     else:
         language_pack_version = local_meta.get("language_pack_version") + 1
     return language_pack_version
-
 
 
 def zip_language_packs(lang_codes=None):
@@ -447,10 +449,10 @@ def zip_language_packs(lang_codes=None):
         # Create a zipfile for this language
         zip_filepath = get_language_pack_filepath(lang_code_ietf)
         ensure_dir(os.path.dirname(zip_filepath))
+        logging.info("Creating zip file in %s" % zip_filepath)
         z = zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED)
 
         # Get every single file in the directory and zip it up
-        logging.info("Creating zip file in %s" % zip_filepath)
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
             z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))
         for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
