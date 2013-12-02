@@ -283,7 +283,7 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
 
 
 def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
-    """Build latest translations into zip archive on CrowdIn"""
+    """Build latest translations into zip archive on CrowdIn."""
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
@@ -303,14 +303,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
 
     if lang == 'all':
         languages = os.listdir(extract_path)
-        for lang in languages:
-            extract_new_po(extract_path, lang=lang)
+        return [extract_new_po(extract_path, lang=l) for l in languages]
     else:
         converted_code = lcode_to_django(lang)
         src_path = os.path.join(extract_path, lang)
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
+        dest_file = os.path.join(dest_path, 'django.po')
         ensure_dir(dest_path)
-        subprocess.call(['msgcat', '-o', os.path.join(dest_path, 'django.po')] + list(all_po_files(src_path)))
+        subprocess.call(['msgcat', '-o', dest_file] + list(all_po_files(src_path)))
+        return dest_file
 
 
 def all_po_files(dir):
