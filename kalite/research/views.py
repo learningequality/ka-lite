@@ -24,12 +24,13 @@ def control_flow(request):
 	if ((experiment.start_datetime + timedelta(days=4)).replace(hour=0, minute=0) < datetime.now()) and experiment.activity_stage==5:
 		experiment.activity_stage += 1
 		experiment.save()
-	if experiment.condition == 3 and request.GET.get("time", "") and request.GET.get("date", ""):
+	if experiment.condition == 2 and request.GET.get("time", "") and request.GET.get("date", ""):
 		time = request.GET.get("time")
 		date = request.GET.get("date")
 		experiment.datacollect = time + " " + date
 		experiment.activity_stage += 1
 		experiment.save()
+		return HttpResponseRedirect(reverse("control_flow"))
 	if experiment.activity_stage == 0:
 		return instructions(request)
 	if 0 < experiment.activity_stage < 3 or experiment.activity_stage == 8:
@@ -69,7 +70,7 @@ def survey1(request, survey):
     	2: "https://docs.google.com/forms/d/1SmhkF8g5MhHC6VPdZEkbF5RxLWtIRydV6LQXbr56Sks/viewform?entry.1651397965",
     	3: "https://docs.google.com/forms/d/1JHU8BjLpTe45Ey_ChSWZd8u-l0SCmdmnTnV3FYkX-lw/viewform?entry.1921541933",
     	4: "https://docs.google.com/forms/d/1u_F7Wnj_shd6PiIKh_KO4VQXQqhA61I38ddyFLBw2kI/viewform?entry.1921541933",
-    	7: "https://docs.google.com/forms/d/1-yVnVFrVVauAefvPKkkUJP9O8UthtFxUUvgYSi9iqs4/viewform?entry.1651397965",
+    	8: "https://docs.google.com/forms/d/1-yVnVFrVVauAefvPKkkUJP9O8UthtFxUUvgYSi9iqs4/viewform?entry.1651397965",
     }
     survey_url = survey_urls[survey]
 
@@ -87,7 +88,7 @@ def time_pick(request, experiment):
 
     user = request.session.get("facility_user")
     test_time = (experiment.start_datetime+timedelta(days=4)).replace(hour=0, minute=0).strftime('%A, %B %d')
-    if experiment.condition == 2:
+    if experiment.condition == 1:
     	time = (experiment.start_datetime+timedelta(days=2)).replace(hour=18, second=0).strftime('%A, %B %d at %I:%M%p')
     	experiment.datacollect = time
     	experiment.save()
