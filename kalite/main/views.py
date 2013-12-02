@@ -100,7 +100,7 @@ def refresh_topic_cache(handler, force=False):
                 strip_counts_from_ancestors(node)
         return node
 
-    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, *args, **kwargs):
+    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, force=False, *args, **kwargs):
         """
         Centralized logic for how to refresh the topic cache, for each type of object.
 
@@ -129,9 +129,10 @@ def refresh_topic_cache(handler, force=False):
             elif node["kind"] == "Topic":
                 bottom_layer_topic =  "Topic" not in node["contains"]
                 # always run video_counts_need_update(), to make sure the (internal) counts stay up to date.
+                force = video_counts_need_update() or force or bottom_layer_topic
                 recount_videos_and_invalidate_parents(
                     node,
-                    force=video_counts_need_update() or force or bottom_layer_topic,
+                    force=force,
                     stamp_urls=bottom_layer_topic,
                 )
 
