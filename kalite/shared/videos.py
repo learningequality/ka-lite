@@ -41,7 +41,6 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
         return {"stream": stream_url, "thumbnail": thumbnail_url, "on_disk": video_on_disk, "stream_type": "video/%s" % format}
 
     youtube_id = get_youtube_id(video_id, None)
-    urls = {}
 
     # Get the subtitle urls
     subtitle_lang_codes = get_subtitles_on_disk(youtube_id)
@@ -50,6 +49,7 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
     #logging.debug("Subtitles for %s: %s" % (youtube_id, subtitles_urls))
 
     # Loop over all known dubbed videos
+    urls = {}
     for language, youtube_id in get_id2oklang_map(video_id).iteritems():
         try:
             lang_code = get_language_code(language)
@@ -57,12 +57,15 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
             logging.warn("Skipping unknown language '%s'" % (language))
             continue
         urls[lang_code] = compute_urls(youtube_id, format, videos_path=videos_path)
-        urls[lang_code]["subtitles"] = subtitles_urls.get(lang_code)
+
+    urls["en"] = urls.get("en", {})
+    urls["en"]["subtitles"] = subtitles_urls
 
     # now scrub any values that don't actually exist
     for lang_code in urls.keys():
-        if not urls[lang_code]["on_disk"]:
+        if not urls[lang_code]["on_disk"] and not urls[lang_code].get("subtitles"):
             del urls[lang_code]
+
     return urls
 
 def stamp_urls_on_video(video, force=False):
