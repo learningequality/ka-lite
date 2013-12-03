@@ -118,6 +118,7 @@ def update_srts(days, lang_codes):
     else:
         call_command("cache_subtitles", date_since_attempt=date)
 
+
 def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None):
 
     logging.info("Downloading %s language(s)" % lang_codes)
@@ -126,7 +127,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
     assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
     for lang_code in lang_codes:
-        download_latest_translations(
+        po_file = download_latest_translations(
             lang_code=lang_code,
             project_id=settings.CROWDIN_PROJECT_ID,
 
@@ -144,6 +145,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
                 project_id=settings.KA_CROWDIN_PROJECT_ID,
                 project_key=settings.KA_CROWDIN_PROJECT_KEY,
                 zip_file=ka_zip_file,
+                combine_with_po_file=po_file,
                 rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
             )
 
@@ -232,6 +234,7 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
                                  project_key=settings.CROWDIN_PROJECT_KEY,
                                  lang_code="all",
                                  zip_file=None,
+                                 combine_with_po_file=None,
                                  rebuild=True):
     """
     Download latest translations from CrowdIn to corresponding locale
@@ -275,11 +278,13 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     z.extractall(tmp_dir_path)
 
     # Copy over new translations
-    extract_new_po(tmp_dir_path)
+    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code)
 
     # Clean up tracks
     if os.path.exists(tmp_dir_path):
         shutil.rmtree(tmp_dir_path)
+
+    return po_file
 
 
 def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
@@ -295,28 +300,50 @@ def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=setti
 
 
 def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
-    """Move newly downloaded po files to correct location in locale direction"""
+    """Move newly downloaded po files to correct location in locale
+    direction. Returns the location of the po file if a single
+    language is given, or a list of locations if language is
+    'all'.
+
+    """
 
     if combine_with_po_file:
-        assert os.path.basename(combine_with_po_file) in ["django.po", "djangojs.po"], "File %s does not seem to be either django.po or djangojs.po."
         assert lang != 'all', "You can only combine a po file with only one other po file. Please select a specific language, not 'all'."
+        assert os.path.basename(combine_with_po_file) in ["django.po", "djangojs.po"], "File %s does not seem to be either django.po or djangojs.po."
 
     if lang == 'all':
         languages = os.listdir(extract_path)
-        return [extract_new_po(extract_path, lang=l) for l in languages]
+        return [extract_new_po(os.path.join(extract_path, l), lang=l) for l in languages]
     else:
         converted_code = lcode_to_django(lang)
-        src_path = os.path.join(extract_path, lang)
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
-        dest_file = os.path.join(dest_path, 'django.po')
         ensure_dir(dest_path)
-        subprocess.call(['msgcat', '-o', dest_file] + list(all_po_files(src_path)))
+        dest_file = os.path.join(dest_path, 'django.po')
+        build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
+        src_po_files = all_po_files(extract_path)
+        concat_command = ['msgcat', '-o', build_file, '--no-location']
+
+        # filter out po files that are giving me problems
+        src_po_files = filter(lambda po_file: not ('learn.math.trigonometry.exercises' in po_file or 'learn.math.algebra.exercises' in po_file),
+                              src_po_files)
+
+        concat_command += src_po_files
+
+        if combine_with_po_file and os.path.exists(combine_with_po_file):
+            concat_command += [combine_with_po_file]
+
+        subprocess.call(concat_command)
+
+        shutil.move(build_file, dest_file)  # for debugging; make sure to remove!!!!!
+        shutil.copy(dest_file, './django.po')
+
         return dest_file
 
 
 def all_po_files(dir):
     '''Walks the directory dir and returns an iterable containing all the
-po files in the given directory.
+    po files in the given directory.
+
     '''
     # return glob.glob(os.path.join(dir, '*/*.po'))
     for current_dir, _, filenames in os.walk(dir):
@@ -400,7 +427,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
             json.dump(local_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata.append(local_meta)
+        master_metadata[lc] = local_meta
 
     # Save updated master
     ensure_dir(os.path.dirname(LANGUAGE_PACK_AVAILABILITY_FILEPATH))
