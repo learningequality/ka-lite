@@ -30,12 +30,6 @@ class Command(BaseCommand):
     help = 'Updates all language packs'
 
     option_list = BaseCommand.option_list + (
-        make_option('-d', '--days',
-                    action='store',
-                    dest='days',
-                    default=0 if not settings.DEBUG else 365,
-                    metavar="NUM_DAYS",
-                    help="Update any and all subtitles that haven't been refreshed in the numebr of days given. Defaults to 0 days."),
         make_option('-l', '--lang_code',
                     action='store',
                     dest='lang_code',
@@ -138,7 +132,7 @@ def validate_srts(lang_codes, forcefully=False):
             for str in strings:
                 n_empty += int(len(str.strip()) == 0)
 
-                if len(str.strip()) > 1 and len(set(str)) == 1:
+                if len(str.strip()) > 1 and len(set(str)) == 1 and "." not in str:
                     srt_issues.append("srt contains string of all one character: %s" % str)
 
             if n_empty > len(strings)/10.:  # 10%
