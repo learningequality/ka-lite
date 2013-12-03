@@ -14,6 +14,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
+from securesync.middleware import refresh_session_facility_info
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
 from utils.internet import JsonResponse, JsonpResponse
 
@@ -113,7 +114,8 @@ def facility_required(handler):
             @distributed_server_only
             @render_to("securesync/facility_selection.html")
             def facility_selection(request):
-                facilities = Facility.objects.all()
+                facilities = list(Facility.objects.all())
+                refresh_session_facility_info(request, len(facilities))
                 context = {"facilities": facilities}
                 return context
             return facility_selection(request)

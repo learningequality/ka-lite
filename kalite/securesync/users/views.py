@@ -16,6 +16,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
+from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup
 from config.models import Settings
 from main.models import UserLog
@@ -26,7 +27,6 @@ from settings import LOG as logging
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
 from utils.internet import set_query_params
-
 
 @require_admin
 @distributed_server_only
@@ -202,8 +202,11 @@ def add_group(request, facility):
 @facility_from_request
 @render_to("securesync/login.html")
 def login(request, facility):
-    facilities = list(Facility.objects.all())
     facility_id = facility and facility.id or None
+    facilities = list(Facility.objects.all())
+
+    # Fix for #1211: refresh cached facility info when it's free and relevant
+    refresh_session_facility_info(request, facility_count=len(facilities))
 
     if request.method == 'POST':
         # log out any Django user or facility user

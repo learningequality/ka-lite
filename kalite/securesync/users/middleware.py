@@ -1,6 +1,12 @@
 from .models import Facility
 
 
+def refresh_session_facility_info(request, facility_count):
+    # Fix for #1211
+    # Free time to refresh the facility info, which is otherwise cached for efficiency
+    request.session["facility_count"] = facility_count
+    request.session["facility_exists"] = request.session["facility_count"] > 0
+
 class AuthFlags:
     def process_request(self, request):
         request.is_admin = False
@@ -32,6 +38,4 @@ class FacilityCheck:
         """
         if not "facility_exists" in request.session or request.is_admin:
             # always refresh for admins, or when no facility exists yet.
-            request.session["facility_count"] = Facility.objects.count()
-            request.session["facility_exists"] = request.session["facility_count"] > 0
-
+            refresh_session_facility_info(request, facility_count=Facility.objects.count())
