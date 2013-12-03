@@ -330,7 +330,7 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         languages = os.listdir(extract_path)
         return [extract_new_po(os.path.join(extract_path, l), lang=l) for l in languages]
     else:
-        converted_code = lcode_to_django(lang)
+        converted_code = lcode_to_django_dir(lang)
         # ensure directory exists in locale folder, and then overwrite local po files with new ones
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
         ensure_dir(dest_path)
