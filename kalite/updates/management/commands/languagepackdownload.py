@@ -116,12 +116,7 @@ def update_database(lang_code):
 
     logging.info("Updating database for language pack: %s" % lang_code)
 
-    pack, created = LanguagePack.objects.get_or_create(
-        code=lang_code,
-        name=metadata["name"],
-        software_version=metadata["software_version"]
-    )
-
+    pack, created = LanguagePack.objects.get_or_create(code=lang_code)
     for key, value in metadata.items():
         setattr(pack, key, value)
     pack.save()
