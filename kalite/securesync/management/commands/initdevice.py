@@ -23,7 +23,7 @@ def load_data_for_offline_install(in_file):
     """
     Receives a serialized file for import.
     Import the file--nothing more!
-    
+
     File should contain:
     * Central server object
     and, optionally
@@ -35,7 +35,7 @@ def load_data_for_offline_install(in_file):
     assert os.path.exists(in_file), "in_file must exist."
     with open(in_file, "r") as fp:
         models = engine.deserialize(fp.read())  # all must be in a consistent version
-    
+
     # First object should be the central server.
     try:
         central_server = models.next().object
@@ -78,7 +78,7 @@ def confirm_or_generate_zone(invitation=None):
         # Sorry dude, you weren't invited to the party.  You'll have to have your own!
         # Generate a zone (for stand-alone machines)
         call_command("generate_zone")
-        sys.stdout.write("Successfully generated a sharing network, and joined!.\n") 
+        sys.stdout.write("Successfully generated a sharing network, and joined!.\n")
 
     set_as_registered()  # would try to sync
 
@@ -141,7 +141,7 @@ class Command(BaseCommand):
                 #if not settings.DEBUG:
                 #    os.remove(data_file)
             except Exception as e:
-                raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
+                raise CommandError("Error importing offline data from %s: %s\n" % (data_file, e))
 
         confirm_or_generate_zone(invitation)
 

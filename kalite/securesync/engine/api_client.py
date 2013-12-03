@@ -14,8 +14,8 @@ from securesync.devices.models import *
 class SyncClient(BaseClient):
     """ This is for the distributed server, for establishing a client session with
     the central server.  Over that session, syncing can occur in multiple requests.
-    
-    Note that in the future, this object may be used to sync 
+
+    Note that in the future, this object may be used to sync
     between two distributed servers (i.e. peer-to-peer sync)!"""
     session = None
 
@@ -38,7 +38,7 @@ class SyncClient(BaseClient):
         self.session = SyncSession()
 
         # Request one: validate me as a sessionable partner
-        (self.session.client_nonce, 
+        (self.session.client_nonce,
          self.session.client_device,
          data) = self.validate_me_on_server()
 
@@ -96,12 +96,12 @@ class SyncClient(BaseClient):
         try:
             data = json.loads(raw_data)
         except ValueError as e:
-            z = re.search(r'exception_value">([^<]+)<', str(raw_data), re.MULTILINE)
+            z = re.search(r'exception_value">([^<]+)<', unicode(raw_data), re.MULTILINE)
             if z:
                 raise Exception("Could not load JSON\n; server error=%s" % z.group(1))
             else:
                 raise Exception("Could not load JSON\n; raw content=%s" % raw_data)
-            
+
         # Happens if the server reports an error
         if data.get("error"):
             # This happens when a device points to a new central server,
@@ -194,7 +194,7 @@ class SyncClient(BaseClient):
         """
         This method first syncs device counters and device objects, so that the two computers
         can determine who has what and, in comparison, what it needs to request.
-        
+
         Then, it uses those device records to partially download and partially upload.
         Not all at once--that would be less robust!
 

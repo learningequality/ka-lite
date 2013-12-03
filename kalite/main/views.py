@@ -444,6 +444,6 @@ def handler_500(request):
     errortype, value, tb = sys.exc_info()
     context = {
         "errortype": errortype.__name__,
-        "value": str(value),
+        "value": unicode(value),
     }
     return HttpResponseServerError(render_to_string("500.html", context, context_instance=RequestContext(request)))
