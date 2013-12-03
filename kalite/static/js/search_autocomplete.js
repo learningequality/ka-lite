@@ -1,10 +1,15 @@
 var _nodes = null;   // store info about each topic tree node (persists to local storage)
 var _titles = [];    // keep an array (local memory only) around for fast filtering
 var _timeout_length = 1000 * 20; // 20 seconds
-var _version = "2"; // increment this when you're invalidating old storage
+var _version = "3"; // increment this when you're invalidating old storage
+
+function prefixed_key(base_key) {
+    return "kalite_search_" + base_key;
+}
 
 function ls_key(node_type, lang) {
-    return "nodes_" + node_type + "_" + lang + "_v" + _version;
+    // make them collide by language
+    return prefixed_key("nodes_" + node_type + "_" + "_v" + _version);
 }
 
 function isLocalStorageAvailable(item_index) {
@@ -55,13 +60,14 @@ function fetchTopicTree(lang) {
             if (isLocalStorageAvailable()) {
                 //console.log("Caching to local store");
                 // we can only store strings in localStorage
+                localStorage.setItem(prefixed_key("language"), lang);
                 var node_types = [];
                 for (node_type in _nodes) {
                     node_types = node_types.concat(node_type);
                     //console.log("Saving " + ls_key(node_type, lang));
                     localStorage.setItem(ls_key(node_type, lang), JSON.stringify(_nodes[node_type]));
                 }
-                localStorage.setItem("node_types", JSON.stringify(node_types));
+                localStorage.setItem(prefixed_key("node_types"), JSON.stringify(node_types));
             }
 
             // But for now, for search purposes, flatten
@@ -89,7 +95,7 @@ function fetchLocalOrRemote() {
         // No need to reload
         return;
 
-    } else if (isLocalStorageAvailable(ls_key("Topic", lang))) {
+    } else if (isLocalStorageAvailable(prefixed_key("language")) && localStorage.getItem(prefixed_key("language")) == lang) {
         //console.log("LocalStore cache hit.")
         // Get from local storage, grouped by type
         var node_types = JSON.parse(localStorage.getItem("node_types"));
