@@ -9,7 +9,10 @@ Log = minimal_logger(__name__)
 
 class IfcfgParser(MetaMixin):
     class Meta:
-        ifconfig_cmd_args = ['ifconfig', '-a']
+        # KA-LITE-MOD: separated ifconfig_cmd_args out into ifconfig_cmd_args and
+        # ifconfig_executables, so various paths could be tried if the others fail
+        ifconfig_executables = ['ifconfig', '/sbin/ifconfig', '/usr/sbin/ifconfig']
+        ifconfig_cmd_args = ['-a']
         patterns = [
             '(?P<device>^[a-zA-Z0-9]+): flags=(?P<flags>.*) mtu (?P<mtu>.*)',
             '.*(inet )(?P<inet>[^\s]*).*',
@@ -39,13 +42,25 @@ class IfcfgParser(MetaMixin):
         Optional Arguments:
         
             ifconfig
-                The data (stdout) from the ifconfig command.  Default is to
-                call self._meta.ifconfig_cmd_args for the stdout.
+                The data (stdout) from the ifconfig command.  Default is to call
+                self._meta.ifconfig_executables with self._meta.ifconfig_cmd_args
+                for the stdout.
                 
         """
         _interfaces = []
         if not ifconfig:
-            ifconfig, err, retcode = exec_cmd(self._meta.ifconfig_cmd_args)
+            # KA-LITE-MOD: loop over the potential locations of ifconfig, to try them all
+            for executable in self._meta.ifconfig_executables:
+                try:
+                    ifconfig, err, retcode = exec_cmd([executable] + self._meta.ifconfig_cmd_args)
+                    break
+                except:
+                    continue
+
+        # KA-LITE-MOD: skip out if we didn't find an ifconfig binary to run
+        if not ifconfig:
+            return
+
         self.ifconfig_data = ifconfig
         cur = None
         all_keys = []
