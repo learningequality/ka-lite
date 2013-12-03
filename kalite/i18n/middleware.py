@@ -6,7 +6,6 @@ from config.models import Settings
 from settings import LOG as logging
 from shared.i18n import lcode_to_django_lang
 
-
 class SessionLanguage:
     def process_request(self, request):
         """
@@ -29,20 +28,29 @@ class SessionLanguage:
             request.session["django_language"] = lang_code
             logging.debug("setting session language to %s" % lang_code)
 
+            redirect_url = request.get_full_path().replace("set_default_language="+request.GET["set_default_language"], "")
+            return HttpResponseRedirect(redirect_url)
+
         elif "set_language" in request.GET:
             lang_code = lcode_to_django_lang(request.GET["set_language"])
 
             request.session["django_language"] = lang_code
             logging.debug("setting session language to %s" % lang_code)
+
+            redirect_url = request.get_full_path().replace("set_language="+request.GET["set_language"], "")
+            return HttpResponseRedirect(redirect_url)
+
         # Process the current language
         if "default_language" not in request.session:
             request.session["default_language"] = lcode_to_django_lang(Settings.get("default_language") or settings.LANGUAGE_CODE)
+
         if "django_language" not in request.session:
             request.session["django_language"] = request.session["default_language"]
             logging.debug("setting session language to %s" % request.session["django_language"])
 
         # each request can get the language from the querystring, or from the currently set session language
         request.language = request.session["django_language"]
+
 
 class VideoLanguage:
     """SessionLanguage must be called first"""
