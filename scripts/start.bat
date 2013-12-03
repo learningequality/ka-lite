@@ -55,3 +55,4 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
     )
 )
 
+exit
