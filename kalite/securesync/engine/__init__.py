@@ -23,7 +23,7 @@ def add_syncing_models(models):
 
     for model in models:
         if model in _syncing_models:
-            logging.warn("We are already syncing model %s" % str(model))
+            logging.warn("We are already syncing model %s" % unicode(model))
             continue
 
         # When we add models to be synced, we need to make sure
@@ -102,7 +102,7 @@ def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQU
         zone = own_device.get_zone()
 
     # if no devices specified, assume we're starting from zero, and include all devices in the zone
-    if device_counters is None:        
+    if device_counters is None:
         device_counters = dict((device.id, 0) for device in Device.objects.by_zone(zone))
 
     # remove all requested devices that either don't exist or aren't in the correct zone
@@ -122,7 +122,7 @@ def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQU
         device = Device.objects.get(pk=device_id)
 
         # We need to track the min counter position (send things above this value)
-        #   and the max (we're sending up to this value, so make sure nothing 
+        #   and the max (we're sending up to this value, so make sure nothing
         #   below it is left behind)
         counter_min = counter + 1
         counter_max = 0
@@ -179,7 +179,7 @@ def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQU
             if remaining is not None:
                 remaining -= len(new_models)
 
-        # Must loop through all models (due to potential dependencies), but 
+        # Must loop through all models (due to potential dependencies), but
         if remaining is not None and remaining <= 0:
             break
 
@@ -205,7 +205,7 @@ def get_serialized_models(*args, **kwargs):
 #@transaction.commit_on_success
 def save_serialized_models(data, increment_counters=True, src_version=None):
     """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
-    If src_version is None, all unrecognized fields are (silently) stripped off.  
+    If src_version is None, all unrecognized fields are (silently) stripped off.
     If it is set to some value, then only fields of versions higher than ours are stripped off.
     By defaulting to src_version=None, we're expecting a perfect match when we come in
     (i.e. that wherever we got this data from, they were smart enough to "dumb it down" for us,
@@ -214,7 +214,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     So, care must be taken in calling this function
 
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
-    
+
     from .models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
     from securesync.devices.models import Device
 
@@ -242,20 +242,20 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     try:
         for modelwrapper in models:
             try:
-        
+
                 # extract the model from the deserialization wrapper
                 model = modelwrapper.object
-        
+
                 # only allow the importing of models that are subclasses of SyncedModel
                 if not hasattr(model, "verify"):
                     raise ValidationError("Cannot save model: %s does not have a verify method (not a subclass of SyncedModel?)" % model.__class__)
-        
+
                 # TODO(jamalex): more robust way to do this? (otherwise, it might barf about the id already existing)
                 model._state.adding = False
-        
+
                 # verify that all fields are valid, and that foreign keys can be resolved
                 model.full_clean()
-        
+
                 # save the imported model (checking that the signature is valid in the process)
                 model.save(imported=True, increment_counters=increment_counters)
 
@@ -275,15 +275,15 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
                         model.signed_by.set_counter_position(model.counter, soft_set=True)
                 except:
                     pass
-        
+
     except Exception as e:
-        exceptions += str(e)
-        
+        exceptions += unicode(e)
+
     # deal with any models that didn't validate properly; throw them into purgatory so we can try again later
     if unsaved_models:
         if not purgatory:
             purgatory = ImportPurgatory()
-        
+
         # These models were successfully unserialized, so re-save in our own version.
         purgatory.serialized_models = serialize(unsaved_models, ensure_ascii=False, dest_version=own_device.get_version())
         purgatory.exceptions = exceptions

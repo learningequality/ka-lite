@@ -33,7 +33,7 @@ LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "language
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 def get_language_pack_metadata_filepath(lang_code):
-    lang_code = lcode_to_django(lang_code)
+    lang_code = lcode_to_django_dir(lang_code)
     return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
 
 def get_language_pack_filepath(lang_code, version=version.VERSION):
@@ -164,12 +164,15 @@ def get_language_code(language, for_django=False):
     if not lang_code:
        raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, LANG_LOOKUP_FILEPATH))
     elif for_django:
-        return lcode_to_django(lang_code)
+        return lcode_to_django_dir(lang_code)
     else:
         return lang_code
 
 
-def lcode_to_django(lang_code):
+def lcode_to_django_lang(lang_code):
+    return lcode_to_ietf(lang_code).lower()
+
+def lcode_to_django_dir(lang_code):
     return convert_language_code_format(lang_code, for_django=True)
 
 def lcode_to_ietf(lang_code):
@@ -229,18 +232,25 @@ def get_languages_on_disk():
 def get_subtitles_on_disk(youtube_id):
     """
     Returns a list of all language codes that contain subtitles for this video.
+
+    Central and distributed servers store in different places, so loop differently
     """
 
-    installed_subtitles = []
+    def on_disk_central(youtube_id):
+        installed_subtitles = []
 
-    # Loop through locale folders
-    for locale_dir in settings.LOCALE_PATHS:
-        if not os.path.exists(locale_dir):
-            continue
+        # Loop through locale folders
+        for locale_dir in settings.LOCALE_PATHS:
+            if not os.path.exists(locale_dir):
+                continue
+            installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
+        return installed_subtitles
 
-        installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
+    def on_disk_distributed(youtube_id):
+        installed_subtitles = [lang for lang in os.listdir(os.path.join(settings.STATIC_ROOT, "subtitles")) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
+        return installed_subtitles
 
-    return sorted(installed_subtitles)
+    return sorted(on_disk_central(youtube_id) if settings.CENTRAL_SERVER else on_disk_distributed(youtube_id))
 
 
 def update_jsi18n_file(code="en"):

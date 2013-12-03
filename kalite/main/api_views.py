@@ -29,7 +29,7 @@ from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
-from shared.topic_tools import get_flat_topic_tree 
+from shared.topic_tools import get_flat_topic_tree
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
@@ -122,7 +122,7 @@ def save_exercise_log(request):
 
     if "points" in request.session:
         del request.session["points"]  # will be recomputed when needed
-        
+
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
@@ -319,7 +319,7 @@ def status(request):
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
         if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
-            msg_txt = cgi.escape(str(msg_txt))
+            msg_txt = cgi.escape(unicode(msg_txt))
 
         message_dicts.append({
             "tags": message.tags,

@@ -22,7 +22,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.i18n import lcode_to_django, update_jsi18n_file
+from shared.i18n import lcode_to_django_dir, update_jsi18n_file
 from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 
@@ -155,7 +155,7 @@ def compile_po_files(lang_codes=None, failure_ok=True):
         (out, err, rc) = call_command_with_output('compilemessages')
     else:
         lang_code = lang_codes if isinstance(lang_codes, basestring) else lang_codes[0]
-        (out, err, rc) = call_command_with_output('compilemessages', locale=lcode_to_django(lang_code))
+        (out, err, rc) = call_command_with_output('compilemessages', locale=lcode_to_django_dir(lang_code))
 
     if err and not failure_ok:
         raise CommandError("Failure compiling po files: %s" % err)
