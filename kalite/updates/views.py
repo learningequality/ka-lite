@@ -88,7 +88,6 @@ def update_languages(request):
 
     context.update({
         "installed_languages": list(get_installed_language_packs()),
-        "default_language": lcode_to_ietf(request.session['default_language']),
     })
 
     return context

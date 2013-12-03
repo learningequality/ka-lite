@@ -163,7 +163,7 @@
                                 <option value="{{ settings.LANGUAGE_CODE }}" {% if settings.LANGUAGE_CODE == current_language %}selected{% endif %}>blue</option>
                                 {% endif %}
                             </select>
-                            {% if current_language != DEFAULT_LANGUAGE %}
+                            {% if current_language != default_language %}
                                 <input type="checkbox" class="admin-only" id="make_default_language"/>
                                 <label class="admin-only" for="make_default_language">{% trans "Use this language as the default" %}</label>
                             {% endif %}

@@ -121,11 +121,12 @@ $(document).ready(function() {
 
             // From the filtered titles, produce labels (html) and values (for doing stuff)
             var results = [];
+            var is_admin = window.userModel.get("is_admin");
             for (idx in titles_filtered) {
                 var node = nodes[titles_filtered[idx]];
 
                 // exclude videos that aren't available
-                if (node.type == "video" && !node.available) {
+                if (!is_admin && node.type == "video" && !node.available) {
                     continue;
                 }
 
