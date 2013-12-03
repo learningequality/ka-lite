@@ -32,18 +32,18 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
     They will have different functions in here, for sure.
     """
-    
+
     default_username = "test_student"
     default_password = "socrates"
     default_facility_name = "middle of nowhere"
-    
+
     def tearDown(self):
         """
         """
-        
+
         # Must clean up, as browser sessions could persist
         if self.persistent_browser:
-            self.browser_logout_user()  
+            self.browser_logout_user()
         super(KALiteDistributedBrowserTestCase, self).tearDown()
 
     def create_student(self, username=default_username, password=default_password, facility_name=default_facility_name):
@@ -135,14 +135,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         if expect_success:
             self.assertIn(reverse("coach_reports"), self.browser.current_url, "Login browses to coach reports page" )
             self.browser_check_django_message("success", contains="You've been logged in!")
-    
+
     def browser_login_student(self, username, password, facility_name=None, expect_success=True):
         self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
         time.sleep(self.max_wait_time/10) # allow time for async messages to load
         if expect_success:
             self.assertIn(reverse("homepage"), self.browser.current_url, "Login browses to homepage" )
             self.browser_check_django_message("success", contains="You've been logged in!")
-    
+
     def browser_logout_user(self):
         if self.browser_is_logged_in():
             # Since logout redirects to the homepage, browse_to will fail (with no good way to avoid).
@@ -360,7 +360,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         From an exercise page, insert an answer into the text box and submit.
         """
         self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
-        self.browser_send_keys(str(answer))
+        self.browser_send_keys(unicode(answer))
         self.browser_send_keys(Keys.RETURN)
 
         # Convert points to a number, when appropriate
@@ -452,7 +452,7 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
             if error_list:
                 logging.error("Found JS error(s) while loading path: " + path)
                 for e in error_list:
-                    logging.error(e)    
+                    logging.error(e)
             self.assertFalse(error_list)
 
 

@@ -63,7 +63,7 @@ class Command(BaseCommand):
                 try:
                     verify_raw_password(p1)
                 except ValidationError as e:
-                    self.stderr.write(str(e) + "\n")
+                    self.stderr.write(unicode(e) + "\n")
                     count += 1
                     continue
                 p2 = self._get_pass("Password (again): ")

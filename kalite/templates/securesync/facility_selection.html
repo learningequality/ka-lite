@@ -20,7 +20,7 @@
                 {% for facility in facilities %}
                 <li class="facility_title">
                     <h2>
-                        <a href="?facility={{facility.pk}}">{{ facility }}</a>
+                        <a href="?facility={{ facility.pk }}">{{ facility }}</a>
                         {% if request.is_admin and facilities.count > 1 %}
                             {% if facility.is_default %}
                             <span class=default-setter>{% trans "(this is the default)" %}</span>
