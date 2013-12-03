@@ -36,7 +36,7 @@ import settings
 import version
 from settings import LOG as logging
 from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, LOCALE_ROOT, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import get_language_name, lcode_to_django, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath
+from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
@@ -71,7 +71,7 @@ class Command(BaseCommand):
         if not options["lang_code"] or options["lang_code"].lower() == "all":
             lang_codes = None
         else:
-            lang_codes = [lcode_to_django(lc) for lc in options["lang_code"].split(",")]
+            lang_codes = [lcode_to_django_dir(lc) for lc in options["lang_code"].split(",")]
 
         obliterate_old_schema()
 
@@ -125,7 +125,7 @@ def obliterate_old_schema():
             if not os.path.isdir(os.path.join(locale_root, lang)):
                 continue
             # If it isn't crowdin/django format, keeeeeeellllllll
-            if lang != lcode_to_django(lang):
+            if lang != lcode_to_django_dir(lang):
                 logging.info("Deleting %s directory because it does not fit our language code format standards" % lang)
                 shutil.rmtree(os.path.join(locale_root, lang))
 
@@ -159,7 +159,7 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 
     if lang_codes:
         # Only show the errors relevant to the list of language codes passed in.
-        lang_codes = set([lcode_to_django(lc) for lc in lang_codes])
+        lang_codes = set([lcode_to_django_dir(lc) for lc in lang_codes])
         broken_codes = list(set(broken_codes).intersection(lang_codes))
 
     if broken_codes:
@@ -239,7 +239,7 @@ def extract_new_po(tmp_dir_path=None, language_codes=[]):
         update_languages = set(update_languages).intersect(set(language_codes))
 
     for lang in update_languages:
-        converted_code = lcode_to_django(lang)
+        converted_code = lcode_to_django_dir(lang)
         # ensure directory exists in locale folder, and then overwrite local po files with new ones
         ensure_dir(os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES"))
         for po_file in glob.glob(os.path.join(tmp_dir_path, lang, "*/*.po")):
@@ -277,7 +277,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         subtitle_counts = json.load(fp)
 
     for lc in lang_codes:
-        lang_code_django = lcode_to_django(lc)
+        lang_code_django = lcode_to_django_dir(lc)
         lang_code_ietf = lcode_to_ietf(lc)
         lang_name = get_language_name(lang_code_ietf)
 
@@ -375,7 +375,7 @@ def zip_language_packs(lang_codes=None):
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 
     for lang_code_ietf in lang_codes:
-        lang_code_django = lcode_to_django(lang_code_ietf)
+        lang_code_django = lcode_to_django_dir(lang_code_ietf)
         lang_locale_path = os.path.join(LOCALE_ROOT, lang_code_django)
 
         if not os.path.exists(lang_locale_path):

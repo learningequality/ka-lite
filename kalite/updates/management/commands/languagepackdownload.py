@@ -16,7 +16,7 @@ import version
 from .classes import UpdatesStaticCommand
 from i18n.models import LanguagePack
 from settings import LOG as logging
-from shared.i18n import LOCALE_ROOT, lcode_to_django, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
+from shared.i18n import LOCALE_ROOT, lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
 from utils.general import ensure_dir
 
 
@@ -51,7 +51,7 @@ class Command(UpdatesStaticCommand):
 
         lang_code = lcode_to_ietf(options["lang_code"])
         software_version = options["software_version"]
-        if lcode_to_django(lang_code) == settings.LANGUAGE_CODE:
+        if lcode_to_django_dir(lang_code) == settings.LANGUAGE_CODE:
             logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % lang_code)
         if software_version == version.VERSION:
             logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
@@ -97,7 +97,7 @@ def get_language_pack(lang_code, software_version):
 
 def unpack_language(lang_code, zip_file):
     """Unpack zipped language pack into locale directory"""
-    lang_code = lcode_to_django(lang_code)
+    lang_code = lcode_to_django_dir(lang_code)
 
     logging.info("Unpacking new translations")
     ensure_dir(os.path.join(LOCALE_ROOT, lang_code, "LC_MESSAGES"))

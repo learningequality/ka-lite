@@ -4,6 +4,7 @@ import settings
 from .models import LanguagePack
 from config.models import Settings
 from settings import LOG as logging
+from shared.i18n import lcode_to_django_lang
 
 
 class SessionLanguage:
@@ -18,23 +19,24 @@ class SessionLanguage:
             request.session["language_choices"] = list(LanguagePack.objects.all())
 
         # Set the current language, and redirect (to clean browser history)
-        if request.is_admin and request.GET.get("set_default_language"):
-            Settings.set("default_language", request.GET["set_default_language"])
-            request.session["default_language"] = request.GET["set_default_language"]
-            logging.debug("setting default language to %s" % request.GET["set_default_language"])
+        if request.is_admin and "set_default_language" in request.GET:
+            lang_code = lcode_to_django_lang(request.GET["set_default_language"])
 
-            request.session["django_language"] = request.GET["set_default_language"]
-            logging.debug("setting session language to %s" % request.session["django_language"])
-            return HttpResponseRedirect(request.path)
+            Settings.set("default_language", lang_code)
+            request.session["default_language"] = lang_code
+            logging.debug("setting default language to %s" % lang_code)
 
-        elif request.GET.get("set_language"):
-            request.session["django_language"] = request.GET["set_language"]
-            logging.debug("setting session language to %s" % request.session["django_language"])
-            return HttpResponseRedirect(request.path)
+            request.session["django_language"] = lang_code
+            logging.debug("setting session language to %s" % lang_code)
 
+        elif "set_language" in request.GET:
+            lang_code = lcode_to_django_lang(request.GET["set_language"])
+
+            request.session["django_language"] = lang_code
+            logging.debug("setting session language to %s" % lang_code)
         # Process the current language
         if "default_language" not in request.session:
-            request.session["default_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
+            request.session["default_language"] = lcode_to_django_lang(Settings.get("default_language") or settings.LANGUAGE_CODE)
         if "django_language" not in request.session:
             request.session["django_language"] = request.session["default_language"]
             logging.debug("setting session language to %s" % request.session["django_language"])
@@ -45,4 +47,4 @@ class SessionLanguage:
 class VideoLanguage:
     """SessionLanguage must be called first"""
     def process_request(self, request):
-        request.video_language = request.GET.get("lang") or request.session["django_language"]
+        request.video_language = lcode_to_django_lang(request.GET.get("lang") or request.session["django_language"])

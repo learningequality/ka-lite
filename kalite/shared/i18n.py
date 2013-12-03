@@ -33,7 +33,7 @@ LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "language
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 def get_language_pack_metadata_filepath(lang_code):
-    lang_code = lcode_to_django(lang_code)
+    lang_code = lcode_to_django_dir(lang_code)
     return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
 
 def get_language_pack_filepath(lang_code, version=version.VERSION):
@@ -164,12 +164,15 @@ def get_language_code(language, for_django=False):
     if not lang_code:
        raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, LANG_LOOKUP_FILEPATH))
     elif for_django:
-        return lcode_to_django(lang_code)
+        return lcode_to_django_dir(lang_code)
     else:
         return lang_code
 
 
-def lcode_to_django(lang_code):
+def lcode_to_django_lang(lang_code):
+    return lcode_to_ietf(lang_code).lower()
+
+def lcode_to_django_dir(lang_code):
     return convert_language_code_format(lang_code, for_django=True)
 
 def lcode_to_ietf(lang_code):
