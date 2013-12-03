@@ -49,14 +49,6 @@ KHAN_SERVER_URL = "http://www.khanacademy.org"
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 
 
-def requests_response_to_django_response(requests_response):
-    django_response = HttpResponse(requests_response.content, status=requests_response.status_code)
-    for key, val in requests_response.headers.items(): 
-        django_response[key] = val
-    print str(django_response)
-    return django_response
-
-
 @central_server_only
 def start_auth(request):
     """
@@ -80,7 +72,7 @@ def finish_auth(request):
         request.session["REQUEST_TOKEN"] = OAuthToken(params['oauth_token'], params['oauth_token_secret'])
         request.session["REQUEST_TOKEN"].set_verifier(params['oauth_verifier'])
     except MultiValueDictKeyError as e:
-        # we just want to generate a 500 anyway; 
+        # we just want to generate a 500 anyway;
         #   nothing we could do here except give a slightly more meaningful error
         raise e
 
@@ -151,7 +143,7 @@ def update_all_central_callback(request):
     """
     if not "ACCESS_TOKEN" in request.session:
         finish_auth(request)
-    
+
     exercises = get_api_resource(request, "/api/v1/user/exercises")
     videos = get_api_resource(request, "/api/v1/user/videos")
 
@@ -180,7 +172,7 @@ def update_all_central_callback(request):
                 "completion_timestamp": convert_ka_date(video['last_watched']) if video['completed'] else None,
             })
             logging.debug("Got video log for %s: %s" % (video_id, video_logs[-1]))
-        except KeyError:  # 
+        except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
 
     # Save exercises
@@ -286,7 +278,7 @@ def update_all_distributed_callback(request):
             logging.debug("Saving video log for %s: %s" % (video_id, vl))
             vl.save()
             n_videos_uploaded += 1
-        except KeyError:  # 
+        except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = "Unexpected error importing videos: %s" % e
