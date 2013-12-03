@@ -105,7 +105,7 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
     if bad_languages:
         outstr = "Failed to download subtitles for the following languages: %s" % (bad_languages.keys())
         outstr += "\n" + str(bad_languages)
-        raise CommandError(outstr)
+        logging.error(outstr)
 
 
 def get_srt_path(lang_code, locale_root=LOCALE_ROOT):
