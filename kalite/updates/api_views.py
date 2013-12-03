@@ -20,7 +20,7 @@ from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from main import topicdata
 from shared.decorators import require_admin
-from shared.jobs import force_job, job_status
+from shared.jobs import force_job
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
@@ -90,6 +90,7 @@ def _process_log_to_dict(process_log):
             "process_percent": process_log.process_percent,
             "stage_name": process_log.stage_name,
             "stage_percent": process_log.stage_percent,
+            "stage_status": process_log.stage_status,
             "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
             "total_stages": process_log.total_stages,
             "notes": process_log.notes,
@@ -131,18 +132,6 @@ def start_video_download(request):
 
     force_job("videodownload", _("Download Videos"))
     return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def check_video_download(request):
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    percentages = {}
-    percentages["downloading"] = job_status("videodownload")
-    for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
-    return JsonResponse(percentages)
 
 
 @require_admin

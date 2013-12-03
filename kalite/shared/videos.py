@@ -41,7 +41,6 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
         return {"stream": stream_url, "thumbnail": thumbnail_url, "on_disk": video_on_disk, "stream_type": "video/%s" % format}
 
     youtube_id = get_youtube_id(video_id, None)
-    urls = {}
 
     # Get the subtitle urls
     subtitle_lang_codes = get_subtitles_on_disk(youtube_id)
@@ -50,6 +49,7 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
     #logging.debug("Subtitles for %s: %s" % (youtube_id, subtitles_urls))
 
     # Loop over all known dubbed videos
+    urls = {}
     for language, youtube_id in get_id2oklang_map(video_id).iteritems():
         try:
             lang_code = get_language_code(language)
@@ -57,12 +57,15 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
             logging.warn("Skipping unknown language '%s'" % (language))
             continue
         urls[lang_code] = compute_urls(youtube_id, format, videos_path=videos_path)
-        urls[lang_code]["subtitles"] = subtitles_urls.get(lang_code)
+
+    urls["en"] = urls.get("en", {})
+    urls["en"]["subtitles"] = subtitles_urls
 
     # now scrub any values that don't actually exist
     for lang_code in urls.keys():
-        if not urls[lang_code]["on_disk"]:
+        if not urls[lang_code]["on_disk"] and not urls[lang_code].get("subtitles"):
             del urls[lang_code]
+
     return urls
 
 def stamp_urls_on_video(video, force=False):
@@ -78,7 +81,8 @@ def stamp_urls_on_video(video, force=False):
         video_id=video["id"],
         format="mp4",
     )
-    video["available"] = bool(video["urls"]) or bool(settings.BACKUP_VIDEO_SOURCE)
+    video["on_disk"]   = any([lang_video["on_disk"] for lang_video in video["urls"].values()])
+    video["available"] = bool(video["on_disk"]) or bool(settings.BACKUP_VIDEO_SOURCE)
     return video
 
 def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT):
@@ -87,7 +91,7 @@ def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT
 
 _vid_last_updated = 0
 _vid_last_count = 0
-def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
+def video_counts_need_update(videos_path=settings.CONTENT_ROOT, format="mp4"):
     """
     Compare current state to global state variables to check whether video counts need updating.
     """
@@ -97,14 +101,16 @@ def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
     if not os.path.exists(videos_path):
         return False
 
-    files = os.listdir(videos_path)
+    files = glob.glob(os.path.join(videos_path, "*.%s" % format))
 
+    # Have to update count and last_updated together, to make sure that next round
+    #   stores all proper data (if something changed), or to do both checks (in case nothing changed)
     vid_count = len(files)
     if vid_count:
-        # TODO(bcipolli) implement this as a linear search, rather than sort-then-select.
-        vid_last_updated = os.path.getmtime(sorted([(videos_path + f) for f in files], key=os.path.getmtime, reverse=True)[0])
+        vid_last_updated = os.path.getmtime(sorted(files, key=os.path.getmtime, reverse=True)[0])
     else:
         vid_last_updated = 0
+
     need_update = (vid_count != _vid_last_count) or (vid_last_updated != _vid_last_updated)
 
     _vid_last_count = vid_count
@@ -113,7 +119,7 @@ def video_counts_need_update(videos_path=settings.CONTENT_ROOT):
     return need_update
 
 
-def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
+def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, stamp_urls=False):
     """ Uses the (json) topic tree to query the django database for which video files exist
 
     Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -148,7 +154,7 @@ def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
             for child in topic["children"]:
                 if not force and "nvideos_local" in child:
                     continue
-                (child, _, _, _) = get_video_counts(topic=child, videos_path=videos_path)
+                stamp_video_counts(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
                 nvideos_local += child["nvideos_local"]
                 nvideos_known += child["nvideos_known"]
 
@@ -157,13 +163,17 @@ def get_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False):
         else:
             videos = get_videos(topic)
             for video in videos:
-                if force or "urls" not in video:
+                #import pdb; pdb.set_trace()
+                if stamp_urls and (force or "urls" not in video):
                     stamp_urls_on_video(video)
-                nvideos_local += int(bool(video["urls"]))  # add 1 if video["on_disk"]
+                elif not "urls" in video:  # TODO(bcipolli) this is an intentional bug, until performance can be boosted.
+                    video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path=videos_path)
+                nvideos_local += int(video["on_disk"])
+
             nvideos_known = len(videos)
 
-    changed = topic.get("nvideos_local", -1) != nvideos_local
-    changed = changed or topic.get("nvideos_known", -1) != nvideos_known
+    changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
+    changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
     topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)

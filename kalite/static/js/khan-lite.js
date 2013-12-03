@@ -68,6 +68,10 @@ function clear_messages() {
     return $("#message_container");
 }
 
+function get_message(msg_id) {
+    return $("#" + msg_id).text();
+}
+
 function setGetParam(href, name, val) {
     // Generic function for changing a querystring parameter in a url
     var vars = {};

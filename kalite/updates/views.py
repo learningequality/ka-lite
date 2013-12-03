@@ -87,7 +87,6 @@ def update_languages(request):
 
     context.update({
         "installed_languages": list(get_installed_language_packs()),
-        "default_language": settings.LANGUAGE_CODE,
     })
 
     return context

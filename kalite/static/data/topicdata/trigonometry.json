@@ -7,13 +7,6 @@
     "title": "Graphing points", 
     "parent_id": "graphing_coordinates", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_coordinates"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -28,7 +21,6 @@
       "descartes-and-cartesian-coordinates"
     ], 
     "description": "Plot a given point on the coordinate plane.", 
-    "parent": "graphing_coordinates", 
     "basepoints": 13.0, 
     "h_position": -1, 
     "slug": "graphing_points", 
@@ -48,13 +40,6 @@
     "title": "Graphing points and naming quadrants", 
     "parent_id": "graphing_coordinates", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_coordinates"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -68,7 +53,6 @@
       "descartes-and-cartesian-coordinates"
     ], 
     "description": "Graph a point and indicate which quadrant it is in on the coordinate plane.", 
-    "parent": "graphing_coordinates", 
     "basepoints": 16.0, 
     "h_position": -4, 
     "slug": "graphing_points_2", 
@@ -88,13 +72,6 @@
     "title": "Points on the coordinate plane", 
     "parent_id": "graphing_coordinates", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_coordinates"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -108,7 +85,6 @@
       "plot-ordered-pairs"
     ], 
     "description": "Determine which of several given ordered pairs is not graphed on the coordinate plane.", 
-    "parent": "graphing_coordinates", 
     "basepoints": 21.0, 
     "h_position": -4, 
     "slug": "identifying_points_1", 
@@ -128,13 +104,6 @@
     "title": "Ordered pair solutions to linear equations", 
     "parent_id": "graphing_coordinates", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_coordinates"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -148,7 +117,6 @@
       "application-problem-with-graph"
     ], 
     "description": "Determine which ordered pair represents a solution to a graph or equation.\n", 
-    "parent": "graphing_coordinates", 
     "basepoints": 21.0, 
     "h_position": 8, 
     "slug": "identifying_points_2", 
@@ -168,13 +136,6 @@
     "title": "Interpreting linear relationships", 
     "parent_id": "graphing_coordinates", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_coordinates"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -186,7 +147,6 @@
       "graphs-of-linear-equations"
     ], 
     "description": "", 
-    "parent": "graphing_coordinates", 
     "basepoints": 14.0, 
     "h_position": 8, 
     "slug": "interpreting_linear_equations", 
@@ -206,13 +166,6 @@
     "title": "Identifying slope of a line", 
     "parent_id": "slope_of_line", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "slope_of_line"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -225,7 +178,6 @@
       "slope-of-a-line-2"
     ], 
     "description": "Select the graph that represents a given slope.\n", 
-    "parent": "slope_of_line", 
     "basepoints": 17.0, 
     "h_position": 6, 
     "slug": "slope_of_a_line", 
@@ -245,13 +197,6 @@
     "title": "Line graph intuition", 
     "parent_id": "slope_of_line", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "slope_of_line"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -264,7 +209,6 @@
       "slope-and-y-intercept-intuition"
     ], 
     "description": "Adjust the slope and y-intercept of a line to make it go through given points.", 
-    "parent": "slope_of_line", 
     "basepoints": 17.0, 
     "h_position": -9, 
     "slug": "line_graph_intuition", 
@@ -285,13 +229,6 @@
     "title": "Graphing linear equations", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -304,7 +241,6 @@
       "converting-to-slope-intercept-form"
     ], 
     "description": "Graph a linear equation on the coordinate plane.\n", 
-    "parent": "line_equation", 
     "basepoints": 19.0, 
     "h_position": 8, 
     "slug": "graphing_linear_equations", 
@@ -325,13 +261,6 @@
     "title": "Solving for the y-intercept", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -346,7 +275,6 @@
       "equation-of-a-line-hairier-example"
     ], 
     "description": "Solve linear equations for the y-intercept.\n", 
-    "parent": "line_equation", 
     "basepoints": 18.0, 
     "h_position": 5, 
     "slug": "solving_for_the_y-intercept", 
@@ -368,13 +296,6 @@
     "title": "Slope intercept form", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -389,7 +310,6 @@
       "linear-equations-in-slope-intercept-form"
     ], 
     "description": "Write an equation in slope-intercept form based on values given in a table.\n", 
-    "parent": "line_equation", 
     "basepoints": 26.0, 
     "h_position": -11, 
     "slug": "slope_intercept_form", 
@@ -409,13 +329,6 @@
     "title": "Point slope form", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -428,7 +341,6 @@
       "idea-behind-point-slope-form"
     ], 
     "description": "Given 2 points, write an equation in point-slope form.\n", 
-    "parent": "line_equation", 
     "basepoints": 23.0, 
     "h_position": -9, 
     "slug": "point_slope_form", 
@@ -448,13 +360,6 @@
     "title": "Converting between slope-intercept and standard form", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -466,7 +371,6 @@
       "linear-equations-in-standard-form"
     ], 
     "description": "Convert linear equations between slope-intercept and standard forms.\n", 
-    "parent": "line_equation", 
     "basepoints": 21.0, 
     "h_position": -10, 
     "slug": "converting_between_slope_intercept_and_standard_form", 
@@ -486,13 +390,6 @@
     "title": "Converting between point-slope and slope-intercept form", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -506,7 +403,6 @@
       "linear-equations-in-point-slope-form"
     ], 
     "description": "Convert linear equations between point-slop and slope-intercept forms.\n", 
-    "parent": "line_equation", 
     "basepoints": 19.0, 
     "h_position": -9, 
     "slug": "converting_between_point_slope_and_slope_intercept", 
@@ -527,13 +423,6 @@
     "title": "Finding the equation of a line", 
     "parent_id": "line_equation", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "line_equation"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -548,7 +437,6 @@
       "point-slope-and-standard-form"
     ], 
     "description": "Given x and y values, write the equation of a line.\n", 
-    "parent": "line_equation", 
     "basepoints": 23.0, 
     "h_position": -10, 
     "slug": "equation_of_a_line", 
@@ -569,13 +457,6 @@
     "title": "Midpoint formula", 
     "parent_id": "midpoint_and_distance", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "midpoint_and_distance"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -587,7 +468,6 @@
       "midpoint-formula"
     ], 
     "description": "Find the midpoint of a segment on the coordinate plane, or find the endpoint of a segment given one point and the midpoint.", 
-    "parent": "midpoint_and_distance", 
     "basepoints": 23.0, 
     "h_position": -13, 
     "slug": "midpoint_formula", 
@@ -607,13 +487,6 @@
     "title": "Distance formula", 
     "parent_id": "midpoint_and_distance", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "midpoint_and_distance"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -625,7 +498,6 @@
       "distance-formula"
     ], 
     "description": "Use the Pythagorean theorem to find the distance between two points on the coordinate plane.", 
-    "parent": "midpoint_and_distance", 
     "basepoints": 25.0, 
     "h_position": -10, 
     "slug": "distance_formula", 
@@ -645,13 +517,6 @@
     "title": "Equations of parallel and perpendicular lines", 
     "parent_id": "parallel_perpendicular", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "parallel_perpendicular"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -669,7 +534,6 @@
       "parallel-lines-3"
     ], 
     "description": "Determine the equation of a line parallel or perpendicular to the given line. Determine the relationship between two linear equations.", 
-    "parent": "parallel_perpendicular", 
     "basepoints": 21.0, 
     "h_position": -10, 
     "slug": "line_relationships", 
@@ -689,13 +553,6 @@
     "title": "Distance between point and line", 
     "parent_id": "parallel_perpendicular", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "parallel_perpendicular"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -709,7 +566,6 @@
       "distance-formula"
     ], 
     "description": "Find the distance between a point and a line. Some horizontal and vertical lines.", 
-    "parent": "parallel_perpendicular", 
     "basepoints": 20.0, 
     "h_position": -10, 
     "slug": "distance_between_point_and_line", 
@@ -729,13 +585,6 @@
     "title": "Graphs of inequalities", 
     "parent_id": "graphing_inequalities", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_inequalities"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -750,7 +599,6 @@
       "graphing-linear-inequalities-in-two-variables-example-2"
     ], 
     "description": "Write an inequality from a given graph\n", 
-    "parent": "graphing_inequalities", 
     "basepoints": 22.0, 
     "h_position": -12, 
     "slug": "graphs_of_inequalities", 
@@ -770,13 +618,6 @@
     "title": "Graphing linear inequalities", 
     "parent_id": "graphing_inequalities", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_inequalities"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -791,7 +632,6 @@
       "graphing-linear-inequalities-in-two-variables-example-2"
     ], 
     "description": "Graph a linear inequality on the coordinate plane. Determine whether the line should be solid or dotted, and shade the proper side.\n", 
-    "parent": "graphing_inequalities", 
     "basepoints": 21.0, 
     "h_position": -11, 
     "slug": "graphing_inequalities", 
@@ -811,13 +651,6 @@
     "title": "Graphing and solving linear inequalities", 
     "parent_id": "graphing_inequalities", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "graphs", 
-      "graphing_inequalities"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -831,7 +664,6 @@
       "graphing-linear-inequalities-in-two-variables-example-2"
     ], 
     "description": "Graph a linear inequality on the coordinate plane. Determine whether given ordered pairs are solutions.\n", 
-    "parent": "graphing_inequalities", 
     "basepoints": 24.0, 
     "h_position": -11, 
     "slug": "graphing_inequalities_2", 
@@ -851,13 +683,6 @@
     "title": "Understanding function notation", 
     "parent_id": "function_introduction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "function_introduction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -872,7 +697,6 @@
       "understanding-function-notation-exercise"
     ], 
     "description": "", 
-    "parent": "function_introduction", 
     "basepoints": 15.0, 
     "h_position": 9, 
     "slug": "functions_1", 
@@ -892,13 +716,6 @@
     "title": "Evaluating expressions with function notation", 
     "parent_id": "function_introduction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "function_introduction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -910,7 +727,6 @@
       "evaluating-a-function-expression"
     ], 
     "description": "Find the value of a function for a given x based on a graph, and perform operations with that value.\n", 
-    "parent": "function_introduction", 
     "basepoints": 24.0, 
     "h_position": 10, 
     "slug": "functions_2", 
@@ -930,13 +746,6 @@
     "title": "Evaluating composite functions", 
     "parent_id": "function_introduction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "function_introduction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -948,7 +757,6 @@
       "evaluating-composite-functions-example-1"
     ], 
     "description": "Find the function of a function.\n", 
-    "parent": "function_introduction", 
     "basepoints": 29.0, 
     "h_position": 10, 
     "slug": "functions_3", 
@@ -968,13 +776,6 @@
     "title": "Domain of a function", 
     "parent_id": "function_introduction", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "function_introduction"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -991,7 +792,6 @@
       "domain-and-range-2"
     ], 
     "description": "Given the equation of a function, determine the domain.\n", 
-    "parent": "function_introduction", 
     "basepoints": 18.0, 
     "h_position": 9, 
     "slug": "domain_of_a_function", 
@@ -1012,13 +812,6 @@
     "title": "Domain and range from graph", 
     "parent_id": "domain_range", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "domain_range"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1030,7 +823,6 @@
       "domain-and-range-from-graphs"
     ], 
     "description": "Given the graph of a function, determine its domain or range.\n", 
-    "parent": "domain_range", 
     "basepoints": 16.0, 
     "h_position": 8, 
     "slug": "domain_and_range_0.5", 
@@ -1050,13 +842,6 @@
     "title": "Domain of a function", 
     "parent_id": "domain_range", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "domain_range"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1073,7 +858,6 @@
       "domain-and-range-2"
     ], 
     "description": "Given the equation of a function, determine the domain.\n", 
-    "parent": "domain_range", 
     "basepoints": 18.0, 
     "h_position": 9, 
     "slug": "domain_of_a_function", 
@@ -1094,13 +878,6 @@
     "title": "Range of a function", 
     "parent_id": "domain_range", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "domain_range"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1116,7 +893,6 @@
       "domain-and-range-2"
     ], 
     "description": "Given the equation of a quadratic function, determine the range.\n", 
-    "parent": "domain_range", 
     "basepoints": 18.0, 
     "h_position": 7, 
     "slug": "range_of_a_function", 
@@ -1137,13 +913,6 @@
     "title": "Inverses of functions", 
     "parent_id": "fucntion_inverses", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "fucntion_inverses"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1158,7 +927,6 @@
       "introduction-to-function-inverses"
     ], 
     "description": "Determine the inverse of a function based on the equation and graph.\n", 
-    "parent": "fucntion_inverses", 
     "basepoints": 18.0, 
     "h_position": 9, 
     "slug": "inverses_of_functions", 
@@ -1179,13 +947,6 @@
     "title": "Positive and negative parts of functions", 
     "parent_id": "analyzing_functions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "analyzing_functions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1197,7 +958,6 @@
       "when-a-function-is-positive-or-negative"
     ], 
     "description": "Identify positive and negative regions on graphs of functions\n", 
-    "parent": "analyzing_functions", 
     "basepoints": 12.0, 
     "h_position": 12, 
     "slug": "positive_and_negative_parts_of_functions", 
@@ -1217,13 +977,6 @@
     "title": "Even and odd functions", 
     "parent_id": "analyzing_functions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "analyzing_functions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1236,7 +989,6 @@
       "connection-between-even-and-odd-numbers-and-functions"
     ], 
     "description": "Determine if a graphed function is even, odd, or neither.\n", 
-    "parent": "analyzing_functions", 
     "basepoints": 12.0, 
     "h_position": 6, 
     "slug": "even_and_odd_functions", 
@@ -1256,13 +1008,6 @@
     "title": "Shifting and reflecting functions", 
     "parent_id": "analyzing_functions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "functions_and_graphs", 
-      "analyzing_functions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1274,7 +1019,6 @@
       "shifting-and-reflecting-functions"
     ], 
     "description": "Determine the equation for one graphed function in terms of another.\n", 
-    "parent": "analyzing_functions", 
     "basepoints": 15.0, 
     "h_position": 7, 
     "slug": "shifting_and_reflecting_functions", 
@@ -1296,13 +1040,6 @@
     "title": "Factoring quadratics 1", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1316,7 +1053,6 @@
       "factoring-trinomials-with-a-leading-1-coefficient"
     ], 
     "description": "Factor quadratics\u00a0that are not perfect squares, where the leading coefficient is 1.", 
-    "parent": "quad_factoring", 
     "basepoints": 22.0, 
     "h_position": -7, 
     "slug": "factoring_polynomials_1", 
@@ -1336,13 +1072,6 @@
     "title": "Solving quadratics by factoring", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1356,7 +1085,6 @@
       "factoring-trinomials-with-a-leading-1-coefficient"
     ], 
     "description": "Factor quadratics to find the x-intercepts. Solve a polynomial by factoring.\n", 
-    "parent": "quad_factoring", 
     "basepoints": 17.0, 
     "h_position": -11, 
     "slug": "solving_quadratics_by_factoring", 
@@ -1376,13 +1104,6 @@
     "title": "Factoring quadratics 2", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1394,7 +1115,6 @@
       "factoring-trinomials-with-a-common-factor"
     ], 
     "description": "Factor quadratics that are not perfect squares, where the leading coefficient is not 1", 
-    "parent": "quad_factoring", 
     "basepoints": 27.0, 
     "h_position": -7, 
     "slug": "factoring_polynomials_2", 
@@ -1414,13 +1134,6 @@
     "title": "Solving quadratics by factoring 2", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1434,7 +1147,6 @@
       "Example 2: Solving a quadratic equation by factoring"
     ], 
     "description": "Solve quadratics by factoring, where A is not 1\n", 
-    "parent": "quad_factoring", 
     "basepoints": 23.0, 
     "h_position": -11, 
     "slug": "solving_quadratics_by_factoring_2", 
@@ -1454,13 +1166,6 @@
     "title": "Factoring difference of squares 1", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1472,7 +1177,6 @@
       "factoring-difference-of-squares"
     ], 
     "description": "Factoring differences of squares into the form (x+b)*(x-b)\n", 
-    "parent": "quad_factoring", 
     "basepoints": 17.0, 
     "h_position": -5, 
     "slug": "factoring_difference_of_squares_1", 
@@ -1493,13 +1197,6 @@
     "title": "Factoring difference of squares 2", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1511,7 +1208,6 @@
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
     "description": "Factoring differences of squares into the form (Ax+b)*(Ax-b)\n", 
-    "parent": "quad_factoring", 
     "basepoints": 18.0, 
     "h_position": -5, 
     "slug": "factoring_difference_of_squares_2", 
@@ -1531,13 +1227,6 @@
     "title": "Factoring difference of squares 3", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1550,7 +1239,6 @@
       "u09-l2-t1-we3-factoring-special-products-3"
     ], 
     "description": "Factoring a difference of squares in the format C(Ax+b)*(Ax-b)\n", 
-    "parent": "quad_factoring", 
     "basepoints": 23.0, 
     "h_position": -5, 
     "slug": "factoring_difference_of_squares_3", 
@@ -1570,13 +1258,6 @@
     "title": "Factoring polynomials by grouping", 
     "parent_id": "quad_factoring", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_factoring"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1594,7 +1275,6 @@
       "factoring-trinomials-by-grouping-6"
     ], 
     "description": "Factor polynomials by grouping\n", 
-    "parent": "quad_factoring", 
     "basepoints": 27.0, 
     "h_position": -8, 
     "slug": "factoring_polynomials_by_grouping_1", 
@@ -1614,13 +1294,6 @@
     "title": "Solving quadratics by taking the square root", 
     "parent_id": "quad_formula_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_formula_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1632,7 +1305,6 @@
       "solving-quadratic-equations-by-square-roots"
     ], 
     "description": "Solve quadratics by taking the square root.\n", 
-    "parent": "quad_formula_tutorial", 
     "basepoints": 21.0, 
     "h_position": -12, 
     "slug": "solving_quadratics_by_taking_the_square_root", 
@@ -1652,13 +1324,6 @@
     "title": "Solving quadratics by completing the square 1", 
     "parent_id": "quad_formula_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_formula_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1670,7 +1335,6 @@
       "solving-quadratic-equations-by-completing-the-square"
     ], 
     "description": "Find the roots of a quadratic equation by completing the square.", 
-    "parent": "quad_formula_tutorial", 
     "basepoints": 19.0, 
     "h_position": -12, 
     "slug": "completing_the_square_1", 
@@ -1691,13 +1355,6 @@
     "title": "Solving quadratics by completing the square 2", 
     "parent_id": "quad_formula_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_formula_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1709,7 +1366,6 @@
       "solving-quadratic-equations-by-completing-the-square"
     ], 
     "description": "Find the roots of a quadratic by completing the square. The leading coefficient isn't 1!", 
-    "parent": "quad_formula_tutorial", 
     "basepoints": 25.0, 
     "h_position": -11, 
     "slug": "completing_the_square_2", 
@@ -1730,13 +1386,6 @@
     "title": "Using the quadratic formula", 
     "parent_id": "quad_formula_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_formula_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1751,7 +1400,6 @@
       "quadratic-equation-part-2"
     ], 
     "description": "Use the quadratic formula to find the roots of a quadratic function.", 
-    "parent": "quad_formula_tutorial", 
     "basepoints": 18.0, 
     "h_position": -11, 
     "slug": "quadratic_equation", 
@@ -1771,13 +1419,6 @@
     "title": "Solutions to quadratic equations", 
     "parent_id": "quad_formula_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "quad_formula_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1790,7 +1431,6 @@
       "discriminant-for-types-of-solutions-for-a-quadratic"
     ], 
     "description": "Determine how many solutions a quadratic equation has and whether they are rational, irrational, or complex\n", 
-    "parent": "quad_formula_tutorial", 
     "basepoints": 20.0, 
     "h_position": -11, 
     "slug": "solutions_to_quadratic_equations", 
@@ -1810,13 +1450,6 @@
     "title": "Adding and subtracting polynomials", 
     "parent_id": "polynomial_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "polynomial_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1830,7 +1463,6 @@
       "adding-and-subtracting-polynomials-3"
     ], 
     "description": "Add or subtract polynomials\n", 
-    "parent": "polynomial_tutorial", 
     "basepoints": 19.0, 
     "h_position": -6, 
     "slug": "adding_and_subtracting_polynomials", 
@@ -1850,13 +1482,6 @@
     "title": "Multiplying polynomials", 
     "parent_id": "polynomial_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "polynomial_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1870,7 +1495,6 @@
       "more-multiplying-polynomials"
     ], 
     "description": "Multiply two expressions with variables and exponents to get a polynomial\n", 
-    "parent": "polynomial_tutorial", 
     "basepoints": 17.0, 
     "h_position": -7, 
     "slug": "multiplying_polynomials", 
@@ -1890,13 +1514,6 @@
     "title": "Partial fraction expansion", 
     "parent_id": "partial-fraction-expansion", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "polynomial_and_rational", 
-      "partial-fraction-expansion"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1910,7 +1527,6 @@
       "partial-fraction-expansion-3"
     ], 
     "description": "Represent a complicated rational fraction as a sum of simpler fractions using partial fraction expansion.\n", 
-    "parent": "partial-fraction-expansion", 
     "basepoints": 29.0, 
     "h_position": -8, 
     "slug": "partial_fraction_expansion_1", 
@@ -1930,13 +1546,6 @@
     "title": "Trigonometry 0.5", 
     "parent_id": "basic_trig_ratios", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "basic_trig_ratios"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1949,7 +1558,6 @@
       "basic-trigonometry-ii"
     ], 
     "description": "", 
-    "parent": "basic_trig_ratios", 
     "basepoints": 17.0, 
     "h_position": -1, 
     "slug": "trigonometry_0.5", 
@@ -1969,13 +1577,6 @@
     "title": "Trigonometry 1", 
     "parent_id": "basic_trig_ratios", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "basic_trig_ratios"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -1988,7 +1589,6 @@
       "basic-trigonometry-ii"
     ], 
     "description": "", 
-    "parent": "basic_trig_ratios", 
     "basepoints": 18.0, 
     "h_position": 2, 
     "slug": "trigonometry_1", 
@@ -2009,13 +1609,6 @@
     "title": "Reciprocal trig functions", 
     "parent_id": "basic_trig_ratios", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "basic_trig_ratios"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2028,7 +1621,6 @@
       "example--using-trig-to-solve-for-missing-information"
     ], 
     "description": "Understand the right triangle definition of sec, csc, and cot functions\n", 
-    "parent": "basic_trig_ratios", 
     "basepoints": 17.0, 
     "h_position": 3, 
     "slug": "reciprocal_trig_funcs", 
@@ -2048,13 +1640,6 @@
     "title": "Trigonometry 1.5", 
     "parent_id": "basic_trig_ratios", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "basic_trig_ratios"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2068,7 +1653,6 @@
       "basic-trigonometry-ii"
     ], 
     "description": "", 
-    "parent": "basic_trig_ratios", 
     "basepoints": 20.0, 
     "h_position": 2, 
     "slug": "trigonometry_1.5", 
@@ -2088,13 +1672,6 @@
     "title": "Trigonometry 2", 
     "parent_id": "basic_trig_ratios", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "basic_trig_ratios"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2106,7 +1683,6 @@
       "example--trig-to-solve-the-sides-and-angles-of-a-right-triangle"
     ], 
     "description": "", 
-    "parent": "basic_trig_ratios", 
     "basepoints": 19.0, 
     "h_position": 2, 
     "slug": "trigonometry_2", 
@@ -2126,13 +1702,6 @@
     "title": "Special right triangles", 
     "parent_id": "basic_trig_ratios", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "basic_trig_ratios"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2148,7 +1717,6 @@
       "45-45-90-triangle-side-ratios"
     ], 
     "description": "", 
-    "parent": "basic_trig_ratios", 
     "basepoints": 19.0, 
     "h_position": 0, 
     "slug": "pythagorean_theorem_2", 
@@ -2169,13 +1737,6 @@
     "title": "Degrees to radians", 
     "parent_id": "radians_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "radians_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2189,7 +1750,6 @@
       "radian-and-degree-conversion-practice"
     ], 
     "description": "", 
-    "parent": "radians_tutorial", 
     "basepoints": 15.0, 
     "h_position": 1, 
     "slug": "degrees_to_radians", 
@@ -2209,13 +1769,6 @@
     "title": "Radians to degrees", 
     "parent_id": "radians_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "radians_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2229,7 +1782,6 @@
       "radian-and-degree-conversion-practice"
     ], 
     "description": "", 
-    "parent": "radians_tutorial", 
     "basepoints": 17.0, 
     "h_position": 3, 
     "slug": "radians_to_degrees", 
@@ -2249,13 +1801,6 @@
     "title": "Radians and degrees", 
     "parent_id": "radians_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "radians_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2270,7 +1815,6 @@
       "we-converting-degrees-to-radians"
     ], 
     "description": "", 
-    "parent": "radians_tutorial", 
     "basepoints": 17.0, 
     "h_position": 2, 
     "slug": "radians_and_degrees", 
@@ -2291,13 +1835,6 @@
     "title": "Unit circle", 
     "parent_id": "unit_circle_tut", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "unit_circle_tut"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2314,7 +1851,6 @@
       "the-sign-of-sine"
     ], 
     "description": "", 
-    "parent": "unit_circle_tut", 
     "basepoints": 19.0, 
     "h_position": 3, 
     "slug": "unit_circle", 
@@ -2334,13 +1870,6 @@
     "title": "Graphs of sine and cosine", 
     "parent_id": "trig_graphs_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "trig_graphs_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2352,7 +1881,6 @@
       "matching-a-trigonometric-function-to-its-graph"
     ], 
     "description": "", 
-    "parent": "trig_graphs_tutorial", 
     "basepoints": 18.0, 
     "h_position": 1, 
     "slug": "graphs_of_sine_and_cosine", 
@@ -2372,13 +1900,6 @@
     "title": "Inverse trig functions", 
     "parent_id": "inverse_trig_functions", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "basic-trigonometry", 
-      "inverse_trig_functions"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2393,7 +1914,6 @@
       "example---calculator-to-evaluate-inverse-trig-function"
     ], 
     "description": "", 
-    "parent": "inverse_trig_functions", 
     "basepoints": 17.0, 
     "h_position": 2, 
     "slug": "inverse_trig_functions", 
@@ -2413,13 +1933,6 @@
     "title": "Pythagorean identities", 
     "parent_id": "trig_iden_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "less-basic-trigonometry", 
-      "trig_iden_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2433,7 +1946,6 @@
       "trigonometric-identities"
     ], 
     "description": "Simplify expressions using Pythagorean trig identities\n", 
-    "parent": "trig_iden_tutorial", 
     "basepoints": 15.0, 
     "h_position": 4, 
     "slug": "pythagorean_identities", 
@@ -2454,13 +1966,6 @@
     "title": "Addition and subtraction trig identities", 
     "parent_id": "trig_iden_tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "less-basic-trigonometry", 
-      "trig_iden_tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2476,7 +1981,6 @@
       "proof--cos-a-b-----cos-a--cos-b---sin-a--sin-b"
     ], 
     "description": "Computing expressions using trig addition and subtraction identities\n", 
-    "parent": "trig_iden_tutorial", 
     "basepoints": 26.0, 
     "h_position": 3, 
     "slug": "trig_addition_identities", 
@@ -2496,13 +2000,6 @@
     "title": "Law of cosines", 
     "parent_id": "law-sines-cosines", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "less-basic-trigonometry", 
-      "law-sines-cosines"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2515,7 +2012,6 @@
       "law-of-cosines"
     ], 
     "description": "Solve missing triangle measures using the law of cosines\n", 
-    "parent": "law-sines-cosines", 
     "basepoints": 27.0, 
     "h_position": 4, 
     "slug": "law_of_cosines", 
@@ -2528,40 +2024,6 @@
     "exercise_id": "law_of_cosines"
   }, 
   {
-    "v_position": 53, 
-    "path": "/math/trigonometry/less-basic-trigonometry/law-sines-cosines/e/law_of_sines/", 
-    "id": "law_of_sines", 
-    "display_name": "Law of sines", 
-    "title": "Law of sines", 
-    "parent_id": "law-sines-cosines", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "less-basic-trigonometry", 
-      "law-sines-cosines"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "less-basic-trigonometry", 
-      "law-sines-cosines"
-    ], 
-    "related_video_slugs": [], 
-    "description": "Solve missing triangle measures using the law of sines", 
-    "parent": "law-sines-cosines", 
-    "basepoints": 26.0, 
-    "h_position": -14, 
-    "slug": "law_of_sines", 
-    "kind": "Exercise", 
-    "name": "law_of_sines", 
-    "seconds_per_fast_problem": 36.5, 
-    "prerequisites": [], 
-    "exercise_id": "law_of_sines"
-  }, 
-  {
     "v_position": 39, 
     "path": "/math/trigonometry/conics_precalc/conic_section_intro/e/recognizing_conic_sections/", 
     "id": "recognizing_conic_sections", 
@@ -2569,13 +2031,6 @@
     "title": "Recognizing conic sections", 
     "parent_id": "conic_section_intro", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "conic_section_intro"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2587,7 +2042,6 @@
       "introduction-to-conic-sections"
     ], 
     "description": "Determine if the graph of a conic section shows a circle, hyperbola, parabola, or ellipse.\n", 
-    "parent": "conic_section_intro", 
     "basepoints": 10.0, 
     "h_position": -15, 
     "slug": "recognizing_conic_sections", 
@@ -2607,13 +2061,6 @@
     "title": "Equation of a circle in factored form", 
     "parent_id": "circles-tutorial-precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "circles-tutorial-precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2625,7 +2072,6 @@
       "radius-and-center-for-a-circle-equation-in-standard-form"
     ], 
     "description": "Find the center and radius of a circle given the equation in factored form.\n", 
-    "parent": "circles-tutorial-precalc", 
     "basepoints": 14.0, 
     "h_position": -16, 
     "slug": "equation_of_a_circle_1", 
@@ -2645,13 +2091,6 @@
     "title": "Graphing circles", 
     "parent_id": "circles-tutorial-precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "circles-tutorial-precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2664,7 +2103,6 @@
       "conic-sections--intro-to-circles"
     ], 
     "description": "Graph circles from equations in standard form\n", 
-    "parent": "circles-tutorial-precalc", 
     "basepoints": 17.0, 
     "h_position": 1, 
     "slug": "graphing_circles", 
@@ -2684,13 +2122,6 @@
     "title": "Equation of a circle in non-factored form", 
     "parent_id": "circles-tutorial-precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "circles-tutorial-precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2704,7 +2135,6 @@
       "conic-identification-3"
     ], 
     "description": "Find the center and radius of a circle given the equation in unfactored form.\n", 
-    "parent": "circles-tutorial-precalc", 
     "basepoints": 24.0, 
     "h_position": -16, 
     "slug": "equation_of_a_circle_2", 
@@ -2724,13 +2154,6 @@
     "title": "Graphing circles 2", 
     "parent_id": "circles-tutorial-precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "circles-tutorial-precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2744,7 +2167,6 @@
       "conic-identification-3"
     ], 
     "description": "Graph circles from equations in general form\n", 
-    "parent": "circles-tutorial-precalc", 
     "basepoints": 24.0, 
     "h_position": 1, 
     "slug": "graphing_circles_2", 
@@ -2764,13 +2186,6 @@
     "title": "Equation of an ellipse", 
     "parent_id": "ellipses-precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "ellipses-precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2782,7 +2197,6 @@
       "conic-sections--intro-to-ellipses"
     ], 
     "description": "Find the center and major and minor radius of an ellipse given its equation.\n", 
-    "parent": "ellipses-precalc", 
     "basepoints": 17.0, 
     "h_position": -15, 
     "slug": "equation_of_an_ellipse", 
@@ -2802,13 +2216,6 @@
     "title": "Parabola intuition 1", 
     "parent_id": "parabolas_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "parabolas_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2821,7 +2228,6 @@
       "shifting-and-scaling-parabolas"
     ], 
     "description": "Make one parabola overlap with another by adjusting the leading coefficient and vertex coordinates.\n", 
-    "parent": "parabolas_precalc", 
     "basepoints": 19.0, 
     "h_position": -14, 
     "slug": "parabola_intuition_1", 
@@ -2841,13 +2247,6 @@
     "title": "Parabola intuition 2", 
     "parent_id": "parabolas_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "parabolas_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2857,7 +2256,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix.\n", 
-    "parent": "parabolas_precalc", 
     "basepoints": 25.0, 
     "h_position": -14, 
     "slug": "parabola_intuition_2", 
@@ -2877,13 +2275,6 @@
     "title": "Parabola intuition 3", 
     "parent_id": "parabolas_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "parabolas_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2895,7 +2286,6 @@
       "using-the-focus-and-directrix-to-find-the-equation-of-a-parabola"
     ], 
     "description": "Make one parabola overlap with another by adjusting the focus coordinates and directrix. Find the equation of the parabola.\n", 
-    "parent": "parabolas_precalc", 
     "basepoints": 29.0, 
     "h_position": -12, 
     "slug": "parabola_intuition_3", 
@@ -2915,13 +2305,6 @@
     "title": "Equation of a hyperbola", 
     "parent_id": "hyperbolas-precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "conics_precalc", 
-      "hyperbolas-precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2935,7 +2318,6 @@
       "conic-sections--hyperbolas-3"
     ], 
     "description": "Find the asymptotes of a hyperbola based on the equation.\n", 
-    "parent": "hyperbolas-precalc", 
     "basepoints": 19.0, 
     "h_position": -17, 
     "slug": "equation_of_a_hyperbola", 
@@ -2955,13 +2337,6 @@
     "title": "Graphing systems of equations", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -2973,7 +2348,6 @@
       "solving-systems-graphically"
     ], 
     "description": "Graph a system of equations in slope-intercept or standard form\n", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 28.0, 
     "h_position": 12, 
     "slug": "graphing_systems_of_equations", 
@@ -2993,13 +2367,6 @@
     "title": "Systems of equations with simple elimination", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3016,7 +2383,6 @@
       "king-s-cupcakes---solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equation with one-step elimination (e.g., x-values or y-values cancel each other out).\n", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 27.0, 
     "h_position": 11, 
     "slug": "systems_of_equations_with_elimination_0.5", 
@@ -3036,13 +2402,6 @@
     "title": "Systems of equations with elimination", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3052,7 +2411,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Solving systems of equations with elimination.", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 29.0, 
     "h_position": 9, 
     "slug": "systems_of_equations_with_elimination", 
@@ -3072,13 +2430,6 @@
     "title": "Systems of equations with substitution", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3094,7 +2445,6 @@
       "solving-systems-by-substitution-3"
     ], 
     "description": "Solve systems of equations using substitution\n", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 29.0, 
     "h_position": 10, 
     "slug": "systems_of_equations_with_substitution", 
@@ -3114,13 +2464,6 @@
     "title": "Systems of equations", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3140,7 +2483,6 @@
       "solving-systems-by-elimination"
     ], 
     "description": "Solve systems of equations with substitution and elimination.\n", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 29.0, 
     "h_position": 10, 
     "slug": "systems_of_equations", 
@@ -3162,13 +2504,6 @@
     "title": "Systems of equations word problems", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3181,7 +2516,6 @@
       "algebraic-word-problem"
     ], 
     "description": "Word problems with systems of equations.", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 29.0, 
     "h_position": 13, 
     "slug": "systems_of_equations_word_problems", 
@@ -3202,13 +2536,6 @@
     "title": "Solutions to systems of equations", 
     "parent_id": "systems_tutorial_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_tutorial_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3221,7 +2548,6 @@
       "consistent-and-inconsistent-systems"
     ], 
     "description": "Determine how many solutions exist to a given system of equations (one, zero, infinite).\n", 
-    "parent": "systems_tutorial_precalc", 
     "basepoints": 15.0, 
     "h_position": 12, 
     "slug": "solutions_to_systems_of_equations", 
@@ -3241,13 +2567,6 @@
     "title": "Graphing systems of inequalities", 
     "parent_id": "systems_inequalities_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_inequalities_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3261,7 +2580,6 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
     "description": "Graph a system of linear inequalities.\n", 
-    "parent": "systems_inequalities_precalc", 
     "basepoints": 28.0, 
     "h_position": -11, 
     "slug": "graphing_systems_of_inequalities", 
@@ -3281,13 +2599,6 @@
     "title": "Graphing and solving systems of inequalities", 
     "parent_id": "systems_inequalities_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "systems_eq_ineq", 
-      "systems_inequalities_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3301,7 +2612,6 @@
       "u06-l3-t1-we3-graphing-systems-of-inequalities"
     ], 
     "description": "Graph a system of inequalities, and determine whether ordered pairs are solutions.\n", 
-    "parent": "systems_inequalities_precalc", 
     "basepoints": 29.0, 
     "h_position": -11, 
     "slug": "graphing_systems_of_inequalities_2", 
@@ -3321,13 +2631,6 @@
     "title": "Arithmetic sequences 1", 
     "parent_id": "seq_and_series", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "seq_induction", 
-      "seq_and_series"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3341,7 +2644,6 @@
       "arithmetic-sequences"
     ], 
     "description": "Write the next term in an arithmetic sequence.\n", 
-    "parent": "seq_and_series", 
     "basepoints": 14.0, 
     "h_position": 10, 
     "slug": "arithmetic_sequences_1", 
@@ -3361,13 +2663,6 @@
     "title": "Arithmetic sequences 2", 
     "parent_id": "seq_and_series", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "seq_induction", 
-      "seq_and_series"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3382,7 +2677,6 @@
       "arithmetic-sequences"
     ], 
     "description": "Find the nth term of an arithmetic sequence.\n", 
-    "parent": "seq_and_series", 
     "basepoints": 21.0, 
     "h_position": 10, 
     "slug": "arithmetic_sequences_2", 
@@ -3402,13 +2696,6 @@
     "title": "Arithmetic series", 
     "parent_id": "seq_and_series", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "seq_induction", 
-      "seq_and_series"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3421,7 +2708,6 @@
       "formula-for-arithmetic-series"
     ], 
     "description": "Find the sum of the first n terms of an arithmetic sequence.\n", 
-    "parent": "seq_and_series", 
     "basepoints": 26.0, 
     "h_position": 10, 
     "slug": "arithmetic_series", 
@@ -3441,13 +2727,6 @@
     "title": "Geometric sequences 1", 
     "parent_id": "geometric-sequence-series", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "seq_induction", 
-      "geometric-sequence-series"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3460,7 +2739,6 @@
       "geometric-sequences"
     ], 
     "description": "Find the next term in a geometric sequence.\n", 
-    "parent": "geometric-sequence-series", 
     "basepoints": 17.0, 
     "h_position": 9, 
     "slug": "geometric_sequences_1", 
@@ -3480,13 +2758,6 @@
     "title": "Geometric sequences 2", 
     "parent_id": "geometric-sequence-series", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "seq_induction", 
-      "geometric-sequence-series"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3499,7 +2770,6 @@
       "geometric-sequences"
     ], 
     "description": "Find the nth term of a geometric sequence.\n", 
-    "parent": "geometric-sequence-series", 
     "basepoints": 20.0, 
     "h_position": 9, 
     "slug": "geometric_sequences_2", 
@@ -3520,13 +2790,6 @@
     "title": "Probability 1", 
     "parent_id": "basic_prob_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "basic_prob_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3542,7 +2805,6 @@
       "events-and-outcomes-1"
     ], 
     "description": "", 
-    "parent": "basic_prob_precalc", 
     "basepoints": 18.0, 
     "h_position": 15, 
     "slug": "probability_1", 
@@ -3562,13 +2824,6 @@
     "title": "Independent probability", 
     "parent_id": "independent_events_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "independent_events_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3585,7 +2840,6 @@
       "lebron-asks-about-free-throws-versus-three-pointers"
     ], 
     "description": "", 
-    "parent": "independent_events_precalc", 
     "basepoints": 19.0, 
     "h_position": 17, 
     "slug": "independent_probability", 
@@ -3605,13 +2859,6 @@
     "title": "Dependent probability", 
     "parent_id": "dependent_events_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "dependent_events_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3627,7 +2874,6 @@
       "monty-hall-problem"
     ], 
     "description": "", 
-    "parent": "dependent_events_precalc", 
     "basepoints": 22.0, 
     "h_position": 14, 
     "slug": "dependent_probability", 
@@ -3647,13 +2893,6 @@
     "title": "Counting 2", 
     "parent_id": "combinatorics_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "combinatorics_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3666,7 +2905,6 @@
       "combinations"
     ], 
     "description": "", 
-    "parent": "combinatorics_precalc", 
     "basepoints": 17.0, 
     "h_position": 16, 
     "slug": "counting_2", 
@@ -3686,13 +2924,6 @@
     "title": "Permutations", 
     "parent_id": "combinatorics_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "combinatorics_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3706,7 +2937,6 @@
       "permutations-and-combinations-2"
     ], 
     "description": "Introductory permutation problems.\n", 
-    "parent": "combinatorics_precalc", 
     "basepoints": 14.0, 
     "h_position": 16, 
     "slug": "permutations_1", 
@@ -3726,13 +2956,6 @@
     "title": "Combinations", 
     "parent_id": "combinatorics_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "combinatorics_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3745,7 +2968,6 @@
       "permutations-and-combinations-3"
     ], 
     "description": "Introductory combination problems\n", 
-    "parent": "combinatorics_precalc", 
     "basepoints": 19.0, 
     "h_position": 16, 
     "slug": "combinations_1", 
@@ -3765,13 +2987,6 @@
     "title": "Permutations and combinations", 
     "parent_id": "combinatorics_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "combinatorics_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3781,7 +2996,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Permutations and Combinations with overcounting", 
-    "parent": "combinatorics_precalc", 
     "basepoints": 20.0, 
     "h_position": 16, 
     "slug": "permutations_and_combinations_2", 
@@ -3801,13 +3015,6 @@
     "title": "Probability with permutations and combinations", 
     "parent_id": "prob_combinatorics_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "prob_comb", 
-      "prob_combinatorics_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3828,7 +3035,6 @@
       "mega-millions-jackpot-probability"
     ], 
     "description": "Probability questions using permutations and combinations of objects\n", 
-    "parent": "prob_combinatorics_precalc", 
     "basepoints": 26.0, 
     "h_position": 16, 
     "slug": "probability_with_perm_comb", 
@@ -3848,13 +3054,6 @@
     "title": "Imaginary unit powers", 
     "parent_id": "i_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "i_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3867,7 +3066,6 @@
       "calculating-i-raised-to-arbitrary-exponents"
     ], 
     "description": "Solve problems with base i (square root of -1) raised to a positive exponent\n", 
-    "parent": "i_precalc", 
     "basepoints": 13.0, 
     "h_position": -3, 
     "slug": "imaginary_unit_powers", 
@@ -3887,13 +3085,6 @@
     "title": "The complex plane", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3908,7 +3099,6 @@
       "complex-numbers--part-2"
     ], 
     "description": "Plot complex numbers on the complex plane.\n", 
-    "parent": "complex_num_precalc", 
     "basepoints": 13.0, 
     "h_position": -3, 
     "slug": "the_complex_plane", 
@@ -3928,13 +3118,6 @@
     "title": "Complex number polar form intuition", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3946,7 +3129,6 @@
       "complex-number-polar-form-intuition-exercise"
     ], 
     "description": "Adjust the angle and radius to plot a complex number in polar form.\n", 
-    "parent": "complex_num_precalc", 
     "basepoints": 10.0, 
     "h_position": -4, 
     "slug": "complex_number_polar_form_intuition", 
@@ -3966,13 +3148,6 @@
     "title": "Complex plane operations", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -3982,7 +3157,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Add or subtract numbers in the complex plane.\n", 
-    "parent": "complex_num_precalc", 
     "basepoints": 17.0, 
     "h_position": -3, 
     "slug": "complex_plane_operations", 
@@ -4002,13 +3176,6 @@
     "title": "Adding and subtracting complex numbers", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4022,7 +3189,6 @@
       "subtracting-complex-numbers"
     ], 
     "description": "", 
-    "parent": "complex_num_precalc", 
     "basepoints": 16.0, 
     "h_position": -3, 
     "slug": "adding_and_subtracting_complex_numbers", 
@@ -4043,13 +3209,6 @@
     "title": "Multiplying complex numbers", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4062,7 +3221,6 @@
       "complex-numbers"
     ], 
     "description": "", 
-    "parent": "complex_num_precalc", 
     "basepoints": 21.0, 
     "h_position": -3, 
     "slug": "multiplying_complex_numbers", 
@@ -4083,13 +3241,6 @@
     "title": "Dividing complex numbers", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4101,7 +3252,6 @@
       "dividing-complex-numbers"
     ], 
     "description": "", 
-    "parent": "complex_num_precalc", 
     "basepoints": 26.0, 
     "h_position": -3, 
     "slug": "dividing_complex_numbers", 
@@ -4121,13 +3271,6 @@
     "title": "Multiplying and dividing complex numbers in polar form", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4140,7 +3283,6 @@
       "complex-number-polar-form-intuition-exercise"
     ], 
     "description": "Multiply and divide complex numbers in polar form, and plot the answer by specifying the radius and angle.\n", 
-    "parent": "complex_num_precalc", 
     "basepoints": 10.0, 
     "h_position": -4, 
     "slug": "multiplying_and_dividing_complex_number_polar_forms", 
@@ -4161,13 +3303,6 @@
     "title": "Absolute value of complex numbers", 
     "parent_id": "complex_num_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_num_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4179,7 +3314,6 @@
       "absolute-value-of-a-complex-number"
     ], 
     "description": "Find the absolute value of a complex number.\n", 
-    "parent": "complex_num_precalc", 
     "basepoints": 18.0, 
     "h_position": -2, 
     "slug": "absolute_value_of_complex_numbers", 
@@ -4199,13 +3333,6 @@
     "title": "Complex number polar form intuition", 
     "parent_id": "complex_analysis", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_analysis"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4217,7 +3344,6 @@
       "complex-number-polar-form-intuition-exercise"
     ], 
     "description": "Adjust the angle and radius to plot a complex number in polar form.\n", 
-    "parent": "complex_analysis", 
     "basepoints": 10.0, 
     "h_position": -4, 
     "slug": "complex_number_polar_form_intuition", 
@@ -4237,13 +3363,6 @@
     "title": "Multiplying and dividing complex numbers in polar form", 
     "parent_id": "complex_analysis", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_analysis"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4256,7 +3375,6 @@
       "complex-number-polar-form-intuition-exercise"
     ], 
     "description": "Multiply and divide complex numbers in polar form, and plot the answer by specifying the radius and angle.\n", 
-    "parent": "complex_analysis", 
     "basepoints": 10.0, 
     "h_position": -4, 
     "slug": "multiplying_and_dividing_complex_number_polar_forms", 
@@ -4277,13 +3395,6 @@
     "title": "Powers of complex numbers", 
     "parent_id": "complex_analysis", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "imaginary_complex_precalc", 
-      "complex_analysis"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4293,7 +3404,6 @@
     ], 
     "related_video_slugs": [], 
     "description": "Use Euler's formula to determine the value of a complex number raised to an nth power.", 
-    "parent": "complex_analysis", 
     "basepoints": 10.0, 
     "h_position": -4, 
     "slug": "powers_of_complex_numbers_1", 
@@ -4306,40 +3416,6 @@
     "exercise_id": "powers_of_complex_numbers_1"
   }, 
   {
-    "v_position": 54, 
-    "path": "/math/trigonometry/limit_topic_precalc/limits_precalc/e/limits_1/", 
-    "id": "limits_1", 
-    "display_name": "Limits 1", 
-    "title": "Limits 1", 
-    "parent_id": "limits_precalc", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "limit_topic_precalc", 
-      "limits_precalc"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "limit_topic_precalc", 
-      "limits_precalc"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "limits_precalc", 
-    "basepoints": 15.0, 
-    "h_position": -8, 
-    "slug": "limits_1", 
-    "kind": "Exercise", 
-    "name": "limits_1", 
-    "seconds_per_fast_problem": 8.0, 
-    "prerequisites": [], 
-    "exercise_id": "limits_1"
-  }, 
-  {
     "v_position": 53, 
     "path": "/math/trigonometry/limit_topic_precalc/limits_precalc/e/limits_2/", 
     "id": "limits_2", 
@@ -4347,13 +3423,6 @@
     "title": "Two-sided limits using advanced algebra", 
     "parent_id": "limits_precalc", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "trigonometry", 
-      "limit_topic_precalc", 
-      "limits_precalc"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -4365,7 +3434,6 @@
       "limit-factoring-cubic"
     ], 
     "description": "", 
-    "parent": "limits_precalc", 
     "basepoints": 26.0, 
     "h_position": 1, 
     "slug": "limits_2", 

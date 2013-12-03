@@ -109,10 +109,13 @@ class FacilityUser(DeferredCountSyncedModel):
             # Could fail if password doesn't split into parts nicely
             pass
 
-        else:
+        elif self.password:
             raise ValidationError(_("Unknown password format."))
 
         super(FacilityUser, self).save(*args, **kwargs)
+
+        # in case the password was changed on another server, and then synced into here, clear cached password
+        CachedPassword.invalidate_cached_password(user=self)
 
     def check_password(self, raw_password):
         cached_password = CachedPassword.get_cached_password(self)

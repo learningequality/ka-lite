@@ -7,13 +7,6 @@
     "title": "Reading tables 1", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -25,9 +18,8 @@
       "reading-tables-1"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 17.0, 
-    "h_position": -10, 
+    "h_position": -6, 
     "slug": "reading_tables_1", 
     "kind": "Exercise", 
     "name": "reading_tables_1", 
@@ -43,13 +35,6 @@
     "title": "Reading tables 2", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -61,9 +46,8 @@
       "reading-tables-2"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 18.0, 
-    "h_position": -10, 
+    "h_position": -6, 
     "slug": "reading_tables_2", 
     "kind": "Exercise", 
     "name": "reading_tables_2", 
@@ -81,13 +65,6 @@
     "title": "Reading stem and leaf plots", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -99,9 +76,8 @@
       "reading-stem-and-leaf-plots"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 16.0, 
-    "h_position": -10, 
+    "h_position": -6, 
     "slug": "reading_stem_and_leaf_plots", 
     "kind": "Exercise", 
     "name": "reading_stem_and_leaf_plots", 
@@ -119,13 +95,6 @@
     "title": "Reading pictographs 1", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -137,9 +106,8 @@
       "reading-pictographs"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 16.0, 
-    "h_position": -9, 
+    "h_position": -5, 
     "slug": "reading_pictographs_1", 
     "kind": "Exercise", 
     "name": "reading_pictographs_1", 
@@ -155,13 +123,6 @@
     "title": "Reading pictographs 2", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -173,9 +134,8 @@
       "reading-pictographs"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 18.0, 
-    "h_position": -9, 
+    "h_position": -5, 
     "slug": "reading_pictographs_2", 
     "kind": "Exercise", 
     "name": "reading_pictographs_2", 
@@ -193,13 +153,6 @@
     "title": "Reading bar charts 1", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -211,9 +164,8 @@
       "reading-bar-charts-1"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 13.0, 
-    "h_position": -8, 
+    "h_position": -4, 
     "slug": "reading_bar_charts_1", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_1", 
@@ -231,13 +183,6 @@
     "title": "Creating bar charts 1", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -249,9 +194,8 @@
       "creating-bar-charts-1"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 24.0, 
-    "h_position": -8, 
+    "h_position": -4, 
     "slug": "creating_bar_charts_1", 
     "kind": "Exercise", 
     "name": "creating_bar_charts_1", 
@@ -267,13 +211,6 @@
     "title": "Reading bar charts 2", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -285,9 +222,8 @@
       "reading-bar-charts-2"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 18.0, 
-    "h_position": -8, 
+    "h_position": -4, 
     "slug": "reading_bar_charts_2", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_2", 
@@ -305,13 +241,6 @@
     "title": "Reading bar charts 3", 
     "parent_id": "reading_data", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -323,9 +252,8 @@
       "reading-bar-charts-3"
     ], 
     "description": "", 
-    "parent": "reading_data", 
     "basepoints": 20.0, 
-    "h_position": -8, 
+    "h_position": -4, 
     "slug": "reading_bar_charts_3", 
     "kind": "Exercise", 
     "name": "reading_bar_charts_3", 
@@ -337,40 +265,6 @@
     "exercise_id": "reading_bar_charts_3"
   }, 
   {
-    "v_position": 12, 
-    "path": "/math/arithmetic/applying-math-reasoning-topic/reading_data/e/reading_line_charts_1/", 
-    "id": "reading_line_charts_1", 
-    "display_name": "Reading line charts 1", 
-    "title": "Reading line charts 1", 
-    "parent_id": "reading_data", 
-    "live": false, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
-    "ancestor_ids": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "reading_data"
-    ], 
-    "related_video_slugs": [], 
-    "description": "", 
-    "parent": "reading_data", 
-    "basepoints": 16.0, 
-    "h_position": -13, 
-    "slug": "reading_line_charts_1", 
-    "kind": "Exercise", 
-    "name": "reading_line_charts_1", 
-    "seconds_per_fast_problem": 9.0, 
-    "prerequisites": [], 
-    "exercise_id": "reading_line_charts_1"
-  }, 
-  {
     "v_position": 4, 
     "path": "/math/arithmetic/applying-math-reasoning-topic/greater-than-less-than/e/comparing_whole_numbers/", 
     "id": "comparing_whole_numbers", 
@@ -378,13 +272,6 @@
     "title": "Comparing whole numbers", 
     "parent_id": "greater-than-less-than", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "greater-than-less-than"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -396,9 +283,8 @@
       "greater-than-and-less-than-symbols"
     ], 
     "description": "", 
-    "parent": "greater-than-less-than", 
     "basepoints": 10.0, 
-    "h_position": -11, 
+    "h_position": -7, 
     "slug": "comparing_whole_numbers", 
     "kind": "Exercise", 
     "name": "comparing_whole_numbers", 
@@ -416,13 +302,6 @@
     "title": "Inequalities on a number line", 
     "parent_id": "greater-than-less-than", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "arithmetic", 
-      "applying-math-reasoning-topic", 
-      "greater-than-less-than"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -434,9 +313,8 @@
       "inequalities-on-a-number-line"
     ], 
     "description": "Write equations of inequalities graphed on number lines. Identify number line graphs of inequalities.\n", 
-    "parent": "greater-than-less-than", 
     "basepoints": 17.0, 
-    "h_position": -12, 
+    "h_position": -8, 
     "slug": "inequalities_on_a_number_line", 
     "kind": "Exercise", 
     "name": "inequalities_on_a_number_line", 

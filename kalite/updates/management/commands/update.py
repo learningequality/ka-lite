@@ -120,7 +120,7 @@ class Command(UpdatesStaticCommand):
 
         except Exception as e:
             if self.started() and not not self.ended():
-                self.cancel(notes=str(e))
+                self.cancel(stage_status="error", notes=str(e))
             raise
 
         assert self.ended(), "Subroutines should complete() if they start()!"
@@ -279,7 +279,7 @@ class Command(UpdatesStaticCommand):
         lines = open(self.signature_file, "r").read().split("\n")
         chunk_size = int(lines.pop(0))
         if not central_server:
-            logging.warn("No central server device object found; trusting zip file because you asked me to...") 
+            logging.warn("No central server device object found; trusting zip file because you asked me to...")
         elif central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
             logging.info("Verified file!")
         else:

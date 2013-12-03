@@ -7,13 +7,6 @@
     "title": "Recognizing rays, lines, and line segments", 
     "parent_id": "intro_euclid", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "segments-and-angles", 
-      "intro_euclid"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -25,7 +18,6 @@
       "lines--line-segments--and-rays"
     ], 
     "description": "", 
-    "parent": "intro_euclid", 
     "basepoints": 10.0, 
     "h_position": -14, 
     "slug": "recognizing_rays_lines_and_line_segments", 
@@ -43,13 +35,6 @@
     "title": "Points, lines, and planes", 
     "parent_id": "intro_euclid", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "segments-and-angles", 
-      "intro_euclid"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -62,7 +47,6 @@
       "specifying-planes-in-three-dimensions"
     ], 
     "description": "", 
-    "parent": "intro_euclid", 
     "basepoints": 14.0, 
     "h_position": -15, 
     "slug": "points_lines_and_planes", 
@@ -82,13 +66,6 @@
     "title": "Measuring segments", 
     "parent_id": "measuring-segments-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "segments-and-angles", 
-      "measuring-segments-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -101,7 +78,6 @@
       "language-and-notation-of-basic-geometry"
     ], 
     "description": "", 
-    "parent": "measuring-segments-tutorial", 
     "basepoints": 12.0, 
     "h_position": -17, 
     "slug": "measuring_segments", 
@@ -121,13 +97,6 @@
     "title": "Congruent segments", 
     "parent_id": "measuring-segments-tutorial", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "segments-and-angles", 
-      "measuring-segments-tutorial"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -139,7 +108,6 @@
       "congruent-segments"
     ], 
     "description": "", 
-    "parent": "measuring-segments-tutorial", 
     "basepoints": 12.0, 
     "h_position": -16, 
     "slug": "congruent_segments", 
@@ -159,13 +127,6 @@
     "title": "Segment addition", 
     "parent_id": "line-segment-algebra", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "segments-and-angles", 
-      "line-segment-algebra"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -177,7 +138,6 @@
       "segment-addition"
     ], 
     "description": "", 
-    "parent": "line-segment-algebra", 
     "basepoints": 25.0, 
     "h_position": -18, 
     "slug": "segment_addition", 
@@ -198,13 +158,6 @@
     "title": "Midpoint of a segment", 
     "parent_id": "line-segment-algebra", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "geometry", 
-      "segments-and-angles", 
-      "line-segment-algebra"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -216,7 +169,6 @@
       "midpoint-of-a-segment"
     ], 
     "description": "", 
-    "parent": "line-segment-algebra", 
     "basepoints": 26.0, 
     "h_position": -19, 
     "slug": "midpoint_of_a_segment", 

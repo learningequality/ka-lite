@@ -79,25 +79,33 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
 
     for lang_code in lang_codes:
         lang_code = lcode_to_ietf(lang_code)
-        srt_list_path = get_lang_map_filepath(lang_code)
 
         try:
-            videos = json.loads(open(srt_list_path).read())
+            lang_map_filepath = get_lang_map_filepath(lang_code)
+            if not os.path.exists(lang_map_filepath):
+                videos = {}  # happens if an unknown set for subtitles.
+            else:
+                with open(lang_map_filepath, "r") as fp:
+                    videos = json.load(fp)
         except Exception as e:
-            logging.error("Error in subtitles metadata file for %s: %s" % (lang_code, e))
-            bad_languages[lang_code] = e
+            error_msg = "Error in subtitles metadata file for %s: %s" % (lang_code, e)
+            logging.error(error_msg)
+            bad_languages[lang_code] = error_msg
             continue
 
         try:
             download_if_criteria_met(videos, lang_code=lang_code, **kwargs)
         except Exception as e:
-            logging.error("Error downloading subtitles for %s: %s" % (lang_code, e))
-            bad_languages[lang_code] = e
+            error_msg = "Error downloading subtitles for %s: %s" % (lang_code, e)
+            logging.error(error_msg)
+            bad_languages[lang_code] = error_msg
             continue
 
     # now report final results
     if bad_languages:
-        raise CommandError("Failed to download subtitles for the following languages: %s" % bad_languages.keys())
+        outstr = "Failed to download subtitles for the following languages: %s" % (bad_languages.keys())
+        outstr += "\n" + str(bad_languages)
+        raise CommandError(outstr)
 
 
 def get_srt_path(lang_code, locale_root=LOCALE_ROOT):
@@ -200,8 +208,10 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
             ))
 
     # Summarize output
-    if srt_count is not None:
+    if srt_count is None:
         # only none if nothing was done.
+        logging.info("Nothing was done.")
+    else:
         logging.info("We now have %d subtitles (amara thought they had %d) for language '%s'!" % (
             srt_count, n_videos, lang_code,
         ))
@@ -216,7 +226,8 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     assert format == "srt", "We only support srt download at the moment."
 
     # srt map deals with amara, so uses ietf codes (e.g. en-us)
-    api_info_map = json.loads(open(SRTS_JSON_FILEPATH).read())
+    with open(SRTS_JSON_FILEPATH, "r") as fp:
+        api_info_map = json.load(fp)
 
     # get amara id
     amara_code = api_info_map.get(youtube_id).get("amara_code")
@@ -252,7 +263,8 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     # Open JSON file
     filepath = get_lang_map_filepath(lang_code)
     try:
-        language_srt_map = json.loads(open(filepath).read())
+        with open(filepath, "r") as fp:
+            language_srt_map = json.load(fp)
     except Exception as e:
         logging.error("Something went wrong while trying to open the json file (%s): %s" % (filepath, e))
         return False
@@ -321,9 +333,12 @@ def write_count_to_json(subtitle_counts, data_path):
 
 def validate_language_map(lang_codes):
     """
-    In order to run this command, all srt languages must exist in the
-    language map.  Rather than having errors unexpectedly along the way,
-    we can check up-front.
+    This function will tell you any blockers that you'll hit while
+    running this command.
+
+    All srt languages must exist in the language map; missing languages
+    will cause errors during command running (which can be long).
+    This function avoids that problem by doing the above consistency check.
     """
     lang_codes = lang_codes or get_all_prepped_lang_codes()
     missing_langs = []

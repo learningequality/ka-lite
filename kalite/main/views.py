@@ -30,8 +30,9 @@ from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
 from shared.jobs import force_job
-from shared.videos import get_video_urls, get_video_counts, stamp_urls_on_video
-from utils.internet import is_loopback_connection, JsonResponse
+from shared.topic_tools import get_ancestor, get_parent
+from shared.videos import get_video_urls, stamp_video_counts, stamp_urls_on_video, video_counts_need_update
+from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
 
 def check_setup_status(handler):
@@ -73,31 +74,33 @@ def refresh_topic_cache(handler, force=False):
         """
         Remove relevant counts from all ancestors
         """
-        parent = node["parent"]
-        while parent:
-            if "nvideos_local" in parent:
-                del parent["nvideos_local"]
-            if "nvideos_known" in parent:
-                del parent["nvideos_known"]
-            parent = parent["parent"]
+        for ancestor_id in node.get("ancestor_ids", []):
+            ancestor = get_ancestor(node, ancestor_id)
+            if "nvideos_local" in ancestor:
+                del ancestor["nvideos_local"]
+            if "nvideos_known" in ancestor:
+                del ancestor["nvideos_known"]
         return node
 
-    def recount_videos_and_invalidate_parents(node, force=False):
+    def recount_videos_and_invalidate_parents(node, force=False, stamp_urls=False):
         """
-        Call get_video_counts (if necessary); if a change has been detected,
+        Call stamp_video_counts (if necessary); if a change has been detected,
         then check parents to see if their counts should be invalidated.
         """
         do_it = force
         do_it = do_it or "nvideos_local" not in node
         do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
         if do_it:
-            logging.debug("Adding video counts to topic (and all descendants) %s" % node["path"])
-            changed = get_video_counts(topic=node, force=force)
-            if changed and node.get("parent") and "nvideos_local" in node["parent"]:
+            logging.debug("Adding video counts %sto topic (and all descendants) %s" % (
+                "(and urls) " if stamp_urls else "",
+                node["path"],
+            ))
+            (_a, _b, _c, changed) = stamp_video_counts(topic=node, force=force, stamp_urls=stamp_urls)
+            if changed:
                 strip_counts_from_ancestors(node)
         return node
 
-    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, *args, **kwargs):
+    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, force=False, *args, **kwargs):
         """
         Centralized logic for how to refresh the topic cache, for each type of object.
 
@@ -111,21 +114,27 @@ def refresh_topic_cache(handler, force=False):
             if not node:
                 continue
             has_children = bool(node.get("children"))
-            has_grandchildren = has_children and any(["children" in child for child in node["children"]])
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or "urls" not in node:  #
+                if force or "urls" not in node:
                     #stamp_urls_on_video(node, force=force)  # will be done by force below
-                    recount_videos_and_invalidate_parents(node["parent"], force=True)
+                    recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
+
+            elif node["kind"] == "Exercise":
+                for video in topic_tools.get_related_videos(exercise=node).values():
+                    if not "urls" in video:
+                        stamp_urls_on_video(video, force=True)  # will be done by force below
 
             elif node["kind"] == "Topic":
-                if not force and (not has_grandchildren or "nvideos_local" not in node):
-                    # if forcing, would do this here, and again below--so skip if forcing.
-                    logging.debug("cache miss: stamping urls on videos")
-                    for video in topic_tools.get_topic_videos(path=node["path"]):
-                        stamp_urls_on_video(video, force=force)
-                recount_videos_and_invalidate_parents(node, force=force or not has_grandchildren)
+                bottom_layer_topic =  "Topic" not in node["contains"]
+                # always run video_counts_need_update(), to make sure the (internal) counts stay up to date.
+                force = video_counts_need_update() or force or bottom_layer_topic
+                recount_videos_and_invalidate_parents(
+                    node,
+                    force=force,
+                    stamp_urls=bottom_layer_topic,
+                )
 
         kwargs.update(cached_nodes)
         return handler(request, *args, **kwargs)
@@ -221,9 +230,29 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     if video["available"] and not any([url["on_disk"] for url in video["urls"].values()]):
         messages.success(request, "Got video content from %s" % video["urls"]["default"]["stream_url"])
 
+    # Fallback mechanism
+    available_urls = dict([(lang, urls) for lang, urls in video["urls"].iteritems() if urls["on_disk"]])
+    if not available_urls:
+        vid_lang = None
+    elif request.video_language in available_urls:
+        vid_lang = request.video_language
+    elif request.video_language.split("-", 1)[0] in available_urls:
+        vid_lang = request.video_language.split("-", 1)[0]
+    elif settings.LANGUAGE_CODE in available_urls:
+        vid_lang = settings.LANGUAGE_CODE
+    elif "en" in available_urls:
+        vid_lang = "en"
+    else:
+        vid_lang = available_urls.keys()[0]
+
+
+
     context = {
         "video": video,
         "title": video["title"],
+        "available_videos": available_urls,
+        "selected_language": vid_lang,
+        "video_urls": available_urls[vid_lang] if vid_lang else None,
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
@@ -286,6 +315,8 @@ def easy_admin(request):
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
         "clock_set": settings.ENABLE_CLOCK_SET,
+        "ips": get_ip_addresses(include_loopback=False),
+        "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }
     return context
 

@@ -80,7 +80,7 @@
                 </td>
             </tr>
             {% endif %}
-        
+
             <tr>
                 <td class="title" colspan="2">
                     <h2>{% trans "(Offline) Management and Reporting Tools" %}</h2>
@@ -114,7 +114,7 @@
             </tr>
 
             {% if user.is_superuser and settings.DEBUG %}{% comment "Django-admins and in debug mode" %}{% endcomment %}
-        
+
             <tr>
                 <td class="title" colspan="2">
                     <h2>{% trans "Advanced User Tools" %}</h2>
@@ -130,7 +130,29 @@
                     <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
                 </td>
             </tr>
+
             {% endif %}
+
+            {% if ips %}
+            <tr>
+                <td class="title" colspan="2">
+                    <h2>{% trans "Connection Information" %}</h2>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    {% trans "To connect to this installation of KA Lite from another computer over the network, try these addresses:" %}
+                </td>
+            </tr>
+            {% for ip in ips %}
+            <tr>
+                <td class="desc" colspan="2"><a target="_blank" href="http://{{ ip }}:{{ port }}/">http://{{ ip }}:{{ port }}/</a></td>
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+
+
         </table>
     </div>
 {% endblock content %}

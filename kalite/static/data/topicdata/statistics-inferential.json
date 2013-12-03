@@ -7,13 +7,6 @@
     "title": "Empirical rule", 
     "parent_id": "normal_distribution", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "probability", 
-      "statistics-inferential", 
-      "normal_distribution"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -28,7 +21,6 @@
       "ck12-org-normal-distribution-problems--z-score"
     ], 
     "description": "", 
-    "parent": "normal_distribution", 
     "basepoints": 24.0, 
     "h_position": 2, 
     "slug": "empirical_rule", 
@@ -49,13 +41,6 @@
     "title": "Z scores 1", 
     "parent_id": "normal_distribution", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "probability", 
-      "statistics-inferential", 
-      "normal_distribution"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -68,7 +53,6 @@
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
     "description": "Find the z-score of a particular measurement given the mean and standard deviation.\n", 
-    "parent": "normal_distribution", 
     "basepoints": 19.0, 
     "h_position": 3, 
     "slug": "z_scores_1", 
@@ -89,13 +73,6 @@
     "title": "Z scores 2", 
     "parent_id": "normal_distribution", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "probability", 
-      "statistics-inferential", 
-      "normal_distribution"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -109,7 +86,6 @@
       "ck12-org-normal-distribution-problems--empirical-rule"
     ], 
     "description": "Use a z-table to find the probability of a particular measurement.\n", 
-    "parent": "normal_distribution", 
     "basepoints": 22.0, 
     "h_position": 3, 
     "slug": "z_scores_2", 
@@ -129,13 +105,6 @@
     "title": "Z scores 3", 
     "parent_id": "normal_distribution", 
     "live": true, 
-    "parents": [
-      "root", 
-      "math", 
-      "probability", 
-      "statistics-inferential", 
-      "normal_distribution"
-    ], 
     "ancestor_ids": [
       "root", 
       "math", 
@@ -148,7 +117,6 @@
       "ck12-org--more-empirical-rule-and-z-score-practice"
     ], 
     "description": "Use a z-table to find the probability that a particular measurement is in a range.\n", 
-    "parent": "normal_distribution", 
     "basepoints": 28.0, 
     "h_position": 3, 
     "slug": "z_scores_3", 

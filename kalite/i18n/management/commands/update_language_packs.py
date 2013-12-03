@@ -72,6 +72,12 @@ class Command(BaseCommand):
                     dest='ka_zip_file',
                     default=None,
                     help='a local zip file to be used for KA content instead of fetching to CrowdIn. Ignores -l if this is used.'),
+        make_option('-o', '--use_local',
+                    action='store_true',
+                    dest='use_local',
+                    default=False,
+                    metavar="USE_LOCAL",
+                    help="Use the local po files, instead of refreshing from online (a way to test translation tweaks)"),
     )
 
     def handle(self, **options):
@@ -93,6 +99,7 @@ class Command(BaseCommand):
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
             download_ka_translations=not options['no_ka'],
+            use_local=options["use_local"],
         )
 
 
@@ -108,33 +115,34 @@ def update_srts(days, lang_codes):
         call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
 
 
-def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None):
+def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
 
     logging.info("Downloading %s language(s)" % lang_codes)
 
-    # Download latest UI translations from CrowdIn
-    assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
+    if not use_local:
+        # Download latest UI translations from CrowdIn
+        assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
-    for lang_code in (lang_codes or [None]):
-        download_latest_translations(
-            lang_code=lang_code,
-            project_id=settings.CROWDIN_PROJECT_ID,
-            project_key=settings.CROWDIN_PROJECT_KEY,
-            zip_file=zip_file,
-        )
-
-        # Download Khan Academy translations too
-        if download_ka_translations:
-            assert hasattr(settings, "KA_CROWDIN_PROJECT_ID") and hasattr(settings, "KA_CROWDIN_PROJECT_KEY"), "KA Crowdin keys must be set to do this."
-
-            logging.info("Downloading Khan Academy translations...")
+        for lang_code in (lang_codes or [None]):
             download_latest_translations(
                 lang_code=lang_code,
-                project_id=settings.KA_CROWDIN_PROJECT_ID,
-                project_key=settings.KA_CROWDIN_PROJECT_KEY,
-                zip_file=ka_zip_file,
-                rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
+                project_id=settings.CROWDIN_PROJECT_ID,
+                project_key=settings.CROWDIN_PROJECT_KEY,
+                zip_file=zip_file,
             )
+
+            # Download Khan Academy translations too
+            if download_ka_translations:
+                assert hasattr(settings, "KA_CROWDIN_PROJECT_ID") and hasattr(settings, "KA_CROWDIN_PROJECT_KEY"), "KA Crowdin keys must be set to do this."
+
+                logging.info("Downloading Khan Academy translations...")
+                download_latest_translations(
+                    lang_code=lang_code,
+                    project_id=settings.KA_CROWDIN_PROJECT_ID,
+                    project_key=settings.KA_CROWDIN_PROJECT_KEY,
+                    zip_file=ka_zip_file,
+                    rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
+                )
 
     # Compile
     (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
@@ -185,8 +193,9 @@ def obliterate_old_schema():
         logging.info("Move completed.")
 
 def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
-    """Return list of languages to not rezip due to errors in compile process. Email admins errors
-
+    """
+    Return list of languages to not rezip due to errors in compile process.
+    Then email admins errors.
     """
 
     broken_codes = re.findall(r'(?<=ka-lite/locale/)\w+(?=/LC_MESSAGES)', err) or []
@@ -316,9 +325,15 @@ def generate_metadata(lang_codes=None, broken_langs=None):
     try:
         with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
             master_metadata = json.load(fp)
+        if isinstance(master_metadata, list):
+            logging.info("Code switched from list to dict to support single language LanguagePack updates; converting your old list storage for dictionary storage.")
+            master_list = master_metadata
+            master_metadata = {}
+            for lang_meta in master_list:
+                master_metadata[lang_meta["code"]] = lang_meta
     except Exception as e:
-        logging.info("Error opening language pack metadata: %s" % e)
-        master_metadata = []
+        logging.warn("Error opening language pack metadata: %s; resetting" % e)
+        master_metadata = {}
 
     # loop through all languages in locale, update master file
     crowdin_meta_dict = download_crowdin_metadata()
@@ -344,7 +359,8 @@ def generate_metadata(lang_codes=None, broken_langs=None):
         try:
             with open(metadata_filepath) as fp:
                 local_meta = json.load(fp)
-        except:
+        except Exception as e:
+            logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
             local_meta = {}
 
         try:
@@ -379,7 +395,7 @@ def generate_metadata(lang_codes=None, broken_langs=None):
             json.dump(local_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata.append(local_meta)
+        master_metadata[lang_code_ietf] = local_meta
 
     # Save updated master
     ensure_dir(os.path.dirname(LANGUAGE_PACK_AVAILABILITY_FILEPATH))
@@ -418,7 +434,7 @@ def zip_language_packs(lang_codes=None):
     converts all into ietf
     """
 
-    lang_codes = lang_codes or listdir(LOCALE_ROOT)
+    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
     lang_codes = [lcode_to_ietf(lc) for lc in lang_codes]
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 

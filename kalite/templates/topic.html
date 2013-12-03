@@ -82,15 +82,24 @@
             <a href="v/{{ video.slug }}/" class="video-link client-online-only video-{% if not video.available %}un{% endif %}available">
                 {% trans video.title %}
             </a>
-            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.urls %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
                 {% trans video.title %}
             </a>
 
+            {# dubbed videos #}
             {% for lang, urls in video.urls.iteritems %}
-                <span class="video_indicator">{{ lang }}</span>
-                {% if urls.subtitles %}
-                <span class="subtitle_indicator">{{ lang }}</span>
+                {% if lang != current_language %}
+                <span class="video_indicator">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}" class="video-link video-available">
+                        {{ lang }}
+                    </a>
+                </span>
                 {% endif %}
+            {% endfor %}
+
+            {# subtitles #}
+            {% for lang in video.urls.en.subtitles.keys %}
+                <span class="subtitle_indicator">{{ lang }}</span>
             {% endfor %}
         </li>
         {% endfor %}

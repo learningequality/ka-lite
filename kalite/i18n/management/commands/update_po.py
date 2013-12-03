@@ -44,7 +44,7 @@ class Command(BaseCommand):
             raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
         # All commands must be run from project root
-        move_to_project_root()
+        change_dir_to_project_root()
 
         # (safety measure) prevent any english or test translations from being uploaded
         delete_current_templates()
@@ -60,7 +60,7 @@ class Command(BaseCommand):
             update_templates()
 
 
-def move_to_project_root():
+def change_dir_to_project_root():
     """Change into the project root directory to run i18n commands"""
     logging.info("Moving to project root directory")
     project_root = os.path.join(settings.PROJECT_PATH, "../")
@@ -69,11 +69,22 @@ def move_to_project_root():
 
 
 def delete_current_templates():
-    """Delete existing en po files"""
-    logging.info("Deleting English language locale directory")
-    english_path = os.path.join(settings.LOCALE_PATHS[0], "en")
-    if os.path.exists(english_path):
-        shutil.rmtree(english_path)
+    """Delete existing en po/pot files"""
+    logging.info("Deleting English language po files")
+    for locale_path in settings.LOCALE_PATHS:
+        english_path = os.path.join(locale_path, "en", "LC_MESSAGES")
+        if os.path.exists(english_path):
+            shutil.rmtree(english_path)
+
+    logging.info("Deleting English language pot files")
+    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    if os.path.exists(pot_path):
+        shutil.rmtree(pot_path)
+
+    logging.info("Deleting old English language pot files")
+    old_pot_path = os.path.join(settings.STATIC_ROOT, "pot")
+    if os.path.exists(old_pot_path):
+        shutil.rmtree(old_pot_path)
 
 def run_makemessages():
     """Run makemessages command for english po files"""
@@ -88,12 +99,13 @@ def run_makemessages():
 
 def update_templates():
     """Update template po files"""
-    logging.info("Posting template po files to static/pot/")
-    ## post them to exposed URL
-    static_path = os.path.join(settings.STATIC_ROOT, "pot/")
-    ensure_dir(static_path)
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(static_path, "kalite.pot"))
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(static_path, "kalitejs.pot"))
+    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    logging.info("Copying english po files to %s" % pot_path)
+
+    #  post them to exposed URL
+    ensure_dir(pot_path)
+    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(pot_path, "kalite.pot"))
+    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(pot_path, "kalitejs.pot"))
 
 
 def generate_test_files():
@@ -131,9 +143,13 @@ def generate_test_files():
 
 
 def compile_po_files(lang_codes=None, failure_ok=True):
-    """Compile all po files in locale directory"""
+    """
+    Compile all po files in locale directory.
+
+    First argument (lang_codes) can be None (means all), a list/tuple, or even a string (shh...)
+    """
     # before running compilemessages, ensure in correct directory
-    move_to_project_root()
+    change_dir_to_project_root()
 
     if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
