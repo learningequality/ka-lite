@@ -133,13 +133,18 @@ def move_srts(lang_code):
     Srts live in the locale directory, but that's not exposed at any URL.  So instead,
     we have to move the srts out to /static/subtitles/[lang_code]/
     """
-    lang_code = lcode_to_ietf(lang_code)
-    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
-    srt_static_dir = os.path.join(subtitles_static_dir, lang_code)
-    srt_locale_dir = os.path.join(LOCALE_ROOT, lang_code, "subtitles")
+    lang_code_ietf = lcode_to_ietf(lang_code)
+    lang_code_django = lcode_to_django_dir(lang_code)
 
+    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
+    srt_static_dir = os.path.join(subtitles_static_dir, lang_code_ietf)
+    srt_locale_dir = os.path.join(LOCALE_ROOT, lang_code_django, "subtitles")
     ensure_dir(srt_static_dir)
-    for fil in glob.glob(os.path.join(srt_locale_dir, "*.srt")):
+
+    lang_subtitles = glob.glob(os.path.join(srt_locale_dir, "*.srt"))
+    logging.debug("Moving %d subtitles from %s to %s" % (len(lang_subtitles), srt_locale_dir, srt_static_dir))
+
+    for fil in lang_subtitles:
         srt_dest_path = os.path.join(srt_static_dir, os.path.basename(fil))
         if os.path.exists(srt_dest_path):
             os.remove(srt_dest_path)

@@ -232,18 +232,25 @@ def get_languages_on_disk():
 def get_subtitles_on_disk(youtube_id):
     """
     Returns a list of all language codes that contain subtitles for this video.
+
+    Central and distributed servers store in different places, so loop differently
     """
 
-    installed_subtitles = []
+    def on_disk_central(youtube_id):
+        installed_subtitles = []
 
-    # Loop through locale folders
-    for locale_dir in settings.LOCALE_PATHS:
-        if not os.path.exists(locale_dir):
-            continue
+        # Loop through locale folders
+        for locale_dir in settings.LOCALE_PATHS:
+            if not os.path.exists(locale_dir):
+                continue
+            installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
+        return installed_subtitles
 
-        installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
+    def on_disk_distributed(youtube_id):
+        installed_subtitles = [lang for lang in os.listdir(os.path.join(settings.STATIC_ROOT, "subtitles")) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
+        return installed_subtitles
 
-    return sorted(installed_subtitles)
+    return sorted(on_disk_central(youtube_id) if settings.CENTRAL_SERVER else on_disk_distributed(youtube_id))
 
 
 def update_jsi18n_file(code="en"):
