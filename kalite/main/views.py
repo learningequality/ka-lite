@@ -404,7 +404,7 @@ def search(request, topics):  # we don't use the topics variable, but this setup
             possible_matches[node_type] = []  # make dict only for non-skipped categories
             for nodearr in node_dict.values():
                 node = nodearr[0]
-                title = node['title'].lower()  # this could be done once and stored.
+                title = _(node['title']).lower()  # this could be done once and stored.
                 if title == query:
                     # Redirect to an exact match
                     return HttpResponseRedirect(node['path'])
