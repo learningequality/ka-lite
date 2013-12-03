@@ -24,7 +24,7 @@ from django.core.management import call_command
 import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
-from shared.i18n import get_language_name, get_lang_map_filepath
+from shared.i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
 from shared.topic_tools import get_slug2id_map
 from utils.general import convert_date_input, ensure_dir, make_request
 
@@ -56,8 +56,11 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             with open(map_file, "r") as fp:
                 srts_dict = json.load(fp)
         except Exception as e:
-            logging.error("JSON file corrupted, using empty json and starting from scratch (%s)" % e)
-            srts_dict = {}
+            if not force:  # only handle the error if force=True.  Otherwise, these data are too valuable to lose, so just assume a temp problem.
+                raise
+            else:
+                logging.error("JSON file corrupted, using empty json and starting from scratch (%s)" % e)
+                srts_dict = {}
         else:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
 
@@ -211,6 +214,7 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
     for youtube_id, data in api_info_map.items():
         languages = data.get("language_codes", [])
         for lang_code in languages:
+            lang_code = lcode_to_ietf(lang_code)
             if not lang_code in remote_availability_map:
                 #logging.info("Creating language section '%s'" % lang_code)
                 remote_availability_map[lang_code] = {}

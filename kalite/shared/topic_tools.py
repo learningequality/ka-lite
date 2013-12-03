@@ -6,6 +6,8 @@ import json
 import os
 from functools import partial
 
+from django.utils.translation import ugettext as _
+
 import settings
 from settings import LOG as logging
 from shared import i18n
@@ -61,12 +63,12 @@ def get_slug2id_map(force=False):
     return SLUG2ID_MAP
 
 
-FLAT_TOPIC_TREE = None
-def get_flat_topic_tree(force=False):
+FLAT_TOPIC_TREE = {}
+def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
     global FLAT_TOPIC_TREE
-    if FLAT_TOPIC_TREE is None or force:
-        FLAT_TOPIC_TREE = generate_flat_topic_tree(get_node_cache(force=force))
-    return FLAT_TOPIC_TREE
+    if lang_code not in FLAT_TOPIC_TREE or force:
+        FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
+    return FLAT_TOPIC_TREE[lang_code]
 
 
 def validate_ancestor_ids(topictree=None):
@@ -109,7 +111,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     return slug2id_map
 
 
-def generate_flat_topic_tree(node_cache=None):
+def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
     categories = node_cache or get_node_cache()
     result = dict()
     # make sure that we only get the slug of child of a topic
@@ -119,7 +121,7 @@ def generate_flat_topic_tree(node_cache=None):
         for node_name, node_list in category.iteritems():
             node = node_list[0]
             relevant_data = {
-                'title': node['title'],
+                'title': _(node['title']),
                 'path': node['path'],
                 'kind': node['kind'],
                 'available': node.get('available', True),

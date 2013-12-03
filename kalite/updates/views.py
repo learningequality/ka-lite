@@ -32,6 +32,7 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
+from shared.i18n import lcode_to_ietf
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
@@ -87,7 +88,6 @@ def update_languages(request):
 
     context.update({
         "installed_languages": list(get_installed_language_packs()),
-        "default_language": request.session['default_language'],
     })
 
     return context

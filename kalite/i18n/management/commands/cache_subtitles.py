@@ -26,7 +26,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import lcode_to_django, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
 from utils.general import convert_date_input, ensure_dir, make_request
 
 
@@ -81,28 +81,36 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
         lang_code = lcode_to_ietf(lang_code)
 
         try:
-            with open(get_lang_map_filepath(lang_code), "r") as fp:
-                videos = json.load(fp)
+            lang_map_filepath = get_lang_map_filepath(lang_code)
+            if not os.path.exists(lang_map_filepath):
+                videos = {}  # happens if an unknown set for subtitles.
+            else:
+                with open(lang_map_filepath, "r") as fp:
+                    videos = json.load(fp)
         except Exception as e:
-            logging.error("Error in subtitles metadata file for %s: %s" % (lang_code, e))
-            bad_languages[lang_code] = e
+            error_msg = "Error in subtitles metadata file for %s: %s" % (lang_code, e)
+            logging.error(error_msg)
+            bad_languages[lang_code] = error_msg
             continue
 
         try:
             download_if_criteria_met(videos, lang_code=lang_code, **kwargs)
         except Exception as e:
-            logging.error("Error downloading subtitles for %s: %s" % (lang_code, e))
-            bad_languages[lang_code] = e
+            error_msg = "Error downloading subtitles for %s: %s" % (lang_code, e)
+            logging.error(error_msg)
+            bad_languages[lang_code] = error_msg
             continue
 
     # now report final results
     if bad_languages:
-        raise CommandError("Failed to download subtitles for the following languages: %s" % bad_languages.keys())
+        outstr = "Failed to download subtitles for the following languages: %s" % (bad_languages.keys())
+        outstr += "\n" + str(bad_languages)
+        logging.error(outstr)
 
 
 def get_srt_path(lang_code, locale_root=LOCALE_ROOT):
     "lang_code: since srts are stored for django, must convert to django inside function"""
-    return os.path.join(locale_root, lcode_to_django(lang_code), "subtitles")
+    return os.path.join(locale_root, lcode_to_django_dir(lang_code), "subtitles")
 
 
 def get_all_download_status_files():
