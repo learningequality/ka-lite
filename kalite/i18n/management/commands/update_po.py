@@ -62,7 +62,7 @@ class Command(BaseCommand):
 
 def change_dir_to_project_root():
     """Change into the project root directory to run i18n commands"""
-    logging.info("Moving to project root directory")
+    logging.debug("Moving to project root directory")
     project_root = os.path.join(settings.PROJECT_PATH, "../")
     os.chdir(project_root)
     ensure_dir(os.path.join(project_root, "locale/"))
