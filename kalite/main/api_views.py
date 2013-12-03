@@ -333,6 +333,7 @@ def status(request):
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
+        "current_language": request.session["django_language"],
         "messages": message_dicts,
     }
     # Override properties using facility data
@@ -359,6 +360,13 @@ def getpid(request):
         return HttpResponse("")
 
 
+@api_handle_error_with_json
 @backend_cache_page
-def flat_topic_tree(request):
-    return JsonResponse(get_flat_topic_tree())
+def flat_topic_tree(request, lang_code):
+
+    if lang_code != request.session.get("django_language"):
+        raise NotImplementedError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current=%(current_lang)s, requested=%(requested_lang)s).") % {
+            "current_lang": request.session.get("django_language"),
+            "requested_lang": lang_code,
+        })
+    return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
