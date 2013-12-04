@@ -53,17 +53,21 @@
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
         <script>
-            // the following variables are used by functions in distributed-server.js
-            // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
-            var SERVER_INFO_PATH    = "{% url get_server_info %}";
-            var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
-            var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
+         // the following variables are used by functions in distributed-server.js
+         // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
+         var SERVER_INFO_PATH    = "{% url get_server_info %}";
+         var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
+         var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
+         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}";
+         var CHANGE_LANGUAGE_URL = window.location.href + "?set_default_language="
+         var DEFAULT_LANGUAGE = "{{ default_language }}"
         </script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/distributed-server.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/language_switch.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}?{{ BUILD_ID }}"></script>
 
         {% block headjs %}{% endblock headjs %}
@@ -172,8 +176,10 @@
 
                     {% endblock footerleft %}
                     <div id="copyright" class="tiny">
-                        {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
-                        <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
+                      <select id="language-select">
+                      </select>
+                      {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
+                      <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
                     </div>
                 </div>
             </div>
