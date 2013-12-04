@@ -5,6 +5,7 @@ import requests
 import shutil
 import sys
 import zipfile
+from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
@@ -116,8 +117,8 @@ def update_database(lang_code):
 
     logging.info("Updating database for language pack: %s" % lang_code)
 
-    pack, created = LanguagePack.objects.get_or_create(code=lang_code)
-    for key, value in metadata.items():
+    pack = get_object_or_None(LanguagePack, code=lang_code) or LanguagePack(code=lang_code)
+    for key, value in metadata.iteritems():
         setattr(pack, key, value)
     pack.save()
 

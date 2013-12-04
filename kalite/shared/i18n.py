@@ -49,13 +49,19 @@ def get_language_pack_url(lang_code, version=version.VERSION):
 class LanguageNotFoundError(Exception):
     pass
 
+DUBBED_VIDEO_MAP_RAW = None
 DUBBED_VIDEO_MAP = None
 def get_dubbed_video_map(lang_code=None, force=False):
-    global DUBBED_VIDEO_MAP, DUBBED_VIDEOS_MAPPING_FILEPATH
+    """
+    Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
+    """
+    global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW, DUBBED_VIDEOS_MAPPING_FILEPATH
     if DUBBED_VIDEO_MAP is None or force:
         try:
             if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
                 if settings.CENTRAL_SERVER:
+                    # Never call commands that could fail from the distributed server.
+                    #   Always create a central server API to abstract things (see below)
                     call_command("generate_dubbed_video_mappings")
                 else:
                     response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
@@ -63,10 +69,15 @@ def get_dubbed_video_map(lang_code=None, force=False):
                     with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
                         fp.write(response.content)  # wait until content has been confirmed before opening file.
             with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
-                DUBBED_VIDEO_MAP = json.load(fp)
+                DUBBED_VIDEO_MAP_RAW = json.load(fp)
         except:
-            DUBBED_VIDEO_MAP = {}  # setting this will avoid triggering reload on every call
-    return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
+            DUBBED_VIDEO_MAP_RAW = {}  # setting this will avoid triggering reload on every call
+
+        DUBBED_VIDEO_MAP = {}
+        for lang_name, video_map in DUBBED_VIDEO_MAP_RAW.iteritems():
+            DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
+
+    return DUBBED_VIDEO_MAP.get(lang_code) if lang_code else DUBBED_VIDEO_MAP
 
 YT2ID_MAP = None
 def get_file2id_map(force=False):
@@ -75,7 +86,7 @@ def get_file2id_map(force=False):
         YT2ID_MAP = {}
         for dic in get_dubbed_video_map().values():
             for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                YT2ID_MAP[dubbed_youtube_id] = english_youtube_id
+                YT2ID_MAP[dubbed_youtube_id] = english_youtube_id  # assumes video id is the english youtube_id
     return YT2ID_MAP
 
 ID2OKLANG_MAP = None
@@ -114,27 +125,36 @@ def get_srt_path_on_disk(youtube_id, code):
 
 
 CODE2LANG_MAP = None
-def get_code2lang_map(force=False):
+def get_code2lang_map(lang_code=None, force=False):
+    """
+    """
     global LANG_LOOKUP_FILEPATH, CODE2LANG_MAP
+
     if force or not CODE2LANG_MAP:
         with open(LANG_LOOKUP_FILEPATH, "r") as fp:
             lmap = json.load(fp)
+
         CODE2LANG_MAP = {}
-        # convert all upper to lower
-        for lang_code, entry in lmap.iteritems():
-            CODE2LANG_MAP[lcode_to_ietf(lang_code)] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
-    return CODE2LANG_MAP
+        for lc, entry in lmap.iteritems():
+            CODE2LANG_MAP[lcode_to_ietf(lc)] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+
+    return CODE2LANG_MAP.get(lang_code, {}).get("name") if lang_code else CODE2LANG_MAP
 
 LANG2CODE_MAP = None
-def get_langcode_map(force=False):
+def get_langcode_map(lang_name=None, force=False):
+    """
+    """
     global LANG_LOOKUP_FILEPATH, LANG2CODE_MAP
+
     if force or not LANG2CODE_MAP:
         LANG2CODE_MAP = {}
+
         for code, entries in get_code2lang_map(force=force).iteritems():
             for lang in entries.values():
                 if lang:
                     LANG2CODE_MAP[lang.lower()] = lcode_to_ietf(code)
-    return LANG2CODE_MAP
+
+    return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 def get_language_name(lang_code, native=False, error_on_missing=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
@@ -143,7 +163,7 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
     # Convert code if neccessary
     lang_code = lcode_to_ietf(lang_code)
 
-    language_entry = get_code2lang_map().get(lang_code)
+    language_entry = get_code2lang_map(lang_code)
     if not language_entry:
         if error_on_missing:
             raise LanguageNotFoundError("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, LANG_LOOKUP_FILEPATH))
