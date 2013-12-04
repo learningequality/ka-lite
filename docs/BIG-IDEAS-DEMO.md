@@ -1,5 +1,7 @@
 ___Setting up a Spanish-language demo___
-* To the file `ka-lite/kalite/local_settings.py`, add the line `CENTRAL_SERVER_HOST="kalite.learningequality.org:7007"`
+* To the file `ka-lite/kalite/local_settings.py`, add the following lines:
+    * `CENTRAL_SERVER_HOST="kalite.learningequality.org:7007"`
+    * `CACHE_TIME = 0`
 * Run `scrape_videos -l es` to get all the dubbed videos
 * Run `scrape_exercises -l es` to get all the localized exercises.
 * Install the spanish language pack
@@ -12,6 +14,7 @@ ___Setting up a Spanish-language demo___
 DONE!!!
 
 ___Want to have more language packs available?___
+
 1. Log into the central server
 2. In the `ka-lite-develop/kalite` folder, run `./manage.py update_language_pack -l [lang_code]
     * Useful language codes: de (German), ar (Arabic), zh-CN (simplified Chinese), pt-BR (brazilian portuguese), en (english)
@@ -34,6 +37,7 @@ rename the Pytw-oTpUNk.mp4
 DONE!
 
 ___Download Localized Exercises___
+
 1. Download https://es.khanacademy.org/khan-exercises/exercises/vertical_angles.html?lang=es
 2. Put into the `ka-lite/kalite/static/js/khan-exercises/exercises/` folder to replace the english version
 3. Repeat for all files in the directory!
