@@ -11,6 +11,11 @@ ___Setting up a Spanish-language demo___
 
 DONE!!!
 
+___Want to have more language packs available?___
+1. Log into the central server
+2. In the `ka-lite-develop/kalite` folder, run `./manage.py update_language_pack -l [lang_code]
+    * Useful language codes: de (German), ar (Arabic), zh-CN (simplified Chinese), pt-BR (brazilian portuguese), en (english)
+3. Go back to your distributed server, and refresh--you'll find the language packs there.
 
 ___New commands___
 * `scrape_videos -l es` - [run on distributed server] download all known dubbed videos in spanish, from youtube, and save as mp4
