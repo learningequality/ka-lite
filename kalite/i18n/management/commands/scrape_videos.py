@@ -70,7 +70,7 @@ class Command(BaseCommand):
         lang_code = lcode_to_ietf(options["lang_code"])
         video_map = get_dubbed_video_map(lang_code) or {}
         video_ids = options["video_ids"].split(",") if options["video_ids"] else None
-        video_ids = video_ids or (get_topic_videos(topic_id=options["topic_id"]) if options["topic_id"] else None)
+        video_ids = video_ids or ([video["youtube_id"] for video in get_topic_videos(topic_id=options["topic_id"])] if options["topic_id"] else None)
         video_ids = video_ids or video_map.keys()
 
         # Download the videos
