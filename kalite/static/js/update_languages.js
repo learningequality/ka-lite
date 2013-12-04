@@ -1,4 +1,4 @@
-var installable_languages;
+var installable_languages = null;
 
 
 // this function doesn't look good. One too many callbacks!
@@ -144,3 +144,6 @@ function languagepack_reset_callback(progress, resp) {
 var languagepack_callbacks = {
     reset: languagepack_reset_callback
 };
+
+// Show the (locally) installed languages, while we wait for the central server
+$(function() { display_languages([]); });
