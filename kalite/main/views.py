@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import re
 import sys
 from annoying.decorators import render_to
@@ -201,12 +202,28 @@ def topic_context(topic):
     topics    = topic_tools.get_live_topics(topic)
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
+    exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
+
+    for lang_code in os.listdir(exercises_path):
+        loc_path = os.path.join(exercises_path, lang_code)
+        if not os.path.isdir(loc_path):
+            continue
+
+        for exercise in exercises:
+            ex_path = os.path.join(loc_path, "%s.html" % exercise["id"])
+            if not os.path.exists(ex_path):
+                continue
+            exercise_langs[exercise["id"]].append(lang_code)
+
+
     context = {
         "topic": topic,
         "title": topic["title"],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
+        "exercise_langs": exercise_langs,
         "topics": my_topics,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
@@ -268,10 +285,19 @@ def exercise_handler(request, exercise, **related_videos):
     """
     Display an exercise
     """
+    lang = request.session["django_language"]
+    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_file = exercise["slug"] + ".html"
+    exercise_template = exercise_file
+    exercise_localized_template = os.path.join(lang, exercise_file)
+
+    if os.path.exists(os.path.join(exercise_root, exercise_localized_template)):
+        exercise_template = exercise_localized_template
+
     context = {
         "exercise": exercise,
         "title": exercise["title"],
-        "exercise_template": "exercises/" + exercise["slug"] + ".html",
+        "exercise_template": exercise_template,
         "related_videos": [v for v in related_videos.values() if v["available"]],
     }
     return context

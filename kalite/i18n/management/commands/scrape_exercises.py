@@ -10,6 +10,7 @@ NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us). However,
 """
 import glob
 import os
+import requests
 import shutil
 from optparse import make_option
 
@@ -17,9 +18,9 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.topic_tools import get_topic_videos
-from shared.i18n import get_dubbed_video_map, lcode_to_ietf
-from utils.videos import get_outside_video_urls
+from shared.topic_tools import get_node_cache
+from shared.i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang
+from utils.general import ensure_dir
 
 
 class Command(BaseCommand):
@@ -32,12 +33,12 @@ class Command(BaseCommand):
                     default=None,
                     metavar="LANG_CODE",
                     help="Specify a particular language code (e.g. en-us) to download subtitles for. Can be used with -f to update previously downloaded subtitles."),
-        make_option('-i', '--video-ids',
+        make_option('-i', '--exercise-ids',
                     action='store',
-                    dest='video_ids',
+                    dest='exercise_ids',
                     default=None,
-                    metavar="VIDEO_IDS",
-                    help="Download the specified videos only"),
+                    metavar="exercise_ids",
+                    help="Download the specified exercises only"),
         make_option('-t', '--topic-id',
                     action='store',
                     dest='topic_id',
@@ -66,56 +67,38 @@ class Command(BaseCommand):
         if not options["lang_code"]:
             raise CommandError("You must specify a language code.")
 
-        # Get list of videos
+        # Get list of exercises
         lang_code = lcode_to_ietf(options["lang_code"])
-        video_map = get_dubbed_video_map(lang_code)
-        video_ids = options["video_ids"].split(",") if options["video_ids"] else None
-        video_ids = video_ids or (get_topic_videos(topic_id=options["topic_id"]) if options["topic_id"] else None)
-        video_ids = video_ids or video_map.keys()
+        exercise_ids = options["exercise_ids"].split(",") if options["exercise_ids"] else None
+        exercise_ids = exercise_ids or (get_topic_exercises(topic_id=options["topic_id"]) if options["topic_id"] else None)
+        exercise_ids = exercise_ids or get_node_cache("Exercise").keys()
 
-        # Download the videos
-        for video_id in video_ids:
-            if video_id in video_map:
-                youtube_id = video_map[video_id]
-
-            elif video_id in video_map.values():
-                # Perhaps they sent in a youtube ID?  We can handle that!
-                youtube_id = video_id
-            else:
-                logging.error("No mapping for video_id=%s; skipping" % video_id)
-                continue
-
-            scrape_video(youtube_id=youtube_id, format=options["format"], force=options["force"])
-            #scrape_thumbnail(youtube_id=youtube_id)
+        # Download the exercises
+        for exercise_id in exercise_ids:
+            scrape_exercise(exercise_id=exercise_id, lang_code=lang_code, force=options["force"])
 
         logging.info("Process complete.")
 
-def scrape_video(youtube_id, format="mp4", force=False):
+def scrape_exercise(exercise_id, lang_code, force=False):
+    ka_lang_code = lang_code.lower()
 
-    video_filename = "%s.%s" % (youtube_id, format)
-    video_filepath = os.path.join(settings.CONTENT_ROOT, video_filename)
-    if os.path.exists(video_filepath) and not force:
+    exercise_filename = "%s.%s" % (exercise_id, "html")
+    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_localized_root = os.path.join(exercise_root, ka_lang_code)
+    exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
+
+    if os.path.exists(exercise_dest_filepath) and not force:
         return
 
-    # Step 1: install youtube-dl
-    if os.system("which youtube-dl"):
-        logging.info("Downloading youtube-dl")
-        os.system("sudo curl https://yt-dl.org/downloads/2013.12.03/youtube-dl -o /usr/local/bin/youtube-dl")
+    exercise_url = "https://es.khanacademy.org/khan-exercises/exercises/%s.html?lang=%s" % (exercise_id, ka_lang_code)
+    logging.info("Retrieving exercise %s from %s" % (exercise_id, exercise_url))
 
-    logging.info("Retrieving youtube video %s" % youtube_id)
-    os.system("youtube-dl  --id -f %s www.youtube.com/watch?v=%s" % (format, youtube_id))
-    os.system("youtube-dl  --write-thumbnail -k --id -f %s www.youtube.com/watch?v=%s" % (format, youtube_id))
-
-    for fil in glob.glob(youtube_id + ".*"):
-        if not os.path.exists(os.path.join(settings.CONTENT_ROOT, fil)):
-            shutil.move(fil, settings.CONTENT_ROOT)
-
-"""
-def scrape_thumbnail(youtube_id, format="png", force=False):
-    _, thumbnail_url = get_outside_video_urls(youtube_id)
     try:
-        resp = requests.get(thumbnail_url)
-        with open(
+        ensure_dir(exercise_localized_root)
+
+        resp = requests.get(exercise_url)
+        resp.raise_for_status()
+        with open(exercise_dest_filepath, "wb") as fp:
+            fp.write(resp.content)
     except Exception as e:
-        logging.error("Failed to download %s: %s" % (thumbnail_url, e))
-"""
+        logging.error("Failed to download %s: %s" % (exercise_url, e))

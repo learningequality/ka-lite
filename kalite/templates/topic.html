@@ -114,6 +114,14 @@
         <li>
             <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
             <a class="exercise-link" href="e/{{ exercise.name }}/">{% trans exercise.display_name %}</a>
+
+            {# dubbed videos #}
+            {% for lang in exercise_langs|get_item:exercise.id %}
+                <span class="video_indicator">
+                    {{ lang }}
+                </span>
+            {% endfor %}
+
         </li>
         {% endfor %}
         <br/>
