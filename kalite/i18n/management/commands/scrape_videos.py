@@ -37,7 +37,7 @@ class Command(BaseCommand):
                     dest='video_ids',
                     default=None,
                     metavar="VIDEO_IDS",
-                    help="Download the specified video only"),
+                    help="Download the specified videos only"),
         make_option('-t', '--topic-id',
                     action='store',
                     dest='topic_id',

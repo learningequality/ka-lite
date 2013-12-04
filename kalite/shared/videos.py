@@ -50,15 +50,10 @@ def get_video_urls(video_id, format="mp4", videos_path=settings.CONTENT_ROOT):
 
     # Loop over all known dubbed videos
     urls = {}
-    for language, youtube_id in get_id2oklang_map(video_id).iteritems():
-        try:
-            lang_code = get_language_code(language)
-        except Exception as e:
-            logging.warn("Skipping unknown language '%s'" % (language))
-            continue
+    for lang_code, youtube_id in get_id2oklang_map(video_id).iteritems():
         urls[lang_code] = compute_urls(youtube_id, format, videos_path=videos_path)
 
-    urls["en"] = urls.get("en", {})
+    urls["en"] = urls.get("en", {"on_disk": False})
     urls["en"]["subtitles"] = subtitles_urls
 
     # now scrub any values that don't actually exist
@@ -119,7 +114,7 @@ def video_counts_need_update(videos_path=settings.CONTENT_ROOT, format="mp4"):
     return need_update
 
 
-def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, stamp_urls=False):
+def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, stamp_urls=True):
     """ Uses the (json) topic tree to query the django database for which video files exist
 
     Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -164,10 +159,10 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
             videos = get_videos(topic)
             for video in videos:
                 #import pdb; pdb.set_trace()
-                if stamp_urls and (force or "urls" not in video):
+                if (force or "urls" not in video):
                     stamp_urls_on_video(video)
-                elif not "urls" in video:  # TODO(bcipolli) this is an intentional bug, until performance can be boosted.
-                    video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path=videos_path)
+                #elif not "urls" in video:  # TODO(bcipolli) this is an intentional bug, until performance can be boosted.
+                #    video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path=videos_path)
                 nvideos_local += int(video["on_disk"])
 
             nvideos_known = len(videos)
