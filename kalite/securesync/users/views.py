@@ -279,4 +279,3 @@ def logout(request):
     if next[0] != "/":
         next = "/"
     return HttpResponseRedirect(next)
-
