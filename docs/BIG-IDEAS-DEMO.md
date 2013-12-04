@@ -1,6 +1,7 @@
 ___Setting up a Spanish-language demo___
 * To the file `ka-lite/kalite/local_settings.py`, add the following lines:
-    * `CENTRAL_SERVER_HOST="kalite.learningequality.org:7007"`
+    * `CENTRAL_SERVER_HOST = "kalite.learningequality.org:7007"`
+    * `SECURESYNC_PROTOCOL = "http"`
     * `CACHE_TIME = 0`
 * Run `scrape_videos -l es` to get all the dubbed videos
 * Run `scrape_exercises -l es` to get all the localized exercises.
