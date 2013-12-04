@@ -4,7 +4,8 @@ import settings
 from .models import LanguagePack
 from config.models import Settings
 from settings import LOG as logging
-from shared.i18n import lcode_to_django_lang
+from shared.i18n import lcode_to_django_lang, lcode_to_ietf
+
 
 class SessionLanguage:
     def process_request(self, request):
@@ -55,4 +56,4 @@ class SessionLanguage:
 class VideoLanguage:
     """SessionLanguage must be called first"""
     def process_request(self, request):
-        request.video_language = lcode_to_django_lang(request.GET.get("lang") or request.session["django_language"])
+        request.video_language = lcode_to_ietf(request.GET.get("lang") or request.session["django_language"])

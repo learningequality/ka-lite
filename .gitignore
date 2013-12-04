@@ -31,6 +31,7 @@ writeup/
 /kalite/local_settings.py
 /kalite/media
 /kalite/static/js/i18n
+/kalite/static/js/khan-exercises/exercises/*/
 /kalite/static/subtitles
 /kalite/private_key.pem
 /kalite/secrets.py

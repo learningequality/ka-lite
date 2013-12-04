@@ -17,7 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.topic_tools import get_topic_videos
+from shared.topic_tools import get_topic_videos, get_node_cache
 from shared.i18n import get_dubbed_video_map, lcode_to_ietf
 from utils.videos import get_outside_video_urls
 
@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
         # Get list of videos
         lang_code = lcode_to_ietf(options["lang_code"])
-        video_map = get_dubbed_video_map(lang_code)
+        video_map = get_dubbed_video_map(lang_code) or {}
         video_ids = options["video_ids"].split(",") if options["video_ids"] else None
         video_ids = video_ids or (get_topic_videos(topic_id=options["topic_id"]) if options["topic_id"] else None)
         video_ids = video_ids or video_map.keys()
@@ -87,6 +87,7 @@ class Command(BaseCommand):
 
             scrape_video(youtube_id=youtube_id, format=options["format"], force=options["force"])
             #scrape_thumbnail(youtube_id=youtube_id)
+            logging.info("Access video at %s" % get_node_cache("Video")[video_id][0]["path"])#, {}).get("path"))
 
         logging.info("Process complete.")
 
@@ -98,7 +99,7 @@ def scrape_video(youtube_id, format="mp4", force=False):
         return
 
     # Step 1: install youtube-dl
-    if os.system("which youtube-dl"):
+    if os.system("which youtube-dl > /dev/null"):
         logging.info("Downloading youtube-dl")
         os.system("sudo curl https://yt-dl.org/downloads/2013.12.03/youtube-dl -o /usr/local/bin/youtube-dl")
 
