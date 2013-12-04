@@ -134,8 +134,8 @@
                                                     <li>
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
-                                                                <div class="thumb">
-                                                                    <img class="thumbimage" {% if video.urls.en.thumbnail %}src="{{ video.urls.en.thumbnail }}{% endif %}"/>
+                                                                <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
+                                                                    <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
                                                                             <span class="progress-circle" data-video-id="{{ video.id }}"></span>

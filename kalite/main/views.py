@@ -32,7 +32,7 @@ from shared.caching import backend_cache_page
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent
-from shared.videos import get_video_urls, stamp_video_counts, stamp_urls_on_video, video_counts_need_update
+from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
 from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
 
@@ -85,7 +85,7 @@ def refresh_topic_cache(handler, force=False):
 
     def recount_videos_and_invalidate_parents(node, force=False, stamp_urls=False):
         """
-        Call stamp_video_counts (if necessary); if a change has been detected,
+        Call stamp_video_availability (if necessary); if a change has been detected,
         then check parents to see if their counts should be invalidated.
         """
         do_it = force
@@ -96,7 +96,7 @@ def refresh_topic_cache(handler, force=False):
                 "(and urls) " if stamp_urls else "",
                 node["path"],
             ))
-            (_a, _b, _c, changed) = stamp_video_counts(topic=node, force=force, stamp_urls=stamp_urls)
+            (_a, _b, _c, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
             if changed:
                 strip_counts_from_ancestors(node)
         return node
@@ -118,14 +118,14 @@ def refresh_topic_cache(handler, force=False):
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or "urls" not in node:
-                    #stamp_urls_on_video(node, force=force)  # will be done by force below
+                if force or "availability" not in node:
+                    #stamp_availability_on_topic(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
                 for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not "urls" in video:
-                        stamp_urls_on_video(video, force=True)  # will be done by force below
+                    if not "availability" in video:
+                        stamp_availability_on_video(video, force=True)  # will be done by force below
 
             elif node["kind"] == "Topic":
                 bottom_layer_topic =  "Topic" not in node["contains"]
@@ -244,11 +244,11 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
 
-    if video["available"] and not any([url["on_disk"] for url in video["urls"].values()]):
-        messages.success(request, "Got video content from %s" % video["urls"]["default"]["stream_url"])
+    if video["available"] and not any([avail["on_disk"] for avail in video["availability"].values()]):
+        messages.success(request, "Got video content from %s" % video["availability"]["default"]["stream_url"])
 
     # Fallback mechanism
-    available_urls = dict([(lang, urls) for lang, urls in video["urls"].iteritems() if urls["on_disk"]])
+    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
     if not available_urls:
         vid_lang = None
     elif request.video_language in available_urls:
