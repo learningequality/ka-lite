@@ -85,9 +85,12 @@ class Command(BaseCommand):
                 logging.error("No mapping for video_id=%s; skipping" % video_id)
                 continue
 
-            scrape_video(youtube_id=youtube_id, format=options["format"], force=options["force"])
-            #scrape_thumbnail(youtube_id=youtube_id)
-            logging.info("Access video at %s" % get_node_cache("Video")[video_id][0]["path"])#, {}).get("path"))
+            try:
+                scrape_video(youtube_id=youtube_id, format=options["format"], force=options["force"])
+                #scrape_thumbnail(youtube_id=youtube_id)
+                logging.info("Access video %s at %s" % (youtube_id, get_node_cache("Video")[video_id][0]["path"]))
+            except Exception as e:
+                logging.error("Failed to download video %s: %s" % (youtube_id, e))
 
         logging.info("Process complete.")
 
