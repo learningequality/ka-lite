@@ -25,6 +25,7 @@ import re
 import requests
 import shutil
 import subprocess
+import sys
 import tempfile
 import zipfile
 import StringIO
@@ -87,7 +88,7 @@ class Command(BaseCommand):
                     help="Use the local po files, instead of refreshing from online (a way to test translation tweaks)"),
     )
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         if not settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on the central server.")
         if not options["lang_code"] or options["lang_code"].lower() == "all":
@@ -147,6 +148,8 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
                 project_key=settings.CROWDIN_PROJECT_KEY,
                 zip_file=zip_file,
             )
+            if not po_file:
+                continue
 
             # Download Khan Academy translations too
             if download_ka_translations:
@@ -271,11 +274,14 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
 
         logging.info("Attempting to download a zip archive of current translations")
         request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, lang_code, project_key)
-        r = requests.get(request_url)
         try:
-            r.raise_for_status()
+            resp = requests.get(request_url)
+            resp.raise_for_status()
         except Exception as e:
-            if r.status_code == 401:
+            if resp.status_code == 404:
+                logging.info("No translations found for language %s" % lang_code)
+                return None  # no translations
+            elif resp.status_code == 401:
                 raise CommandError("401 Unauthorized while trying to access the CrowdIn API. Be sure to set CROWDIN_PROJECT_ID and CROWDIN_PROJECT_KEY in local_settings.py.")
             else:
                 raise CommandError("%s - couldn't connect to CrowdIn API - cannot continue without downloading %s!" % (e, request_url))
@@ -283,11 +289,11 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
             logging.info("Successfully downloaded zip archive")
 
         # Unpack into temp dir
-        z = zipfile.ZipFile(StringIO.StringIO(r.content))
+        z = zipfile.ZipFile(StringIO.StringIO(resp.content))
 
         if zip_file:
             with open(zip_file, "wb") as fp:  # save the zip file
-                fp.write(r.content)
+                fp.write(resp.content)
 
     tmp_dir_path = tempfile.mkdtemp()
     z.extractall(tmp_dir_path)
@@ -307,9 +313,9 @@ def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=setti
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
-    r = requests.get(request_url)
+    resp = requests.get(request_url)
     try:
-        r.raise_for_status()
+        resp.raise_for_status()
     except Exception as e:
         logging.error(e)
 
@@ -348,7 +354,19 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         if combine_with_po_file and os.path.exists(combine_with_po_file):
             concat_command += [combine_with_po_file]
 
-        subprocess.call(concat_command)
+
+        backups = [sys.stdout, sys.stderr]
+        try:
+            sys.stdout = StringIO.StringIO()     # capture output
+            sys.stderr = StringIO.StringIO()
+
+            p = subprocess.call(concat_command)
+
+            out = sys.stdout.getvalue() # release output
+            err = sys.stderr.getvalue() # release err
+        finally:
+            sys.stdout = backups[0]
+            sys.stderr = backups[1]
 
         shutil.move(build_file, dest_file)  # for debugging; make sure to remove!!!!!
         shutil.copy(dest_file, './django.po')
@@ -422,7 +440,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False):
             # update metadata
             updated_meta = {
                 "code": lcode_to_ietf(crowdin_meta.get("code") or lang_code_django),  # user-facing code
-                "name": crowdin_meta.get("name") or lang_name,
+                "name": (crowdin_meta.get("name") or lang_name),
                 "percent_translated": int(crowdin_meta.get("approved_progress", 0)),
                 "phrases": int(crowdin_meta.get("phrases", 0)),
                 "approved_translations": int(crowdin_meta.get("approved", 0)),
