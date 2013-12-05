@@ -70,7 +70,7 @@ class Command(BaseCommand):
         # Get list of exercises
         lang_code = lcode_to_ietf(options["lang_code"])
         exercise_ids = options["exercise_ids"].split(",") if options["exercise_ids"] else None
-        exercise_ids = exercise_ids or (get_topic_exercises(topic_id=options["topic_id"]) if options["topic_id"] else None)
+        exercise_ids = exercise_ids or ([ex["id"] for ex in get_topic_exercises(topic_id=options["topic_id"])] if options["topic_id"] else None)
         exercise_ids = exercise_ids or get_node_cache("Exercise").keys()
 
         # Download the exercises
