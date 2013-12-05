@@ -171,10 +171,13 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
             # Fake it
             language_entry = {"name": lang_code, "native_name": lang_code}
 
-    if not native:
-        return language_entry["name"]
+    if not isinstance(language_entry, dict):
+        return language_entry
     else:
-        return language_entry["native_name"]
+        if not native:
+            return language_entry["name"]
+        else:
+            return language_entry["native_name"]
 
 
 def get_language_code(language, for_django=False):
