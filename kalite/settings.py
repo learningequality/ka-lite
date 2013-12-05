@@ -93,12 +93,6 @@ DATABASES      = getattr(local_settings, "DATABASES", {
     }
 })
 
-CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
-CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
-PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {'min_length': getattr(local_settings,
-                                                                                              'PASSWORD_MIN_LENGTH',
-                                                                                              6)})
-
 
 ##############################
 # Basic Django settings
@@ -216,8 +210,10 @@ if CENTRAL_SERVER:
     AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
     AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
 
-else:
+    CONTENT_ROOT   = None
+    CONTENT_URL    = None
 
+else:
     ROOT_URLCONF = "main.urls"
     INSTALLED_APPS += ("i18n", "updates",)
     MIDDLEWARE_CLASSES += (
@@ -226,10 +222,18 @@ else:
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
     )
-#    if USE_I18N:
+
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage", "i18n.middleware.VideoLanguage",)  # VideoLanguage must come after SessionLanguage
     INSTALLED_APPS += ('i18n',)
+
+    CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
+    CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
+    PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
+        'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
+    })
+
+
 
 ########################
 # Debugging and testing
