@@ -27,7 +27,9 @@ writeup/
 /content/*.srt
 /data/i18n
 /data/subtitles
-/kalite-*.zip
+/kalite/*.jpg
+/kalite/*.mp4.part
+/kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media
 /kalite/static/js/i18n
