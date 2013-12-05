@@ -23,6 +23,7 @@ ___Want to have more language packs available?___
 
 ___New commands___
 * `scrape_videos -l es` - [run on distributed server] download all known dubbed videos in spanish, from youtube, and save as mp4
+    * NOTE: Only the following languages are supported: `da`, `he`, `pt-BR`, `tr`, `es`
 * `scrape_exercises -l es` - [run on distributed server] download all exercises in spanish, from khan academy, and put them in the proper place for use.
 
 
