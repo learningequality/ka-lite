@@ -55,7 +55,7 @@ class VideoLog(DeferredCountSyncedModel):
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
             self.video_id = i18n.get_video_id(self.youtube_id) or self.youtube_id  # for unknown videos, default to the youtube_id
-        
+
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -81,8 +81,8 @@ class VideoLog(DeferredCountSyncedModel):
 
         namespace = uuid.UUID(self.user.id)
         # can be video_id because that's set to the english youtube_id, to match past code.
-        return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex  
-        
+        return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex
+
 
     @staticmethod
     def get_points_for_user(user):
@@ -401,7 +401,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return cur_log
 
     @classmethod
-    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=language, suppress_save=False):
+    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=None, suppress_save=False):
         """Helper function to update an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -467,7 +467,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
     assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
-    
+
     instance = kwargs["instance"]
 
     if not instance.start_datetime:
