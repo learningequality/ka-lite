@@ -5,6 +5,7 @@ import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from functools import partial
 
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -30,6 +31,7 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
+from shared.i18n import select_best_available_language
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent
 from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
@@ -249,20 +251,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
     # Fallback mechanism
     available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    if not available_urls:
-        vid_lang = None
-    elif request.video_language in available_urls:
-        vid_lang = request.video_language
-    elif request.video_language.split("-", 1)[0] in available_urls:
-        vid_lang = request.video_language.split("-", 1)[0]
-    elif settings.LANGUAGE_CODE in available_urls:
-        vid_lang = settings.LANGUAGE_CODE
-    elif "en" in available_urls:
-        vid_lang = "en"
-    else:
-        vid_lang = available_urls.keys()[0]
-
-
+    vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language, )
 
     context = {
         "video": video,
@@ -291,13 +280,23 @@ def exercise_handler(request, exercise, **related_videos):
     exercise_template = exercise_file
     exercise_localized_template = os.path.join(lang, exercise_file)
 
-    if os.path.exists(os.path.join(exercise_root, exercise_localized_template)):
-        exercise_template = exercise_localized_template
+    # Get the language codes for exercise teplates that exist
+    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
+    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
+    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
+
+    # Return the best available exercise template
+    exercise_lang = select_best_available_language(available_langs, target_code=request.language)
+    if exercise_lang == "en":
+        exercise_template = exercise_file
+    else:
+        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
 
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": exercise_template,
+        "exercise_lang": exercise_lang,
         "related_videos": [v for v in related_videos.values() if v["available"]],
     }
     return context

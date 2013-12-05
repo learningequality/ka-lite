@@ -291,3 +291,20 @@ def update_jsi18n_file(code="en"):
     response = javascript_catalog(request, packages=('ka-lite.locale',))
     with open(output_file, "w") as fp:
         fp.write(response.content)
+
+
+def select_best_available_language(available_codes, target_code=settings.LANGUAGE_CODE):
+    if not available_codes:
+        return None
+    elif target_code in available_codes:
+        return target_code
+    elif target_code.split("-", 1)[0] in available_codes:
+        return target_code.split("-", 1)[0]
+    elif settings.LANGUAGE_CODE in available_codes:
+        return settings.LANGUAGE_CODE
+    elif "en" in available_codes:
+        return "en"
+    elif available_codes:
+        return available_codes[0]
+    else:
+        return None
