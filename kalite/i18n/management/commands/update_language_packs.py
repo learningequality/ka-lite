@@ -29,8 +29,8 @@ import sys
 import tempfile
 import zipfile
 import StringIO
-
 from optparse import make_option
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.core.mail import mail_admins
@@ -51,7 +51,7 @@ class Command(BaseCommand):
         make_option('-d', '--days',
                     action='store',
                     dest='days',
-                    default=0 if not settings.DEBUG else 365,
+                    default=1 if not settings.DEBUG else 365,
                     metavar="NUM_DAYS",
                     help="Update any and all subtitles that haven't been refreshed in the numebr of days given. Defaults to 0 days."),
         make_option('-l', '--lang_code',
@@ -368,8 +368,7 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
             sys.stdout = backups[0]
             sys.stderr = backups[1]
 
-        shutil.move(build_file, dest_file)  # for debugging; make sure to remove!!!!!
-        shutil.copy(dest_file, './django.po')
+        shutil.move(build_file, dest_file)
 
         return dest_file
 
