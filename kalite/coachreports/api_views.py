@@ -317,7 +317,7 @@ def convert_topic_tree_for_dynatree(node):
             "isFolder": True,
             "key": node["path"],
             "children": children,
-            "expand": node["parent_id"] is None,  # top level
+            "expand": False,  # top level
         }
     return None
 

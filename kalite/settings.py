@@ -229,9 +229,6 @@ else:
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
     CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
-    PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
-        'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
-    })
 
 
 
@@ -338,6 +335,9 @@ PASSWORD_ITERATIONS_STUDENT_SYNCED = getattr(local_settings, "PASSWORD_ITERATION
 assert PASSWORD_ITERATIONS_TEACHER_SYNCED >= 5000, "PASSWORD_ITERATIONS_TEACHER_SYNCED must be >= 5000"
 assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_SYNCED must be >= 2500"
 
+PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
+    'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
+})
 
 ########################
 # Storage and caching
