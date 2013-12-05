@@ -95,7 +95,7 @@
                 <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
                 {% with lang_avail=video.availability|get_item:selected_language %}
                 {% for lang, subtitle_url in lang_avail.subtitles.iteritems %}
-                <track kind="captions" src="{{ subtitle_url }}" srclang="{{ lang }}" label="{{ lang }}" {% if lang == current_language and current_language != "en" %}default="True" {% endif %}/>
+                <track kind="captions" src="{{ subtitle_url }}" srclang="{{ lang }}" label="{{ lang }}" {% if lang == selected_language and selected_language != "en" %}default="True" {% endif %}/>
                 {% endfor %}
                 {% endwith %}
             </video>

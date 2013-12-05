@@ -14,12 +14,12 @@
            line-height: 23px;
            margin-left: 10px;
         }
-        .subtitle_indicator {
+        .subtitle-indicator {
             background-color: #aaf;
             margin: 0px 1px 0px 0px;
             padding: 2px;
         }
-        .video_indicator {
+        .dubbedvideo-indicator {
             background-color: #faa;
             margin: 0px 1px 0px 0px;
             padding: 2px;
@@ -93,7 +93,7 @@
             {# dubbed videos #}
             {% for lang, avail in video.availability.iteritems %}
                 {% if avail.on_disk %}
-                <span class="video_indicator">
+                <span class="dubbedvideo-indicator">
                     <a href="v/{{ video.slug }}/?lang={{ lang }}">
                         {{ lang }}
                     </a></span>
@@ -102,7 +102,11 @@
 
             {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
             {% for lang in video.availability.en.subtitles.keys %}
-                <span class="subtitle_indicator">{{ lang }}</span>
+                <span class="subtitle-indicator">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}">
+                {{ lang }}
+</a>
+                </span>
             {% endfor %}
         </li>
         {% endfor %}
@@ -120,10 +124,10 @@
 
             {# dubbed videos #}
             {% for lang in exercise_langs|get_item:exercise.id %}
-                <span class="video_indicator">
-                    <!--a href="e/{{ exercise.slug }}/?lang={{ lang }}"-->
+                <span class="dubbedvideo-indicator">
+                    <a href="e/{{ exercise.slug }}/?lang={{ lang }}">
                         {{ lang }}
-                    <!--/a-->
+                    </a>
                 </span>
             {% endfor %}
 
