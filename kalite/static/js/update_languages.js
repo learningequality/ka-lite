@@ -14,6 +14,8 @@ $(function() {
         installable_languages = languages;
         display_languages(languages);
     }).error(function(data, status, error) {
+        installable_languages = [];
+        display_languages([]);
         handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 });

@@ -458,7 +458,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+        return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())
 
 
 def handler_404(request):
