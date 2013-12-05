@@ -34,7 +34,7 @@
         <p>
             <label>{% trans "Facility: " %}</label>
             {{ facility }}
-            {% if request.admin %}
+            {% if request.is_admin %}
                 <a href="?facility=select">{% trans "(Select a different facility)" %}</a>
             {% endif %}
         </p>
