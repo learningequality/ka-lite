@@ -1,9 +1,11 @@
 import copy
 import json
+import os
 import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from functools import partial
 
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -29,9 +31,10 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
+from shared.i18n import select_best_available_language
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent
-from shared.videos import get_video_urls, stamp_video_counts, stamp_urls_on_video, video_counts_need_update
+from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
 from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
 
@@ -84,7 +87,7 @@ def refresh_topic_cache(handler, force=False):
 
     def recount_videos_and_invalidate_parents(node, force=False, stamp_urls=False):
         """
-        Call stamp_video_counts (if necessary); if a change has been detected,
+        Call stamp_video_availability (if necessary); if a change has been detected,
         then check parents to see if their counts should be invalidated.
         """
         do_it = force
@@ -95,7 +98,7 @@ def refresh_topic_cache(handler, force=False):
                 "(and urls) " if stamp_urls else "",
                 node["path"],
             ))
-            (_a, _b, _c, changed) = stamp_video_counts(topic=node, force=force, stamp_urls=stamp_urls)
+            (_a, _b, _c, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
             if changed:
                 strip_counts_from_ancestors(node)
         return node
@@ -117,14 +120,14 @@ def refresh_topic_cache(handler, force=False):
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or "urls" not in node:
-                    #stamp_urls_on_video(node, force=force)  # will be done by force below
+                if force or "availability" not in node:
+                    #stamp_availability_on_topic(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
                 for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not "urls" in video:
-                        stamp_urls_on_video(video, force=True)  # will be done by force below
+                    if not "availability" in video:
+                        stamp_availability_on_video(video, force=True)  # will be done by force below
 
             elif node["kind"] == "Topic":
                 bottom_layer_topic =  "Topic" not in node["contains"]
@@ -201,12 +204,28 @@ def topic_context(topic):
     topics    = topic_tools.get_live_topics(topic)
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
+    exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
+
+    for lang_code in os.listdir(exercises_path):
+        loc_path = os.path.join(exercises_path, lang_code)
+        if not os.path.isdir(loc_path):
+            continue
+
+        for exercise in exercises:
+            ex_path = os.path.join(loc_path, "%s.html" % exercise["id"])
+            if not os.path.exists(ex_path):
+                continue
+            exercise_langs[exercise["id"]].append(lang_code)
+
+
     context = {
         "topic": topic,
         "title": topic["title"],
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
+        "exercise_langs": exercise_langs,
         "topics": my_topics,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
@@ -227,25 +246,12 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
 
-    if video["available"] and not any([url["on_disk"] for url in video["urls"].values()]):
-        messages.success(request, "Got video content from %s" % video["urls"]["default"]["stream_url"])
+    if video["available"] and not any([avail["on_disk"] for avail in video["availability"].values()]):
+        messages.success(request, "Got video content from %s" % video["availability"]["default"]["stream_url"])
 
     # Fallback mechanism
-    available_urls = dict([(lang, urls) for lang, urls in video["urls"].iteritems() if urls["on_disk"]])
-    if not available_urls:
-        vid_lang = None
-    elif request.video_language in available_urls:
-        vid_lang = request.video_language
-    elif request.video_language.split("-", 1)[0] in available_urls:
-        vid_lang = request.video_language.split("-", 1)[0]
-    elif settings.LANGUAGE_CODE in available_urls:
-        vid_lang = settings.LANGUAGE_CODE
-    elif "en" in available_urls:
-        vid_lang = "en"
-    else:
-        vid_lang = available_urls.keys()[0]
-
-
+    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
+    vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language, )
 
     context = {
         "video": video,
@@ -268,10 +274,29 @@ def exercise_handler(request, exercise, **related_videos):
     """
     Display an exercise
     """
+    lang = request.session["django_language"]
+    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_file = exercise["slug"] + ".html"
+    exercise_template = exercise_file
+    exercise_localized_template = os.path.join(lang, exercise_file)
+
+    # Get the language codes for exercise teplates that exist
+    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
+    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
+    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
+
+    # Return the best available exercise template
+    exercise_lang = select_best_available_language(available_langs, target_code=request.language)
+    if exercise_lang == "en":
+        exercise_template = exercise_file
+    else:
+        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
+
     context = {
         "exercise": exercise,
         "title": exercise["title"],
-        "exercise_template": "exercises/" + exercise["slug"] + ".html",
+        "exercise_template": exercise_template,
+        "exercise_lang": exercise_lang,
         "related_videos": [v for v in related_videos.values() if v["available"]],
     }
     return context
@@ -404,7 +429,7 @@ def search(request, topics):  # we don't use the topics variable, but this setup
             possible_matches[node_type] = []  # make dict only for non-skipped categories
             for nodearr in node_dict.values():
                 node = nodearr[0]
-                title = node['title'].lower()  # this could be done once and stored.
+                title = _(node['title']).lower()  # this could be done once and stored.
                 if title == query:
                     # Redirect to an exact match
                     return HttpResponseRedirect(node['path'])

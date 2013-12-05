@@ -223,7 +223,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
                     unstarted = False
                 children.append(child)
         return {
-            "title": node["title"],
+            "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
             "key": node["id"],
