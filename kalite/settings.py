@@ -210,7 +210,7 @@ if CENTRAL_SERVER:
     AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
     AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
 
-    CONTENT_ROOT   = None
+    CONTENT_ROOT   = None  # needed for shared functions that are main-only
     CONTENT_URL    = None
 
 else:

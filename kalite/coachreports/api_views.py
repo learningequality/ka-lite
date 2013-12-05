@@ -296,16 +296,18 @@ def compute_data(data_types, who, where):
     }
 
 
-def convert_topic_tree_for_dynatree(node, level=0):
+def convert_topic_tree_for_dynatree(node):
     """Converts topic tree from standard dictionary nodes
     to dictionary nodes usable by the dynatree app"""
 
     if node["kind"] == "Topic":
+        # Only show topics with exercises
         if "Exercise" not in node["contains"]:
             return None
+
         children = []
         for child_node in node["children"]:
-            child = convert_topic_tree_for_dynatree(child_node, level=level + 1)
+            child = convert_topic_tree_for_dynatree(child_node)
             if child:
                 children.append(child)
 
@@ -315,7 +317,7 @@ def convert_topic_tree_for_dynatree(node, level=0):
             "isFolder": True,
             "key": node["path"],
             "children": children,
-            "expand": level < 1,
+            "expand": node["parent_id"] is None,  # top level
         }
     return None
 
