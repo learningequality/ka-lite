@@ -11,6 +11,6 @@ if exist "%KALITE_DIR%\cronserver.pid" (
         taskkill /f /pid %%i > nul 2>&1 && echo Cron server was stopped!
         tskill %%i > nul 2>&1 && echo Cron server was stopped!
         del "%KALITE_DIR%\cronserver.pid" > nul 2>&1
-        cd %CURRENT_DIR%
+        cd "%CURRENT_DIR%"
     )
 )
