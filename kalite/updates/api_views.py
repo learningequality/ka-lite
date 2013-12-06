@@ -181,6 +181,16 @@ def installed_language_packs(request):
     installed = request.session['language_choices']
     return JsonResponse(installed)
 
+
+@api_handle_error_with_json
+def refresh_installed_language_packs(request):
+    '''
+    Refresh the list of language packs we have cached in the session object.
+    '''
+    installed = request.session['language_choices'] = list(get_installed_language_packs())
+    return JsonResponse(installed)
+
+
 @require_admin
 @api_handle_error_with_json
 def start_languagepack_download(request):
