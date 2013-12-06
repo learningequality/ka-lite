@@ -247,8 +247,11 @@ def get_subtitles_on_disk(youtube_id):
         return installed_subtitles
 
     def on_disk_distributed(youtube_id):
-        installed_subtitles = [lang for lang in os.listdir(os.path.join(settings.STATIC_ROOT, "subtitles")) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
-        return installed_subtitles
+        subtitles_root = os.path.join(settings.STATIC_ROOT, "subtitles")
+        if not os.path.exists(subtitles_root):
+            return []
+        else:
+            return [lang for lang in os.listdir(subtitles_root) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
 
     return sorted(on_disk_central(youtube_id) if settings.CENTRAL_SERVER else on_disk_distributed(youtube_id))
 

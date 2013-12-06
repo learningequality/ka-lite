@@ -225,3 +225,41 @@ def make_request(headers, url, max_retries=5):
             logging.warn("Unexpected Error downloading %s: %s" % (url, e))
 
     return response
+
+
+def get_kind_by_extension(filename):
+    """Return filetype by the extension or empty string if it is not located in the lookup dictionary"""
+    # Hardcoded file types
+    file_kind_dictionary = {
+        "Video": ["mp4", "mov", "3gp", "amv", "asf", "asx", "avi", "mpg", "swf", "wmv"],
+        "Audio": ["mp3", "wma", "wav", "mid", "ogg"],
+        "Document": ["pdf", "txt", "rtf", "html", "xml"],
+    }
+
+    extension = os.path.splitext(filename)[1]
+    if extension:
+        extension = extension[1:]
+    if extension in file_kind_dictionary["Video"]:
+        return "Video"
+    elif extension in file_kind_dictionary["Audio"]:
+        return "Audio"
+    elif extension in file_kind_dictionary["Document"]:
+        return "Document"
+    else:
+        return "Document"
+        #raise Exception("Can't tell what type of file '%s' is by the extension '%s'. Please add to lookup dictionary and re-run command." % (filename, extension))
+
+
+def slugify_path(path):
+    slugified = []
+    for slug in path.split("/"):
+        slugified.append(slugify(slug))
+    slugified = os.path.join("/", *slugified)
+    return slugified
+
+
+def humanize_name(filename):
+    """Return human readable string from filename, by replacing:
+        - and _ with space
+    """
+    return re.sub('[-_]', ' ', filename)

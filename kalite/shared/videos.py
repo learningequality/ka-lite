@@ -139,7 +139,7 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
     nvideos_known = 0
 
     # Can't deal with leaves
-    assert "children" in topic, "Should not be calling this function on leaves; it's inefficient!"
+    assert topic["kind"] == "Topic", "Should not be calling this function on leaves; it's inefficient!"
 
     # Only look for videos if there are more branches
     if len(topic["children"]) == 0:
@@ -150,14 +150,15 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
         #  The children have children, let them figure things out themselves
         # $ASSUMPTION: if first child is a branch, THEY'RE ALL BRANCHES.
         #              if first child is a leaf, THEY'RE ALL LEAVES
-        if "children" in topic["children"][0]:
-            for child in topic["children"]:
+        for child in topic["children"]:
+            if "children" in child:
                 if not force and "nvideos_local" in child:
                     continue
                 stamp_video_counts(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
                 nvideos_local += child["nvideos_local"]
                 nvideos_known += child["nvideos_known"]
 
+<<<<<<< HEAD
         # BASE CASE:
         # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
         else:
@@ -168,9 +169,14 @@ def stamp_video_counts(topic, videos_path=settings.CONTENT_ROOT, force=False, st
                     stamp_urls_on_video(video)
                 elif not "urls" in video:  # TODO(bcipolli) this is an intentional bug, until performance can be boosted.
                     video["on_disk"] = is_video_on_disk(video["youtube_id"], videos_path=videos_path)
+=======
+            else:
+                video = child
+                if force or "availability" not in video:
+                    stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
+>>>>>>> f77f003... Tons 'o tweaks, plus reconfigure building nodes
                 nvideos_local += int(video["on_disk"])
-
-            nvideos_known = len(videos)
+                nvideos_known += 1
 
     changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
     changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
