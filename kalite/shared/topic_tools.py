@@ -344,3 +344,22 @@ def is_sibling(node1, node2):
     parent_path2 = parse_path(node2)
 
     return parent_path1 == parent_path2
+
+
+def get_neighbor_nodes(node, neighbor_kind=None):
+
+    parent = get_parent(node)
+    prev = next = None
+    filtered_children = [ch for ch in parent["children"] if not neighbor_kind or ch["kind"] == neighbor_kind]
+
+    for idx, child in enumerate(filtered_children):
+        if child["path"] != node["path"]:
+            continue
+
+        if idx < (len(filtered_children) - 1):
+            next = filtered_children[idx + 1]
+        if idx > 0:
+            prev = filtered_children[idx - 1]
+        break
+
+    return prev, next
