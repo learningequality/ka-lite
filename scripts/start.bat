@@ -20,8 +20,8 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
     move "%KALITE_DIR%\static\videos\*" "%KALITE_DIR%\..\content" > nul 2> nul
 
     set "file_exist="
-    if exist %KALITE_DIR%\cronserver.pid set file_exist=0
-    if exist %KALITE_DIR%\runcherrypyserver.pid set file_exist=0
+    if exist "%KALITE_DIR%\cronserver.pid" set file_exist=0
+    if exist "%KALITE_DIR%\runcherrypyserver.pid" set file_exist=0
     if defined file_exist (
         echo -------------------------------------------------------------------
         echo KA Lite server is still running.
