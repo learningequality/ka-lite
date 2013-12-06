@@ -7,7 +7,7 @@ set KALITE_DIR=%SCRIPT_DIR%\..\kalite
 CALL "%SCRIPT_DIR%\get_port.bat" %*
 CALL "%SCRIPT_DIR%\get_setting.bat" CHERRYPY_THREAD_COUNT NTHREADS
 
-IF EXIST "%KALITE_DIR%\runcherrypyserver.pid" (
+IF EXIST %KALITE_DIR%\runcherrypyserver.pid (
     CALL "%SCRIPT_DIR%\serverstop.bat"
 )
 
