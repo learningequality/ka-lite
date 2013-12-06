@@ -249,11 +249,14 @@ def exercise_handler(request, exercise, **related_videos):
     """
     Display an exercise
     """
+    prev, next = get_neighbor_nodes(exercise, neighbor_kind=exercise['kind'])
     context = {
         "exercise": exercise,
         "title": exercise["title"],
         "exercise_template": "exercises/" + exercise["slug"] + ".html",
         "related_videos": [v for v in related_videos.values() if v["available"]],
+        "prev": prev,
+        "next": next,
     }
     return context
 
