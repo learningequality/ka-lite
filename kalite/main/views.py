@@ -30,7 +30,7 @@ from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
 from shared.jobs import force_job
-from shared.topic_tools import get_ancestor, get_parent
+from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from shared.videos import get_video_urls, stamp_video_counts, stamp_urls_on_video, video_counts_need_update
 from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
@@ -144,37 +144,18 @@ def refresh_topic_cache(handler, force=False):
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
-    seeking = "Topic" # search for topics, until we find videos or exercise
-    for slug in slugs:
-        # towards the end of the url, we switch from seeking a topic node
-        #   to the particular type of node in the tree
-        for kind, kind_slug in topic_tools.kind_slugs.items():
-            if slug == kind_slug.split("/")[0]:
-                seeking = kind
-                break
+    while current_node:
+        match = [ch for ch in (current_node['children'] or []) if request.path.startswith(ch["path"])]
+        if not match:
+            raise Http404
+        current_node = match[0]
+        if request.path == current_node["path"]:
+            break
 
-        # match each step in the topics hierarchy, with the url slug.
-        else:
-            children = [child for child in current_node['children'] if child['kind'] == seeking]
-            if not children:
-                raise Http404
-            match = None
-            prev = None
-            next = None
-            for child in children:
-                if match:
-                    next = child
-                    break
-                if child["slug"] == slug:
-                    match = child
-                else:
-                    prev = child
-            if not match:
-                raise Http404
-            current_node = match
     if current_node["kind"] == "Topic":
         return topic_handler(request, cached_nodes={"topic": current_node})
     elif current_node["kind"] == "Video":
+        prev, next = get_neighbor_nodes(current_node, neighbor_kind="Video")
         return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
     elif current_node["kind"] == "Exercise":
         cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
