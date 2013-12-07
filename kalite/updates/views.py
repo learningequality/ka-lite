@@ -83,6 +83,9 @@ def get_installed_language_packs():
 @require_admin
 @render_to("updates/update_languages.html")
 def update_languages(request):
+    # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
+    request.session['language_choices'] = list(get_installed_language_packs())
+
     # here we want to reference the language meta data we've loaded into memory
     context = update_context(request)
 
