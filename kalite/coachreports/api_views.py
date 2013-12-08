@@ -311,7 +311,7 @@ def convert_topic_tree_for_dynatree(node, level=0):
                 children.append(child)
 
         return {
-            "title": node["title"],
+            "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
             "key": node["path"],
