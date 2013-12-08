@@ -155,11 +155,12 @@ def splat_handler(request, splat):
     if current_node["kind"] == "Topic":
         return topic_handler(request, cached_nodes={"topic": current_node})
     elif current_node["kind"] == "Video":
-        prev, next = get_neighbor_nodes(current_node, neighbor_kind="Video")
+        prev, next = get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
         return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
     elif current_node["kind"] == "Exercise":
         cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
         cached_nodes["exercise"] = current_node
+        cached_nodes["prev"], cached_nodes["next"] = get_neighbor_nodes(current_node, neighbor_kind=current_node['kind'])
         return exercise_handler(request, cached_nodes=cached_nodes)
     else:
         raise Http404
@@ -245,11 +246,10 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 @backend_cache_page
 @render_to("exercise.html")
 @refresh_topic_cache
-def exercise_handler(request, exercise, **related_videos):
+def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
     Display an exercise
     """
-    prev, next = get_neighbor_nodes(exercise, neighbor_kind=exercise['kind'])
     context = {
         "exercise": exercise,
         "title": exercise["title"],
