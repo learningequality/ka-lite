@@ -10,4 +10,3 @@ def languages(request):
         "language_choices": request.session["language_choices"],
         "current_language": lcode_to_ietf(request.session["django_language"]),
     }
-
