@@ -18,9 +18,9 @@ from django.utils.translation import ugettext as _
 import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
-from main import topicdata
 from shared.decorators import require_admin
 from shared.jobs import force_job
+from shared.topic_tools import get_topic_tree
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
@@ -205,6 +205,8 @@ def start_languagepack_download(request):
 def annotate_topic_tree(node, level=0, statusdict=None):
     if not statusdict:
         statusdict = {}
+
+
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -231,7 +233,8 @@ def annotate_topic_tree(node, level=0, statusdict=None):
             "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
             "expand": level < 1,
         }
-    if node["kind"] == "Video":
+
+    elif node["kind"] == "Video":
         #statusdict contains an item for each video registered in the database
         # will be {} (empty dict) if there are no videos downloaded yet
         percent = statusdict.get(node["youtube_id"], 0)
@@ -247,13 +250,14 @@ def annotate_topic_tree(node, level=0, statusdict=None):
             "key": node["youtube_id"],
             "addClass": status,
         }
+
     return None
 
 @require_admin
 @api_handle_error_with_json
 def get_annotated_topic_tree(request):
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))
+    return JsonResponse(annotate_topic_tree(get_topic_tree(), statusdict=statusdict))
 
 
 """

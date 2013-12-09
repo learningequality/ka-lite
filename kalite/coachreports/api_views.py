@@ -20,13 +20,12 @@ from django.utils.translation import ugettext as _
 
 from .forms import DataForm
 from config.models import Settings
-from main import topicdata
 from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import allow_api_profiling
-from shared.topic_tools import get_topic_by_path
+from shared.topic_tools import get_topic_by_path, get_node_cache
 from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 
 
@@ -206,9 +205,9 @@ def compute_data(data_types, who, where):
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, get_node_cache('Exercise').values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -297,16 +296,18 @@ def compute_data(data_types, who, where):
     }
 
 
-def convert_topic_tree_for_dynatree(node, level=0):
+def convert_topic_tree_for_dynatree(node):
     """Converts topic tree from standard dictionary nodes
     to dictionary nodes usable by the dynatree app"""
 
     if node["kind"] == "Topic":
+        # Only show topics with exercises
         if "Exercise" not in node["contains"]:
             return None
+
         children = []
         for child_node in node["children"]:
-            child = convert_topic_tree_for_dynatree(child_node, level=level + 1)
+            child = convert_topic_tree_for_dynatree(child_node)
             if child:
                 children.append(child)
 
@@ -316,7 +317,7 @@ def convert_topic_tree_for_dynatree(node, level=0):
             "isFolder": True,
             "key": node["path"],
             "children": children,
-            "expand": level < 1,
+            "expand": False,  # top level
         }
     return None
 
@@ -324,7 +325,7 @@ def convert_topic_tree_for_dynatree(node, level=0):
 # view endpoints #######
 
 @api_handle_error_with_json
-def get_topic_tree(request, topic_path):
+def get_exercise_topic_tree(request, topic_path):
     return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
 
 
