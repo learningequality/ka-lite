@@ -1,6 +1,6 @@
 from django import forms
 
-from main.topicdata import NODE_CACHE
+from shared.topic_tools import get_node_cache
 
 
 class ExerciseLogForm(forms.Form):
@@ -15,7 +15,7 @@ class ExerciseLogForm(forms.Form):
         """
         Make sure the exercise ID is found.
         """
-        if not self.cleaned_data.get("exercise_id", "") in NODE_CACHE['Exercise']:
+        if not self.cleaned_data.get("exercise_id", "") in get_node_cache('Exercise'):
             raise forms.ValidationError(_("Exercise ID not recognized"))
 
 
@@ -32,7 +32,7 @@ class VideoLogForm(forms.Form):
         """
         Make sure the video ID is found.
         """
-        if self.cleaned_data["video_id"] not in NODE_CACHE["Video"]:
+        if self.cleaned_data["video_id"] not in get_node_cache("Video"):
             raise forms.ValidationError(_("Video ID not recognized."))
 
 class DateTimeForm(forms.Form):

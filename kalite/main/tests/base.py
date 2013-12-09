@@ -2,7 +2,7 @@ import os
 import random
 
 import settings
-from main.topicdata import NODE_CACHE
+from shared.topic_data import get_node_cache
 from shared.testing.base import KALiteTestCase
 
 
@@ -12,8 +12,8 @@ class MainTestCase(KALiteTestCase):
         """
         Helper function for testing video files.
         """
-        youtube_id = NODE_CACHE.keys()[0]
-        video_id = youtube_id
+        video_id = get_node_cache("Video").keys()[0]
+        youtube_id = get_node_cache("Video")[video_id]["youtube_id"]
         fake_video_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_video_file, "w") as fh:
             fh.write("")

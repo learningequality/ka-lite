@@ -17,13 +17,12 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from main.topicdata import NODE_CACHE
 from main.models import VideoLog, ExerciseLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache
 from utils.general import max_none
 from utils.internet import StatusException
 
@@ -118,8 +117,9 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     if not user:
         raise Http404
 
+    node_cache = get_node_cache()
     topic_ids = [t["id"] for t in get_knowledgemap_topics()]
-    topics = [NODE_CACHE["Topic"][id][0] for id in topic_ids]
+    topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -138,38 +138,38 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
-        if not elog["exercise_id"] in NODE_CACHE["Exercise"]:
+        if not elog["exercise_id"] in node_cache["Exercise"]:
             # Sometimes KA updates their topic tree and eliminates exercises;
             #   we also want to support 3rd party switching of trees arbitrarily.
             logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
             continue
 
-        parent_ids = [topic for ex in NODE_CACHE["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
+        parent_ids = [topic for ex in node_cache["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
             logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
-            topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic][0]["path"])
+            topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        if not vlog["video_id"] in NODE_CACHE["Video"]:
+        if not vlog["video_id"] in node_cache["Video"]:
             # Sometimes KA updates their topic tree and eliminates videos;
             #   we also want to support 3rd party switching of trees arbitrarily.
             logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
             continue
 
-        parent_ids = [topic for vid in NODE_CACHE["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
+        parent_ids = [topic for vid in node_cache["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
             logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
-            topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic][0]["path"])
+            topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
 
 
