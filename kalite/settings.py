@@ -156,11 +156,12 @@ TEMPLATE_LOADERS = (
     "django.template.loaders.app_directories.Loader",
 #     "django.template.loaders.eggs.Loader",
 )
+#    if USE_I18N:
+TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
 
 MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -190,6 +191,7 @@ INSTALLED_APPS = (
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
+INSTALLED_APPS += ('i18n',)
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -221,15 +223,20 @@ else:
         "securesync.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
+        "kalite.i18n.middleware.SessionLanguage",
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
-    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage", "i18n.middleware.VideoLanguage",)  # VideoLanguage must come after SessionLanguage
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
     CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
+# Must define after i18n.middleware.SessionLanguage
+MIDDLEWARE_CLASSES += (
+    'django.middleware.locale.LocaleMiddleware',
+)
 
 
 ########################

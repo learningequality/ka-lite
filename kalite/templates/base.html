@@ -54,17 +54,21 @@
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
         <script>
-            // the following variables are used by functions in distributed-server.js
-            // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
-            var SERVER_INFO_PATH    = "{% url get_server_info %}";
-            var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
-            var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
+         // the following variables are used by functions in distributed-server.js
+         // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
+         var SERVER_INFO_PATH    = "{% url get_server_info %}";
+         var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
+         var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
+         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}";
+         var CHANGE_LANGUAGE_URL = window.location.href + "?set_default_language="
+         var DEFAULT_LANGUAGE = "{{ default_language }}"
         </script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/distributed-server.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/language-selector.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}?{{ BUILD_ID }}"></script>
 
         {% block headjs %}{% endblock headjs %}
@@ -152,17 +156,14 @@
         <footer id="footer" class="short">
             <div id="leaves">
                 <div class="inner">
-                    {% block footerleft %}
-
+                    <div style="float:left">
+                        {% block footerleft %}
                         {% if language_choices %}
-                        <form id="language-preferences" style="display:none">
+                        <form id="language-preferences" >
                             <select id="language_selector">
                                 {% for lang in language_choices %}
                                 <option value="{{ lang.code }}" {% if lang.code == current_language %}selected{% endif %}>{{ lang.name }}</option>
                                 {% endfor %}
-                                {% if settings.LANGUAGE_CODE not in language_choices %}
-                                <option value="{{ settings.LANGUAGE_CODE }}" {% if settings.LANGUAGE_CODE == current_language %}selected{% endif %}>blue</option>
-                                {% endif %}
                             </select>
                             {% if current_language != default_language %}
                                 <input type="checkbox" class="admin-only" id="make_default_language"/>
@@ -170,15 +171,14 @@
                             {% endif %}
                         </form>
                         {% endif %}
-
                     {% endblock footerleft %}
+                    </div>
                     <div id="copyright" class="tiny">
-                        {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
-                        <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
+                      {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
+                      <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
                     </div>
                 </div>
             </div>
         </footer>
-        {% comment %}These will disappear with cleanup item #234{% endcomment %}
     </body>
 </html>

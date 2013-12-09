@@ -139,6 +139,7 @@ function start_languagepack_download(lang_code) {
 }
 
 function languagepack_reset_callback(progress, resp) {
+    $.ajax({url: "/api/languagepacks/refresh", async: false});
     display_languages(installable_languages);
     $("#option-" + language_downloading).remove();
 }

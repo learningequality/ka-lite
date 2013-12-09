@@ -49,6 +49,35 @@ function communicate_api_failure(resp, msg_id) {
 }
 
 
+function handleSuccessAPI(error_id) {
+    if (error_id === undefined) {
+        error_id = "id_updates";  // ID of message element
+    }
+    clear_message(error_id)
+}
+
+function handleFailedAPI(resp, error_text, error_id) {
+    if (error_id === undefined) {
+        error_id = "id_updates";  // ID of message element
+    }
+
+    switch (resp.status) {
+        case 403:
+            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id)
+            break;
+        default:
+            //communicate_api_failure(resp)
+            messages = $.parseJSON(resp.responseText);
+            if (messages && !("error" in messages)) {
+                // this should be an assert--should never happen
+                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
+            } else {
+                show_message("error", error_text + ": " + messages["error"], error_id);
+            }
+            break;
+    }
+}
+
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
