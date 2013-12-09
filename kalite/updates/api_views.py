@@ -9,16 +9,18 @@ from annoying.functions import get_object_or_None
 
 from django.core.management import call_command
 from django.db.models import Q
-from django.http import HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
+from django.utils.translation import ugettext as _
 
 import settings
 from .models import UpdateProgressLog, VideoFile
-from main import topicdata
+from .views import get_installed_language_packs
 from shared.decorators import require_admin
-from shared.jobs import force_job, job_status
+from shared.jobs import force_job
+from shared.topic_tools import get_topic_tree
 from shared.videos import delete_downloaded_files
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
@@ -31,7 +33,7 @@ def process_log_from_request(handler):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
-                return JsonResponse({"error": "process_id is not numeric."}, status=500);
+                return JsonResponse({"error": _("process_id is not numeric.")}, status=500);
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
@@ -58,7 +60,7 @@ def process_log_from_request(handler):
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
                 return JsonResponse({"error": str(e)}, status=500);
         else:
-            return JsonResponse({"error": "Must specify process_id or process_name"})
+            return JsonResponse({"error": _("Must specify process_id or process_name")})
 
         return handler(request, process_log, *args, **kwargs)
     return wrapper_fn_pfr
@@ -78,9 +80,9 @@ def _process_log_to_dict(process_log):
     """
     Utility function to convert a process log to a dict
     """
-    
+
     if not process_log or not process_log.total_stages:
-        return {} 
+        return {}
     else:
         return {
             "process_id": process_log.id,
@@ -88,6 +90,7 @@ def _process_log_to_dict(process_log):
             "process_percent": process_log.process_percent,
             "stage_name": process_log.stage_name,
             "stage_percent": process_log.stage_percent,
+            "stage_status": process_log.stage_status,
             "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
             "total_stages": process_log.total_stages,
             "notes": process_log.notes,
@@ -127,20 +130,8 @@ def start_video_download(request):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
-    force_job("videodownload", "Download Videos")
+    force_job("videodownload", _("Download Videos"))
     return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def check_video_download(request):
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
-    percentages = {}
-    percentages["downloading"] = job_status("videodownload")
-    for id in youtube_ids:
-        videofile = get_object_or_None(VideoFile, youtube_id=id) or VideoFile(youtube_id=id)
-        percentages[id] = videofile.percent_complete
-    return JsonResponse(percentages)
 
 
 @require_admin
@@ -150,7 +141,7 @@ def retry_video_download(request):
     Clear any video still accidentally marked as in-progress, and restart the download job.
     """
     VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
-    force_job("videodownload", "Download Videos")
+    force_job("videodownload", _("Download Videos"))
     return JsonResponse({})
 
 
@@ -185,11 +176,38 @@ def cancel_video_download(request):
 
     return JsonResponse({})
 
+@api_handle_error_with_json
+def installed_language_packs(request):
+    installed = request.session['language_choices']
+    return JsonResponse(installed)
+
+
+@api_handle_error_with_json
+def refresh_installed_language_packs(request):
+    '''
+    Refresh the list of language packs we have cached in the session object.
+    '''
+    installed = request.session['language_choices'] = list(get_installed_language_packs())
+    return JsonResponse(installed)
+
+
+@require_admin
+@api_handle_error_with_json
+def start_languagepack_download(request):
+    if request.POST:
+        data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
+        call_command_async(
+            'languagepackdownload',
+            manage_py_dir=settings.PROJECT_PATH,
+            language=data['lang']) # TODO: migrate to force_job once it can accept command_args
+        return JsonResponse({'success': True})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None):
     if not statusdict:
         statusdict = {}
+
+
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -208,15 +226,16 @@ def annotate_topic_tree(node, level=0, statusdict=None):
                     unstarted = False
                 children.append(child)
         return {
-            "title": node["title"],
+            "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
-            "key": node["slug"],
+            "key": node["id"],
             "children": children,
             "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
             "expand": level < 1,
         }
-    if node["kind"] == "Video":
+
+    elif node["kind"] == "Video":
         #statusdict contains an item for each video registered in the database
         # will be {} (empty dict) if there are no videos downloaded yet
         percent = statusdict.get(node["youtube_id"], 0)
@@ -232,13 +251,14 @@ def annotate_topic_tree(node, level=0, statusdict=None):
             "key": node["youtube_id"],
             "addClass": status,
         }
+
     return None
 
 @require_admin
 @api_handle_error_with_json
 def get_annotated_topic_tree(request):
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return JsonResponse(annotate_topic_tree(topicdata.TOPICS, statusdict=statusdict))
+    return JsonResponse(annotate_topic_tree(get_topic_tree(), statusdict=statusdict))
 
 
 """

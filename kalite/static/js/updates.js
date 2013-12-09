@@ -6,6 +6,19 @@ var process_interval_handles = {}
 var process_callbacks = {}
 
 $(function() {
+    setTimeout(function() {
+        with_online_status("server", function(server_is_online) {
+            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+            // Best to assume offline, as online check returns much faster than offline check.
+            if(!server_is_online){
+                show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."), "id_offline_message");
+            } else {
+                $(".enable-when-server-online").removeAttr("disabled");
+                clear_message("id_offline_message")
+            }
+        })},
+        200);
+
     $(".progressbar-overall").progressbar({
         value: 0,
         max: 100
@@ -71,9 +84,9 @@ function updatesStart_callback(process_name, start_time) {
                     //Set up the recurring callback
                     clearInterval(process_interval_handles[process_name]);
                     process_interval_handles[process_name] = setInterval(
-                        function () { 
+                        function () {
                             updatesStart_callback(
-                                process_name, 
+                                process_name,
                                 new Date(request.getResponseHeader('Date'))
                             );
                         },
@@ -140,11 +153,11 @@ function updatesCheck(process_name, interval) {
             var completed = !progress_log.process_name || progress_log.completed;
             if (completed) {
                 //
-                if (progress_log.process_percent == 1.) {
+                if (progress_log.process_percent == 1. && !progress_log.stage_status) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
                     show_message("success", message, "id_" + process_name);
                     updatesReset(process_name);
-                } else if (progress_log.completed) {
+                } else if (progress_log.completed && progress_log.stage_status == "cancelled") {
                     show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]", "id_" + process_name);
                     updatesReset(process_name);
                 } else if (progress_log.process_name) {
@@ -237,33 +250,3 @@ function updatesReset(process_name) {
     }
 
 }
-
-function handleSuccessAPI(error_id) {
-    if (error_id === undefined) {
-        error_id = "id_updates";  // ID of message element
-    }
-    clear_message(error_id)
-}
-
-function handleFailedAPI(resp, error_text, error_id) {
-    if (error_id === undefined) {
-        error_id = "id_updates";  // ID of message element
-    }
-
-    switch (resp.status) {
-        case 403:
-            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id)
-            break;
-        default:
-            //communicate_api_failure(resp)
-            messages = $.parseJSON(resp.responseText);
-            if (messages && !("error" in messages)) {
-                // this should be an assert--should never happen
-                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
-            } else {
-                show_message("error", error_text + ": " + messages["error"], error_id);
-            }
-            break;
-    }
-}
-

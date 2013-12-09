@@ -1,40 +1,65 @@
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext_lazy as _
 
 import settings
 from .models import LanguagePack
 from config.models import Settings
 from settings import LOG as logging
-from shared.i18n import convert_language_code_format
+from shared.i18n import lcode_to_django_lang, lcode_to_ietf
 
-# TODO(dylan): new class that handles finding and setting the language for the session
+
 class SessionLanguage:
+    def set_language(self, request, cur_lang):
+        # each request can get the language from the querystring, or from the currently set session language
+        old_lang = request.session.get("django_language", "")
+        if cur_lang != old_lang:
+            logging.debug("setting session language to %s" % cur_lang)
+
+        # Set the two variables we care most about
+        request.session["django_language"] = cur_lang
+        request.session["default_language"] = cur_lang
+        request.language = lcode_to_ietf(cur_lang)
+
     def process_request(self, request):
         """
         Process requests to set language, redirect to the same URL to continue processing
         without leaving the "set" in the browser history.
         """
 
-        # Set the set of available languages
         if "language_choices" not in request.session:
+            # Set the set of available languages
             request.session["language_choices"] = list(LanguagePack.objects.all())
-            request.session["language_codes"] = [convert_language_code_format(lp.code) for lp in request.session["language_choices"]]
 
-        # Set the current language, and redirect (to clean browser history)
-        if request.is_admin and request.GET.get("set_default_language"):
-            logging.debug("setting default language to %s" % request.GET["set_default_language"])
-            Settings.set("default_language", request.GET["set_default_language"])
-            return HttpResponseRedirect(request.path)
+        if "set_default_language" in request.GET:
+            # Set the current server default language, and redirect (to clean browser history)
+            if not request.is_admin:
+                raise PermissionDenied(_("You don't have permissions to set the server's default language."))
 
-        elif request.GET.get("set_language"):
-            request.session["django_language"] = request.GET["set_language"]
-            logging.debug("setting session language to %s" % request.session["django_language"])
-            return HttpResponseRedirect(request.path)
+            lang_code = lcode_to_django_lang(request.GET["set_default_language"])
 
-        # Process the current language
-        if "default_language" not in request.session:
-            request.session["default_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
-        if "django_language" not in request.session:
-            request.session["django_language"] = request.session["default_language"]
-            logging.debug("setting session language to %s" % request.session["django_language"])
+            self.set_language(request, lang_code)
+            Settings.set("default_language", lang_code)
+            logging.debug("setting default language to %s" % lang_code)
 
-        request.language = request.session["django_language"]
+            redirect_url = request.get_full_path().replace("set_default_language="+request.GET["set_default_language"], "")
+            return HttpResponseRedirect(redirect_url)
+
+        elif "set_language" in request.GET:
+            # Set the current user's session language, and redirect (to clean browser history)
+            lang_code = lcode_to_django_lang(request.GET["set_language"])
+
+            self.set_language(request, lang_code)
+            logging.debug("setting session language to %s" % lang_code)
+
+            redirect_url = request.get_full_path().replace("set_language="+request.GET["set_language"], "")
+            return HttpResponseRedirect(redirect_url)
+
+        # Set this request's language based on the listed priority
+        cur_lang = lcode_to_django_lang( \
+            request.GET.get("lang") \
+            or request.session.get("django_language") \
+            or request.session.get("default_language") \
+            or settings.LANGUAGE_CODE \
+        )
+        self.set_language(request, cur_lang)

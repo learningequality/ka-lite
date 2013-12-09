@@ -24,12 +24,12 @@ except:
     class Organization(models.Model):
         pass
 from coachreports.views import student_view_context
-from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from settings import LOG as logging
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from shared.topic_tools import get_node_cache
 from utils.internet import CsvResponse, render_to_csv
 
 
@@ -230,7 +230,7 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
 @render_to("control_panel/account_management.html")
 def account_management(request, org_id=None):
 
-    # Only log 'coachreport' activity for students, 
+    # Only log 'coachreport' activity for students,
     #   (otherwise it's hard to compare teachers)
     if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
         try:
@@ -277,7 +277,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(topicdata.NODE_CACHE['Exercise'])
+    num_exercises = len(get_node_cache('Exercise'))
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -299,7 +299,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
-    video_logs = list(video_logs.values("youtube_id", "user__pk"))
+    video_logs = list(video_logs.values("video_id", "user__pk"))
     login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
 
     for user in users:
@@ -320,7 +320,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
         user_data[user.pk]["total_videos"] = 0
         user_data[user.pk]["videos_watched"] = []
-    
+
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1
@@ -329,7 +329,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     for vlog in video_logs:
         user_data[vlog["user__pk"]]["total_videos"] += 1
-        user_data[vlog["user__pk"]]["videos_watched"].append(vlog["youtube_id"])
+        user_data[vlog["user__pk"]]["videos_watched"].append(vlog["video_id"])
 
     for llog in login_logs:
         if llog["activity_type"] == UserLog.get_activity_int("coachreport"):
@@ -341,7 +341,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
-        group_name = getattr(user.group, "name", "Ungrouped")
+        group_name = getattr(user.group, "name", _("Ungrouped"))
         if not group_pk in group_data:
             group_data[group_pk] = {
                 "name": group_name,
@@ -410,7 +410,7 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
     def get_users_from_group(group_id, facility=None):
-        if group_id == "Ungrouped":
+        if group_id == _("Ungrouped"):
             return FacilityUser.objects \
                 .filter(facility=facility, group__isnull=True) \
                 .order_by("first_name", "last_name")

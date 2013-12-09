@@ -19,6 +19,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         possible_points: 750,
         starting_points: 0,
         youtube_id: "",
+        video_id: "",
         player_state: VideoPlayerState.UNSTARTED,
         seconds_between_saves: 30,
         percent_between_saves: 0.1
@@ -41,7 +42,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         var self = this;
 
-        doRequest("/api/get_video_logs", [this.get("youtube_id")])
+        doRequest("/api/get_video_logs", [this.get("video_id")])
             .success(function(data) {
                 if (data.length === 0) {
                     return;
@@ -74,6 +75,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         var lastSavedBeforeError = this.get("wall_time_last_saved");
 
         data = {
+            video_id: this.get("video_id"),
             youtube_id: this.get("youtube_id"),
             seconds_watched: this.get("seconds_watched_since_save"),
             total_seconds_watched: this.get("total_seconds_watched"),
@@ -408,13 +410,14 @@ window.PointView = Backbone.View.extend({
 });
 
 
-function initialize_video(video_youtube_id) {
+function initialize_video(video_id, youtube_id) {
 
     var create_video_view = _.once(function(width, height) {
 
         window.videoView = new VideoView({
             el: $("#video-player"),
-            youtube_id: video_youtube_id,
+            video_id: video_id,
+            youtube_id: youtube_id,
             width: width,
             height: height
         });
@@ -451,7 +454,7 @@ function initialize_video(video_youtube_id) {
 
     $("#launch_mplayer").click(_.throttle(function() {
         // launch mplayer in the background to play the video
-        doRequest("/api/launch_mplayer?youtube_id=" + video_youtube_id)
+        doRequest("/api/launch_mplayer?youtube_id=" + youtube_id)
             .fail(function(resp) {
                 communicate_api_failure(resp, "id_mplayer");
             });
