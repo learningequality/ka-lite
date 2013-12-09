@@ -74,7 +74,16 @@
 
 {% block content %}
     <div class="exercises-header">
-        <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}javascript.history.go(-1){% endif %}" class="return-link" >&#60;{% trans "Return" %}</a>
+
+        {% if prev %}
+        <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
+        {% endif %}
+
+        {% if next %}
+        <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+        {% endif %}
+        <div class="clear"></div>
+
         <h2>
             <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
             {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
