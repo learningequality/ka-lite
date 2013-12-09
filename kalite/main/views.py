@@ -145,7 +145,7 @@ def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
     while current_node:
-        match = [ch for ch in (current_node['children'] or []) if request.path.startswith(ch["path"])]
+        match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
         if not match:
             raise Http404
         current_node = match[0]
