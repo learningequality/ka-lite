@@ -20,8 +20,8 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
     move "%KALITE_DIR%\static\videos\*" "%KALITE_DIR%\..\content" > nul 2> nul
 
     set "file_exist="
-    if exist "%KALITE_DIR\cronserver.pid" set file_exist=0
-    if exist "%KALITE_DIR\runcherrypyserver.pid" set file_exist=0
+    if exist "%KALITE_DIR%\cronserver.pid" set file_exist=0
+    if exist "%KALITE_DIR%\runcherrypyserver.pid" set file_exist=0
     if defined file_exist (
         echo -------------------------------------------------------------------
         echo KA Lite server is still running.
@@ -42,10 +42,10 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
     CALL "%SCRIPT_DIR%\get_setting.bat" CENTRAL_SERVER CENTRAL_SERVER
     if "%CENTRAL_SERVER%" EQU "False" (
         echo Starting the cron server in the background.
-        start /B /I "%SCRIPT_DIR%\runhidden.vbs" "%SCRIPT_DIR%\cronstart.bat"
+        call "%SCRIPT_DIR%\cronstart.bat"
     )
     echo Running the web server in the background, on port %PORT%.
-    start /B /I "%SCRIPT_DIR%\runhidden.vbs" "%SCRIPT_DIR%\serverstart.bat"
+    call "%SCRIPT_DIR%\serverstart.bat"
 
     echo The server should now be accessible locally at: http://127.0.0.1:%PORT%/
     echo To access it from another connected computer, try the following:
@@ -54,5 +54,3 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
         for /f "tokens=1 delims= " %%a in ("%%i") do echo http://%%a:%PORT%/
     )
 )
-
-exit
