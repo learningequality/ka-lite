@@ -227,7 +227,7 @@ else:
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
-    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage", "i18n.middleware.VideoLanguage",)  # VideoLanguage must come after SessionLanguage
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
