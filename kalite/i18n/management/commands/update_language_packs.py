@@ -347,13 +347,16 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         src_po_files = all_po_files(extract_path)
         concat_command = ['msgcat', '-o', build_file, '--no-location']
 
-        # filter out po files that are giving me problems
-        src_po_files = filter(lambda po_file: not ('learn.math.trigonometry.exercises' in po_file or 'learn.math.algebra.exercises' in po_file),
-                              src_po_files)
+        # remove all exercise po that is not about math
+        src_po_files = [po for po in src_po_files if not ('exercises' in po and not 'math' in po)]
+
+        # exclude exercises that have nonstandard po formats (looking at you, KA)
+        src_po_files = [po for po in src_po_files if not 'trigonometry.exercises' in po and not 'algebra.exercises' in po]
 
         # before we call msgcat, process each exercise po file and leave out only the metadata
         for exercise_po in get_exercise_po_files(src_po_files):
             remove_exercise_nonmetadata(exercise_po)
+        logging.debug("Done removing nonmetadata.")
 
         concat_command += src_po_files
 
@@ -378,19 +381,28 @@ def slice_errors_off_po_file(errorstr):
 def remove_exercise_nonmetadata(pofilename):
     assert os.path.exists(pofilename), "%s does not exist!" % pofilename
 
-    EXERCISE_METADATA_LINE = r'#.*(of|for) exercise <a'
+    EXERCISE_METADATA_LINE = r'.*(of|for) exercise <a'
 
     logging.info('Removing nonmetadata msgblocks from %s' % pofilename)
     pofile = polib.pofile(pofilename)
 
-    clean_pofile = polib.POFile(fpath=pofilename)
+    clean_pofile = polib.POFile(encoding='utf-8')
+    clean_pofile.append(pofile.metadata_as_entry())
     for msgblock in pofile:
-        if re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
+        if 'Project-Id-Version' in msgblock.msgstr or msgblock.msgstr == '':  # is header; ignore, already included
+            continue
+        elif re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
             # is exercise metadata, preserve
             clean_pofile.append(msgblock)
 
-    clean_pofile.save()
-    # test!
+    os.remove(pofilename)
+    clean_pofile.save(fpath=pofilename)
+
+    # ok, here's the deal: there's a bug right now in polib.py in which
+    # it creates an empty header AUTOMATICALLY. Plus, there is no way
+    # to specify what this header contains. So what do we do? We delete this
+    # header. TODO for Aron: Fix polib.py
+    subprocess.call(['sed', '-i', '-e 1,/^$/d', pofilename])
 
 
 def get_exercise_po_files(po_files):
