@@ -1,5 +1,5 @@
 """
-Contains test wrappers and helper functions for 
+Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
@@ -20,13 +20,12 @@ from django.test import LiveServerTestCase
 import settings
 from config.models import Settings
 from securesync.models import Device
-from shared import caching
 
 
 def create_test_admin(username="admin", password="pass", email="admin@example.com"):
     """Create a test user.
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""
-    
+
     test_admin = User.objects.create_superuser(username, email, password)
 
     # You'll need to log him in before you can send requests through the client
@@ -36,14 +35,14 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
     # set dummy password, so it can be passed around
     test_admin.password = password
     assert client.login(username=test_admin.username, password=password)
-    
+
     return test_admin
-    
-    
+
+
 
 class KALiteTestCase(LiveServerTestCase):
     """The base class for KA Lite test cases."""
-    
+
     def __init__(self, *args, **kwargs):
         self.content_root = tempfile.mkdtemp() + "/"
         self.cache_dir = tempfile.mkdtemp() + "/"
