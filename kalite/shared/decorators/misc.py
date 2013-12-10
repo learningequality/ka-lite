@@ -110,6 +110,7 @@ def facility_required(handler):
                 messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
             return HttpResponseRedirect(reverse("add_facility"))
+
         else:
             @distributed_server_only
             @render_to("securesync/facility_selection.html")

@@ -7,6 +7,7 @@ import datetime
 import logging
 import requests
 import os
+import errno
 
 
 class InvalidDateFormat(Exception):
@@ -129,10 +130,20 @@ def version_diff(v1, v2):
     return 0
 
 
+# http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    if not os.path.exists(path):
+    try:
         os.makedirs(path)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            # file already exists
+            if not os.path.isdir(path):
+                # file exists but is not a directory
+                raise OSError(errno.ENOTDIR, "Not a directory: '%s'" % path)
+            pass  # directory already exists
+        else:
+            raise
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
