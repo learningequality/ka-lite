@@ -30,6 +30,7 @@
         td.pct, td.float, td.int, td.date {
             text-align: right;
         }
+        td.date { border: 0px; }
         td.struggling {
             background-color: #aa0;
             font-weight: bold;
@@ -98,7 +99,7 @@
                 </span>
             </td>
             {% for def in stat_defs %}
-            <td class="{{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}"">
+            <td class="{{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}">
                 {% if def.type == "float" %}
                     {{ stats|get_item:topic.id|get_item:def.key|floatformat }}
                 {% elif def.type == "pct" %}
