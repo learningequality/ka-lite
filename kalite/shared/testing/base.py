@@ -3,22 +3,11 @@ Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
-import glob
-import os
-import shutil
-import tempfile
-
-from django import conf
 from django.contrib.auth.models import User
-from django.core import cache
-from django.core.cache.backends.filebased import FileBasedCache
-from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
-from django.test.client import Client
 from django.test import LiveServerTestCase
+from django.test.client import Client
 
-import settings
-from config.models import Settings
 from securesync.models import Device
 
 
@@ -42,6 +31,12 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
 
 class KALiteTestCase(LiveServerTestCase):
     """The base class for KA Lite test cases."""
+
+    def setUp(self):
+        Device.own_device = None  # cached within securesync, never cleared out
+
+    def tearDown(self):
+        Device.own_device = None  # cached within securesync, never cleared out
 
     def reverse(self, url_name, args=None, kwargs=None):
         """Given a URL name, returns the full central URL to that URL"""

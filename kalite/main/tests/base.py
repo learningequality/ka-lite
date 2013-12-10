@@ -1,9 +1,17 @@
+import glob
 import os
 import random
+import shutil
 import tempfile
+
+from django import conf
+from django.core import cache
+from django.core.cache.backends.filebased import FileBasedCache
+from django.core.cache.backends.locmem import LocMemCache
 
 import settings
 from config.models import Settings
+from securesync.models import Device
 from shared.topic_tools import get_node_cache
 from shared.testing.base import KALiteTestCase
 
@@ -54,7 +62,7 @@ class MainTestCase(KALiteTestCase):
     def tearDown(self):
         self.tearDown_fake_contentroot()
         self.tearDown_fake_cache()
-        #self.tearDown_fake_device()  # nothing to do
+        self.tearDown_fake_device()  # nothing to do
 
     def tearDown_fake_contentroot(self):
         shutil.rmtree(self.content_root)
@@ -65,6 +73,9 @@ class MainTestCase(KALiteTestCase):
         shutil.rmtree(self.cache_dir)
         #for path in glob.glob(os.path.join(self.cache_dir, "*")):
         #    os.remove(path)
+
+    def tearDown_fake_device(self):
+        Device.own_device = None
 
     def is_cache_empty(self):
         return self.get_num_cache_entries() == 0
