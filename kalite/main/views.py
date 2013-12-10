@@ -291,10 +291,17 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
 def exercise_dashboard(request):
     # Just grab the first path, whatever it is
     paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
+
     slug = request.GET.get("topic")
+    if not slug:
+        title = _("Your Knowledge Map")
+    elif slug in topicdata.NODE_CACHE["Topic"]:
+        title = _(topicdata.NODE_CACHE["Topic"][slug][0]["title"])
+    else:
+        raise Http404
 
     context = {
-        "title": topicdata.NODE_CACHE["Topic"][slug][0]["title"] if slug else _("Your Knowledge Map"),
+        "title": title,
         "exercise_paths": json.dumps(paths),
     }
     return context
