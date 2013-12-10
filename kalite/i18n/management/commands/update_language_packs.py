@@ -360,10 +360,9 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         if combine_with_po_file and os.path.exists(combine_with_po_file):
             concat_command += [combine_with_po_file]
 
-        try:
-            output = subprocess.check_output(concat_command, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            output = e.output
+        process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
+        process.wait()
+        output = process.stdout
 
         slice_errors_off_po_file(output)
 
