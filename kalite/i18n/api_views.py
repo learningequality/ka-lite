@@ -44,9 +44,7 @@ def get_available_language_packs(request):
             language_packs_available = json.load(fp)
     except:
         raise Http404
-
-    return JsonResponse(language_packs_available.values())
-
+    return JsonResponse(sorted(language_packs_available.values(), key=lambda lp: lp["name"].lower()))
 
 @central_server_only
 @api_handle_error_with_json
