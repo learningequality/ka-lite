@@ -12,4 +12,7 @@ if "%CENTRAL_SERVER%" EQU "True" (
 
     echo.
     start /b python.exe -c "import sys, subprocess; sp=subprocess.Popen([sys.executable, '%KALITE_DIR%\manage.py', 'cronserver', '%FREQ%']);f=open('%KALITE_DIR%\cronserver.pid','w'); f.write(str(sp.pid)); f.close(); exit();"
+
+    rem A small hack to give time for cronserver to start properly.
+    ping 1.1.1.1 -n 1 -w 5000 > nul
 )
