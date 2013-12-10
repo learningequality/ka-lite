@@ -35,6 +35,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.core.mail import mail_admins
 
+import polib
+
 import settings
 import version
 from settings import LOG as logging
@@ -349,28 +351,51 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         src_po_files = filter(lambda po_file: not ('learn.math.trigonometry.exercises' in po_file or 'learn.math.algebra.exercises' in po_file),
                               src_po_files)
 
+        # before we call msgcat, process each exercise po file and leave out only the metadata
+        for exercise_po in get_exercise_po_files(src_po_files):
+            remove_exercise_nonmetadata(exercise_po)
+
         concat_command += src_po_files
 
         if combine_with_po_file and os.path.exists(combine_with_po_file):
             concat_command += [combine_with_po_file]
 
-
-        backups = [sys.stdout, sys.stderr]
         try:
-            sys.stdout = StringIO.StringIO()     # capture output
-            sys.stderr = StringIO.StringIO()
+            output = subprocess.check_output(concat_command, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output = e.output
 
-            p = subprocess.call(concat_command)
-
-            out = sys.stdout.getvalue() # release output
-            err = sys.stderr.getvalue() # release err
-        finally:
-            sys.stdout = backups[0]
-            sys.stderr = backups[1]
+        slice_errors_off_po_file(output)
 
         shutil.move(build_file, dest_file)
 
         return dest_file
+
+
+def slice_errors_off_po_file(errorstr):
+    pass
+
+
+def remove_exercise_nonmetadata(pofilename):
+    assert os.path.exists(pofilename), "%s does not exist!" % pofilename
+
+    EXERCISE_METADATA_LINE = r'#.*(of|for) exercise <a'
+
+    logging.info('Removing nonmetadata msgblocks from %s' % pofilename)
+    pofile = polib.pofile(pofilename)
+
+    clean_pofile = polib.POFile(fpath=pofilename)
+    for msgblock in pofile:
+        if re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
+            # is exercise metadata, preserve
+            clean_pofile.append(msgblock)
+
+    clean_pofile.save()
+    # test!
+
+
+def get_exercise_po_files(po_files):
+    return fnmatch.filter(po_files, '*.exercises-??.po')
 
 
 def all_po_files(dir):
