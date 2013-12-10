@@ -247,8 +247,7 @@ def login(request, facility):
         else:
             messages.error(
                 request,
-                strip_tags(form.non_field_errors())
-                or _("There was an error logging you in. Please correct any errors listed below, and try again.")
+                _("There was an error logging you in. Please correct any errors listed below, and try again."),
             )
 
     else:  # render the unbound login form
