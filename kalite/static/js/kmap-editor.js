@@ -88,7 +88,7 @@ var KMapEditor = {
             this.maxX = Math.max.apply(Math, _.pluck(this.exercises, "h_position"));
             this.maxY = Math.max.apply(Math, _.pluck(this.exercises, "v_position"));
         } else if (this.zoomLevel === this.ZOOM_TOPICS) {
-            var topicList = _.values(this.maplayout.topics);
+            var topicList = _.values(this.maplayout.nodes);
             this.minX = Math.min.apply(Math, _.pluck(topicList, "h_position"));
             this.minY = Math.min.apply(Math, _.pluck(topicList, "v_position"));
             this.maxX = Math.max.apply(Math, _.pluck(topicList, "h_position"));
@@ -117,7 +117,7 @@ var KMapEditor = {
 
         // add topics
         if (this.zoomLevel === this.ZOOM_TOPICS) {
-            $.each(this.maplayout.topics, function(topicId, topic) {
+            $.each(this.maplayout.nodes, function(topicId, topic) {
                 var newDiv = $("<div>")
                     .addClass("exercise")
                     .css({
@@ -243,8 +243,8 @@ $(document).ready(function() {
         $.getJSON("/api/knowledge_map/" + vars["topic"])
             .success(function(exerciseLayout) {
 
-                var exercises = $.map(exerciseLayout.topics, function(exercise) { return exercise });
-                var exercise_ids = $.map(exerciseLayout.topics, function(exercise) { return exercise.id });
+                var exercises = $.map(exerciseLayout.nodes, function(exercise) { return exercise });
+                var exercise_ids = $.map(exerciseLayout.nodes, function(exercise) { return exercise.id });
                 doRequest("/api/get_exercise_logs", exercise_ids)
                     .success(function(data) {
                         var exercisesCompleted = {};

@@ -289,9 +289,6 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
 @backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    # Just grab the first path, whatever it is
-    paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
-
     slug = request.GET.get("topic")
     if not slug:
         title = _("Your Knowledge Map")
