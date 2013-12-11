@@ -76,7 +76,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     # a) We're in DEBUG mode
     # b) The debug cache file exists
     # c) It's less than 7 days old.
-    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 14.0:
+    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 114.0:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
         with open(debug_cache_file, "r") as fp:
@@ -493,22 +493,49 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             adjust_coord(children, "h_position")
 
         return knowledge_map, knowledge_topics
-
     normalize_tree(knowledge_map, knowledge_topics)
 
-    # Dump the knowledge map
-    with open(os.path.join(data_path, topic_tools.map_layout_file), "w") as fp:
-        fp.write(json.dumps(knowledge_map, indent=2))
+    def stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics):
+        """
+        """
+        # Move over the root map
+        root_map = {}
+        for topic in knowledge_map["topics"].values():
+            root_map[topic["id"]] = {
+                "kind": "Topic",
+                "h_position": topic["x"],
+                "v_position": topic["y"],
+                "icon_url": topic["icon_url"],
+            }
+        root_node = node_cache["Topic"]["root"][0]
+        root_node["knowledge_map"] = {
+            "topics": root_map,
+            "polylines": knowledge_map["polylines"],
+        }
 
-    # Rewrite topicdata, obliterating the old (to remove cruft)
-    topicdata_dir = os.path.join(data_path, "topicdata")
-    if os.path.exists(topicdata_dir):
-        shutil.rmtree(topicdata_dir)
-    os.mkdir(topicdata_dir)
+        # Move over subtopic paths
+        for topic_id, subtopic_data in knowledge_topics.iteritems():
+            # Move over the root map
+            topic_map = {}
+            for subtopic in subtopic_data:
+                print subtopic, subtopic_data
+                topic_map[subtopic["id"]] = {
+                    "kind": "Exercise",
+                    "h_position": subtopic["h_position"],
+                    "v_position": subtopic["v_position"],
+                }
+            for node in node_cache["Topic"][topic_id]:
+                node["icon_url"] = node["icon_src"]
+                node["knowledge_map"] = {
+                    "topics": topic_map,
+                    "polylines": None,  # can make this use prereqs
+                }
+    stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics)
 
-    for key, value in knowledge_topics.items():
-        with open(os.path.join(topicdata_dir, "%s.json" % key), "w") as fp:
-            fp.write(json.dumps(value, indent=2))
+    # Dump the topic tree (again)
+    root_node = node_cache["Topic"]["root"][0]
+    with open(os.path.join(data_path, topic_tools.topics_file), "w") as fp:
+        fp.write(json.dumps(root_node, indent=2))
 
     return knowledge_map, knowledge_topics
 
