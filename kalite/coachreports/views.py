@@ -115,7 +115,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     """
     user = get_user_from_request(request=request)
     if not user:
-        raise Http404
+        raise Http404("User not found.")
 
     node_cache = get_node_cache()
     topic_ids = [t["id"] for t in get_knowledgemap_topics()]

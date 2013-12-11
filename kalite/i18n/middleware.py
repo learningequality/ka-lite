@@ -15,10 +15,8 @@ class SessionLanguage:
         old_lang = request.session.get("django_language", "")
         if cur_lang != old_lang:
             logging.debug("setting session language to %s" % cur_lang)
+            request.session["django_language"] = cur_lang
 
-        # Set the two variables we care most about
-        request.session["django_language"] = cur_lang
-        request.session["default_language"] = cur_lang
         request.language = lcode_to_ietf(cur_lang)
 
     def process_request(self, request):
@@ -55,11 +53,13 @@ class SessionLanguage:
             redirect_url = request.get_full_path().replace("set_language="+request.GET["set_language"], "")
             return HttpResponseRedirect(redirect_url)
 
+        if not "default_language" in request.session:
+            request.session["default_language"] = Settings.get("default_language") or settings.LANGUAGE_CODE
+
         # Set this request's language based on the listed priority
         cur_lang = lcode_to_django_lang( \
             request.GET.get("lang") \
             or request.session.get("django_language") \
             or request.session.get("default_language") \
-            or settings.LANGUAGE_CODE \
         )
         self.set_language(request, cur_lang)
