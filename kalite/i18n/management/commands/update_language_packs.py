@@ -356,29 +356,26 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         # before we call msgcat, process each exercise po file and leave out only the metadata
         for exercise_po in get_exercise_po_files(src_po_files):
             remove_exercise_nonmetadata(exercise_po)
-        logging.debug("Done removing nonmetadata.")
 
         concat_command += src_po_files
 
         if combine_with_po_file and os.path.exists(combine_with_po_file):
             concat_command += [combine_with_po_file]
 
+        logging.info('Concatenating all po files found...')
         process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
         process.wait()
-        output = process.stdout
-
-        slice_errors_off_po_file(output)
 
         shutil.move(build_file, dest_file)
 
         return dest_file
 
 
-def slice_errors_off_po_file(errorstr):
-    pass
-
-
 def remove_exercise_nonmetadata(pofilename):
+    '''Checks each message block in the po file given by pofilename, and
+    sees if the top comment of each one has the string '(of|for)
+    exercise'. If not, then it will be deleted from the po file.
+    '''
     assert os.path.exists(pofilename), "%s does not exist!" % pofilename
 
     EXERCISE_METADATA_LINE = r'.*(of|for) exercise <a'
