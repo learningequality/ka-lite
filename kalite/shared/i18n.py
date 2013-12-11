@@ -1,16 +1,19 @@
 """
 Utility functions for i18n related tasks on the distributed server
 """
+import glob
 import json
 import os
 import re
 import requests
+import shutil
 
 from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
 
 import settings
 import version
+from settings import LOG as logging
 from utils.general import ensure_dir
 
 
@@ -331,6 +334,7 @@ def scrub_locale_paths():
                 shutil.rmtree(os.path.join(locale_root, lang))
 
 def move_old_subtitles():
+    locale_root = settings.LOCALE_PATHS[0]
     srt_root = os.path.join(settings.STATIC_ROOT, "srt")
     if os.path.exists(srt_root):
         logging.info("Outdated schema detected for storing srt files. Hang tight, the moving crew is on it.")
