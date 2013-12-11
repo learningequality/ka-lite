@@ -302,7 +302,6 @@ def exercise_dashboard(request):
 
     context = {
         "title": title,
-        "exercise_paths": json.dumps(paths),
     }
     return context
 

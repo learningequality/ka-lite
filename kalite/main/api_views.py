@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
@@ -22,6 +22,7 @@ from django.views.decorators.gzip import gzip_page
 
 import settings
 import version
+from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog
 from config.models import Settings
@@ -370,3 +371,32 @@ def flat_topic_tree(request, lang_code):
             "requested_lang": lang_code,
         })
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
+
+
+@api_handle_error_with_json
+#@backend_cache_page
+def knowledge_map_json(request, topic_id):
+    topic = topicdata.NODE_CACHE["Topic"].get(topic_id)
+    if not topic:
+        raise Http404("Topic '%s' not found" % topic_id)
+    elif not "knowledge_map" in topic[0]:
+        raise Http404("Topic '%s' has no knowledge map metadata." % topic_id)
+
+    kmap = topic[0]["knowledge_map"]
+    nodes_out = {}
+    for id, kmap_data in kmap["topics"].iteritems():
+        cur_node = topicdata.NODE_CACHE[kmap_data["kind"]][id][0]
+        nodes_out[id] = {
+            "id": cur_node["id"],
+            "title": _(cur_node["title"]),
+            "h_position":  kmap_data["h_position"],
+            "v_position": kmap_data["v_position"],
+            "icon_url": cur_node.get("icon_url", cur_node.get("icon_src")),
+            "prerequisites": cur_node.get("prerequisites", []),
+            "path": cur_node["path"],
+        }
+
+    return JsonResponse({
+        "topics": nodes_out,
+        "polylines": kmap["polylines"],
+    })
