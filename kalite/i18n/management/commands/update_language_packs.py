@@ -402,7 +402,10 @@ def remove_exercise_nonmetadata(pofilename):
     # it creates an empty header AUTOMATICALLY. Plus, there is no way
     # to specify what this header contains. So what do we do? We delete this
     # header. TODO for Aron: Fix polib.py
-    subprocess.call(['sed', '-i', '-e 1,/^$/d', pofilename])
+    sedproc = subprocess.Popen(['sed', '-e 1,/^$/d', pofilename], stdout=subprocess.PIPE)
+    out, _ = sedproc.communicate()
+    with open(pofilename, 'w') as pofile:
+        pofile.write(out)
 
 
 def get_exercise_po_files(po_files):
