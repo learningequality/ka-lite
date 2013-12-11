@@ -497,6 +497,17 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
 
     def stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics):
         """
+        Any topic node can have a "knowledge map" property.
+        If it does, it can have two components:
+        1. nodes: a dictionary containing node ids and a few values, including:
+            - kind (the kind of node)
+            - h_position / v_position
+            - optional "icon_url"
+        2. polylines (optional)
+          - defines the connections between nodes
+
+        So now, when you have a topic node, it contains in itself
+          enough data to pull together a knowledge map on the fly.
         """
         # Move over the root map
         root_map = {}
@@ -509,7 +520,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             }
         root_node = node_cache["Topic"]["root"][0]
         root_node["knowledge_map"] = {
-            "topics": root_map,
+            "nodes": root_map,
             "polylines": knowledge_map["polylines"],
         }
 
@@ -518,7 +529,6 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             # Move over the root map
             topic_map = {}
             for subtopic in subtopic_data:
-                print subtopic, subtopic_data
                 topic_map[subtopic["id"]] = {
                     "kind": "Exercise",
                     "h_position": subtopic["h_position"],
@@ -527,10 +537,19 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             for node in node_cache["Topic"][topic_id]:
                 node["icon_url"] = node["icon_src"]
                 node["knowledge_map"] = {
-                    "topics": topic_map,
-                    "polylines": None,  # can make this use prereqs
+                    "nodes": topic_map,
                 }
     stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics)
+
+    def scrub_topic_tree(node_cache):
+        # Now, remove unnecessary values
+        for kind_nodes in node_cache.values():
+            for node_list in kind_nodes.values():
+                for node in node_list:
+                    for prop in ["x_pos", "y_pos", "in_knowledge_map", "icon_src", u'topic_page_url', u'hide', "node_slug", "extended_slug"]:
+                        if prop in node:
+                            del node[prop]
+    scrub_topic_tree(node_cache)
 
     # Dump the topic tree (again)
     root_node = node_cache["Topic"]["root"][0]
@@ -564,30 +583,6 @@ def validate_data(topictree, node_cache, slug2id_map, knowledge_map):
         topic = topic_nodes[0]
         if not topic_tools.get_topic_by_path(topic["path"], root_node=topictree).get("children"):
             sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
-
-    # Validate all topics in knowledge map are in the node cache
-    for slug in knowledge_map["topics"]:
-        if slug not in node_cache["Topic"]:
-            sys.stderr.write("Unknown topic in knowledge map: %s\n" % slug)
-
-        topicdata_path = os.path.join(settings.PROJECT_PATH + "/static/data/", "topicdata", "%s.json" % slug)
-        if not os.path.exists(topicdata_path):
-            sys.stderr.write("Could not find topic data in topicdata directory: '%s'\n" % slug)
-
-    # Validate all topics in node-cache are in (or out) of knowledge map, as requested.
-    for topic_nodes in node_cache["Topic"].values():
-        topic = topic_nodes[0]
-        if topic["in_knowledge_map"] and not topic["slug"] in knowledge_map["topics"]:
-            sys.stderr.write("Topic '%-40s' not in knowledge map, but node_cache says it should be.\n" % topic["slug"])
-
-        elif not topic["in_knowledge_map"] and topic["slug"] in knowledge_map["topics"]:
-            sys.stderr.write("Topic '%-40s' in knowledge map, but node_cache says it shouldn't be.\n" % topic["slug"])
-
-        elif topic["in_knowledge_map"] and not topic_tools.get_topic_by_path(topic["path"], root_node=topictree).get("children"):
-            sys.stderr.write("Topic '%-40s' in knowledge map, but has no children.\n" % topic["slug"])
-
-        elif topic["in_knowledge_map"] and not topic_tools.get_all_leaves(topic_tools.get_topic_by_path(topic["path"], root_node=topictree), leaf_type="Exercise"):
-            sys.stderr.write("Topic '%40s' in knowledge map, but has no exercises.\n" % topic["slug"])
 
 
 class Command(BaseCommand):
