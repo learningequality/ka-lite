@@ -1,14 +1,12 @@
-{% extends "base_distributed.html" %}
-
+{% extends base_template %}
 {% load i18n %}
 
-{% block title %}{% trans "Error" %}{% endblock %}
+{% block title %}{% trans "Error" %}{{ block.super }}{% endblock title %}
 
 {% block content %}
-<h1>{% trans "Error" %}</h1>
+    <h1>{% trans "Error" %}</h1>
 
-<p><b>{% trans "Sorry, but there was an error while trying to load the page." %}</b></p>
+    <p><b>{% trans "Sorry, but there was an error while trying to load the page." %}</b></p>
 
-({{ errortype }}: {{ value }})
-
-{% endblock %}
+    ({{ errortype }}: {{ value }})
+{% endblock content %}

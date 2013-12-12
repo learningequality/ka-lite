@@ -4,6 +4,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.http import HttpResponse,HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 import settings
 from central.models import Organization
@@ -24,11 +25,11 @@ def contact_subscribe(request, email=None):
 
     email = email or getattr(request,request.method).get('email')
     if not email:
-        raise Exception("Email not specified")
+        raise Exception(_("Email not specified"))
         
     # Don't want to muck with mailchimp during testing (though I did validate this)
     if settings.DEBUG:
-        return HttpResponse("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!" % email)
+        return HttpResponse(_("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!") % email)
     else:
         return HttpResponse(mailchimp_subscribe(email, settings.CENTRAL_SUBSCRIBE_URL))
 
@@ -85,7 +86,7 @@ def contact_wizard(request, type=""):
                        return handle_contact(request, contact_form, contribute_form, settings.CENTRAL_INFO_EMAIL, "contribute")
 
             else:
-                raise Exception("Unknown contact type: %s"%(contact_form.cleaned_data["type"]))
+                raise Exception(_("Unknown contact type: %s") % (contact_form.cleaned_data["type"]))
 
     # A GET request.  Create empty forms, fill in user details if available
     #   Auto-select the type, if relevant
@@ -117,7 +118,7 @@ def contact_wizard(request, type=""):
                 instance=Contact(
                     type=type,
                     user=request.user,
-                    name="%s %s"%(request.user.first_name, request.user.last_name),
+                    name="%s %s" % (request.user.first_name, request.user.last_name),
                     email=request.user.email,
                     org_name=org.name,
                     ip=get_request_ip(request),

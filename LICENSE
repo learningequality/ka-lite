@@ -2,7 +2,7 @@
 For the KA Lite software:
 ------------------------------------------------------------------------------
 
-The KA Lite software itself is MIT licensed (see http://opensource.org/licenses/MIT):
+Copyright for the KA Lite software, except where otherwise specified in the code or further down in this file, belongs to the Foundation for Learning Equality, Inc. (FLE), and by contributing your code to this project (except where otherwise negotiated), you agree to assign copyright in this code to FLE, to be licensed under the same terms as the rest of the code. The KA Lite codebase is released for use under the open-source MIT license (see http://opensource.org/licenses/MIT):
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -41,6 +41,7 @@ django_extensions
 django-faq
 GitPython
 django-postmark
+ifcfg
 pyasn1
 werkzeug
 
@@ -57,5 +58,5 @@ Under the ASL license v2 (http://www.apache.org/licenses/LICENSE-2.0.html):
 rsa
 south
 
-Under GPL version 3:
+Under LGPL version 3 (http://www.gnu.org/licenses/lgpl.html):
 mplayer

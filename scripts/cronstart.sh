@@ -11,5 +11,11 @@ if [ "$pids" ]; then
     source "$SCRIPT_DIR/cronstop.sh"
 fi
 
-freq=`"$SCRIPT_DIR/get_setting.sh" CRONSERVER_FREQUENCY`
-"$pyexec" "$KALITE_DIR/manage.py" cronserver "$freq" &
+central_server=`"$SCRIPT_DIR/get_setting.sh" CENTRAL_SERVER`
+if [ "$central_server" == "True" ]; then
+    echo "ERROR: do not call cronstart on the central server."
+    exit 1
+else
+    freq=`"$SCRIPT_DIR/get_setting.sh" CRONSERVER_FREQUENCY`
+    "$pyexec" "$KALITE_DIR/manage.py" cronserver "$freq" &
+fi

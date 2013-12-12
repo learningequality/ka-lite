@@ -6,8 +6,11 @@ import json
 import os
 from functools import partial
 
+from django.utils.translation import ugettext as _
+
 import settings
 from settings import LOG as logging
+from shared import i18n
 
 
 kind_slugs = {
@@ -16,11 +19,8 @@ kind_slugs = {
     "Topic": ""
 }
 
-multipath_kinds = ["Exercise", "Video"]
-
 topics_file = "topics.json"
 map_layout_file = "maplayout_data.json"
-video_remap_file = "youtube_to_slug_map.json"
 
 
 # Globals that can be filled
@@ -28,7 +28,9 @@ TOPICS          = None
 def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        TOPICS = json.loads(open(os.path.join(settings.DATA_PATH, topics_file)).read())
+        with open(os.path.join(settings.DATA_PATH, topics_file), "r") as fp:
+            TOPICS = json.load(fp)
+        validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
 
@@ -47,16 +49,85 @@ KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS, map_layout_file
     if KNOWLEDGEMAP_TOPICS is None or force:
-        kmap = json.loads(open(os.path.join(settings.DATA_PATH, map_layout_file)).read())
+        with open(os.path.join(settings.DATA_PATH, map_layout_file), "r") as fp:
+            kmap = json.load(fp)
         KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
     return KNOWLEDGEMAP_TOPICS
 
-ID2SLUG_MAP = None
-def get_id2slug_map(force=False):
-    global ID2SLUG_MAP, video_remap_file
-    if ID2SLUG_MAP is None or force:
-        ID2SLUG_MAP     = json.loads(open(os.path.join(settings.DATA_PATH, video_remap_file)).read())
-    return ID2SLUG_MAP
+
+SLUG2ID_MAP = None
+def get_slug2id_map(force=False):
+    global SLUG2ID_MAP
+    if SLUG2ID_MAP is None or force:
+        SLUG2ID_MAP = generate_slug_to_video_id_map(get_node_cache(force=force))
+    return SLUG2ID_MAP
+
+
+FLAT_TOPIC_TREE = {}
+def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
+    global FLAT_TOPIC_TREE
+    if lang_code not in FLAT_TOPIC_TREE or force:
+        FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
+    return FLAT_TOPIC_TREE[lang_code]
+
+
+def validate_ancestor_ids(topictree=None):
+    """
+    Given the KA Lite topic tree, make sure all parent_id and ancestor_ids are stamped
+    """
+
+    if not topictree:
+        topictree = get_topic_tree()
+
+    def recurse_nodes(node, ancestor_ids=[]):
+        # Add ancestor properties
+        if not "parent_id" in node:
+            node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
+        if not "ancestor_ids" in node:
+            node["ancestor_ids"] = ancestor_ids
+
+        # Do the recursion
+        for child in node.get("children", []):
+            recurse_nodes(child, ancestor_ids=ancestor_ids + [node["id"]])
+    recurse_nodes(topictree)
+
+    return topictree
+
+
+def generate_slug_to_video_id_map(node_cache=None):
+    """
+    Go through all videos, and make a map of slug to video_id, for fast look-up later
+    """
+
+    node_cache = node_cache or get_node_cache()
+
+    slug2id_map = dict()
+
+    # Make a map from youtube ID to video slug
+    for video_id, v in node_cache['Video'].iteritems():
+        assert v[0]["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
+        slug2id_map[v[0]['slug']] = video_id
+
+    return slug2id_map
+
+
+def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
+    categories = node_cache or get_node_cache()
+    result = dict()
+    # make sure that we only get the slug of child of a topic
+    # to avoid redundancy
+    for category_name, category in categories.iteritems():
+        result[category_name] = {}
+        for node_name, node_list in category.iteritems():
+            node = node_list[0]
+            relevant_data = {
+                'title': _(node['title']),
+                'path': node['path'],
+                'kind': node['kind'],
+                'available': node.get('available', True),
+            }
+            result[category_name][node_name] = relevant_data
+    return result
 
 
 def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
@@ -69,74 +140,55 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
     node_cache = {}
 
 
-    def recurse_nodes(node, path="/", parents=[]):
+    def recurse_nodes(node):
         # Add the node to the node cache
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
-        
-        if node["slug"] in node_cache[kind]:
-            # Existing node, so append the path to the set of paths
-            assert kind in multipath_kinds, "Make sure we expect to see multiple nodes map to the same slug (%s unexpected)" % kind
 
-            # Before adding, let's validate some basic properties of the 
-            #   stored node and the new node:
-            # 1. Compare the keys, and make sure that they overlap 
-            #      (except the stored node will not have 'path', but instead 'paths')
-            # 2. For string args, check that values are the same
-            #      (most/all args are strings, and ... I feel we're already being darn
-            #      careful here.  So, I think it's enough.
-            node_shared_keys = set(node.keys()) - set(["path"])
-            stored_shared_keys = set(node_cache[kind][node["slug"]]) - set(["path", "paths", "parents"])
-            unshared_keys = node_shared_keys.symmetric_difference(stored_shared_keys)
-            shared_keys = node_shared_keys.intersection(stored_shared_keys)
-            assert not unshared_keys, "Node and stored node should have all the same keys."
-            for key in shared_keys:
-                # A cursory check on values, for strings only (avoid unsafe types)
-                if isinstance(node[key], basestring):
-                    assert node[key] == node_cache[kind][node["slug"]][key], "Node values don't match"
-
-            # We already added this node, it's just found at multiple paths.
-            #   So, save the new path
-            node_cache[kind][node["slug"]]["paths"].append(node["path"])
-            node_cache[kind][node["slug"]]["parents"] = list(set(node_cache[kind][node["slug"]]["parents"]).union(set(parents)))
-
-        else:
-            # New node, so copy off, massage, and store.
-            node_copy = node
-            if kind in multipath_kinds:
-                # If multiple paths can map to a single slug, need to store all paths.
-                node_copy["paths"] = [node_copy["path"]]
-            node_cache[kind][node["slug"]] = node_copy
-            # Add parents
-            node_cache[kind][node["slug"]]["parents"] = parents
+        if node["id"] not in node_cache[kind]:
+            node_cache[kind][node["id"]] = []
+        node_cache[kind][node["id"]] += [node]        # Append
 
         # Do the recursion
         for child in node.get("children", []):
-            assert "path" in node and "paths" not in node, "This code can't handle nodes with multiple paths; it just generates them!"
-            recurse_nodes(child, node["path"], parents + [node["slug"]])
-
+            recurse_nodes(child)
     recurse_nodes(topictree)
 
     return node_cache
 
 
-def get_videos(topic): 
+def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
+    potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
+    if not potential_parents:
+        return None
+    elif len(potential_parents) == 1:
+        return potential_parents[0]
+    else:
+        for pp in potential_parents:
+            if node["path"].startswith(pp["path"]):  # find parent by path
+                return pp
+        return None
+
+def get_parent(node, parent_type="Topic"):
+    return get_ancestor(node, ancestor_id=node["parent_id"], ancestor_type=parent_type)
+
+def get_videos(topic):
     """Given a topic node, returns all video node children (non-recursively)"""
     return filter(lambda node: node["kind"] == "Video", topic["children"])
 
 
-def get_exercises(topic): 
+def get_exercises(topic):
     """Given a topic node, returns all exercise node children (non-recursively)"""
     return filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
 
 
-def get_live_topics(topic): 
+def get_live_topics(topic):
     """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
     return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
 
 
-def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT):
-    return [path.split("/")[-1].split(".")[0] for path in glob.glob(videos_path + "*.mp4")]
+def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
+    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
 
 
 def get_topic_by_path(path, root_node=None):
@@ -148,7 +200,6 @@ def get_topic_by_path(path, root_node=None):
         return root_node
     elif not path.startswith(root_node["path"]):
         return {}
-        
 
     # split into parts (remove trailing slash first)
     parts = path[len(root_node["path"]):-1].split("/")
@@ -179,7 +230,8 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     if not "children" in topic_node:
         if leaf_type is None or topic_node['kind'] == leaf_type:
             leaves.append(topic_node)
-    else:
+
+    elif not leaf_type or leaf_type in topic_node["contains"]:
         for child in topic_node["children"]:
             leaves += get_all_leaves(topic_node=child, leaf_type=leaf_type)
 
@@ -187,14 +239,15 @@ def get_all_leaves(topic_node=None, leaf_type=None):
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
-    """Given a topic (identified by topic_id or path), return all descendant exercises"""
+    """Given a topic (identified by topic_id or path), return all descendent leaf nodes"""
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
 
     if not path:
-        topic_node = filter(partial(lambda node, name: node['slug'] == name, name=topic_id), get_node_cache('Topic').values())
+        topic_node = get_node_cache('Topic').get(topic_id, None)
         if not topic_node:
             return []
-        path = topic_node[0]['path']
+        else:
+            path = topic_node[0]['path']
 
     topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
@@ -218,7 +271,7 @@ def get_related_exercises(videos):
     """Given a set of videos, get all of their related exercises."""
     related_exercises = []
     for video in videos:
-        if "related_exercise" in video:
+        if video.get("related_exercise"):
             related_exercises.append(video['related_exercise'])
     return related_exercises
 
@@ -227,27 +280,58 @@ def get_exercise_paths():
     """This function retrieves all the exercise paths.
     """
     exercises = get_node_cache("Exercise").values()
-    return [exercise["paths"][0] for exercise in exercises if len(exercise.get("paths", [])) > 0]
+    return [n["path"] for exercise in exercises for n in exercise]
 
 
-def get_related_videos(exercises, topics=None, possible_videos=None):
+def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
     """Given a set of exercises, get all of the videos that say they're related.
 
     possible_videos: list of videos to consider.
     topics: if not possible_videos, then get the possible videos from a list of topics.
     """
+    assert bool(topics) + bool(possible_videos) <= 1, "May specify possible_videos or topics, but not both."
+
     related_videos = []
 
     if not possible_videos:
         possible_videos = []
         for topic in (topics or get_node_cache('Topic').values()):
-            possible_videos += get_topic_videos(topic_id=topic['id'])
+            possible_videos += get_topic_videos(topic_id=topic[0]['id'])
 
     # Get exercises from videos
-    exercise_ids = [ex["id"] if "id" in ex else ex['name'] for ex in exercises]
-    for video in videos:
+    exercise_ids = [ex["id"] for ex in exercises]
+    for video in possible_videos:
         if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
             related_videos.append(video)
+    return related_videos
+
+def get_video_by_youtube_id(youtube_id):
+    # TODO(bcipolli): will need to change for dubbed videos
+    video_id = i18n.get_video_id(youtube_id=youtube_id)
+    return get_node_cache("Video").get(video_id, [None])[0]
+
+def get_related_videos(exercise, limit_to_available=True):
+    """
+    Return topic tree cached data for each related video,
+    favoring videos that are sibling nodes to the exercises.
+    """
+    def find_most_related_video(videos, exercise):
+        # Search for a sibling video node to add to related exercises.
+        for video in videos:
+            if is_sibling({"path": video["path"], "kind": "Video"}, exercise):
+                return video
+        # failed to find a sibling; just choose the first one.
+        return videos[0] if videos else None
+
+    # Find related videos
+    related_videos = {}
+    for slug in exercise["related_video_slugs"]:
+        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
+
+        # Make sure the IDs are recognized, and are available.
+        if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
+            related_videos[slug] = find_most_related_video(video_nodes, exercise)
+
     return related_videos
 
 
@@ -261,3 +345,21 @@ def is_sibling(node1, node2):
 
     return parent_path1 == parent_path2
 
+
+def get_neighbor_nodes(node, neighbor_kind=None):
+
+    parent = get_parent(node)
+    prev = next = None
+    filtered_children = [ch for ch in parent["children"] if not neighbor_kind or ch["kind"] == neighbor_kind]
+
+    for idx, child in enumerate(filtered_children):
+        if child["path"] != node["path"]:
+            continue
+
+        if idx < (len(filtered_children) - 1):
+            next = filtered_children[idx + 1]
+        if idx > 0:
+            prev = filtered_children[idx - 1]
+        break
+
+    return prev, next

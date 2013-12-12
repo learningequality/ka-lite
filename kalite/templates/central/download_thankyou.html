@@ -1,0 +1,84 @@
+{% extends "central/base.html" %}
+
+{% load i18n %}
+{% load my_filters %}
+{% load staticfiles %}
+
+{% block title %}{% trans "Thank you for installing KA Lite!" %}{% endblock %}
+
+{% block install_active %}active{% endblock install_active %}
+
+{% block headcss %}
+    <style>
+    #instructions li {
+        font-size:14px;
+        margin: 2px;
+    }
+    #post-download, #python-instructions {
+        margin-top: 30px; 
+    }
+    #manual-download {
+        display:none;
+    }
+    #time-left {
+        font-weight: bold;
+        font-size: 18pt;
+        margin: 0px 5px 0px 5px;
+    }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}
+    <script type="text/javascript">
+        var total_time = 10;  // in secs
+        function countdown_callback() {
+            $("#time-left").text("" + total_time);
+            console.log(total_time);
+            $("#manual-download").toggle(true)
+
+            if (total_time > 0) {
+                total_time -= 1;
+                setTimeout(countdown_callback, 1000);
+            } else {
+            }
+        }
+
+        $(function() {
+            countdown_callback()
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Thank you for downloading KA Lite{% if version %} {{ version }}{% endif %}!</h1>
+
+    {% if download_url %}
+    <div id="manual-download">
+        <meta http-equiv="refresh" content="0;{{ download_url }}" />
+        <a href="{{ download_url }}">Click here</a> if download does not start automatically within <span id="time-left"></span> seconds.</a>
+    </div>
+    {% endif %}
+
+    <div id="instructions">
+        <div id="post-download">
+            <h2>What do I do after download?</h2>
+            <ol>
+                <li>When the download completes, <b>copy the zip file to your server(s)</b>.</li>
+                <li>From the server(s), <b>unzip the zip file</b>.</li>
+                <li>From the server(s), <b>run the install_from_zip script</b> file for your operating system.</li>
+            </ol>
+        </div>
+        <div id="python-instructions">
+            <h2>Do you have Python?</h2>
+            Python is the program that runs KA Lite; some systems may not have it.
+            <ol>
+                <li>If you need it, <a target="_new" href="http://www.python.org/getit/releases/2.7.5/#download">download Python</a> (version 2.7).</li>
+                <li>Copy the Python installer over to your server(s).</li>
+                <li>Install Python <b>before you install KA Lite</b>.</li>
+                <li>Make sure to add Python to your PATH (<a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+windows">Windows</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+linux">Linux</a>, <a target="_new" href="https://www.google.com/search?q=add+python+to+path+tutorial+mac">MacOS</a>).</li>
+                <li>Then, install KA Lite (instructions above).</li>
+            </ol>
+        </div>
+
+    </div>
+{% endblock %}

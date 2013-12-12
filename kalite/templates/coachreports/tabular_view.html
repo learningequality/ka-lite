@@ -5,124 +5,69 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Coach Reports" %}{% endblock title %}
+{% block title %}{% trans "Coach Reports" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
-    <style>
-    #legend a {
-        height:12px;
-        margin:0px;
-        padding:0px;
-    }   
-
-    .student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
-        float:left; 
-        display:none;
-        overflow:hidden;
-        white-space:nowrap;
-        width:100%;
-        margin:0px 5px 0px 0px;
-        padding:0px;
-        text-align:right;
-        vertical-align:middle;
-    }
-    .student-name {
-        float:none;
-        text-align:left;
-        display:block;
-    }
-    #legend {
-        float:right;
-        vertical-align:middle;
-        margin:12px 25px 2px 10px;
-    }
-    .legend {
-        float:right;
-        width:120px;
-        height:20px;
-        text-align:center;
-        vertical-align:middle;
-        white-space:nowrap;
-        overflow:hidden;
-        border-style:solid;
-        border-width: 1px;
-        padding:2px;
-        margin-right: 2px;
-    /*display:none;*/
-    
-    }
-    .legend div {
-        float:left;
-        width:35px;
-        height:21px;
-    }
-    #selection-bar {
-        overflow:hide;
-    }
-    #disp_options {
-        float:right;
-    }
-</style>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}?{{ BUILD_ID }}" />
 {% endblock headcss %}
 
 
 
 {% block headjs %}{{ block.super }}
-<script>
-    $(function() {
+    <script>
+        $(function() {
 
-        // Note: Unlike other coach reports, the tabular view is generated in server side templates.
-        // As such, changing any of the values of the items requires a change of URL and subsequent
-        // navigation event in order to produce the new report.
+            // Note: Unlike other coach reports, the tabular view is generated in server side templates.
+            // As such, changing any of the values of the items requires a change of URL and subsequent
+            // navigation event in order to produce the new report.
 
-        $("#report_type").change(function(){
-            window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+window.location.search;
-        });
+            $("#report_type").change(function(){
+                window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+            });
 
-        $("#student").change(function(){
-            window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
-        });
+            $("#student").change(function(){
+                window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
+            });
 
-        $("#topic").change(function(){
-            window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
-        });
+            $("#topic").change(function(){
+                window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
+            });
 
-        $("#facility").change(function(){
-            window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
-        });
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
 
-        $(".group_select").change(function(event){
-            window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
-        });
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
 
-        // Selector to toggle visible elements is stored in each option value
-        cell_height = 27;
-        $("#disp_options").change(function(){
-            selector = $("#disp_options option:selected").val(); 
+            // Selector to toggle visible elements is stored in each option value
+            cell_height = 27;
+            $("#disp_options").change(function(){
+                selector = $("#disp_options option:selected").val(); 
 
-            // adjust the cell height
-            cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
+                // adjust the cell height
+                cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
         
-            // adjust view in data cells
-            $(selector).each(function () {
-                $(this).toggle()
-            });
-            $(selector).each(function () {
-                $(this).height(20);
-                $(this).parent().height(cell_height);
-            });
+                // adjust view in data cells
+                $(selector).each(function () {
+                    $(this).toggle()
+                });
+                $(selector).each(function () {
+                    $(this).height(20);
+                    $(this).parent().height(cell_height);
+                });
 
-            // Adjust student name cell heights
-            $("th.username").each(function () {
-                $(this).height(cell_height);
+                // Adjust student name cell heights
+                $("th.username").each(function () {
+                    $(this).height(cell_height);
+                });
             });
+            $(window).resize(function() {
+                $('.headrowuser').height($('.headrow.data').height()+1);
+            }).resize();
         });
-        $(window).resize(function() {
-            $('.headrowuser').height($('.headrow.data').height()+1);
-        }).resize();
-    });
-</script>
+    </script>
 {% endblock headjs %}
 
 {% block content %}
@@ -130,7 +75,7 @@
 
     <div id="selection-bar">
         <div class="selection">
-        {% comment %}Select the coach report type{% endcomment %}
+        {# Select the coach report type #}
         {% if report_types %}
             <div class="subtitle">{% trans "Select Report" %}</div>
             <select id="report_type">
@@ -158,7 +103,6 @@
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
-                    
                     <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
                 {% endfor %}
             </select>
@@ -224,14 +168,16 @@
         {% block exercise_data %}
             <div class="userstatus">
                 <table>
-                    <tbody>
+                    <thead>
                         <tr>
                             {% for exercise in exercises %}
                                 <th class="headrow data">
-                                    <a href="{{ exercise.path }}"><span title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</span></a>
+                                    <div><a href="{{ exercise.path }}" title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</a></div>
                                 </th>
                             {% endfor %}
                         </tr>
+                    </thead>
+                    <tbody>
                         {% for student in students %}
                             <tr>
                                 {% for exercise in exercises %}
@@ -261,25 +207,25 @@
                         <tr>
                             {% for video in videos %}
                                 <th class="headrow data">
-                                    <a href="{{ video.path }}"><span title='"{{ video.title }}"{% if video.description %} ({{ video.description }}){% endif %}'>{{ video.title }}</span></a>
+                                    <div><a href="{{ video.path }}"><span title='"{{ video.title }}"{% if video.description %} ({{ video.description }}){% endif %}'>{{ video.title }}</span></a></div>
                                 </th>
                             {% endfor %}
                         </tr>
                         {% for student in students %}
                             <tr>
                                 {% for video in videos %}
-                                    {% if not student.video_logs|get_item:video.youtube_id %}
+                                    {% if not student.video_logs|get_item:video.id %}
                                         <td class="status data" title="{% trans "Not Viewed" %}">
                                             &nbsp;
-                                    {% elif not student.video_logs|get_item:video.youtube_id|get_item:"complete" %}
+                                    {% elif not student.video_logs|get_item:video.id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.youtube_id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
+                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
                                             <div class="total_seconds_watched">100%</div>
                                     {% endif %}
-                                    {% if student.video_logs|get_item:video.youtube_id  %}
-                                            <div class="points">{{ student.video_logs|get_item:video.youtube_id|get_item:"points"  }} {% trans "points" %}</div>
+                                    {% if student.video_logs|get_item:video.id  %}
+                                            <div class="points">{{ student.video_logs|get_item:video.id|get_item:"points"  }} {% trans "points" %}</div>
                                     {% endif %}
                                         </td>
                                 {% endfor %}

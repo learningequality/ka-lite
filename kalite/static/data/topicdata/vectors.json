@@ -1,46 +1,67 @@
 [
   {
-    "related_video_readable_ids": [
-      "linear-algebra--vector-examples", 
-      "linear-algebra--introduction-to-vectors"
-    ], 
-    "v_position": 32, 
+    "v_position": 68, 
     "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/scaling_vectors/", 
     "id": "scaling_vectors", 
     "display_name": "Scaling vectors", 
     "title": "Scaling vectors", 
+    "parent_id": "vectors", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "linear-algebra", 
+      "vectors_and_spaces", 
+      "vectors"
+    ], 
+    "related_video_slugs": [
+      "multiplying-vector-by-scalar", 
+      "linear-algebra--vector-examples", 
+      "vector-introduction-linear-algebra"
+    ], 
     "description": "", 
-    "basepoints": 16.0, 
-    "h_position": 18, 
+    "basepoints": 14.0, 
+    "h_position": -20, 
     "slug": "scaling_vectors", 
     "kind": "Exercise", 
     "name": "scaling_vectors", 
-    "seconds_per_fast_problem": 9.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "adding_vectors"
-    ]
+    ], 
+    "exercise_id": "scaling_vectors"
   }, 
   {
-    "related_video_readable_ids": [
-      "linear-algebra--vector-examples", 
-      "linear-algebra--introduction-to-vectors"
-    ], 
-    "v_position": 31, 
+    "v_position": 67, 
     "path": "/math/linear-algebra/vectors_and_spaces/vectors/e/adding_vectors/", 
     "id": "adding_vectors", 
     "display_name": "Adding vectors", 
     "title": "Adding vectors", 
+    "parent_id": "vectors", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "linear-algebra", 
+      "vectors_and_spaces", 
+      "vectors"
+    ], 
+    "related_video_slugs": [
+      "intro-unit-vector-notation", 
+      "vector-introduction-linear-algebra", 
+      "adding-vectors"
+    ], 
     "description": "", 
-    "basepoints": 15.0, 
-    "h_position": 18, 
+    "basepoints": 14.0, 
+    "h_position": -20, 
     "slug": "adding_vectors", 
     "kind": "Exercise", 
     "name": "adding_vectors", 
-    "seconds_per_fast_problem": 8.0, 
+    "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
-      "linear_equations_1"
-    ]
+      "adding_and_subtracting_negative_numbers", 
+      "identifying_points_1"
+    ], 
+    "exercise_id": "adding_vectors"
   }
 ]

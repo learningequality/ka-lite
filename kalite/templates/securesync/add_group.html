@@ -1,25 +1,34 @@
-{% extends 'base_distributed.html' %}
-
+{% extends base_template %}
 {% load i18n %}
 
-{% block title %}{% trans "Add Group" %}{% endblock title %}
+{% block title %}{% trans "Add Group" %}{{ block.super }}{% endblock title %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        $(function () {
+            $('#facility_group').change(function(){
+                window.location.href = $("#facility_group option:selected").val();
+            });
+        });
+    </script>
+{% endblock headjs %}
 
 {% block content %}
-<h2>{% trans "Add a new group" %}</h2>
+    <h1>{% trans "Add a new group" %}</h1>
 
-<form method="post" class="basic-form">
-    <p><label>{% trans "Facility:" %}</label>{{ facility }} <a href="?facility=select"> {% trans "(Select a different facility)" %}</a></p>
+    <form method="post" class="basic-form">
+        {% csrf_token %}
 
-    {% csrf_token %}
-    {{ form.as_p }}
-    {% trans "Create group" as create_group %}
-    <input type="submit" value="{{ create_group }}" class="submit"/>
-</form>
+        {% if not singlefacility %}
+        <p>
+            <label>{% trans "Facility:" %}</label>
+            {{ facility }}
+            <a href="?facility=select"> {% trans "(Select a different facility)" %}</a>
+        </p>
+        {% endif %}
 
-<script>
-$('#facility_group').change(function(){
-    window.location.href = $("#facility_group option:selected").val();
-});
-</script>
-
+        {{ form.as_p }}
+        {% trans "Create group" as create_group %}
+        <input type="submit" value="{{ create_group }}" class="submit"/>
+    </form>
 {% endblock content %}

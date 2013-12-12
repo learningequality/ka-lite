@@ -1,52 +1,45 @@
-{% extends 'base_distributed.html' %}
-
+{% extends base_template %}
 {% load i18n %}
 
 {% block register_active %}active{% endblock register_active %}
 
-{% block title %}{% trans "Register a Device" %}{% endblock title %}
+{% block title %}{% trans "Register a Device" %} {{ block.super }}{% endblock title %}
 
-{% block headjs %}
-<script>
+{% block headjs %}{{ block.super }}
+    <script>
 
-    function reload() {
-        window.location.reload();
-    }
+        function reload() {
+            window.location.reload();
+        }
 
-    $(function() {
-        $(".refresh-link").click(reload);
-    });
-</script>
+        $(function() {
+            $(".refresh-link").click(reload);
+        });
+    </script>
 {% endblock headjs %}
 
-{% load i18n %}
-
 {% block content %}
+    <h2>{% trans "Device registration" %}</h2>
 
-<h2>{% trans "Device registration" %}</h2>
+    {% if error_msg %}
+        {% comment %}Translators: Please do not edit the variable text: %(command)s {% endcomment %}
+        <p>{% blocktrans with command="<b>python manage.py update</b>" %}Sorry, there was an error during registration. Please make sure your device is fully up to date (run {{ command }} and then stop/start the server)." {% endblocktrans %}</p>
+        <p>{% trans "The error message was:" %} <b>{{ error_msg }}</b></p>
+    {% endif %}
 
-{% if error_msg %}
-    {% comment %}Translators: Please do not edit the variable text: %(command)s {% endcomment %}
-	<p>{% blocktrans with command="<b>python manage.py update</b>"%}Sorry, there was an error during registration. Please make sure your device is fully up to date (run {{ command }} and then stop/start the server)." {% endblocktrans %}</p>
-	<p>{% trans "The error message was:" %} <b>{{ error_msg }}</b></p>
-{% endif %}
+    {% if newly_registered %}
+    <p>{% trans "Congratulations, this device has now been registered." %}</p>
+    {% endif %}
 
-{% if newly_registered %}
-<p>{% trans "Congratulations, this device has now been registered." %}</p>
-{% endif %}
+    {% if already_registered %}
+    <p>{% trans "This device has already been registered." %}</p>
+    {% endif %}
 
-{% if already_registered %}
-<p>{% trans "This device has already been registered." %}</p>
-{% endif %}
+    {% if no_internet %}
+    <p>{% trans "The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a>.</p>
+    {% endif %}
 
-{% if no_internet %}
-<p>{% trans "The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a>.</p>
-{% endif %}
-
-{% if unregistered %}
-<p>{% trans "If you have not created an organization and zone yet, please" %} <a href="{{ central_login_url }}" target="_blank">{% trans "login to the central server and create them" %}</a> {% trans "(You will have to create an account there first)." %}</p>
-<p>{% trans "If you already have an organization and a zone, please" %} <a href="{{ registration_url }}">{% trans "login to the central server and register this device in a zone "%}</a>{% trans "(this will open a new window)." %}</p>
-<p>{% trans "Return here and" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a> {% trans "to complete the registration process." %}</p>
-{% endif %}
-
+    {% if unregistered %}
+    <p>{% blocktrans %}Please <a href="{{ registration_url }}">login to the central server and register this device in a sharing network.{% endblocktrans %}</a></p>
+    {% endif %}
 {% endblock content %}

@@ -1,8 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ zone.name }} - Zone Management Console{% endblock title %}
-{% block control_panel_active %}active{% endblock control_panel_active %}
+{% block title %}{{ zone.name }}{% trans "- Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
 <script>
@@ -47,10 +46,10 @@
                 </li-->
             {% endblock download_button %}
             <ul id="zone-management-options">
-                {% if not facilities and not devices %}
+                {% if not facilities and not devices %}{# can only happen on the central server #}
                     <li>
-                        <a class="zone-delete-link" href="{% url delete_zone org_id=org.id zone_id=zone.id %}" onclick="return confirm('Are you sure you want to delete {{zone.name}}?')">
-                            <i class="icon-trash" title="Delete this zone."></i>
+                        <a class="zone-delete-link" href="{% url delete_zone org_id=org_id zone_id=zone_id %}" onclick="return confirm(gettext('Are you sure you want to delete') + ' {{zone.name}}?');">
+                            <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>
                         </a>    
                     </li>
                 {% endif %}
@@ -61,36 +60,38 @@
 {% block control_panel_content %}
 <div id="zone_container">
     <div class="facilities">
-        <h2>Facilities</h2>
+        <h2>{% trans "Facilities" %}</h2>
 
         {% if not facilities %}
-            <p>You currently have no facilities that save synced data with the central server</p>
+            <p>{% trans "You currently have no facilities that sync data with the central server." %}</p>
 
         {% else %}
 
          <table class="simple-table">
             <tr>
-                <th width="250px">Facility Name</th>
-                <th width="120px"># users</th>
-                <th width="120px"># groups</th>
-                <th width="200px">Last Usage</th>
-                <th width="250px">Actions</th>
-                <th></th>
+                <th width="250px">{% trans "Facility Name" %}</th>
+                <th width="120px">{% trans "# users" %}</th>
+                <th width="120px">{% trans "# groups" %}</th>
+                <th width="200px">{% trans "Last Usage" %}</th>
             </tr>
 
             {% for id,facility in facilities.items %}
                 <tr>
                     <td nowrap>
-                        <a href="{% url facility_usage org_id=org.id zone_id=zone.id facility_id=id %}">
+                        <a href="{% url facility_usage org_id=org_id zone_id=zone_id facility_id=id %}">
                             {{ facility.name }}
                         </a>
                     </td>
                     <td nowrap>{{ facility.num_users }}</td>
                     <td nowrap>{{ facility.num_groups }}</td>
-                    <td nowrap>{% if not facility.last_time_used %}{% trans "Never" %}{% else %}{{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}{% endif %}</td>
-
                     <td nowrap>
-                        <!--span class="reports">[<a href="{% url facility_usage org_id=org.id zone_id=zone.id facility_id=id %}">{% trans "view usage" %}</a>]</span-->
+                        {% if not facility.last_time_used %}
+                            {% trans "Never" %}
+                        {% elif facility.last_time_used.last_activity_datetime %}
+                            {{ facility.last_time_used.last_activity_datetime }}
+                        {% else %}
+                            {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -100,27 +101,27 @@
     </div><!-- facilities -->
 
     <div class="devices">
-        <h2>Devices</h2>
+        <h2>{% trans "Devices" %}</h2>
 
         {% if not devices %}
-            <p>You currently have no devices that save synced data with the central server</p>
+            <p>{% trans "You currently have no devices that save synced data with the central server" %}</p>
 
         {% else %}
             <table class="simple-table">
                 <tr>
-                    <th width="250px">Device name</th>
-                    <th width="120px"># Times Sync'd</th>
-                    <th width="120px">Last Sync</th>
-                    <th width="200px">Last Usage</th>
-                    <th width="250px">
-                        Counter
-                        <span class="glossary-link nudge-left" title="The counter is an integer 'timestamp' for each update, and tells the last data update sync'd for a given device."></span>
-                    </th>
+                    <th width="250px">{% trans "Device name" %}</th>
+                    <th width="120px">{% trans "# Times Synced" %}</th>
+                    <th width="120px">{% trans "Last Sync" %}</th>
+                    <th width="200px">{% trans "Last Usage" %}</th>
+                    <!--th width="250px">
+                        {% trans "Counter" %}
+                        <span class="glossary-link nudge-left" title="{% trans 'The counter is an integer &#39;timestamp&#39; for each update, and tells the last data update synced for a given device.' %}"></span>
+                    </th-->
                 </tr>
                 {% for id,device in devices.items %}
                     <tr class="{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
-                            {% if device.num_times_synced != None %}<a href="{% url device_management org_id=org.id zone_id=zone.id device_id=id %}">{% endif %}
+                            {% if device.num_times_synced != None %}<a href="{% url device_management org_id=org_id zone_id=zone_id device_id=id %}">{% endif %}
                                 {{ device.name }}
                                 {% if device.is_demo_device %}[Demo data]{% endif %}
                             {% if device.num_times_synced != None %}</a>{% endif %}
@@ -144,11 +145,13 @@
                                 {% trans "Never" %}
                             {% elif device.last_time_used.completion_timestamp %}
                                 {{ device.last_time_used.completion_timestamp|date }}
+                            {% elif device.last_time_used.last_activity_datetime %}
+                                {{ device.last_time_used.last_activity_datetime }}
                             {% elif device.last_time_used.start_datetime %}
                                 {{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}
                             {% endif %}
                         </td>
-                        <td nowrap>{{ device.counter }}</td>
+                        <!--td nowrap>{{ device.counter }}</td-->
                     </tr>
 
                 {% endfor %}

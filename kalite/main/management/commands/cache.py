@@ -1,16 +1,16 @@
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from main import topicdata
 from shared import caching, topic_tools
+from shared.videos import download_video, DownloadCancelled
 
 
 class Command(BaseCommand):
-    
+
     def usage(self, argname):
         return """cache <command>
     View / manipulate the HTML cache. Pass one arg:
-        
+
     create - generate any pages that haven't been cached already
     refresh - regenerate all pages
     show - show a list of urls that are currently in the cache
@@ -22,7 +22,7 @@ class Command(BaseCommand):
         if settings.CACHE_TIME == 0:
             raise CommandError("caching is turned off (CACHE_TIME is zero or none)")
         elif len(args)<1:
-            raise CommandError("No command specified.")        
+            raise CommandError("No command specified.")
         cmd = args[0].lower()
 
         if cmd in ["create", "recreate", "refresh"]:
@@ -38,9 +38,9 @@ class Command(BaseCommand):
     def create_cache(self, force=False):
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
-            for n in topicdata.NODE_CACHE[node_type].values():
-                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
-                    self.create_page_cache(path=path, force=force)
+            for narr in topic_tools.get_node_cache(node_type).values():
+                for n in narr:
+                    self.create_page_cache(path=n["path"], force=force)
 
 
     def create_page_cache(self, path, force=False):
@@ -56,12 +56,12 @@ class Command(BaseCommand):
             else:
                 self.stdout.write("[Miss]\t%s\n" % path)
             caching.create_cache(path=path)
-                
+
         else:
             if not caching.has_cache_key(path=path):
                 caching.create_cache(path=path)
                 self.stdout.write("[Miss]\t%s\n" % path)
-            
+
         if not caching.has_cache_key(path=path):
             # should never get here!
             self.stdout.write("%s%s\n" % ("?"*10, path))
@@ -71,19 +71,18 @@ class Command(BaseCommand):
 
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Cached %ss:\n" % node_type)
-            for n in topicdata.NODE_CACHE[node_type].values():
-                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
-                    if caching.has_cache_key(path=path):
-                        self.stdout.write("\t%s\n" % path)
-        
-                
+            for narr in topic_tools.get_node_cache(node_type).values():
+                for n in narr:
+                    if caching.has_cache_key(path=n["path"]):
+                        self.stdout.write("\t%s\n" % n["path"])
+
     def clear_cache(self):
         """Go through each cacheable page, and show which are cached and which are NOT"""
 
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Clearing %ss:\n" % node_type)
-            for n in topicdata.NODE_CACHE[node_type].values():
-                for path in n["paths"] if node_type in topic_tools.multipath_kinds else [n["path"]]:
-                    if caching.has_cache_key(path=path):
-                        self.stdout.write("\t%s\n" % path)
-                        caching.expire_page(path=path)
+            for narr in topic_tools.get_node_cache(node_type).values():
+                for n in narr:
+                    if caching.has_cache_key(path=n["path"]):
+                        self.stdout.write("\t%s\n" % n["path"])
+                        caching.expire_page(path=n["path"])

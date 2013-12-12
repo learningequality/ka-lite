@@ -2,14 +2,14 @@
 System = Windows, Linux, etc
 Platform = WindowsXP-SP3, etc.
 
-This file is for functions that take system- and platform-specific 
+This file is for functions that take system- and platform-specific
 information, and try to make them accessible generically (at least for our purposes).
 """
 import os
 import platform
 import sys
 import tempfile
-from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile, BadZipfile
 
 ALL_SYSTEMS = ["windows", "darwin", "linux"]
 
@@ -20,7 +20,7 @@ def is_windows(system=None):
 
 def is_osx(system=None):
     system = system or platform.system()
-    return system.lower() == "darwin"
+    return system.lower() in ["darwin", "macosx"]
 
 
 def system_script_extension(system=None):
@@ -70,20 +70,27 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
 
     if not zip_file:
         zip_file = tempfile.mkstemp()[1]
-    with ZipFile(zip_file, "w", compression) as zfile:
-        for fi, (src_path, dest_path) in enumerate(files_dict.iteritems()):
+
+    zfile = None
+    try:
+        zfile = ZipFile(zip_file, 'w', compression)
+        for fi, (dest_path, src_path) in enumerate(files_dict.iteritems()):
             if callback:
                 callback(src_path, fi, len(files_dict))
             # All platforms besides windows need permissions set.
-            if os.path.splitext(dest_path)[1] not in not_system_specific_scripts(system="windows"):
+            ext = os.path.splitext(dest_path)[1]
+            if ext not in not_system_specific_scripts(system="windows"):
                 zfile.write(src_path, arcname=dest_path)
             # Add with exec perms
             else:
                 info = ZipInfo(dest_path)
-                info.external_attr = 0755 << 16L # give full access to included file
+                info.external_attr = 0775 << ((1 - is_osx()) * 16L) # give full access to included file
                 with open(src_path, "r") as fh:
                     zfile.writestr(info, fh.read())
-
+        zfile.close()
+    finally:
+        if zfile:
+            zfile.close()
 
 def _default_callback_unzip(afile, fi, nfiles):
     """
@@ -118,4 +125,4 @@ def system_specific_unzipping(zip_file, dest_dir, callback=_default_callback_unz
         zip.extract(afile, path=dest_dir)
         # If it's a unix script or manage.py, give permissions to execute
         if (not is_windows()) and (os.path.splitext(afile)[1] in system_specific_scripts() or afile.endswith("manage.py")):
-            os.chmod(os.path.realpath(dest_dir + "/" + afile), 0755)
+            os.chmod(os.path.realpath(dest_dir + "/" + afile), 0775)

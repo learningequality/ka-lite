@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-require="math graphie graphie-helpers-arithmetic">
+<html data-require="math math-format graphie graphie-helpers-arithmetic">
 <head>
     <title>Converting fractions to decimals</title>
     <script src="../khan-exercise.js"></script>
@@ -31,11 +31,11 @@
                     graph.divider.shiftDecimals();
                 </div>
 
-                <div class="graphie" data-update="nmbrs" data-each="Divider.numHintsFor( DENOMINATOR, NUMERATOR * 10000, 0, 4 ) times">
+                <div class="graphie" data-each="Divider.numHintsFor( DENOMINATOR, NUMERATOR * 10000, 0, 4 ) times" data-update="nmbrs">
                     graph.divider.showHint();
                 </div>
 
-                <p>Rounding <code><var>DECIMAL_4.toFixed( 4 )</var></code> to the thousandths place gives <code><var>DECIMAL.toFixed( 3 )</var></code>.</p>
+                <p>Rounding <code><var>localeToFixed(DECIMAL_4, 4)</var></code> to the thousandths place gives <code><var>localeToFixed(DECIMAL, 3)</var></code>.</p>
             </div>
         </div>
     </div>

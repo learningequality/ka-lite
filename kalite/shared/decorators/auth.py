@@ -26,7 +26,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, user, *args, **kwargs: user
 
     def wrapper_fn(request, *args, **kwargs):
-        user = get_object_or_None(FacilityUser, id=request.REQUEST.get("user"))
+        user = get_object_or_None(FacilityUser, id=request.REQUEST["user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
         user = user or request.session.get("facility_user", None)
         return handler(request, *args, user=user, **kwargs)
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
@@ -38,7 +38,7 @@ def require_login(handler):
     """
     @distributed_server_only
     def wrapper_fn(request, *args, **kwargs):
-        if request.user.is_authenticated() or "facility_user" in request.session:
+        if getattr(request, "is_logged_in", False):  # requires the securesync.middleware.AuthFlags middleware be hit
             return handler(request, *args, **kwargs)
 
         # Failed.  Send different response for ajax vs non-ajax requests.
@@ -150,7 +150,7 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = device.get_zone()
                 if not zone:
-                    raise PermissionDenied("You requested device information for a device without a zone.  Only super users can do this!")
+                    raise PermissionDenied(_("You requested device information for a device without a zone.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate device through zone
@@ -158,7 +158,7 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = facility.get_zone()
                 if not zone:
-                    raise PermissionDenied("You requested facility information for a facility with no zone.  Only super users can do this!")
+                    raise PermissionDenied(_("You requested facility information for a facility with no zone.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate zone through org
@@ -169,14 +169,14 @@ def require_authorized_admin(handler):
                 for org in Organization.from_zone(zone):
                     if org.is_member(logged_in_user):
                         return handler(request, *args, **kwargs)
-                raise PermissionDenied("You requested information from an organization that you're not authorized on.")
+                raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
 
         if org_id and org_id != "new":
             org = get_object_or_404(Organization, pk=org_id)
             if not org.is_member(logged_in_user):
-                raise PermissionDenied("You requested information from an organization that you're not authorized on.")
+                raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
             elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
-                raise PermissionDenied("This organization does not have permissions for this zone.")
+                raise PermissionDenied(_("This organization does not have permissions for this zone."))
 
         # Made it through, we're safe!
         return handler(request, *args, **kwargs)
@@ -198,5 +198,5 @@ def require_superuser(handler):
         if getattr(request.user, is_superuser, False):
             return handler(request, *args, **kwargs)
         else:
-            raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
+            raise PermissionDenied(_("You must be logged in as a superuser to access this endpoint."))
     return wrapper_fn

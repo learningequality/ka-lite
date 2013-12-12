@@ -427,9 +427,9 @@ def get_language_from_request(request, check_path=False):
                     _accepted[normalized] = lang
                     return lang
 
-    # DJANGO_CHANGE(bcipolli):
+    # KA-LITE-MOD (bcipolli):
     # run settings.LANGUAGE_CODE through same gauntlet as above
-    # Otherwise, if we try to default to a sub-language (en-us), but only 
+    # Otherwise, if we try to default to a sub-language (en-us), but only
     # the base language is installed (en), we'll get different behavior
     # based on client (some of which hit this fallback) IF the sub-language
     # is not installed.
@@ -444,7 +444,9 @@ def get_language_from_request(request, check_path=False):
     if lang_code and lang_code in supported and check_for_language(lang_code):
         return lang_code
     else:
-        raise Exception("No language code could be determined; even fall-back on settings.LANGUAGE_CODE (%s) failed!" % settings.LANGUAGE_CODE)
+        #raise Exception("No language code could be determined; even fall-back on settings.LANGUAGE_CODE (%s) failed!" % settings.LANGUAGE_CODE)
+        # return the base, base default.
+        return "en"
 
 dot_re = re.compile(r'\S')
 def blankout(src, char):

@@ -17,3 +17,8 @@ class FacilityUserAdmin(admin.ModelAdmin):
     list_display = ("facility", "username", "first_name", "last_name",)
     list_filter = ("facility",)
 admin.site.register(FacilityUser, FacilityUserAdmin)
+
+
+class CachedPasswordAdmin(admin.ModelAdmin):
+    list_display = ("user", "password",)
+admin.site.register(CachedPassword, CachedPasswordAdmin)

@@ -2,104 +2,138 @@
 {% load i18n %}
 {% load my_filters %}
 
-{% block title %}{{ facility.name }} - Facility Usage{% endblock title %}
-{% block control_panel_active %}active{% endblock control_panel_active %}
+{% block title %}{{ facility.name }} - {% trans "Facility Usage" %}{{ block.super }}{% endblock title %}
 
-{% block buttons %}
-            <li>
-                <a class="button--large" href="?format=csv&frequency={{ settings.USER_LOG_SUMMARY_FREQUENCY.1 }}" title="User report for the previous month">
-                    {% trans "Export to CSV" %}
-                </a>
-            </li>
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var end_date = new Date({{ date_range.1 }})
+        var start_date = new Date({{ date_range.0 }})
+
+        if (start_date >= end_date) {
+            start_date.setDate(end_date.getDate() - 30)
+        }
+        $(function() {
+            $('#start_date_select').datepicker({
+                dateFormat: "d MM yy",
+                altField: "#start_standard_date",
+                altFormat: "yy-mm-dd"
+            });
+
+            $("#start_date_select").datepicker('setDate', start_date);
+
+            $('#end_date_select').datepicker({
+                dateFormat: "d MM yy",
+                altField: "#end_standard_date",
+                altFormat: "yy-mm-dd"
+            });
+
+            $("#end_date_select").datepicker('setDate', end_date);
+
+        });
+    </script>
+{% endblock headjs %}
+
+{% block buttons %}{{ block.super }}
+    <li>
+        <div>
+            <form method="post" action="?format=csv">
+            {% csrf_token %}
+            <div class="date">{% trans "Start Date" %}:<input id="start_date_select" type="text"><input class="hidden" type="text" name="period_start" id="start_standard_date"></div>
+            <div class="date">{% trans "End Date" %}:<input id="end_date_select" type="text"><input class="hidden" type="text" name="period_end" id="end_standard_date"></div>
+            <div class="date">
+                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" />
+            </div>
+            </form>
+        </div>
+    </li>
 {% endblock buttons %}
 
 {% block control_panel_content %}
-<div id="facility_container">
-    <div class="groups">
-        <h2>Groups</h2>
+    <div id="facility_container">
+        <div class="groups">
+            <h2>{% trans "Groups" %}</h2>
 
-        {% if not groups %}
-            <p>You currently have no data available</p>
+            {% if not groups %}
+                <p>{% trans "You currently have no data available" %}</p>
 
-        {% else %}
-            <table class="simple-table">
-                <tr>
-                    <th width="100px">Group name</th>
-                    <th width="150px"></th>
-                    <th width="100px"># Students</th>
-                    <th width="100px">Logins</th>
-                    <th width="100px">Login Time</th>
-                    <th width="100px">Videos Viewed</th>
-                    <th width="100px">Exercises Completed</th>
-                    <th width="100px">Mastery</th>
-                </tr>
-                {% for id, group in groups.items %}
+            {% else %}
+                <table class="simple-table">
                     <tr>
-                        <td>{{ group.name }}</td>
-                        <td>
-                            {% if id %}
-                            <span class="actions">[
-                                <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
-                                / <a href="{% url facility_user_management org_id=org.id zone_id=zone.id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
-                            ]</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ group.total_users }}</td>
-                        <td>{{ group.total_logins }}</td>
-                        <td>{{ group.total_hours|floatformat }}</td>
-                        <td>{{ group.total_videos }}</td>
-                        <td>{{ group.total_exercises }}</td>
-                        <td>{{ group.pct_mastery|percent:1 }}</td>
+                        <th width="100px">{% trans "Group name" %}</th>
+                        <th width="150px"></th>
+                        <th width="100px">{% trans "# Students</" %}th>
+                        <th width="100px">{% trans "Logins</" %}th>
+                        <th width="100px">{% trans "Login Time" %}</th>
+                        <th width="100px">{% trans "Videos Viewed" %}</th>
+                        <th width="100px">{% trans "Exercises Completed" %}</th>
+                        <th width="100px">{% trans "Mastery " %}</th>
                     </tr>
+                    {% for id, group in groups.items %}
+                        <tr>
+                            <td>{{ group.name }}</td>
+                            <td>
+                                {% if id %}
+                                <span class="actions">[
+                                    <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
+                                    / <a href="{% url facility_user_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
+                                ]</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ group.total_users }}</td>
+                            <td>{{ group.total_logins }}</td>
+                            <td>{{ group.total_hours|floatformat }}</td>
+                            <td>{{ group.total_videos }}</td>
+                            <td>{{ group.total_exercises }}</td>
+                            <td>{{ group.pct_mastery|percent:1 }}</td>
+                        </tr>
+
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div><!-- groups -->
+
+        <div class="students">
+            <h2>{% trans "Student Usage Reports" %}</h2>
+
+            {% if not students %}
+                <p>{% trans "You currently have no data available" %}</p>
+
+            {% else %}
+
+             <table class="simple-table">
+                <tr>
+                    <tr>
+                        <th width="250px">{% trans "Student name" %}</th>
+                        <th width="100px">{% trans "Group" %}</th>
+                        <th width="100px">{% trans "Logins" %}</th>
+                        <th width="100px">{% trans "Login Time" %}</th>
+                        <th width="100px">{% trans "Videos Viewed" %}</th>
+                        <th width="100px">{% trans "Exercises Completed" %}</th>
+                        <th width="100px">{% trans "Mastery" %}</th>
+                    </tr>
+                    {% for id, student in students.items %}
+                        <tr>
+                            <td>
+                                <a href="{% url student_view %}?user={{ id }}">
+                                    {{ student|format_name:"last_first" }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if student.group %}
+                                    <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ student.group.id }}">{{ student.group.name }}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ student.total_logins }}</td>
+                            <td>{{ student.total_hours|floatformat }}</td>
+                            <td>{{ student.total_videos }}</td>
+                            <td>{{ student.total_exercises }}</td>
+                            <td>{{ student.pct_mastery|percent:1  }}</td>
+                        </tr>
 
                 {% endfor %}
+
             </table>
-        {% endif %}
-    </div><!-- groups -->
-
-
-    <div class="students">
-        <h2>Student Usage Reports</h2>
-
-        {% if not students %}
-            <p>You currently have no data available</p>
-
-        {% else %}
-
-         <table class="simple-table">
-            <tr>
-                <tr>
-                    <th width="250px">Student name</th>
-                    <th width="100px">Group</th>
-                    <th width="100px">Logins</th>
-                    <th width="100px">Login Time</th>
-                    <th width="100px">Videos Viewed</th>
-                    <th width="100px">Exercises Completed</th>
-                    <th width="100px">Mastery</th>
-                </tr>
-                {% for id, student in students.items %}
-                    <tr>
-                        <td>
-                            <a href="{% url student_view %}?user={{ id }}">
-                                {{ student|format_name:"last_first" }}
-                            </a>
-                        </td>
-                        <td>
-                            {% if student.group %}
-                                <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ student.group.id }}">{{ student.group.name }}</a>
-                            {% endif %}
-                        </td>
-                        <td>{{ student.total_logins }}</td>
-                        <td>{{ student.total_hours|floatformat }}</td>
-                        <td>{{ student.total_videos }}</td>
-                        <td>{{ student.total_exercises }}</td>
-                        <td>{{ student.pct_mastery|percent:1  }}</td>
-                    </tr>
-
-            {% endfor %}
-
-        </table>
-        {% endif %}
-    </div><!-- users -->
-</div><!-- facility -->
+            {% endif %}
+        </div><!-- users -->
+    </div><!-- facility -->
 {% endblock control_panel_content %}

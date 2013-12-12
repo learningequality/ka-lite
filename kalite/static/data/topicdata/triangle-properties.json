@@ -1,47 +1,66 @@
 [
   {
-    "related_video_readable_ids": [
-      "angle-bisector-theorem-examples", 
-      "angle-bisector-theorem-proof"
-    ], 
-    "v_position": 32, 
+    "v_position": 69, 
     "path": "/math/geometry/triangle-properties/angle_bisectors/e/angle_bisector_theorem/", 
     "id": "angle_bisector_theorem", 
     "display_name": "Angle bisector theorem", 
     "title": "Angle bisector theorem", 
+    "parent_id": "angle_bisectors", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "triangle-properties", 
+      "angle_bisectors"
+    ], 
+    "related_video_slugs": [
+      "angle-bisector-theorem-examples", 
+      "angle-bisector-theorem-proof"
+    ], 
     "description": "", 
-    "basepoints": 22.0, 
-    "h_position": -19, 
+    "basepoints": 23.0, 
+    "h_position": -1, 
     "slug": "angle_bisector_theorem", 
     "kind": "Exercise", 
     "name": "angle_bisector_theorem", 
-    "seconds_per_fast_problem": 22.0, 
+    "seconds_per_fast_problem": 25.0, 
     "prerequisites": [
       "triangle_angles_1"
-    ]
+    ], 
+    "exercise_id": "angle_bisector_theorem"
   }, 
   {
-    "related_video_readable_ids": [
+    "v_position": 70, 
+    "path": "/math/geometry/triangle-properties/geometric-constructions/e/constructions_1/", 
+    "id": "constructions_1", 
+    "display_name": "Compass constructions", 
+    "title": "Compass constructions", 
+    "parent_id": "geometric-constructions", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "triangle-properties", 
+      "geometric-constructions"
+    ], 
+    "related_video_slugs": [
       "constructing-a-perpendicular-bisector-using-a-compass-and-straightedge", 
       "constructing-a-perpendicular-line-using-a-compass-and-straightedge", 
       "constructing-an-angle-bisector-using-a-compass-and-straightedge"
     ], 
-    "v_position": 33, 
-    "path": "/math/geometry/triangle-properties/geometric-constructions/e/constructions_1/", 
-    "id": "constructions_1", 
-    "display_name": "Compass Constructions", 
-    "title": "Compass Constructions", 
-    "live": true, 
     "description": "Circles and straight-edges, oh my!", 
-    "basepoints": 24.0, 
-    "h_position": -20, 
+    "basepoints": 23.0, 
+    "h_position": 0, 
     "slug": "constructions_1", 
     "kind": "Exercise", 
     "name": "constructions_1", 
-    "seconds_per_fast_problem": 30.0, 
+    "seconds_per_fast_problem": 26.0, 
     "prerequisites": [
+      "parallel_lines_2", 
       "graphing_circles_2"
-    ]
+    ], 
+    "exercise_id": "constructions_1"
   }
 ]
