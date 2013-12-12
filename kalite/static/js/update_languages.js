@@ -6,7 +6,7 @@ $(function() {
     // basic flow: check with central server what we can install
     // if that's successful, check with local server of what we have installed
     // then dont show languages in dropdown box if already installed
-    var url = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available";
+    var url = AVAILABLE_LANGUAGEPACK_URL;
     var request = $.ajax({
         url: url,
         dataType: "jsonp",
