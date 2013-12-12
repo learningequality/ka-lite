@@ -321,6 +321,7 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         # remove all exercise po that is not about math
         if filter_type:
             if filter_type == "ka":
+
                 src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
                 src_po_files = filter(lambda fn: os.path.basename(fn).startswith("learn."), src_po_files)
                 src_po_files = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files]) > 1, src_po_files)
@@ -378,10 +379,11 @@ def remove_exercise_nonmetadata(pofilename):
     # it creates an empty header AUTOMATICALLY. Plus, there is no way
     # to specify what this header contains. So what do we do? We delete this
     # header. TODO for Aron: Fix polib.py
-    sedproc = subprocess.Popen(['sed', '-e 1,/^$/d', pofilename], stdout=subprocess.PIPE)
-    out, _ = sedproc.communicate()
+    with open(pofilename, 'r') as pofile:
+        polines = pofile.read().split('\n')
+    polines = '\n'.join(polines[4:])       # here the first 4 lines compose the empty header. Cull them!
     with open(pofilename, 'w') as fp:
-        fp.write(out)
+        fp.write(polines)
 
 
 def get_exercise_po_files(po_files):
