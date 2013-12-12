@@ -151,6 +151,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
 
             package_metadata[lang_code] = {}
 
+            logging.info("Downloading KA Lite translations...")
             kalite_po_file = download_latest_translations(
                 lang_code=lang_code,
                 project_id=settings.CROWDIN_PROJECT_ID,
@@ -160,6 +161,8 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
             kalite_metadata = get_po_metadata(kalite_po_file)
             package_metadata[lang_code]["ntranslations"] = kalite_metadata["ntranslations"]
             package_metadata[lang_code]["nphrases"]      = kalite_metadata["nphrases"]
+            package_metadata[lang_code]["kalite_ntranslations"] = kalite_metadata["ntranslations"]
+            package_metadata[lang_code]["kalite_nphrases"]      = kalite_metadata["nphrases"]
 
             # Download Khan Academy translations too
             if download_ka_translations:
@@ -178,6 +181,8 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
                 ka_metadata = get_po_metadata(combined_po_file)
                 package_metadata[lang_code]["ntranslations"] = ka_metadata["ntranslations"]
                 package_metadata[lang_code]["nphrases"]      = ka_metadata["nphrases"]
+                package_metadata[lang_code]["ka_ntranslations"] = ka_metadata["ntranslations"] - package_metadata[lang_code]["kalite_ntranslations"]
+                package_metadata[lang_code]["ka_nphrases"]      = ka_metadata["nphrases"] - package_metadata[lang_code]["kalite_nphrases"]
 
     # Compile
     (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
@@ -261,7 +266,6 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
         if rebuild:
             build_translations()
 
-        logging.info("Attempting to download a zip archive of current translations")
         request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, lang_code, project_key)
         try:
             resp = requests.get(request_url)
@@ -278,14 +282,22 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
             logging.info("Successfully downloaded zip archive")
 
         # Unpack into temp dir
-        z = zipfile.ZipFile(StringIO.StringIO(resp.content))
+        try:
+            z = zipfile.ZipFile(StringIO.StringIO(resp.content))
+        except Exception as e:
+            logging.error("Error downloading zip file: % s" % e)
+            z = None
 
-        if zip_file:
-            with open(zip_file, "wb") as fp:  # save the zip file
-                fp.write(resp.content)
+        try:
+            if zip_file:
+                with open(zip_file, "wb") as fp:  # save the zip file
+                    fp.write(resp.content)
+        except Exception as e:
+            logging.error("Error writing zip file to %s: %s" % (zip_file, e))
 
     tmp_dir_path = tempfile.mkdtemp()
-    z.extractall(tmp_dir_path)
+    if z:
+        z.extractall(tmp_dir_path)
 
     # Copy over new translations
     po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code, filter_type=download_type)
@@ -325,15 +337,10 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         languages = os.listdir(extract_path)
         return [extract_new_po(os.path.join(extract_path, l), lang=l) for l in languages]
 
-    else:
-        converted_code = lcode_to_django_dir(lang)
-        # ensure directory exists in locale folder, and then overwrite local po files with new ones
-        dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
-        ensure_dir(dest_path)
-        dest_file = os.path.join(dest_path, 'django.po')
-        build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
+    converted_code = lcode_to_django_dir(lang)
+
+    def prep_inputs(extract_path, converted_code, filter_type):
         src_po_files = [po for po in all_po_files(extract_path)]
-        concat_command = ['msgcat', '-o', build_file, '--no-location']
 
         # remove all exercise po that is not about math
         if filter_type:
@@ -347,23 +354,43 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                 for exercise_po in get_exercise_po_files(src_po_files):
                     remove_exercise_nonmetadata(exercise_po)
 
-        concat_command += src_po_files
-        if combine_with_po_file and os.path.exists(combine_with_po_file):
-            concat_command += [combine_with_po_file]
+        if combine_with_po_file:
+            src_po_files.append(combine_with_po_file)
 
-        logging.info('Concatenating all po files found...')
-        try:
-            process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
-            process.wait()
-        except OSError as e:
-            if e.strerror == "No such file or directory":
-                raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
-            else:
-                raise
+        return src_po_files
+    src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
-        shutil.move(build_file, dest_file)
+
+    def produce_outputs(src_po_files, converted_code):
+        # ensure directory exists in locale folder, and then overwrite local po files with new ones
+        dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
+        ensure_dir(dest_path)
+        dest_file = os.path.join(dest_path, 'django.po')
+
+        if len(src_po_files) == 1:
+            shutil.move(src_po_file[0], dest_file)
+
+        else:
+            build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
+
+            logging.info('Concatenating all po files found...')
+            try:
+                concat_command = ['msgcat', '-o', build_file, '--no-location'] + src_po_files
+                process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
+                process.wait()
+            except OSError as e:
+                if e.strerror == "No such file or directory":
+                    raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
+                else:
+                    raise
+            shutil.move(build_file, dest_file)
 
         return dest_file
+
+    dest_file = produce_outputs(src_po_files, converted_code)
+
+    return dest_file
+
 
 def get_po_metadata(pofilename):
     pofile = polib.pofile(pofilename)
