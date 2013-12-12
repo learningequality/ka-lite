@@ -43,7 +43,7 @@ def get_available_language_packs(request, version):
         with open(get_language_pack_availability_filepath(ver=version), "r") as fp:
             language_packs_available = json.load(fp)
     except:
-        raise Http404
+        language_packs_available = {}
     return JsonResponse(sorted(language_packs_available.values(), key=lambda lp: lp["name"].lower()))
 
 @central_server_only
