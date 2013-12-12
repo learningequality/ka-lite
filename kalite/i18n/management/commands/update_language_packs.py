@@ -35,6 +35,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.core.mail import mail_admins
 
+import polib
+
 import settings
 import version
 from settings import LOG as logging
@@ -163,6 +165,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
                     zip_file=ka_zip_file,
                     combine_with_po_file=po_file,
                     rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
+                    download_type="ka",
                 )
 
     # Compile
@@ -220,7 +223,8 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
                                  lang_code="all",
                                  zip_file=None,
                                  combine_with_po_file=None,
-                                 rebuild=True):
+                                 rebuild=True,
+                                 download_type=None):
     """
     Download latest translations from CrowdIn to corresponding locale
     directory. If zip_file is given, use that as the zip file
@@ -268,7 +272,7 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     z.extractall(tmp_dir_path)
 
     # Copy over new translations
-    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code)
+    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code, filter_type=download_type)
 
     # Clean up tracks
     if os.path.exists(tmp_dir_path):
@@ -289,7 +293,7 @@ def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=setti
         logging.error(e)
 
 
-def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
+def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_type=None):
     """Move newly downloaded po files to correct location in locale
     direction. Returns the location of the po file if a single
     language is given, or a list of locations if language is
@@ -311,35 +315,77 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         ensure_dir(dest_path)
         dest_file = os.path.join(dest_path, 'django.po')
         build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
-        src_po_files = all_po_files(extract_path)
+        src_po_files = [po for po in all_po_files(extract_path)]
         concat_command = ['msgcat', '-o', build_file, '--no-location']
 
-        # filter out po files that are giving me problems
-        src_po_files = filter(lambda po_file: not ('learn.math.trigonometry.exercises' in po_file or 'learn.math.algebra.exercises' in po_file),
-                              src_po_files)
+        # remove all exercise po that is not about math
+        if filter_type:
+            if filter_type == "ka":
+                src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
+                src_po_files = filter(lambda fn: os.path.basename(fn).startswith("learn."), src_po_files)
+                src_po_files = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files]) > 1, src_po_files)
+                src_po_files = [po + ".po" for po in src_po_files]
+
+                # before we call msgcat, process each exercise po file and leave out only the metadata
+                for exercise_po in get_exercise_po_files(src_po_files):
+                    remove_exercise_nonmetadata(exercise_po)
 
         concat_command += src_po_files
 
         if combine_with_po_file and os.path.exists(combine_with_po_file):
             concat_command += [combine_with_po_file]
 
-
-        backups = [sys.stdout, sys.stderr]
+        logging.info('Concatenating all po files found...')
         try:
-            sys.stdout = StringIO.StringIO()     # capture output
-            sys.stderr = StringIO.StringIO()
-
-            p = subprocess.call(concat_command)
-
-            out = sys.stdout.getvalue() # release output
-            err = sys.stderr.getvalue() # release err
-        finally:
-            sys.stdout = backups[0]
-            sys.stderr = backups[1]
+            process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
+            process.wait()
+        except OSError as e:
+            if e.strerror == "No such file or directory":
+                raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
+            else:
+                raise
 
         shutil.move(build_file, dest_file)
 
         return dest_file
+
+
+def remove_exercise_nonmetadata(pofilename):
+    '''Checks each message block in the po file given by pofilename, and
+    sees if the top comment of each one has the string '(of|for)
+    exercise'. If not, then it will be deleted from the po file.
+    '''
+    assert os.path.exists(pofilename), "%s does not exist!" % pofilename
+
+    EXERCISE_METADATA_LINE = r'.*(of|for) exercise <a'
+
+    logging.info('Removing nonmetadata msgblocks from %s' % pofilename)
+    pofile = polib.pofile(pofilename)
+
+    clean_pofile = polib.POFile(encoding='utf-8')
+    clean_pofile.append(pofile.metadata_as_entry())
+    for msgblock in pofile:
+        if 'Project-Id-Version' in msgblock.msgstr or msgblock.msgstr == '':  # is header; ignore, already included
+            continue
+        elif re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
+            # is exercise metadata, preserve
+            clean_pofile.append(msgblock)
+
+    os.remove(pofilename)
+    clean_pofile.save(fpath=pofilename)
+
+    # ok, here's the deal: there's a bug right now in polib.py in which
+    # it creates an empty header AUTOMATICALLY. Plus, there is no way
+    # to specify what this header contains. So what do we do? We delete this
+    # header. TODO for Aron: Fix polib.py
+    sedproc = subprocess.Popen(['sed', '-e 1,/^$/d', pofilename], stdout=subprocess.PIPE)
+    out, _ = sedproc.communicate()
+    with open(pofilename, 'w') as fp:
+        fp.write(out)
+
+
+def get_exercise_po_files(po_files):
+    return fnmatch.filter(po_files, '*.exercises-*.po')
 
 
 def all_po_files(dir):
