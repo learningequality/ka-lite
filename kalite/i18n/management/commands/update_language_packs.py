@@ -88,9 +88,7 @@ class Command(BaseCommand):
             update_srts(days=options["days"], lang_codes=lang_codes)
 
         # Converted language code for language packs
-        update_language_packs(
-            lang_codes=lang_codes,
-        )
+        update_language_packs(lang_codes=lang_codes)
 
 
 def update_srts(days, lang_codes):
@@ -473,8 +471,6 @@ def zip_language_packs(lang_codes=None):
         # Get every single file in the directory and zip it up
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
             z.write(os.path.join(lang_locale_path, metadata_file), arcname=os.path.basename(metadata_file))
-        for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
-            z.write(os.path.join(lang_locale_path, mo_file), arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
         for srt_file in glob.glob('%s/subtitles/*.srt' % lang_locale_path):
             z.write(os.path.join(lang_locale_path, srt_file), arcname=os.path.join("subtitles", os.path.basename(srt_file)))
         z.close()
