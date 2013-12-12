@@ -165,6 +165,7 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
                     zip_file=ka_zip_file,
                     combine_with_po_file=po_file,
                     rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
+                    download_type="ka",
                 )
 
     # Compile
@@ -222,7 +223,8 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
                                  lang_code="all",
                                  zip_file=None,
                                  combine_with_po_file=None,
-                                 rebuild=True):
+                                 rebuild=True,
+                                 download_type=None):
     """
     Download latest translations from CrowdIn to corresponding locale
     directory. If zip_file is given, use that as the zip file
@@ -270,7 +272,7 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     z.extractall(tmp_dir_path)
 
     # Copy over new translations
-    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code)
+    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code, filter_type=download_type)
 
     # Clean up tracks
     if os.path.exists(tmp_dir_path):
@@ -291,7 +293,7 @@ def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=setti
         logging.error(e)
 
 
-def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
+def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_type=None):
     """Move newly downloaded po files to correct location in locale
     direction. Returns the location of the po file if a single
     language is given, or a list of locations if language is
@@ -313,18 +315,20 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
         ensure_dir(dest_path)
         dest_file = os.path.join(dest_path, 'django.po')
         build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
-        src_po_files = all_po_files(extract_path)
+        src_po_files = [po for po in all_po_files(extract_path)]
         concat_command = ['msgcat', '-o', build_file, '--no-location']
 
         # remove all exercise po that is not about math
-        src_po_files = [po for po in src_po_files if not ('exercises' in po and not 'math' in po)]
+        if filter_type:
+            if filter_type == "ka":
+                src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
+                src_po_files = filter(lambda fn: os.path.basename(fn).startswith("learn."), src_po_files)
+                src_po_files = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files]) > 1, src_po_files)
+                src_po_files = [po + ".po" for po in src_po_files]
 
-        # exclude exercises that have nonstandard po formats (looking at you, KA)
-        src_po_files = [po for po in src_po_files if not 'trigonometry.exercises' in po and not 'algebra.exercises' in po]
-
-        # before we call msgcat, process each exercise po file and leave out only the metadata
-        for exercise_po in get_exercise_po_files(src_po_files):
-            remove_exercise_nonmetadata(exercise_po)
+                # before we call msgcat, process each exercise po file and leave out only the metadata
+                for exercise_po in get_exercise_po_files(src_po_files):
+                    remove_exercise_nonmetadata(exercise_po)
 
         concat_command += src_po_files
 
@@ -332,8 +336,14 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all"):
             concat_command += [combine_with_po_file]
 
         logging.info('Concatenating all po files found...')
-        process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
-        process.wait()
+        try:
+            process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
+            process.wait()
+        except OSError as e:
+            if e.strerror == "No such file or directory":
+                raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
+            else:
+                raise
 
         shutil.move(build_file, dest_file)
 
@@ -370,12 +380,12 @@ def remove_exercise_nonmetadata(pofilename):
     # header. TODO for Aron: Fix polib.py
     sedproc = subprocess.Popen(['sed', '-e 1,/^$/d', pofilename], stdout=subprocess.PIPE)
     out, _ = sedproc.communicate()
-    with open(pofilename, 'w') as pofile:
-        pofile.write(out)
+    with open(pofilename, 'w') as fp:
+        fp.write(out)
 
 
 def get_exercise_po_files(po_files):
-    return fnmatch.filter(po_files, '*.exercises-??.po')
+    return fnmatch.filter(po_files, '*.exercises-*.po')
 
 
 def all_po_files(dir):
