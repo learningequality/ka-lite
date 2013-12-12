@@ -71,7 +71,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         register_url = self.reverse("add_facility_student")
         self.browse_to(register_url) # Load page
-        self.assertIn("Sign up", self.browser.title, "Register page title %s") # this depends on who is logged in.
+        #self.assertIn(_("Sign up"), self.browser.title, "Register page title") # this depends on who is logged in.
 
         # Part 1: REGISTER
         if facility_name and self.browser.find_element_by_id("id_facility").is_displayed():
@@ -99,7 +99,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         login_url = self.reverse("login")
         self.browse_to(login_url) # Load page
-        self.assertIn("Log in", self.browser.title, "Login page title")
+        self.assertIn(_("Log in"), self.browser.title, "Login page title")
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
@@ -247,6 +247,7 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
 
 
 @distributed_server_test
+@unittest.skipIf(settings.package_selected("UserRestricted"), "Registration not allowed when UserRestricted set.")
 class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
     password   = "password"
@@ -284,7 +285,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
         text_box = self.browser.find_element_by_id("id_username") # form element
         error    = text_box.parent.find_elements_by_class_name("errorlist")[-1]
-        self.assertIn("A user with this username already exists.", error.text, "Check 'username is taken' error.")
+        self.assertIn(_("A user with this username already exists."), error.text, "Check 'username is taken' error.")
 
 
     def test_login_two_users_different_cases(self):

@@ -41,7 +41,7 @@ import settings
 import version
 from settings import LOG as logging
 from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath
+from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
@@ -98,7 +98,7 @@ class Command(BaseCommand):
         else:
             lang_codes = [lcode_to_django_dir(lc) for lc in options["lang_code"].split(",")]
 
-        obliterate_old_schema()
+        upgrade_old_schema()
 
         # Raw language code for srts
         if not options['no_srts']:
@@ -178,42 +178,11 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
     zip_language_packs(lang_codes=lang_codes)
 
 
-def obliterate_old_schema():
+def upgrade_old_schema():
     """Move srt files from static/srt to locale directory and file them by language code, delete any old locale directories"""
-    srt_root = os.path.join(settings.STATIC_ROOT, "srt")
 
-
-    for locale_root in settings.LOCALE_PATHS:
-        if not os.path.exists(locale_root):
-            continue
-        for lang in os.listdir(locale_root):
-            # Skips if not a directory
-            if not os.path.isdir(os.path.join(locale_root, lang)):
-                continue
-            # If it isn't crowdin/django format, keeeeeeellllllll
-            if lang != lcode_to_django_dir(lang):
-                logging.info("Deleting %s directory because it does not fit our language code format standards" % lang)
-                shutil.rmtree(os.path.join(locale_root, lang))
-
-    if os.path.exists(os.path.join(settings.STATIC_ROOT, "srt")):
-        logging.info("Outdated schema detected for storing srt files. Hang tight, the moving crew is on it.")
-        for lang in os.listdir(srt_root):
-            # Skips if not a directory
-            if not os.path.isdir(os.path.join(srt_root, lang)):
-                continue
-            lang_srt_path = os.path.join(srt_root, lang, "subtitles/")
-            lang_locale_path = os.path.join(locale_root, lang)
-            ensure_dir(lang_locale_path)
-            dst = os.path.join(lang_locale_path, "subtitles")
-
-            for srt_file_path in glob.glob(os.path.join(lang_srt_path, "*.srt")):
-                base_path, srt_filename = os.path.split(srt_file_path)
-                if not os.path.exists(os.path.join(dst, srt_filename)):
-                    ensure_dir(dst)
-                    shutil.move(srt_file_path, os.path.join(dst, srt_filename))
-
-        shutil.rmtree(srt_root)
-        logging.info("Move completed.")
+    scrub_locale_paths()
+    move_old_subtitles()
 
 def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
     """
