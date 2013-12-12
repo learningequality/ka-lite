@@ -38,12 +38,12 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('central.views',
-    url(r'^$', 'homepage', {}, 'homepage'), 
+    url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^content/(?P<page>\w+)/', 'content_page', {}, 'content_page'), # Example of a new landing page
     url(r'^wiki/(?P<path>.*)$', 'content_page', {"page": "wiki_page", "wiki_site": settings.CENTRAL_WIKI_URL}, 'wiki'),
 
-    url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'), 
-    url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'), 
+    url(r'^delete_admin/(?P<org_id>\w+)/(?P<user_id>\w+)/$', 'delete_admin', {}, 'delete_admin'),
+    url(r'^delete_invite/(?P<org_id>\w+)/(?P<invite_id>\w+)/$', 'delete_invite', {}, 'delete_invite'),
     url(r'^accounts/', include(registration.urls)),
 
     # Organization
@@ -67,19 +67,20 @@ urlpatterns += patterns('central.views',
 
     # The install wizard app has two views: both options available (here)
     #   or an "edition" selected (to get more info, or redirect to download, below)
-    url(r'^download/wizard/$', 'download_wizard', {}, 'download_wizard'),
-    url(r'^download/wizard/(?P<edition>[\w-]+)/$', 'download_wizard', {}, 'download_wizard'),
-    url(r'^download/thankyou/$', 'download_thankyou', {}, 'download_thankyou'),
+    #url(r'^download/wizard/$', 'download_wizard', {}, 'download_wizard'),
+    #url(r'^download/wizard/(?P<edition>[\w-]+)/$', 'download_wizard', {}, 'download_wizard'),
+    #url(r'^download/thankyou/$', 'download_thankyou', {}, 'download_thankyou'),
 
     # Downloads: public
-    url(r'^download/kalite/(?P<version>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
-    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
-    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
+    #url(r'^download/kalite/(?P<version>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
+    #url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
+    #url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/$', 'download_kalite_public', {}, 'download_kalite_public'),
     # Downloads: private
-    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
-    url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/(?P<include_data>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
+    #url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
+    #url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/(?P<include_data>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
     # redirects for downloads
     url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
+    url(r'^wiki/installation/$', 'content_page', {"page": "wiki_page", "wiki_site": settings.CENTRAL_WIKI_URL, "path": "/installation/"}, 'install'),
 
     url(r'^contact/', include(contact.urls)),
     url(r'^about/$', lambda request: HttpResponseRedirect('http://learningequality.org/'), {}, 'about'),

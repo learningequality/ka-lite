@@ -89,7 +89,7 @@ def org_management(request, org_id=None):
         "my_invitations": list(OrganizationInvitation.objects \
             .filter(email_to_invite=request.user.email)
             .order_by("organization__name")),
-        "download_url": reverse("download_wizard"),
+        "download_url": reverse("install"),
     }
 
 
