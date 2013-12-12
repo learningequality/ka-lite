@@ -126,6 +126,8 @@ class Command(BaseCommand):
         # Nothing to do with a central server
         if settings.CENTRAL_SERVER:
             return
+        elif True:  # for 0.10.3, short-cut to avoid invitation logic.
+            return
 
         # Now we're definitely not central server, so ... go for it!
         # Import a zone (for machines sharing zones), and join if it works!

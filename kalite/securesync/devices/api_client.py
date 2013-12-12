@@ -32,10 +32,11 @@ class RegistrationClient(BaseClient):
         """
         # Get the required model data by registering (online and offline options available)
         try:
-            if prove_self:
-                (models,response) = self.register_prove_self_registration()
-            else:
-                models = self.register_via_preregistered_key()
+#            if not prove_self:
+            models = self.register_via_preregistered_key()
+#            else:
+#                (models,response) = self.register_prove_self_registration()
+
         except Exception as e:
             # Some of our exceptions are actually json blobs from the server.
             #   Try loading them to pass on that error info.
