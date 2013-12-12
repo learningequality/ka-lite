@@ -90,10 +90,6 @@ class Command(BaseCommand):
         # Converted language code for language packs
         update_language_packs(
             lang_codes=lang_codes,
-            zip_file=options['zip_file'],
-            ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=not options['no_ka'],
-            use_local=options["use_local"],
         )
 
 
