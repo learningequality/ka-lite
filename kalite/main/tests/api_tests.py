@@ -163,7 +163,7 @@ class TestSaveVideoLog(KALiteTestCase):
     def test_new_videolog(self):
 
         # make sure the target video log does not already exist
-        videologs = VideoLog.objects.filter(video_id=self.VIDEO_ID, user__username=self.USERNAME)
+        videologs = VideoLog.objects.filter(video_id=self.VIDEO_ID2, user__username=self.USERNAME)
         self.assertEqual(videologs.count(), 0, "The target video log to be newly created already exists")
 
         c = KALiteClient()
@@ -174,7 +174,7 @@ class TestSaveVideoLog(KALiteTestCase):
 
         # save a new video log
         result = c.save_video_log(
-            video_id=self.VIDEO_ID2, 
+            video_id=self.VIDEO_ID2,
             youtube_id=self.YOUTUBE_ID2,
             total_seconds_watched=self.ORIGINAL_SECONDS_WATCHED,
             points=self.NEW_POINTS,
@@ -182,7 +182,7 @@ class TestSaveVideoLog(KALiteTestCase):
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
 
         # get a reference to the newly created VideoLog
-        videolog = VideoLog.objects.get(video_id=self.VIDEO_ID, user__username=self.USERNAME)
+        videolog = VideoLog.objects.get(video_id=self.VIDEO_ID2, user__username=self.USERNAME)
 
         # make sure the VideoLog was properly created
         self.assertEqual(videolog.points, self.NEW_POINTS, "The VideoLog's points were not saved correctly.")
@@ -205,7 +205,7 @@ class TestSaveVideoLog(KALiteTestCase):
 
         # save a new record onto the video log, with a correct answer (increasing the points and streak)
         result = c.save_video_log(
-            video_id=self.VIDEO_ID, 
+            video_id=self.VIDEO_ID,
             youtube_id=self.YOUTUBE_ID,
             total_seconds_watched=self.ORIGINAL_SECONDS_WATCHED + self.NEW_SECONDS_WATCHED,
             points=self.ORIGINAL_POINTS + self.NEW_POINTS,
