@@ -378,6 +378,8 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                 concat_command = ['msgcat', '-o', build_file, '--no-location'] + src_po_files
                 process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
                 process.wait()
+                if not os.path.exists(build_file):
+                    raise CommandError("Unable to concatenate po files.")
             except OSError as e:
                 if e.strerror == "No such file or directory":
                     raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
