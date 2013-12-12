@@ -65,21 +65,6 @@ class Command(BaseCommand):
                     dest='no_srts',
                     default=False,
                     help='Do not download and bundle video subtitles.'),
-        make_option('--no_ka',
-                    action='store_true',
-                    dest='no_ka',
-                    default=False,
-                    help='Do not include Khan Academy content translations.'),
-        make_option('--zip_file',
-                    action='store',
-                    dest='zip_file',
-                    default=None,
-                    help='a local zip file to be used instead of fetching to CrowdIn. Ignores -l if this is used.'),
-        make_option('--ka_zip_file',
-                    action='store',
-                    dest='ka_zip_file',
-                    default=None,
-                    help='a local zip file to be used for KA content instead of fetching to CrowdIn. Ignores -l if this is used.'),
         make_option('-o', '--use_local',
                     action='store_true',
                     dest='use_local',
@@ -129,48 +114,8 @@ def update_srts(days, lang_codes):
 
 def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
 
-    logging.info("Downloading %s language(s)" % lang_codes)
-
-    if not use_local:
-        # Download latest UI translations from CrowdIn
-        assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
-
-
-        # Download Khan Academy translations too
-        if download_ka_translations:
-            assert hasattr(settings, "KA_CROWDIN_PROJECT_ID") and hasattr(settings, "KA_CROWDIN_PROJECT_KEY"), "KA Crowdin keys must be set to do this."
-
-        for lang_code in (lang_codes or [None]):
-
-            po_file = download_latest_translations(
-                lang_code=lang_code,
-                project_id=settings.CROWDIN_PROJECT_ID,
-                project_key=settings.CROWDIN_PROJECT_KEY,
-                zip_file=zip_file,
-            )
-            if not po_file:
-                continue
-
-            # Download Khan Academy translations too
-            if download_ka_translations:
-                assert hasattr(settings, "KA_CROWDIN_PROJECT_ID") and hasattr(settings, "KA_CROWDIN_PROJECT_KEY"), "KA Crowdin keys must be set to do this."
-
-                logging.info("Downloading Khan Academy translations...")
-                download_latest_translations(
-                    lang_code=lang_code,
-                    project_id=settings.KA_CROWDIN_PROJECT_ID,
-                    project_key=settings.KA_CROWDIN_PROJECT_KEY,
-                    zip_file=ka_zip_file,
-                    combine_with_po_file=po_file,
-                    rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
-                )
-
-    # Compile
-    (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
-    broken_langs = handle_po_compile_errors(lang_codes=lang_codes, out=out, err=err, rc=rc)
-
     # Loop through new UI translations & subtitles, create/update unified meta data
-    generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, added_ka=download_ka_translations)
+    generate_metadata(lang_codes=lang_codes)
 
     # Zip
     zip_language_packs(lang_codes=lang_codes)
@@ -392,6 +337,9 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False):
 
     """
     logging.info("Generating new language pack metadata")
+
+    if broken_langs is None:
+        broken_langs = tuple()
 
     lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
     try:
