@@ -40,7 +40,7 @@ import polib
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import get_language_pack_availability_filepath, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH
 from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
@@ -183,6 +183,8 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
                 package_metadata[lang_code]["nphrases"]      = ka_metadata["nphrases"]
                 package_metadata[lang_code]["ka_ntranslations"] = ka_metadata["ntranslations"] - package_metadata[lang_code]["kalite_ntranslations"]
                 package_metadata[lang_code]["ka_nphrases"]      = ka_metadata["nphrases"] - package_metadata[lang_code]["kalite_nphrases"]
+
+            # Now that we have metadata, compress by removing non-translated "translations"
 
     # Compile
     (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
@@ -463,7 +465,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
 
     lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
     try:
-        with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
+        with open(get_language_pack_availability_filepath(), "r") as fp:
             master_metadata = json.load(fp)
     except Exception as e:
         logging.warn("Error opening language pack metadata: %s; resetting" % e)
@@ -543,8 +545,8 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
         master_metadata[lang_code_ietf] = local_meta
 
     # Save updated master
-    ensure_dir(os.path.dirname(LANGUAGE_PACK_AVAILABILITY_FILEPATH))
-    with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, 'w') as output:
+    ensure_dir(os.path.dirname(get_language_pack_availability_filepath()))
+    with open(get_language_pack_availability_filepath(), 'w') as output:
         json.dump(master_metadata, output)
     logging.info("Local record of translations updated")
 
@@ -555,7 +557,7 @@ def update_metadata(sizes):
     Update this info in the local metadata (but not inside the zip)
     """
     try:
-        with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
+        with open(get_language_pack_availability_filepath(), "r") as fp:
             master_metadata = json.load(fp)
     except Exception as e:
         logging.warn("Error opening language pack metadata: %s; resetting" % e)
@@ -584,8 +586,8 @@ def update_metadata(sizes):
         master_metadata[lang_code_ietf] = local_meta
 
     # Save updated master
-    ensure_dir(os.path.dirname(LANGUAGE_PACK_AVAILABILITY_FILEPATH))
-    with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, 'w') as output:
+    ensure_dir(os.path.dirname(get_language_pack_availability_filepath()))
+    with open(get_language_pack_availability_filepath(), 'w') as output:
         json.dump(master_metadata, output)
     logging.info("Local record of translations updated")
 

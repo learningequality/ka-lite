@@ -14,5 +14,6 @@ def custom(request):
         "DATA_PATH": settings.DATA_PATH,
         "settings": settings,
         "restricted": settings.package_selected("UserRestricted"),
+        "VERSION": version.VERSION,
         "BUILD_ID": BUILD_ID,
     }
