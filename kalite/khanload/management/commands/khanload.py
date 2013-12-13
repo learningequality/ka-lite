@@ -17,7 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared import topic_tools
+from shared import khanload, topic_tools
 from utils.general import datediff
 
 
@@ -60,7 +60,7 @@ slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "Mo
 temp_ok_atts = ["x_pos", "y_pos", "in_knowledge_map", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
 
 
-def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
+def download_khan_data(url, debug_cache_file=None, debug_cache_dir=khanload.KHANLOAD_CACHE_DIR):
     """Download data from the given url.
 
     In DEBUG mode, these downloads are slow.  So for the sake of faster iteration,
@@ -127,7 +127,7 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
         node["slug"] = node[slug_key[kind]] if node[slug_key[kind]] != "root" else ""
         node["id"] = node[id_key[kind]]  # these used to be the same; now not. Easier if they stay the same (issue #233)
 
-        node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
+        node["path"] = path + khanload.kind_slugs[kind] + node["slug"] + "/"
         node["title"] = node[title_key[kind]]
 
         # Add some attribute that should have been on there to start with.
