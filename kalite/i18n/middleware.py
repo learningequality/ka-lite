@@ -63,10 +63,11 @@ def set_language_data(request):
 
         set_default_language(request, lang_code=request.GET["set_default_language"], global_set=True)
 
-        redirect_url = request.get_full_path().replace("set_default_language="+request.GET["set_default_language"], "")
+        redirect_url = request.get_full_path().replace("set_default_language=" + request.GET["set_default_language"], "")
         return HttpResponseRedirect(redirect_url)
 
     elif "set_language" in request.GET:
+        import pdb; pdb.set_trace()
         # Set the current user's session language, and redirect (to clean browser history)
         set_default_language(request, request.GET["set_language"], global_set=(request.is_logged_in and not request.is_django_user))
 
@@ -82,9 +83,10 @@ def set_language_data(request):
     cur_lang = request.GET.get("lang") \
         or request.session.get("django_language") \
         or request.session.get("default_language")
+
     set_request_language(request, lang_code=cur_lang)
 
 
 class SessionLanguage:
     def process_request(self, request):
-        set_language_data(request)
+        return set_language_data(request)
