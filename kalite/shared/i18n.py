@@ -238,7 +238,15 @@ def get_installed_language_packs():
     """
     On-disk method to show currently installed languages and meta data.
     """
-    sorted_list = []
+
+    installed_language_packs = [{
+        'code': 'en',
+        'software_version': version.VERSION,
+        'language_pack_version': 0,
+        'percent_translated': 100,
+        'subtitle_count': 0,
+        'name': 'English',
+    }]
 
     # Loop through locale folders
     for locale_dir in settings.LOCALE_PATHS:
@@ -257,8 +265,9 @@ def get_installed_language_packs():
                 logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
                 continue
 
-            bisect.insort_left(sorted_list, lang_meta)
+            installed_language_packs.append(lang_meta)
 
+    sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 
 
