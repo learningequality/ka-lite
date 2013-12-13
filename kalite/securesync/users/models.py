@@ -87,6 +87,7 @@ class FacilityUser(DeferredCountSyncedModel):
     is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have teacher permissions)"))
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128)
+    default_language = models.CharField(max_length=8, null=True); default_language.minversion="0.11.1"
 
     class Meta:
         unique_together = ("facility", "username")
