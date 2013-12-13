@@ -17,7 +17,7 @@ import version
 from .classes import UpdatesStaticCommand
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url, get_localized_exercise_dirpath
 from utils.general import ensure_dir
 
 
@@ -74,6 +74,7 @@ class Command(UpdatesStaticCommand):
 
             self.next_stage("Moving files to their appropriate local disk locations.")
             move_dubbed_video_map(lang_code)
+            move_exercises(lang_code)
             move_srts(lang_code)
 
             self.complete("Finished processing language pack %s" % lang_code)
@@ -110,10 +111,19 @@ def move_dubbed_video_map(lang_code):
     lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
     dvm_filepath = os.path.join(lang_pack_location, "dubbed_videos", os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
     if not os.path.exists(dvm_filepath):
-        logging.error("Could not find downloaded dubbed video filepath: %s")
+        logging.error("Could not find downloaded dubbed video filepath: %s" % dvm_filepath)
     else:
         ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
         shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
+
+def move_exercises(lang_code):
+    src_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=True)
+    dest_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=False)
+    if not os.path.exists(src_exercise_dir):
+        logging.warn("Could not find downloaded exercises; skipping: %s" % src_exercise_dir)
+    else:
+        logging.info("Moving downloaded exercises to %s" % dest_exercise_dir)
+        shutil.move(src_exercise_dir, dest_exercise_dir)
 
 def move_srts(lang_code):
     """
