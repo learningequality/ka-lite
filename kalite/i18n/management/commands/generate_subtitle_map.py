@@ -49,7 +49,20 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     # Initialize the data
     if not os.path.exists(map_file):
         ensure_dir(os.path.dirname(map_file))
-        srts_dict = {}
+        if not settings.DEBUG:
+            raise CommandError("TRUE central server's srts dict should never be empty...")
+        else:
+            # Pull it from the central server
+            try:
+                resp = requests.get("http://kalite.learningequality.org/media/testing/%s" % (os.path.basename(map_file)))
+                resp.raise_for_status()
+                with open(map_file, "w") as fp:
+                    fp.write(resp.content)
+                srts_dict = json.loads(resp.content)
+            except Exception as e:
+                logging.error("Failed to download TRUE central server's srts availability file.")
+                srts_dict = {}
+
     else:
         # Open the file, read, and clean out old videos.
         try:
