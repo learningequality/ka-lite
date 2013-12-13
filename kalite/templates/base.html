@@ -161,8 +161,8 @@
                         {% if language_choices %}
                         <form id="language-preferences" >
                             <select id="language_selector">
-                                {% for lang in language_choices %}
-                                <option value="{{ lang.code }}" {% if lang.code == current_language %}selected{% endif %}>{{ lang.name }}</option>
+                                {% for lang_code, lang_meta in language_choices.iteritems %}
+                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{{ lang_meta.name }}</option>
                                 {% endfor %}
                             </select>
                         </form>

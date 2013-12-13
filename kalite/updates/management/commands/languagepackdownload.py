@@ -15,7 +15,6 @@ from django.utils.translation import ugettext as _
 import settings
 import version
 from .classes import UpdatesStaticCommand
-from i18n.models import LanguagePack
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
 from utils.general import ensure_dir
@@ -67,10 +66,6 @@ class Command(UpdatesStaticCommand):
             self.next_stage("Unpacking language pack '%s'" % lang_code)
             unpack_language(lang_code, zip_file)
 
-            # Update database with meta info
-            self.next_stage("Updating database for language pack '%s'" % lang_code)
-            update_database(lang_code)
-
             #
             self.next_stage("Creating static files for language pack '%s'" % lang_code)
             update_jsi18n_file(lang_code)
@@ -106,23 +101,6 @@ def unpack_language(lang_code, zip_file):
     ## Unpack into temp dir
     z = zipfile.ZipFile(StringIO(zip_file))
     z.extractall(os.path.join(LOCALE_ROOT, lang_code))
-
-
-def update_database(lang_code):
-    """Create/update LanguagePack table in database based on given languages metadata"""
-
-    lang_code = lcode_to_ietf(lang_code)
-    with open(get_language_pack_metadata_filepath(lang_code)) as fp:
-        metadata = json.load(fp)
-
-    logging.info("Updating database for language pack: %s" % lang_code)
-
-    pack = get_object_or_None(LanguagePack, code=lang_code) or LanguagePack(code=lang_code)
-    for key, value in metadata.iteritems():
-        setattr(pack, key, value)
-    pack.save()
-
-    logging.info("Successfully updated database.")
 
 def move_srts(lang_code):
     """
