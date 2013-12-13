@@ -10,17 +10,9 @@ from django.utils.translation import ugettext as _
 
 import settings
 from settings import LOG as logging
-from shared import i18n
-
-
-kind_slugs = {
-    "Video": "v/",
-    "Exercise": "e/",
-    "Topic": ""
-}
+from shared import i18n, khanload
 
 topics_file = "topics.json"
-map_layout_file = "maplayout_data.json"
 
 
 # Globals that can be filled
@@ -47,7 +39,7 @@ def get_node_cache(node_type=None, force=False):
 
 KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
-    global KNOWLEDGEMAP_TOPICS, map_layout_file
+    global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
         root_node = get_topic_tree(force=force)
         sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
@@ -340,7 +332,7 @@ def get_related_videos(exercise, limit_to_available=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
+    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
 
     parent_path1 = parse_path(node1)
     parent_path2 = parse_path(node2)

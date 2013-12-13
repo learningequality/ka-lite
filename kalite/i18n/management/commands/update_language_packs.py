@@ -40,13 +40,12 @@ import polib
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import get_language_pack_availability_filepath, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH
+from shared.i18n import get_language_pack_availability_filepath, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR
 from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
 
-CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 
 class Command(BaseCommand):
     help = 'Updates all language packs'
