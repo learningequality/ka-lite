@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 import settings
+from shared.i18n import get_dubbed_video_map
 from securesync.models import Device
 from utils.general import ensure_dir
 from utils.platforms import is_windows, not_system_specific_scripts, system_specific_zipping, _default_callback_zip
@@ -209,6 +210,8 @@ class Command(BaseCommand):
         if options['platform'] not in ["all", "linux", "macos", "darwin", "windows"]:
             raise CommandError("Unrecognized platform: %s; will include ALL files." % options['platform'])
 
+        # Step 0: refresh all resources
+        get_dubbed_video_map(force=True)  # force a remote download
         # Step 1: recursively add all static files
         kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
         files_dict = recursively_add_files(dirpath=kalite_base, **options)

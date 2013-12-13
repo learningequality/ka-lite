@@ -19,6 +19,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from securesync.models import Device
 from settings import LOG as logging
+from shared.i18n import get_dubbed_video_map
 from updates.management.commands.classes import UpdatesStaticCommand
 from utils import crypto
 from utils.django_utils import call_outside_command_with_output
@@ -133,6 +134,7 @@ class Command(UpdatesStaticCommand):
         self.stages = [
             "clean_pyc",
             "git",
+            "download",
             "syncdb",
         ]
 
@@ -162,7 +164,11 @@ class Command(UpdatesStaticCommand):
                 self.stderr.write("%s\n" % gce.stderr)
                 exit(1)
 
-        # step 3: syncdb
+        # step 3: get other remote resources
+        self.next_stage("Download remote resources")
+        get_dubbed_video_map(force=True)  # force a remote download
+
+        # step 4: syncdb
         self.next_stage("Update the database")
         call_command("setup", interactive=False)
 
