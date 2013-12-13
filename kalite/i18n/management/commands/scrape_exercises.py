@@ -19,9 +19,8 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from settings import LOG as logging
 from shared.topic_tools import get_node_cache
-from shared.i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang
+from shared.i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang, get_localized_exercise_dirpath
 from utils.general import ensure_dir
-
 
 class Command(BaseCommand):
     help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitles/srts_download_status.json"
@@ -61,9 +60,6 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        if settings.CENTRAL_SERVER:
-            raise CommandError("This must only be run on the distributed server.")
-
         if not options["lang_code"]:
             raise CommandError("You must specify a language code.")
 
@@ -83,8 +79,7 @@ def scrape_exercise(exercise_id, lang_code, force=False):
     ka_lang_code = lang_code.lower()
 
     exercise_filename = "%s.%s" % (exercise_id, "html")
-    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
-    exercise_localized_root = os.path.join(exercise_root, ka_lang_code)
+    exercise_localized_root = get_localized_exercise_dirpath(ka_lang_code)
     exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
 
     if os.path.exists(exercise_dest_filepath) and not force:
