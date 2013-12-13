@@ -26,6 +26,7 @@ import version
 from .models import VideoFile
 from config.models import Settings
 from control_panel.views import local_device_context, user_management_context
+from i18n.middleware import set_language_choices
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
@@ -59,7 +60,7 @@ def update_videos(request, max_to_show=5):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
 
-    installed_languages = request.session['language_choices'] = get_installed_language_packs()
+    installed_languages = set_language_choices(request, force=True)
     languages_to_show = [l['name'] for l in installed_languages.values()[:max_to_show]]
     other_languages_count = max(0, len(installed_languages) - max_to_show)
 
@@ -76,7 +77,7 @@ def update_videos(request, max_to_show=5):
 @render_to("updates/update_languages.html")
 def update_languages(request):
     # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
-    request.session['language_choices'] = get_installed_language_packs()
+    set_language_choices(request, force=True)
 
     # here we want to reference the language meta data we've loaded into memory
     context = update_context(request)
