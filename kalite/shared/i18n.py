@@ -64,18 +64,32 @@ def get_dubbed_video_map(lang_code=None, force=False):
     Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
     """
     global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW, DUBBED_VIDEOS_MAPPING_FILEPATH
+
     if DUBBED_VIDEO_MAP is None or force:
         try:
-            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
-                if settings.CENTRAL_SERVER:
-                    # Never call commands that could fail from the distributed server.
-                    #   Always create a central server API to abstract things (see below)
-                    call_command("generate_dubbed_video_mappings")
-                else:
-                    response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
-                    response.raise_for_status()
-                    with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
-                        fp.write(response.content)  # wait until content has been confirmed before opening file.
+            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
+                try:
+                    if settings.CENTRAL_SERVER:
+                        # Never call commands that could fail from the distributed server.
+                        #   Always create a central server API to abstract things (see below)
+                        call_command("generate_dubbed_video_mappings")
+                    else:
+                        # Generate from the spreadsheet
+                        response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
+                        response.raise_for_status()
+                        with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
+                            fp.write(response.content)  # wait until content has been confirmed before opening file.
+                except Exception as e:
+                    if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
+                        # Unrecoverable error, so raise
+                        raise
+                    elif DUBBED_VIDEO_MAP:
+                        # No need to recover--allow the downstream dude to catch the error.
+                        raise
+                    else:
+                        # We can recover by NOT forcing reload.
+                        logging.warn("%s" % e)
+
             with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
                 DUBBED_VIDEO_MAP_RAW = json.load(fp)
         except:
