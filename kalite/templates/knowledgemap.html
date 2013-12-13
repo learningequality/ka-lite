@@ -11,9 +11,6 @@
 {% block headjs %}{{ block.super }}
     <script type='text/javascript' src='{% static "js/khan-exercises/third_party/raphael.js" %}'></script>
     <script type='text/javascript' src='{% static "js/kmap-editor.js" %}'></script>
-    <script>
-        var exercise_paths = {{ exercise_paths|safe }};
-    </script>
 {% endblock headjs %}
 
 {% block content %}

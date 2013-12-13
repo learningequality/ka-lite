@@ -4,7 +4,7 @@ VERSION_INFO = {
 
     "0.11.1": {
         "release_date": "2013/11/28",
-        "git_commit": "bb2c7048d22abb76aa7dcfeb89e7a06820372480",
+        "git_commit": "cd55e92ebbd3ad5ac0283ddf3de302d1cd26b608",
         "new_features": {
             "all": ["over 5x faster performance"],
             "students": [],
@@ -27,6 +27,23 @@ VERSION_INFO = {
             "students": [],
             "coaches": [],
             "admins": ["automated registration", "download and install via zip"],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+    },
+
+    "0.10.3": {
+        "release_date": "2013/12/16",
+        "git_commit": "aa588ef130d38c647f8f3514c70ca074f761b0e9",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Better performance (faster save times and login times)"],
         },
         "bugs_fixed": {
             "all": [],

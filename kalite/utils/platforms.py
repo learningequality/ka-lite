@@ -20,7 +20,7 @@ def is_windows(system=None):
 
 def is_osx(system=None):
     system = system or platform.system()
-    return system.lower() == "darwin"
+    return system.lower() in ["darwin", "macosx"]
 
 
 def system_script_extension(system=None):

@@ -3,10 +3,11 @@ import time
 from functools import partial
 from optparse import make_option
 
+from django.utils.translation import ugettext as _
+
 import settings
 from .classes import UpdatesDynamicCommand
-from shared import caching
-from shared.jobs import force_job
+from shared import caching, i18n
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
@@ -54,7 +55,9 @@ class Command(UpdatesDynamicCommand):
                 # update progress data
                 video_node = get_video_by_youtube_id(self.video.youtube_id)
                 video_title = video_node["title"] if video_node else self.video.youtube_id
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes="Downloading '%s'" % video_title)
+
+                # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
+                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%s'") % video_title)
 
                 if percent == 100:
                     self.video = None
@@ -62,7 +65,7 @@ class Command(UpdatesDynamicCommand):
         except DownloadCancelled as de:
             if self.video:
                 self.stdout.write("Download Cancelled!\n")
-            
+
                 # Update video info
                 self.video.percent_complete = 0
                 self.video.flagged_for_download = False
@@ -77,17 +80,17 @@ class Command(UpdatesDynamicCommand):
     def handle(self, *args, **options):
         self.video = None
 
-        handled_video_ids = []  # stored to deal with caching
-        failed_video_ids = []  # stored to avoid requerying failures.
+        handled_youtube_ids = []  # stored to deal with caching
+        failed_youtube_ids = []  # stored to avoid requerying failures.
 
         set_process_priority.lowest(logging=settings.LOG)
-        
+
         try:
             while True: # loop until the method is aborted
                 # Grab any video that hasn't been tried yet
                 videos = VideoFile.objects \
                     .filter(flagged_for_download=True, download_in_progress=False) \
-                    .exclude(youtube_id__in=failed_video_ids)
+                    .exclude(youtube_id__in=failed_youtube_ids)
                 video_count = videos.count()
                 if video_count == 0:
                     self.stdout.write("Nothing to download; exiting.\n")
@@ -102,34 +105,39 @@ class Command(UpdatesDynamicCommand):
                 self.stdout.write("Downloading video '%s'...\n" % video.youtube_id)
 
                 # Update the progress logging
-                self.set_stages(num_stages=video_count + len(handled_video_ids) + len(failed_video_ids) + int(options["auto_cache"]))
+                self.set_stages(num_stages=video_count + len(handled_youtube_ids) + len(failed_youtube_ids) + int(options["auto_cache"]))
                 if not self.started():
                     self.start(stage_name=video.youtube_id)
 
                 # Initiate the download process
                 try:
                     download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
-                    handled_video_ids.append(video.youtube_id)
+                    handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write("Download is complete!\n")
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
-                    self.stderr.write("Error in downloading %s: %s\n" % (video.youtube_id, e))
+                    msg = "Error in downloading %s: %s" % (video.youtube_id, e)
+                    self.stderr.write("%s\n" % msg)
                     video.download_in_progress = False
                     video.flagged_for_download = not isinstance(e, URLNotFound)  # URLNotFound means, we won't try again
                     video.save()
                     # Rather than getting stuck on one video, continue to the next video.
-                    failed_video_ids.append(video.youtube_id)
+                    failed_youtube_ids.append(video.youtube_id)
+                    self.update_stage(stage_status="error", notes="%s; continuing to next video." % msg)
                     continue
 
             # This can take a long time, without any further update, so ... best to avoid.
-            if options["auto_cache"] and caching.caching_is_enabled() and handled_video_ids:
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes="Generating all pages related to videos.")
-                caching.regenerate_all_pages_related_to_videos(video_ids=handled_video_ids)
+            if options["auto_cache"] and caching.caching_is_enabled() and handled_youtube_ids:
+                self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes=_("Generating all pages related to videos."))
+                caching.regenerate_all_pages_related_to_videos(video_ids=list(set([i18n.get_video_id(yid) or yid for yid in handled_youtube_ids])))
 
             # Update
-            self.complete(notes="Downloaded %d of %d videos successfully." % (len(handled_video_ids), len(handled_video_ids) + len(failed_video_ids)))
+            self.complete(notes=_("Downloaded %(num_handled_videos)s of %(num_total_videos)s videos successfully.") % {
+                "num_handled_videos": len(handled_youtube_ids),
+                "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
+            })
 
         except Exception as e:
-            sys.stderr.write("Error: %s\n" % e)
-            self.cancel(notes="Error: %s" % e)
+            self.cancel(stage_status="error", notes=_("Error: %s") % e)
+            raise

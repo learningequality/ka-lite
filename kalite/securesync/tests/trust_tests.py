@@ -7,11 +7,18 @@ from django.utils import unittest
 
 import settings
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
-from shared.testing import distributed_server_test, central_server_test
+from shared.testing import distributed_server_test, central_server_test, KALiteTestCase
 from utils.crypto import Key
 
 
-class TestChainOfTrust(TestCase):
+class TestChainOfTrust(KALiteTestCase):
+    def setUp(self):
+        Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
+        super(KALiteTestCase, self).setUp()
+
+    def tearDown(self):
+        super(KALiteTestCase, self).tearDown()
+        Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
 
     @distributed_server_test
     def test_valid_own_device(self):

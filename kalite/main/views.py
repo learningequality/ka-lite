@@ -1,9 +1,11 @@
 import copy
 import json
+import os
 import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from functools import partial
 
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -29,9 +31,12 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin
+from shared.i18n import select_best_available_language
 from shared.jobs import force_job
-from shared.videos import get_video_urls, is_video_on_disk, video_counts_need_update, get_video_counts
-from utils.internet import is_loopback_connection, JsonResponse
+from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
+
 
 def check_setup_status(handler):
     """
@@ -66,50 +71,107 @@ def check_setup_status(handler):
     return wrapper_fn
 
 
+def refresh_topic_cache(handler, force=False):
+
+    def strip_counts_from_ancestors(node):
+        """
+        Remove relevant counts from all ancestors
+        """
+        for ancestor_id in node.get("ancestor_ids", []):
+            ancestor = get_ancestor(node, ancestor_id)
+            if "nvideos_local" in ancestor:
+                del ancestor["nvideos_local"]
+            if "nvideos_known" in ancestor:
+                del ancestor["nvideos_known"]
+        return node
+
+    def recount_videos_and_invalidate_parents(node, force=False, stamp_urls=False):
+        """
+        Call stamp_video_availability (if necessary); if a change has been detected,
+        then check parents to see if their counts should be invalidated.
+        """
+        do_it = force
+        do_it = do_it or "nvideos_local" not in node
+        do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
+        if do_it:
+            logging.debug("Adding video counts %sto topic (and all descendants) %s" % (
+                "(and urls) " if stamp_urls else "",
+                node["path"],
+            ))
+            (_a, _b, _c, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
+            if changed:
+                strip_counts_from_ancestors(node)
+        return node
+
+    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, force=False, *args, **kwargs):
+        """
+        Centralized logic for how to refresh the topic cache, for each type of object.
+
+        When the object is desired to be used, this code runs to refresh data,
+        balancing between correctness and efficiency.
+        """
+        if not cached_nodes:
+            cached_nodes = {"topics": topicdata.TOPICS}
+
+        for node in cached_nodes.values():
+            if not node:
+                continue
+            has_children = bool(node.get("children"))
+
+            # Propertes not yet marked
+            if node["kind"] == "Video":
+                if force or "availability" not in node:
+                    #stamp_availability_on_topic(node, force=force)  # will be done by force below
+                    recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
+
+            elif node["kind"] == "Exercise":
+                for video in topic_tools.get_related_videos(exercise=node).values():
+                    if not "availability" in video:
+                        stamp_availability_on_video(video, force=True)  # will be done by force below
+
+            elif node["kind"] == "Topic":
+                bottom_layer_topic =  "Topic" not in node["contains"]
+                # always run video_counts_need_update(), to make sure the (internal) counts stay up to date.
+                force = video_counts_need_update() or force or bottom_layer_topic
+                recount_videos_and_invalidate_parents(
+                    node,
+                    force=force,
+                    stamp_urls=bottom_layer_topic,
+                )
+
+        kwargs.update(cached_nodes)
+        return handler(request, *args, **kwargs)
+    return refresh_topic_cache_wrapper_fn
+
 @backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
     current_node = topicdata.TOPICS
-    seeking = "Topic" # search for topics, until we find videos or exercise
-    for slug in slugs:
-        # towards the end of the url, we switch from seeking a topic node
-        #   to the particular type of node in the tree
-        for kind, kind_slug in topic_tools.kind_slugs.items():
-            if slug == kind_slug.split("/")[0]:
-                seeking = kind
-                break
+    while current_node:
+        match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
+        if not match:
+            raise Http404
+        current_node = match[0]
+        if request.path == current_node["path"]:
+            break
 
-        # match each step in the topics hierarchy, with the url slug.
-        else:
-            children = [child for child in current_node['children'] if child['kind'] == seeking]
-            if not children:
-                raise Http404
-            match = None
-            prev = None
-            next = None
-            for child in children:
-                if match:
-                    next = child
-                    break
-                if child["slug"] == slug:
-                    match = child
-                else:
-                    prev = child
-            if not match:
-                raise Http404
-            current_node = match
     if current_node["kind"] == "Topic":
-        return topic_handler(request, current_node)
+        return topic_handler(request, cached_nodes={"topic": current_node})
     elif current_node["kind"] == "Video":
-        return video_handler(request, video=current_node, prev=prev, next=next)
+        prev, next = get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
+        return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
     elif current_node["kind"] == "Exercise":
-        return exercise_handler(request, current_node)
+        cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
+        cached_nodes["exercise"] = current_node
+        cached_nodes["prev"], cached_nodes["next"] = get_neighbor_nodes(current_node, neighbor_kind=current_node['kind'])
+        return exercise_handler(request, cached_nodes=cached_nodes)
     else:
         raise Http404
 
 
 @backend_cache_page
 @render_to("topic.html")
+@refresh_topic_cache
 def topic_handler(request, topic):
     return topic_context(topic)
 
@@ -122,14 +184,22 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-
-    # Get video counts if they'll be used, on-demand only.
-    #
-    # Check in this order so that the initial counts are always updated
-    if video_counts_need_update() or not 'nvideos_local' in topic:
-        (topic,_,_) = get_video_counts(topic=topic, videos_path=settings.CONTENT_ROOT)
-
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+
+    exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
+
+    for lang_code in os.listdir(exercises_path):
+        loc_path = os.path.join(exercises_path, lang_code)
+        if not os.path.isdir(loc_path):
+            continue
+
+        for exercise in exercises:
+            ex_path = os.path.join(loc_path, "%s.html" % exercise["id"])
+            if not os.path.exists(ex_path):
+                continue
+            exercise_langs[exercise["id"]].append(lang_code)
+
 
     context = {
         "topic": topic,
@@ -137,6 +207,7 @@ def topic_context(topic):
         "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
         "videos": videos,
         "exercises": exercises,
+        "exercise_langs": exercise_langs,
         "topics": my_topics,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
@@ -145,12 +216,10 @@ def topic_context(topic):
 
 @backend_cache_page
 @render_to("video.html")
+@refresh_topic_cache
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    video_on_disk = is_video_on_disk(video['youtube_id'])
-    video_exists = video_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
-
-    if not video_exists:
+    if not video["available"]:
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
             messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
@@ -159,14 +228,19 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
 
-    video["stream_type"] = "video/%s" % format
+    if video["available"] and not any([avail["on_disk"] for avail in video["availability"].values()]):
+        messages.success(request, "Got video content from %s" % video["availability"]["default"]["stream_url"])
 
-    if video_exists and not video_on_disk:
-        messages.success(request, "Got video content from %s" % video["stream_url"])
+    # Fallback mechanism
+    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
+    vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language, )
 
     context = {
         "video": video,
         "title": video["title"],
+        "available_videos": available_urls,
+        "selected_language": vid_lang,
+        "video_urls": available_urls[vid_lang] if vid_lang else None,
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
@@ -177,36 +251,37 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
 @backend_cache_page
 @render_to("exercise.html")
-def exercise_handler(request, exercise):
+@refresh_topic_cache
+def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
     Display an exercise
     """
-    # Find related videos   
-    related_videos = {}
-    for key in exercise["related_video_readable_ids"]:
-        video_nodes = topicdata.NODE_CACHE["Video"].get(key, None)
-        
-        # Make sure the IDs are recognized, and are available.
-        if not video_nodes:
-            continue
-        if not video_nodes[0].get("on_disk", False) and not settings.BACKUP_VIDEO_SOURCE:
-            continue
-        
-        # Search for a sibling video node to add to related exercises.
-        for video in video_nodes:
-            if topic_tools.is_sibling({"path": video["path"], "kind": "Video"}, exercise):
-                related_videos[key] = video
-                break
-    
-        # failed to find a sibling; just choose the first one.
-        if key not in related_videos:
-            related_videos[key] = video_nodes[0]
+    lang = request.session["django_language"]
+    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_file = exercise["slug"] + ".html"
+    exercise_template = exercise_file
+    exercise_localized_template = os.path.join(lang, exercise_file)
+
+    # Get the language codes for exercise teplates that exist
+    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
+    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
+    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
+
+    # Return the best available exercise template
+    exercise_lang = select_best_available_language(available_langs, target_code=request.language)
+    if exercise_lang == "en":
+        exercise_template = exercise_file
+    else:
+        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
 
     context = {
         "exercise": exercise,
         "title": exercise["title"],
-        "exercise_template": "exercises/" + exercise["slug"] + ".html",
-        "related_videos": related_videos.values(),
+        "exercise_template": exercise_template,
+        "exercise_lang": exercise_lang,
+        "related_videos": [v for v in related_videos.values() if v["available"]],
+        "prev": prev,
+        "next": next,
     }
     return context
 
@@ -214,21 +289,28 @@ def exercise_handler(request, exercise):
 @backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    # Just grab the first path, whatever it is
-    paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
     slug = request.GET.get("topic")
+    if not slug:
+        title = _("Your Knowledge Map")
+    elif slug in topicdata.NODE_CACHE["Topic"]:
+        title = _(topicdata.NODE_CACHE["Topic"][slug][0]["title"])
+    else:
+        raise Http404
 
     context = {
-        "title": topicdata.NODE_CACHE["Topic"][slug][0]["title"] if slug else _("Your Knowledge Map"),
-        "exercise_paths": json.dumps(paths),
+        "title": title,
     }
     return context
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
 @render_to("homepage.html")
-def homepage(request):
-    context = topic_context(topicdata.TOPICS)
+@refresh_topic_cache
+def homepage(request, topics):
+    """
+    Homepage.
+    """
+    context = topic_context(topics)
     context.update({
         "title": "Home",
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
@@ -245,6 +327,8 @@ def easy_admin(request):
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
         "clock_set": settings.ENABLE_CLOCK_SET,
+        "ips": get_ip_addresses(include_loopback=False),
+        "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }
     return context
 
@@ -302,7 +386,8 @@ def device_redirect(request):
         raise Http404(_("This device is not on any zone."))
 
 @render_to('search_page.html')
-def search(request):
+@refresh_topic_cache
+def search(request, topics):  # we don't use the topics variable, but this setup will refresh the node cache
     # Inputs
     query = request.GET.get('query')
     category = request.GET.get('category')
@@ -331,7 +416,7 @@ def search(request):
             possible_matches[node_type] = []  # make dict only for non-skipped categories
             for nodearr in node_dict.values():
                 node = nodearr[0]
-                title = node['title'].lower()  # this could be done once and stored.
+                title = _(node['title']).lower()  # this could be done once and stored.
                 if title == query:
                     # Redirect to an exact match
                     return HttpResponseRedirect(node['path'])
@@ -360,7 +445,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(reverse("login") + "?next=" + request.path)
+        return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())
 
 
 def handler_404(request):
@@ -371,6 +456,6 @@ def handler_500(request):
     errortype, value, tb = sys.exc_info()
     context = {
         "errortype": errortype.__name__,
-        "value": str(value),
+        "value": unicode(value),
     }
     return HttpResponseServerError(render_to_string("500.html", context, context_instance=RequestContext(request)))

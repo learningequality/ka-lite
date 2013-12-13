@@ -31,7 +31,7 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     base_name = os.path.split(key_base)[1]
 
     if key_base == "":  # base directory
-        in_dirs = set(dirnames) - set(('.git', 'content', 'node_modules'))
+        in_dirs = set(dirnames) - set((".git", "content", "node_modules", "_khanload_cache"))
 
     elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
@@ -66,7 +66,7 @@ def file_in_blacklist_set(file_path):
 
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", "*.pot"]) \
+    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ".pot", ".sublime-project", ".sublime-workspace", ".patch"]) \
         or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store", "Gruntfile.js", "package.json"])
 
 
@@ -125,7 +125,7 @@ def create_local_settings_file(location, server_type="local", locale=None, centr
     elif os.path.exists(location):
         shutil.copy(location, fil)
 
-    ls = open(fil, "a") #append, to keep those settings, but override SOME
+    ls = open(fil, "a") # append, to keep those settings, but override SOME
 
     ls.write("\n") # never trust the previous file ended with a newline!
     if settings.DEBUG:

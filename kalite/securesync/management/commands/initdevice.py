@@ -23,7 +23,7 @@ def load_data_for_offline_install(in_file):
     """
     Receives a serialized file for import.
     Import the file--nothing more!
-    
+
     File should contain:
     * Central server object
     and, optionally
@@ -35,7 +35,7 @@ def load_data_for_offline_install(in_file):
     assert os.path.exists(in_file), "in_file must exist."
     with open(in_file, "r") as fp:
         models = engine.deserialize(fp.read())  # all must be in a consistent version
-    
+
     # First object should be the central server.
     try:
         central_server = models.next().object
@@ -78,7 +78,7 @@ def confirm_or_generate_zone(invitation=None):
         # Sorry dude, you weren't invited to the party.  You'll have to have your own!
         # Generate a zone (for stand-alone machines)
         call_command("generate_zone")
-        sys.stdout.write("Successfully generated a sharing network, and joined!.\n") 
+        sys.stdout.write("Successfully generated a sharing network, and joined!.\n")
 
     set_as_registered()  # would try to sync
 
@@ -108,8 +108,8 @@ class Command(BaseCommand):
             default=None,
             help='Default facility name'),
         )
-    install_json_filename = "install_data.json"
-    install_json_file = os.path.join(settings.STATIC_ROOT, "data", install_json_filename)
+    data_json_filename = "network_data.json"
+    data_json_file = os.path.join(settings.STATIC_ROOT, "data", data_json_filename)
 
     def handle(self, *args, **options):
         if DeviceMetadata.objects.filter(is_own_device=True).count() > 0:
@@ -117,7 +117,7 @@ class Command(BaseCommand):
 
         name        = args[0] if (len(args) >= 1 and args[0]) else get_host_name()
         description = args[1] if (len(args) >= 2 and args[1]) else ""
-        data_file   = args[2] if (len(args) >= 3 and args[2]) else self.install_json_file
+        data_file   = args[2] if (len(args) >= 3 and args[2]) else self.data_json_file
 
         own_device = Device.initialize_own_device(name=name, description=description)
         self.stdout.write("Device '%s'%s has been successfully initialized.\n"
@@ -141,7 +141,7 @@ class Command(BaseCommand):
                 #if not settings.DEBUG:
                 #    os.remove(data_file)
             except Exception as e:
-                raise CommandError("Error importing offline data from %s: %s\n" % (data_file, str(e))) 
+                raise CommandError("Error importing offline data from %s: %s\n" % (data_file, e))
 
         confirm_or_generate_zone(invitation)
 

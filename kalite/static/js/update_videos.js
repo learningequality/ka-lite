@@ -1,18 +1,23 @@
 // Callback functions
 
+var lastKey = null;
+var nErrors = 0
+
 function video_start_callback(progress_log, resp) {
     if (!progress_log) {
         //handleFailedAPI(resp, "Error starting updates process");
     }
+    lastKey = null;
+    nErrors = 0;
 }
-
-var lastKey = null;
 
 function video_check_callback(progress_log, resp) {
     // When video status is checked
     if (progress_log) { // check succeeded
         // Determine what changed, and what to update
         var currentKey = progress_log.stage_name;
+
+        // update key
         var keyCompleted = null;
         if (currentKey != lastKey) {
             keyCompleted = lastKey;
@@ -20,10 +25,26 @@ function video_check_callback(progress_log, resp) {
             keyCompleted = currentKey;
         }
 
+        var status = progress_log.stage_status;
+
         if (keyCompleted) {
-            // 100% done with the video
-            setNodeClass(keyCompleted, "complete");
+            if (!status) {
+                setNodeClass(keyCompleted, "complete");
+            } else if (status == "error") {
+                // update # errors
+                nErrors++;
+            }
+
             if (progress_log.process_percent == 1.) {
+            // 100% done with the set of videos.  Display based on the total
+
+                if (nErrors != 0) {
+                    // Redisplay the download message as a warning.
+                    set_message("warning", get_message("id_videodownload"), "id_videodownload");
+                    // could show the retry button, but we'd have to store which videos
+                    //   went poorly.
+                }
+
                 // 100% done with ALL videos.
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
@@ -32,6 +53,7 @@ function video_check_callback(progress_log, resp) {
                     $("#cancel-download").hide();
                 }
                 return;
+
             } else if (lastKey != currentKey) {
                 setNodeClass(currentKey, "partial");
             }
@@ -46,6 +68,7 @@ function video_check_callback(progress_log, resp) {
             setNodeClass(currentKey, "partial");
             $("#retry-video-download").hide();
             $("#cancel-download").show();
+            $("#download-videos").removeAttr("disabled");
         }
 
         lastKey = currentKey;
@@ -75,17 +98,6 @@ var URL_CANCEL_VIDEO_DOWNLOADS = "{% url cancel_video_download %}";
 $(function() {
 
     setTimeout(function() {
-        with_online_status("server", function(server_is_online) {
-            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
-            // Best to assume offline, as online check returns much faster than offline check.
-            if(!server_is_online){
-                show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."), "id_offline_message");
-            } else {
-                $(".enable-when-server-online").removeAttr("disabled");
-                clear_message("id_offline_message")
-            }
-        });
-
         doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {}).success(function(treeData) {
             $("#content_tree").dynatree({
                 imagePath:"../images/",
@@ -95,8 +107,8 @@ $(function() {
                 debugLevel: 0,
                 onSelect: function(select, node) {
 
-                    var newVideoCount = getSelectedIncompleteVideoIDs().length;
-                    var oldVideoCount = getSelectedStartedVideoIDs().length;
+                    var newVideoCount = getSelectedIncompleteYoutubeIDs().length;
+                    var oldVideoCount = getSelectedStartedYoutubeIDs().length;
 
                     $("#download-videos").hide();
                     $("#delete-videos").hide();
@@ -131,10 +143,10 @@ $(function() {
     $("#download-videos").click(function() {
         // Prep
         // Get all videos to download
-        var video_ids = getSelectedIncompleteVideoIDs();
+        var youtube_ids = getSelectedIncompleteYoutubeIDs();
 
         // Do the request
-        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: video_ids})
+        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
             .success(function() {
                 handleSuccessAPI("id_video_download");
                 updatesStart("videodownload", 5000, video_callbacks)
@@ -150,7 +162,7 @@ $(function() {
         $("#download-videos").attr("disabled", "disabled");
 
         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-download-videos", "Download Videos", video_ids.length);
+        ga_track("send", "event", "update", "click-download-videos", "Download Videos", youtube_ids.length);
     });
 
     // Delete existing videos
@@ -160,13 +172,13 @@ $(function() {
 
         // Prep
         // Get all videos marked for download
-        var video_ids = getSelectedStartedVideoIDs();
+        var youtube_ids = getSelectedStartedYoutubeIDs();
 
         // Do the request
-        doRequest(URL_DELETE_VIDEOS, {youtube_ids: video_ids})
+        doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
             .success(function() {
                 handleSuccessAPI("id_video_download");
-                $.each(video_ids, function(ind, id) {
+                $.each(youtube_ids, function(ind, id) {
                     setNodeClass(id, "unstarted");
                 });
             })
@@ -179,7 +191,7 @@ $(function() {
         unselectAllNodes();
 
         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", video_ids.length);
+        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
     });
 
     // Cancel current downloads
@@ -239,32 +251,32 @@ function unselectAllNodes() {
 
 function getSelectedIncompleteVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return _.uniq($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) {
         return node.data.addClass != "complete" && node.childList == null;
     }));
 }
 
 function getSelectedStartedVideos() {
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return _.uniq($.grep(arr, function(node) { 
+    return _.uniq($.grep(arr, function(node) {
         return node.data.addClass != "unstarted" && node.childList == null;
     }));
 }
 
-function getSelectedIncompleteVideoIDs() {
+function getSelectedIncompleteYoutubeIDs() {
     var videos = getSelectedIncompleteVideos();
-    var video_ids = _.uniq($.map(videos, function(node) {
+    var youtube_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
-    return video_ids;
+    return youtube_ids;
 }
 
-function getSelectedStartedVideoIDs() {
+function getSelectedStartedYoutubeIDs() {
     var videos = getSelectedStartedVideos();
-    var video_ids = _.uniq($.map(videos, function(node) {
+    var youtube_ids = _.uniq($.map(videos, function(node) {
         return node.data.key;
     }));
-    return video_ids;
+    return youtube_ids;
 }
 
 function withNodes(nodeKey, callback, currentNode) {

@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
@@ -22,6 +22,7 @@ from django.views.decorators.gzip import gzip_page
 
 import settings
 import version
+from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog
 from config.models import Settings
@@ -29,7 +30,7 @@ from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
 from shared.jobs import force_job, job_status
-from shared.topic_tools import get_flat_topic_tree 
+from shared.topic_tools import get_flat_topic_tree
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
@@ -58,11 +59,11 @@ class student_log_api(object):
 @student_log_api(logged_out_message=_("Video progress not saved."))
 def save_video_log(request):
     """
-    Receives a youtube_id and relevant data,
+    Receives a video_id and relevant data,
     saves it to the currently authorized user.
     """
 
-    # Form does all the data validation, including the youtube_id
+    # Form does all the data validation, including the video_id
     form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
         raise ValidationError(form.errors)
@@ -71,6 +72,7 @@ def save_video_log(request):
     try:
         videolog = VideoLog.update_video_log(
             facility_user=user,
+            video_id=data["video_id"],
             youtube_id=data["youtube_id"],
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
@@ -81,7 +83,7 @@ def save_video_log(request):
         return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(user)
+        del request.session["points"]  # will be recomputed when needed
 
     return JsonResponse({
         "points": videolog.points,
@@ -120,8 +122,8 @@ def save_exercise_log(request):
         return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(user)
-        
+        del request.session["points"]  # will be recomputed when needed
+
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
@@ -135,7 +137,7 @@ def save_exercise_log(request):
 @student_log_api(logged_out_message=_("Progress not loaded."))
 def get_video_logs(request):
     """
-    Given a list of youtube_ids, retrieve a list of video logs for this user.
+    Given a list of video_ids, retrieve a list of video logs for this user.
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
@@ -143,8 +145,8 @@ def get_video_logs(request):
 
     user = request.session["facility_user"]
     logs = VideoLog.objects \
-        .filter(user=user, youtube_id__in=data) \
-        .values("youtube_id", "complete", "total_seconds_watched", "points")
+        .filter(user=user, video_id__in=data) \
+        .values("video_id", "complete", "total_seconds_watched", "points")
 
     return JsonResponse(list(logs))
 
@@ -244,10 +246,12 @@ def launch_mplayer(request):
         return JsonResponse({"error": "no youtube_id specified"}, status=500)
 
     youtube_id = request.REQUEST["youtube_id"]
+    video_id = request.REQUEST["video_id"]
     facility_user = request.session.get("facility_user")
 
     callback = partial(
         _update_video_log_with_points,
+        video_id=video_id,
         youtube_id=youtube_id,
         facility_user=facility_user,
         language=request.language,
@@ -258,7 +262,7 @@ def launch_mplayer(request):
     return JsonResponse({})
 
 
-def _update_video_log_with_points(seconds_watched, video_length, youtube_id, facility_user, language):
+def _update_video_log_with_points(seconds_watched, video_id, video_length, youtube_id, facility_user, language):
     """Handle the callback from the mplayer thread, saving the VideoLog. """
     # TODO (bcipolli) add language info here
 
@@ -270,6 +274,7 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
 
     videolog = VideoLog.update_video_log(
         facility_user=facility_user,
+        video_id=video_id,
         youtube_id=youtube_id,
         additional_seconds_watched=seconds_watched,
         new_points=new_points,
@@ -277,7 +282,7 @@ def _update_video_log_with_points(seconds_watched, video_length, youtube_id, fac
     )
 
     if "points" in request.session:
-        request.session["points"] = compute_total_points(facility_user)
+        del request.session["points"]  # will be recomputed when needed
 
 
 def compute_total_points(user):
@@ -315,7 +320,7 @@ def status(request):
         # Note: this duplicates a bit of Django template logic.
         msg_txt = message.message
         if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
-            msg_txt = cgi.escape(str(msg_txt))
+            msg_txt = cgi.escape(unicode(msg_txt))
 
         message_dicts.append({
             "tags": message.tags,
@@ -329,6 +334,7 @@ def status(request):
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
+        "current_language": request.session["django_language"],
         "messages": message_dicts,
     }
     # Override properties using facility data
@@ -355,6 +361,59 @@ def getpid(request):
         return HttpResponse("")
 
 
+@api_handle_error_with_json
 @backend_cache_page
-def flat_topic_tree(request):
-    return JsonResponse(get_flat_topic_tree())
+def flat_topic_tree(request, lang_code):
+
+    if lang_code != request.session.get("django_language"):
+        raise NotImplementedError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current=%(current_lang)s, requested=%(requested_lang)s).") % {
+            "current_lang": request.session.get("django_language"),
+            "requested_lang": lang_code,
+        })
+    return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
+
+
+@api_handle_error_with_json
+@backend_cache_page
+def knowledge_map_json(request, topic_id):
+    """
+    Topic nodes can now have a "knowledge_map" stamped on them.
+    This code currently exposes that data to the kmap-editor code,
+    mostly as it expects it now.
+
+    So this is kind of a hack-ish mix of code that avoids rewriting kmap-editor.js,
+    but allows a cleaner rewrite of the stored data, and bridges the gap between
+    that messiness and the cleaner back-end.
+    """
+
+    # Try and get the requested topic, and make sure it has knowledge map data available.
+    topic = topicdata.NODE_CACHE["Topic"].get(topic_id)
+    if not topic:
+        raise Http404("Topic '%s' not found" % topic_id)
+    elif not "knowledge_map" in topic[0]:
+        raise Http404("Topic '%s' has no knowledge map metadata." % topic_id)
+
+    # For each node (can be of any type now), pull out only
+    #   the relevant data.
+    kmap = topic[0]["knowledge_map"]
+    nodes_out = {}
+    for id, kmap_data in kmap["nodes"].iteritems():
+        cur_node = topicdata.NODE_CACHE[kmap_data["kind"]][id][0]
+        nodes_out[id] = {
+            "id": cur_node["id"],
+            "title": _(cur_node["title"]),
+            "h_position":  kmap_data["h_position"],
+            "v_position": kmap_data["v_position"],
+            "icon_url": cur_node.get("icon_url", cur_node.get("icon_src")),  # messy
+            "path": cur_node["path"],
+        }
+        if not "polylines" in kmap:  # messy
+            # Two ways to define lines:
+            # 1. have "polylines" defined explicitly
+            # 2. use prerequisites to compute lines on the fly.
+            nodes_out[id]["prerequisites"] = cur_node.get("prerequisites", [])
+
+    return JsonResponse({
+        "nodes": nodes_out,
+        "polylines": kmap.get("polylines"),  # messy
+    })
