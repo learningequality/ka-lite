@@ -17,7 +17,7 @@ import os
 import shutil
 from optparse import make_option
 
-from django.core import management
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
@@ -91,10 +91,10 @@ def run_makemessages():
     logging.info("Executing makemessages command")
     # Generate english po file
     ignore_pattern = ['python-packages/*']
-    management.call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
     # Generate english po file for javascript
     ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*']
-    management.call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
 
 
 def update_templates():

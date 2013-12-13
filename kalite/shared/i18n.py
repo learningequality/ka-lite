@@ -33,6 +33,8 @@ SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
+CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
+
 def get_language_pack_availability_filepath(ver=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, ver, "language_pack_availability.json")
 
@@ -64,18 +66,32 @@ def get_dubbed_video_map(lang_code=None, force=False):
     Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
     """
     global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW, DUBBED_VIDEOS_MAPPING_FILEPATH
+
     if DUBBED_VIDEO_MAP is None or force:
         try:
-            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
-                if settings.CENTRAL_SERVER:
-                    # Never call commands that could fail from the distributed server.
-                    #   Always create a central server API to abstract things (see below)
-                    call_command("generate_dubbed_video_mappings")
-                else:
-                    response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
-                    response.raise_for_status()
-                    with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
-                        fp.write(response.content)  # wait until content has been confirmed before opening file.
+            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
+                try:
+                    if settings.CENTRAL_SERVER:
+                        # Never call commands that could fail from the distributed server.
+                        #   Always create a central server API to abstract things (see below)
+                        call_command("generate_dubbed_video_mappings")
+                    else:
+                        # Generate from the spreadsheet
+                        response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
+                        response.raise_for_status()
+                        with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
+                            fp.write(response.content)  # wait until content has been confirmed before opening file.
+                except Exception as e:
+                    if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
+                        # Unrecoverable error, so raise
+                        raise
+                    elif DUBBED_VIDEO_MAP:
+                        # No need to recover--allow the downstream dude to catch the error.
+                        raise
+                    else:
+                        # We can recover by NOT forcing reload.
+                        logging.warn("%s" % e)
+
             with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
                 DUBBED_VIDEO_MAP_RAW = json.load(fp)
         except:
