@@ -11,6 +11,8 @@ NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us). However,
 import glob
 import os
 import shutil
+import stat
+import subprocess
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -19,6 +21,7 @@ import settings
 from settings import LOG as logging
 from shared.topic_tools import get_topic_videos, get_node_cache
 from shared.i18n import get_dubbed_video_map, lcode_to_ietf
+from utils.general import ensure_dir
 from utils.videos import get_outside_video_urls
 
 
@@ -101,14 +104,20 @@ def scrape_video(youtube_id, format="mp4", force=False):
     if os.path.exists(video_filepath) and not force:
         return
 
-    # Step 1: install youtube-dl
-    if os.system("which youtube-dl > /dev/null"):
-        logging.info("Downloading youtube-dl")
-        os.system("sudo curl https://yt-dl.org/downloads/2013.12.03/youtube-dl -o /usr/local/bin/youtube-dl")
+    # Step 1: find or install the youtube-dl binary
+    yt_dl_bin, _ = subprocess.Popen(['which', 'youtube-dl'], stdout=subprocess.PIPE).communicate()
+    if not yt_dl_bin:           # install youtube-dl into scripts dir
+        yt_dl_bin = os.path.join(settings.SCRIPTS_PATH, 'youtube-dl')
+        if not os.path.exists(yt_dl_bin):
+            logging.info("No youtube-dl binary found. Installing...")
+            ensure_dir(settings.SCRIPTS_PATH)
+            subprocess.call(['curl', 'https://yt-dl.org/downloads/2013.12.03/youtube-dl', '-o', yt_dl_bin])
+            os.chmod(yt_dl_bin, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)  #  set correct permissions
+            logging.info("youtube-dl binary installed at %s" % yt_dl_bin)
 
     logging.info("Retrieving youtube video %s" % youtube_id)
-    os.system("youtube-dl  --id -f %s www.youtube.com/watch?v=%s" % (format, youtube_id))
-    os.system("youtube-dl  --write-thumbnail -k --id -f %s www.youtube.com/watch?v=%s" % (format, youtube_id))
+    subprocess.call([yt_dl_bin, '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
+    subprocess.call([yt_dl_bin, '--id', '-k', '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
 
     for fil in glob.glob(youtube_id + ".*"):
         if not os.path.exists(os.path.join(settings.CONTENT_ROOT, fil)):

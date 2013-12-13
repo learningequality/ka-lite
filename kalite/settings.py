@@ -83,6 +83,8 @@ PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.pat
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
+SCRIPTS_PATH   = getattr(local_settings, "SCRIPTS_PATH", os.path.join(PROJECT_PATH, '..', 'scripts'))
+
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),

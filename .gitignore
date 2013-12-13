@@ -38,3 +38,4 @@ writeup/
 /kalite/static/subtitles
 /kalite/private_key.pem
 /kalite/secrets.py
+/scripts/youtube-dl
