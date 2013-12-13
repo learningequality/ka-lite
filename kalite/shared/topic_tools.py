@@ -49,9 +49,9 @@ KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS, map_layout_file
     if KNOWLEDGEMAP_TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, map_layout_file), "r") as fp:
-            kmap = json.load(fp)
-        KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
+        root_node = get_topic_tree(force=force)
+        sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
+        KNOWLEDGEMAP_TOPICS =  [k[0] for k in sorted_items]
     return KNOWLEDGEMAP_TOPICS
 
 

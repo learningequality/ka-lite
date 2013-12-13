@@ -118,7 +118,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         raise Http404("User not found.")
 
     node_cache = get_node_cache()
-    topic_ids = [t["id"] for t in get_knowledgemap_topics()]
+    topic_ids = get_knowledgemap_topics()
     topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
@@ -251,7 +251,7 @@ def tabular_view(request, facility, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = get_knowledgemap_topics()
+    topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
