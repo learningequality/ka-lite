@@ -218,6 +218,7 @@ class Command(BaseCommand):
 
         # Step 0: refresh all resources
         get_dubbed_video_map(force=True)  # force a remote download
+
         # Step 1: recursively add all static files
         kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
         files_dict = recursively_add_files(dirpath=kalite_base, **options)

@@ -1,12 +1,14 @@
 """
 Utility functions for i18n related tasks on the distributed server
 """
+import bisect
 import glob
 import json
 import os
 import re
 import requests
 import shutil
+from collections import OrderedDict
 
 from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
@@ -248,12 +250,11 @@ def get_lang_map_filepath(lang_code):
     return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
 
 
-def get_languages_on_disk():
+def get_installed_language_packs():
     """
     On-disk method to show currently installed languages and meta data.
     """
-    raise Exception("NYI; this needs to validate that all the parts are in the right places (mo and srt), and should be moved into a languagepackscan command--the only place it's relevant.")
-    installed_languages = []
+    sorted_list = []
 
     # Loop through locale folders
     for locale_dir in settings.LOCALE_PATHS:
@@ -261,18 +262,20 @@ def get_languages_on_disk():
             continue
 
         # Loop through folders in each locale dir
-        for lang in os.listdir(locale_dir):
+        for django_disk_code in os.listdir(locale_dir):
+
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
-                with open(os.path.join(locale_dir, lang, "%s_metadata.json" % lang), "r") as fp:
+                metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % django_disk_code)
+                with open(metadata_filepath, "r") as fp:
                     lang_meta = json.load(fp)
-            except:
-                lang_meta = {}
-            lang = lang_meta
-            installed_languages.append(lang)
+            except Exception as e:
+                logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
+                continue
 
-    # return installed_languages
-    return installed_languages
+            bisect.insort_left(sorted_list, lang_meta)
+
+    return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 
 
 def get_subtitles_on_disk(youtube_id):

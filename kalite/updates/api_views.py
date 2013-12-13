@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
+from i18n.middleware import set_language_choices
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.topic_tools import get_topic_tree
@@ -178,8 +179,8 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    installed = request.session['language_choices'] = list(get_installed_language_packs())
-    return JsonResponse(installed)
+    set_language_choices(request, force=True)
+    return JsonResponse(request.session['language_choices'].values())
 
 
 @require_admin
