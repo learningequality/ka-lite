@@ -35,12 +35,10 @@ SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.js
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 
+LOCALE_ROOT = settings.LOCALE_PATHS[0]
+
 def get_language_pack_availability_filepath(ver=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, ver, "language_pack_availability.json")
-
-
-
-LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 def get_language_pack_metadata_filepath(lang_code):
     lang_code = lcode_to_django_dir(lang_code)

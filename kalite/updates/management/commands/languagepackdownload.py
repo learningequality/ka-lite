@@ -16,7 +16,8 @@ import settings
 import version
 from .classes import UpdatesStaticCommand
 from settings import LOG as logging
-from shared.i18n import LOCALE_ROOT, lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
+from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url
 from utils.general import ensure_dir
 
 
@@ -41,8 +42,8 @@ class Command(UpdatesStaticCommand):
     stages = (
         "download_language_pack",
         "unpack_language_pack",
-        "update_database",
         "add_js18n_file",
+        "move_files",
     )
 
     def handle(self, *args, **options):
@@ -70,8 +71,11 @@ class Command(UpdatesStaticCommand):
             self.next_stage("Creating static files for language pack '%s'" % lang_code)
             update_jsi18n_file(lang_code)
 
-            #
+
+            self.next_stage("Moving files to their appropriate local disk locations.")
+            move_dubbed_video_map(lang_code)
             move_srts(lang_code)
+
             self.complete("Finished processing language pack %s" % lang_code)
         except Exception as e:
             self.cancel(stage_status="error", notes="Error: %s" % e)
@@ -101,6 +105,15 @@ def unpack_language(lang_code, zip_file):
     ## Unpack into temp dir
     z = zipfile.ZipFile(StringIO(zip_file))
     z.extractall(os.path.join(LOCALE_ROOT, lang_code))
+
+def move_dubbed_video_map(lang_code):
+    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    dvm_filepath = os.path.join(lang_pack_location, "dubbed_videos", os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
+    if not os.path.exists(dvm_filepath):
+        logging.error("Could not find downloaded dubbed video filepath: %s")
+    else:
+        ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
+        shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
 
 def move_srts(lang_code):
     """
