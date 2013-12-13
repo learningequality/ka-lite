@@ -41,7 +41,6 @@ import settings
 import version
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR, DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
@@ -403,10 +402,13 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
 
 
 def get_po_metadata(pofilename):
-    pofile = polib.pofile(pofilename)
-
-    nphrases = len(pofile)
-    ntranslations = sum([int(po.msgid != po.msgstr) for po in pofile])
+    if not pofilename or not os.path.exists(pofilename):
+        nphrases = 0
+        ntranslations = 0
+    else:
+        pofile = polib.pofile(pofilename)
+        nphrases = len(pofile)
+        ntranslations = sum([int(po.msgid != po.msgstr) for po in pofile])
 
     return { "ntranslations": ntranslations, "nphrases": nphrases }
 
@@ -511,7 +513,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
             if "ntranslations" in lang_entry and "nphrases" in lang_entry:
                 nphrases = lang_entry["nphrases"]
                 ntranslations = lang_entry["ntranslations"]
-                percent_translated = 100. * ntranslations / float(nphrases)
+                percent_translated = 100. * ntranslations / float(nphrases) if nphrases else 0  # for when language isn't even recognized
 
             else:
                 nphrases = crowdin_meta.get("phrases", 0)

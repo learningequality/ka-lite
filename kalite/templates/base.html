@@ -165,10 +165,6 @@
                                 <option value="{{ lang.code }}" {% if lang.code == current_language %}selected{% endif %}>{{ lang.name }}</option>
                                 {% endfor %}
                             </select>
-                            {% if current_language != default_language %}
-                                <input type="checkbox" class="admin-only" id="make_default_language"/>
-                                <label class="admin-only" for="make_default_language">{% trans "Use this language as the default" %}</label>
-                            {% endif %}
                         </form>
                         {% endif %}
                     {% endblock footerleft %}
