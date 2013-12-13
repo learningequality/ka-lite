@@ -398,10 +398,13 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
 
 
 def get_po_metadata(pofilename):
-    pofile = polib.pofile(pofilename)
-
-    nphrases = len(pofile)
-    ntranslations = sum([int(po.msgid != po.msgstr) for po in pofile])
+    if not pofilename or not os.path.exists(pofilename):
+        nphrases = 0
+        ntranslations = 0
+    else:
+        pofile = polib.pofile(pofilename)
+        nphrases = len(pofile)
+        ntranslations = sum([int(po.msgid != po.msgstr) for po in pofile])
 
     return { "ntranslations": ntranslations, "nphrases": nphrases }
 
@@ -506,7 +509,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
             if "ntranslations" in lang_entry and "nphrases" in lang_entry:
                 nphrases = lang_entry["nphrases"]
                 ntranslations = lang_entry["ntranslations"]
-                percent_translated = 100. * ntranslations / float(nphrases)
+                percent_translated = 100. * ntranslations / float(nphrases) if nphrases else 0  # for when language isn't even recognized
 
             else:
                 nphrases = crowdin_meta.get("phrases", 0)
