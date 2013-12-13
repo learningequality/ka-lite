@@ -13,13 +13,13 @@ NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us).
 import datetime
 import json
 import os
+import requests
 import sys
 import tempfile
 
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
 
 import settings
 from settings import LOG as logging
@@ -54,13 +54,14 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
         else:
             # Pull it from the central server
             try:
+                logging.debug("Fetching central server's srt availability file.")
                 resp = requests.get("http://kalite.learningequality.org/media/testing/%s" % (os.path.basename(map_file)))
                 resp.raise_for_status()
                 with open(map_file, "w") as fp:
                     fp.write(resp.content)
                 srts_dict = json.loads(resp.content)
             except Exception as e:
-                logging.error("Failed to download TRUE central server's srts availability file.")
+                logging.error("Failed to download TRUE central server's srts availability file: %s" % e)
                 srts_dict = {}
 
     else:

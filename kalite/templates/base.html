@@ -161,14 +161,10 @@
                         {% if language_choices %}
                         <form id="language-preferences" >
                             <select id="language_selector">
-                                {% for lang in language_choices %}
-                                <option value="{{ lang.code }}" {% if lang.code == current_language %}selected{% endif %}>{{ lang.name }}</option>
+                                {% for lang_code, lang_meta in language_choices.iteritems %}
+                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{{ lang_meta.name }}</option>
                                 {% endfor %}
                             </select>
-                            {% if current_language != default_language %}
-                                <input type="checkbox" class="admin-only" id="make_default_language"/>
-                                <label class="admin-only" for="make_default_language">{% trans "Use this language as the default" %}</label>
-                            {% endif %}
                         </form>
                         {% endif %}
                     {% endblock footerleft %}
