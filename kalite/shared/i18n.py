@@ -49,13 +49,11 @@ def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL
     else:
         return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", ka_lang_code)
 
-
 def get_srt_path_on_disk(youtube_id, code, is_central_server=settings.CENTRAL_SERVER):
     if is_central_server:
         return os.path.join(LOCALE_ROOT, code, "subtitles", youtube_id + ".srt")
     else:
         return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
-
 
 def get_language_pack_metadata_filepath(lang_code):
     lang_code = lcode_to_django_dir(lang_code)
