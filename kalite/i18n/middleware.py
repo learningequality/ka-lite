@@ -3,10 +3,9 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
 import settings
-from .models import LanguagePack
 from config.models import Settings
 from settings import LOG as logging
-from shared.i18n import lcode_to_django_lang, lcode_to_ietf
+from shared.i18n import lcode_to_django_lang, lcode_to_ietf, get_installed_language_packs
 
 
 class SessionLanguage:
@@ -53,7 +52,7 @@ class SessionLanguage:
 
         if "language_choices" not in request.session:
             # Set the set of available languages
-            request.session["language_choices"] = list(LanguagePack.objects.all())
+            request.session["language_choices"] = get_installed_language_packs()
 
         if "set_default_language" in request.GET:
             # Set the current server default language, and redirect (to clean browser history)

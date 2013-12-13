@@ -178,8 +178,8 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    installed = request.session['language_choices'] = list(get_installed_language_packs())
-    return JsonResponse(installed)
+    request.session['language_choices'] = get_installed_language_packs()
+    return JsonResponse(request.session['language_choices'].values())
 
 
 @require_admin
