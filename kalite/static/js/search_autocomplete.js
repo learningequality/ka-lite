@@ -130,7 +130,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = sprintf(gettext("<li class='autocomplete %(nodetype)s %(nodeavailable)savailable'>%(nodetitle)s</li>"), { nodetype : node.type, nodeavailable : (node.available ? "" : "un"), nodetitle : node.title});
+                var label = "<li class='autocomplete " + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</li>";
                 results.push({
                     label: label,
                     value: node.title
