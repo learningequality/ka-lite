@@ -22,6 +22,8 @@ from shared.topic_tools import get_node_cache
 from shared.i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang, get_localized_exercise_dirpath
 from utils.general import ensure_dir
 
+AVAILABLE_EXERCISE_LANGUAGE_CODES = ["da", "he", "pt-BR", "tr", "es", "fr"]
+
 class Command(BaseCommand):
     help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitles/srts_download_status.json"
 
@@ -63,15 +65,20 @@ class Command(BaseCommand):
         if not options["lang_code"]:
             raise CommandError("You must specify a language code.")
 
-        # Get list of exercises
-        lang_code = lcode_to_ietf(options["lang_code"])
-        exercise_ids = options["exercise_ids"].split(",") if options["exercise_ids"] else None
-        exercise_ids = exercise_ids or ([ex["id"] for ex in get_topic_exercises(topic_id=options["topic_id"])] if options["topic_id"] else None)
-        exercise_ids = exercise_ids or get_node_cache("Exercise").keys()
 
-        # Download the exercises
-        for exercise_id in exercise_ids:
-            scrape_exercise(exercise_id=exercise_id, lang_code=lang_code, force=options["force"])
+        lang_code = lcode_to_ietf(options["lang_code"])
+        if lang_code not in AVAILABLE_EXERCISE_LANGUAGE_CODES:
+            logging.info("No exercises available for language %s" % lang_code)
+
+        else:
+            # Get list of exercises
+            exercise_ids = options["exercise_ids"].split(",") if options["exercise_ids"] else None
+            exercise_ids = exercise_ids or ([ex["id"] for ex in get_topic_exercises(topic_id=options["topic_id"])] if options["topic_id"] else None)
+            exercise_ids = exercise_ids or get_node_cache("Exercise").keys()
+
+            # Download the exercises
+            for exercise_id in exercise_ids:
+                scrape_exercise(exercise_id=exercise_id, lang_code=lang_code, force=options["force"])
 
         logging.info("Process complete.")
 
