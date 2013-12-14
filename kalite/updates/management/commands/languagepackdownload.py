@@ -52,11 +52,7 @@ class Command(UpdatesStaticCommand):
 
         lang_code = lcode_to_ietf(options["lang_code"])
         software_version = options["software_version"]
-        if lcode_to_django_dir(lang_code) == settings.LANGUAGE_CODE:
-            logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % lang_code)
-        if software_version == version.VERSION:
-            logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
-
+        logging.info("Downloading language pack for lang_code=%s, software_version=%s" % (lang_code, software_version))
 
         # Download the language pack
         try:
@@ -113,6 +109,7 @@ def move_dubbed_video_map(lang_code):
     if not os.path.exists(dvm_filepath):
         logging.error("Could not find downloaded dubbed video filepath: %s" % dvm_filepath)
     else:
+        logging.debug("Moving dubbed video map to %s" % DUBBED_VIDEOS_MAPPING_FILEPATH)
         ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
         shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
 
@@ -122,8 +119,13 @@ def move_exercises(lang_code):
     if not os.path.exists(src_exercise_dir):
         logging.warn("Could not find downloaded exercises; skipping: %s" % src_exercise_dir)
     else:
-        logging.info("Moving downloaded exercises to %s" % dest_exercise_dir)
-        shutil.move(src_exercise_dir, dest_exercise_dir)
+        # Move over one at a time, to combine with any other resources that were there before.
+        ensure_dir(dest_exercise_dir)
+        all_exercise_files = glob.glob(os.path.join(src_exercise_dir, "*.html"))
+        logging.info("Moving %d downloaded exercises to %s" % (len(all_exercise_files), dest_exercise_dir))
+
+        for exercise_file in all_exercise_files:
+            shutil.move(exercise_file, os.path.join(dest_exercise_dir, os.path.basename(exercise_file)))
 
 def move_srts(lang_code):
     """
@@ -139,7 +141,7 @@ def move_srts(lang_code):
     ensure_dir(srt_static_dir)
 
     lang_subtitles = glob.glob(os.path.join(srt_locale_dir, "*.srt"))
-    logging.debug("Moving %d subtitles from %s to %s" % (len(lang_subtitles), srt_locale_dir, srt_static_dir))
+    logging.info("Moving %d subtitles to %s" % (len(lang_subtitles), srt_static_dir))
 
     for fil in lang_subtitles:
         srt_dest_path = os.path.join(srt_static_dir, os.path.basename(fil))

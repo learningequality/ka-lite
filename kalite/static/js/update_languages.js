@@ -151,10 +151,12 @@ $(function() {
 
         if (found) {
             var langdata = matching_installable[0];
-            $("#lp-num-srts").text(sprintf("%d", langdata["subtitle_count"]));
-            $("#lp-pct-trans").text(sprintf("%5.2f%%", langdata["percent_translated"]));
-            $("#lp-down-size").text(sprintf("%5.2f MB", langdata["zip_size"]/1.0E6));
-            $("#lp-disk-size").text(sprintf("%5.2f MB", langdata["package_size"]/1.0E6));
+            // For each of the following, || 0 will return 0 if the quantity is undefined.
+            $("#lp-num-srts").text(sprintf("%d", langdata["subtitle_count"] || 0));
+            $("#lp-pct-trans").text(sprintf("%5.2f%%", langdata["percent_translated"] || 0));
+            $("#lp-down-size").text(sprintf("%5.2f MB", langdata["zip_size"]/1.0E6 || 0));
+            $("#lp-disk-size").text(sprintf("%5.2f MB", langdata["package_size"]/1.0E6 || 0));
+            $("#lp-num-exers").text(sprintf("%d", langdata["num_exercises"] || 0));
         }
         $("#langpack-details").toggle(found);
     });
