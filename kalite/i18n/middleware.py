@@ -67,7 +67,6 @@ def set_language_data(request):
         return HttpResponseRedirect(redirect_url)
 
     elif "set_language" in request.GET:
-        import pdb; pdb.set_trace()
         # Set the current user's session language, and redirect (to clean browser history)
         set_default_language(request, request.GET["set_language"], global_set=(request.is_logged_in and not request.is_django_user))
 

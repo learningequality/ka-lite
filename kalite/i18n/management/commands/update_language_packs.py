@@ -625,8 +625,6 @@ def increment_language_pack_version(local_meta, updated_meta):
 (start over if software version has incremented)
     """
     for att in VERSION_CHANGING_ATTRIBUTES:
-        if att not in updated_meta:
-            import pdb; pdb.set_trace()
         assert att in updated_meta, "All VERSION_CHANGING_ATTRIBUTES must be set (%s is not?)" % att
 
     if not local_meta or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
