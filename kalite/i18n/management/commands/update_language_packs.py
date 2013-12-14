@@ -85,6 +85,11 @@ class Command(BaseCommand):
                     dest='no_dubbed',
                     default=False,
                     help='Do not refresh Khan Academy dubbed video mappings.'),
+        make_option('--no-update',
+                    action='store_true',
+                    dest='no_update',
+                    default=False,
+                    help='Do not refresh any resources before packaging.'),
         make_option('--zip_file',
                     action='store',
                     dest='zip_file',
@@ -116,13 +121,13 @@ class Command(BaseCommand):
         package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
 
         # Update all the latest srts
-        if not options['no_srts']:
+        if not options['no_srts'] and not options['no_update']:
             update_srts(days=options["days"], lang_codes=lang_codes)
         for lang_code in lang_codes:
             package_metadata[lang_code]["subtitle_count"] = get_subtitle_count(lang_code)
 
         # Update the dubbed video mappings
-        if not options['no_dubbed']:
+        if not options['no_dubbed'] and not options['no_update']:
             get_dubbed_video_map(force=True)
         for lang_code in lang_codes:
             dv_map = get_dubbed_video_map(lang_code)
@@ -130,7 +135,7 @@ class Command(BaseCommand):
 
         # Update the exercises
         for lang_code in lang_codes:
-            if not options['no_exercises']:
+            if not options['no_exercises'] and not options['no_update']:
                 call_command("scrape_exercises", lang_code=lang_code)
             package_metadata[lang_code]["num_exercises"] = get_localized_exercise_count(lang_code)
 
@@ -139,7 +144,7 @@ class Command(BaseCommand):
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=not options['no_ka'],
+            download_ka_translations=not options['no_ka'] and not options['no_update'],
             use_local=options["use_local"],
         )
         for lang_code in lang_codes:
@@ -380,9 +385,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             if filter_type == "ka":
 
                 src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
-                src_po_files = filter(lambda fn: os.path.basename(fn).startswith("learn."), src_po_files)
-                src_po_files = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files]) > 1, src_po_files)
-                src_po_files = [po + ".po" for po in src_po_files]
+
+                # Stream 1
+                src_po_files_learn = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn.", "content.chrome", "_other_"]]), src_po_files)
+                src_po_files_learn = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files_learn]) > 1, src_po_files_learn)
+
+                # Stream 2
+                src_po_files_extra = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
+
+                src_po_files = [po + ".po" for po in src_po_files_learn + src_po_files_extra]
 
                 # before we call msgcat, process each exercise po file and leave out only the metadata
                 for exercise_po in get_exercise_po_files(src_po_files):
@@ -532,11 +543,9 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
         except Exception as e:
             logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
             local_meta = {}
-        print local_meta
 
         try:
             updated_meta = package_metadata.get(lang_code_ietf, {})
-
             updated_meta.update({
                 "code": lang_code_ietf,  # user-facing code
                 "name": lang_name,
@@ -550,6 +559,8 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
         language_pack_version = increment_language_pack_version(local_meta, updated_meta)
         updated_meta["language_pack_version"] = language_pack_version
         local_meta.update(updated_meta)
+
+        logging.debug("%s" % local_meta)
 
         # Write locally (this is used on download by distributed server to update it's database)
         with open(metadata_filepath, 'w') as output:
