@@ -385,9 +385,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             if filter_type == "ka":
 
                 src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
-                src_po_files = filter(lambda fn: os.path.basename(fn).startswith("learn."), src_po_files)
-                src_po_files = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files]) > 1, src_po_files)
-                src_po_files = [po + ".po" for po in src_po_files]
+
+                # Stream 1
+                src_po_files_learn = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn.", "content.chrome", "_other_"]]), src_po_files)
+                src_po_files_learn = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files_learn]) > 1, src_po_files_learn)
+
+                # Stream 2
+                src_po_files_extra = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
+
+                src_po_files = [po + ".po" for po in src_po_files_learn + src_po_files_extra]
 
                 # before we call msgcat, process each exercise po file and leave out only the metadata
                 for exercise_po in get_exercise_po_files(src_po_files):
