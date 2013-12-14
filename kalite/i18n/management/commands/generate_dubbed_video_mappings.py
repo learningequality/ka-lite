@@ -6,6 +6,7 @@ import datetime
 import json
 import os
 import requests
+from optparse import make_option
 from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
@@ -102,13 +103,21 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
 class Command(BaseCommand):
     help = "Make a dictionary of english video=>dubbed video mappings, from the online Google Docs spreadsheet."
 
+    option_list = BaseCommand.option_list + (
+        make_option('--force',
+                    action='store_true',
+                    dest='force',
+                    default=False,
+                    help='Force reload of spreadsheet'),
+    )
+
     def handle(self, *args, **options):
 
         # Get the CSV data, either from a recent cache_file
         #   or from the internet
         cache_dir = settings.MEDIA_ROOT
         cache_file = os.path.join(cache_dir, "dubbed_videos.csv")
-        if os.path.exists(cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(cache_file)), units="days") <= 14.0:
+        if not options["force"] and os.path.exists(cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(cache_file)), units="days") <= 14.0:
             # Use cached data to generate the video map
             csv_data = open(cache_file, "r").read()
             (video_map, _) = generate_dubbed_video_mappings(csv_data=csv_data)

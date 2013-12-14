@@ -40,15 +40,14 @@ import polib
 import settings
 import version
 from settings import LOG as logging
-
 from shared.i18n import LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR, DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
+from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_localized_exercise_dirpath, get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths, get_subtitle_count, get_localized_exercise_count
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
 
 # Attributes whose value, if changed, should change the version of the language pack.
-VERSION_CHANGING_ATTRIBUTES = ["approved_translations", "phrases", "subtitle_count"]
+VERSION_CHANGING_ATTRIBUTES = ["approved_translations", "phrases", "subtitle_count", "num_dubbed_videos", "num_exercises"]
 
 class Command(BaseCommand):
     help = 'Updates all language packs'
@@ -70,12 +69,27 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='no_srts',
                     default=False,
-                    help='Do not download and bundle video subtitles.'),
+                    help='Do not refresh video subtitles before bundling.'),
         make_option('--no_ka',
                     action='store_true',
                     dest='no_ka',
                     default=False,
-                    help='Do not include Khan Academy content translations.'),
+                    help='Do not refresh Khan Academy content translations before bundling.'),
+        make_option('--no-exercises',
+                    action='store_true',
+                    dest='no_exercises',
+                    default=False,
+                    help='Do not refresh Khan Academy exercises before bundling.'),
+        make_option('--no-dubbed',
+                    action='store_true',
+                    dest='no_dubbed',
+                    default=False,
+                    help='Do not refresh Khan Academy dubbed video mappings.'),
+        make_option('--no-update',
+                    action='store_true',
+                    dest='no_update',
+                    default=False,
+                    help='Do not refresh any resources before packaging.'),
         make_option('--zip_file',
                     action='store',
                     dest='zip_file',
@@ -104,28 +118,47 @@ class Command(BaseCommand):
 
         upgrade_old_schema()
 
+        package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
+
         # Update all the latest srts
-        if not options['no_srts']:
+        if not options['no_srts'] and not options['no_update']:
             update_srts(days=options["days"], lang_codes=lang_codes)
+        for lang_code in lang_codes:
+            package_metadata[lang_code]["subtitle_count"] = get_subtitle_count(lang_code)
 
         # Update the dubbed video mappings
-        get_dubbed_video_map(force=True)
+        if not options['no_dubbed'] and not options['no_update']:
+            get_dubbed_video_map(force=True)
+        for lang_code in lang_codes:
+            dv_map = get_dubbed_video_map(lang_code)
+            package_metadata[lang_code]["num_dubbed_videos"] = len(dv_map) if dv_map else 0
+
+        # Update the exercises
+        for lang_code in lang_codes:
+            if not options['no_exercises'] and not options['no_update']:
+                call_command("scrape_exercises", lang_code=lang_code)
+            package_metadata[lang_code]["num_exercises"] = get_localized_exercise_count(lang_code)
 
         # Update the crowdin translations
-        update_translations(
+        (trans_metadata, broken_langs) = update_translations(
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=not options['no_ka'],
+            download_ka_translations=not options['no_ka'] and not options['no_update'],
             use_local=options["use_local"],
         )
+        for lang_code in lang_codes:
+            package_metadata[lang_code].update(trans_metadata.get(lang_code, {}))
+
+        # Loop through new UI translations & subtitles, create/update unified meta data
+        generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, package_metadata=package_metadata)
 
         # Zip
         package_sizes = zip_language_packs(lang_codes=lang_codes)
         logging.debug("Package sizes: %s" % package_sizes)
 
         # Loop through new UI translations & subtitles, create/update unified meta data
-        update_metadata(sizes=package_sizes)
+        update_metadata(package_sizes)
 
 
 def update_srts(days, lang_codes):
@@ -171,10 +204,10 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
                 zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
             )
             kalite_metadata = get_po_metadata(kalite_po_file)
-            package_metadata[lang_code]["ntranslations"] = kalite_metadata["ntranslations"]
-            package_metadata[lang_code]["nphrases"]      = kalite_metadata["nphrases"]
-            package_metadata[lang_code]["kalite_ntranslations"] = kalite_metadata["ntranslations"]
-            package_metadata[lang_code]["kalite_nphrases"]      = kalite_metadata["nphrases"]
+            package_metadata[lang_code]["approved_translations"] = kalite_metadata["approved_translations"]
+            package_metadata[lang_code]["phrases"]               = kalite_metadata["phrases"]
+            package_metadata[lang_code]["kalite_ntranslations"]  = kalite_metadata["approved_translations"]
+            package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
 
             # Download Khan Academy translations too
             if download_ka_translations:
@@ -191,10 +224,10 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
                     download_type="ka",
                 )
                 ka_metadata = get_po_metadata(combined_po_file)
-                package_metadata[lang_code]["ntranslations"] = ka_metadata["ntranslations"]
-                package_metadata[lang_code]["nphrases"]      = ka_metadata["nphrases"]
-                package_metadata[lang_code]["ka_ntranslations"] = ka_metadata["ntranslations"] - package_metadata[lang_code]["kalite_ntranslations"]
-                package_metadata[lang_code]["ka_nphrases"]      = ka_metadata["nphrases"] - package_metadata[lang_code]["kalite_nphrases"]
+                package_metadata[lang_code]["approved_translations"] = ka_metadata["approved_translations"]
+                package_metadata[lang_code]["phrases"]               = ka_metadata["phrases"]
+                package_metadata[lang_code]["ka_ntranslations"]      = ka_metadata["approved_translations"] - package_metadata[lang_code]["kalite_ntranslations"]
+                package_metadata[lang_code]["ka_nphrases"]           = ka_metadata["phrases"] - package_metadata[lang_code]["kalite_nphrases"]
 
             # Now that we have metadata, compress by removing non-translated "translations"
 
@@ -202,10 +235,7 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
     (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
     broken_langs = handle_po_compile_errors(lang_codes=lang_codes, out=out, err=err, rc=rc)
 
-    # Loop through new UI translations & subtitles, create/update unified meta data
-    logging.debug("Language metadata: %s" % package_metadata)
-    generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, added_ka=download_ka_translations, package_metadata=package_metadata)
-
+    return (package_metadata, broken_langs)
 
 
 def upgrade_old_schema():
@@ -322,8 +352,8 @@ def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=setti
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
-    resp = requests.get(request_url)
     try:
+        resp = requests.get(request_url)
         resp.raise_for_status()
     except Exception as e:
         logging.error(e)
@@ -418,7 +448,7 @@ def get_po_metadata(pofilename):
         nphrases = len(pofile)
         ntranslations = sum([int(po.msgid != po.msgstr) for po in pofile])
 
-    return { "ntranslations": ntranslations, "nphrases": nphrases }
+    return { "approved_translations": ntranslations, "phrases": nphrases }
 
 
 def remove_exercise_nonmetadata(pofilename):
@@ -471,7 +501,7 @@ def all_po_files(dir):
             yield os.path.join(current_dir, po_file)
 
 
-def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, package_metadata=None):
+def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None):
     """Loop through locale folder, create or update language specific meta
     and create or update master file, skipping broken languages
 
@@ -490,8 +520,6 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
 
     # loop through all languages in locale, update master file
     crowdin_meta_dict = download_crowdin_metadata()
-    with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
-        subtitle_counts = json.load(fp)
 
     for lc in lang_codes:
         lang_code_django = lcode_to_django_dir(lc)
@@ -517,33 +545,11 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
             local_meta = {}
 
         try:
-            lang_entry = package_metadata.get(lang_code_ietf, {})
-            if "ntranslations" in lang_entry and "nphrases" in lang_entry:
-                nphrases = lang_entry["nphrases"]
-                ntranslations = lang_entry["ntranslations"]
-                percent_translated = 100. * ntranslations / float(nphrases) if nphrases else 0  # for when language isn't even recognized
-
-            else:
-                nphrases = crowdin_meta.get("phrases", 0)
-                ntranslations = crowdin_meta.get("approved", 0)
-                percent_translated = crowdin_meta.get("approved_progress", 0)
-
-            # update metadata
-            updated_meta = {
-                "code": lcode_to_ietf(crowdin_meta.get("code") or lang_code_django),  # user-facing code
-                "name": (crowdin_meta.get("name") or lang_name),
-                "percent_translated": percent_translated,
-                "phrases": int(nphrases),
-                "approved_translations": int(ntranslations),
-            }
-
-            # Obtain current number of subtitles
-            entry = subtitle_counts.get(lang_name, {})
-            srt_count = entry.get("count", 0)
-
+            updated_meta = package_metadata.get(lang_code_ietf, {})
             updated_meta.update({
+                "code": lang_code_ietf,  # user-facing code
+                "name": lang_name,
                 "software_version": version.VERSION,
-                "subtitle_count": srt_count,
             })
 
         except LanguageNotFoundError:
@@ -553,6 +559,8 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
         language_pack_version = increment_language_pack_version(local_meta, updated_meta)
         updated_meta["language_pack_version"] = language_pack_version
         local_meta.update(updated_meta)
+
+        logging.debug("%s" % local_meta)
 
         # Write locally (this is used on download by distributed server to update it's database)
         with open(metadata_filepath, 'w') as output:
@@ -568,7 +576,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
     logging.info("Local record of translations updated")
 
 
-def update_metadata(sizes):
+def update_metadata(updated_metadata):
     """
     We've zipped the packages, and now have unzipped & zipped sizes.
     Update this info in the local metadata (but not inside the zip)
@@ -580,7 +588,7 @@ def update_metadata(sizes):
         logging.warn("Error opening language pack metadata: %s; resetting" % e)
         master_metadata = {}
 
-    for lc, sz in sizes.iteritems():
+    for lc, meta in updated_metadata.iteritems():
         lang_code_ietf = lcode_to_ietf(lc)
 
         # Gather existing metadata
@@ -592,8 +600,8 @@ def update_metadata(sizes):
             logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
             continue
 
-        local_meta["package_size"] = sz["package_size"]
-        local_meta["zip_size"] = sz["zip_size"]
+        for att, val in meta.iteritems():
+            local_meta[att] = val
 
         # Write locally (this is used on download by distributed server to update it's database)
         with open(metadata_filepath, 'w') as output:
@@ -690,6 +698,13 @@ def zip_language_packs(lang_codes=None):
             # Get every single subtitle
             filepath = os.path.join(lang_locale_path, srt_file)
             z.write(filepath, arcname=os.path.join("subtitles", os.path.basename(srt_file)))
+            sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
+
+        exercises_dirpath = get_localized_exercise_dirpath(lang_code_ietf)
+        for exercise_file in glob.glob(os.path.join(exercises_dirpath, "*.html")):
+            # Get every single compiled language file
+            filepath = os.path.join(exercises_dirpath, exercise_file)
+            z.write(filepath, arcname=os.path.join("exercises", os.path.basename(exercise_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         # Add dubbed video map

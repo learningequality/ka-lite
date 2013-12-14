@@ -10,6 +10,7 @@ import requests
 import shutil
 from collections import OrderedDict
 
+from django.core.management import call_command
 from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
 
@@ -37,8 +38,22 @@ CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
+
 def get_language_pack_availability_filepath(ver=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, ver, "language_pack_availability.json")
+
+def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL_SERVER):
+    ka_lang_code = lang_code.lower()
+    if is_central_server:
+        return os.path.join(LOCALE_ROOT, ka_lang_code, "exercises")
+    else:
+        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", ka_lang_code)
+
+def get_srt_path_on_disk(youtube_id, code, is_central_server=settings.CENTRAL_SERVER):
+    if is_central_server:
+        return os.path.join(LOCALE_ROOT, code, "subtitles", youtube_id + ".srt")
+    else:
+        return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
 
 def get_language_pack_metadata_filepath(lang_code):
     lang_code = lcode_to_django_dir(lang_code)
@@ -72,7 +87,8 @@ def get_dubbed_video_map(lang_code=None, force=False):
                     if settings.CENTRAL_SERVER:
                         # Never call commands that could fail from the distributed server.
                         #   Always create a central server API to abstract things (see below)
-                        call_command("generate_dubbed_video_mappings")
+                        logging.debug("Generating dubbed video mappings.")
+                        call_command("generate_dubbed_video_mappings", force=force)
                     else:
                         # Generate from the spreadsheet
                         response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
@@ -92,7 +108,8 @@ def get_dubbed_video_map(lang_code=None, force=False):
 
             with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
                 DUBBED_VIDEO_MAP_RAW = json.load(fp)
-        except:
+        except Exception as e:
+            logging.info("Failed to get dubbed video mappings; defaulting to empty.")
             DUBBED_VIDEO_MAP_RAW = {}  # setting this will avoid triggering reload on every call
 
         DUBBED_VIDEO_MAP = {}
@@ -142,9 +159,15 @@ def get_video_id(youtube_id):
 def get_srt_url(youtube_id, code):
     return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, youtube_id)
 
-def get_srt_path_on_disk(youtube_id, code):
-    return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
+def get_localized_exercise_count(lang_code, is_central_server=settings.CENTRAL_SERVER):
+    exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=is_central_server)
+    all_exercises = glob.glob(os.path.join(exercise_dir, "*.html"))
+    return len(all_exercises)
 
+def get_subtitle_count(lang_code, is_central_server=settings.CENTRAL_SERVER):
+    subtitle_dir = os.path.dirname(get_srt_path_on_disk("foo", lang_code, is_central_server=is_central_server))
+    all_srts = glob.glob(os.path.join(subtitle_dir, "*.srt"))
+    return len(all_srts)
 
 CODE2LANG_MAP = None
 def get_code2lang_map(lang_code=None, force=False):
