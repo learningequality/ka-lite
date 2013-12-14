@@ -120,7 +120,7 @@ var TotalPointView = Backbone.View.extend({
 
         // only display the points if they are greater than zero, and the user is logged in
         if (points > 0 && this.model.get("is_logged_in")) {
-            this.$el.text(gettext("Total Points") + ": " + points);
+            this.$el.text(sprintf(gettext("Total Points : %(points)d "), { points : points }));
             this.$el.show();
         } else {
             this.$el.hide();
@@ -162,7 +162,7 @@ $(function(){
             toggle_state("admin", data.is_admin);
             if (data.is_logged_in){
                 if (data.is_admin) {
-                    $('#nav_logout').text(data.username + " (" +  gettext("Logout") + ")");
+                    $('#nav_logout').text(sprintf(gettext("%(username)s (Logout)"), { username : data.username }));
                 }
                 else {
                     $('#logged-in-name').text(data.username);

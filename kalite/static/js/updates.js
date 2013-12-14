@@ -161,7 +161,7 @@ function updatesCheck(process_name, interval) {
                     show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]", "id_" + process_name);
                     updatesReset(process_name);
                 } else if (progress_log.process_name) {
-                    show_message("error", gettext("Error during update") + ": " + progress_log.notes, "id_" + process_name);
+                    show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }), "id_" + process_name);
                     updatesReset(process_name);
                 } else {
                 }
@@ -174,7 +174,7 @@ function updatesCheck(process_name, interval) {
                 message = getttext("Could not connect to the server.");
             }
 
-            show_message("error", gettext("Error while checking update status") + ": " + message, "id_" + process_name);
+            show_message("error", sprintf(gettext("Error while checking update status: %(message)s"), { message : message }), "id_" + process_name);
 
             // Do callbacks
             if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
