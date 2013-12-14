@@ -40,12 +40,15 @@ import polib
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import get_language_pack_availability_filepath, LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR
-from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_language_pack_metadata_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
+
+from shared.i18n import LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR, DUBBED_VIDEOS_MAPPING_FILEPATH
+from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths
 from update_po import compile_po_files
 from utils.general import ensure_dir, version_diff
 
 
+# Attributes whose value, if changed, should change the version of the language pack.
+VERSION_CHANGING_ATTRIBUTES = ["approved_translations", "phrases", "subtitle_count"]
 
 class Command(BaseCommand):
     help = 'Updates all language packs'
@@ -101,18 +104,28 @@ class Command(BaseCommand):
 
         upgrade_old_schema()
 
-        # Raw language code for srts
+        # Update all the latest srts
         if not options['no_srts']:
             update_srts(days=options["days"], lang_codes=lang_codes)
 
-        # Converted language code for language packs
-        update_language_packs(
+        # Update the dubbed video mappings
+        get_dubbed_video_map(force=True)
+
+        # Update the crowdin translations
+        update_translations(
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
             download_ka_translations=not options['no_ka'],
             use_local=options["use_local"],
         )
+
+        # Zip
+        package_sizes = zip_language_packs(lang_codes=lang_codes)
+        logging.debug("Package sizes: %s" % package_sizes)
+
+        # Loop through new UI translations & subtitles, create/update unified meta data
+        update_metadata(sizes=package_sizes)
 
 
 def update_srts(days, lang_codes):
@@ -130,7 +143,7 @@ def update_srts(days, lang_codes):
         call_command("cache_subtitles", date_since_attempt=date)
 
 
-def update_language_packs(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
+def update_translations(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
 
     logging.info("Downloading %s language(s)" % lang_codes)
 
@@ -193,12 +206,6 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
     logging.debug("Language metadata: %s" % package_metadata)
     generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, added_ka=download_ka_translations, package_metadata=package_metadata)
 
-    # Zip
-    package_sizes = zip_language_packs(lang_codes=lang_codes)
-    logging.debug("Package sizes: %s" % package_sizes)
-
-    # Loop through new UI translations & subtitles, create/update unified meta data
-    update_metadata(sizes=package_sizes)
 
 
 def upgrade_old_schema():
@@ -544,7 +551,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, added_ka=False, packag
             continue
 
         language_pack_version = increment_language_pack_version(local_meta, updated_meta)
-        updated_meta["language_pack_version"] = language_pack_version + int(added_ka)
+        updated_meta["language_pack_version"] = language_pack_version
         local_meta.update(updated_meta)
 
         # Write locally (this is used on download by distributed server to update it's database)
@@ -606,10 +613,13 @@ def download_crowdin_metadata(project_id=settings.CROWDIN_PROJECT_ID, project_ke
     """Return tuple in format (total_strings, total_translated, percent_translated)"""
 
     request_url = "http://api.crowdin.net/api/project/%s/status?key=%s&json=True" % (project_id, project_key)
-    resp = requests.get(request_url)
-    resp.raise_for_status()
-
-    crowdin_meta_dict = json.loads(resp.content)
+    try:
+        resp = requests.get(request_url)
+        resp.raise_for_status()
+        crowdin_meta_dict = json.loads(resp.content)
+    except Exception as e:
+        logging.error("Error getting crowdin metadata: %s" % e)
+        crowdin_meta_dict = {}
     return crowdin_meta_dict
 
 
@@ -617,13 +627,24 @@ def increment_language_pack_version(local_meta, updated_meta):
     """Increment language pack version if translations have been updated
 (start over if software version has incremented)
     """
+    for att in VERSION_CHANGING_ATTRIBUTES:
+        assert att in updated_meta, "All VERSION_CHANGING_ATTRIBUTES must be set (%s is not?)" % att
+
     if not local_meta or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
         # set to one for the first time, or if this is the first build of a new software version
+        logging.info("Setting %s language pack version to 1" % local_meta["code"])
         language_pack_version = 1
-    elif local_meta.get("total_translated") == updated_meta.get("approved") and local_meta.get("subtitle_count") == updated_meta.get("subtitle_count"):
-        language_pack_version = local_meta.get("language_pack_version") or 1
+
     else:
-        language_pack_version = local_meta.get("language_pack_version") + 1
+        # Search for any attributes that would cause a version change.
+        language_pack_version = local_meta.get("language_pack_version", 1)
+
+        for att in VERSION_CHANGING_ATTRIBUTES:
+            if local_meta.get(att) != updated_meta.get(att):
+                language_pack_version += 1
+                logging.debug("Increasing %s language pack version to %d" % (local_meta["code"], language_pack_version))
+                break
+
     return language_pack_version
 
 
@@ -653,21 +674,27 @@ def zip_language_packs(lang_codes=None):
         logging.info("Creating zip file in %s" % zip_filepath)
         z = zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED)
 
-        # Get every single file in the directory and zip it up
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
+            # Get every single file in the directory and zip it up
             filepath = os.path.join(lang_locale_path, metadata_file)
             z.write(filepath, arcname=os.path.basename(metadata_file))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
+            # Get every single compiled language file
             filepath = os.path.join(lang_locale_path, mo_file)
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         for srt_file in glob.glob('%s/subtitles/*.srt' % lang_locale_path):
+            # Get every single subtitle
             filepath = os.path.join(lang_locale_path, srt_file)
             z.write(filepath, arcname=os.path.join("subtitles", os.path.basename(srt_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
+
+        # Add dubbed video map
+        z.write(DUBBED_VIDEOS_MAPPING_FILEPATH, arcname=os.path.join("dubbed_videos", os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH)))
+        sizes[lang_code_ietf]["package_size"] += os.path.getsize(DUBBED_VIDEOS_MAPPING_FILEPATH)
 
         z.close()
         sizes[lang_code_ietf]["zip_size"]= os.path.getsize(zip_filepath)

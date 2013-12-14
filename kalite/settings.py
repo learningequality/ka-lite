@@ -190,10 +190,10 @@ INSTALLED_APPS = (
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
+    "updates",  #
+    "i18n",  #
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
-
-INSTALLED_APPS += ('i18n',)
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -219,7 +219,6 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS += ("i18n", "updates",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
         "securesync.middleware.FacilityCheck",
