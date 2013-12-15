@@ -86,7 +86,15 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, facility, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context["title"] = _("Timeline plot")
+    try:
+        context["title"] = _(u"%(yaxis_name)s over time") % {
+            "yaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == yaxis][0],
+        }
+    except:
+        pass
+    return context
 
 
 @require_authorized_admin
@@ -94,7 +102,16 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, facility, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context["title"] = _("Scatter plot")
+    try:
+        context["title"] = _(u"%(yaxis_name)s versus %(xaxis_name)s") % {
+            "xaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == xaxis][0],
+            "yaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == yaxis][0],
+        }
+    except:
+        pass
+    return context
 
 
 @require_authorized_access_to_student_data

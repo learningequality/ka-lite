@@ -51,6 +51,7 @@
 
     <div class="download-actions vertical-shadow">
         <h2>{% trans "Installed Language Packs" %}
+            {# Translators: this text is a link; when clicked, admins will be able to manage locally installed resources. #}
           <a href="{% url update_languages %}">({% trans "Manage" %})</a>
         </h2>
         {% if not languages %}
