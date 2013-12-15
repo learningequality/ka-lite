@@ -69,6 +69,9 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
         try:
             with open(map_file, "r") as fp:
                 srts_dict = json.load(fp)
+        except ValueError as ve:
+            # Unrecoverable data corruption; what could we do but start from scratch :'(
+            raise CommandError("Likely json corruption of %s; best option may be to delete.  Raw error: %s" % (map_file, ve))
         except Exception as e:
             if not force:  # only handle the error if force=True.  Otherwise, these data are too valuable to lose, so just assume a temp problem.
                 raise
@@ -156,22 +159,21 @@ def update_video_entry(youtube_id, entry={}):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = make_request(AMARA_HEADERS, request_url)
+    resp = make_request(AMARA_HEADERS, request_url)
     # add api response first to prevent empty json on errors
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
-    if isinstance(r, basestring):  # string responses mean some type of error
-        logging.info("%s at %s" % (r, request_url))
-        entry["api_response"] = r
+    if isinstance(resp, basestring):  # string responses mean some type of error
+        entry["api_response"] = resp
         return entry
 
     try:
-        content = json.loads(r.content)
+        content = json.loads(resp.content)
         assert "objects" in content  # just index in, to make sure the expected data is there.
         assert len(content["objects"]) == 1
         languages = content["objects"][0]["languages"]
     except Exception as e:
-        logging.warn("%s: Could not load json response: %s" % (youtube_id, e))
+        logging.warn("Error updating video entry %s: Could not load json response: %s" % (youtube_id, e))
         entry["api_response"] = "client-error"
         return entry
 

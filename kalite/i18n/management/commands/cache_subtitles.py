@@ -178,7 +178,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
         response = download_subtitle(youtube_id, lang_code, format="srt")
         time_of_attempt = unicode(datetime.datetime.now().date())
 
-        if response == "client-error" or response == "server-error":
+        if isinstance(response, basestring):
             # Couldn't download
             logging.info("%s/%s.srt: Updating JSON file to record error (%s)." % (
                 lang_code, youtube_id, response,
@@ -239,7 +239,7 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     resp = make_request(AMARA_HEADERS, "%s/%s/languages/%s/subtitles/?format=srt" % (
         base_url, amara_code, lang_code.lower(),
     ))
-    if isinstance(resp, basestring) or not resp:
+    if isinstance(resp, basestring):
         return resp
     else:
         # return the subtitle text, replacing empty subtitle lines with

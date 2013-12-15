@@ -209,9 +209,12 @@ def make_request(headers, url, max_retries=5):
     """Return response from url; retry up to 5 times for server errors.
     When returning an error, return human-readable status code.
 
-    codes: server-error, client-error
+    codes: server-error, client-error, unexpected-error
     """
+    assert max_retries >= 0, "max_retries must be non-negative."  # guarantees response will never be None
+
     response = None
+    last_error = None
     for retries in range(1, 1 + max_retries):
         try:
             response = requests.get(url, headers=headers)
@@ -233,6 +236,11 @@ def make_request(headers, url, max_retries=5):
             else:
                 break
         except Exception as e:
-            logging.warn("Unexpected Error downloading %s: %s" % (url, e))
+            if response is None:
+                response = "unexpected-error"
+            cur_error = unicode(e.message)
+            if not last_error or last_error != cur_error:
+                logging.warn(u"Unexpected Error downloading %s: %s" % (url, cur_error))
+            last_error = cur_error
 
     return response
