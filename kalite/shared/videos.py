@@ -8,6 +8,8 @@ from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
 
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "content", "video_file_sizes.json")
+
 def download_video(youtube_id, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
 
