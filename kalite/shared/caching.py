@@ -26,13 +26,13 @@ from utils.internet import generate_all_paths
 # Signals
 
 @receiver(post_save, sender=VideoFile)
-def my_handler1(sender, **kwargs):
+def invalidate_on_video_update(sender, **kwargs):
     """
     Listen in to see when videos become available.
     """
     # Can only do full check in Django 1.5+, but shouldn't matter--we should only save with
     # percent_complete == 100 once.
-    just_now_available = kwargs["instance"].percent_complete == 100 #and "percent_complete" in kwargs["updated_fields"]
+    just_now_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100 #and "percent_complete" in kwargs["updated_fields"]
     if just_now_available:
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
@@ -40,11 +40,11 @@ def my_handler1(sender, **kwargs):
         invalidate_all_pages_related_to_video(video_id=i18n.get_video_id(kwargs["instance"].youtube_id))
 
 @receiver(pre_delete, sender=VideoFile)
-def my_handler2(sender, **kwargs):
+def invalidate_on_video_delete(sender, **kwargs):
     """
     Listen in to see when available videos become unavailable.
     """
-    was_available = kwargs["instance"].percent_complete == 100
+    was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
     if was_available:
         logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
         invalidate_all_pages_related_to_video(video_id=i18n.get_video_id(kwargs["instance"].youtube_id))
