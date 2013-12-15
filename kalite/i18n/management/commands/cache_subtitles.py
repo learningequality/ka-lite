@@ -178,7 +178,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
         response = download_subtitle(youtube_id, lang_code, format="srt")
         time_of_attempt = unicode(datetime.datetime.now().date())
 
-        if isinstance(response, basestring):
+        if response in ["client-error", "server-error", "unexpected_error"]:
             # Couldn't download
             logging.info("%s/%s.srt: Updating JSON file to record error (%s)." % (
                 lang_code, youtube_id, response,
@@ -221,7 +221,7 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     """
     Return subtitles for YouTube ID in language specified. Return False if they do not exist. Update local JSON accordingly.
 
-    Note: srt map deals with amara, so uses ietf codes (e.g. en-us)
+    Note: srt map deals with amara, so uses lower-cased ietf codes (e.g. en-us)
     """
     assert format == "srt", "We only support srt download at the moment."
 
