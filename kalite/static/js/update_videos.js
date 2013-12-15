@@ -295,9 +295,10 @@ function getSelectedMetadata(vid_type, data_type) {
     var videos = getSelectedVideos(vid_type);
     var metadata = _.uniq($.map(videos, function(node) {
         switch (data_type) {
-            case null: return node.data;
+            case null:
+            case undefined: return node.data;
             case "youtube_id": return node.data.key;
-            default: assert(false, sprintf("Unknown ata type: %s", data_type)); break;
+            default: assert(false, sprintf("Unknown data type: %s", data_type)); break;
         }
     }));
     return metadata;
