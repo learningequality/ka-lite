@@ -69,6 +69,9 @@ class Command(BaseCommand):
         if not options["lang_code"]:
             raise CommandError("You must specify a language code.")
 
+        #
+        ensure_dir(settings.CONTENT_ROOT)
+
         # Get list of videos
         lang_code = lcode_to_ietf(options["lang_code"])
         video_map = get_dubbed_video_map(lang_code) or {}
@@ -98,7 +101,6 @@ class Command(BaseCommand):
         logging.info("Process complete.")
 
 def scrape_video(youtube_id, format="mp4", force=False):
-
     video_filename = "%s.%s" % (youtube_id, format)
     video_filepath = os.path.join(settings.CONTENT_ROOT, video_filename)
     if os.path.exists(video_filepath) and not force:
@@ -106,7 +108,9 @@ def scrape_video(youtube_id, format="mp4", force=False):
 
     # Step 1: find or install the youtube-dl binary
     yt_dl_bin, _ = subprocess.Popen(['which', 'youtube-dl'], stdout=subprocess.PIPE).communicate()
-    if not yt_dl_bin:           # install youtube-dl into scripts dir
+    if yt_dl_bin:
+        yt_dl_bin = yt_dl_bin.strip()
+    else:           # install youtube-dl into scripts dir
         yt_dl_bin = os.path.join(settings.SCRIPTS_PATH, 'youtube-dl')
         if not os.path.exists(yt_dl_bin):
             logging.info("No youtube-dl binary found. Installing...")
