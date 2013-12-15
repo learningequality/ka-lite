@@ -90,7 +90,7 @@ def run_makemessages():
     """Run makemessages command for english po files"""
     logging.info("Executing makemessages command")
     # Generate english po file
-    ignore_pattern = ['python-packages/*']
+    ignore_pattern = ['python-packages/*'] + ['kalite/%s/*' % dirname for dirname in ['central', 'contact', 'faq', 'registration', 'tests', 'stats']]
     call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
     # Generate english po file for javascript
     ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*', 'kalite/static/js/khan-exercises/*']
