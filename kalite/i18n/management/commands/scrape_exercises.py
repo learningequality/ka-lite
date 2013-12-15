@@ -84,6 +84,7 @@ class Command(BaseCommand):
 
 def scrape_exercise(exercise_id, lang_code, force=False):
     ka_lang_code = lang_code.lower()
+    ietf_lang_code = lcode_to_ietf(lang_code)
 
     exercise_filename = "%s.%s" % (exercise_id, "html")
     exercise_localized_root = get_localized_exercise_dirpath(ka_lang_code)
@@ -92,7 +93,7 @@ def scrape_exercise(exercise_id, lang_code, force=False):
     if os.path.exists(exercise_dest_filepath) and not force:
         return
 
-    exercise_url = "https://es.khanacademy.org/khan-exercises/exercises/%s.html?lang=%s" % (exercise_id, ka_lang_code)
+    exercise_url = "https://es.khanacademy.org/khan-exercises/exercises/%s.html?lang=%s" % (exercise_id, ietf_lang_code)
     logging.info("Retrieving exercise %s from %s" % (exercise_id, exercise_url))
 
     try:
