@@ -10,8 +10,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from utils.general import ensure_dir
 from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH
+from utils.general import ensure_dir, softload_json
 
 
 class Command(BaseCommand):
@@ -24,12 +24,7 @@ class Command(BaseCommand):
         if settings.CENTRAL_SERVER:
             raise CommandError("Run this command on the distributed server only.")
 
-        try:
-            with open(REMOTE_VIDEO_SIZE_FILEPATH, "r") as fp:
-                video_sizes = json.load(fp)
-        except Exception as e:
-            logging.debug("Error loading %s: %s" % (REMOTE_VIDEO_SIZE_FILEPATH, e))
-            video_sizes = {}
+        video_sizes= softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
 
         all_video_filepaths = glob.glob(os.path.join(settings.CONTENT_ROOT, "*.mp4"))
         logging.info("Querying sizes for %d video(s)." % len(all_video_filepaths))
