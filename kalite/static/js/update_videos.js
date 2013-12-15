@@ -111,18 +111,35 @@ $(function() {
                     var oldVideoMetadata = getSelectedStartedMetadata()
                     var newVideoCount    = newVideoMetadata.length;
                     var oldVideoCount    = oldVideoMetadata.length;
+                    var newVideoSize     = _(newVideoMetadata).reduce(function(memo, meta) {
+                        // Reduce to compute sum
+                        return memo + meta.size;
+                    }, 0);
+                    var oldVideoSize     = _(oldVideoMetadata).reduce(function(memo, meta) {
+                        return memo + meta.size;
+                    }, 0);
 
-                    $("#download-videos").hide();
-                    $("#delete-videos").hide();
                     $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
                     $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
 
-                    if (newVideoCount > 0) {
-                        $(".new-video-count").text(newVideoCount);
+                    if (newVideoCount == 0) {
+                        $("#download-videos").hide();
+                    } else {
+                        $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected videos (%(vid_size).1f %(vid_size_units)s)"), {
+                            vid_count: newVideoCount,
+                            vid_size: (newVideoSize < Math.pow(2, 10)) ? newVideoSize : newVideoSize / Math.pow(2, 10),
+                            vid_size_units: (newVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
+                        }));
                         $("#download-videos").show();
                     }
-                    if (oldVideoCount > 0) {
-                        $(".old-video-count").text(oldVideoCount);
+                    if (oldVideoCount == 0) {
+                        $("#delete-videos").hide();
+                    } else {
+                        $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected videos (%(vid_size).1f %(vid_size_units)s)"), {
+                            vid_count: oldVideoCount,
+                            vid_size: (oldVideoSize < 2) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
+                            vid_size_units: (oldVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
+                        }));
                         $("#delete-videos").show();
                     }
                 },
@@ -256,7 +273,7 @@ function getSelectedVideos(vid_type) {
     switch (vid_type) {
         case "started": avoid_type = "unstarted"; break;
         case "incomplete": avoid_type ="complete"; break;
-        default: assert(false, sprintf("Unknown vid type: %s", vid_type); break;
+        default: assert(false, sprintf("Unknown vid type: %s", vid_type)); break;
     }
 
     var arr = $("#content_tree").dynatree("getSelectedNodes");
@@ -280,7 +297,7 @@ function getSelectedMetadata(vid_type, data_type) {
         switch (data_type) {
             case null: return node.data;
             case "youtube_id": return node.data.key;
-            default: assert(false, sprintf("Unknown ata type: %s", data_type); break;
+            default: assert(false, sprintf("Unknown ata type: %s", data_type)); break;
         }
     }));
     return metadata;

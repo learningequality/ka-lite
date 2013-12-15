@@ -3,6 +3,7 @@
 import datetime
 import dateutil.parser
 import json
+import os
 import re
 import math
 from annoying.functions import get_object_or_None
@@ -19,10 +20,11 @@ import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from i18n.middleware import set_language_choices
+from settings import LOG as logging
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.topic_tools import get_topic_tree
-from shared.videos import delete_downloaded_files
+from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
@@ -195,7 +197,7 @@ def start_languagepack_download(request):
         return JsonResponse({'success': True})
 
 
-def annotate_topic_tree(node, level=0, statusdict=None):
+def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None):
     if not statusdict:
         statusdict = {}
 
@@ -203,9 +205,11 @@ def annotate_topic_tree(node, level=0, statusdict=None):
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
+
         children = []
         unstarted = True
         complete = True
+
         for child_node in node["children"]:
             child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
             if child:
@@ -217,6 +221,7 @@ def annotate_topic_tree(node, level=0, statusdict=None):
                 if child["addClass"] == "complete":
                     unstarted = False
                 children.append(child)
+
         return {
             "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
@@ -231,20 +236,28 @@ def annotate_topic_tree(node, level=0, statusdict=None):
         #statusdict contains an item for each video registered in the database
         # will be {} (empty dict) if there are no videos downloaded yet
         percent = statusdict.get(node["youtube_id"], 0)
+        vid_size = None
+        status = None
+
         if not percent:
             status = "unstarted"
+            vid_size = get_remote_video_size(node["youtube_id"], 0) / float(2**20)  # express in MB
         elif percent == 100:
             status = "complete"
+            vid_size = get_local_video_size(node["youtube_id"], 0) / float(2**20)  # express in MB
         else:
             status = "partial"
+
         return {
             "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "key": node["youtube_id"],
             "addClass": status,
+            "size": vid_size,
         }
 
     return None
+
 
 @require_admin
 @api_handle_error_with_json
