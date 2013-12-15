@@ -193,6 +193,9 @@ function select_update_elements(process_name, selector) {
 function updateDisplay(process_name, progress_log) {
     window.progress_log = progress_log;
     window.process_name = process_name;
+
+    clear_message("id_" + process_name);
+
     if (progress_log.completed) {
         select_update_elements(process_name, ".progress-section").hide();
     } else if (progress_log.total_stages) {
