@@ -231,10 +231,10 @@ def make_request(headers, url, max_retries=5):
                 ))
                 response = "client-error"
                 break
-            # TODO(dylan): if internet connection goes down, we aren't catching
-            # that, and things just break
             else:
+                # Success case
                 break
+
         except Exception as e:
             if response is None:
                 response = "unexpected-error"
