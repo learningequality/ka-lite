@@ -171,7 +171,7 @@ function updatesCheck(process_name, interval) {
             var message = resp.responseText || gettext("problem on server.");
 
             if (resp.state() == "rejected") {
-                message = getttext("Could not connect to the server.");
+                message = gettext("Could not connect to the server.");
             }
 
             show_message("error", sprintf(gettext("Error while checking update status: %(message)s"), { message : message }), "id_" + process_name);
