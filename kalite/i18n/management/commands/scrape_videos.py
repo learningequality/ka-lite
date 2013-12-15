@@ -100,28 +100,37 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
-def scrape_video(youtube_id, format="mp4", force=False):
+def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
+    """
+    Assumes it's in the path; if not, we try to download & install.
+    """
     video_filename = "%s.%s" % (youtube_id, format)
     video_filepath = os.path.join(settings.CONTENT_ROOT, video_filename)
     if os.path.exists(video_filepath) and not force:
         return
 
     # Step 1: find or install the youtube-dl binary
-    yt_dl_bin, _ = subprocess.Popen(['which', 'youtube-dl'], stdout=subprocess.PIPE).communicate()
-    if yt_dl_bin:
-        yt_dl_bin = yt_dl_bin.strip()
-    else:           # install youtube-dl into scripts dir
-        yt_dl_bin = os.path.join(settings.SCRIPTS_PATH, 'youtube-dl')
-        if not os.path.exists(yt_dl_bin):
+    try:
+        logging.info("Retrieving youtube video %s" % youtube_id)
+        subprocess.call([yt_dl_bin, '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
+        subprocess.call([yt_dl_bin, '--id', '-k', '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
+    except OSError as oe:
+        if oe.errno != 2: # only hit the roll-our-own / install code for a very specific error.
+            raise
+
+        # Below here: try to use / install a local copy of youtube-dl
+        new_bin = os.path.join(settings.SCRIPTS_PATH, 'youtube-dl')
+        assert yt_dl_bin != new_bin, "Recursive call should never get us here."
+
+        if not os.path.exists(new_bin):
             logging.info("No youtube-dl binary found. Installing...")
             ensure_dir(settings.SCRIPTS_PATH)
-            subprocess.call(['curl', 'https://yt-dl.org/downloads/2013.12.03/youtube-dl', '-o', yt_dl_bin])
-            os.chmod(yt_dl_bin, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)  #  set correct permissions
-            logging.info("youtube-dl binary installed at %s" % yt_dl_bin)
+            subprocess.call(['curl', 'https://yt-dl.org/downloads/2013.12.03/youtube-dl', '-o', new_bin])
+            os.chmod(new_bin, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)  #  set correct permissions
+            logging.info("youtube-dl binary installed at %s" % new_bin)
 
-    logging.info("Retrieving youtube video %s" % youtube_id)
-    subprocess.call([yt_dl_bin, '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
-    subprocess.call([yt_dl_bin, '--id', '-k', '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
+        # Recursive call
+        return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin)
 
     for fil in glob.glob(youtube_id + ".*"):
         if not os.path.exists(os.path.join(settings.CONTENT_ROOT, fil)):
