@@ -107,8 +107,10 @@ $(function() {
                 debugLevel: 0,
                 onSelect: function(select, node) {
 
-                    var newVideoCount = getSelectedIncompleteYoutubeIDs().length;
-                    var oldVideoCount = getSelectedStartedYoutubeIDs().length;
+                    var newVideoMetadata = getSelectedIncompleteMetadata();
+                    var oldVideoMetadata = getSelectedStartedMetadata()
+                    var newVideoCount    = newVideoMetadata.length;
+                    var oldVideoCount    = oldVideoMetadata.length;
 
                     $("#download-videos").hide();
                     $("#delete-videos").hide();
@@ -143,7 +145,7 @@ $(function() {
     $("#download-videos").click(function() {
         // Prep
         // Get all videos to download
-        var youtube_ids = getSelectedIncompleteYoutubeIDs();
+        var youtube_ids = getSelectedIncompleteMetadata("youtube_id");
 
         // Do the request
         doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
@@ -172,7 +174,7 @@ $(function() {
 
         // Prep
         // Get all videos marked for download
-        var youtube_ids = getSelectedStartedYoutubeIDs();
+        var youtube_ids = getSelectedStarted("youtube_id");
 
         // Do the request
         doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
@@ -249,34 +251,46 @@ function unselectAllNodes() {
     });
 }
 
-function getSelectedIncompleteVideos() {
+function getSelectedVideos(vid_type) {
+    var avoid_type = null;
+    switch (vid_type) {
+        case "started": avoid_type = "unstarted"; break;
+        case "incomplete": avoid_type ="complete"; break;
+        default: assert(false, sprintf("Unknown vid type: %s", vid_type); break;
+    }
+
     var arr = $("#content_tree").dynatree("getSelectedNodes");
     return _.uniq($.grep(arr, function(node) {
-        return node.data.addClass != "complete" && node.childList == null;
+        return node.data.addClass != avoid_type && node.childList == null;
     }));
+}
+
+
+function getSelectedIncompleteVideos() {
+    return getSelectedVideos("incomplete");
 }
 
 function getSelectedStartedVideos() {
-    var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return _.uniq($.grep(arr, function(node) {
-        return node.data.addClass != "unstarted" && node.childList == null;
-    }));
+    return getSelectedVideos("started");
 }
 
-function getSelectedIncompleteYoutubeIDs() {
-    var videos = getSelectedIncompleteVideos();
-    var youtube_ids = _.uniq($.map(videos, function(node) {
-        return node.data.key;
+function getSelectedMetadata(vid_type, data_type) {
+    var videos = getSelectedVideos(vid_type);
+    var metadata = _.uniq($.map(videos, function(node) {
+        switch (data_type) {
+            case null: return node.data;
+            case "youtube_id": return node.data.key;
+            default: assert(false, sprintf("Unknown ata type: %s", data_type); break;
+        }
     }));
-    return youtube_ids;
+    return metadata;
+}
+function getSelectedIncompleteMetadata(data_type) {
+    return getSelectedMetadata("incomplete", data_type);
 }
 
-function getSelectedStartedYoutubeIDs() {
-    var videos = getSelectedStartedVideos();
-    var youtube_ids = _.uniq($.map(videos, function(node) {
-        return node.data.key;
-    }));
-    return youtube_ids;
+function getSelectedStartedMetadata(data_type) {
+    return getSelectedMetadata("started", data_type);
 }
 
 function withNodes(nodeKey, callback, currentNode) {
