@@ -4,6 +4,7 @@ Miscellaneous utility functions (no dependence on non-standard packages, such as
 General string, integer, date functions.
 """
 import datetime
+import json
 import logging
 import requests
 import os
@@ -236,3 +237,14 @@ def make_request(headers, url, max_retries=5):
             logging.warn("Unexpected Error downloading %s: %s" % (url, e))
 
     return response
+
+def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    try:
+        with open(json_filepath, "r") as fp:
+            return json.load(fp)
+    except Exception as e:
+        if logger:
+            logger("%s %s: %s" % (errmsg, json_filepath, e))
+        if raises:
+            raise
+        return default

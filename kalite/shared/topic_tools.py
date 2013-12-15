@@ -11,6 +11,8 @@ from django.utils.translation import ugettext as _
 import settings
 from settings import LOG as logging
 from shared import i18n, khanload
+from utils.general import softload_json
+
 
 topics_file = "topics.json"
 
@@ -20,8 +22,7 @@ TOPICS          = None
 def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, topics_file), "r") as fp:
-            TOPICS = json.load(fp)
+        TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
