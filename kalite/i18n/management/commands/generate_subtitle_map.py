@@ -150,22 +150,21 @@ def update_video_entry(youtube_id, entry={}):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = make_request(AMARA_HEADERS, request_url)
+    resp = make_request(AMARA_HEADERS, request_url)
     # add api response first to prevent empty json on errors
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
-    if isinstance(r, basestring):  # string responses mean some type of error
-        logging.info("%s at %s" % (r, request_url))
-        entry["api_response"] = r
+    if isinstance(resp, basestring):  # string responses mean some type of error
+        entry["api_response"] = resp
         return entry
 
     try:
-        content = json.loads(r.content)
+        content = json.loads(resp.content)
         assert "objects" in content  # just index in, to make sure the expected data is there.
         assert len(content["objects"]) == 1
         languages = content["objects"][0]["languages"]
     except Exception as e:
-        logging.warn("%s: Could not load json response: %s" % (youtube_id, e))
+        logging.warn("Error updating video entry %s: Could not load json response: %s" % (youtube_id, e))
         entry["api_response"] = "client-error"
         return entry
 

@@ -113,7 +113,7 @@ class Command(BaseCommand):
         if not options["lang_code"] or options["lang_code"].lower() == "all":
             lang_codes = ['all']
         else:
-            lang_codes = [lcode_to_django_dir(lc) for lc in options["lang_code"].split(",")]
+            lang_codes = [lcode_to_ietf(lc) for lc in options["lang_code"].split(",")]
 
         upgrade_old_schema()
 
