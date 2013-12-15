@@ -93,7 +93,7 @@ def run_makemessages():
     ignore_pattern = ['python-packages/*']
     call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
     # Generate english po file for javascript
-    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*']
+    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*', 'kalite/static/js/khan-exercises/*']
     call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
 
 
