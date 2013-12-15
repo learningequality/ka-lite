@@ -68,13 +68,11 @@
             </tr>
             <tr>
                 <td><div class="link bootstrap-timepicker"><input id="time_select" type="text"></div></td>
-                {# Translators: do not translate/change HH:MM #}
-                <td class="desc">{% trans "Input current time (HH:MM - 24 Hour)" %}</td>
+                <td class="desc">{% blocktrans with time_format="HH:MM" %}Input current time ({{ time_format }} - 24 Hour){% endblocktrans %}</td>
             </tr>
             <tr>
                 <td><div class="link date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
-                {# Translators: do not translate/change DD-MM-YYYY #}
-                <td class="desc">{% trans "Input current date (DD-MM-YYYY)" %}</td>
+                <td class="desc">{% blocktrans with date_format="DD-MM-YYYY" %}Input current date ({{ date_format }}){% endblocktrans %}</td>
             </tr>
             <tr>
                 <td class="link" colspan="2">
@@ -130,8 +128,6 @@
                     <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
                 </td>
             </tr>
-
-            {% endif %}
 
             {% if ips %}
             <tr>
