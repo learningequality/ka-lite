@@ -84,7 +84,7 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
             if not os.path.exists(lang_map_filepath):
                 videos = {}  # happens if an unknown set for subtitles.
             else:
-                with open(lang_map_filepath, "r") as fp:
+                videos open(lang_map_filepath, "r") as fp:
                     videos = json.load(fp)
         except Exception as e:
             error_msg = "Error in subtitles metadata file for %s: %s" % (lang_code, e)
