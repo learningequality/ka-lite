@@ -1,3 +1,9 @@
+function assert(val, msg) {
+    if (!val) {
+        show_message("error", msg, "id_assert");
+    }
+}
+
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;

@@ -5,10 +5,27 @@ import utils.videos  # keep access to all functions
 from settings import logging
 from shared.i18n import get_srt_path_on_disk, get_srt_url, get_id2oklang_map, get_youtube_id, get_subtitles_on_disk, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
+from utils.general import softload_json
 from utils.videos import *  # get all into the current namespace, override some.
 
 
 REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "content", "video_file_sizes.json")
+
+REMOTE_VIDEO_SIZES = None
+def get_remote_video_size(youtube_id, default=None, force=False):
+    global REMOTE_VIDEO_SIZES
+    if REMOTE_VIDEO_SIZES is None:
+        REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
+    return REMOTE_VIDEO_SIZES.get(youtube_id, default)
+
+
+def get_local_video_size(youtube_id, default=None):
+    try:
+        return os.path.getsize(os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id))
+    except Exception as e:
+        logging.debug(str(e))
+        return default
+
 
 def download_video(youtube_id, format="mp4", callback=None):
     """Downloads the video file to disk (note: this does NOT invalidate any of the cached html files in KA Lite)"""
@@ -19,7 +36,6 @@ def download_video(youtube_id, format="mp4", callback=None):
 
 def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
-
 
 
 def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT):

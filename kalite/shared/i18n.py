@@ -43,11 +43,10 @@ def get_language_pack_availability_filepath(ver=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, ver, "language_pack_availability.json")
 
 def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL_SERVER):
-    ka_lang_code = lang_code.lower()
     if is_central_server:
-        return os.path.join(LOCALE_ROOT, ka_lang_code, "exercises")
+        return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "exercises")
     else:
-        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", ka_lang_code)
+        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", lang_code.lower())
 
 def get_srt_path_on_disk(youtube_id, code, is_central_server=settings.CENTRAL_SERVER):
     if is_central_server:

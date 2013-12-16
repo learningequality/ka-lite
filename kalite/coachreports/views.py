@@ -257,7 +257,7 @@ def tabular_view(request, facility, report_type="exercise"):
     context.update({
         "report_types": ("exercise", "video"),
         "request_report_type": report_type,
-        "topics": topics,
+        "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
     })
 
     # get querystring info
