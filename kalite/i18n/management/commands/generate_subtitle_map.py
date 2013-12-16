@@ -26,7 +26,7 @@ from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
 from shared.i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
 from shared.topic_tools import get_slug2id_map
-from utils.general import convert_date_input, ensure_dir, make_request
+from utils.general import convert_date_input, ensure_dir, make_request, softload_json
 
 
 class OutDatedSchema(Exception):
@@ -66,19 +66,10 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
 
     else:
         # Open the file, read, and clean out old videos.
-        try:
-            with open(map_file, "r") as fp:
-                srts_dict = json.load(fp)
-        except ValueError as ve:
-            # Unrecoverable data corruption; what could we do but start from scratch :'(
-            raise CommandError("Likely json corruption of %s; best option may be to delete.  Raw error: %s" % (map_file, ve))
-        except Exception as e:
-            if not force:  # only handle the error if force=True.  Otherwise, these data are too valuable to lose, so just assume a temp problem.
-                raise
-            else:
-                logging.error("JSON file corrupted, using empty json and starting from scratch (%s)" % e)
-                srts_dict = {}
-        else:
+        #   only handle the error if force=True.
+        #   Otherwise, these data are too valuable to lose, so just assume a temp problem.
+        srts_dict = softload_json(map_file, raises=not force, logger=logging.error)
+        if srts_dict:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
 
         # Set of videos no longer used by KA Lite
@@ -217,13 +208,7 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
     Note: srt map deals with amara, so uses ietf codes (e.g. en-us)
     """
     # Load the current download status
-    try:
-        with open(map_file) as fp:
-            api_info_map = json.load(fp)
-    except Exception as e:
-        # Must be corrupted; start from scratch!
-        logging.warn("Could not open %s for updates; starting from scratch.  Error=%s" % (map_file, e))
-        api_info_map = {}
+    api_info_map = softload_json(map_file, logger=logging.warn)
 
     # Next we want to iterate through those and create a big srt dictionary organized by language code
     remote_availability_map = {}
@@ -250,12 +235,7 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
         if not os.path.exists(lang_map_filepath):
             lang_map = {}
         else:
-            try:
-                with open(lang_map_filepath, "r") as fp:
-                    lang_map = json.load(fp)
-            except Exception as e:
-                logging.error("Language download status mapping for (%s) is corrupted (%s), rewriting it." % (lang_code, e))
-                lang_map = {}
+            lang_map = softload_json(lang_map_filepath, logger=logging.error)
 
         # First, check to see if it's empty (e.g. no subtitles available for any videos)
         if not new_data:

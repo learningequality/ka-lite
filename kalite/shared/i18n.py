@@ -17,7 +17,7 @@ from django.views.i18n import javascript_catalog
 import settings
 import version
 from settings import LOG as logging
-from utils.general import ensure_dir
+from utils.general import ensure_dir, softload_json
 
 
 if settings.CENTRAL_SERVER:
@@ -105,8 +105,7 @@ def get_dubbed_video_map(lang_code=None, force=False):
                         # We can recover by NOT forcing reload.
                         logging.warn("%s" % e)
 
-            with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
-                DUBBED_VIDEO_MAP_RAW = json.load(fp)
+            DUBBED_VIDEO_MAP_RAW = softload_json(DUBBED_VIDEOS_MAPPING_FILEPATH, raises=True)
         except Exception as e:
             logging.info("Failed to get dubbed video mappings; defaulting to empty.")
             DUBBED_VIDEO_MAP_RAW = {}  # setting this will avoid triggering reload on every call
@@ -175,8 +174,7 @@ def get_code2lang_map(lang_code=None, force=False):
     global LANG_LOOKUP_FILEPATH, CODE2LANG_MAP
 
     if force or not CODE2LANG_MAP:
-        with open(LANG_LOOKUP_FILEPATH, "r") as fp:
-            lmap = json.load(fp)
+        lmap = softload_json(LANG_LOOKUP_FILEPATH, logger=logging.debug)
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
@@ -295,8 +293,7 @@ def get_installed_language_packs():
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
                 metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % django_disk_code)
-                with open(metadata_filepath, "r") as fp:
-                    lang_meta = json.load(fp)
+                lang_meta = softload_json(metadata_filepath, raises=True)
             except Exception as e:
                 logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
                 continue

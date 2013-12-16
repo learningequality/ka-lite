@@ -21,6 +21,7 @@ import fnmatch
 import glob
 import json
 import os
+import polib
 import re
 import requests
 import shutil
@@ -35,15 +36,13 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.core.mail import mail_admins
 
-import polib
-
 import settings
 import version
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR, DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_localized_exercise_dirpath, get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths, get_subtitle_count, get_localized_exercise_count
 from update_po import compile_po_files
-from utils.general import ensure_dir, version_diff
+from utils.general import ensure_dir, softload_json, version_diff
 
 
 # Attributes whose value, if changed, should change the version of the language pack.
@@ -520,12 +519,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
     logging.info("Generating new language pack metadata")
 
     lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
-    try:
-        with open(get_language_pack_availability_filepath(), "r") as fp:
-            master_metadata = json.load(fp)
-    except Exception as e:
-        logging.warn("Error opening language pack metadata: %s; resetting" % e)
-        master_metadata = {}
+    master_metadata = softload_json(get_language_pack_availability_filepath(), logger=logging.warn, errmsg="Error opening master language pack metadata")
 
     # loop through all languages in locale, update master file
     crowdin_meta_dict = download_crowdin_metadata()
@@ -546,12 +540,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
         # Gather existing metadata
         crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lang_code_ietf), {})
         metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf)
-        try:
-            with open(metadata_filepath) as fp:
-                local_meta = json.load(fp)
-        except Exception as e:
-            logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
-            local_meta = {}
+        local_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
         try:
             updated_meta = package_metadata.get(lang_code_ietf, {})
@@ -590,24 +579,14 @@ def update_metadata(updated_metadata):
     We've zipped the packages, and now have unzipped & zipped sizes.
     Update this info in the local metadata (but not inside the zip)
     """
-    try:
-        with open(get_language_pack_availability_filepath(), "r") as fp:
-            master_metadata = json.load(fp)
-    except Exception as e:
-        logging.warn("Error opening language pack metadata: %s; resetting" % e)
-        master_metadata = {}
+    master_metadata = softload_json(get_language_pack_availability_filepath(), logger=logging.warn, errmsg="Error opening master language pack metadata")
 
     for lc, meta in updated_metadata.iteritems():
         lang_code_ietf = lcode_to_ietf(lc)
 
         # Gather existing metadata
         metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf)
-        try:
-            with open(metadata_filepath) as fp:
-                local_meta = json.load(fp)
-        except Exception as e:
-            logging.warn("Error opening language pack metadata (%s): %s; resetting" % (metadata_filepath, e))
-            continue
+        local_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
         for att, val in meta.iteritems():
             local_meta[att] = val
