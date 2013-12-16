@@ -26,7 +26,8 @@ from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
 from shared.i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
 from shared.topic_tools import get_slug2id_map
-from utils.general import convert_date_input, ensure_dir, make_request, softload_json
+from utils.general import convert_date_input, ensure_dir, softload_json
+from utils.internet import make_request
 
 
 class OutDatedSchema(Exception):

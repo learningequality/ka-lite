@@ -27,7 +27,8 @@ import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
 from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
-from utils.general import convert_date_input, ensure_dir, make_request, softload_json
+from utils.general import convert_date_input, ensure_dir, softload_json
+from utils.internet import make_request
 
 
 class LanguageNameDoesNotExist(Exception):
