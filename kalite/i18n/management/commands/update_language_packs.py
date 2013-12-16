@@ -178,11 +178,20 @@ def update_srts(days, lang_codes):
 
 def update_translations(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
 
-    logging.info("Downloading %s language(s)" % lang_codes)
-
     package_metadata = {}
 
-    if not use_local:
+    if use_local:
+        for lang_code in lang_codes:
+            lang_code = lcode_to_ietf(lang_code)
+            package_metadata[lang_code] = {}
+            combined_po_file = os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "LC_MESSAGES", "django.po")
+            ka_metadata = get_po_metadata(combined_po_file)
+            package_metadata[lang_code]["approved_translations"] = ka_metadata["approved_translations"]
+            package_metadata[lang_code]["phrases"]               = ka_metadata["phrases"]
+
+    else:
+        logging.info("Downloading %s language(s)" % lang_codes)
+
         # Download latest UI translations from CrowdIn
         assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
