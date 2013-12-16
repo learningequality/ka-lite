@@ -69,9 +69,14 @@ class Command(BaseCommand):
                     dest='no_srts',
                     default=False,
                     help='Do not refresh video subtitles before bundling.'),
-        make_option('--no_ka',
+        make_option('--no-kalite-trans',
                     action='store_true',
-                    dest='no_ka',
+                    dest='no_kalite_trans',
+                    default=True,
+                    help='Do not refresh KA Lite content translations before bundling.'),
+        make_option('--no-ka-trans',
+                    action='store_true',
+                    dest='no_ka_trans',
                     default=False,
                     help='Do not refresh Khan Academy content translations before bundling.'),
         make_option('--no-exercises',
@@ -143,7 +148,8 @@ class Command(BaseCommand):
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=not options['no_ka'] and not options['no_update'],
+            download_ka_translations=not options['no_ka_trans'] and not options['no_update'],
+            download_kalite_translations=not options['no_kalite_trans'] and not options['no_update'],
             use_local=options["use_local"],
         )
         for lang_code in lang_codes:
@@ -175,7 +181,12 @@ def update_srts(days, lang_codes):
         call_command("cache_subtitles", date_since_attempt=date)
 
 
-def update_translations(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
+def update_translations(lang_codes=None,
+                        download_kalite_translations=True,
+                        download_ka_translations=True,
+                        zip_file=None,
+                        ka_zip_file=None,
+                        use_local=False):
 
     package_metadata = {}
 
@@ -192,7 +203,6 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
         logging.info("Downloading %s language(s)" % lang_codes)
 
         # Download latest UI translations from CrowdIn
-        assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
 
         # Download Khan Academy translations too
@@ -202,20 +212,30 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
         for lang_code in (lang_codes or [None]):
             lang_code = lcode_to_ietf(lang_code)
 
-            package_metadata[lang_code] = {}
+            package_metadata[lang_code] = {
+                'approved_translations': 0,
+                'phrases': 0,
+                'kalite_ntranslations': 0,
+                'kalite_nphrases': 0,
+            }                   # these values will likely yield the wrong values when download_kalite_translations == False.
 
-            logging.info("Downloading KA Lite translations...")
-            kalite_po_file = download_latest_translations(
-                lang_code=lang_code,
-                project_id=settings.CROWDIN_PROJECT_ID,
-                project_key=settings.CROWDIN_PROJECT_KEY,
-                zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
-            )
-            kalite_metadata = get_po_metadata(kalite_po_file)
-            package_metadata[lang_code]["approved_translations"] = kalite_metadata["approved_translations"]
-            package_metadata[lang_code]["phrases"]               = kalite_metadata["phrases"]
-            package_metadata[lang_code]["kalite_ntranslations"]  = kalite_metadata["approved_translations"]
-            package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
+            kalite_po_file = None
+
+            if download_kalite_translations:
+                assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
+
+                logging.info("Downloading KA Lite translations...")
+                kalite_po_file = download_latest_translations(
+                    lang_code=lang_code,
+                    project_id=settings.CROWDIN_PROJECT_ID,
+                    project_key=settings.CROWDIN_PROJECT_KEY,
+                    zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
+                )
+                kalite_metadata = get_po_metadata(kalite_po_file)
+                package_metadata[lang_code]["approved_translations"] = kalite_metadata["approved_translations"]
+                package_metadata[lang_code]["phrases"]               = kalite_metadata["phrases"]
+                package_metadata[lang_code]["kalite_ntranslations"]  = kalite_metadata["approved_translations"]
+                package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
 
             # Download Khan Academy translations too
             if download_ka_translations:
