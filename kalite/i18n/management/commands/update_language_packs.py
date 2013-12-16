@@ -18,6 +18,7 @@ NOTE: all language codes internally are assumed to be in django format (e.g. en_
 """
 import datetime
 import fnmatch
+import gc
 import glob
 import json
 import os
@@ -422,10 +423,12 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                 src_po_files_extra = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
 
                 src_po_files = [po + ".po" for po in src_po_files_learn + src_po_files_extra]
+                gc.collect()
 
                 # before we call msgcat, process each exercise po file and leave out only the metadata
                 for exercise_po in get_exercise_po_files(src_po_files):
                     remove_exercise_nonmetadata(exercise_po)
+                    gc.collect()
 
         if combine_with_po_file:
             src_po_files.append(combine_with_po_file)
