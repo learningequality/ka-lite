@@ -10,7 +10,7 @@ function video_start_callback(progress_log, resp) {
     }
     lastKey = null;
     nErrors = 0;
-    videos_downloading = true;
+    videos_downloading = false;
 }
 
 function video_reset_callback() {
@@ -21,6 +21,8 @@ function video_reset_callback() {
 
 function video_check_callback(progress_log, resp) {
     // When video status is checked
+    videos_downloading = (progress_log != null) && (progress_log.process_name != null);
+
     if (progress_log) { // check succeeded
         // Determine what changed, and what to update
         var currentKey = progress_log.stage_name;
@@ -139,7 +141,7 @@ $(function() {
                             vid_size: (newVideoSize < Math.pow(2, 10)) ? newVideoSize : newVideoSize / Math.pow(2, 10),
                             vid_size_units: (newVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
                         }));
-                        $("#download-videos").toggle($("#download-videos").attr("disabled") === "undefined"); // only show if we're not currently downloading
+                        $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
                     }
                     if (oldVideoCount == 0) {
                         $("#delete-videos").hide();
