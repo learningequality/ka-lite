@@ -32,10 +32,10 @@ from utils.internet import StatusException, JsonResponse, api_handle_error_with_
 # Global variable of all the known stats, their internal and external names,
 #    and their "datatype" (which is a value that Google Visualizations uses)
 stats_dict = [
-    {"key": "pct_mastery",        "name": _("% Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)"), "timeline": True},
-    {"key": "effort",             "name": _("% Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
-    {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
-    {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
+    {"key": "pct_mastery",        "name": _("Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)"), "timeline": True},
+    {"key": "effort",             "name": _("Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
+    {"key": "ex:attempts",        "name": _("Attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
+    {"key": "ex:streak_progress", "name": _("Streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
     {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
     { "key": "ex:completion_timestamp", "name": _("Time exercise completed"),"type": "datetime", "description": _("Day/time the exercise was completed.") },
     {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},

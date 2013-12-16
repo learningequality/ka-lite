@@ -158,12 +158,12 @@
                     <div id="{{ groupobject.facility }}" class="group_div">
                         <select id="{{ groupobject.facility }}_group_select" class="group_select">
                             {% if groupobject.groups %}
-                                    <option value="">{% trans "[all groups]" %}</option>
+                                    <option value="">[{% trans "all groups" %}]</option>
                                     {% for group in groupobject.groups %}
                                     <option value="{{ group.id }}">{{ group }}</option>
                                     {% endfor %}
                             {% else %}
-                                <option value="" selected>{% trans "[no groups]" %}</option>
+                                <option value="" selected>[{% trans "no groups" %}]</option>
                             {% endif %}
                         </select>
                         {% if groupobject.groups|length > 1 %}
@@ -181,6 +181,7 @@
                 {% block navbar_makelink %}
                 <div id="link-box">
                     <input name="url" id="url" type="text" style="display:none"></input>
+                    {# Translators: this is used to share a URL (with other teachers) #}
                     <a href="javascript:display_link()">({% trans "share" %})</a>
                 </div>
                 {% endblock navbar_makelink %}

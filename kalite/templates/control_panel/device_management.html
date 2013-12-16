@@ -60,18 +60,19 @@
             </div>
 
             {% if not shown_sessions %}
-                <p>{% trans "This device has never synced with the central server" %}</p>
+                <p>{% trans "This device has never synced with the central server." %}</p>
             {% else %}
                 {% with shown_sessions|length as shown_count %}
-                <span>{% blocktrans %}(showing {{ shown_count }} of {{ total_sessions }}){% endblocktrans %}</span>
+                {# Translators: shown_count and total_sessions are integer variables; do not translate them! #}
+                <span>({% blocktrans %}showing {{ shown_count }} of {{ total_sessions }}{% endblocktrans %})</span>
                 {% endwith %}
                 <table class="simple-table">
                     <tr>
-                        <th width="250px">{% trans "Sync date" %}</th>
-                        <th width="250px">{% trans "Sync address" %}</th>
-                        <th width="200px">{% trans "# models uploaded" %}</th>
-                        <th width="200px">{% trans "# models downloaded" %}</th>
-                        <th width="200px">{% trans "# errors" %}</th>
+                        <th width="250px">{% trans "Sync Date" %}</th>
+                        <th width="250px">{% trans "Device IP Address" %}</th>
+                        <th width="200px">{% trans "# Models Uploaded" %}</th>
+                        <th width="200px">{% trans "# Models Downloaded" %}</th>
+                        <th width="200px">{% trans "# Errors" %}</th>
                     </tr>
                     {% for sync_session in shown_sessions %}
                         <tr>

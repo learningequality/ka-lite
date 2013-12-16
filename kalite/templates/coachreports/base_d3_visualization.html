@@ -112,12 +112,14 @@
             clear_message("id_coachreports")
             doRequest(url)
                 .success(function(json) {
-                    $("#loading").text("{% trans 'Drawing' %} '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'...");
+                    $("#loading").text(sprintf(gettext("Drawing %(xaxis_name)s versus %(yaxis_name)s"), {
+                        xaxis_name: stat2name(props["xaxis"]),
+                        yaxis_name: stat2name(props["yaxis"])
+                    }));
                     if (Object.keys(json["data"]).length > 0) {
                         drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
                     } else {
                         show_message("error", "{% trans 'No student accounts in this group have been created.' %}", "id_coachreports");
-                        //$("#chart_div").html("<b class='error'>{% trans 'No student accounts in this group have been created.' %}</b>");
                     }
                     $("#loading").text("");
                 }).fail(function(resp) {
@@ -227,7 +229,7 @@
 
 {% block navbar_topics %}
     <h3 id="topic_header">
-        {% trans "Topics selected" %}:
+        {% trans "Topics Selected" %}:
         <a id="topic_paths" href="javascript:toggle_tree()"></a>
         <span id="topic_paths_note"></span>
     </h3>

@@ -16,7 +16,7 @@
 
 {% block titlebar_title %}
     <li>
-        {% trans "Account Management Page for" %} {{ student.get_name }}
+        {% blocktrans with student_name=student.get_name %}Account management page for {{ student_name }}{% endblocktrans %}
     </li>
 {% endblock titlebar_title %}
 

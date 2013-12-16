@@ -68,11 +68,11 @@
             </tr>
             <tr>
                 <td><div class="link bootstrap-timepicker"><input id="time_select" type="text"></div></td>
-                <td class="desc">{% trans "Input current time (HH:MM - 24 Hour)" %}</td>
+                <td class="desc">{% blocktrans with time_format="HH:MM" %}Input current time ({{ time_format }} - 24 Hour){% endblocktrans %}</td>
             </tr>
             <tr>
                 <td><div class="link date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
-                <td class="desc">{% trans "Input current date (DD-MM-YYYY)" %}</td>
+                <td class="desc">{% blocktrans with date_format="DD-MM-YYYY" %}Input current date ({{ date_format }}){% endblocktrans %}</td>
             </tr>
             <tr>
                 <td class="link" colspan="2">
@@ -92,16 +92,16 @@
             </tr>
             <tr>
                 <td class="link"><a href="{% url zone_redirect %}">{% trans "Network management" %}</a></td>
-                <td class="desc">{%trans "Access to summary data over all facilities and devices" %}</td>
+                <td class="desc">{%trans "Access to summary data over all facilities and devices." %}</td>
             </tr>
             <tr>
                 <td class="link"><a href="{% url user_list %}">{% trans "User management" %}</a></td>
-                <td class="desc">{% trans "Add/move/delete users across groups" %}</td>
+                <td class="desc">{% trans "Add/move/delete users across groups." %}</td>
             </tr>
 
             <tr class="client-online-only">
                 <td class="title" colspan="2">
-                    <h2>{% trans "(Online) help documents" %}</h2>
+                    <h2>{% trans "(Online) Help Documents" %}</h2>
                 </td>
             </tr>
             <tr class="client-online-only">
@@ -110,10 +110,8 @@
             </tr>
             <tr class="client-online-only">
                 <td class="link"><a href="http://{{central_server_host}}/faq" target="_blank">{% trans "FAQ" %}</a></td>
-                <td class="desc">{% trans "Contains the latest FAQ for troubleshooting" %}</td>
+                <td class="desc">{% trans "Contains the latest FAQ for troubleshooting." %}</td>
             </tr>
-
-            {% if user.is_superuser and settings.DEBUG %}{% comment "Django-admins and in debug mode" %}{% endcomment %}
 
             <tr>
                 <td class="title" colspan="2">
@@ -122,7 +120,7 @@
             </tr>
             <tr>
                 <td class="link"><a href="{% url admin:index %}">{% trans "Django admin" %}</a></td>
-                <td class="desc">{% trans "Database of information stored in your KA Lite installation" %}</td>
+                <td class="desc">{% trans "Database of information stored in your KA Lite installation." %}</td>
             </tr>
             <tr>
                 <td class="link">&nbsp;</td>
@@ -130,8 +128,6 @@
                     <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
                 </td>
             </tr>
-
-            {% endif %}
 
             {% if ips %}
             <tr>

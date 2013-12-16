@@ -8,10 +8,10 @@
 {% block content %}
     <form method="post" class="basic-form">
         {% csrf_token %}
-        <h2>{% trans "Login" %}</h2>
+        <h2>{% trans "Log in" %}</h2>
 
         {{ form.as_p }}
 
-        <input type="submit" value="{% trans 'Login' %}" class="submit"/>
+        <input type="submit" value="{% trans 'Log in' %}" class="submit" />
     </form>
 {% endblock content %}
