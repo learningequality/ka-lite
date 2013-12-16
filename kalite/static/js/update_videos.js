@@ -152,7 +152,7 @@ $(function() {
                 updatesStart("videodownload", 5000, video_callbacks);
                 show_message(
                     "success",
-                    sprintf(gettext("Starting download of %(num)d video(s)"), {num: numVideos}),
+                    sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos}),
                     "id_videodownload"
                 );
             })
