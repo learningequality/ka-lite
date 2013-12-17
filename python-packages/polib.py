@@ -1088,6 +1088,7 @@ class POEntry(_BaseEntry):
         self.msgctxt = other.msgctxt
         self.occurrences = other.occurrences
         self.comment = other.comment
+        self.msgstr = other.msgstr if other.msgstr else self.msgstr
         fuzzy = 'fuzzy' in self.flags
         self.flags = other.flags[:]  # clone flags
         if fuzzy:
