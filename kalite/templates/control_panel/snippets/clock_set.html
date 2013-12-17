@@ -3,40 +3,15 @@
 
 {% block headcss %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-timepicker.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/clock_set.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}
     <script type="text/javascript" src="{% static 'js/bootstrap-timepicker.min.js' %}"></script>
     <script type="text/javascript">
-    $(function() {
-        $('#time_select').timepicker({
-            disableFocus: true,
-            showMeridian: false,
-            minuteStep: 1
-            });
-        $('#date_select').datepicker({
-            dateFormat: "dd-mm-yy",
-            altField: "#standard-date",
-            altFormat: "yy-mm-dd"
-        });
-
-        $("#date_select").datepicker('setDate', new Date());
-
-        $('#set_time').click(
-            function () {
-                var data = {
-                    date_time: $('#standard-date').val() + " " + $('#time_select').val()
-                };
-                doRequest("{% url time_set %}", data)
-                    .success(function(data) {
-                        show_api_messages(data, "id_set_time");
-                    })
-                    .fail(function(resp) {
-                        communicate_api_failure(resp, "id_set_time");
-                    });
-            });
-    });
+        var TIME_SET_URL = "{% url time_set %}";
     </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/clock_set.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
