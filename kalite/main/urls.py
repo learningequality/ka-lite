@@ -41,7 +41,6 @@ urlpatterns += patterns('main.views',
     url(r'^update/', include(updates.urls)),
 
     url(r'^help/$', 'help', {}, 'help'),
-    url(r'^userlist/$', 'user_list', {}, 'user_list'),
 
     # API
     url(r'^api/', include(main.api_urls)),

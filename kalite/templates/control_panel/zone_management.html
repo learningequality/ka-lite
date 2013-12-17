@@ -102,7 +102,7 @@
                         {% endif %}
                     </td>
                     <td nowrap>
-                        <a href="{% url user_list %}?facility={{ facility.id }}">{% trans "Manage Users" %}</a>
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Manage Users" %}</a>
                         /
                         <a href="{% url facility_usage org_id=org_id zone_id=zone_id facility_id=facility.id %}">{% trans "View Usage" %}</a>
                     </td>

@@ -225,16 +225,65 @@ def group_report(request, facility_id, group_id=None, org_id=None, zone_id=None)
 
 
 @require_authorized_admin
-@render_to("control_panel/group_users_management.html")
-def facility_user_management(request, facility_id, group_id="", org_id=None, zone_id=None):
-    group_id=group_id or request.REQUEST.get("group","")  # TODO(bcipolli) remove the need for this
+@render_to("control_panel/facility_user_management.html")
+def facility_user_management(request, facility_id, user_type="students", group_id=None, org_id=None, zone_id=None):
+    group_id=group_id or request.REQUEST.get("group","")
+    if group_id == "None":
+        group_id = None
+    page=request.REQUEST.get("page","1"),
+    facility = Facility.objects.get(id=facility_id)
+    groups = FacilityGroup.objects \
+        .filter(facility=facility) \
+        .order_by("name")
 
-    context = user_management_context(
-        request=request,
-        facility_id=facility_id,
-        group_id=group_id,
-        page=request.REQUEST.get("page","1"),
-    )
+    # This could be moved into a function shared across files, if necessary.
+    #   For now, moving into function, as outside if function it looks more
+    #   general-purpose than it's being used / tested now.
+    def get_users_from_group(group_id, facility=None):
+        if group_id == _("Ungrouped"):
+            return FacilityUser.objects \
+                .filter(facility=facility, group__isnull=True) \
+                .order_by("first_name", "last_name")
+        elif not group_id:
+            return []
+        else:
+            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
+    user_list = get_users_from_group(group_id, facility=facility)
+
+    # Get the user list from the group
+    if not user_list:
+        users = []
+    else:
+        paginator = Paginator(user_list, per_page)
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+
+    if users:
+        if users.has_previous():
+            prevGETParam = request.GET.copy()
+            prevGETParam["page"] = users.previous_page_number()
+            previous_page_url = "?" + prevGETParam.urlencode()
+        else:
+            previous_page_url = ""
+        if users.has_next():
+            nextGETParam = request.GET.copy()
+            nextGETParam["page"] = users.next_page_number()
+            next_page_url = "?" + nextGETParam.urlencode()
+        else:
+            next_page_url = ""
+    context = {
+        "facility": facility,
+        "users": users,
+        "groups": groups,
+        "group_id": group_id,
+        "facility_id": facility_id,
+    }
+    if users:
+        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
 
     context.update(control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id, group_id=group_id))
     return context
@@ -413,59 +462,3 @@ def local_device_context(request):
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
 
-
-def user_management_context(request, facility_id, group_id, page=1, per_page=25):
-    facility = Facility.objects.get(id=facility_id)
-    groups = FacilityGroup.objects \
-        .filter(facility=facility) \
-        .order_by("name")
-
-    # This could be moved into a function shared across files, if necessary.
-    #   For now, moving into function, as outside if function it looks more
-    #   general-purpose than it's being used / tested now.
-    def get_users_from_group(group_id, facility=None):
-        if group_id == _("Ungrouped"):
-            return FacilityUser.objects \
-                .filter(facility=facility, group__isnull=True) \
-                .order_by("first_name", "last_name")
-        elif not group_id:
-            return []
-        else:
-            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
-    user_list = get_users_from_group(group_id, facility=facility)
-
-    # Get the user list from the group
-    if not user_list:
-        users = []
-    else:
-        paginator = Paginator(user_list, per_page)
-        try:
-            users = paginator.page(page)
-        except PageNotAnInteger:
-            users = paginator.page(1)
-        except EmptyPage:
-            users = paginator.page(paginator.num_pages)
-
-    if users:
-        if users.has_previous():
-            prevGETParam = request.GET.copy()
-            prevGETParam["page"] = users.previous_page_number()
-            previous_page_url = "?" + prevGETParam.urlencode()
-        else:
-            previous_page_url = ""
-        if users.has_next():
-            nextGETParam = request.GET.copy()
-            nextGETParam["page"] = users.next_page_number()
-            next_page_url = "?" + nextGETParam.urlencode()
-        else:
-            next_page_url = ""
-    context = {
-        "facility": facility,
-        "users": users,
-        "groups": groups,
-        "group_id": group_id,
-        "facility_id": facility_id,
-    }
-    if users:
-        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
-    return context

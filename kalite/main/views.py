@@ -21,7 +21,6 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
-from control_panel.views import user_management_context
 from main import topicdata
 from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
@@ -334,34 +333,6 @@ def easy_admin(request):
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }
-    return context
-
-
-@require_admin
-@facility_required
-@render_to("current_users.html")
-def user_list(request, facility):
-
-    # Use default group
-    group_id = request.REQUEST.get("group")
-    if not group_id:
-        groups = FacilityGroup.objects \
-            .annotate(Count("facilityuser")) \
-            .filter(facilityuser__count__gt=0)
-        ngroups = groups.count()
-        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
-        if ngroups == 1:
-            group_id = groups[0].id if groups.count() else "Ungrouped"
-
-    context = user_management_context(
-        request=request,
-        facility_id=facility.id,
-        group_id=group_id,
-        page=request.REQUEST.get("page","1"),
-    )
-    context.update({
-        "singlefacility": Facility.objects.count() == 1,
-    })
     return context
 
 
