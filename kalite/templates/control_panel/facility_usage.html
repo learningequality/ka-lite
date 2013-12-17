@@ -46,8 +46,11 @@
                         $("#end_date_select").datepicker('setDate', end_date);
                         $("#end_date_select").datepicker('hide');
                         $("#end_date_select").blur();
+
+                        $("#top_export_button_id").val("Cancel");
                     } else {
                         cansee = false;
+                        $("#top_export_button_id").val("Export");
                     }
                 });
             });
@@ -60,9 +63,9 @@
         <div id="export_csv_div_id" class="export_csv_div">
             <form method="post" action="?format=csv">
                 {% csrf_token %}
-                <p><label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></p>
-                <p><label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></p>
-                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" />
+                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></input>
+                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></input>
+                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
