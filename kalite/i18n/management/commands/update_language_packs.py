@@ -30,6 +30,7 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+import zlib
 import StringIO
 from optparse import make_option
 
@@ -407,33 +408,31 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
     converted_code = lcode_to_django_dir(lang)
 
     def prep_inputs(extract_path, converted_code, filter_type):
-        src_po_files = [po for po in all_po_files(extract_path)]
+        src_po_files = all_po_files(extract_path)
 
         # remove all exercise po that is not about math
         if filter_type:
             if filter_type == "ka":
+                for po_file in src_po_files:
+                    name, _ext = os.path.splitext(po_file)
 
-                src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
+                    # Stream 1: learn
+                    learn_filter = any(os.path.basename(name).startswith(str) for str in ["learn.", "content.chrome", "_other_"])
+                    learn_filter = ".videos" in name or ".exercises" in name
 
-                # Stream 1
-                src_po_files_learn = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn.", "content.chrome", "_other_"]]), src_po_files)
-                src_po_files_learn = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files_learn]) > 1, src_po_files_learn)
+                    # Stream 2: extra
+                    extra_filter = any(os.path.basename(name).startswith(str) for str in ["content.chrome", "_other_"])
 
-                # Stream 2
-                src_po_files_extra = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
-
-                src_po_files = [po + ".po" for po in src_po_files_learn + src_po_files_extra]
-                gc.collect()
-
-                # before we call msgcat, process each exercise po file and leave out only the metadata
-                for exercise_po in get_exercise_po_files(src_po_files):
-                    remove_exercise_nonmetadata(exercise_po)
-                    gc.collect()
+                    if learn_filter or extra_filter:
+                        remove_exercise_nonmetadata(po_file)
+                        gc.collect()
+                        yield zlib.compress(po_file)
+                    else:
+                        continue
 
         if combine_with_po_file:
-            src_po_files.append(combine_with_po_file)
+            yield combine_with_po_file
 
-        return src_po_files
     src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
 
@@ -443,24 +442,22 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         ensure_dir(dest_path)
         dest_file = os.path.join(dest_path, 'django.po')
 
-        if len(src_po_files) == 1:
-            shutil.move(src_po_file[0], dest_file)
+        build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
 
-        else:
-            build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
+        logging.info('Concatenating all po files found...')
+        try:
+            build_po = polib.pofile(build_file)
+        except IOError as e:  # build_file doesn't exist yet
+            build_po = polib.POFile(fpath=build_file)
 
-            logging.info('Concatenating all po files found...')
-            try:
-                build_po = polib.pofile(build_file)
-            except IOError as e:  # build_file doesn't exist yet
-                build_po = polib.POFile(fpath=build_file)
+        for src_file in src_po_files:
+            src_file = zlib.decompress(src_file)  # this whole zlib.{de,}compress hack saves a megabyte. It counts!
+            logging.debug('Concatenating %s with %s...' % (src_file, build_file))
+            src_po = polib.pofile(src_file)
+            build_po.merge(src_po)
 
-            for src_file in src_po_files:
-                logging.debug('Concatenating %s with %s...' % (src_file, build_file))
-                src_po = polib.pofile(src_file)
-                build_po.merge(src_po)
-            build_po.save()
-            shutil.move(build_file, dest_file)
+        build_po.save()
+        shutil.move(build_file, dest_file)
 
         return dest_file
 
@@ -496,10 +493,7 @@ def remove_exercise_nonmetadata(pofilename):
     clean_pofile = polib.POFile(encoding='utf-8')
     clean_pofile.append(pofile.metadata_as_entry())
     for msgblock in pofile:
-        if 'Project-Id-Version' in msgblock.msgstr or msgblock.msgstr == '':  # is header; ignore, already included
-            continue
-
-        elif re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
+        if re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
             # is exercise metadata, preserve
             clean_pofile.append(msgblock)
 
