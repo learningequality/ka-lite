@@ -318,20 +318,29 @@ def homepage(request, topics):
 
 def help(request):
     if request.is_admin:
-        return easy_admin(request)
+        return help_admin(request)
     else:
-        return HttpResponse("NYI")
+        return help_student(request)
 
 @require_admin
 @check_setup_status
-@render_to("admin_distributed.html")
-def easy_admin(request):
+@render_to("help_admin.html")
+def help_admin(request):
 
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
+    }
+    return context
+
+
+@render_to("help_student.html")
+def help_student(request):
+
+    context = {
+        "wiki_url" : settings.CENTRAL_WIKI_URL,
     }
     return context
 
