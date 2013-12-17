@@ -451,16 +451,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
 
             logging.info('Concatenating all po files found...')
             try:
-                concat_command = ['msgcat', '-o', build_file, '--no-location'] + src_po_files
-                process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
-                process.wait()
-                if not os.path.exists(build_file):
-                    raise CommandError("Unable to concatenate po files.")
-            except OSError as e:
-                if e.strerror == "No such file or directory":
-                    raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
-                else:
-                    raise
+                build_po = polib.pofile(build_file)
+            except IOError as e:  # build_file doesn't exist yet
+                build_po = polib.POFile(fpath=build_file)
+
+            for src_file in src_po_files:
+                logging.debug('Concatenating %s with %s...' % (src_file, build_file))
+                src_po = polib.pofile(src_file)
+                build_po.merge(src_po)
+            build_po.save()
             shutil.move(build_file, dest_file)
 
         return dest_file
@@ -499,23 +498,13 @@ def remove_exercise_nonmetadata(pofilename):
     for msgblock in pofile:
         if 'Project-Id-Version' in msgblock.msgstr or msgblock.msgstr == '':  # is header; ignore, already included
             continue
+
         elif re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
             # is exercise metadata, preserve
             clean_pofile.append(msgblock)
 
     os.remove(pofilename)
     clean_pofile.save(fpath=pofilename)
-
-    # ok, here's the deal: there's a bug right now in polib.py in which
-    # it creates an empty header AUTOMATICALLY. Plus, there is no way
-    # to specify what this header contains. So what do we do? We delete this
-    # header. TODO for Aron: Fix polib.py
-    with open(pofilename, 'r') as pofile:
-        polines = pofile.read().split('\n')
-    polines = '\n'.join(polines[4:])       # here the first 4 lines compose the empty header. Cull them!
-    with open(pofilename, 'w') as fp:
-        fp.write(polines)
-
 
 def get_exercise_po_files(po_files):
     return fnmatch.filter(po_files, '*.exercises-*.po')
@@ -651,7 +640,7 @@ def increment_language_pack_version(local_meta, updated_meta):
 
     if not local_meta or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
         # set to one for the first time, or if this is the first build of a new software version
-        logging.info("Setting %s language pack version to 1" % local_meta["code"])
+        logging.info("Setting %s language pack version to 1" % updated_meta["code"])
         language_pack_version = 1
 
     else:
