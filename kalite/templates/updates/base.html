@@ -5,11 +5,11 @@
 {% block update_active %}active{% endblock update_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/base.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/updates.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/updates/base.js' %}"></script>
 
     <script type="text/javascript">
         var URL_GET_SERVER_INFO = "{% url get_server_info %}";
