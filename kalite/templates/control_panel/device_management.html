@@ -11,11 +11,10 @@
 {% endblock headcss %}
 
 {% block buttons %}{{ block.super }}
-    {% if not is_central %}
+    {% if is_own_device %}
         <div class="server-online-only">
-            <div class="registered-only">
-                <a class="green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
-            </div>
+            <a class="registered-only green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
+            <a class="not-registered-only green_button" href="{% url register_public_key %}">{% trans "Register" %}</a>
         </div>
     {% endif %}
 {% endblock buttons %}
@@ -60,7 +59,8 @@
             </div>
 
             {% if not shown_sessions %}
-                <p>{% trans "This device has never synced with the central server." %}</p>
+                <p class="registered-only">{% trans "This device has never synced with the central server." %}</p>
+                <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
             {% else %}
                 {% with shown_sessions|length as shown_count %}
                 {# Translators: shown_count and total_sessions are integer variables; do not translate them! #}
