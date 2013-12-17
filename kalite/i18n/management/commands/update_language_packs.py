@@ -424,7 +424,8 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                     extra_filter = any(os.path.basename(name).startswith(str) for str in ["content.chrome", "_other_"])
 
                     if learn_filter or extra_filter:
-                        remove_exercise_nonmetadata(po_file)
+                        if fnmatch.fnmatch(po_file, 'exercises-????.po'):
+                            remove_exercise_nonmetadata(po_file)
                         gc.collect()
                         yield zlib.compress(po_file)
                     else:
@@ -451,11 +452,17 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             build_po = polib.POFile(fpath=build_file)
 
         for src_file in src_po_files:
-            src_file = zlib.decompress(src_file)  # this whole zlib.{de,}compress hack saves a megabyte. It counts!
+            src_file = zlib.decompress(src_file)  # ARON: this whole zlib.{de,}compress hack saves a megabyte. It counts!
             logging.debug('Concatenating %s with %s...' % (src_file, build_file))
             src_po = polib.pofile(src_file)
             build_po.merge(src_po)
 
+        # de-obsolete messages
+        for poentry in build_po:
+            # ok build_po appears to be a list, but not actually one. Hence just doing
+            # a list comprehension over it won't work. So we unobsolete entries so that
+            # they can be detected and turned into a mo file
+            poentry.obsolete = False
         build_po.save()
         shutil.move(build_file, dest_file)
 
