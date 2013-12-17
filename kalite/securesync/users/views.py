@@ -219,7 +219,7 @@ def login(request, facility):
         user = authenticate(username=username, password=password)
         if user:
             auth_login(request, user)
-            return HttpResponseRedirect(request.next or reverse("easy_admin"))
+            return HttpResponseRedirect(request.next or reverse("zone_management"))
 
         # try logging in as a facility user
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})

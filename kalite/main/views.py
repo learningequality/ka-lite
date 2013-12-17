@@ -317,6 +317,12 @@ def homepage(request, topics):
     })
     return context
 
+def help(request):
+    if request.is_admin:
+        return easy_admin(request)
+    else:
+        return HttpResponse("NYI")
+
 @require_admin
 @check_setup_status
 @render_to("admin_distributed.html")
@@ -325,8 +331,6 @@ def easy_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "in_a_zone":  Device.get_own_device().get_zone() is not None,
-        "clock_set": settings.ENABLE_CLOCK_SET,
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }

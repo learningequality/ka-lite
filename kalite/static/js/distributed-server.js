@@ -158,10 +158,11 @@ $(function(){
 
             toggle_state("logged-in", data.is_logged_in);
             toggle_state("registered", data.registered);
-            toggle_state("django-user", data.is_django_user);
-            toggle_state("admin", data.is_admin);
+            toggle_state("super-user", data.is_django_user);
+            toggle_state("teacher", data.is_admin && !data.is_django_user);
+            toggle_state("admin", data.is_admin); // combination of teachers & super-users
             if (data.is_logged_in){
-                if (data.is_admin) {
+                if (data.is_django_user) {
                     $('#nav_logout').text(sprintf(gettext("%(username)s (Logout)"), { username : data.username }));
                 }
                 else {

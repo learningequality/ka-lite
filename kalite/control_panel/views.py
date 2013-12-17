@@ -33,6 +33,17 @@ from shared.topic_tools import get_node_cache
 from utils.internet import CsvResponse, render_to_csv
 
 
+def set_clock_context(request):
+    return {
+        "clock_set": settings.ENABLE_CLOCK_SET,
+    }
+
+def sync_now_context(request):
+    return {
+        "in_a_zone":  Device.get_own_device().get_zone() is not None,
+    }
+
+
 @require_authorized_admin
 @render_to("control_panel/zone_form.html")
 def zone_form(request, zone_id, org_id=None):
@@ -83,6 +94,7 @@ def zone_management(request, zone_id, org_id=None):
             "num_times_synced": sync_sessions.count() if sync_sessions is not None else None,
             "last_time_synced": sync_sessions.aggregate(Max("timestamp"))["timestamp__max"] if sync_sessions is not None else None,
             "is_demo_device": device.get_metadata().is_demo_device,
+            "is_own_device": device.get_metadata().is_own_device and not settings.CENTRAL_SERVER,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
             "counter": device.get_counter_position(),
         }
@@ -112,6 +124,7 @@ def zone_management(request, zone_id, org_id=None):
         "upload_form": UploadFileForm(),
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
     })
+    context.update(set_clock_context(request))
     return context
 
 
@@ -167,10 +180,11 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
     context.update({
         "shown_sessions": shown_sessions,
         "total_sessions": total_sessions,
+        "is_own_device": not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id,
     })
 
     # If local (and, for security purposes, a distributed server), get device metadata
-    if not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id:
+    if context["is_own_device"]:
         context.update(local_device_context(request))
 
     return context
