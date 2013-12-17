@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block easyadmin_active %}active{% endblock easyadmin_active %}
+{% block help_active %}active{% endblock help_active %}
 {% block title %}{% trans "Administration Panel" %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
@@ -10,19 +10,17 @@
 {% endblock headcss %}
 
 {% block content %}
-    <div id="content">
-        {% trans "This page can help you administer your installation of KA Lite." %}
+    {% trans "This page can help you administer your installation of KA Lite." %}
 
-        <table>
-            <tr class="client-online-only">
-                <td class="title" colspan="2">
-                    <h2>{% trans "(Online) Help Documents" %}</h2>
-                </td>
-            </tr>
-            <tr class="client-online-only">
-                <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
-                <td class="desc"> {% trans "Contains the latest information about using KA Lite." %}</td>
-            </tr>
-        </table>
-    </div>
+    <table>
+        <tr class="client-online-only">
+            <td class="title" colspan="2">
+                <h2>{% trans "(Online) Help Documents" %}</h2>
+            </td>
+        </tr>
+        <tr class="client-online-only">
+            <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
+            <td class="desc"> {% trans "Contains the latest information about using KA Lite." %}</td>
+        </tr>
+    </table>
 {% endblock content %}
