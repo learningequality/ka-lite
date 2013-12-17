@@ -12,45 +12,68 @@
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
         }
-        $(function() {
-            $('#start_date_select').datepicker({
-                dateFormat: "d MM yy",
-                altField: "#start_standard_date",
-                altFormat: "yy-mm-dd"
+
+        $(document).ready(function(){
+            
+            $(function() {
+
+                $('#start_date_select').datepicker({
+                    dateFormat: "d MM yy",
+                    altField: "#start_standard_date",
+                    altFormat: "yy-mm-dd",
+                    autoclose: true,
+                });
+
+                $('#end_date_select').datepicker({
+                    dateFormat: "d MM yy",
+                    altField: "#end_standard_date",
+                    altFormat: "yy-mm-dd"
+                });
             });
+        });
 
-            $("#start_date_select").datepicker('setDate', start_date);
+        $(document).ready(function(){
+            var cansee = false;
+            $("#top_export_button_id").click(function(){
+                $("#export_csv_div_id").toggle(function(){
+                    if(cansee == false){
+                        cansee = true;
+                        $("#start_date_select").focus();
+                        $("#start_date_select").datepicker('setDate', start_date);
+                        $("#start_date_select").datepicker('hide');
 
-            $('#end_date_select').datepicker({
-                dateFormat: "d MM yy",
-                altField: "#end_standard_date",
-                altFormat: "yy-mm-dd"
+                        $("#end_date_select").focus();
+                        $("#end_date_select").datepicker('setDate', end_date);
+                        $("#end_date_select").datepicker('hide');
+                        $("#end_date_select").blur();
+
+                        $("#top_export_button_id").val("Cancel");
+                    } else {
+                        cansee = false;
+                        $("#top_export_button_id").val("Export");
+                    }
+                });
             });
-
-            $("#end_date_select").datepicker('setDate', end_date);
-
         });
     </script>
 {% endblock headjs %}
 
 {% block buttons %}{{ block.super }}
     <li>
-        <div>
+        <div id="export_csv_div_id" class="export_csv_div">
             <form method="post" action="?format=csv">
-            {% csrf_token %}
-            <div class="date">{% trans "Start Date" %}:<input id="start_date_select" type="text"><input class="hidden" type="text" name="period_start" id="start_standard_date"></div>
-            <div class="date">{% trans "End Date" %}:<input id="end_date_select" type="text"><input class="hidden" type="text" name="period_end" id="end_standard_date"></div>
-            <div class="date">
-                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" />
-            </div>
+                {% csrf_token %}
+                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></input>
+                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></input>
+                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
 {% endblock buttons %}
-
 {% block control_panel_content %}
     <div id="facility_container">
-        <div class="groups">
+        <div>
+            <br>
             <h2>{% trans "Groups" %}</h2>
 
             {% if not groups %}

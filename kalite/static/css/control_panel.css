@@ -89,16 +89,55 @@ a.edit-link {
     background-image: none;
     border: 1px solid transparent;
     -webkit-user-select: none;
+    margin-left: 4.5em;
 }
 
 .btn-large:visited {
     color: #fff;
 }
 
+.btn-large:hover {
+    background-color:#C0C0C0;
+}
+
 .date {
-    float: left;
+    display: inline !important;
+    margin: 5px;
+    text-align: center;
+    width: 180px;
 }
 
 .hidden {
     display: none;
+}
+
+.export_csv_div {
+    width: 100%;
+    margin-top: 30px;
+    position: relative;
+    display: none;
+}
+
+.export_csv_input {
+    margin-left: 2.5em;
+    display: inline !important;
+    margin: 5px;
+}
+
+.top_export_button {
+    float: right;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #91ca7f;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+    border:0px;
+    vertical-align: middle;
+    min-width: 80px;
+}
+
+.top_export_button:hover {
+    background-color:#C0C0C0;
 }
