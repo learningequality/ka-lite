@@ -6,7 +6,7 @@
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/update_videos.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_videos.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -19,7 +19,7 @@
         var URL_CANCEL_VIDEO_DOWNLOADS = "{% url cancel_video_download %}";
     </script>
 
-    <script type="text/javascript" src="{% static 'js/update_videos.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
