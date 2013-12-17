@@ -573,9 +573,11 @@ class _BaseFile(list):
     # header. TODO for Aron: Fix polib.py
     def _remove_extra_msgid(self):
         pofilename = self.fpath
+        header_to_remove = '# \nmsgid ""\nmsgstr ""\n\n'
         with open(pofilename, 'r') as pofile:
-            polines = pofile.read().split('\n')
-            polines = '\n'.join(polines[4:])       # here the first 4 lines compose the empty header. Cull them!
+            polines = pofile.read()
+            if polines.startswith(header_to_remove):
+                polines = polines[len(header_to_remove):]
         with open(pofilename, 'w') as fp:
             fp.write(polines)
 
