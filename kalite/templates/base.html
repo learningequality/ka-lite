@@ -110,7 +110,7 @@
                 <a href="{% url update_videos %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Update" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url zone_redirect %}" id="nav_manage_zone" class="admin-only {% block zone_management %}{% endblock zone_management %}" title="{% trans 'Manage KA Lite' %}">{% trans "Manage" %}</a>
+                <a href="{% url zone_redirect %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Manage" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a>
