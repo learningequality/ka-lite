@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block update_active %}active{% endblock update_active %}
+
 {% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
@@ -47,18 +49,6 @@
         <button id="delete-videos" type="button">
             <span id="delete-videos-text" class="old-video-count"></span>
         </button>
-    </div>
-
-    <div class="download-actions vertical-shadow">
-        <h2>{% trans "Installed Language Packs" %}
-            {# Translators: this text is a link; when clicked, admins will be able to manage locally installed resources. #}
-          <a href="{% url update_languages %}">({% trans "Manage" %})</a>
-        </h2>
-        {% if not languages %}
-            {% trans "No language packs installed." %}
-        {% else %}
-            {{ languages|join:", " }} {% if other_languages_count %}and {{ other_languages_count }} more. {% endif %}
-        {% endif %}
     </div>
 
     <div style="clear: both;"></div>
