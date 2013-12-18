@@ -34,6 +34,9 @@ function doRequest(url, data) {
         data: data ? JSON.stringify(data) : "",
         contentType: "application/json",
         dataType: "json"
+    })
+    .fail(function(resp) {
+        communicate_api_failure(resp);
     });
 }
 
