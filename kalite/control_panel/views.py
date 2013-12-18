@@ -28,7 +28,7 @@ from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from settings import LOG as logging
-from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data, facility_required
 from shared.topic_tools import get_node_cache
 from utils.internet import CsvResponse, render_to_csv
 
@@ -129,11 +129,12 @@ def zone_management(request, zone_id, org_id=None):
     return context
 
 
+@facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_usage.html")
 @render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
-def facility_usage(request, facility_id, org_id=None, zone_id=None, frequency=None, period_start="", period_end=""):
-    context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id)
+def facility_usage(request, facility, org_id=None, zone_id=None, frequency=None, period_start="", period_end=""):
+    context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility.id)
 
     # Basic data
     groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
@@ -191,10 +192,11 @@ def device_management(request, device_id, org_id=None, zone_id=None, n_sessions=
     return context
 
 
+@facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_form.html")
-def facility_form(request, facility_id, org_id=None, zone_id=None):
-    context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id)
+def facility_form(request, facility, org_id=None, zone_id=None):
+    context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility.id)
 
     if request.method != "POST":
         form = FacilityForm(instance=context["facility"])
@@ -210,29 +212,30 @@ def facility_form(request, facility_id, org_id=None, zone_id=None):
     return context
 
 
+@facility_required
 @require_authorized_admin
 @render_to("control_panel/group_report.html")
-def group_report(request, facility_id, group_id=None, org_id=None, zone_id=None):
+def group_report(request, facility, group_id=None, org_id=None, zone_id=None):
     context = group_report_context(
-        facility_id=facility_id,
+        facility_id=facility.id,
         group_id=group_id or request.REQUEST.get("group", ""),
         topic_id=request.REQUEST.get("topic", ""),
         org_id=org_id,
         zone_id=zone_id
     )
 
-    context.update(control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id, group_id=group_id))
+    context.update(control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
     return context
 
 
+@facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_user_management.html")
-def facility_user_management(request, facility_id, user_type="students", group_id=None, org_id=None, zone_id=None):
+def facility_user_management(request, facility, user_type="students", group_id=None, org_id=None, zone_id=None, per_page=25):
     group_id=group_id or request.REQUEST.get("group","")
     if group_id == "None":
         group_id = None
-    page=request.REQUEST.get("page","1"),
-    facility = Facility.objects.get(id=facility_id)
+    page=request.REQUEST.get("page","1")
     groups = FacilityGroup.objects \
         .filter(facility=facility) \
         .order_by("name")
@@ -240,16 +243,17 @@ def facility_user_management(request, facility_id, user_type="students", group_i
     # This could be moved into a function shared across files, if necessary.
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
-    def get_users_from_group(group_id, facility=None):
+    def get_users_from_group(user_type, group_id, facility=None):
         if group_id == _("Ungrouped"):
             return FacilityUser.objects \
+                .filter(is_teacher=(user_type == "student")) \
                 .filter(facility=facility, group__isnull=True) \
                 .order_by("first_name", "last_name")
         elif not group_id:
             return []
         else:
             return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
-    user_list = get_users_from_group(group_id, facility=facility)
+    user_list = get_users_from_group(user_type=user_type, group_id=group_id, facility=facility)
 
     # Get the user list from the group
     if not user_list:
@@ -281,12 +285,11 @@ def facility_user_management(request, facility_id, user_type="students", group_i
         "users": users,
         "groups": groups,
         "group_id": group_id,
-        "facility_id": facility_id,
     }
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
 
-    context.update(control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility_id, group_id=group_id))
+    context.update(control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
     return context
 
 

@@ -87,11 +87,27 @@
                             {{ facility.name }}
                         </a>
                         <a href="{% url facility_edit id=facility.id %}">
-                            <span class="icon-pencil icon-medium" style="padding: 0px 0px 5px 2px" title="{% trans 'Edit facility' %}"></span>
+                            <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">{% trans "Edit" %}</span>
                         </a>
+                        {% if facility.is_deletable %}
+                        <a href="{% url facility_edit id=facility.id %}">
+                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}">{% trans "Remove" %}</span>
+                        </a>
+                        {% endif %}
                     </td>
-                    <td nowrap>{{ facility.num_users }}</td>
-                    <td nowrap>{{ facility.num_groups }}</td>
+                    <td nowrap>
+                        {{ facility.num_users }}
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Add" %}</a>
+                        /
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Remove" %}</a>
+                    </td>
+                    <td nowrap>
+                        {{ facility.num_groups }}
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Add"  %}</a>
+                            /
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Remove" %}</a>
+                    </td>
+                    </td>
                     <td nowrap>
                         {% if not facility.last_time_used %}
                             {% trans "Never" %}
