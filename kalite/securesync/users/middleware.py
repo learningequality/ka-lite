@@ -1,3 +1,7 @@
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+
+import settings
 from .models import Facility
 
 
@@ -39,3 +43,11 @@ class FacilityCheck:
         if not "facility_exists" in request.session or request.is_admin:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())
+
+class LockdownCheck:
+    def process_request(self, request):
+        """
+        Whitelist only a few URLs, otherwise fail.
+        """
+        if settings.LOCKDOWN and not request.is_logged_in and request.path not in [reverse("homepage"), reverse("login"), reverse("add_facility_student"), reverse("status")]:
+            raise PermissionDenied()
