@@ -53,6 +53,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         if kwargs.get("facility_id", None):  # avoid using blank
             # Facility passed in directly
             facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
+            del kwargs["facility_id"]
 
         elif "facility" in request.GET:
             # Facility from querystring

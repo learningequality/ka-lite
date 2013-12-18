@@ -326,7 +326,6 @@ def help(request):
 @check_setup_status
 @render_to("help_admin.html")
 def help_admin(request):
-
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
