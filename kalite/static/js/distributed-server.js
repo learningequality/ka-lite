@@ -85,9 +85,6 @@ function force_sync() {
         .success(function() {
             show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."), "id_command")
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_command")
-        });
 }
 
 /**
@@ -170,9 +167,6 @@ $(function(){
             }
             show_django_messages(data.messages);
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_status")
-        });
 });
 
 // Related to student log progress
@@ -187,9 +181,6 @@ $(function(){
                     $("[data-video-id='" + video.video_id + "']").addClass(newClass);
                 });
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs")
-            });
     }
 
     // load progress data for all exercises linked on page, and render progress circles
@@ -202,9 +193,6 @@ $(function(){
                     $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
                 });
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
-            });
     }
 
 });
@@ -256,7 +244,7 @@ function get_server_status(options, fields, callback) {
         data: {fields: (fields || []).join(",")}
     }).success(function(data) {
         callback(data);
-    }).error(function() {
+    }).fail(function() {
         callback({status: "error"});
     });
 }
