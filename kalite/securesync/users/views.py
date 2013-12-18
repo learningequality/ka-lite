@@ -260,6 +260,7 @@ def login(request, facility):
     return {
         "form": form,
         "facilities": facilities,
+        "sign_up_url": reverse("add_facility_student"),
     }
 
 

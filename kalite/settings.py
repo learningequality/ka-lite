@@ -225,6 +225,7 @@ else:
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
         "kalite.i18n.middleware.SessionLanguage",
+        "securesync.middleware.LockdownCheck",
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
@@ -346,6 +347,9 @@ assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_
 PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
     'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
 })
+
+LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
 
 ########################
 # Storage and caching

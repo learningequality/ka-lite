@@ -14,4 +14,11 @@
 
         <input type="submit" value="{% trans 'Log in' %}" class="submit" />
     </form>
+    <div style="margin-top:20px">
+    {% if not restricted %}
+        {% blocktrans %}If you don't have a login, please <a href="{{ sign_up_url }}" style="font-weight: bold; color:blue">sign up</a>.{% endblocktrans %}
+    {% else %}
+        {% blocktrans %}If you don't have a login, please contact your administrator.{% endblocktrans %}
+    {% endif %}
+    </div>
 {% endblock content %}
