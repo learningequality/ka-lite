@@ -486,7 +486,7 @@ a.green_button:hover,input.green_button:hover{
     line-height: 14px;
     float: right;
     margin-left: 1px;
-    min-width: 50px;
+    min-width: 5px;
 }
 
 input#search {
