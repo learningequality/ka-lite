@@ -416,15 +416,21 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                 for po_file in src_po_files:
                     name, _ext = os.path.splitext(po_file)
 
-                    # Stream 1: learn
-                    learn_filter = any(os.path.basename(name).startswith(str) for str in ["learn.", "content.chrome", "_other_"])
-                    learn_filter = ".videos" in name or ".exercises" in name
+                    # Topic tree
+                    topic_tree_filter = '_high_priority_content' in name
 
-                    # Stream 2: extra
-                    extra_filter = any(os.path.basename(name).startswith(str) for str in ["content.chrome", "_other_"])
+                    # exercise
+                    exercise_filter = fnmatch.fnmatch(name, 'learn.math.*exercises*')
 
-                    if learn_filter or extra_filter:
-                        if fnmatch.fnmatch(po_file, 'exercises-????.po'):
+                    # # Stream 1: learn
+                    # learn_filter = any(os.path.basename(name).startswith(str) for str in ["learn.", "content.chrome", "_other_"])
+                    # learn_filter = (".videos" in name or ".exercises" in name) and learn_filter
+
+                    # # Stream 2: extra
+                    # extra_filter = any(os.path.basename(name).startswith(str) for str in ["content.chrome", "_other_"])
+
+                    if topic_tree_filter or exercise_filter:
+                        if fnmatch.fnmatch(po_file, 'exercises-*.po'):
                             remove_exercise_nonmetadata(po_file)
                         gc.collect()
                         yield zlib.compress(po_file)
