@@ -116,6 +116,7 @@ def zone_management(request, zone_id, org_id=None):
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
+            "is_deletable": facility.is_deletable(),
         }
 
     context.update({
