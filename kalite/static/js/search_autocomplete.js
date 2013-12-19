@@ -1,7 +1,7 @@
 var _nodes = null;   // store info about each topic tree node (persists to local storage)
 var _titles = [];    // keep an array (local memory only) around for fast filtering
 var _timeout_length = 1000 * 20; // 20 seconds
-var _version = "3"; // increment this when you're invalidating old storage
+var _version = "5"; // increment this when you're invalidating old storage
 
 function prefixed_key(base_key) {
     return "kalite_search_" + base_key;
@@ -33,7 +33,7 @@ function fetchTopicTree(lang) {
             handleFailedAPI(resp, gettext("Error getting search data"));
         },
         success: function(categories) {
-            //console.log("got the remote topic tree for  " + lang);
+            console.log("got the remote topic tree for  " + lang);
 
             _nodes = {};
             for (var category_name in categories) { // category is either Video, Exercise or Topic
@@ -98,7 +98,12 @@ function fetchLocalOrRemote() {
     } else if (isLocalStorageAvailable(prefixed_key("language")) && localStorage.getItem(prefixed_key("language")) == lang) {
         //console.log("LocalStore cache hit.")
         // Get from local storage, grouped by type
-        var node_types = JSON.parse(localStorage.getItem("node_types"));
+        var node_types = JSON.parse(localStorage.getItem(prefixed_key("node_types")));
+        if (!node_types) {
+            console.log(gettext("Warning: failed to retrieve node_types from localStorage, but other data existed.  Refetching the data, to try and solve the problem."));
+            fetchTopicTree(lang);
+            return;
+        }
         _nodes = {};
         for (idx in node_types) {
             var node_type = node_types[idx];
