@@ -1,3 +1,4 @@
+import re
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -118,8 +119,25 @@ def facility_required(handler):
             def facility_selection(request):
                 facilities = list(Facility.objects.all())
                 refresh_session_facility_info(request, len(facilities))
-                context = {"facilities": facilities}
-                return context
+
+                # Choose the path template
+                cp_path_match = re.match(r"^(.*\/facility\/)[^/]+(\/.*)$", request.path)
+                if cp_path_match:
+                    path_template = "%s%%(facility_id)s%s" % cp_path_match.groups()
+                else:
+                    path_template="%(path)s?%(querystring)s&facility=%(facility_id)s"
+
+                selection_paths = {}
+                for facility in facilities:
+                    selection_paths[facility.id] = path_template % ({
+                        "path": request.path,
+                        "querystring": "",
+                        "facility_id": facility.id,
+                    })
+                return {
+                    "facilities": facilities,
+                    "selection_paths": selection_paths,
+                }
             return facility_selection(request)
 
     return inner_fn
