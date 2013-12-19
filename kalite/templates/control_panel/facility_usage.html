@@ -51,7 +51,19 @@
 {% block control_panel_content %}
     <div id="facility_container">
         <div class="groups">
-            <h2>{% trans "Groups" %}</h2>
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Groups" %}</span>
+                <a href="{% url add_group %}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new group' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "A group is group of students, such as a classroom of students or all students in one grade." %}
+                </span>
+            </div>
 
             {% if not groups %}
                 <p>{% trans "You currently have no data available." %}</p>
@@ -96,7 +108,19 @@
         </div><!-- groups -->
 
         <div class="students">
-            <h2>{% trans "Student Usage Reports" %}</h2>
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Students" %}</span>
+                <a href="{% url add_facility_student %}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new student' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "This report contains information about recent student activity." %}
+                </span>
+            </div>
 
             {% if not students %}
                 <p>{% trans "You currently have no data available." %}</p>

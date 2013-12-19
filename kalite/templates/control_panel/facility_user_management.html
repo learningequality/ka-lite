@@ -13,6 +13,10 @@
         .selection {
             margin-bottom: 20px;
         }
+        .users {
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
     </style>
 {% endblock headcss %}
 
@@ -26,17 +30,26 @@
 {% block control_panel_content %}
     <div id="zone_container">
         <div class="teachers">
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Coaches" %}</span>
+                <a href="{% url add_facility_teacher %}?facility={{ facility_id }}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new coach' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
             <div>
-                <h2 style="float:left;line-height:25px;">{% trans "Teachers" %}</h2>
-                <a style="line-height:25px;" href="{% url add_facility_teacher %}?facility={{ facility_id }}">{% trans "Add" %}</a>
+                <span>
+                    {% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}
+                </span>
             </div>
 
             <div class="users">
-            {% if not teachers %}
-                <p>{% trans "You currently have no teachers for this facility." %}</p>
+            {% if not coaches %}
+                <p>{% trans "You currently have no coaches for this facility." %}</p>
 
             {% else %}
-            {% block teachers_table %}
+            {% block coaches_table %}
                 <table>
                     <tbody>
                         <tr>
@@ -56,7 +69,7 @@
                                 {% trans "Group" %}
                             </th>
                         </tr>
-                        {% for user in teachers %}
+                        {% for user in coaches %}
                         <tr>
                             <td class="selectcol">
                                 <input type="checkbox" value="{{ user.username }}">
@@ -101,10 +114,20 @@
 
 
         <div class="students">
-            <div>
-                <h2 style="float:left;line-height:25px;">{% trans "Students" %}</h2>
-                <a style="line-height:25px;" href="{% url add_facility_teacher %}?facility={{ facility_id }}">{% trans "Add" %}</a>
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Students" %}</span>
+                <a href="{% url add_facility_student %}?facility={{ facility_id }}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new student' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
             </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "Students belong to groups." %}
+                </span>
+            </div>
+
 
 
             {% if not students %}

@@ -263,7 +263,7 @@ def facility_user_management(request, facility, user_type=None, group_id=None, o
 
     context.update({
         "students": students,
-        "teachers": teachers,
+        "coaches": teachers,
         "groups": groups,
     })
 
