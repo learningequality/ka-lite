@@ -28,14 +28,6 @@ from shared.decorators import require_admin, central_server_only, distributed_se
 from shared.jobs import force_job
 from utils.internet import set_query_params
 
-@require_admin
-@distributed_server_only
-@render_to("securesync/facility_admin.html")
-def facility_admin(request):
-    facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
-
 
 @require_admin
 @distributed_server_only
@@ -51,7 +43,7 @@ def facility_edit(request, id=None):
             form.save()
             # Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
             messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
-            return HttpResponseRedirect(request.next or reverse("facility_admin"))
+            return HttpResponseRedirect(request.next or reverse("zone_management"))
     else:
         form = FacilityForm(instance=facil)
     return {

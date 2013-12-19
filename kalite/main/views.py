@@ -323,7 +323,6 @@ def help(request):
         return help_student(request)
 
 @require_admin
-@check_setup_status
 @render_to("help_admin.html")
 def help_admin(request):
     context = {
