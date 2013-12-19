@@ -24,12 +24,12 @@ except:
     class Organization(models.Model):
         pass
 from coachreports.views import student_view_context
-from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from securesync.forms import FacilityForm
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from settings import LOG as logging
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from shared.topic_tools import get_node_cache
 from utils.internet import CsvResponse, render_to_csv
 
 
@@ -230,7 +230,7 @@ def facility_user_management(request, facility_id, group_id="", org_id=None, zon
 @render_to("control_panel/account_management.html")
 def account_management(request, org_id=None):
 
-    # Only log 'coachreport' activity for students, 
+    # Only log 'coachreport' activity for students,
     #   (otherwise it's hard to compare teachers)
     if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
         try:
@@ -277,7 +277,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(topicdata.NODE_CACHE['Exercise'])
+    num_exercises = len(get_node_cache('Exercise'))
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -320,7 +320,7 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
 
         user_data[user.pk]["total_videos"] = 0
         user_data[user.pk]["videos_watched"] = []
-    
+
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1

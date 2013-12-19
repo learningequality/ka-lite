@@ -54,9 +54,9 @@ class RegistrationClient(BaseClient):
 
             # save the imported model, and mark the returned Device as trusted
             if isinstance(model.object, Device):
-                model.object.save(is_trusted=True, imported=True)
+                model.object.save(is_trusted=True, imported=True, increment_counters=False)
             else:
-                model.object.save(imported=True)
+                model.object.save(imported=True, increment_counters=False)
 
         # If that all completes successfully, then we've registered!  Woot!
         return {"code": "registered"}

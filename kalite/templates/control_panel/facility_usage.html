@@ -74,12 +74,12 @@
             <h2>{% trans "Groups" %}</h2>
 
             {% if not groups %}
-                <p>{% trans "You currently have no data available" %}</p>
+                <p>{% trans "You currently have no data available." %}</p>
 
             {% else %}
                 <table class="simple-table">
                     <tr>
-                        <th width="100px">{% trans "Group name" %}</th>
+                        <th width="100px">{% trans "Group Name" %}</th>
                         <th width="150px"></th>
                         <th width="100px">{% trans "# Students</" %}th>
                         <th width="100px">{% trans "Logins</" %}th>
@@ -94,8 +94,11 @@
                             <td>
                                 {% if id %}
                                 <span class="actions">[
+                                    {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
                                     <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
-                                    / <a href="{% url facility_user_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
+                                    /
+                                    {# Translators: this is a verb; by clicking this link, the user will be able to manage student accounts. #}
+                                    <a href="{% url facility_user_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
                                 ]</span>
                                 {% endif %}
                             </td>
@@ -116,14 +119,14 @@
             <h2>{% trans "Student Usage Reports" %}</h2>
 
             {% if not students %}
-                <p>{% trans "You currently have no data available" %}</p>
+                <p>{% trans "You currently have no data available." %}</p>
 
             {% else %}
 
              <table class="simple-table">
                 <tr>
                     <tr>
-                        <th width="250px">{% trans "Student name" %}</th>
+                        <th width="250px">{% trans "Student Name" %}</th>
                         <th width="100px">{% trans "Group" %}</th>
                         <th width="100px">{% trans "Logins" %}</th>
                         <th width="100px">{% trans "Login Time" %}</th>

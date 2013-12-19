@@ -11,6 +11,8 @@ from django.core.management import call_command
 
 import settings
 from securesync.models import Device
+from shared.i18n import CROWDIN_CACHE_DIR, get_dubbed_video_map
+from shared.khanload import KHANLOAD_CACHE_DIR
 from utils.general import ensure_dir
 from utils.platforms import is_windows, not_system_specific_scripts, system_specific_zipping, _default_callback_zip
 
@@ -28,15 +30,20 @@ def file_in_platform(file_path, platform):
 def select_package_dirs(dirnames, key_base, **kwargs):
     """Choose which directories to include/exclude,
     based on the "key-base", which is essentially the relative path from the ka-lite project"""
-    base_name = os.path.split(key_base)[1]
+    base_name = os.path.split(key_base)[-1]
 
     if key_base == "":  # base directory
-        in_dirs = set(dirnames) - set((".git", "content", "node_modules", "_khanload_cache"))
+        in_dirs = set(dirnames) - set((".git", "content", "node_modules", os.path.basename(KHANLOAD_CACHE_DIR), os.path.basename(CROWDIN_CACHE_DIR)))
 
-    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
-        # ONLY include files for the particular locale
+    elif base_name in ["locale", "localflavor"]:
+        if  kwargs.get("locale") not in [None, "", "all"]:
+            # ONLY include files for the particular locale
+            in_dirs = set((kwargs['locale'],))
+        else:
+            in_dirs = set([])
 
-        in_dirs = set((kwargs['locale'],))
+    elif key_base == os.path.join("locale", kwargs['locale']):
+        in_dirs = set(["LC_MESSAGES"])
 
     else:
         # can't exclude 'test', which eliminates the Django test client (used in caching)
@@ -203,11 +210,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not settings.CENTRAL_SERVER:
             raise CommandError("Disabled for distributed servers, until we can figure out what to do with ")
-        
+
         options['platform'] = options['platform'].lower() # normalize
 
         if options['platform'] not in ["all", "linux", "macos", "darwin", "windows"]:
             raise CommandError("Unrecognized platform: %s; will include ALL files." % options['platform'])
+
+        # Step 0: refresh all resources
+        get_dubbed_video_map(force=True)  # force a remote download
 
         # Step 1: recursively add all static files
         kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
@@ -226,8 +236,8 @@ class Command(BaseCommand):
         # Step 4: package into a zip file
         ensure_dir(os.path.realpath(os.path.dirname(options["file"])))  # allows relative paths to be passed.===
         system_specific_zipping(
-            files_dict = dict([(v["dest_path"], src_path) for src_path, v in files_dict.iteritems()]), 
-            zip_file = options["file"], 
+            files_dict = dict([(v["dest_path"], src_path) for src_path, v in files_dict.iteritems()]),
+            zip_file = options["file"],
             compression=ZIP_DEFLATED if options['compress'] else ZIP_STORED,
             callback=_default_callback_zip if options["verbosity"] else None,
         )

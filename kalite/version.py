@@ -36,6 +36,23 @@ VERSION_INFO = {
         },
     },
 
+    "0.10.3": {
+        "release_date": "2013/12/16",
+        "git_commit": "aa588ef130d38c647f8f3514c70ca074f761b0e9",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Better performance (faster save times and login times)"],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+    },
+
     "0.10.2": {
         "release_date": "2013/10/08",
         "git_commit": "5831abb8d2ee0815416a17885790679c4672bf97",

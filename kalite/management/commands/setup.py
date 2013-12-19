@@ -25,6 +25,7 @@ import settings
 import version
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
 from securesync.models import Zone
+from shared.i18n import move_old_subtitles
 from utils.general import get_host_name
 from utils.internet import get_ip_addresses
 from utils.platforms import is_windows, system_script_extension
@@ -251,10 +252,10 @@ class Command(BaseCommand):
             #
             # Hackish, as this duplicates code from initdevice.
             #
-            if os.path.exists(InitCommand.data_json_file):
-                # This is a pathway to install zone-based data on a software upgrade.
-                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
-                load_data_for_offline_install(in_file=InitCommand.data_json_file)
+            #if os.path.exists(InitCommand.data_json_file):
+            #    # This is a pathway to install zone-based data on a software upgrade.
+            #    sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
+            #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
             confirm_or_generate_zone()
             initialize_facility()
@@ -278,6 +279,10 @@ class Command(BaseCommand):
             shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
 
         start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
+
+        # Move subtitles (if necessary)
+        #  Only required from before 0.10.2 to after 0.10.3
+        move_old_subtitles()
 
 
         # Run videoscan, on the distributed server.

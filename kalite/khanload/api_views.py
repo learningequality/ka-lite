@@ -38,10 +38,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 import settings
 from main.models import ExerciseLog, VideoLog
-from main.topicdata import NODE_CACHE
 from settings import LOG as logging
 from securesync.models import FacilityUser
 from shared.decorators import require_login, distributed_server_only, central_server_only
+from shared.topic_tools import get_node_cache
 from utils.internet import JsonResponse
 
 
@@ -146,6 +146,7 @@ def update_all_central_callback(request):
 
     exercises = get_api_resource(request, "/api/v1/user/exercises")
     videos = get_api_resource(request, "/api/v1/user/videos")
+    node_cache = get_node_cache()
 
     # Save videos
     video_logs = []
@@ -158,7 +159,7 @@ def update_all_central_callback(request):
             continue
 
         # Only save video logs for videos that we recognize.
-        if video_id not in NODE_CACHE["Video"]:
+        if video_id not in node_cache["Video"]:
             logging.warn("Skipping unknown video %s" % video_id)
             continue
 
@@ -184,13 +185,13 @@ def update_all_central_callback(request):
 
         # Only save video logs for videos that we recognize.
         slug = exercise.get('exercise', "")
-        if slug not in NODE_CACHE['Exercise']:
+        if slug not in node_cache['Exercise']:
             logging.warn("Skipping unknown video %s" % slug)
             continue
 
         try:
             completed = exercise['streak'] >= 10
-            basepoints = NODE_CACHE['Exercise'][slug][0]['basepoints']
+            basepoints = node_cache['Exercise'][slug][0]['basepoints']
             exercise_logs.append({
                 "exercise_id": slug,
                 "streak_progress": min(100, 100 * exercise['streak']/10),  # duplicates logic elsewhere
@@ -259,7 +260,7 @@ def update_all_distributed_callback(request):
     videos = json.loads(request.POST["video_logs"])
     exercises = json.loads(request.POST["exercise_logs"])
     user = FacilityUser.objects.get(id=request.POST["user_id"])
-
+    node_cache = get_node_cache()
     # Save videos
     n_videos_uploaded = 0
     for video in videos:
@@ -267,7 +268,7 @@ def update_all_distributed_callback(request):
         youtube_id = video['youtube_id']
 
         # Only save video logs for videos that we recognize.
-        if video_id not in NODE_CACHE["Video"]:
+        if video_id not in node_cache["Video"]:
             logging.warn("Skipping unknown video %s" % video_id)
             continue
 
@@ -288,7 +289,7 @@ def update_all_distributed_callback(request):
     n_exercises_uploaded = 0
     for exercise in exercises:
         # Only save video logs for videos that we recognize.
-        if exercise['exercise_id'] not in NODE_CACHE['Exercise']:
+        if exercise['exercise_id'] not in node_cache['Exercise']:
             logging.warn("Skipping unknown video %s" % exercise['exercise_id'])
             continue
 

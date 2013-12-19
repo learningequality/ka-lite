@@ -1,3 +1,9 @@
+function assert(val, msg) {
+    if (!val) {
+        show_message("error", msg, "id_assert");
+    }
+}
+
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
@@ -28,6 +34,9 @@ function doRequest(url, data) {
         data: data ? JSON.stringify(data) : "",
         contentType: "application/json",
         dataType: "json"
+    })
+    .fail(function(resp) {
+        communicate_api_failure(resp);
     });
 }
 

@@ -113,11 +113,11 @@
             <p class="topic-list">
                 {% for subtopic in topics %}
                 {% if backup_vids_available and subtopic.nvideos_local == 0 %}
-                    <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{{subtopic.nvideos_known}}/{{subtopic.nvideos_known}} {% trans "video(s) are available." %}">
+                    <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}" %}">
                         {% trans subtopic.title %}
                     </a>
                 {% endif %}
-                <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local == 0 %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
+                <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local == 0 %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}">
                     {% trans subtopic.title %}
                 </a>
                 {% endfor %}

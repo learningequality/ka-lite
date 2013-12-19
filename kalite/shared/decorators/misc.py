@@ -53,6 +53,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         if kwargs.get("facility_id", None):  # avoid using blank
             # Facility passed in directly
             facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
+            del kwargs["facility_id"]
 
         elif "facility" in request.GET:
             # Facility from querystring
@@ -110,6 +111,7 @@ def facility_required(handler):
                 messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
             return HttpResponseRedirect(reverse("add_facility"))
+
         else:
             @distributed_server_only
             @render_to("securesync/facility_selection.html")

@@ -14,11 +14,15 @@
            line-height: 23px;
            margin-left: 10px;
         }
-        .subtitle_indicator {
+        .subtitle-indicator {
             background-color: #aaf;
+            margin: 0px 1px 0px 0px;
+            padding: 2px;
         }
-        .video_indicator {
+        .dubbedvideo-indicator {
             background-color: #faa;
+            margin: 0px 1px 0px 0px;
+            padding: 2px;
         }
     </style>
 {% endblock headcss %}
@@ -30,7 +34,7 @@
             $('.video-unavailable').removeAttr("href");
 
             // TODO(bcipolli): use javascript to translate here
-            $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
+            $('a.video-unavailable').attr("title", "{% trans 'This video is not downloaded.' %}");
         });
     </script>
 {% endblock headjs %}
@@ -54,10 +58,10 @@
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
+            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}">
                 {% trans subtopic.title %}
             </a>
-            <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
+            <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}" %}">
                 {% trans subtopic.title %}
             </a>
             </span>
@@ -87,19 +91,22 @@
             </a>
 
             {# dubbed videos #}
-            {% for lang, urls in video.urls.iteritems %}
-                {% if lang != current_language %}
-                <span class="video_indicator">
-                    <a href="v/{{ video.slug }}/?lang={{ lang }}" class="video-link video-available">
+            {% for lang, avail in video.availability.iteritems %}
+                {% if avail.on_disk %}
+                <span class="dubbedvideo-indicator">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}">
                         {{ lang }}
-                    </a>
-                </span>
+                    </a></span>
                 {% endif %}
             {% endfor %}
 
-            {# subtitles #}
-            {% for lang in video.urls.en.subtitles.keys %}
-                <span class="subtitle_indicator">{{ lang }}</span>
+            {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
+            {% for lang in video.availability.en.subtitles.keys %}
+                <span class="subtitle-indicator">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}">
+                {{ lang }}
+</a>
+                </span>
             {% endfor %}
         </li>
         {% endfor %}
@@ -113,7 +120,17 @@
         {% for exercise in exercises %}
         <li>
             <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
-            <a class="exercise-link" href="e/{{ exercise.name }}/">{% trans exercise.display_name %}</a>
+            <a class="exercise-link" href="e/{{ exercise.name }}/">{% trans exercise.title %}</a>
+
+            {# dubbed videos #}
+            {% for lang in exercise_langs|get_item:exercise.id %}
+                <span class="dubbedvideo-indicator">
+                    <a href="e/{{ exercise.slug }}/?lang={{ lang }}">
+                        {{ lang }}
+                    </a>
+                </span>
+            {% endfor %}
+
         </li>
         {% endfor %}
         <br/>

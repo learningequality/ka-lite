@@ -27,7 +27,7 @@ import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
 from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
-from utils.general import convert_date_input, ensure_dir, make_request
+from utils.general import convert_date_input, ensure_dir, make_request, softload_json
 
 
 class LanguageNameDoesNotExist(Exception):
@@ -49,8 +49,7 @@ def clear_subtitles_cache(lang_codes=None, locale_root=LOCALE_ROOT):
 
         # Clear the status file
         lm_file = get_lang_map_filepath(lang_code)
-        with open(lm_file, "r") as fp:
-            download_status = json.load(fp)
+        download_status = softload_json(lm_file, raises=True)
         for key in download_status:
             download_status[key] = {u'downloaded': False, u'last_success': u'', u'last_attempt': u'', u'api_response': u''}
         with open(lm_file, "w") as fp:
@@ -85,7 +84,7 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
             if not os.path.exists(lang_map_filepath):
                 videos = {}  # happens if an unknown set for subtitles.
             else:
-                with open(lang_map_filepath, "r") as fp:
+                videos open(lang_map_filepath, "r") as fp:
                     videos = json.load(fp)
         except Exception as e:
             error_msg = "Error in subtitles metadata file for %s: %s" % (lang_code, e)
@@ -178,7 +177,7 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
         response = download_subtitle(youtube_id, lang_code, format="srt")
         time_of_attempt = unicode(datetime.datetime.now().date())
 
-        if response == "client-error" or response == "server-error":
+        if response in ["client-error", "server-error", "unexpected_error"]:
             # Couldn't download
             logging.info("%s/%s.srt: Updating JSON file to record error (%s)." % (
                 lang_code, youtube_id, response,
@@ -221,13 +220,12 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     """
     Return subtitles for YouTube ID in language specified. Return False if they do not exist. Update local JSON accordingly.
 
-    Note: srt map deals with amara, so uses ietf codes (e.g. en-us)
+    Note: srt map deals with amara, so uses lower-cased ietf codes (e.g. en-us)
     """
     assert format == "srt", "We only support srt download at the moment."
 
     # srt map deals with amara, so uses ietf codes (e.g. en-us)
-    with open(SRTS_JSON_FILEPATH, "r") as fp:
-        api_info_map = json.load(fp)
+    api_info_map = softload_json(SRTS_JSON_FILEPATH, raises=True)
 
     # get amara id
     amara_code = api_info_map.get(youtube_id).get("amara_code")
@@ -239,7 +237,7 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     resp = make_request(AMARA_HEADERS, "%s/%s/languages/%s/subtitles/?format=srt" % (
         base_url, amara_code, lang_code.lower(),
     ))
-    if isinstance(resp, basestring) or not resp:
+    if isinstance(resp, basestring):
         return resp
     else:
         # return the subtitle text, replacing empty subtitle lines with
@@ -262,11 +260,8 @@ def update_json(youtube_id, lang_code, downloaded, api_response, time_of_attempt
     """
     # Open JSON file
     filepath = get_lang_map_filepath(lang_code)
-    try:
-        with open(filepath, "r") as fp:
-            language_srt_map = json.load(fp)
-    except Exception as e:
-        logging.error("Something went wrong while trying to open the json file (%s): %s" % (filepath, e))
+    language_srt_map = softload_json(filepath, logger=logging.error)
+    if not language_srt_map:
         return False
 
     # create updated entry
@@ -316,13 +311,7 @@ def store_new_counts(lang_code, data_path=SUBTITLES_DATA_ROOT, locale_root=LOCAL
 
 def write_count_to_json(subtitle_counts, data_path):
     """Write JSON to file in static/data/subtitles/"""
-    try:
-        with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
-            current_counts = json.load(fp)
-    except Exception as e:
-        logging.error("Subtitle counts file appears to be corrupted (%s). Starting from scratch." % e)
-        current_counts = {}
-
+    current_counts = softload_json(SUBTITLE_COUNTS_FILEPATH, logger=logging.error)
     current_counts.update(subtitle_counts)
 
     logging.debug("Writing fresh srt counts to %s" % SUBTITLE_COUNTS_FILEPATH)

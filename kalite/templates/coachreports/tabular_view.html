@@ -5,7 +5,7 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Coach Reports" %} {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}?{{ BUILD_ID }}" />
@@ -44,11 +44,11 @@
             // Selector to toggle visible elements is stored in each option value
             cell_height = 27;
             $("#disp_options").change(function(){
-                selector = $("#disp_options option:selected").val(); 
+                selector = $("#disp_options option:selected").val();
 
                 // adjust the cell height
                 cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
-        
+
                 // adjust view in data cells
                 $(selector).each(function () {
                     $(this).toggle()
@@ -85,7 +85,7 @@
                 {% endfor %}
             </select>
         {% else %}
-            <div class="subtitle">{% trans "No Report Types Available" %}</div>
+            <div class="subtitle">{% trans "No report types available." %}</div>
         {% endif %}
         </div>
 
@@ -103,7 +103,7 @@
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
-                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.standalone_title }}</option>
+                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.title }}</option>
                 {% endfor %}
             </select>
         {% endif %}
@@ -127,7 +127,7 @@
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
             {% trans "No student accounts have been created." %}
         {% elif not request.GET.topic %}
-            {% comment %}Group was selected, but data not queried because a topic was not selected 
+            {% comment %}Group was selected, but data not queried because a topic was not selected
             (NOTE: this required knowledge of how the view queries data){% endcomment %}
             {% trans "Please select a topic above." %}
         {% else %}
@@ -219,13 +219,13 @@
                                             &nbsp;
                                     {% elif not student.video_logs|get_item:video.id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">{{ student.video_logs|get_item:video.id|get_item:"total_seconds_watched" }} {% trans "secs" %}</div>
+                                            <div class="total_seconds_watched">{% blocktrans with total_seconds_watched=student.video_logs|get_item:video.id|get_item:"total_seconds_watched" %}{{ total_seconds_watched }} secs{% endblocktrans %}</div>
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
                                             <div class="total_seconds_watched">100%</div>
                                     {% endif %}
                                     {% if student.video_logs|get_item:video.id  %}
-                                            <div class="points">{{ student.video_logs|get_item:video.id|get_item:"points"  }} {% trans "points" %}</div>
+                                            <div class="points">{% blocktrans with points=student.video_logs|get_item:video.id|get_item:"points"  %}{{ points}} points{% endblocktrans %}</div>
                                     {% endif %}
                                         </td>
                                 {% endfor %}

@@ -66,7 +66,7 @@ CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if n
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("kalite.%s" % CENTRAL_SERVER_DOMAIN) + (":7007" if DEBUG else ""))
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN
 CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
@@ -83,6 +83,8 @@ PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.pat
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
+SCRIPTS_PATH   = getattr(local_settings, "SCRIPTS_PATH", os.path.join(PROJECT_PATH, '..', 'scripts'))
+
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
@@ -92,12 +94,6 @@ DATABASES      = getattr(local_settings, "DATABASES", {
         },
     }
 })
-
-CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
-CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
-PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {'min_length': getattr(local_settings,
-                                                                                              'PASSWORD_MIN_LENGTH',
-                                                                                              6)})
 
 
 ##############################
@@ -162,11 +158,12 @@ TEMPLATE_LOADERS = (
     "django.template.loaders.app_directories.Loader",
 #     "django.template.loaders.eggs.Loader",
 )
+#    if USE_I18N:
+TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
 
 MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -193,9 +190,10 @@ INSTALLED_APPS = (
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
+    "updates",  #
+    "i18n",  #
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
-
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -216,20 +214,31 @@ if CENTRAL_SERVER:
     AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
     AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
 
-else:
+    CONTENT_ROOT   = None  # needed for shared functions that are main-only
+    CONTENT_URL    = None
 
+else:
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS += ("i18n", "updates",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
         "securesync.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
+        "kalite.i18n.middleware.SessionLanguage",
     )
-#    if USE_I18N:
+
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
-    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage", "i18n.middleware.VideoLanguage",)  # VideoLanguage must come after SessionLanguage
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
+
+    CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
+    CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
+
+# Must define after i18n.middleware.SessionLanguage
+MIDDLEWARE_CLASSES += (
+    'django.middleware.locale.LocaleMiddleware',
+)
+
 
 ########################
 # Debugging and testing
@@ -334,6 +343,9 @@ PASSWORD_ITERATIONS_STUDENT_SYNCED = getattr(local_settings, "PASSWORD_ITERATION
 assert PASSWORD_ITERATIONS_TEACHER_SYNCED >= 5000, "PASSWORD_ITERATIONS_TEACHER_SYNCED must be >= 5000"
 assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_SYNCED must be >= 2500"
 
+PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
+    'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
+})
 
 ########################
 # Storage and caching

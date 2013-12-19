@@ -4,9 +4,11 @@ Miscellaneous utility functions (no dependence on non-standard packages, such as
 General string, integer, date functions.
 """
 import datetime
+import json
 import logging
 import requests
 import os
+import errno
 
 
 class InvalidDateFormat(Exception):
@@ -129,10 +131,20 @@ def version_diff(v1, v2):
     return 0
 
 
+# http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    if not os.path.exists(path):
+    try:
         os.makedirs(path)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            # file already exists
+            if not os.path.isdir(path):
+                # file exists but is not a directory
+                raise OSError(errno.ENOTDIR, "Not a directory: '%s'" % path)
+            pass  # directory already exists
+        else:
+            raise
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
@@ -198,9 +210,12 @@ def make_request(headers, url, max_retries=5):
     """Return response from url; retry up to 5 times for server errors.
     When returning an error, return human-readable status code.
 
-    codes: server-error, client-error
+    codes: server-error, client-error, unexpected-error
     """
+    assert max_retries >= 0, "max_retries must be non-negative."  # guarantees response will never be None
+
     response = None
+    last_error = None
     for retries in range(1, 1 + max_retries):
         try:
             response = requests.get(url, headers=headers)
@@ -217,11 +232,27 @@ def make_request(headers, url, max_retries=5):
                 ))
                 response = "client-error"
                 break
-            # TODO(dylan): if internet connection goes down, we aren't catching
-            # that, and things just break
             else:
+                # Success case
                 break
+
         except Exception as e:
-            logging.warn("Unexpected Error downloading %s: %s" % (url, e))
+            if response is None:
+                response = "unexpected-error"
+            cur_error = unicode(e.message)
+            if not last_error or last_error != cur_error:
+                logging.warn(u"Unexpected Error downloading %s: %s" % (url, cur_error))
+            last_error = cur_error
 
     return response
+
+def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    try:
+        with open(json_filepath, "r") as fp:
+            return json.load(fp)
+    except Exception as e:
+        if logger:
+            logger("%s %s: %s" % (errmsg, json_filepath, e))
+        if raises:
+            raise
+        return default

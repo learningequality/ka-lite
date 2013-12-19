@@ -11,6 +11,19 @@ function pluralidx(n) {
     return v;
   }
 }
+catalog['An amount remaining; ex: there is something leftleft'] = 'left';
+catalog['Check Answer'] = 'Check Answer';
+catalog['Hide scratchpad'] = 'Hide scratchpad';
+catalog['I\'d like a hint'] = 'I\'d like a hint';
+catalog['I\'d like another hint'] = 'I\'d like another hint';
+catalog['Please wait'] = 'Please wait';
+catalog['Show Solution'] = 'Show Solution';
+catalog['Show next step'] = 'Show next step';
+catalog['Show scratchpad'] = 'Show scratchpad';
+catalog['Try Again'] = 'Try Again';
+catalog['points'] = 'points';
+catalog['step'] = 'step';
+
 
 function gettext(msgid) {
   var value = catalog[msgid];

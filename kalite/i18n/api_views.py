@@ -8,7 +8,7 @@ from django.http import HttpResponse, Http404
 
 import settings
 from shared.decorators import central_server_only
-from shared.i18n import LANGUAGE_PACK_AVAILABILITY_FILEPATH, SUBTITLES_DATA_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
+from shared.i18n import get_language_pack_availability_filepath, SUBTITLES_DATA_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
 
 
@@ -35,18 +35,16 @@ def get_subtitle_counts(request):
 @central_server_only
 @allow_jsonp
 @api_handle_error_with_json
-def get_available_language_packs(request):
+def get_available_language_packs(request, version):
     """Return dict of available language packs"""
 
     # On central, loop through available language packs in static/language_packs/
     try:
-        with open(LANGUAGE_PACK_AVAILABILITY_FILEPATH, "r") as fp:
+        with open(get_language_pack_availability_filepath(ver=version), "r") as fp:
             language_packs_available = json.load(fp)
     except:
         raise Http404
-
-    return JsonResponse(language_packs_available.values())
-
+    return JsonResponse(sorted(language_packs_available.values(), key=lambda lp: lp["name"].lower()))
 
 @central_server_only
 @api_handle_error_with_json

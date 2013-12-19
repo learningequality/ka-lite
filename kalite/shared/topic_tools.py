@@ -6,19 +6,15 @@ import json
 import os
 from functools import partial
 
+from django.utils.translation import ugettext as _
+
 import settings
 from settings import LOG as logging
-from shared import i18n
+from shared import i18n, khanload
+from utils.general import softload_json
 
-
-kind_slugs = {
-    "Video": "v/",
-    "Exercise": "e/",
-    "Topic": ""
-}
 
 topics_file = "topics.json"
-map_layout_file = "maplayout_data.json"
 
 
 # Globals that can be filled
@@ -26,8 +22,7 @@ TOPICS          = None
 def get_topic_tree(force=False):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, topics_file), "r") as fp:
-            TOPICS = json.load(fp)
+        TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
     return TOPICS
 
@@ -45,11 +40,11 @@ def get_node_cache(node_type=None, force=False):
 
 KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
-    global KNOWLEDGEMAP_TOPICS, map_layout_file
+    global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, map_layout_file), "r") as fp:
-            kmap = json.load(fp)
-        KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
+        root_node = get_topic_tree(force=force)
+        sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
+        KNOWLEDGEMAP_TOPICS =  [k[0] for k in sorted_items]
     return KNOWLEDGEMAP_TOPICS
 
 
@@ -61,12 +56,12 @@ def get_slug2id_map(force=False):
     return SLUG2ID_MAP
 
 
-FLAT_TOPIC_TREE = None
-def get_flat_topic_tree(force=False):
+FLAT_TOPIC_TREE = {}
+def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
     global FLAT_TOPIC_TREE
-    if FLAT_TOPIC_TREE is None or force:
-        FLAT_TOPIC_TREE = generate_flat_topic_tree(get_node_cache(force=force))
-    return FLAT_TOPIC_TREE
+    if lang_code not in FLAT_TOPIC_TREE or force:
+        FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
+    return FLAT_TOPIC_TREE[lang_code]
 
 
 def validate_ancestor_ids(topictree=None):
@@ -109,7 +104,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     return slug2id_map
 
 
-def generate_flat_topic_tree(node_cache=None):
+def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
     categories = node_cache or get_node_cache()
     result = dict()
     # make sure that we only get the slug of child of a topic
@@ -119,7 +114,7 @@ def generate_flat_topic_tree(node_cache=None):
         for node_name, node_list in category.iteritems():
             node = node_list[0]
             relevant_data = {
-                'title': node['title'],
+                'title': _(node['title']),
                 'path': node['path'],
                 'kind': node['kind'],
                 'available': node.get('available', True),
@@ -177,12 +172,14 @@ def get_videos(topic):
 
 def get_exercises(topic):
     """Given a topic node, returns all exercise node children (non-recursively)"""
-    return filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
+    # Note: "live" is currently not stamped on any nodes, but could be in the future, so keeping here.
+    return filter(lambda node: node["kind"] == "Exercise" and node.get("live", True), topic["children"])
 
 
 def get_live_topics(topic):
     """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
-    return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+    # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
+    return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and "Video" in node["contains"], topic["children"])
 
 
 def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
@@ -336,9 +333,28 @@ def get_related_videos(exercise, limit_to_available=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
+    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
 
     parent_path1 = parse_path(node1)
     parent_path2 = parse_path(node2)
 
     return parent_path1 == parent_path2
+
+
+def get_neighbor_nodes(node, neighbor_kind=None):
+
+    parent = get_parent(node)
+    prev = next = None
+    filtered_children = [ch for ch in parent["children"] if not neighbor_kind or ch["kind"] == neighbor_kind]
+
+    for idx, child in enumerate(filtered_children):
+        if child["path"] != node["path"]:
+            continue
+
+        if idx < (len(filtered_children) - 1):
+            next = filtered_children[idx + 1]
+        if idx > 0:
+            prev = filtered_children[idx - 1]
+        break
+
+    return prev, next

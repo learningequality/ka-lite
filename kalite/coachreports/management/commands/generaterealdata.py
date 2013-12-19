@@ -33,7 +33,6 @@ from django.db import transaction
 
 import settings
 import securesync
-from main import topicdata
 from main.models import ExerciseLog, VideoLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
 from settings import LOG as logging

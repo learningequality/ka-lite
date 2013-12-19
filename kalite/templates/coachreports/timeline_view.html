@@ -4,8 +4,13 @@
 {% load my_filters %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Timeline plot" %} {{ block.super }}{% endblock title %}
-{% block report_title %}{% trans "Timeline plot" %}{% endblock report_title %}
+{% block title %}{{ title }} {{ block.super }}{% endblock title %}
+{% block report_title %}{{ title }}{% endblock report_title %}
+
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}?{{ BUILD_ID }}">
+{% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/coachreports/d3.multitimeseries.js' %}"></script>
@@ -27,10 +32,6 @@
     </script>
 {% endblock headjs %}
 
-
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}?{{ BUILD_ID }}">
-{% endblock headcss %}
 
 {% block axis_dropdown %}
     {% trans "X-Axis" %}:

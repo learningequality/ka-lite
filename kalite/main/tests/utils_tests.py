@@ -3,10 +3,13 @@ Tests of utility functions.  Though they aren't part of the "main" app,
 there's no other app to include them with!
 """
 import datetime
+import os
+import shutil
+import tempfile
 
 from django.test import TestCase
 
-from utils.general import datediff, version_diff
+from utils.general import datediff, version_diff, ensure_dir
 
 
 class DateDiffTestCase(TestCase):
@@ -87,3 +90,49 @@ class VersionDiffTestCase(TestCase):
 
         self.assertEqual(version_diff("0.0.1", "0.0.2"), -1, "Patch version diff (no sub-patch)")
         self.assertEqual(version_diff("0.0.1.0", "0.0.2.0"), -1, "Patch version diff (matching sub-patch)")
+
+
+class EnsureDirTestCase(TestCase):
+    """
+    Unit tests for ensure_dir function
+    """
+
+    def setUp(self):
+        self.dirname = tempfile.mkdtemp()
+        self.filename = tempfile.mkstemp(dir=self.dirname)[1]
+
+    def tearDown(self):
+        if os.path.exists(self.dirname):
+            shutil.rmtree(self.dirname)
+
+    def assertDirExists(self, path):
+        self.assertTrue(os.path.isdir(path))
+
+    def assertNotExists(self, path):
+        self.assertFalse(os.path.exists(path))
+
+    def test_dir(self):
+        ensure_dir(self.dirname)
+        self.assertDirExists(self.dirname)
+
+    def test_new_dir(self):
+        newdir = os.path.join(self.dirname, 'newdir', 'newdir')
+        self.assertNotExists(newdir)
+        ensure_dir(newdir)
+        self.assertDirExists(newdir)
+
+    def test_new_dotted_dir(self):
+        newdir = os.path.join(self.dirname, 'new.dir')
+        self.assertNotExists(newdir)
+        ensure_dir(newdir)
+        self.assertDirExists(newdir)
+
+    def test_file(self):
+        with self.assertRaisesRegexp(OSError, 'Not a directory'):
+            ensure_dir(self.filename)
+
+    def test_new_dir_after_file(self):
+        newdir = os.path.join(self.filename, 'newdir')
+        with self.assertRaisesRegexp(OSError, 'Not a directory'):
+            ensure_dir(newdir)
+        self.assertNotExists(newdir)

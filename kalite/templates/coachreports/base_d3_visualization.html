@@ -34,7 +34,7 @@
             text-align:center;
         }
         .google-chart {
-            width: 900px; 
+            width: 900px;
             height: 500px;
         }
         .subtitle {
@@ -68,14 +68,14 @@
         function stat2name(stat) {
             var children = $("#xaxis option");
             for (opt in children) {
-                if (children[opt].value == stat) {        
+                if (children[opt].value == stat) {
                     return children[opt].text;
                 }
             }
 
             var children = $("#yaxis option");
             for (opt in children) {
-                if (children[opt].value == stat) {        
+                if (children[opt].value == stat) {
                     return children[opt].text;
                 }
             }
@@ -88,7 +88,7 @@
                 case "{{ stat.key }}": return "{{ stat.type }}";
                 {% endfor %}
             }
-            return null;    
+            return null;
         }
     </script>
 
@@ -96,30 +96,32 @@
         function plotJsonData(chart_div, base_url, props) {
             /* Called whenever json data blob returns (via AJAX)
                NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
-    
+
             // Scrub data
             if (!props["user"])     { props["user"]     = "{{ form.user|escapejs }}"; }
             if (!props["topic_path"])  { props["topic_path"]  = {{ form.topic_path|jsonify }}; }
 
             if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length==0) { // one of the ---- is selected
-                return false; 
+                return false;
             }
-    
+
             // Get the data
             var url = base_url + "?";
             url = url + $.param(props, true);
 
             clear_message("id_coachreports")
             doRequest(url)
-                .success(function(json) {        
-                    $("#loading").text("{% trans 'Drawing' %} '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'...");
+                .success(function(json) {
+                    $("#loading").text(sprintf(gettext("Drawing %(xaxis_name)s versus %(yaxis_name)s"), {
+                        xaxis_name: stat2name(props["xaxis"]),
+                        yaxis_name: stat2name(props["yaxis"])
+                    }));
                     if (Object.keys(json["data"]).length > 0) {
                         drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
                     } else {
                         show_message("error", "{% trans 'No student accounts in this group have been created.' %}", "id_coachreports");
-                        //$("#chart_div").html("<b class='error'>{% trans 'No student accounts in this group have been created.' %}</b>");
                     }
-                    $("#loading").text(""); 
+                    $("#loading").text("");
                 }).fail(function(resp) {
                     if (resp.responseText.indexOf("too many SQL variables") != -1) {
                         // Translate cryptic error message
@@ -127,7 +129,7 @@
                     } else {
                         communicate_api_failure(resp, "id_coachreports");
                     }
-                    $("#loading").text(""); 
+                    $("#loading").text("");
                 });
             $("#loading").text("Loading '" + stat2name(props["xaxis"]) + "' vs. '" + stat2name(props["yaxis"]) + "'...");
             $("#chart_div").html("");
@@ -148,7 +150,7 @@
                     "xaxis":       $("#xaxis option:selected").val(),
                     "yaxis":       $("#yaxis option:selected").val(),
                     "user":        "",
-                    "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(), 
+                    "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(),
                     "facility":    $("#facility option:selected").val(),
                     "topic_path":  topic_paths
                 }
@@ -157,21 +159,21 @@
     </script>
     <script type="text/javascript">
 
-        $(function() {  
+        $(function() {
             window.showing_tree = false;
 
-            // Select the values in the 
+            // Select the values in the
             $("#xaxis").val("{{ form.xaxis }}").change();
             $("#yaxis").val("{{ form.yaxis }}").change().prop("disabled", false);
-        
-        
+
+
             setTimeout(function() {
                 // Set some event functions, once objects are available to manipulate
 
                 // Register a callback
                 window.toggle_tree_callbacks.push(plotTopics);
 
-                // Make sure that each dropdown has a callback 
+                // Make sure that each dropdown has a callback
                 //   to replot upon selection.
                 $(".group_select").change(function(event) { changeData(event.target.id); plotTopics(null); });
                 $("#facility").change(function() { changeData("facility"); plotTopics(null); });
@@ -181,9 +183,11 @@
                     toggle_tree();
                 });
 
-                // Get the topic tree (starting on window load)            
-                doRequest("{% url get_topic_tree topic_path='/math/' %}")
+                // Get the topic tree (starting on window load)
+                doRequest("{% url get_exercise_topic_tree topic_path='/math/' %}")
                     .success(function(treeData) {
+                        treeData["expand"] = true; // expand the top level
+
                         $("#content_tree").dynatree({
                             imagePath:"{% static 'images/' %}",
                             checkbox: true,
@@ -191,7 +195,7 @@
                             children: treeData,
                             debugLevel: 0,
                             onSelect: function(select, node) {
-                        
+
                             },
                             onDblClick: function(node, event) {
                                 node.toggleSelect();
@@ -211,12 +215,9 @@
                                 else {
                                     set_topic_paths_in_tree(this, topic_paths_in_querystring);
                                 }
-                        
+
                             }
                         })
-                    })
-                    .fail(function(resp) {
-                        communicate_api_failure(resp, "id_coachreports");
                     })
             }, 200); //200= callback wait time.
         });
@@ -225,7 +226,7 @@
 
 {% block navbar_topics %}
     <h3 id="topic_header">
-        {% trans "Topics selected" %}:
+        {% trans "Topics Selected" %}:
         <a id="topic_paths" href="javascript:toggle_tree()"></a>
         <span id="topic_paths_note"></span>
     </h3>
@@ -245,7 +246,7 @@
             <h2>{% trans "Loading topic tree... Please wait!" %}</h2>
         </div>
     </div>
-    
+
     <div id="google-chart">
     {% block chart_div %}
         <div id="loading"></div>

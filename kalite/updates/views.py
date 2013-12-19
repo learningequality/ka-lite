@@ -26,13 +26,12 @@ import version
 from .models import VideoFile
 from config.models import Settings
 from control_panel.views import local_device_context, user_management_context
-from i18n.models import LanguagePack
-from main import topicdata
+from i18n.middleware import set_language_choices
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
-from shared.i18n import lcode_to_ietf
+from shared.i18n import lcode_to_ietf, get_installed_language_packs
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
@@ -57,39 +56,34 @@ def update(request):
 
 @require_admin
 @render_to("updates/update_videos.html")
-def update_videos(request):
+def update_videos(request, max_to_show=5):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
-    hit_max = 5
-    installed_languages = get_installed_language_packs()
-    languages_to_show = [l['name'] for l in installed_languages[:hit_max]]
-    languages_other = installed_languages[hit_max:]
+
+    installed_languages = set_language_choices(request, force=True)
+    languages_to_show = [l['name'] for l in installed_languages.values()[:max_to_show]]
+    other_languages_count = max(0, len(installed_languages) - max_to_show)
 
     context = update_context(request)
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
         "languages": languages_to_show,
-        "other_languages_count": len(languages_other)
+        "other_languages_count": other_languages_count,
     })
     return context
 
 
-def get_installed_language_packs():
-    language_packs = LanguagePack.objects \
-        .order_by("name") \
-        .values("name", "subtitle_count", "percent_translated", "language_pack_version", "code")
-    return language_packs
-
 @require_admin
 @render_to("updates/update_languages.html")
 def update_languages(request):
+    # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
+    set_language_choices(request, force=True)
+
     # here we want to reference the language meta data we've loaded into memory
     context = update_context(request)
-
     context.update({
-        "installed_languages": list(get_installed_language_packs()),
+        "installed_languages": request.session['language_choices'].values(),
     })
-
     return context
 
 
