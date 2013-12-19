@@ -252,10 +252,10 @@ class Command(BaseCommand):
             #
             # Hackish, as this duplicates code from initdevice.
             #
-            if os.path.exists(InitCommand.data_json_file):
-                # This is a pathway to install zone-based data on a software upgrade.
-                sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
-                load_data_for_offline_install(in_file=InitCommand.data_json_file)
+            #if os.path.exists(InitCommand.data_json_file):
+            #    # This is a pathway to install zone-based data on a software upgrade.
+            #    sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
+            #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
             confirm_or_generate_zone()
             initialize_facility()
