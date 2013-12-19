@@ -105,7 +105,8 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     video_map = get_id2oklang_map(video["id"]) or {}
 
     if not "on_disk" in video_availability:
-        for lang_code, youtube_id in video_map.iteritems():
+        for lang_code in video_map.keys():
+            youtube_id = video_map[lang_code]
             video_availability[lang_code] = compute_video_availability(youtube_id, format=format, videos_path=videos_path)
         video_availability["en"] = video_availability.get("en", {"on_disk": False})  # en should always be defined
 
