@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'FacilityUser.default_language'
         db.add_column('securesync_facilityuser', 'default_language',
-                      self.gf('django.db.models.fields.CharField')(max_length=8, null=True),
+                      self.gf('django.db.models.fields.CharField')(max_length=8, blank=True, null=True),
                       keep_default=False)
 
 
