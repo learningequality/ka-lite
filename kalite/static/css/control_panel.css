@@ -112,10 +112,12 @@ a.edit-link {
 }
 
 .export_csv_div {
-    width: 100%;
+    float: right;
     margin-top: 30px;
     position: relative;
     display: none;
+    background-color: #ddd;
+    padding: 5px;
 }
 
 .export_csv_input {

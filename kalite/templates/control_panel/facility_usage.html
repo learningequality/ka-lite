@@ -14,7 +14,7 @@
         }
 
         $(document).ready(function(){
-            
+
             $(function() {
 
                 $('#start_date_select').datepicker({
@@ -32,28 +32,25 @@
             });
         });
 
-        $(document).ready(function(){
-            var cansee = false;
-            $("#top_export_button_id").click(function(){
-                $("#export_csv_div_id").toggle(function(){
-                    if(cansee == false){
-                        cansee = true;
-                        $("#start_date_select").focus();
-                        $("#start_date_select").datepicker('setDate', start_date);
-                        $("#start_date_select").datepicker('hide');
-
-                        $("#end_date_select").focus();
-                        $("#end_date_select").datepicker('setDate', end_date);
-                        $("#end_date_select").datepicker('hide');
-                        $("#end_date_select").blur();
-
-                        $("#top_export_button_id").val("Cancel");
+        $(function(){
+            $("#top_export_button_id").click(function() {
+                $("#export_csv_div_id").toggle(function() {
+                    if (!$("#export_csv_div_id").is(":visible")) {
+                        $("#top_export_button_id").val("{% trans 'Export data' %}");
                     } else {
-                        cansee = false;
-                        $("#top_export_button_id").val("Export");
+                        $("#start_date_select").datepicker('setDate', start_date);
+                        $("#end_date_select").datepicker('setDate', end_date);
+
+                        $("#top_export_button_id").val("{% trans 'Cancel' %}");
                     }
                 });
             });
+
+            $("#CSV_EXPORT").click(function() {
+                //show_message("success", "{% trans 'Exporting data to csv.' %}");
+                $("#top_export_button_id").click();
+            });
+
         });
     </script>
 {% endblock headjs %}

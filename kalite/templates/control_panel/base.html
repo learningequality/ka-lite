@@ -46,7 +46,7 @@
                 <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
 
                 {% endif %}
-                <li><input class="top_export_button" id="top_export_button_id" type="button" value="Export"></input></li>
+                <li><input class="top_export_button" id="top_export_button_id" type="button" value="{% trans 'Export data' %}"></input></li>
             {% endblock titlebar_title %}
                 {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
                 {% block buttons %}
