@@ -206,46 +206,6 @@ def max_none(data):
     return max(non_none_data) if non_none_data else None
 
 
-def make_request(headers, url, max_retries=5):
-    """Return response from url; retry up to 5 times for server errors.
-    When returning an error, return human-readable status code.
-
-    codes: server-error, client-error, unexpected-error
-    """
-    assert max_retries >= 0, "max_retries must be non-negative."  # guarantees response will never be None
-
-    response = None
-    last_error = None
-    for retries in range(1, 1 + max_retries):
-        try:
-            response = requests.get(url, headers=headers)
-            if response.status_code >= 500:
-                if retries == max_retries:
-                    logging.warn("Unexpected Error downloading %s: server-side error (%d)" % (
-                        url, response.status_code,
-                    ))
-                    response = "server-error"
-                    break;
-            elif response.status_code >= 400:
-                logging.debug("Error downloading %s: client-side error (%d)" % (
-                    url, response.status_code,
-                ))
-                response = "client-error"
-                break
-            else:
-                # Success case
-                break
-
-        except Exception as e:
-            if response is None:
-                response = "unexpected-error"
-            cur_error = unicode(e.message)
-            if not last_error or last_error != cur_error:
-                logging.warn(u"Unexpected Error downloading %s: %s" % (url, cur_error))
-            last_error = cur_error
-
-    return response
-
 def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
     try:
         with open(json_filepath, "r") as fp:

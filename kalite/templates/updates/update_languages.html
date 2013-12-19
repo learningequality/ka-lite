@@ -36,6 +36,9 @@
             margin-left: 10px;
             font-weight: bold;
         }
+        #languagepackdownload-progressbar {
+            margin-bottom: 25px;
+        }
 
     </style>
 {% endblock headcss %}
@@ -77,6 +80,11 @@
             <span id="lp-disk-size"></span><label> ({% trans "on disk" %})</label>
             <span id="lp-num-exers"></span><label> {% trans "exercise(s)" %}</label>
         </div>
+    </div>
+    <div class="clear"></div>
+
+    <div id="languagepackdownload-progressbar">
+        {% include "updates/progress-bar.html" %}
     </div>
     <div class="clear"></div>
 
