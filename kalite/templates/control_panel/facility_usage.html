@@ -57,6 +57,9 @@
 
 {% block buttons %}{{ block.super }}
     <li>
+        <input class="top_export_button" id="top_export_button_id" type="button" value="{% trans 'Export data' %}"></input>
+    </li>
+    <li>
         <div id="export_csv_div_id" class="export_csv_div">
             <form method="post" action="?format=csv">
                 {% csrf_token %}
