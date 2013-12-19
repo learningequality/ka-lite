@@ -67,9 +67,10 @@ def zone_form(request, zone_id, org_id=None):
 
 @require_authorized_admin
 @render_to("control_panel/zone_management.html")
-def zone_management(request, zone_id, org_id=None):
+def zone_management(request, zone_id="None", org_id=None):
     context = control_panel_context(request, org_id=org_id, zone_id=zone_id)
     own_device = Device.get_own_device()
+
     if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
         raise Http404()  # on distributed server, we can make due if they're not registered.
 

@@ -15,6 +15,19 @@
         .demo {
             background-color:#fee;
         }
+        .icon-medium {
+            min-width: 13px;
+            min-height: 13px;
+        }
+        .icon-trash {
+            background-image:url({% static 'images/icon-trash.png' %});
+        }
+        .icon-add {
+            background-image:url({% static 'images/icon-plus-sign.png' %});
+        }
+        .icon-pencil {
+            background-image:url({% static 'images/icon-edit.png' %});
+        }
     </style>
 {% endblock headcss %}
 
@@ -64,8 +77,12 @@
 {% block control_panel_content %}
 <div id="zone_container">
     <div class="facilities">
-        <h2>{% trans "Facilities" %}</h2>
-
+        <div style="line-height:25px;">
+            <h2 style="float:left">{% trans "Facilities" %}</h2>
+            <a style="float:left" href="{% url facility_edit id='new' %}">
+                <span class="icon-add icon-medium" title="{% trans 'Add a new facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </a>
+        </div>
         {% if not facilities %}
             <p>{% trans "You currently have no facilities that sync data with the central server." %}</p>
 
@@ -87,25 +104,31 @@
                             {{ facility.name }}
                         </a>
                         <a href="{% url facility_edit id=facility.id %}">
-                            <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">{% trans "Edit" %}</span>
+                            <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% if facility.is_deletable %}
                         <a href="{% url facility_edit id=facility.id %}">
-                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}">{% trans "Remove" %}</span>
+                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% endif %}
                     </td>
                     <td nowrap>
                         {{ facility.num_users }}
-                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Add" %}</a>
-                        /
-                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Remove" %}</a>
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                            <span class="icon-add icon-medium" title="{% trans 'Add users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </a>
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                            <span class="icon-pencil icon-medium" title="{% trans 'Edit users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </a>
                     </td>
                     <td nowrap>
                         {{ facility.num_groups }}
-                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Add"  %}</a>
-                            /
-                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Remove" %}</a>
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                            <span class="icon-add icon-medium" title="{% trans 'Add groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </a>
+                        <a href="{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                            <span class="icon-pencil icon-medium" title="{% trans 'Edit groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </a>
                     </td>
                     </td>
                     <td nowrap>
