@@ -149,6 +149,8 @@ def splat_handler(request, splat):
     current_node = topicdata.TOPICS
     while current_node:
         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
+        if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
+            match = [m for m in match if request.path == m["path"]]
         if not match:
             raise Http404
         current_node = match[0]
