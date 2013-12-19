@@ -231,65 +231,41 @@ def group_report(request, facility, group_id=None, org_id=None, zone_id=None):
 @facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_user_management.html")
-def facility_user_management(request, facility, user_type="students", group_id=None, org_id=None, zone_id=None, per_page=25):
-    group_id=group_id or request.REQUEST.get("group","")
-    if group_id == "None":
-        group_id = None
+def facility_user_management(request, facility, user_type=None, group_id=None, org_id=None, zone_id=None, per_page=25):
     page=request.REQUEST.get("page","1")
     groups = FacilityGroup.objects \
         .filter(facility=facility) \
         .order_by("name")
+    context = control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility.id, group_id=group_id)
 
     # This could be moved into a function shared across files, if necessary.
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
     def get_users_from_group(user_type, group_id, facility=None):
-        if group_id == _("Ungrouped"):
-            return FacilityUser.objects \
-                .filter(is_teacher=(user_type == "student")) \
-                .filter(facility=facility, group__isnull=True) \
-                .order_by("first_name", "last_name")
-        elif not group_id:
+        if user_type == "teachers":
+            user_list = FacilityUser.objects \
+                .filter(is_teacher=True) \
+                .filter(facility=facility)
+        elif group_id == _("Ungrouped"):
+            user_list = FacilityUser.objects \
+                .filter(is_teacher=False) \
+                .filter(facility=facility, group__isnull=True)
+        elif not group_id or group_id == "None":
             return []
         else:
-            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
-    user_list = get_users_from_group(user_type=user_type, group_id=group_id, facility=facility)
+            user_list = get_object_or_404(FacilityGroup, pk=group_id) \
+                .facilityuser_set
+        return list(user_list \
+                    .order_by("first_name", "last_name", "username"))
+    teachers = get_users_from_group(user_type="teachers", group_id=group_id, facility=facility)
+    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
-    # Get the user list from the group
-    if not user_list:
-        users = []
-    else:
-        paginator = Paginator(user_list, per_page)
-        try:
-            users = paginator.page(page)
-        except PageNotAnInteger:
-            users = paginator.page(1)
-        except EmptyPage:
-            users = paginator.page(paginator.num_pages)
-
-    if users:
-        if users.has_previous():
-            prevGETParam = request.GET.copy()
-            prevGETParam["page"] = users.previous_page_number()
-            previous_page_url = "?" + prevGETParam.urlencode()
-        else:
-            previous_page_url = ""
-        if users.has_next():
-            nextGETParam = request.GET.copy()
-            nextGETParam["page"] = users.next_page_number()
-            next_page_url = "?" + nextGETParam.urlencode()
-        else:
-            next_page_url = ""
-    context = {
-        "facility": facility,
-        "users": users,
+    context.update({
+        "students": students,
+        "teachers": teachers,
         "groups": groups,
-        "group_id": group_id,
-    }
-    if users:
-        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
+    })
 
-    context.update(control_panel_context(request, org_id=org_id, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
     return context
 
 
@@ -440,16 +416,16 @@ def control_panel_context(request, **kwargs):
         context["org_id"] = kwargs["org_id"]
     if "zone_id" in kwargs:
         context["zone"] = get_object_or_None(Zone, pk=kwargs["zone_id"]) if kwargs["zone_id"] else None
-        context["zone_id"] = kwargs["zone_id"]
+        context["zone_id"] = kwargs["zone_id"] or "None"
     if "facility_id" in kwargs:
         context["facility"] = get_object_or_404(Facility, pk=kwargs["facility_id"]) if kwargs["facility_id"] != "new" else None
-        context["facility_id"] = kwargs["facility_id"]
+        context["facility_id"] = kwargs["facility_id"] or "None"
     if "group_id" in kwargs:
         context["group"] = get_object_or_None(FacilityGroup, pk=kwargs["group_id"])
-        context["group_id"] = kwargs["group_id"]
+        context["group_id"] = kwargs["group_id"] or "None"
     if "device_id" in kwargs:
         context["device"] = get_object_or_404(Device, pk=kwargs["device_id"])
-        context["device_id"] = kwargs["device_id"]
+        context["device_id"] = kwargs["device_id"] or "None"
 
     return context
 
