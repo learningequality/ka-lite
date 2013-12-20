@@ -22,7 +22,7 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone,
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
 from utils.general import max_none
 from utils.internet import StatusException
 
@@ -136,6 +136,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     node_cache = get_node_cache()
     topic_ids = get_knowledgemap_topics()
+    topic_ids += [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
     topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
@@ -202,8 +203,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
-         # total streak currently a pct, but expressed in max 100; convert to
-         # proportion (like other percentages here)
+        # total streak currently a pct, but expressed in max 100; convert to
+        # proportion (like other percentages here)
         stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),

@@ -36,7 +36,7 @@ function doRequest(url, data) {
         dataType: "json"
     })
     .fail(function(resp) {
-        communicate_api_failure(resp);
+        communicate_api_failure(resp, "id_do_request");
     });
 }
 

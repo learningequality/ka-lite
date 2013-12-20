@@ -12,22 +12,44 @@
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
         }
-        $(function() {
-            $('#start_date_select').datepicker({
-                dateFormat: "d MM yy",
-                altField: "#start_standard_date",
-                altFormat: "yy-mm-dd"
+
+        $(document).ready(function(){
+
+            $(function() {
+
+                $('#start_date_select').datepicker({
+                    dateFormat: "d MM yy",
+                    altField: "#start_standard_date",
+                    altFormat: "yy-mm-dd",
+                    autoclose: true,
+                });
+
+                $('#end_date_select').datepicker({
+                    dateFormat: "d MM yy",
+                    altField: "#end_standard_date",
+                    altFormat: "yy-mm-dd"
+                });
+            });
+        });
+
+        $(function(){
+            $("#top_export_button_id").click(function() {
+                $("#export_csv_div_id").toggle(function() {
+                    if (!$("#export_csv_div_id").is(":visible")) {
+                        $("#top_export_button_id").val("{% trans 'Export data' %}");
+                    } else {
+                        $("#start_date_select").datepicker('setDate', start_date);
+                        $("#end_date_select").datepicker('setDate', end_date);
+
+                        $("#top_export_button_id").val("{% trans 'Cancel' %}");
+                    }
+                });
             });
 
-            $("#start_date_select").datepicker('setDate', start_date);
-
-            $('#end_date_select').datepicker({
-                dateFormat: "d MM yy",
-                altField: "#end_standard_date",
-                altFormat: "yy-mm-dd"
+            $("#CSV_EXPORT").click(function() {
+                //show_message("success", "{% trans 'Exporting data to csv.' %}");
+                $("#top_export_button_id").click();
             });
-
-            $("#end_date_select").datepicker('setDate', end_date);
 
         });
     </script>
@@ -35,19 +57,19 @@
 
 {% block buttons %}{{ block.super }}
     <li>
-        <div>
+        <input class="top_export_button" id="top_export_button_id" type="button" value="{% trans 'Export data' %}"></input>
+    </li>
+    <li>
+        <div id="export_csv_div_id" class="export_csv_div">
             <form method="post" action="?format=csv">
-            {% csrf_token %}
-            <div class="date">{% trans "Start Date" %}:<input id="start_date_select" type="text"><input class="hidden" type="text" name="period_start" id="start_standard_date"></div>
-            <div class="date">{% trans "End Date" %}:<input id="end_date_select" type="text"><input class="hidden" type="text" name="period_end" id="end_standard_date"></div>
-            <div class="date">
-                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" />
-            </div>
+                {% csrf_token %}
+                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></input>
+                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></input>
+                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
 {% endblock buttons %}
-
 {% block control_panel_content %}
     <div id="facility_container">
         <div class="groups">

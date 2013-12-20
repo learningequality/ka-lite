@@ -1,5 +1,6 @@
 {% extends base_template %}
 {% load staticfiles %}
+{% load i18n %}
 
 {% block control_panel_active %}active{% endblock control_panel_active %}
 
@@ -46,14 +47,15 @@
 
                 {% if group %}
                 <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
+
                 {% endif %}
             {% endblock titlebar_title %}
+                {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
                 {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
                 <ul class="titlebar__buttons">
                 {% block buttons %}
                 {% endblock buttons %}
                 </ul>
-
             </ul>
         </div>
     {% endblock titlebar %}

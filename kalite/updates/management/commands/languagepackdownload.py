@@ -19,7 +19,7 @@ from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url, get_localized_exercise_dirpath
 from utils.general import ensure_dir
-
+from utils.download import callback_percent_proxy, download_file
 
 class Command(UpdatesStaticCommand):
     help = "Download language pack requested from central server"
@@ -57,11 +57,11 @@ class Command(UpdatesStaticCommand):
         # Download the language pack
         try:
             self.start("Downloading language pack '%s'" % lang_code)
-            zip_file = get_language_pack(lang_code, software_version)
+            zip_filepath = get_language_pack(lang_code, software_version, callback=self.cb)
 
             # Unpack into locale directory
             self.next_stage("Unpacking language pack '%s'" % lang_code)
-            unpack_language(lang_code, zip_file)
+            unpack_language(lang_code, zip_filepath=zip_filepath)
 
             #
             self.next_stage("Creating static files for language pack '%s'" % lang_code)
@@ -78,21 +78,19 @@ class Command(UpdatesStaticCommand):
             self.cancel(stage_status="error", notes="Error: %s" % e)
             raise
 
-def get_language_pack(lang_code, software_version):
+    def cb(self, percent):
+        self.update_stage(stage_percent=percent/100.)
+
+def get_language_pack(lang_code, software_version, callback):
     """Download language pack for specified language"""
 
     lang_code = lcode_to_ietf(lang_code)
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
-    r = requests.get(request_url)
-    try:
-        r.raise_for_status()
-    except Exception as e:
-        raise CommandError(e)
+    path, response = download_file(request_url, callback=callback_percent_proxy(callback))
+    return path
 
-    return r.content
-
-def unpack_language(lang_code, zip_file):
+def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     """Unpack zipped language pack into locale directory"""
     lang_code = lcode_to_django_dir(lang_code)
 
@@ -100,7 +98,7 @@ def unpack_language(lang_code, zip_file):
     ensure_dir(os.path.join(LOCALE_ROOT, lang_code, "LC_MESSAGES"))
 
     ## Unpack into temp dir
-    z = zipfile.ZipFile(StringIO(zip_file))
+    z = zipfile.ZipFile(zip_fp or (StringIO(zip_data) if zip_data else open(zip_filepath, "rb")))
     z.extractall(os.path.join(LOCALE_ROOT, lang_code))
 
 def move_dubbed_video_map(lang_code):

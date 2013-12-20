@@ -112,6 +112,9 @@ def refresh_topic_cache(handler, force=False):
         if not cached_nodes:
             cached_nodes = {"topics": topicdata.TOPICS}
 
+        def has_computed_urls(node):
+            return "subtitles" in node.get("availability", {}).get("en", {})
+
         for node in cached_nodes.values():
             if not node:
                 continue
@@ -119,13 +122,13 @@ def refresh_topic_cache(handler, force=False):
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or "availability" not in node:
+                if force or not has_computed_urls(node):
                     #stamp_availability_on_topic(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
                 for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not "availability" in video:
+                    if not has_computed_urls(node):
                         stamp_availability_on_video(video, force=True)  # will be done by force below
 
             elif node["kind"] == "Topic":
@@ -148,6 +151,8 @@ def splat_handler(request, splat):
     current_node = topicdata.TOPICS
     while current_node:
         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
+        if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
+            match = [m for m in match if request.path == m["path"]]
         if not match:
             raise Http404
         current_node = match[0]
