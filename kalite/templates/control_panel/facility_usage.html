@@ -53,7 +53,7 @@
         <div class="groups">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Groups" %}</span>
-                <a href="{% url add_group %}">
+                <a href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
                     <span class="icon-add icon-medium" title="{% trans 'Add a new group' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>
@@ -87,7 +87,7 @@
                                 {% if id %}
                                 <span class="actions">[
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                    <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
+                                    <a href="{% url coach_reports %}?facility={{ facility_id }}&group={{ id }}">{% trans "coach" %}</a>
                                     /
                                     {# Translators: this is a verb; by clicking this link, the user will be able to manage student accounts. #}
                                     <a href="{% url facility_user_management zone_id=zone_id facility_id=facility_id group_id=id %}">{% trans "manage" %}</a>
@@ -110,7 +110,7 @@
         <div class="students">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Students" %}</span>
-                <a href="{% url add_facility_student %}">
+                <a href="{% url add_facility_student %}?facility={{ facility_id }}&next={{ request.path }}">
                     <span class="icon-add icon-medium" title="{% trans 'Add a new student' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>

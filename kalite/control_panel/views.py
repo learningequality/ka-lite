@@ -151,7 +151,7 @@ def facility_usage(request, facility, zone_id=None, frequency=None, period_start
             (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
     else:
         form = DateRangeForm()
-    (student_data, group_data) = _get_user_usage_data(students, period_start=period_start, period_end=period_end)
+    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end)
     (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
 
     context.update({
@@ -307,10 +307,12 @@ def _get_date_range(frequency, period_start, period_end):
     return (period_start, period_end)
 
 
-def _get_user_usage_data(users, period_start=None, period_end=None):
+def _get_user_usage_data(users, groups=None, period_start=None, period_end=None):
     """
     Returns facility user data, within the given date range.
     """
+
+    groups = groups or set([user.group for user in users])
 
     # compute period start and end
     # Now compute stats, based on queried data
@@ -375,20 +377,22 @@ def _get_user_usage_data(users, period_start=None, period_end=None):
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
+    for group in list(groups) + [None]:  # None for ungrouped
+        group_pk = getattr(group, "pk", None)
+        group_name = getattr(group, "name", _("Ungrouped"))
+        group_data[group_pk] = {
+            "name": group_name,
+            "total_logins": 0,
+            "total_hours": 0,
+            "total_users": 0,
+            "total_videos": 0,
+            "total_exercises": 0,
+            "pct_mastery": 0,
+        }
+
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
-        group_name = getattr(user.group, "name", _("Ungrouped"))
-        if not group_pk in group_data:
-            group_data[group_pk] = {
-                "name": group_name,
-                "total_logins": 0,
-                "total_hours": 0,
-                "total_users": 0,
-                "total_videos": 0,
-                "total_exercises": 0,
-                "pct_mastery": 0,
-            }
         group_data[group_pk]["total_users"] += 1
         group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]
