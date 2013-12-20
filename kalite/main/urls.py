@@ -49,7 +49,7 @@ urlpatterns += patterns('main.views',
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
     url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'), # only one device, so make an easy way to access it
-    url(r'^management/', include(control_panel.urls), {"org_id": ""}), # no org_id, but parameter needed for reverse url look-up
+    url(r'^management/', include(control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
 )
 
 # Testing

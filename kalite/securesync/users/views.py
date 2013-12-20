@@ -41,9 +41,10 @@ def facility_edit(request, id=None):
         form = FacilityForm(data=request.POST, instance=facil)
         if form.is_valid():
             form.save()
+            facil = form.instance
             # Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
             messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
-            return HttpResponseRedirect(request.next or reverse("zone_management"))
+            return HttpResponseRedirect(request.next or reverse("zone_management", kwargs={"zone_id": getattr(facil.get_zone(), "id", "None")}))
     else:
         form = FacilityForm(instance=facil)
     return {

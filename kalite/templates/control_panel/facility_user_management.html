@@ -22,7 +22,7 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
-        var TEMPLATE_GROUP_URL = "{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='None' %}";
+        var TEMPLATE_GROUP_URL = "{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/facility_user_management.js' %}"></script>
 {% endblock headjs %}

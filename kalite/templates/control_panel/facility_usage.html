@@ -90,7 +90,7 @@
                                     <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
                                     /
                                     {# Translators: this is a verb; by clicking this link, the user will be able to manage student accounts. #}
-                                    <a href="{% url facility_user_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
+                                    <a href="{% url facility_user_management zone_id=zone_id facility_id=facility_id group_id=id %}">{% trans "manage" %}</a>
                                 ]</span>
                                 {% endif %}
                             </td>
