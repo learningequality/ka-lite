@@ -174,7 +174,7 @@ def add_group(request, facility):
             form.instance.facility = facility
             form.save()
 
-            redir_url = request.GET.get("prev") or reverse("add_facility_student")
+            redir_url = request.next or request.GET.get("prev") or reverse("add_facility_student")
             redir_url = set_query_params(redir_url, {"facility": facility.pk, "group": form.instance.pk})
             return HttpResponseRedirect(redir_url)
 
