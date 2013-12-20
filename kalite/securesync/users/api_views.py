@@ -1,3 +1,5 @@
+from django.http import HttpResponseForbidden
+from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 
 from securesync.models import FacilityGroup, FacilityUser
@@ -37,3 +39,19 @@ def delete_users(request):
     users_to_delete = FacilityUser.objects.filter(username__in=users)
     users_to_delete.delete()
     return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
+def facility_delete(request, facility_id=None):
+    if not request.is_django_user:
+        raise PermissionDenied("Teachers cannot delete facilities.")
+
+    facility_id = facility_id or simplejson.loads(request.raw_post_data or "{}").get("facility_id")
+    fac = get_object_or_404(Facility, id=facility_id)
+    if not fac.is_deletable():
+        return HttpResponseForbidden("")
+
+    fac.delete()
+    return JsonResponse({})
+

@@ -317,6 +317,8 @@ class SyncedModel(ExtendedModel):
         # otherwise, try getting the zone of the device that signed it
         if not zone and self.signed_by:
             zone = self.signed_by.get_zone()
+        if not zone and not self.signed_by:
+            zone = _get_own_device().get_zone()
         # otherwise, if it's signed by a trusted authority, try getting the fallback zone
         if not zone and self.signed_by and self.signed_by.is_trusted():
             zone = self.zone_fallback
