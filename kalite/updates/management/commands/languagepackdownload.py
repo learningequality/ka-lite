@@ -19,7 +19,7 @@ from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url, get_localized_exercise_dirpath
 from utils.general import ensure_dir
-from utils.download import callback_percent_proxy, download_file
+from utils.internet import callback_percent_proxy, download_file
 
 class Command(UpdatesStaticCommand):
     help = "Download language pack requested from central server"
