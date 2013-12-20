@@ -309,7 +309,7 @@ INSTALL_FACILITY_NAME = getattr(local_settings, "INSTALL_FACILITY_NAME", None if
 # Syncing and synced data
 ########################
 
-SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
+SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https" if not DEBUG else "http")
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
