@@ -167,29 +167,24 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     if len(topic["children"]) == 0:
         logging.debug("no children: %s" % topic["path"])
 
-    elif len(topic["children"]) > 0:
+    for child in topic["children"]:
         # RECURSIVE CALL:
         #  The children have children, let them figure things out themselves
-        # $ASSUMPTION: if first child is a branch, THEY'RE ALL BRANCHES.
-        #              if first child is a leaf, THEY'RE ALL LEAVES
-        if "children" in topic["children"][0]:
-            for child in topic["children"]:
-                if not force and "nvideos_local" in child:
-                    continue
-                stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
-                nvideos_local += child["nvideos_local"]
-                nvideos_known += child["nvideos_known"]
+        if "children" in child:
+            if not force and "nvideos_local" in child:
+                continue
+            stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
+            nvideos_local += child["nvideos_local"]
+            nvideos_known += child["nvideos_known"]
 
-        # BASE CASE:
-        # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
-        else:
-            videos = get_videos(topic)
-            for video in videos:
-                if force or "availability" not in video:
-                    stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
-                nvideos_local += int(video["on_disk"])
-
-            nvideos_known = len(videos)
+    # BASE CASE:
+    # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
+    videos = get_videos(topic)
+    for video in videos:
+        if force or "availability" not in video:
+            stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
+        nvideos_local += int(video["on_disk"])
+    nvideos_known += len(videos)
 
     changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
     changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
