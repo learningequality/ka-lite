@@ -1,24 +1,6 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 VERSION = "0.10.3"
 VERSION_INFO = {
-
-    "0.11.1": {
-        "release_date": "2013/11/28",
-        "git_commit": "cd55e92ebbd3ad5ac0283ddf3de302d1cd26b608",
-        "new_features": {
-            "all": ["over 5x faster performance"],
-            "students": [],
-            "coaches": [],
-            "admins": [],
-        },
-        "bugs_fixed": {
-            "all": [],
-            "students": [],
-            "coaches": [],
-            "admins": [],
-        },
-    },
-
     "0.11.0": {
         "release_date": "2013/09/03",
         "git_commit": "29eb96e136d702b5d128b6bbb1b5c347457d080f",
@@ -37,13 +19,18 @@ VERSION_INFO = {
     },
 
     "0.10.3": {
-        "release_date": "2013/12/16",
-        "git_commit": "aa588ef130d38c647f8f3514c70ca074f761b0e9",
+        "release_date": "2013/12/28",
+        "git_commit": "e4faa50c3e19d92c735a3b2e9dfdee033c418d9c",
         "new_features": {
             "all": [],
-            "students": [],
+            "students": [
+                "Better performance (faster save times and login times)",
+                "Integration with latest exercises",
+            ],
             "coaches": [],
-            "admins": ["Better performance (faster save times and login times)"],
+            "admins": [
+                "Easier updates for subtitles",
+            ],
         },
         "bugs_fixed": {
             "all": [],
@@ -58,9 +45,9 @@ VERSION_INFO = {
         "git_commit": "5831abb8d2ee0815416a17885790679c4672bf97",
         "new_features": {
             "all": [],
-            "students": ["import your KA progress into KA Lite"],
+            "students": ["Import your KA progress into KA Lite"],
             "coaches": [],
-            "admins": ["now start KA Lite by double-clicking the start script"],
+            "admins": ["Now start KA Lite by double-clicking the start script"],
         },
         "bugs_fixed": {
             "all": [],
@@ -105,8 +92,8 @@ VERSION_INFO = {
     },
 
     "0.9.2": {
-        "release_date": "2013/02/xx",
-        "git_commit": "",
+        "release_date": "2013/02/09",
+        "git_commit": "7c326329b7ae1b6000d1c636cf8ca920a8cc8daa",
         "new_features": {
             "all": [],
             "students": [],
