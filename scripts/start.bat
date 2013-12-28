@@ -23,11 +23,7 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
     if exist "%KALITE_DIR%\cronserver.pid" set file_exist=0
     if exist "%KALITE_DIR%\runcherrypyserver.pid" set file_exist=0
     if defined file_exist (
-        echo -------------------------------------------------------------------
-        echo KA Lite server is still running.
-        echo Please run stop.bat and then start.bat again.
-        echo -------------------------------------------------------------------
-        exit /b
+        call "%SCRIPT_DIR%\stop.bat"
     )
 
     call "%SCRIPT_DIR%\python.bat"
