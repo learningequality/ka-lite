@@ -30,7 +30,6 @@ import subprocess
 import sys
 import tempfile
 import zipfile
-import zlib
 import StringIO
 from optparse import make_option
 
@@ -416,26 +415,22 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                 for po_file in src_po_files:
                     name, _ext = os.path.splitext(po_file)
 
-                    # Topic tree
-                    topic_tree_filter = '_high_priority_content' in name
+                # Magic # 4 below: 3 for .po, 1 for -  (-fr.po)
+                src_po_files_learn     = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn."]]), src_po_files)
+                src_po_files_videos    = filter(lambda fn: ".videos" in fn, src_po_files_learn)
+                src_po_files_exercises = filter(lambda fn: ".exercises" in fn, src_po_files_learn)
+                src_po_files_topics    = filter(lambda fn:  sum([po.startswith(fn[:-len(lang)-4]) for po in src_po_files_learn]) > 1, src_po_files_learn)
+                src_po_files_topics   += filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
 
-                    # exercise
-                    exercise_filter = fnmatch.fnmatch(name, 'learn.math.*exercises*')
+                src_po_files = src_po_files_videos + src_po_files_exercises + src_po_files_topics
 
-                    # # Stream 1: learn
-                    # learn_filter = any(os.path.basename(name).startswith(str) for str in ["learn.", "content.chrome", "_other_"])
-                    # learn_filter = (".videos" in name or ".exercises" in name) and learn_filter
-
-                    # # Stream 2: extra
-                    # extra_filter = any(os.path.basename(name).startswith(str) for str in ["content.chrome", "_other_"])
-
-                    if topic_tree_filter or exercise_filter:
-                        if fnmatch.fnmatch(po_file, 'exercises-*.po'):
-                            remove_exercise_nonmetadata(po_file)
-                        gc.collect()
-                        yield zlib.compress(po_file)
-                    else:
-                        continue
+                # before we call msgcat, process each exercise po file and leave out only the metadata
+                for exercise_po in src_po_files_exercises:
+                    remove_nonmetadata(exercise_po, r'.*(of|for) exercise')
+                for video_po in src_po_files_videos:
+                    remove_nonmetadata(video_po, r'.*(of|for) video')
+                for topic_po in src_po_files_topics:
+                    remove_nonmetadata(topic_po, r'.*(of|for) topic')
 
         if combine_with_po_file:
             yield combine_with_po_file
@@ -443,7 +438,10 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
     src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
 
+    @profile
     def produce_outputs(src_po_files, converted_code):
+        if any(["admin-pl.po" in pofile for pofile in src_po_files]):
+            import pdb; pdb.set_trace()
         # ensure directory exists in locale folder, and then overwrite local po files with new ones
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
         ensure_dir(dest_path)
@@ -491,14 +489,12 @@ def get_po_metadata(pofilename):
     return { "approved_translations": ntranslations, "phrases": nphrases }
 
 
-def remove_exercise_nonmetadata(pofilename):
+def remove_nonmetadata(pofilename, METADATA_MARKER):
     '''Checks each message block in the po file given by pofilename, and
     sees if the top comment of each one has the string '(of|for)
     exercise'. If not, then it will be deleted from the po file.
     '''
     assert os.path.exists(pofilename), "%s does not exist!" % pofilename
-
-    EXERCISE_METADATA_LINE = r'.*(of|for) exercise <a'
 
     logging.info('Removing nonmetadata msgblocks from %s' % pofilename)
     pofile = polib.pofile(pofilename)
@@ -525,7 +521,8 @@ def all_po_files(dir):
     # return glob.glob(os.path.join(dir, '*/*.po'))
     for current_dir, _, filenames in os.walk(dir):
         for po_file in fnmatch.filter(filenames, '*.po'):
-            yield os.path.join(current_dir, po_file)
+            if os.path.basename(po_file)[0] != '.':
+                yield os.path.join(current_dir, po_file)
 
 
 def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None):
