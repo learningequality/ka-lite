@@ -412,8 +412,6 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         # remove all exercise po that is not about math
         if filter_type:
             if filter_type == "ka":
-                for po_file in src_po_files:
-                    name, _ext = os.path.splitext(po_file)
 
                 # Magic # 4 below: 3 for .po, 1 for -  (-fr.po)
                 src_po_files_learn     = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn."]]), src_po_files)
@@ -433,7 +431,9 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                     remove_nonmetadata(topic_po, r'.*(of|for) topic')
 
         if combine_with_po_file:
-            yield combine_with_po_file
+            src_po_files += combine_with_po_file
+
+        return src_po_files
 
     src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
@@ -456,7 +456,6 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             build_po = polib.POFile(fpath=build_file)
 
         for src_file in src_po_files:
-            src_file = zlib.decompress(src_file)  # ARON: this whole zlib.{de,}compress hack saves a megabyte. It counts!
             logging.debug('Concatenating %s with %s...' % (src_file, build_file))
             src_po = polib.pofile(src_file)
             build_po.merge(src_po)
@@ -502,7 +501,7 @@ def remove_nonmetadata(pofilename, METADATA_MARKER):
     clean_pofile = polib.POFile(encoding='utf-8')
     clean_pofile.append(pofile.metadata_as_entry())
     for msgblock in pofile:
-        if re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
+        if re.match(METADATA_MARKER, msgblock.tcomment):
             # is exercise metadata, preserve
             clean_pofile.append(msgblock)
 
