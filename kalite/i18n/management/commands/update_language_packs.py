@@ -432,20 +432,20 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                     src_po_files_topics,
                     ifilter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
                 )
-                src_po_files = chain(src_po_files_videos, src_po_files_exercises, src_po_files_topics)
 
                 # before we call msgcat, process each exercise po file and leave out only the metadata
                 for exercise_po in src_po_files_exercises:
                     remove_nonmetadata(exercise_po, r'.*(of|for) exercise')
+                    yield exercise_po
                 for video_po in src_po_files_videos:
                     remove_nonmetadata(video_po, r'.*(of|for) video')
+                    yield video_po
                 for topic_po in src_po_files_topics:
                     remove_nonmetadata(topic_po, r'.*(of|for) topic')
+                    yield topic_po
 
         if combine_with_po_file:
-            src_po_files = chain(src_po_files, [combine_with_po_file])
-
-        return src_po_files
+            yield combine_with_po_file
 
     src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
