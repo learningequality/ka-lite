@@ -31,6 +31,7 @@ import sys
 import tempfile
 import zipfile
 import StringIO
+from itertools import chain, ifilter
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -423,13 +424,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             if filter_type == "ka":
 
                 # Magic # 4 below: 3 for .po, 1 for -  (-fr.po)
-                src_po_files_learn     = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn."]]), src_po_files)
-                src_po_files_videos    = filter(lambda fn: ".videos" in fn, src_po_files_learn)
-                src_po_files_exercises = filter(lambda fn: ".exercises" in fn, src_po_files_learn)
-                src_po_files_topics    = filter(lambda fn:  sum([po.startswith(fn[:-len(lang)-4]) for po in src_po_files_learn]) > 1, src_po_files_learn)
-                src_po_files_topics   += filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
-
-                src_po_files = src_po_files_videos + src_po_files_exercises + src_po_files_topics
+                src_po_files_learn     = ifilter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn."]]), src_po_files)
+                src_po_files_videos    = ifilter(lambda fn: ".videos" in fn, src_po_files_learn)
+                src_po_files_exercises = ifilter(lambda fn: ".exercises" in fn, src_po_files_learn)
+                src_po_files_topics    = ifilter(lambda fn:  sum([po.startswith(fn[:-len(lang)-4]) for po in src_po_files_learn]) > 1, src_po_files_learn)
+                src_po_files_topics    = chain(
+                    src_po_files_topics,
+                    ifilter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
+                )
+                src_po_files = chain(src_po_files_videos, src_po_files_exercises, src_po_files_topics)
 
                 # before we call msgcat, process each exercise po file and leave out only the metadata
                 for exercise_po in src_po_files_exercises:
@@ -440,17 +443,14 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
                     remove_nonmetadata(topic_po, r'.*(of|for) topic')
 
         if combine_with_po_file:
-            src_po_files += combine_with_po_file
+            src_po_files = chain(src_po_files, [combine_with_po_file])
 
         return src_po_files
 
     src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
 
-    @profile
     def produce_outputs(src_po_files, converted_code):
-        if any(["admin-pl.po" in pofile for pofile in src_po_files]):
-            import pdb; pdb.set_trace()
         # ensure directory exists in locale folder, and then overwrite local po files with new ones
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
         ensure_dir(dest_path)
