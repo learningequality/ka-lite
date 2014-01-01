@@ -95,6 +95,11 @@ class Command(BaseCommand):
                     dest='no_update',
                     default=False,
                     help='Do not refresh any resources before packaging.'),
+        make_option('--low-mem',
+                    action='store_true',
+                    dest='low_mem',
+                    default=False,
+                    help='Limit the memory used by the command by making the garbage collector more aggressive.'),
         make_option('--zip_file',
                     action='store',
                     dest='zip_file',
@@ -124,6 +129,10 @@ class Command(BaseCommand):
         upgrade_old_schema()
 
         package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
+
+        if options['low_mem']:
+            logging.info('Making the GC more aggressive...')
+            gc.set_threshold(36, 2, 2)
 
         # Update all the latest srts
         if not options['no_srts'] and not options['no_update']:
