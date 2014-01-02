@@ -60,7 +60,7 @@ CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if not DEBUG else 5)  # 18 threads seems a sweet spot
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
@@ -527,8 +527,6 @@ if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
     assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    # 18 is the sweet-spot for cherrypy threads
-    CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
 
