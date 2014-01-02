@@ -5,8 +5,6 @@ General string, integer, date functions.
 """
 import datetime
 import json
-import logging
-import requests
 import os
 import errno
 

@@ -1,4 +1,6 @@
+import logging
 import os
+import requests
 import socket
 import sys
 import tempfile
