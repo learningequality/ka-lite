@@ -412,6 +412,7 @@ class _BaseFile(list):
         # set the file path if not set
         if self.fpath is None and fpath:
             self.fpath = fpath
+        self._remove_extra_msgid()
 
     def find(self, st, by='msgid', include_obsolete_entries=False,
              msgctxt=False):
@@ -565,6 +566,20 @@ class _BaseFile(list):
         output += ids
         output += strs
         return output
+
+    # ok, here's the deal: there's a bug right now in polib.py in which
+    # it creates an empty header AUTOMATICALLY. Plus, there is no way
+    # to specify what this header contains. So what do we do? We delete this
+    # header. TODO for Aron: Fix polib.py
+    def _remove_extra_msgid(self):
+        pofilename = self.fpath
+        header_to_remove = '# \nmsgid ""\nmsgstr ""\n\n'
+        with open(pofilename, 'r') as pofile:
+            polines = pofile.read()
+            if polines.startswith(header_to_remove):
+                polines = polines[len(header_to_remove):]
+        with open(pofilename, 'w') as fp:
+            fp.write(polines)
 
     def _encode(self, mixed):
         """
@@ -1073,6 +1088,7 @@ class POEntry(_BaseEntry):
         self.msgctxt = other.msgctxt
         self.occurrences = other.occurrences
         self.comment = other.comment
+        self.msgstr = other.msgstr if other.msgstr else self.msgstr
         fuzzy = 'fuzzy' in self.flags
         self.flags = other.flags[:]  # clone flags
         if fuzzy:
@@ -1717,7 +1733,7 @@ class TextWrapper(textwrap.TextWrapper):
                     cur_line.append(chunks.pop())
                     cur_len += l
 
-                # Nope, this line is full.
+
                 else:
                     break
 

@@ -18,6 +18,7 @@ NOTE: all language codes internally are assumed to be in django format (e.g. en_
 """
 import datetime
 import fnmatch
+import gc
 import glob
 import json
 import os
@@ -30,6 +31,7 @@ import sys
 import tempfile
 import zipfile
 import StringIO
+from itertools import chain, ifilter
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -69,9 +71,14 @@ class Command(BaseCommand):
                     dest='no_srts',
                     default=False,
                     help='Do not refresh video subtitles before bundling.'),
-        make_option('--no_ka',
+        make_option('--no-kalite-trans',
                     action='store_true',
-                    dest='no_ka',
+                    dest='no_kalite_trans',
+                    default=True,
+                    help='Do not refresh KA Lite content translations before bundling.'),
+        make_option('--no-ka-trans',
+                    action='store_true',
+                    dest='no_ka_trans',
                     default=False,
                     help='Do not refresh Khan Academy content translations before bundling.'),
         make_option('--no-exercises',
@@ -89,6 +96,11 @@ class Command(BaseCommand):
                     dest='no_update',
                     default=False,
                     help='Do not refresh any resources before packaging.'),
+        make_option('--low-mem',
+                    action='store_true',
+                    dest='low_mem',
+                    default=False,
+                    help='Limit the memory used by the command by making the garbage collector more aggressive.'),
         make_option('--zip_file',
                     action='store',
                     dest='zip_file',
@@ -119,6 +131,10 @@ class Command(BaseCommand):
 
         package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
 
+        if options['low_mem']:
+            logging.info('Making the GC more aggressive...')
+            gc.set_threshold(36, 2, 2)
+
         # Update all the latest srts
         if not options['no_srts'] and not options['no_update']:
             update_srts(days=options["days"], lang_codes=lang_codes)
@@ -143,7 +159,8 @@ class Command(BaseCommand):
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=not options['no_ka'] and not options['no_update'],
+            download_ka_translations=not options['no_ka_trans'] and not options['no_update'],
+            download_kalite_translations=not options['no_kalite_trans'] and not options['no_update'],
             use_local=options["use_local"],
         )
         for lang_code in lang_codes:
@@ -175,7 +192,12 @@ def update_srts(days, lang_codes):
         call_command("cache_subtitles", date_since_attempt=date)
 
 
-def update_translations(lang_codes=None, download_ka_translations=True, zip_file=None, ka_zip_file=None, use_local=False):
+def update_translations(lang_codes=None,
+                        download_kalite_translations=True,
+                        download_ka_translations=True,
+                        zip_file=None,
+                        ka_zip_file=None,
+                        use_local=False):
 
     package_metadata = {}
 
@@ -192,7 +214,6 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
         logging.info("Downloading %s language(s)" % lang_codes)
 
         # Download latest UI translations from CrowdIn
-        assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
 
 
         # Download Khan Academy translations too
@@ -202,20 +223,30 @@ def update_translations(lang_codes=None, download_ka_translations=True, zip_file
         for lang_code in (lang_codes or [None]):
             lang_code = lcode_to_ietf(lang_code)
 
-            package_metadata[lang_code] = {}
+            package_metadata[lang_code] = {
+                'approved_translations': 0,
+                'phrases': 0,
+                'kalite_ntranslations': 0,
+                'kalite_nphrases': 0,
+            }                   # these values will likely yield the wrong values when download_kalite_translations == False.
 
-            logging.info("Downloading KA Lite translations...")
-            kalite_po_file = download_latest_translations(
-                lang_code=lang_code,
-                project_id=settings.CROWDIN_PROJECT_ID,
-                project_key=settings.CROWDIN_PROJECT_KEY,
-                zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
-            )
-            kalite_metadata = get_po_metadata(kalite_po_file)
-            package_metadata[lang_code]["approved_translations"] = kalite_metadata["approved_translations"]
-            package_metadata[lang_code]["phrases"]               = kalite_metadata["phrases"]
-            package_metadata[lang_code]["kalite_ntranslations"]  = kalite_metadata["approved_translations"]
-            package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
+            kalite_po_file = None
+
+            if download_kalite_translations:
+                assert hasattr(settings, "CROWDIN_PROJECT_ID") and hasattr(settings, "CROWDIN_PROJECT_KEY"), "Crowdin keys must be set to do this."
+
+                logging.info("Downloading KA Lite translations...")
+                kalite_po_file = download_latest_translations(
+                    lang_code=lang_code,
+                    project_id=settings.CROWDIN_PROJECT_ID,
+                    project_key=settings.CROWDIN_PROJECT_KEY,
+                    zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
+                )
+                kalite_metadata = get_po_metadata(kalite_po_file)
+                package_metadata[lang_code]["approved_translations"] = kalite_metadata["approved_translations"]
+                package_metadata[lang_code]["phrases"]               = kalite_metadata["phrases"]
+                package_metadata[lang_code]["kalite_ntranslations"]  = kalite_metadata["approved_translations"]
+                package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
 
             # Download Khan Academy translations too
             if download_ka_translations:
@@ -386,31 +417,36 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
     converted_code = lcode_to_django_dir(lang)
 
     def prep_inputs(extract_path, converted_code, filter_type):
-        src_po_files = [po for po in all_po_files(extract_path)]
+        src_po_files = all_po_files(extract_path)
 
         # remove all exercise po that is not about math
         if filter_type:
             if filter_type == "ka":
 
-                src_po_files = [os.path.splitext(po)[0] for po in src_po_files]
-
-                # Stream 1
-                src_po_files_learn = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn.", "content.chrome", "_other_"]]), src_po_files)
-                src_po_files_learn = filter(lambda fn: ".videos" in fn or ".exercises" in fn or sum([po.startswith(fn[:-len(lang)-1]) for po in src_po_files_learn]) > 1, src_po_files_learn)
-
-                # Stream 2
-                src_po_files_extra = filter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
-
-                src_po_files = [po + ".po" for po in src_po_files_learn + src_po_files_extra]
+                # Magic # 4 below: 3 for .po, 1 for -  (-fr.po)
+                src_po_files_learn     = ifilter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn."]]), src_po_files)
+                src_po_files_videos    = ifilter(lambda fn: ".videos" in fn, src_po_files_learn)
+                src_po_files_exercises = ifilter(lambda fn: ".exercises" in fn, src_po_files_learn)
+                src_po_files_topics    = ifilter(lambda fn:  sum([po.startswith(fn[:-len(lang)-4]) for po in src_po_files_learn]) > 1, src_po_files_learn)
+                src_po_files_topics    = chain(
+                    src_po_files_topics,
+                    ifilter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["content.chrome", "_other_"]]), src_po_files)
+                )
 
                 # before we call msgcat, process each exercise po file and leave out only the metadata
-                for exercise_po in get_exercise_po_files(src_po_files):
-                    remove_exercise_nonmetadata(exercise_po)
+                for exercise_po in src_po_files_exercises:
+                    remove_nonmetadata(exercise_po, r'.*(of|for) exercise')
+                    yield exercise_po
+                for video_po in src_po_files_videos:
+                    remove_nonmetadata(video_po, r'.*(of|for) video')
+                    yield video_po
+                for topic_po in src_po_files_topics:
+                    remove_nonmetadata(topic_po, r'.*(of|for) topic')
+                    yield topic_po
 
         if combine_with_po_file:
-            src_po_files.append(combine_with_po_file)
+            yield combine_with_po_file
 
-        return src_po_files
     src_po_files = prep_inputs(extract_path, converted_code, filter_type)
 
 
@@ -420,25 +456,27 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         ensure_dir(dest_path)
         dest_file = os.path.join(dest_path, 'django.po')
 
-        if len(src_po_files) == 1:
-            shutil.move(src_po_file[0], dest_file)
+        build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
 
-        else:
-            build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
+        logging.info('Concatenating all po files found...')
+        try:
+            build_po = polib.pofile(build_file)
+        except IOError as e:  # build_file doesn't exist yet
+            build_po = polib.POFile(fpath=build_file)
 
-            logging.info('Concatenating all po files found...')
-            try:
-                concat_command = ['msgcat', '-o', build_file, '--no-location'] + src_po_files
-                process = subprocess.Popen(concat_command, stderr=subprocess.STDOUT)
-                process.wait()
-                if not os.path.exists(build_file):
-                    raise CommandError("Unable to concatenate po files.")
-            except OSError as e:
-                if e.strerror == "No such file or directory":
-                    raise CommandError("%s must be installed and in your path to run this command." % concat_command[0])
-                else:
-                    raise
-            shutil.move(build_file, dest_file)
+        for src_file in src_po_files:
+            logging.debug('Concatenating %s with %s...' % (src_file, build_file))
+            src_po = polib.pofile(src_file)
+            build_po.merge(src_po)
+
+        # de-obsolete messages
+        for poentry in build_po:
+            # ok build_po appears to be a list, but not actually one. Hence just doing
+            # a list comprehension over it won't work. So we unobsolete entries so that
+            # they can be detected and turned into a mo file
+            poentry.obsolete = False
+        build_po.save()
+        shutil.move(build_file, dest_file)
 
         return dest_file
 
@@ -459,14 +497,12 @@ def get_po_metadata(pofilename):
     return { "approved_translations": ntranslations, "phrases": nphrases }
 
 
-def remove_exercise_nonmetadata(pofilename):
+def remove_nonmetadata(pofilename, METADATA_MARKER):
     '''Checks each message block in the po file given by pofilename, and
     sees if the top comment of each one has the string '(of|for)
     exercise'. If not, then it will be deleted from the po file.
     '''
     assert os.path.exists(pofilename), "%s does not exist!" % pofilename
-
-    EXERCISE_METADATA_LINE = r'.*(of|for) exercise <a'
 
     logging.info('Removing nonmetadata msgblocks from %s' % pofilename)
     pofile = polib.pofile(pofilename)
@@ -474,25 +510,12 @@ def remove_exercise_nonmetadata(pofilename):
     clean_pofile = polib.POFile(encoding='utf-8')
     clean_pofile.append(pofile.metadata_as_entry())
     for msgblock in pofile:
-        if 'Project-Id-Version' in msgblock.msgstr or msgblock.msgstr == '':  # is header; ignore, already included
-            continue
-        elif re.match(EXERCISE_METADATA_LINE, msgblock.tcomment):
+        if re.match(METADATA_MARKER, msgblock.tcomment):
             # is exercise metadata, preserve
             clean_pofile.append(msgblock)
 
     os.remove(pofilename)
     clean_pofile.save(fpath=pofilename)
-
-    # ok, here's the deal: there's a bug right now in polib.py in which
-    # it creates an empty header AUTOMATICALLY. Plus, there is no way
-    # to specify what this header contains. So what do we do? We delete this
-    # header. TODO for Aron: Fix polib.py
-    with open(pofilename, 'r') as pofile:
-        polines = pofile.read().split('\n')
-    polines = '\n'.join(polines[4:])       # here the first 4 lines compose the empty header. Cull them!
-    with open(pofilename, 'w') as fp:
-        fp.write(polines)
-
 
 def get_exercise_po_files(po_files):
     return fnmatch.filter(po_files, '*.exercises-*.po')
@@ -506,7 +529,8 @@ def all_po_files(dir):
     # return glob.glob(os.path.join(dir, '*/*.po'))
     for current_dir, _, filenames in os.walk(dir):
         for po_file in fnmatch.filter(filenames, '*.po'):
-            yield os.path.join(current_dir, po_file)
+            if os.path.basename(po_file)[0] != '.':
+                yield os.path.join(current_dir, po_file)
 
 
 def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None):
@@ -628,7 +652,7 @@ def increment_language_pack_version(local_meta, updated_meta):
 
     if not local_meta or version_diff(local_meta.get("software_version"), version.VERSION) < 0:
         # set to one for the first time, or if this is the first build of a new software version
-        logging.info("Setting %s language pack version to 1" % local_meta["code"])
+        logging.info("Setting %s language pack version to 1" % updated_meta["code"])
         language_pack_version = 1
 
     else:
