@@ -144,12 +144,17 @@ $(function() {
         // Prep
         // Get all videos to download
         var youtube_ids = getSelectedIncompleteYoutubeIDs();
+        var numVideos = youtube_ids.length;
 
         // Do the request
         doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
             .success(function() {
-                handleSuccessAPI("id_video_download");
-                updatesStart("videodownload", 5000, video_callbacks)
+                updatesStart("videodownload", 5000, video_callbacks);
+                show_message(
+                    "success",
+                    sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos}),
+                    "id_videodownload"
+                );
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, gettext("Error starting video download"), "id_video_download");
