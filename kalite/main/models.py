@@ -25,11 +25,11 @@ class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.11.1"
+    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
     youtube_id = models.CharField(max_length=20)
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
@@ -122,7 +122,7 @@ class ExerciseLog(DeferredCountSyncedModel):
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
     attempts_before_completion = models.IntegerField(blank=True, null=True)
@@ -197,7 +197,7 @@ class UserLogSummary(DeferredCountSyncedModel):
     end_datetime = models.DateTimeField(blank=True, null=True)
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
-    last_activity_datetime = models.DateTimeField(blank=True, null=True); last_activity_datetime.minversion = "0.11.1"
+    last_activity_datetime = models.DateTimeField(blank=True, null=True); last_activity_datetime.minversion = "0.10.3"
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -310,7 +310,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     start_datetime = models.DateTimeField(blank=False, null=False)
     last_active_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
