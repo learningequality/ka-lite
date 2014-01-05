@@ -9,6 +9,7 @@ from .models import *
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
+from settings import LOG as logging
 
 
 class SyncClient(BaseClient):
@@ -174,7 +175,8 @@ class SyncClient(BaseClient):
         for device_id in devices_to_download: # force
             try:
                 d = Device.objects.get(id=device_id)
-            except:
+            except Exception as e:
+                logging.error("Exception locating device %s for metadata creation: %s" % (device_id, e))
                 continue
 
             if not d.get_counter_position():  # this would be nonzero if the device sync'd models
@@ -220,6 +222,7 @@ class SyncClient(BaseClient):
             self.session.errors += download_results.has_key("error")
             self.session.errors += download_results.has_key("exceptions")
         except Exception as e:
+            logging.debug("Exception downloading models: %s" % e)
             download_results["error"] = e
             self.session.errors += 1
 
@@ -237,6 +240,7 @@ class SyncClient(BaseClient):
             self.session.errors += upload_results.has_key("error")
             self.session.errors += upload_results.has_key("exceptions")
         except Exception as e:
+            logging.debug("Exception uploading models: %s" % e)
             upload_results["error"] = e
             self.session.errors += 1
 
