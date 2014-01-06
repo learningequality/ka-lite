@@ -105,8 +105,8 @@ VERSION_INFO = {
     },
 
     "0.9.2": {
-        "release_date": "2013/02/xx",
-        "git_commit": "",
+        "release_date": "2013/02/09",
+        "git_commit": "7c326329b7ae1b6000d1c636cf8ca920a8cc8daa",
         "new_features": {
             "all": [],
             "students": [],
