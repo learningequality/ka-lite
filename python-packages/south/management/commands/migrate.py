@@ -41,7 +41,7 @@ class Command(BaseCommand):
         make_option('--database', action='store', dest='database',
             default=DEFAULT_DB_ALIAS, help='Nominates a database to synchronize. '
                 'Defaults to the "default" database.'),
-        make_option('--hack',  # needed for relaunch_external hack
+        make_option('--hack',  # KA-LITE-MOD: needed for relaunch_external hack
             action="store_true",
             dest="hack",
             default=False,
@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
     def relaunch_external(self):
         """
-        This is a KA Lite hack.
+        This is a KA Lite hack. #KA-LITE-MOD
 
         In our git-based update command (until version 0.10.3), we update the code, then run
         run the 'migrate' command under the old code (since it's loaded into memory).
