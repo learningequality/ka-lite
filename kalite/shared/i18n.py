@@ -93,7 +93,7 @@ def get_dubbed_video_map(lang_code=None, force=False):
                         response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
                         response.raise_for_status()
                         with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
-                            fp.write(response.content)  # wait until content has been confirmed before opening file.
+                            fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
                 except Exception as e:
                     if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
                         # Unrecoverable error, so raise
