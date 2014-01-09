@@ -423,7 +423,10 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         src_po_files = all_po_files(extract_path)
 
         # remove all exercise po that is not about math
-        if filter_type:
+        if not filter_type:
+            for po_file in src_po_files:
+                yield po_file
+        else:
             if filter_type == "ka":
 
                 # Magic # 4 below: 3 for .po, 1 for -  (-fr.po)
