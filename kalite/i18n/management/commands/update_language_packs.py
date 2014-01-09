@@ -31,6 +31,7 @@ import sys
 import tempfile
 import zipfile
 import StringIO
+from collections import defaultdict
 from itertools import chain, ifilter
 from optparse import make_option
 
@@ -43,7 +44,6 @@ import version
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR, DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_localized_exercise_dirpath, get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths, get_subtitle_count, get_localized_exercise_count
-from update_po import compile_po_files
 from utils.general import ensure_dir, softload_json, version_diff
 
 
@@ -155,7 +155,7 @@ class Command(BaseCommand):
             package_metadata[lang_code]["num_exercises"] = get_localized_exercise_count(lang_code)
 
         # Update the crowdin translations
-        (trans_metadata, broken_langs) = update_translations(
+        trans_metadata = update_translations(
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
@@ -167,7 +167,7 @@ class Command(BaseCommand):
             package_metadata[lang_code].update(trans_metadata.get(lang_code, {}))
 
         # Loop through new UI translations & subtitles, create/update unified meta data
-        generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, package_metadata=package_metadata)
+        generate_metadata(lang_codes=lang_codes, package_metadata=package_metadata)
 
         # Zip
         package_sizes = zip_language_packs(lang_codes=lang_codes)
@@ -223,12 +223,15 @@ def update_translations(lang_codes=None,
         for lang_code in (lang_codes or [None]):
             lang_code = lcode_to_ietf(lang_code)
 
-            package_metadata[lang_code] = {
+            # we make it a defaultdict so that if no value is present it's automatically 0
+            package_metadata[lang_code] = defaultdict(
+                lambda: 0,
+                {
                 'approved_translations': 0,
-                'phrases': 0,
-                'kalite_ntranslations': 0,
-                'kalite_nphrases': 0,
-            }                   # these values will likely yield the wrong values when download_kalite_translations == False.
+                    'phrases': 0,
+                    'kalite_ntranslations': 0,
+                    'kalite_nphrases': 0,
+                })                   # these values will likely yield the wrong values when download_kalite_translations == False.
 
             kalite_po_file = None
 
@@ -268,13 +271,13 @@ def update_translations(lang_codes=None,
                 package_metadata[lang_code]["ka_ntranslations"]      = ka_metadata["approved_translations"] - package_metadata[lang_code]["kalite_ntranslations"]
                 package_metadata[lang_code]["ka_nphrases"]           = ka_metadata["phrases"] - package_metadata[lang_code]["kalite_nphrases"]
 
-            # Now that we have metadata, compress by removing non-translated "translations"
 
-    # Compile
-    (out, err, rc) = compile_po_files(lang_codes=lang_codes)  # converts to django
-    broken_langs = handle_po_compile_errors(lang_codes=lang_codes, out=out, err=err, rc=rc)
+            # here we compute the percent translated
+            if download_ka_translations or download_kalite_translations:
+                pmlc = package_metadata[lang_code] # shorter name, less characters
+                pmlc["percent_translated"] = 100. * (pmlc['kalite_ntranslations'] + pmlc['ka_ntranslations']) / float(pmlc['kalite_nphrases'] + pmlc['ka_nphrases'])
 
-    return (package_metadata, broken_langs)
+    return package_metadata
 
 
 def upgrade_old_schema():
@@ -455,6 +458,7 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
         dest_path = os.path.join(LOCALE_ROOT, converted_code, "LC_MESSAGES")
         ensure_dir(dest_path)
         dest_file = os.path.join(dest_path, 'django.po')
+        dest_mo_file = os.path.join(dest_path, 'django.mo')
 
         build_file = os.path.join(dest_path, 'djangobuild.po')  # so we dont clobber previous django.po that we build
 
@@ -476,6 +480,7 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             # they can be detected and turned into a mo file
             poentry.obsolete = False
         build_po.save()
+        build_po.save_as_mofile(dest_mo_file)
         shutil.move(build_file, dest_file)
 
         return dest_file
@@ -557,7 +562,7 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
         if not os.path.isdir(os.path.join(LOCALE_ROOT, lang_code_django)):
             logging.info("Skipping item %s because it is not a directory" % lang_code_django)
             continue
-        elif lang_code_django in broken_langs:  # broken_langs is django format
+        elif broken_langs and lang_code_django in broken_langs:  # broken_langs is django format
             logging.info("Skipping directory %s because it triggered an error during compilemessages. The admins should have received a report about this and must fix it before this pack will be updateed." % lang_code_django)
             continue
 
