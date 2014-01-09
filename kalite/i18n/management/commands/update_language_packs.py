@@ -74,7 +74,7 @@ class Command(BaseCommand):
         make_option('--no-kalite-trans',
                     action='store_true',
                     dest='no_kalite_trans',
-                    default=True,
+                    default=False,
                     help='Do not refresh KA Lite content translations before bundling.'),
         make_option('--no-ka-trans',
                     action='store_true',
