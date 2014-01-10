@@ -98,7 +98,7 @@ def refresh_topic_cache(handler, force=False):
                 "(and urls) " if stamp_urls else "",
                 node["path"],
             ))
-            (_a, _b, _c, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
+            (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
             if changed:
                 strip_counts_from_ancestors(node)
         return node
@@ -124,7 +124,6 @@ def refresh_topic_cache(handler, force=False):
             # Propertes not yet marked
             if node["kind"] == "Video":
                 if force or not has_computed_urls(node):
-                    #stamp_availability_on_topic(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
@@ -189,7 +188,7 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available')) for t in topics]
 
     exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
@@ -214,7 +213,6 @@ def topic_context(topic):
         "exercises": exercises,
         "exercise_langs": exercise_langs,
         "topics": my_topics,
-        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
@@ -233,12 +231,14 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
 
-    if video["available"] and not any([avail["on_disk"] for avail in video["availability"].values()]):
-        messages.success(request, "Got video content from %s" % video["availability"]["default"]["stream_url"])
-
     # Fallback mechanism
     available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language, )
+    if video["available"] and not available_urls:
+        vid_lang = "en"
+        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
+    else:
+        vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language)
+
 
     context = {
         "video": video,
@@ -318,7 +318,6 @@ def homepage(request, topics):
     context = topic_context(topics)
     context.update({
         "title": "Home",
-        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
 

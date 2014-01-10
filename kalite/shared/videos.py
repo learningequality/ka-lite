@@ -84,7 +84,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     def compute_video_metadata(youtube_id, format):
         return {"stream_type": "video/%s" % format}
 
-    def compute_video_urls(youtube_id, format, on_disk=None, thumb_format="png", videos_path=settings.CONTENT_ROOT):
+    def compute_video_urls(youtube_id, format, lang_code, on_disk=None, thumb_format="png", videos_path=settings.CONTENT_ROOT):
         if on_disk is None:
             on_disk = is_video_on_disk(youtube_id, format, videos_path=videos_path)
 
@@ -92,7 +92,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
             video_base_url = settings.CONTENT_URL + youtube_id
             stream_url = video_base_url + ".%s" % format
             thumbnail_url = video_base_url + ".png"
-        elif settings.BACKUP_VIDEO_SOURCE:
+        elif settings.BACKUP_VIDEO_SOURCE and lang_code == "en":
             dict_vals = {"youtube_id": youtube_id, "video_format": format, "thumb_format": thumb_format }
             stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
             thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
@@ -117,7 +117,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     if stamp_urls:
         # Loop over all known dubbed videos
         for lang_code, youtube_id in video_map.iteritems():
-            urls = compute_video_urls(youtube_id, format, on_disk=video_availability[lang_code]["on_disk"], videos_path=videos_path)
+            urls = compute_video_urls(youtube_id, format, lang_code, on_disk=video_availability[lang_code]["on_disk"], videos_path=videos_path)
             if urls:
                 # Only add properties if anything is available.
                 video_availability[lang_code].update(urls)
@@ -138,6 +138,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     video["availability"] = video_availability
     video["on_disk"]   = any_on_disk
     video["available"] = any_available
+
     return video
 
 
@@ -185,10 +186,13 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
             stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
         nvideos_local += int(video["on_disk"])
     nvideos_known += len(videos)
+    nvideos_available = nvideos_local if not settings.BACKUP_VIDEO_SOURCE else nvideos_known
 
     changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
     changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
+    topic["nvideos_available"] = nvideos_available
     topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
-    return (topic, nvideos_local, nvideos_known, changed)
+
+    return (topic, nvideos_local, nvideos_known, nvideos_available, changed)
