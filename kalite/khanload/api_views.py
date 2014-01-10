@@ -115,7 +115,7 @@ def update_all_central(request):
     request.session["distributed_user_id"] = request.GET["user_id"]
     request.session["distributed_callback_url"] = request.GET["callback"]
     request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
-    request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
+    request.session["distributed_csrf_token"] = request._cookies.get("csrftoken")
 
     # TODO(bcipolli)
     # Disabled oauth caching, as we don't have a good way
