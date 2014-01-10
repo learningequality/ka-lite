@@ -238,9 +238,9 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     context = {
         "video": video,
         "title": video["title"],
-        "available_videos": available_urls,
         "selected_language": vid_lang,
-        "video_urls": available_urls[vid_lang] if vid_lang else None,
+        "video_urls": video["availability"].get(vid_lang),
+        "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
