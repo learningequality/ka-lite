@@ -304,7 +304,7 @@ def login_view(request, *args, **kwargs):
             "url": set_query_param(request.REQUEST.get("next", reverse('org_management')), "prev", prev),
         },
         "auth_password_reset_url": reverse("auth_password_reset"),
-        "registration_register_url": reverse("registration_register") + ("next=%s" % request.next if request.next else ""),
+        "registration_register_url": reverse("registration_register") if not request.next else set_query_param(reverse("registration_register"), "next", request.next),
     }
     kwargs["extra_context"] = extra_context
 
