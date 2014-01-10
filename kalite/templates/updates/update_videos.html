@@ -53,6 +53,7 @@
         </button>
     </div>
 
+    {% comment %}
     <div class="download-actions vertical-shadow">
         <h2>{% trans "Installed Language Packs" %}
           <a href="{% url update_languages %}">({% trans "Manage" %})</a>
@@ -63,7 +64,7 @@
             {{ languages|join:", " }} {% if other_languages_count %}and {{ other_languages_count }} more. {% endif %}
         {% endif %}
     </div>
-
+    {% endcomment %}
     <div style="clear: both;"></div>
 
     <div>
