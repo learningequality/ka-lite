@@ -51,7 +51,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     if not os.path.exists(map_file):
         ensure_dir(os.path.dirname(map_file))
         if not settings.DEBUG:
-            raise CommandError("TRUE central server's srts dict should never be empty...")
+            raise CommandError("TRUE central server's srts dict should never be empty; where is your %s?" % map_file)
         else:
             # Pull it from the central server
             try:

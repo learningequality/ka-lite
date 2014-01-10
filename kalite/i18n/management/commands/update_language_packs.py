@@ -41,8 +41,7 @@ from django.core.mail import mail_admins
 import settings
 import version
 from settings import LOG as logging
-from shared.i18n import LOCALE_ROOT, SUBTITLE_COUNTS_FILEPATH, CROWDIN_CACHE_DIR, DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.i18n import get_language_name, lcode_to_django_dir, lcode_to_ietf, LanguageNotFoundError, get_dubbed_video_map,  get_localized_exercise_dirpath, get_language_pack_metadata_filepath, get_language_pack_availability_filepath, get_language_pack_filepath, move_old_subtitles, scrub_locale_paths, get_subtitle_count, get_localized_exercise_count
+from shared.i18n import *
 from update_po import compile_po_files
 from utils.general import ensure_dir, softload_json, version_diff
 
@@ -127,6 +126,12 @@ class Command(BaseCommand):
         else:
             lang_codes = [lcode_to_ietf(lc) for lc in options["lang_code"].split(",")]
 
+        # If no_update is set, then disable all no_* options.
+        for key in options:
+            if key.startswith("no_"):
+                options[key] = options[key] or options["no_update"]
+        import pdb; pdb.set_trace()
+
         upgrade_old_schema()
 
         package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
@@ -135,14 +140,14 @@ class Command(BaseCommand):
             logging.info('Making the GC more aggressive...')
             gc.set_threshold(36, 2, 2)
 
-        # Update all the latest srts
-        if not options['no_srts'] and not options['no_update']:
+        # Update all the latest srts, using raw language code
+        if not options['no_srts']:
             update_srts(days=options["days"], lang_codes=lang_codes)
         for lang_code in lang_codes:
             package_metadata[lang_code]["subtitle_count"] = get_subtitle_count(lang_code)
 
         # Update the dubbed video mappings
-        if not options['no_dubbed'] and not options['no_update']:
+        if not options['no_dubbed']:
             get_dubbed_video_map(force=True)
         for lang_code in lang_codes:
             dv_map = get_dubbed_video_map(lang_code)
@@ -150,7 +155,7 @@ class Command(BaseCommand):
 
         # Update the exercises
         for lang_code in lang_codes:
-            if not options['no_exercises'] and not options['no_update']:
+            if not options['no_exercises']:
                 call_command("scrape_exercises", lang_code=lang_code)
             package_metadata[lang_code]["num_exercises"] = get_localized_exercise_count(lang_code)
 
@@ -159,8 +164,8 @@ class Command(BaseCommand):
             lang_codes=lang_codes,
             zip_file=options['zip_file'],
             ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=not options['no_ka_trans'] and not options['no_update'],
-            download_kalite_translations=not options['no_kalite_trans'] and not options['no_update'],
+            download_ka_translations=not options['no_ka_trans'],
+            download_kalite_translations=not options['no_kalite_trans'],
             use_local=options["use_local"],
         )
         for lang_code in lang_codes:
@@ -281,7 +286,6 @@ def upgrade_old_schema():
     """Move srt files from static/srt to locale directory and file them by language code, delete any old locale directories"""
 
     scrub_locale_paths()
-    move_old_subtitles()
 
 def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
     """
@@ -706,11 +710,10 @@ def zip_language_packs(lang_codes=None):
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
-        for srt_file in glob.glob('%s/subtitles/*.srt' % lang_locale_path):
-            # Get every single subtitle
-            filepath = os.path.join(lang_locale_path, srt_file)
-            z.write(filepath, arcname=os.path.join("subtitles", os.path.basename(srt_file)))
-            sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
+        srt_dirpath = get_srt_path(lang_code_django)
+        for srt_file in glob.glob(os.path.join(srt_dirpath, "*.srt")):
+            z.write(srt_file, arcname=os.path.join("subtitles", os.path.basename(srt_file)))
+            sizes[lang_code_ietf]["package_size"] += os.path.getsize(srt_file)
 
         exercises_dirpath = get_localized_exercise_dirpath(lang_code_ietf)
         for exercise_file in glob.glob(os.path.join(exercises_dirpath, "*.html")):
