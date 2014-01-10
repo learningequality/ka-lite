@@ -272,7 +272,10 @@ def update_translations(lang_codes=None,
             # here we compute the percent translated
             if download_ka_translations or download_kalite_translations:
                 pmlc = package_metadata[lang_code] # shorter name, less characters
-                pmlc["percent_translated"] = 100. * (pmlc['kalite_ntranslations'] + pmlc['ka_ntranslations']) / float(pmlc['kalite_nphrases'] + pmlc['ka_nphrases'])
+                if pmlc['kalite_nphrases'] == pmlc['ka_nphrases'] == 0:
+                    pmlc['percent_translated'] = 0
+                else:
+                    pmlc["percent_translated"] = 100. * (pmlc['kalite_ntranslations'] + pmlc['ka_ntranslations']) / float(pmlc['kalite_nphrases'] + pmlc['ka_nphrases'])
 
     return package_metadata
 
