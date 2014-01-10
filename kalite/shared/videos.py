@@ -3,7 +3,7 @@ import os
 import settings
 import utils.videos  # keep access to all functions
 from settings import logging
-from shared.i18n import get_srt_path_on_disk, get_srt_url, get_id2oklang_map, get_youtube_id, get_subtitles_on_disk, get_language_code
+from shared.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_subtitles_on_disk, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
 from utils.videos import *  # get all into the current namespace, override some.
 
@@ -106,7 +106,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
 
         # Get the (english) subtitle urls
         subtitle_lang_codes = get_subtitles_on_disk(en_youtube_id)
-        subtitles_tuple = [(code, get_srt_url(en_youtube_id, code)) for code in subtitle_lang_codes if os.path.exists(get_srt_path_on_disk(en_youtube_id, code))]
+        subtitles_tuple = [(code, get_srt_url(en_youtube_id, code)) for code in subtitle_lang_codes if os.path.exists(get_srt_path(en_youtube_id, code))]
         subtitles_urls = dict(subtitles_tuple)
         video_availability["en"]["subtitles"] = subtitles_urls
 
