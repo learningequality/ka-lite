@@ -93,11 +93,9 @@
         <div id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
             <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video_urls.thumbnail %}poster="{{ video_urls.thumbnail }}" {% endif %}data-setup="{}">
                 <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
-                {% with lang_avail=video.availability|get_item:selected_language %}
-                {% for lang, subtitle_url in lang_avail.subtitles.iteritems %}
+                {% for lang, subtitle_url in subtitle_urls.iteritems %}
                 <track kind="captions" src="{{ subtitle_url }}" srclang="{{ lang }}" label="{{ lang }}" {% if lang == selected_language and selected_language != "en" %}default="True" {% endif %}/>
                 {% endfor %}
-                {% endwith %}
             </video>
             {% if video_urls.thumbnail %}<img class="video-thumb" src="{{ video_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{% endif %}
         </div>
