@@ -562,10 +562,22 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
         lang_code_django = lcode_to_django_dir(lc)
         lang_code_ietf = lcode_to_ietf(lc)
         lang_name = get_language_name(lang_code_ietf)
+        metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf)
+        ensure_dir(os.path.dirname(metadata_filepath))
 
-        # skips anything not a directory, or with errors
         if not os.path.isdir(os.path.join(LOCALE_ROOT, lang_code_django)):
-            logging.info("Skipping item %s because it is not a directory" % lang_code_django)
+            # We couldn't find the directory, so instead we generate an empty
+            # metadata json
+            with open(metadata_filepath, 'w') as file:
+                json.dump(
+                    {
+                        'code': lang_code_ietf,
+                        'name': lang_name,
+                        'software_version': version.VERSION,
+                        'language_pack_version': 1,
+                    },
+                    file
+                )
             continue
         elif broken_langs and lang_code_django in broken_langs:  # broken_langs is django format
             logging.info("Skipping directory %s because it triggered an error during compilemessages. The admins should have received a report about this and must fix it before this pack will be updateed." % lang_code_django)
@@ -573,7 +585,6 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
 
         # Gather existing metadata
         crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lang_code_ietf), {})
-        metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf)
         local_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
         try:
