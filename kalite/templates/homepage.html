@@ -6,6 +6,7 @@
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
+    {{ block.super }}
     <style>
         .suggested-action {
             background-color: #F7F7F7;
@@ -67,11 +68,10 @@
             font-family: "MuseoSans500", sans-serif;
         }
 
-        .topic-list a {
-            display: block;
+        .topic a {
             padding: 0 0 8px 40px;
             font-size: 18px;
-            line-height: 28px;
+            line-height: 40px;
         }
 
         a:hover, a:hover .suggested-action-title {
@@ -112,14 +112,15 @@
             <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
             <p class="topic-list">
                 {% for subtopic in topics %}
-                {% if backup_vids_available and subtopic.nvideos_local == 0 %}
-                    <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{{subtopic.nvideos_known}}/{{subtopic.nvideos_known}} {% trans "video(s) are available." %}">
+                <span class="topic">
+                    <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
                         {% trans subtopic.title %}
                     </a>
-                {% endif %}
-                <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local == 0 %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{subtopic.nvideos_local}}/{{subtopic.nvideos_known}} {% trans "video(s) are downloaded." %}">
-                    {% trans subtopic.title %}
-                </a>
+                    <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
+                        {% trans subtopic.title %}
+                    </a>
+                    <br/>
+                </span>
                 {% endfor %}
             </p>
         </div>
