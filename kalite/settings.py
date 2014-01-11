@@ -138,7 +138,7 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
 TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 
-HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", "")
+HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
