@@ -121,10 +121,24 @@ def get_video_id(youtube_id):
 
 
 def get_srt_url(youtube_id, code):
-    return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, youtube_id)
+    return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
 
-def get_srt_path_on_disk(youtube_id, code):
-    return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
+def get_srt_path(lang_code=None, youtube_id=None):
+    """Both central and distributed servers must make these available
+    at a web-accessible location.
+
+    Now, they share that location, which was published in 0.10.2, and so cannot be changed
+    (at least, not from the central-server side)
+
+    Note also that it must use the django-version language code.
+    """
+    srt_path = os.path.join(settings.STATIC_ROOT, "srt")
+    if lang_code:
+        srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
+    if youtube_id:
+        srt_path = os.path.join(srt_path, youtube_id + ".srt")
+
+    return srt_path
 
 
 CODE2LANG_MAP = None
@@ -256,32 +270,19 @@ def get_languages_on_disk():
     return installed_languages
 
 
-def get_subtitles_on_disk(youtube_id):
+def get_langs_with_subtitle(youtube_id):
     """
     Returns a list of all language codes that contain subtitles for this video.
 
     Central and distributed servers store in different places, so loop differently
     """
 
-    def on_disk_central(youtube_id):
+    subtitles_path = get_srt_path()
+    if os.path.exists(subtitles_path):
+        installed_subtitles = [lc for lc in os.listdir(subtitles_path) if os.path.exists(get_srt_path(lc, youtube_id))]
+    else:
         installed_subtitles = []
-
-        # Loop through locale folders
-        for locale_dir in settings.LOCALE_PATHS:
-            if not os.path.exists(locale_dir):
-                continue
-            installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
-        return installed_subtitles
-
-    def on_disk_distributed(youtube_id):
-        subtitles_path = os.path.join(settings.STATIC_ROOT, "subtitles")
-        if os.path.exists(subtitles_path):
-            installed_subtitles = [lang for lang in os.listdir(subtitles_path) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
-        else:
-            installed_subtitles = []
-        return installed_subtitles
-
-    return sorted(on_disk_central(youtube_id) if settings.CENTRAL_SERVER else on_disk_distributed(youtube_id))
+    return sorted(installed_subtitles)
 
 
 def update_jsi18n_file(code="en"):
