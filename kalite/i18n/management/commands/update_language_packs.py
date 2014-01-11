@@ -130,7 +130,6 @@ class Command(BaseCommand):
         for key in options:
             if key.startswith("no_"):
                 options[key] = options[key] or options["no_update"]
-        import pdb; pdb.set_trace()
 
         upgrade_old_schema()
 

@@ -142,7 +142,6 @@ class Command(UpdatesStaticCommand):
         call_command("clean_pyc")
         self.start(notes="Clean up pyc files")
 
-        import pdb; pdb.set_trace()
         # Step 2: update via git
         self.next_stage(notes="Updating via git%s" % (" to branch %s" % branch if branch else ""))
         repo = git.Repo()
