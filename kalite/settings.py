@@ -242,56 +242,6 @@ MIDDLEWARE_CLASSES += (
 
 
 ########################
-# Debugging and testing
-########################
-
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
-logging.basicConfig()
-LOG.setLevel(LOGGING_LEVEL)
-logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
-
-# Django debug_toolbar config
-if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
-    assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-        'ENABLE_STACKTRACES' : True,
-    }
-
-if DEBUG:
-    # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
-
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
-
-TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
-
-TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
-assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
-
-AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
-
-
-########################
 # Zero-config options
 ########################
 
@@ -364,54 +314,53 @@ CACHES = {
     }
 }
 
-if not CENTRAL_SERVER:
-    # Local memory cache is to expensive to use for the page cache.
-    #   instead, use a file-based cache.
-    # By default, cache for maximum possible time.
-    #   Note: caching for 100 years can be too large a value
-    #   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
-    #   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
-    _5_years = 5 * 365 * 24 * 60 * 60
-    _100_years = 100 * 365 * 24 * 60 * 60
-    _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-    CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
-    CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time if not CENTRAL_SERVER else 0)
+CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
 
-    # Cache is activated in every case,
-    #   EXCEPT: if CACHE_TIME=0
-    if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-        KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
+# Cache is activated in every case,
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
 
-        # File-based cache
-        install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
-        username = getpass.getuser() or "unknown_user"
-        cache_dir_name = "kalite_web_cache_%s" % (username)
-        CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
-        CACHES["file_based_cache"] = {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    # File-based cache
+    install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
+    username = getpass.getuser() or "unknown_user"
+    cache_dir_name = "kalite_web_cache_%s" % (username)
+    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
+    CACHES["file_based_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
 
-        # Memory-based cache
-        CACHES["mem_cache"] = {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
 
-        # The chosen cache
-        CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
-        if CACHE_NAME == "file_based_cache":
-            LOG.debug("Cache location = %s" % CACHE_LOCATION)
-        else:
-            LOG.debug("Using %s caching" % CACHE_NAME)
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+    if CACHE_NAME == "file_based_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+    else:
+        LOG.debug("Using %s caching" % CACHE_NAME)
 
 
 ########################
@@ -454,11 +403,13 @@ assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then
 ########################
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+logging.basicConfig()
+LOG.setLevel(LOGGING_LEVEL)
+logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
@@ -495,9 +446,6 @@ TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
 assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
-
-assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
-
 
 
 ########################
