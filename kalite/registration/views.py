@@ -22,7 +22,7 @@ from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
 from shared.decorators import central_server_only
-from utils.django_utils import set_query_param
+from utils.internet import set_query_params
 
 
 @central_server_only
@@ -301,10 +301,10 @@ def login_view(request, *args, **kwargs):
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
-            "url": set_query_param(request.REQUEST.get("next", reverse('org_management')), "prev", prev),
+            "url": set_query_params(request.REQUEST.get("next", reverse('org_management')), {"prev": prev}),
         },
         "auth_password_reset_url": reverse("auth_password_reset"),
-        "registration_register_url": reverse("registration_register") + ("next=%s" % request.next if request.next else ""),
+        "registration_register_url": reverse("registration_register") if not request.next else     _params(reverse("registration_register"), {"next": request.next}),
     }
     kwargs["extra_context"] = extra_context
 

@@ -17,7 +17,8 @@ import version
 from .classes import UpdatesStaticCommand
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, update_jsi18n_file, get_language_pack_url, get_localized_exercise_dirpath
+from shared.i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from utils.general import ensure_dir
 from utils.internet import callback_percent_proxy, download_file
 
@@ -134,15 +135,21 @@ def move_srts(lang_code):
     lang_code_django = lcode_to_django_dir(lang_code)
 
     subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
-    srt_static_dir = os.path.join(subtitles_static_dir, lang_code_ietf)
-    srt_locale_dir = os.path.join(LOCALE_ROOT, lang_code_django, "subtitles")
-    ensure_dir(srt_static_dir)
+    src_dir = os.path.join(LOCALE_ROOT, lang_code_django, "subtitles")
+    dest_dir = get_srt_path(lang_code_django)
+    ensure_dir(dest_dir)
 
-    lang_subtitles = glob.glob(os.path.join(srt_locale_dir, "*.srt"))
-    logging.info("Moving %d subtitles to %s" % (len(lang_subtitles), srt_static_dir))
+    lang_subtitles = glob.glob(os.path.join(src_dir, "*.srt"))
+    logging.info("Moving %d subtitles from %s to %s" % (len(lang_subtitles), src_dir, dest_dir))
 
     for fil in lang_subtitles:
-        srt_dest_path = os.path.join(srt_static_dir, os.path.basename(fil))
+        srt_dest_path = os.path.join(dest_dir, os.path.basename(fil))
         if os.path.exists(srt_dest_path):
             os.remove(srt_dest_path)
         shutil.move(fil, srt_dest_path)
+
+    if os.listdir(src_dir):
+        logging.warn("%s is not empty; will not remove.  Please check that all subtitles were moved." % src_dir)
+    else:
+        logging.info("Removing empty source directory (%s)." % src_dir)
+        shutil.rmtree(src_dir)
