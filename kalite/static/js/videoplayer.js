@@ -368,8 +368,8 @@ window.VideoView = Backbone.View.extend({
         }
     },
 
-    seekTo: function(seconds) {
-        this.model.player.seekTo(seconds);
+    seek: function(seconds) {
+        this.model.player.currentTime(seconds);
     },
 
     close: function() {
