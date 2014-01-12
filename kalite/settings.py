@@ -57,6 +57,16 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+# the default encoding for strings read from various IO sources
+DEFAULT_ENCODING = getattr(local_settings, "DEFAULT_ENCODING", 'utf-8')
+
+# set the default encoding
+# OK, so why do we reload sys? Because apparently sys.setdefaultencoding
+# is deleted somewhere at startup. Reloading brings it back.
+# see: http://blog.ianbicking.org/illusive-setdefaultencoding.html
+reload(sys)
+sys.setdefaultencoding(DEFAULT_ENCODING)
+
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
