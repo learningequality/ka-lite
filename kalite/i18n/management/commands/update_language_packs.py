@@ -416,13 +416,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
     converted_code = lcode_to_django_dir(lang)
 
     def prep_inputs(extract_path, converted_code, filter_type):
-        src_po_files = all_po_files(extract_path)
+        src_po_files = [po for po in all_po_files(extract_path)]
 
         # remove all exercise po that is not about math
         if filter_type == "ka":
 
             # Magic # 4 below: 3 for .po, 1 for -  (-fr.po)
             src_po_files_learn     = ifilter(lambda fn: any([os.path.basename(fn).startswith(str) for str in ["learn."]]), src_po_files)
+            src_po_files_learn     = [po for po in src_po_files_learn]
+
             src_po_files_videos    = ifilter(lambda fn: ".videos" in fn, src_po_files_learn)
             src_po_files_exercises = ifilter(lambda fn: ".exercises" in fn, src_po_files_learn)
             src_po_files_topics    = ifilter(lambda fn:  sum([po.startswith(fn[:-len(lang)-4]) for po in src_po_files_learn]) > 1, src_po_files_learn)
@@ -432,15 +434,15 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             )
 
             # before we call msgcat, process each exercise po file and leave out only the metadata
-            for exercise_po in src_po_files_exercises:
-                remove_nonmetadata(exercise_po, r'.*(of|for) exercise')
-                yield exercise_po
-            for video_po in src_po_files_videos:
-                remove_nonmetadata(video_po, r'.*(of|for) video')
-                yield video_po
             for topic_po in src_po_files_topics:
                 remove_nonmetadata(topic_po, r'.*(of|for) topic')
                 yield topic_po
+            for video_po in src_po_files_videos:
+                remove_nonmetadata(video_po, r'.*(of|for) video')
+                yield video_po
+            for exercise_po in src_po_files_exercises:
+                remove_nonmetadata(exercise_po, r'.*(of|for) exercise')
+                yield exercise_po
 
         else:
             for po_file in src_po_files:
