@@ -172,7 +172,7 @@ class Command(BaseCommand):
             package_metadata[lang_code].update(trans_metadata.get(lang_code, {}))
 
         # Loop through new UI translations & subtitles, create/update unified meta data
-        generate_metadata(lang_codes=lang_codes, package_metadata=package_metadata)
+        generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, package_metadata=package_metadata)
 
         # Zip
         package_sizes = zip_language_packs(lang_codes=lang_codes)
