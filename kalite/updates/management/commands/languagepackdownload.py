@@ -148,7 +148,9 @@ def move_srts(lang_code):
             os.remove(srt_dest_path)
         shutil.move(fil, srt_dest_path)
 
-    if os.listdir(src_dir):
+    if not os.path.exists(src_dir):
+        pass
+    elif os.listdir(src_dir):
         logging.warn("%s is not empty; will not remove.  Please check that all subtitles were moved." % src_dir)
     else:
         logging.info("Removing empty source directory (%s)." % src_dir)

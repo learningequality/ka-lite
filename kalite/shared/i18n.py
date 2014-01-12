@@ -349,7 +349,7 @@ def update_jsi18n_file(code="en"):
 
     request = HttpRequest()
     request.path = output_file
-    request.session = {'django_language': code}
+    request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
     response = javascript_catalog(request, packages=('ka-lite.locale',))
     with open(output_file, "w") as fp:

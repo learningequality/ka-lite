@@ -131,7 +131,7 @@ USE_I18N       = getattr(local_settings, "USE_I18N", True)
 
 # If you set this to True, Django will format dates, numbers and
 # calendars according to the current locale
-USE_L10N       = getattr(local_settings, "USE_L10N", True)
+USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
 MEDIA_URL      = getattr(local_settings, "MEDIA_URL", "/media/")
 MEDIA_ROOT     = os.path.realpath(getattr(local_settings, "MEDIA_ROOT", PROJECT_PATH + "/media/")) + "/"
@@ -241,6 +241,7 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
+    LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
     CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
