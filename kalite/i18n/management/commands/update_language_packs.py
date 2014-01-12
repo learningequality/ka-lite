@@ -61,10 +61,50 @@ class Command(BaseCommand):
                     metavar="LANG_CODE",
                     help="Language code to update (default: all)"),
         make_option('--no-srts',
+                    action='store_false',
+                    dest='update_srts',
+                    default=True,
+                    help='Do not refresh video subtitles before bundling.'),
+        make_option('--no-kalite-trans',
+                    action='store_false',
+                    dest='update_kalite_trans',
+                    default=True,
+                    help='Do not refresh KA Lite content translations before bundling.'),
+        make_option('--no-ka-trans',
+                    action='store_false',
+                    dest='update_ka_trans',
+                    default=True,
+                    help='Do not refresh Khan Academy content translations before bundling.'),
+        make_option('--no-exercises',
+                    action='store_false',
+                    dest='update_exercises',
+                    default=True,
+                    help='Do not refresh Khan Academy exercises before bundling.'),
+        make_option('--no-dubbed',
+                    action='store_false',
+                    dest='update_dubbed',
+                    default=True,
+                    help='Do not refresh Khan Academy dubbed video mappings.'),
+        make_option('--no-update',
                     action='store_true',
-                    dest='no_srts',
+                    dest='no_update',
                     default=False,
-                    help='Do not download and bundle video subtitles.'),
+                    help='Do not refresh any resources before packaging.'),
+        make_option('--low-mem',
+                    action='store_true',
+                    dest='low_mem',
+                    default=False,
+                    help='Limit the memory used by the command by making the garbage collector more aggressive.'),
+        make_option('--zip_file',
+                    action='store',
+                    dest='zip_file',
+                    default=None,
+                    help='a local zip file to be used instead of fetching to CrowdIn. Ignores -l if this is used.'),
+        make_option('--ka_zip_file',
+                    action='store',
+                    dest='ka_zip_file',
+                    default=None,
+                    help='a local zip file to be used for KA content instead of fetching to CrowdIn. Ignores -l if this is used.'),
         make_option('-o', '--use_local',
                     action='store_true',
                     dest='use_local',
@@ -81,12 +121,47 @@ class Command(BaseCommand):
         else:
             lang_codes = [lcode_to_django_dir(lc) for lc in options["lang_code"].split(",")]
 
-        # Raw language code for srts
-        if not options['no_srts']:
-            update_srts(days=options["days"], lang_codes=lang_codes)
+        # If no_update is set, then disable all update options.
+        for key in options:
+            if key.startswith("update_"):
+                options[key] = options[key] and not options["no_update"]
 
-        # Converted language code for language packs
-        update_language_packs(lang_codes=lang_codes)
+        upgrade_old_schema()
+
+        package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
+
+        if options['low_mem']:
+            logging.info('Making the GC more aggressive...')
+            gc.set_threshold(36, 2, 2)
+
+        # Update all the latest srts, using raw language code
+        if options['update_srts']:
+            update_srts(days=options["days"], lang_codes=lang_codes)
+        for lang_code in lang_codes:
+            package_metadata[lang_code]["subtitle_count"] = get_subtitle_count(lang_code)
+
+        # Update the dubbed video mappings
+        if options['update_dubbed']:
+            get_dubbed_video_map(force=True)
+        for lang_code in lang_codes:
+            dv_map = get_dubbed_video_map(lang_code)
+            package_metadata[lang_code]["num_dubbed_videos"] = len(dv_map) if dv_map else 0
+
+        # Update the exercises
+        for lang_code in lang_codes:
+            if options['update_exercises']:
+                call_command("scrape_exercises", lang_code=lang_code)
+            package_metadata[lang_code]["num_exercises"] = get_localized_exercise_count(lang_code)
+
+        # Loop through new UI translations & subtitles, create/update unified meta data
+        generate_metadata(lang_codes=lang_codes, broken_langs=broken_langs, package_metadata=package_metadata)
+
+        # Zip
+        package_sizes = zip_language_packs(lang_codes=lang_codes)
+        logging.debug("Package sizes: %s" % package_sizes)
+
+        # Loop through new UI translations & subtitles, create/update unified meta data
+        update_metadata(package_sizes)
 
 
 def update_srts(days, lang_codes):
@@ -108,6 +183,17 @@ def update_language_packs(lang_codes=None, download_ka_translations=True, zip_fi
 
     # Loop through new UI translations & subtitles, create/update unified meta data
     generate_metadata(lang_codes=lang_codes)
+    if use_local:
+        for lang_code in lang_codes:
+            lang_code = lcode_to_ietf(lang_code)
+            package_metadata[lang_code] = {}
+            combined_po_file = os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "LC_MESSAGES", "django.po")
+            combined_metadata = get_po_metadata(combined_po_file)
+            package_metadata[lang_code]["approved_translations"] = combined_metadata["approved_translations"]
+            package_metadata[lang_code]["phrases"]               = combined_metadata["phrases"]
+
+    else:
+        logging.info("Downloading %s language(s)" % lang_codes)
 
     # Zip
     zip_language_packs(lang_codes=lang_codes)

@@ -32,7 +32,6 @@ def get_language_pack_availability_filepath(ver=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, ver, "language_pack_availability.json")
 
 
-
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 def get_language_pack_metadata_filepath(lang_code):
@@ -140,6 +139,9 @@ def get_srt_path(lang_code=None, youtube_id=None):
 
     return srt_path
 
+def get_subtitle_count(lang_code):
+    all_srts = glob.glob(os.path.join(get_srt_path(lang_code=lang_code), "*.srt"))
+    return len(all_srts)
 
 CODE2LANG_MAP = None
 def get_code2lang_map(lang_code=None, force=False):
