@@ -48,12 +48,6 @@ def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL
     else:
         return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", lang_code.lower())
 
-def get_srt_path_on_disk(youtube_id, code, is_central_server=settings.CENTRAL_SERVER):
-    if is_central_server:
-        return os.path.join(LOCALE_ROOT, code, "subtitles", youtube_id + ".srt")
-    else:
-        return os.path.join(settings.STATIC_ROOT, "subtitles", code, youtube_id + ".srt")
-
 def get_language_pack_metadata_filepath(lang_code):
     lang_code = lcode_to_django_dir(lang_code)
     return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
@@ -180,9 +174,8 @@ def get_srt_path(lang_code=None, youtube_id=None):
 
     return srt_path
 
-def get_subtitle_count(lang_code, is_central_server=settings.CENTRAL_SERVER):
-    subtitle_dir = os.path.dirname(get_srt_path_on_disk("foo", lang_code, is_central_server=is_central_server))
-    all_srts = glob.glob(os.path.join(subtitle_dir, "*.srt"))
+def get_subtitle_count(lang_code):
+    all_srts = glob.glob(os.path.join(get_srt_path(lang_code=lang_code), "*.srt"))
     return len(all_srts)
 
 CODE2LANG_MAP = None
