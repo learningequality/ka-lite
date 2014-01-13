@@ -51,7 +51,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     if not os.path.exists(map_file):
         ensure_dir(os.path.dirname(map_file))
         if not settings.DEBUG:
-            raise CommandError("TRUE central server's srts dict should never be empty...")
+            raise CommandError("TRUE central server's srts dict should never be empty; where is your %s?" % map_file)
         else:
             # Pull it from the central server
             try:
@@ -82,12 +82,15 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     logging.info("Querying %d mappings." % (len(youtube_ids) - (0 if (force or date_to_check) else len(srts_dict))))
 
     # Once we have the current mapping, proceed through logic to update the mapping
-    n_new_entries = 0
-    n_failures = 0
+    n_refreshed = 0     # keep track to avoid writing if nothing's been refreshed.
+    n_new_entries = 0   # keep track for reporting
+    n_failures = 0      # keep track for reporting
     for youtube_id in youtube_ids:
+
         # Decide whether or not to update this video based on the arguments provided at the command line
         cached = youtube_id in srts_dict
         if not force and cached:
+
             # First, check against date
             flag_for_refresh = True # not (response_code or last_attempt)
             last_attempt = srts_dict[youtube_id].get("last_attempt")
@@ -96,6 +99,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             if not flag_for_refresh:
                 logging.debug("Skipping %s for date-check" % youtube_id)
                 continue
+
             # Second, check against response code
             response_code = srts_dict[youtube_id].get("api_response")
             flag_for_refresh = flag_for_refresh and (not response_to_check or response_to_check == "all" or response_to_check == response_code)
@@ -105,17 +109,20 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             if not response_to_check and not date_to_check and cached: # no flags specified and already cached - skip
                 logging.debug("Skipping %s for already-cached and no flags specified" % youtube_id)
                 continue
+
+        # We're gonna check; just report the reason why.
+        if force and not cached:
+            logging.debug("Updating %s because force flag (-f) given and video not cached." % youtube_id)
+        elif force and cached:
+            logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
         else:
-            if force and not cached:
-                logging.debug("Updating %s because force flag (-f) given and video not cached." % youtube_id)
-            elif force and cached:
-                logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
-            else:
-                logging.debug("Updating %s because video not yet cached." % youtube_id)
+            logging.debug("Updating %s because video not yet cached." % youtube_id)
 
         # If it makes it to here without hitting a continue, then update the entry
+
         try:
             srts_dict[youtube_id] = update_video_entry(youtube_id, entry=srts_dict.get(youtube_id, {}))
+            n_refreshed += 1
         except Exception as e:
             logging.warn("Error updating video %s: %s" % (youtube_id, e))
             n_failures += 1
@@ -128,12 +135,15 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
         n_new_entries += 1
 
     # Finished the loop: save and report
-    with open(map_file, 'wb') as fp:
-        json.dump(srts_dict, fp)
+    if n_refreshed > 0:
+        with open(map_file, 'wb') as fp:
+            json.dump(srts_dict, fp)
     if n_failures == 0:
-        logging.info("Great success! Stored %d fresh entries, %d total." % (n_new_entries, len(srts_dict)))
+        logging.info("Great success! Added %d entries, updated %d entries, of %d total." % (n_new_entries, n_refreshed, len(srts_dict)))
     else:
-        logging.warn("Stored %s fresh entries, but with %s failures." % (n_new_entries, n_failures))
+        logging.warn("Stored %d new entries, refreshed %d entries, but with %s failures, of %d total." % (n_new_entries, n_refreshed, n_failures, len(srts_dict)))
+
+    return n_refreshed != 0
 
 
 def update_video_entry(youtube_id, entry={}):
@@ -327,16 +337,28 @@ class Command(BaseCommand):
                     dest='date_since_attempt',
                     default=None,
                     help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'"),
+        make_option('-y', '--days-since-attempt',
+                    action='store',
+                    dest='days_since_attempt',
+                    default=1,
+                    help="Setting # of days since last attempt; will compute date.  USAGE: '-y 1'"),
     )
 
     def handle(self, *args, **options):
         if not settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on the central server.")
 
+        # Set up the refresh date
+        if not options["date_since_attempt"]:
+            date_since_attempt = datetime.datetime.now() - datetime.timedelta(days=options["days_since_attempt"])
+            options["date_since_attempt"] = date_since_attempt.strftime("%m/%d/%Y")
         converted_date = convert_date_input(options.get("date_since_attempt"))
-        create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
+
+        updated_mappings = create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
         logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
-        language_srt_map = update_language_srt_map()
-        print_language_availability_table(language_srt_map)
+        if updated_mappings:
+            language_srt_map = update_language_srt_map()
+            print_language_availability_table(language_srt_map)
+
         logging.info("Process complete.")

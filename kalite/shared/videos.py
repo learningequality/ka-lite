@@ -3,7 +3,7 @@ import os
 import settings
 import utils.videos  # keep access to all functions
 from settings import logging
-from shared.i18n import get_srt_path_on_disk, get_srt_url, get_id2oklang_map, get_youtube_id, get_subtitles_on_disk, get_language_code
+from shared.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
 from utils.general import softload_json
 from utils.videos import *  # get all into the current namespace, override some.
@@ -84,7 +84,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     def compute_video_metadata(youtube_id, format):
         return {"stream_type": "video/%s" % format}
 
-    def compute_video_urls(youtube_id, format, on_disk=None, thumb_format="png", videos_path=settings.CONTENT_ROOT):
+    def compute_video_urls(youtube_id, format, lang_code, on_disk=None, thumb_format="png", videos_path=settings.CONTENT_ROOT):
         if on_disk is None:
             on_disk = is_video_on_disk(youtube_id, format, videos_path=videos_path)
 
@@ -92,7 +92,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
             video_base_url = settings.CONTENT_URL + youtube_id
             stream_url = video_base_url + ".%s" % format
             thumbnail_url = video_base_url + ".png"
-        elif settings.BACKUP_VIDEO_SOURCE:
+        elif settings.BACKUP_VIDEO_SOURCE and lang_code == "en":
             dict_vals = {"youtube_id": youtube_id, "video_format": format, "thumb_format": thumb_format }
             stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
             thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
@@ -117,15 +117,15 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     if stamp_urls:
         # Loop over all known dubbed videos
         for lang_code, youtube_id in video_map.iteritems():
-            urls = compute_video_urls(youtube_id, format, on_disk=video_availability[lang_code]["on_disk"], videos_path=videos_path)
+            urls = compute_video_urls(youtube_id, format, lang_code, on_disk=video_availability[lang_code]["on_disk"], videos_path=videos_path)
             if urls:
                 # Only add properties if anything is available.
                 video_availability[lang_code].update(urls)
                 video_availability[lang_code].update(compute_video_metadata(youtube_id, format))
 
         # Get the (english) subtitle urls
-        subtitle_lang_codes = get_subtitles_on_disk(en_youtube_id)
-        subtitles_tuple = [(code, get_srt_url(en_youtube_id, code)) for code in subtitle_lang_codes if os.path.exists(get_srt_path_on_disk(en_youtube_id, code))]
+        subtitle_lang_codes = get_langs_with_subtitle(en_youtube_id)
+        subtitles_tuple = [(lc, get_srt_url(en_youtube_id, lc)) for lc in subtitle_lang_codes if os.path.exists(get_srt_path(lc, en_youtube_id))]
         subtitles_urls = dict(subtitles_tuple)
         video_availability["en"]["subtitles"] = subtitles_urls
 
@@ -138,6 +138,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     video["availability"] = video_availability
     video["on_disk"]   = any_on_disk
     video["available"] = any_available
+
     return video
 
 
@@ -185,10 +186,13 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
             stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
         nvideos_local += int(video["on_disk"])
     nvideos_known += len(videos)
+    nvideos_available = nvideos_local if not settings.BACKUP_VIDEO_SOURCE else nvideos_known
 
     changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
     changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
+    topic["nvideos_available"] = nvideos_available
     topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
-    return (topic, nvideos_local, nvideos_known, changed)
+
+    return (topic, nvideos_local, nvideos_known, nvideos_available, changed)

@@ -26,7 +26,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, LanguageNotFoundError
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, get_srt_path, LanguageNotFoundError
 from utils.general import convert_date_input, ensure_dir, softload_json
 from utils.internet import make_request
 
@@ -106,11 +106,6 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
         outstr = "Failed to download subtitles for the following languages: %s" % (bad_languages.keys())
         outstr += "\n" + str(bad_languages)
         logging.error(outstr)
-
-
-def get_srt_path(lang_code, locale_root=LOCALE_ROOT):
-    "lang_code: since srts are stored for django, must convert to django inside function"""
-    return os.path.join(locale_root, lcode_to_django_dir(lang_code), "subtitles")
 
 
 def get_all_download_status_files():

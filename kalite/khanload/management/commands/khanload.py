@@ -80,7 +80,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=khanload.KHAN
     # a) We're in DEBUG mode
     # b) The debug cache file exists
     # c) It's less than 7 days old.
-    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 114.0:
+    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 1E6:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
         with open(debug_cache_file, "r") as fp:
@@ -128,7 +128,7 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
         node["id"] = node[id_key[kind]]  # these used to be the same; now not. Easier if they stay the same (issue #233)
 
         node["path"] = path + khanload.kind_slugs[kind] + node["slug"] + "/"
-        node["title"] = node[title_key[kind]]
+        node["title"] = node[title_key[kind]].strip()
 
         # Add some attribute that should have been on there to start with.
         node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None

@@ -14,7 +14,7 @@ from django.utils import translation
 from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
-from django.views.decorators.http import condition 
+from django.views.decorators.http import condition
 
 import settings
 from settings import LOG as logging
@@ -56,7 +56,7 @@ def calc_last_modified(request, *args, **kwargs):
     Returns the file's modified time as the last-modified date
     """
     assert "cache_name" in kwargs, "Must specify cache_name as a keyword arg."
-    
+
     try:
         cache = get_cache(kwargs["cache_name"])
         assert isinstance(cache, FileBasedCache) or isinstance(cache, LocMemCache), "requires file-based or mem-based cache."
@@ -116,9 +116,9 @@ def get_web_cache():
 
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
     """Call into Django to retrieve a cache key for the given url, or given url name
-    
+
     NOTE: ONLY RETURNS CACHE_KEY IF THE CACHE_ITEM HAS BEEN CREATED ELSEWHERE!!!"""
-    
+
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
     if not cache:
@@ -126,7 +126,7 @@ def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
 
     request = HttpRequest()
     request.path = path or reverse(url_name)
-    request.session = {'django_language': translation.get_language()}
+    request.session = {settings.LANGUAGE_COOKIE_NAME: translation.get_language()}
 
     cache_key = django_get_cache_key(request, cache=get_web_cache())
     if not cache_key and not failure_ok:
@@ -149,7 +149,7 @@ def has_cache_key(path=None, url_name=None, cache=None):
 
 def create_cache(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
-    
+
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
     if not cache:
         cache = get_web_cache()
@@ -168,9 +168,9 @@ def create_cache(path=None, url_name=None, cache=None, force=False):
 
 def expire_page(path=None, url_name=None, failure_ok=False):
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
-    
+
     key = get_cache_key(path=path, url_name=url_name, failure_ok=failure_ok)
-    
+
     if get_web_cache().has_key(key):
         get_web_cache().delete(key)
 

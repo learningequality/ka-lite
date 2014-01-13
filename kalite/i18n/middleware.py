@@ -36,10 +36,10 @@ def set_request_language(request, lang_code):
     # each request can get the language from the querystring, or from the currently set session language
 
     lang_code = lcode_to_django_lang(lang_code)
-    if lang_code != request.session.get("django_language"):
+    if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
         logging.debug("setting session language to %s" % lang_code)
         # Just in case we have a db-backed session, don't write unless we have to.
-        request.session["django_language"] = lang_code
+        request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
 
     request.language = lcode_to_ietf(lang_code)
 
@@ -80,7 +80,7 @@ def set_language_data(request):
 
     # Set this request's language based on the listed priority
     cur_lang = request.GET.get("lang") \
-        or request.session.get("django_language") \
+        or request.session.get(settings.LANGUAGE_COOKIE_NAME) \
         or request.session.get("default_language")
 
     set_request_language(request, lang_code=cur_lang)

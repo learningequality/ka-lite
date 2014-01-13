@@ -6,6 +6,7 @@
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
+    {{ block.super }}
     <style>
         .suggested-action {
             background-color: #F7F7F7;
@@ -67,11 +68,10 @@
             font-family: "MuseoSans500", sans-serif;
         }
 
-        .topic-list a {
-            display: block;
+        .topic a {
             padding: 0 0 8px 40px;
             font-size: 18px;
-            line-height: 28px;
+            line-height: 40px;
         }
 
         a:hover, a:hover .suggested-action-title {
@@ -112,14 +112,12 @@
             <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
             <p class="topic-list">
                 {% for subtopic in topics %}
-                {% if backup_vids_available and subtopic.nvideos_local == 0 %}
-                    <a href="{{ subtopic.path }}" class="topic-available client-online-only" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}" %}">
+                <span class="topic">
+                    <a href="{{ subtopic.path }}" class="topic-link topic-{% if subtopic.nvideos_available == 0 %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
                         {% trans subtopic.title %}
                     </a>
-                {% endif %}
-                <a href="{{ subtopic.path }}" class="{% if backup_vids_available and subtopic.nvideos_local == 0 %}not-client-online-only {% endif %}topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}">
-                    {% trans subtopic.title %}
-                </a>
+                </span>
+                <br />
                 {% endfor %}
             </p>
         </div>

@@ -35,12 +35,13 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         cherrypy.tree.graft(WSGIHandler())
 
         # Serve the content files
-        static_handler = cherrypy.tools.staticdir.handler(
-            section="/",
-            dir=os.path.split(settings.CONTENT_ROOT)[1],
-            root=os.path.abspath(os.path.split(settings.CONTENT_ROOT)[0])
-        )
-        cherrypy.tree.mount(static_handler, settings.CONTENT_URL)
+        if getattr(settings, "CONTENT_ROOT", None):
+            static_handler = cherrypy.tools.staticdir.handler(
+                section="/",
+                dir=os.path.split(settings.CONTENT_ROOT)[1],
+                root=os.path.abspath(os.path.split(settings.CONTENT_ROOT)[0])
+            )
+            cherrypy.tree.mount(static_handler, settings.CONTENT_URL)
 
         # Serve the static media files
         static_handler = cherrypy.tools.staticdir.handler(

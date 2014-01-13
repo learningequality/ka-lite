@@ -93,7 +93,7 @@ def get_dubbed_video_map(lang_code=None, force=False):
                         response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
                         response.raise_for_status()
                         with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
-                            fp.write(response.content)  # wait until content has been confirmed before opening file.
+                            fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
                 except Exception as e:
                     if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
                         # Unrecoverable error, so raise
@@ -155,12 +155,30 @@ def get_video_id(youtube_id):
 
 
 def get_srt_url(youtube_id, code):
-    return settings.STATIC_URL + "subtitles/%s/%s.srt" % (code, youtube_id)
+    return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
 
 def get_localized_exercise_count(lang_code, is_central_server=settings.CENTRAL_SERVER):
     exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=is_central_server)
     all_exercises = glob.glob(os.path.join(exercise_dir, "*.html"))
     return len(all_exercises)
+
+
+def get_srt_path(lang_code=None, youtube_id=None):
+    """Both central and distributed servers must make these available
+    at a web-accessible location.
+
+    Now, they share that location, which was published in 0.10.2, and so cannot be changed
+    (at least, not from the central-server side)
+
+    Note also that it must use the django-version language code.
+    """
+    srt_path = os.path.join(settings.STATIC_ROOT, "srt")
+    if lang_code:
+        srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
+    if youtube_id:
+        srt_path = os.path.join(srt_path, youtube_id + ".srt")
+
+    return srt_path
 
 def get_subtitle_count(lang_code, is_central_server=settings.CENTRAL_SERVER):
     subtitle_dir = os.path.dirname(get_srt_path_on_disk("foo", lang_code, is_central_server=is_central_server))
@@ -304,32 +322,19 @@ def get_installed_language_packs():
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 
 
-def get_subtitles_on_disk(youtube_id):
+def get_langs_with_subtitle(youtube_id):
     """
     Returns a list of all language codes that contain subtitles for this video.
 
     Central and distributed servers store in different places, so loop differently
     """
 
-    def on_disk_central(youtube_id):
+    subtitles_path = get_srt_path()
+    if os.path.exists(subtitles_path):
+        installed_subtitles = [lc for lc in os.listdir(subtitles_path) if os.path.exists(get_srt_path(lc, youtube_id))]
+    else:
         installed_subtitles = []
-
-        # Loop through locale folders
-        for locale_dir in settings.LOCALE_PATHS:
-            if not os.path.exists(locale_dir):
-                continue
-            installed_subtitles += [lang for lang in os.listdir(locale_dir) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
-        return installed_subtitles
-
-    def on_disk_distributed(youtube_id):
-        subtitles_path = os.path.join(settings.STATIC_ROOT, "subtitles")
-        if os.path.exists(subtitles_path):
-            installed_subtitles = [lang for lang in os.listdir(subtitles_path) if os.path.exists(get_srt_path_on_disk(youtube_id, lang))]
-        else:
-            installed_subtitles = []
-        return installed_subtitles
-
-    return sorted(on_disk_central(youtube_id) if settings.CENTRAL_SERVER else on_disk_distributed(youtube_id))
+    return sorted(installed_subtitles)
 
 
 def update_jsi18n_file(code="en"):
@@ -344,7 +349,7 @@ def update_jsi18n_file(code="en"):
 
     request = HttpRequest()
     request.path = output_file
-    request.session = {'django_language': code}
+    request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
     response = javascript_catalog(request, packages=('ka-lite.locale',))
     with open(output_file, "w") as fp:
