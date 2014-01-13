@@ -219,7 +219,12 @@ def update_all_central_callback(request):
         }
     )
     logging.debug("Response (%d): %s" % (response.status_code, response.content))
-    message = json.loads(response.content)
+    try:
+        message = json.loads(response.content)
+    except ValueError as e:
+        message = { "error": unicode(e) }
+    except Exception as e:
+        message = { "error": u"Loading json object: %s" % e }
 
     # If something broke on the distribute d server, we are SCREWED.
     #   For now, just show the error to users.
