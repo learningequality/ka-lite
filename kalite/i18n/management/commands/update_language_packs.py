@@ -373,7 +373,6 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 
     return broken_codes
 
-
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
                                  project_key=settings.CROWDIN_PROJECT_KEY,
                                  lang_code="all",
@@ -385,6 +384,13 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     Download latest translations from CrowdIn to corresponding locale
     directory. If zip_file is given, use that as the zip file
     instead of going through CrowdIn.
+
+    Arguments:
+    - project_id -- the project ID in CrowdIn
+    - project_key -- the secret key used for accessing the po files in CrowdIn
+    - zip_file -- the location of a cached zip file. Stores the downloaded zip file in this location if nonexistent.
+    - rebuild -- ask CrowdIn to rebuild translations. Default is False.
+    - download_type -- whether it is a ka or ka_lite. Default is None, meaning ka_lite.
 
     """
     lang_code = lcode_to_ietf(lang_code)
