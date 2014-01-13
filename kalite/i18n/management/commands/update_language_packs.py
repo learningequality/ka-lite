@@ -437,15 +437,17 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
             )
 
             # before we call msgcat, process each exercise po file and leave out only the metadata
-            for topic_po in src_po_files_topics:
-                remove_nonmetadata(topic_po, r'.*(of|for) topic')
-                yield topic_po
-            for video_po in src_po_files_videos:
-                remove_nonmetadata(video_po, r'.*(of|for) video')
-                yield video_po
-            for exercise_po in src_po_files_exercises:
-                remove_nonmetadata(exercise_po, r'.*(of|for) exercise')
-                yield exercise_po
+            filter_rules = ((r'.*(of|for) exercise', src_po_files_exercises),
+                            (r'.*(of|for) video', src_po_files_videos),
+                            (r'.*(of|for) topic', src_po_files_topics))
+            for rule, src_file_list in filter_rules:
+                for po_file in src_file_list:
+                    try:
+                        remove_nonmetadata(po_file, rule)
+                        yield po_file
+                    except IOError: # either a parse error from polib, or file doesnt exist
+                        # TODO (ARON): capture all po files that return this error, show it to user
+                        continue
 
         else:
             for po_file in src_po_files:
