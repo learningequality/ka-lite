@@ -249,6 +249,18 @@ def update_translations(lang_codes=None,
             package_metadata[lang_code]["kalite_ntranslations"]  = kalite_metadata["approved_translations"]
             package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
 
+            try:
+                kalite_registration_mo_file = download_latest_translations(
+                    lang_code=lang_code,
+                    cache_file=os.path.join(CROWDIN_CACHE_DIR, "kalite-reg-%s.mo" % lang_code) if settings.DEBUG else None,
+                    bare=True,
+                    combine_with_po_file=kalite_po_file,
+                )
+            except requests.HTTPError:
+                logging.info("Skipping registration mo file.")
+            else:
+                kalite_po_file = kalite_registration_mo_file
+
             # Download Khan Academy translations too
             logging.info("Downloading Khan Academy translations...")
             combined_po_file = download_latest_translations(
@@ -334,7 +346,7 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     Arguments:
     - project_id -- the project ID in CrowdIn
     - project_key -- the secret key used for accessing the po files in CrowdIn
-    - cache_file -- the location of a cached zip file. Stores the downloaded zip file in this location if nonexistent.
+    - cache_file -- the location of a cached zip file. Stores the downloaded mo/zip file in this location if nonexistent.
     - rebuild -- ask CrowdIn to rebuild translations. Default is False.
     - bare -- Download a single mo/po file
     - download_url -- the url where to download the translation/s
@@ -345,16 +357,18 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
 
     tmp_dir_path = tempfile.mkdtemp()
     if bare:
-        print "reached bare"
+        mo_path = download_mo(lang_code, cache_file)
+        extract_to_tmp_path(mo_path, path=tmp_dir_path)
     else:
         zip_path = download_zip(lang_code, project_id, project_key, cache_file, rebuild=rebuild)
         extract_to_tmp_path(zip_path, path=tmp_dir_path)
 
-    # Copy over new translations
     po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code, filter_type=download_type)
 
     # cleanup
     cleanup_tmp_path(tmp_dir_path)
+
+    return po_file
 
 
 def extract_to_tmp_path(src, path=None, zip=True):
@@ -362,13 +376,35 @@ def extract_to_tmp_path(src, path=None, zip=True):
         path = tempfile.mkdtemp()
 
     if zip:
-        import pdb; pdb.set_trace()
         z = zipfile.ZipFile(src)
         z.extractall(path)
     else:
         shutil.copy(src, path)
 
     return path
+
+
+def download_mo(lang_code, download_path, force=False):
+    if os.path.exists(download_path) and not force:
+        logging.info("Zip file for %s already downloaded. Skipping..." % lang_code)
+        return download_path
+    else:
+        download_url = "https://raw.github.com/learningequality/ka-lite/v0.10.2/kalite/registration/locale/{}/LC_MESSAGES/django.po"
+        download_url = download_url.format(lang_code)
+        resp = requests.get(download_url)
+
+        try:
+            resp.raise_for_status()
+        except requests.HTTPError as e:
+            if resp.status == 404:
+                logging.info('No mo file with that language found.')
+            raise
+        else:
+            if download_path:
+                with open(download_path, 'w') as f:
+                    f.write(resp.content)
+                    logging.info("mo file written to %s" % download_path)
+
 
 
 def download_zip(lang_code, project_id, project_key, download_path, rebuild=True, force=False):
@@ -386,8 +422,8 @@ def download_zip(lang_code, project_id, project_key, download_path, rebuild=True
             project_id=project_id,
             lang_code=lang_code,
             project_key=project_key)
+        resp = requests.get(request_url)
         try:
-
             resp.raise_for_status()
         except Exception as e:
             if resp.status_code == 404:
@@ -403,9 +439,10 @@ def download_zip(lang_code, project_id, project_key, download_path, rebuild=True
 
         # write downloaded zip into path given by download_path
         try:
-            with open(download_path, "wb") as fp:  # save the zip file
-                fp.write(resp.content)
-                return download_path
+            if download_path:
+                with open(download_path, "wb") as fp:  # save the zip file
+                    fp.write(resp.content)
+                    return download_path
         except Exception as e:
             logging.error("Error writing zip file to %s: %s" % (zip_file, e))
             raise
@@ -448,7 +485,7 @@ def extract_new_po(extract_path, combine_with_po_file=None, lang="all", filter_t
     converted_code = lcode_to_django_dir(lang)
 
     def prep_inputs(extract_path, converted_code, filter_type):
-        src_po_files = [po for po in all_po_files(extract_path)]
+        src_po_files = [po for po in all_translation_files(extract_path)]
 
         # remove all exercise po that is not about math
         if filter_type == "ka":
@@ -562,16 +599,16 @@ def get_exercise_po_files(po_files):
     return fnmatch.filter(po_files, '*.exercises-*.po')
 
 
-def all_po_files(dir):
+def all_translation_files(dir):
     '''Walks the directory dir and returns an iterable containing all the
     po files in the given directory.
 
     '''
     # return glob.glob(os.path.join(dir, '*/*.po'))
     for current_dir, _, filenames in os.walk(dir):
-        for po_file in fnmatch.filter(filenames, '*.po'):
-            if os.path.basename(po_file)[0] != '.':
-                yield os.path.join(current_dir, po_file)
+        for tr_file in fnmatch.filter(filenames, '*.[mp]o'):
+            if os.path.basename(tr_file)[0] != '.':
+                yield os.path.join(current_dir, tr_file)
 
 
 def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None):
