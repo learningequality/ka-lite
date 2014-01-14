@@ -239,7 +239,7 @@ def update_translations(lang_codes=None,
                 lang_code=lang_code,
                 project_id=settings.CROWDIN_PROJECT_ID,
                 project_key=settings.CROWDIN_PROJECT_KEY,
-                zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
+                cache_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code) if settings.DEBUG else None),
             )
 
             # We have the po file, now get metadata.
@@ -255,7 +255,7 @@ def update_translations(lang_codes=None,
                 lang_code=lang_code,
                 project_id=settings.KA_CROWDIN_PROJECT_ID,
                 project_key=settings.KA_CROWDIN_PROJECT_KEY,
-                zip_file=ka_zip_file or (os.path.join(CROWDIN_CACHE_DIR, "ka-%s.zip" % lang_code) if settings.DEBUG else None),
+                cache_file=ka_zip_file or (os.path.join(CROWDIN_CACHE_DIR, "ka-%s.zip" % lang_code) if settings.DEBUG else None),
                 combine_with_po_file=kalite_po_file,
                 rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
                 download_type="ka",
@@ -320,9 +320,11 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
                                  project_key=settings.CROWDIN_PROJECT_KEY,
                                  lang_code="all",
-                                 zip_file=None,
+                                 cache_file=None,
                                  combine_with_po_file=None,
                                  rebuild=True,
+                                 bare=False,
+                                 download_url=None,
                                  download_type=None):
     """
     Download latest translations from CrowdIn to corresponding locale
@@ -332,28 +334,60 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     Arguments:
     - project_id -- the project ID in CrowdIn
     - project_key -- the secret key used for accessing the po files in CrowdIn
-    - zip_file -- the location of a cached zip file. Stores the downloaded zip file in this location if nonexistent.
+    - cache_file -- the location of a cached zip file. Stores the downloaded zip file in this location if nonexistent.
     - rebuild -- ask CrowdIn to rebuild translations. Default is False.
+    - bare -- Download a single mo/po file
+    - download_url -- the url where to download the translation/s
     - download_type -- whether it is a ka or ka_lite. Default is None, meaning ka_lite.
 
     """
     lang_code = lcode_to_ietf(lang_code)
 
-    # Get zip file of translations
-    if zip_file and os.path.exists(zip_file):
-        logging.info("Using local zip file at %s" % zip_file)
-        z = zipfile.ZipFile(zip_file)
-        # use the name of the zip file to infer the language code, if needed
-        lang_code = lang_code or os.path.splitext(os.path.basename(zip_file))[0]
+    tmp_dir_path = tempfile.mkdtemp()
+    if bare:
+        print "reached bare"
+    else:
+        zip_path = download_zip(lang_code, project_id, project_key, cache_file, rebuild=rebuild)
+        extract_to_tmp_path(zip_path, path=tmp_dir_path)
 
+    # Copy over new translations
+    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code, filter_type=download_type)
+
+    # cleanup
+    cleanup_tmp_path(tmp_dir_path)
+
+
+def extract_to_tmp_path(src, path=None, zip=True):
+    if not path:
+        path = tempfile.mkdtemp()
+
+    if zip:
+        import pdb; pdb.set_trace()
+        z = zipfile.ZipFile(src)
+        z.extractall(path)
+    else:
+        shutil.copy(src, path)
+
+    return path
+
+
+def download_zip(lang_code, project_id, project_key, download_path, rebuild=True, force=False):
+
+    # don't redownload zip unless force=True
+    if os.path.exists(download_path) and not force:
+        logging.info("Zip file for %s already downloaded. Skipping..." % lang_code)
+        return download_path
     else:
         # Tell CrowdIn to Build latest package
         if rebuild:
             build_translations()
 
-        request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, lang_code, project_key)
+        request_url = "http://api.crowdin.net/api/project/{project_id}/download/{lang_code}.zip?key={project_key}".format(
+            project_id=project_id,
+            lang_code=lang_code,
+            project_key=project_key)
         try:
-            resp = requests.get(request_url)
+
             resp.raise_for_status()
         except Exception as e:
             if resp.status_code == 404:
@@ -366,32 +400,21 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
         else:
             logging.info("Successfully downloaded zip archive")
 
-        # Unpack into temp dir
-        try:
-            z = zipfile.ZipFile(StringIO.StringIO(resp.content))
-        except Exception as e:
-            logging.error("Error downloading zip file: % s" % e)
-            z = None
 
+        # write downloaded zip into path given by download_path
         try:
-            if zip_file:
-                with open(zip_file, "wb") as fp:  # save the zip file
-                    fp.write(resp.content)
+            with open(download_path, "wb") as fp:  # save the zip file
+                fp.write(resp.content)
+                return download_path
         except Exception as e:
             logging.error("Error writing zip file to %s: %s" % (zip_file, e))
+            raise
 
-    tmp_dir_path = tempfile.mkdtemp()
-    if z:
-        z.extractall(tmp_dir_path)
 
-    # Copy over new translations
-    po_file = extract_new_po(tmp_dir_path, combine_with_po_file=combine_with_po_file, lang=lang_code, filter_type=download_type)
-
+def cleanup_tmp_path(tmp_dir_path):
     # Clean up tracks
     if os.path.exists(tmp_dir_path):
         shutil.rmtree(tmp_dir_path)
-
-    return po_file
 
 
 def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
