@@ -149,6 +149,7 @@ TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/temp
 TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 
 HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
+HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
