@@ -25,3 +25,6 @@ if settings.ZERO_CONFIG:
         sys.argv[sys.argv.index("runserver")] = "kaserve"
     elif "runcherrypyserver" in sys.argv:
         sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
+
+if __name__ == "__main__":
+    execute_manager(settings)
