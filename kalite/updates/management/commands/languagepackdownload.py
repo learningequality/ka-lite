@@ -38,6 +38,11 @@ class Command(UpdatesStaticCommand):
                     default=version.VERSION,
                     metavar="SOFT_VERS",
                     help="Specify the software version to download a language pack for."),
+        make_option('-f', '--from-file',
+                    action='store',
+                    dest='file',
+                    default=None,
+                    help='Use the given zip file instead of fetching from the central server.'),
     )
 
     stages = (
@@ -57,8 +62,12 @@ class Command(UpdatesStaticCommand):
 
         # Download the language pack
         try:
-            self.start("Downloading language pack '%s'" % lang_code)
-            zip_filepath = get_language_pack(lang_code, software_version, callback=self.cb)
+            if options['file']:
+                self.start("Using local language pack '%s'" % options['file'])
+                zip_filepath = options['file']
+            else:
+                self.start("Downloading language pack '%s'" % lang_code)
+                zip_filepath = get_language_pack(lang_code, software_version, callback=self.cb)
 
             # Unpack into locale directory
             self.next_stage("Unpacking language pack '%s'" % lang_code)
