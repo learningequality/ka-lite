@@ -172,7 +172,7 @@ class Command(BaseCommand):
             package_metadata[lang_code].update(trans_metadata.get(lang_code, {}))
 
         # Loop through new UI translations & subtitles, create/update unified meta data
-        generate_metadata(lang_codes=lang_codes, package_metadata=package_metadata)
+        generate_metadata(package_metadata=package_metadata)
 
         # Zip
         package_sizes = zip_language_packs(lang_codes=lang_codes)
@@ -545,16 +545,15 @@ def all_po_files(dir):
                 yield os.path.join(current_dir, po_file)
 
 
-def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None):
+def generate_metadata(package_metadata=None):
     """Loop through locale folder, create or update language specific meta
     and create or update master file, skipping broken languages
-
-    note: broken_langs must be in django format.
-
     """
     logging.info("Generating new language pack metadata")
 
-    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
+    lang_codes = package_metadata.keys() if package_metadata else os.listdir(LOCALE_ROOT)
+    broken_langs = [lc for lc, md in package_metadata.iteritems() if md["broken"]] if package_metadata else []
+
     master_metadata = softload_json(get_language_pack_availability_filepath(), logger=logging.warn, errmsg="Error opening master language pack metadata")
 
     # loop through all languages in locale, update master file
@@ -589,16 +588,18 @@ def generate_metadata(lang_codes=None, broken_langs=None, package_metadata=None)
         crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lang_code_ietf), {})
         local_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
-        try:
-            updated_meta = package_metadata.get(lang_code_ietf, {})
-            updated_meta.update({
-                "code": lang_code_ietf,  # user-facing code
-                "name": lang_name,
-                "software_version": version.VERSION,
-            })
+        updated_meta = package_metadata.get(lang_code_ietf, {})
+        updated_meta.update({
+            "code": lang_code_ietf,  # user-facing code
+            "name": lang_name,
+            "software_version": version.VERSION,
+        })
 
+        try:
+            # Augment the metadata
+            updated_meta.update(get_language_names(lang_code_django))
         except LanguageNotFoundError:
-            logging.error("Unrecognized language; must skip item %s" % lang_code_django)
+            logging.warning("Unrecognized language; unable to add extra naming metadata %s" % lang_code_django)
             continue
 
         language_pack_version = increment_language_pack_version(local_meta, updated_meta)
