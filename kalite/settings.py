@@ -52,6 +52,20 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 
 ##############################
+# Basic setup of logging
+##############################
+
+# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+logging.basicConfig()
+LOG.setLevel(LOGGING_LEVEL)
+logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
+
+
+##############################
 # Basic App Settings
 ##############################
 
@@ -401,15 +415,6 @@ assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then
 ########################
 # Debugging and testing
 ########################
-
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
-logging.basicConfig()
-LOG.setLevel(LOGGING_LEVEL)
-logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
