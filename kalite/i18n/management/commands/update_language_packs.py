@@ -99,7 +99,7 @@ class Command(BaseCommand):
         make_option('--low-mem',
                     action='store_true',
                     dest='low_mem',
-                    default=False,
+                    default=True,
                     help='Limit the memory used by the command by making the garbage collector more aggressive.'),
         make_option('--zip_file',
                     action='store',
@@ -552,7 +552,7 @@ def generate_metadata(package_metadata=None):
     logging.info("Generating new language pack metadata")
 
     lang_codes = package_metadata.keys() if package_metadata else os.listdir(LOCALE_ROOT)
-    broken_langs = [lc for lc, md in package_metadata.iteritems() if md["broken"]] if package_metadata else []
+    broken_langs = [lc for lc, md in package_metadata.iteritems() if md.get("broken")] if package_metadata else []
 
     master_metadata = softload_json(get_language_pack_availability_filepath(), logger=logging.warn, errmsg="Error opening master language pack metadata")
 
