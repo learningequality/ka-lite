@@ -33,7 +33,7 @@ from shared.jobs import force_job, job_status
 from shared.topic_tools import get_flat_topic_tree
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
-from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
 
@@ -50,7 +50,7 @@ class student_log_api(object):
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress.")}, status=500)
+                return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
             else:
                 return handler(request)
         return wrapper_fn
@@ -80,7 +80,7 @@ def save_video_log(request):
         )
 
     except ValidationError as e:
-        return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
+        return JsonResponseMessageError(_("Could not save VideoLog: %s") % e)
 
     if "points" in request.session:
         del request.session["points"]  # will be recomputed when needed
@@ -119,7 +119,7 @@ def save_exercise_log(request):
         exerciselog.full_clean()
         exerciselog.save()
     except ValidationError as e:
-        return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
+        return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
 
     if "points" in request.session:
         del request.session["points"]  # will be recomputed when needed
@@ -141,7 +141,7 @@ def get_video_logs(request):
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
-        return JsonResponse({"error": "Could not load VideoLog objects: Unrecognized input data format." % e}, status=500)
+        return JsonResponseMessageError(_("Could not load VideoLog objects: Unrecognized input data format."))
 
     user = request.session["facility_user"]
     logs = VideoLog.objects \
@@ -159,7 +159,7 @@ def get_exercise_logs(request):
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
-        return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
+        return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
 
     user = request.session["facility_user"]
     logs = ExerciseLog.objects \
@@ -177,13 +177,13 @@ def time_set(request):
     """
 
     if not settings.ENABLE_CLOCK_SET:
-        return JsonResponse({"error": _("This can only be done on Raspberry Pi systems")}, status=403)
+        return JsonResponseMessageError(_("This can only be done on Raspberry Pi systems"), status=403)
 
     # Form does all the data validation - including ensuring that the data passed is a proper date time.
     # This is necessary to prevent arbitrary code being run on the system.
     form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
-        return JsonResponse({"error": _("Could not read date and time: Unrecognized input data format.")}, status=500)
+        return JsonResponseMessageError(_("Could not read date and time: Unrecognized input data format."))
 
     try:
 
@@ -191,11 +191,11 @@ def time_set(request):
             raise PermissionDenied
 
     except PermissionDenied as e:
-        return JsonResponse({"error": _("System permissions prevented time setting, please run with root permissions")}, status=500)
+        return JsonResponseMessageError(_("System permissions prevented time setting, please run with root permissions"))
 
     now = datetime.datetime.now().isoformat(" ").split(".")[0]
 
-    return JsonResponse({"success": _("System time was reset successfully; current system time: %s" % now)})
+    return JsonResponseMessage(_("System time was reset successfully; current system time: %s") % now)
 
 
 # Functions below here focused on users
@@ -243,7 +243,7 @@ def launch_mplayer(request):
         raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
 
     if "youtube_id" not in request.REQUEST:
-        return JsonResponse({"error": "no youtube_id specified"}, status=500)
+        return JsonResponseMessageError(_("No youtube_id specified"))
 
     youtube_id = request.REQUEST["youtube_id"]
     video_id = request.REQUEST["video_id"]
@@ -366,10 +366,10 @@ def getpid(request):
 def flat_topic_tree(request, lang_code):
 
     if lang_code != request.language:
-        return JsonResponse({"error": _("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current='%(current_lang)s', requested='%(requested_lang)s').") % {
+        return JsonResponseMessageError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current='%(current_lang)s', requested='%(requested_lang)s').") % {
             "current_lang": request.session.get(settings.LANGUAGE_COOKIE_NAME),
             "requested_lang": lang_code,
-        }}, status=500);
+        })
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
 
 

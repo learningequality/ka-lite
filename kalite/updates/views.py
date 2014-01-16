@@ -7,7 +7,6 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
