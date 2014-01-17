@@ -34,7 +34,7 @@ SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
-SPECIAL_LANGUAGES_FILEPATH = os.path.join(settings.PROJECT_PATH, 'special_language_mappings.json')
+SPECIAL_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "special_language_mappings.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
