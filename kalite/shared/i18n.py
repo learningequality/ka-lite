@@ -288,12 +288,20 @@ def convert_language_code_format(lang_code, for_django=True):
 def get_lang_map_filepath(lang_code):
     return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
 
+LANG_NAMES_MAP = None
+def get_language_names(lang_code=None):
+    global LANG_NAMES_MAP
+    lang_code = lcode_to_ietf(lang_code)
+    if not LANG_NAMES_MAP:
+        LANG_NAMES_MAP = softload_json(LANG_LOOKUP_FILEPATH)
+    return LANG_NAMES_MAP.get(lang_code) if lang_code else LANG_NAMES_MAP
 
 def get_installed_language_packs():
     """
     On-disk method to show currently installed languages and meta data.
     """
 
+    # There's always English...
     installed_language_packs = [{
         'code': 'en',
         'software_version': version.VERSION,
@@ -301,6 +309,7 @@ def get_installed_language_packs():
         'percent_translated': 100,
         'subtitle_count': 0,
         'name': 'English',
+        'native_name': 'English',
     }]
 
     # Loop through locale folders
@@ -313,10 +322,16 @@ def get_installed_language_packs():
 
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
+                # Get the metadata
                 metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % django_disk_code)
                 lang_meta = softload_json(metadata_filepath, raises=True)
+
+                logging.debug("Added language pack %s" % (django_disk_code))
             except Exception as e:
-                logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
+                if isinstance(e, IOError) and e.errno == 2:
+                    logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
+                else:
+                    logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
                 continue
 
             installed_language_packs.append(lang_meta)
