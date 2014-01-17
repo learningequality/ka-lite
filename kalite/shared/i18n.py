@@ -34,7 +34,7 @@ SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
-SPECIAL_LANGUAGES_FILEPATH = os.path.join(settings.PROJECT_PATH, 'special_language_mappings.json')
+SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "supported_languages.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
@@ -71,9 +71,12 @@ def get_special_language_map(lang_code=None):
     global SPECIAL_LANGUAGE_MAP
     defaultmap = defaultdict(lambda: lang_code)
     if not SPECIAL_LANGUAGE_MAP:
-        with open(SPECIAL_LANGUAGES_FILEPATH) as f:
+        with open(SUPPORTED_LANGUAGES_FILEPATH) as f:
             SPECIAL_LANGUAGE_MAP = json.loads(f.read())
-    return SPECIAL_LANGUAGE_MAP.get(lang_code, defaultmap) if lang_code else SPECIAL_LANGUAGE_MAP
+    return SPECIAL_LANGUAGE_MAP.get(lang_code) or defaultmap if lang_code else SPECIAL_LANGUAGE_MAP
+
+def get_supported_languages():
+    return get_special_language_map().keys()
 
 DUBBED_VIDEO_MAP_RAW = None
 DUBBED_VIDEO_MAP = None

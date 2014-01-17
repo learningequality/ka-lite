@@ -122,10 +122,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not settings.CENTRAL_SERVER:
             raise CommandError("This must only be run on the central server.")
+        supported_langs = get_supported_languages()
         if not options["lang_code"] or options["lang_code"].lower() == "all":
-            lang_codes = ['all']
+            lang_codes = supported_langs
         else:
-            lang_codes = [lcode_to_ietf(lc) for lc in options["lang_code"].split(",")]
+            requested_codes = set(options["lang_code"].split(","))
+            lang_codes = [lcode_to_ietf(lc) for lc in requested_codes if lc in supported_langs]
+            unsupported_codes = requested_codes - set(lang_codes)
+            if unsupported_codes:
+                raise CommandError("Requested unsupported languages: %s" % sorted(list(unsupported_codes)))
+
 
         # If no_update is set, then disable all update options.
         for key in options:
