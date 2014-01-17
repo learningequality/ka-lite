@@ -8,7 +8,7 @@ import os
 import re
 import requests
 import shutil
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from django.core.management import call_command
 from django.http import HttpRequest
@@ -69,10 +69,11 @@ class LanguageNotFoundError(Exception):
 SPECIAL_LANGUAGE_MAP = None
 def get_special_language_map(lang_code=None):
     global SPECIAL_LANGUAGE_MAP
+    defaultmap = defaultdict(lambda: lang_code)
     if not SPECIAL_LANGUAGE_MAP:
         with open(SPECIAL_LANGUAGES_FILEPATH) as f:
             SPECIAL_LANGUAGE_MAP = json.loads(f.read())
-    return SPECIAL_LANGUAGE_MAP.get(lang_code, {}) if lang_code else SPECIAL_LANGUAGE_MAP
+    return SPECIAL_LANGUAGE_MAP.get(lang_code, defaultmap) if lang_code else SPECIAL_LANGUAGE_MAP
 
 DUBBED_VIDEO_MAP_RAW = None
 DUBBED_VIDEO_MAP = None
