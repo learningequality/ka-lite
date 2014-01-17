@@ -1,6 +1,6 @@
 {% extends base_template %}
 
-{% block headjs %}{{ block super }}
+{% block headjs %}
 <script>
 $(function(){
 	setTimeout("window.location.href = '{{ redirect_url }}';",3000);
