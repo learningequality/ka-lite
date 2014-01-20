@@ -19,8 +19,8 @@ VERSION_INFO = {
     },
 
     "0.10.3": {
-        "release_date": "2013/12/28",
-        "git_commit": "e4faa50c3e19d92c735a3b2e9dfdee033c418d9c",
+        "release_date": "2014/01/06",
+        "git_commit": "6e56d05e6f53661aea433d72ce7bddacacddc4b8",
         "new_features": {
             "all": [],
             "students": [

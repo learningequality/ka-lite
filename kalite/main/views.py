@@ -228,19 +228,21 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
 
-    if video["available"] and not any([avail["on_disk"] for avail in video["availability"].values()]):
-        messages.success(request, "Got video content from %s" % video["availability"]["default"]["stream_url"])
-
     # Fallback mechanism
     available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language, )
+    if video["available"] and not available_urls:
+        vid_lang = "en"
+        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
+    else:
+        vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language)
+
 
     context = {
         "video": video,
         "title": video["title"],
-        "available_videos": available_urls,
         "selected_language": vid_lang,
-        "video_urls": available_urls[vid_lang] if vid_lang else None,
+        "video_urls": video["availability"].get(vid_lang),
+        "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),

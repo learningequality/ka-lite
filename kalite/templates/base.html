@@ -158,6 +158,7 @@
                 <div class="inner">
                     <div style="float:left">
                         {% block footerleft %}
+                        {% comment %}
                         {% if language_choices %}
                         <form id="language-preferences" >
                             <select id="language_selector">
@@ -171,6 +172,7 @@
                             {% endif %}
                         </form>
                         {% endif %}
+                        {% endcomment %}
                     {% endblock footerleft %}
                     </div>
                     <div id="copyright" class="tiny">
