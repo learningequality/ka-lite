@@ -85,6 +85,7 @@ class LanguageNotFoundError(Exception):
 
 SPECIAL_LANGUAGE_MAP = None
 def get_special_language_map(lang_code=None):
+    lang_code = lcode_to_ietf(lang_code)
     global SPECIAL_LANGUAGE_MAP
     defaultmap = defaultdict(lambda: lang_code)
     if not SPECIAL_LANGUAGE_MAP:
