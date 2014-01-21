@@ -294,6 +294,9 @@ def convert_language_code_format(lang_code, for_django=True):
     Note: For language codes with localizations, Django requires the format xx_XX (e.g. Spanish from Spain = es_ES)
     not: xx-xx, xx-XX, xx_xx.
     """
+    if not lang_code:  # protect against None
+        return lang_code
+
     lang_code = lang_code.lower()
     code_parts = re.split('-|_', lang_code)
     if len(code_parts) >  1:

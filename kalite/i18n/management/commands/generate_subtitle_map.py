@@ -116,7 +116,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
         elif force and cached:
             logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
         else:
-            logging.debug("Updating %s because video not yet cached." % youtube_id)
+            logging.debug("Updating %s because video subtitles metadata not yet cached." % youtube_id)
 
         # If it makes it to here without hitting a continue, then update the entry
 

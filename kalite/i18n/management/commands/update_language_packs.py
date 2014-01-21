@@ -627,8 +627,8 @@ def generate_metadata(package_metadata=None, version=VERSION):
 
     # Save updated master
     ensure_dir(os.path.dirname(master_filepath))
-    with open(master_filepath, 'w') as output:
-        json.dump(master_metadata, output)
+    with open(master_filepath, 'w') as fp:
+        json.dump(master_metadata, fp)
     logging.info("Local record of translations updated")
 
 
@@ -723,7 +723,6 @@ def zip_language_packs(lang_codes=None, version=VERSION):
         logging.info("Creating zip file in %s" % zip_filepath)
         z = zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED)
 
-        import pdb; pdb.set_trace()
         # Get metadata from the versioned directory
         for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
             # Get every single file in the directory and zip it up
