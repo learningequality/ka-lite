@@ -83,18 +83,18 @@ class LanguageNotFoundError(Exception):
     pass
 
 
-SPECIAL_LANGUAGE_MAP = None
-def get_special_language_map(lang_code=None):
+SUPPORTED_LANGUAGE_MAP = None
+def get_supported_language_map(lang_code=None):
     lang_code = lcode_to_ietf(lang_code)
-    global SPECIAL_LANGUAGE_MAP
+    global SUPPORTED_LANGUAGE_MAP
     defaultmap = defaultdict(lambda: lang_code)
-    if not SPECIAL_LANGUAGE_MAP:
+    if not SUPPORTED_LANGUAGE_MAP:
         with open(SUPPORTED_LANGUAGES_FILEPATH) as f:
-            SPECIAL_LANGUAGE_MAP = json.loads(f.read())
-    return SPECIAL_LANGUAGE_MAP.get(lang_code) or defaultmap if lang_code else SPECIAL_LANGUAGE_MAP
+            SUPPORTED_LANGUAGE_MAP = json.loads(f.read())
+    return SUPPORTED_LANGUAGE_MAP.get(lang_code) or defaultmap if lang_code else SUPPORTED_LANGUAGE_MAP
 
 def get_supported_languages():
-    return get_special_language_map().keys()
+    return get_supported_language_map().keys()
 
 DUBBED_VIDEO_MAP_RAW = None
 DUBBED_VIDEO_MAP = None
