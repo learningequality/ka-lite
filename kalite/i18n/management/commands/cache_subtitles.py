@@ -79,7 +79,7 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
 
     for lang_code in lang_codes:
         lang_code = lcode_to_ietf(lang_code)
-        lang_code_amara = get_supported_language_map(lang_code)['amara']
+        lang_code = get_supported_language_map(lang_code)['amara']
 
         try:
             lang_map_filepath = get_lang_map_filepath(lang_code)
@@ -95,7 +95,7 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
             continue
 
         try:
-            download_if_criteria_met(videos, lang_code=lang_code_amara, **kwargs)
+            download_if_criteria_met(videos, lang_code=lang_code, **kwargs)
         except Exception as e:
             error_msg = "Error downloading subtitles for %s: %s" % (lang_code, e)
             logging.error(error_msg)
@@ -221,11 +221,12 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     """
     assert format == "srt", "We only support srt download at the moment."
 
+
     # srt map deals with amara, so uses ietf codes (e.g. en-us)
     api_info_map = softload_json(SRTS_JSON_FILEPATH, raises=True)
 
     # get amara id
-    amara_code = api_info_map.get(youtube_id).get("amara_code")
+    amara_code = api_info_map.get(youtube_id, {}).get("amara_code")
 
     # make request
     # Please see http://amara.readthedocs.org/en/latest/api.html
