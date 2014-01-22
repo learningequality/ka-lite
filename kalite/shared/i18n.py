@@ -8,16 +8,16 @@ import os
 import re
 import requests
 import shutil
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from django.core.management import call_command
 from django.http import HttpRequest
 from django.views.i18n import javascript_catalog
 
 import settings
-import version
 from settings import LOG as logging
 from utils.general import ensure_dir, softload_json
+from version import VERSION
 
 
 if settings.CENTRAL_SERVER:
@@ -34,13 +34,14 @@ SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
+SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "supported_languages.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
+LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH_SECURE, "i18n", "build")
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
-
-def get_language_pack_availability_filepath(ver=version.VERSION):
-    return os.path.join(LANGUAGE_PACK_ROOT, ver, "language_pack_availability.json")
+def get_language_pack_availability_filepath(version=VERSION):
+    return os.path.join(LANGUAGE_PACK_ROOT, version, "language_pack_availability.json")
 
 def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL_SERVER):
     if is_central_server:
@@ -48,14 +49,30 @@ def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL
     else:
         return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", lang_code.lower())
 
-def get_language_pack_metadata_filepath(lang_code):
-    lang_code = lcode_to_django_dir(lang_code)
-    return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
+def get_lp_build_dir(lang_code=None, version=None):
+    global LANGUAGE_PACK_BUILD_DIR
+    build_dir = LANGUAGE_PACK_BUILD_DIR
+    if lang_code:
+        build_dir = os.path.join(build_dir, lang_code)
+    if version:
+        if not lang_code:
+            raise Exception("Must specify lang_code with version")
+        build_dir = os.path.join(build_dir, version)
 
-def get_language_pack_filepath(lang_code, version=version.VERSION):
+    return build_dir
+
+def get_language_pack_metadata_filepath(lang_code, version=VERSION, is_central_server=settings.CENTRAL_SERVER):
+    lang_code = lcode_to_django_dir(lang_code)
+    metadata_filename = "%s_metadata.json" % lang_code
+    if is_central_server:
+        return os.path.join(get_lp_build_dir(lang_code, version=version), metadata_filename)
+    else:
+        return os.path.join(LOCALE_ROOT, lang_code, metadata_filename)
+
+def get_language_pack_filepath(lang_code, version=VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))
 
-def get_language_pack_url(lang_code, version=version.VERSION):
+def get_language_pack_url(lang_code, version=VERSION):
     url = "http://%s/%s" % (
         settings.CENTRAL_SERVER_HOST,
         get_language_pack_filepath(lang_code, version=version)[len(settings.PROJECT_PATH):],
@@ -64,6 +81,20 @@ def get_language_pack_url(lang_code, version=version.VERSION):
 
 class LanguageNotFoundError(Exception):
     pass
+
+
+SUPPORTED_LANGUAGE_MAP = None
+def get_supported_language_map(lang_code=None):
+    lang_code = lcode_to_ietf(lang_code)
+    global SUPPORTED_LANGUAGE_MAP
+    defaultmap = defaultdict(lambda: lang_code)
+    if not SUPPORTED_LANGUAGE_MAP:
+        with open(SUPPORTED_LANGUAGES_FILEPATH) as f:
+            SUPPORTED_LANGUAGE_MAP = json.loads(f.read())
+    return SUPPORTED_LANGUAGE_MAP.get(lang_code) or defaultmap if lang_code else SUPPORTED_LANGUAGE_MAP
+
+def get_supported_languages():
+    return get_supported_language_map().keys()
 
 DUBBED_VIDEO_MAP_RAW = None
 DUBBED_VIDEO_MAP = None
@@ -143,7 +174,7 @@ def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
 
 def get_video_id(youtube_id):
     """
-    Youtube ID is assumed to be the non-english version.
+    Youtube ID is assumed to be the non-english
     """
     return get_file2id_map().get(youtube_id, youtube_id)
 
@@ -263,6 +294,9 @@ def convert_language_code_format(lang_code, for_django=True):
     Note: For language codes with localizations, Django requires the format xx_XX (e.g. Spanish from Spain = es_ES)
     not: xx-xx, xx-XX, xx_xx.
     """
+    if not lang_code:  # protect against None
+        return lang_code
+
     lang_code = lang_code.lower()
     code_parts = re.split('-|_', lang_code)
     if len(code_parts) >  1:
@@ -294,7 +328,7 @@ def get_installed_language_packs():
     # There's always English...
     installed_language_packs = [{
         'code': 'en',
-        'software_version': version.VERSION,
+        'software_version': VERSION,
         'language_pack_version': 0,
         'percent_translated': 100,
         'subtitle_count': 0,

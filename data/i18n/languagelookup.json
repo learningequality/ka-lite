@@ -597,7 +597,8 @@
   },
   "es":{
     "name":"Spanish; Castilian",
-    "native_name":"Español, Castellano"
+    "native_name":"Español, Castellano",
+    "ka_name":"espanol"
   },
   "su":{
     "name":"Sundanese",
@@ -743,8 +744,7 @@
   },
   "es-ES":{
     "name":"Spanish, Spain",
-    "native_name":"Español",
-    "ka_name":"Espanol"
+    "native_name":"Español"
   },
   "fil":{
     "name":"Filipino",

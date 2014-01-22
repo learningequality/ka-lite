@@ -26,7 +26,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from settings import LOG as logging
 from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, get_srt_path, LanguageNotFoundError
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, get_srt_path, LanguageNotFoundError, get_supported_language_map
 from utils.general import convert_date_input, ensure_dir, softload_json
 from utils.internet import make_request
 
@@ -79,6 +79,7 @@ def download_srt_from_3rd_party(lang_codes=None, **kwargs):
 
     for lang_code in lang_codes:
         lang_code = lcode_to_ietf(lang_code)
+        lang_code = get_supported_language_map(lang_code)['amara']
 
         try:
             lang_map_filepath = get_lang_map_filepath(lang_code)
@@ -220,11 +221,12 @@ def download_subtitle(youtube_id, lang_code, format="srt"):
     """
     assert format == "srt", "We only support srt download at the moment."
 
+
     # srt map deals with amara, so uses ietf codes (e.g. en-us)
     api_info_map = softload_json(SRTS_JSON_FILEPATH, raises=True)
 
     # get amara id
-    amara_code = api_info_map.get(youtube_id).get("amara_code")
+    amara_code = api_info_map.get(youtube_id, {}).get("amara_code")
 
     # make request
     # Please see http://amara.readthedocs.org/en/latest/api.html
@@ -402,4 +404,3 @@ class Command(BaseCommand):
             raise CommandError("Unknown argument: %s" % args[0])
 
         logging.info("Process complete.")
-
