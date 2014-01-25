@@ -208,13 +208,14 @@ def update_language_packs(lang_codes, options):
         lang_metadata.update(trans_metadata.get(lang_code, {}))
 
         # Now create/update unified meta data
+
         generate_metadata(package_metadata={lang_code: lang_metadata}, version=options["version"])
 
         # Zip into language packs
         package_sizes = zip_language_packs(lang_codes=[lang_code], version=options["version"])
-        logging.debug("Package sizes: %s" % package_sizes)
+        logging.debug("%s sizes: %s" % (lang_code, package_sizes.get(lang_code, {})))
 
-        lang_metadata.update(package_sizes)
+        lang_metadata.update(package_sizes.get(lang_code, {}))
 
         # Update the metadata with the package size information
         update_metadata({lang_code: lang_metadata}, version=options["version"])
@@ -664,7 +665,8 @@ def update_metadata(updated_metadata, version=VERSION):
     We've zipped the packages, and now have unzipped & zipped sizes.
     Update this info in the local metadata (but not inside the zip)
     """
-    master_metadata = softload_json(get_language_pack_availability_filepath(), logger=logging.warn, errmsg="Error opening master language pack metadata")
+    master_filepath = get_language_pack_availability_filepath(version=version)
+    master_metadata = softload_json(master_filepath, logger=logging.warn, errmsg="Error opening master language pack metadata")
 
     for lc, meta in updated_metadata.iteritems():
         lang_code_ietf = lcode_to_ietf(lc)
@@ -684,8 +686,8 @@ def update_metadata(updated_metadata, version=VERSION):
         master_metadata[lang_code_ietf] = stored_meta
 
     # Save updated master
-    ensure_dir(os.path.dirname(get_language_pack_availability_filepath()))
-    with open(get_language_pack_availability_filepath(), 'w') as output:
+    ensure_dir(os.path.dirname(master_filepath))
+    with open(master_filepath, 'w') as output:
         json.dump(master_metadata, output)
     logging.info("Local record of translations updated")
 
