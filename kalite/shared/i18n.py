@@ -84,7 +84,7 @@ def get_language_pack_url(lang_code, version=VERSION):
     return url
 
 def get_django_lc_message_file(lang_code, file_name="django.mo", locale_root=LOCALE_ROOT):
-    return os.path.join(locale_root, lc_to_django_dir(lang_code), "LC_MESSAGES", file_name)
+    return os.path.join(locale_root, lcode_to_django_dir(lang_code), "LC_MESSAGES", file_name)
 
 class LanguageNotFoundError(Exception):
     pass
@@ -359,7 +359,7 @@ def get_installed_language_packs():
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
                 # Get the metadata
-                metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % django_disk_code)
+                metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % lcode_to_ietf(django_disk_code))
                 lang_meta = softload_json(metadata_filepath, raises=True)
 
                 logging.debug("Added language pack %s" % (django_disk_code))
