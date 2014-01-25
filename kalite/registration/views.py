@@ -2,7 +2,6 @@
 Views which allow users to create and activate accounts.
 
 """
-
 import copy
 
 from django.contrib import messages
@@ -292,11 +291,17 @@ def login_view(request, *args, **kwargs):
         if nusers == 1 and users[0].username != request.POST["username"]:
             request.POST = copy.deepcopy(request.POST)
             request.POST['username'] = request.POST['username'].lower()
+        prev = request.POST['prev']
 
+    else:
+        prev = request.META.get("HTTP_REFERER")
+
+    # Note: prev used because referer is lost on a login / redirect.
+    #   So paste it on the success redirect.
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
-            "url": request.REQUEST.get("next", reverse('org_management')),
+            "url": set_query_params(request.REQUEST.get("next", reverse('org_management')), {"prev": prev}),
         },
         "auth_password_reset_url": reverse("auth_password_reset"),
         "registration_register_url": reverse("registration_register") if not request.next else set_query_params(reverse("registration_register"), {"next": request.next}),

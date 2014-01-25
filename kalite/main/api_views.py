@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
@@ -22,6 +22,7 @@ from django.views.decorators.gzip import gzip_page
 
 import settings
 import version
+from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog
 from config.models import Settings
@@ -333,7 +334,7 @@ def status(request):
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
-        "current_language": request.session["django_language"],
+        "current_language": request.session[settings.LANGUAGE_COOKIE_NAME],
         "messages": message_dicts,
     }
     # Override properties using facility data
@@ -364,9 +365,55 @@ def getpid(request):
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
 
-    if lang_code != request.session.get("django_language"):
-        raise NotImplementedError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current=%(current_lang)s, requested=%(requested_lang)s).") % {
-            "current_lang": request.session.get("django_language"),
+    if lang_code != request.language:
+        return JsonResponse({"error": _("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current='%(current_lang)s', requested='%(requested_lang)s').") % {
+            "current_lang": request.session.get(settings.LANGUAGE_COOKIE_NAME),
             "requested_lang": lang_code,
-        })
+        }}, status=500);
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
+
+
+@api_handle_error_with_json
+@backend_cache_page
+def knowledge_map_json(request, topic_id):
+    """
+    Topic nodes can now have a "knowledge_map" stamped on them.
+    This code currently exposes that data to the kmap-editor code,
+    mostly as it expects it now.
+
+    So this is kind of a hack-ish mix of code that avoids rewriting kmap-editor.js,
+    but allows a cleaner rewrite of the stored data, and bridges the gap between
+    that messiness and the cleaner back-end.
+    """
+
+    # Try and get the requested topic, and make sure it has knowledge map data available.
+    topic = topicdata.NODE_CACHE["Topic"].get(topic_id)
+    if not topic:
+        raise Http404("Topic '%s' not found" % topic_id)
+    elif not "knowledge_map" in topic[0]:
+        raise Http404("Topic '%s' has no knowledge map metadata." % topic_id)
+
+    # For each node (can be of any type now), pull out only
+    #   the relevant data.
+    kmap = topic[0]["knowledge_map"]
+    nodes_out = {}
+    for id, kmap_data in kmap["nodes"].iteritems():
+        cur_node = topicdata.NODE_CACHE[kmap_data["kind"]][id][0]
+        nodes_out[id] = {
+            "id": cur_node["id"],
+            "title": _(cur_node["title"]),
+            "h_position":  kmap_data["h_position"],
+            "v_position": kmap_data["v_position"],
+            "icon_url": cur_node.get("icon_url", cur_node.get("icon_src")),  # messy
+            "path": cur_node["path"],
+        }
+        if not "polylines" in kmap:  # messy
+            # Two ways to define lines:
+            # 1. have "polylines" defined explicitly
+            # 2. use prerequisites to compute lines on the fly.
+            nodes_out[id]["prerequisites"] = cur_node.get("prerequisites", [])
+
+    return JsonResponse({
+        "nodes": nodes_out,
+        "polylines": kmap.get("polylines"),  # messy
+    })

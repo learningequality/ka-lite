@@ -55,9 +55,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 });
                 self.pointsSaved = data[0].points;
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
-            });
     },
 
     save: function() {
@@ -94,8 +91,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
                 self.saving = false;
-
-                communicate_api_failure(resp, "id_student_logs");
             });
 
         this.set({
@@ -455,9 +450,7 @@ function initialize_video(video_id, youtube_id) {
     $("#launch_mplayer").click(_.throttle(function() {
         // launch mplayer in the background to play the video
         doRequest("/api/launch_mplayer?youtube_id=" + youtube_id)
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_mplayer");
-            });
+
         // after mplayer closes and focus returns to the website, refresh the points from the server
         $(window).focus(function() {
             $(window).unbind("focus");

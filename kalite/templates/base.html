@@ -68,7 +68,6 @@
         <script type="text/javascript" src="{% static 'js/distributed-server.js' %}?{{ BUILD_ID }}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/language-selector.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/search_autocomplete.js' %}?{{ BUILD_ID }}"></script>
 
         {% block headjs %}{% endblock headjs %}
@@ -162,14 +161,11 @@
                         {% if language_choices %}
                         <form id="language-preferences" >
                             <select id="language_selector">
-                                {% for lang in language_choices %}
-                                <option value="{{ lang.code }}" {% if lang.code == current_language %}selected{% endif %}>{{ lang.name }}</option>
+                                <option value="">--</option>{# any time the default language is not an installed language pack #}
+                                {% for lang_code, lang_meta in language_choices.iteritems %}
+                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{{ lang_meta.name }}{% endif %}</option>
                                 {% endfor %}
                             </select>
-                            {% if current_language != default_language %}
-                                <input type="checkbox" class="admin-only" id="make_default_language"/>
-                                <label class="admin-only" for="make_default_language">{% trans "Use this language as the default" %}</label>
-                            {% endif %}
                         </form>
                         {% endif %}
                         {% endcomment %}

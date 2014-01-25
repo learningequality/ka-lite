@@ -71,16 +71,26 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+# the default encoding for strings read from various IO sources
+DEFAULT_ENCODING = getattr(local_settings, "DEFAULT_ENCODING", 'utf-8')
+
+# set the default encoding
+# OK, so why do we reload sys? Because apparently sys.setdefaultencoding
+# is deleted somewhere at startup. Reloading brings it back.
+# see: http://blog.ianbicking.org/illusive-setdefaultencoding.html
+reload(sys)
+sys.setdefaultencoding(DEFAULT_ENCODING)
+
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if not DEBUG else 5)  # 18 threads seems a sweet spot
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("kalite.%s" % CENTRAL_SERVER_DOMAIN) + (":7007" if DEBUG else ""))
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN
 CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
 CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
@@ -96,6 +106,8 @@ PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.pat
 
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
+
+SCRIPTS_PATH   = getattr(local_settings, "SCRIPTS_PATH", os.path.join(PROJECT_PATH, '..', 'scripts'))
 
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
@@ -131,7 +143,7 @@ LANGUAGE_CODE  = getattr(local_settings, "LANGUAGE_CODE", "en")
 # to load the internationalization machinery.
 USE_I18N       = getattr(local_settings, "USE_I18N", True)
 
-# If you set this to False, Django will not format dates, numbers and
+# If you set this to True, Django will format dates, numbers and
 # calendars according to the current locale
 USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
@@ -150,7 +162,8 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
 TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 
-HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", "")
+HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
+HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -204,10 +217,10 @@ INSTALLED_APPS = (
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
+    "updates",  #
+    "i18n",  #
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
-
-INSTALLED_APPS += ('i18n',)
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -233,18 +246,19 @@ if CENTRAL_SERVER:
 
 else:
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS += ("i18n", "updates",)
     MIDDLEWARE_CLASSES += (
         "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
         "securesync.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
         "kalite.i18n.middleware.SessionLanguage",
+        "securesync.middleware.LockdownCheck",
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
+    LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
     CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
@@ -274,7 +288,7 @@ INSTALL_FACILITY_NAME = getattr(local_settings, "INSTALL_FACILITY_NAME", None if
 # Syncing and synced data
 ########################
 
-SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
+SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https" if not DEBUG else "http")
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
@@ -311,6 +325,9 @@ assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_
 PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
     'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
 })
+
+LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
 
 ########################
 # Storage and caching
@@ -477,8 +494,6 @@ if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
     assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    # 18 is the sweet-spot for cherrypy threads
-    CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
 

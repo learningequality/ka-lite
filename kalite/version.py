@@ -1,5 +1,5 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-VERSION = "0.10.3"
+VERSION = "0.11.1"
 VERSION_INFO = {
     "0.11.0": {
         "release_date": "2013/09/03",

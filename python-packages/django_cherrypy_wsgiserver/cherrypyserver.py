@@ -51,6 +51,14 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         )
         cherrypy.tree.mount(static_handler, settings.MEDIA_URL)
 
+        # Serve the static files
+        static_handler = cherrypy.tools.staticdir.handler(
+            section="/",
+            dir=os.path.split(settings.STATIC_ROOT)[1],
+            root=os.path.abspath(os.path.split(settings.STATIC_ROOT)[0])
+        )
+        cherrypy.tree.mount(static_handler, settings.STATIC_URL)
+
         # Serve the static admin media. From django's internal (django.core.servers.basehttp)
         admin_static_dir = os.path.join(django.__path__[0], 'contrib', 'admin', 'static')
         admin_static_handler = cherrypy.tools.staticdir.handler(

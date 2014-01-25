@@ -4,8 +4,8 @@
 {% load my_filters %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Scatter plot" %} {{ block.super }}{% endblock title %}
-{% block report_title %}{% trans "Scatter plot" %}{% endblock report_title %}
+{% block title %}{{ title }}{{ block.super }}{% endblock title %}
+{% block report_title %}{{ title }}{% endblock report_title %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>

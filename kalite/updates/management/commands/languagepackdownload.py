@@ -15,11 +15,12 @@ from django.utils.translation import ugettext as _
 import settings
 import version
 from .classes import UpdatesStaticCommand
-from i18n.models import LanguagePack
 from settings import LOG as logging
-from shared.i18n import LOCALE_ROOT, lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_srt_path, update_jsi18n_file
+from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
+from shared.i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
+from shared.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from utils.general import ensure_dir
-
+from utils.internet import callback_percent_proxy, download_file
 
 class Command(UpdatesStaticCommand):
     help = "Download language pack requested from central server"
@@ -37,13 +38,18 @@ class Command(UpdatesStaticCommand):
                     default=version.VERSION,
                     metavar="SOFT_VERS",
                     help="Specify the software version to download a language pack for."),
+        make_option('-f', '--from-file',
+                    action='store',
+                    dest='file',
+                    default=None,
+                    help='Use the given zip file instead of fetching from the central server.'),
     )
 
     stages = (
         "download_language_pack",
         "unpack_language_pack",
-        "update_database",
         "add_js18n_file",
+        "move_files",
     )
 
     def handle(self, *args, **options):
@@ -52,51 +58,49 @@ class Command(UpdatesStaticCommand):
 
         lang_code = lcode_to_ietf(options["lang_code"])
         software_version = options["software_version"]
-        if lcode_to_django_dir(lang_code) == settings.LANGUAGE_CODE:
-            logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % lang_code)
-        if software_version == version.VERSION:
-            logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
-
+        logging.info("Downloading language pack for lang_code=%s, software_version=%s" % (lang_code, software_version))
 
         # Download the language pack
         try:
-            self.start("Downloading language pack '%s'" % lang_code)
-            zip_file = get_language_pack(lang_code, software_version)
+            if options['file']:
+                self.start("Using local language pack '%s'" % options['file'])
+                zip_filepath = options['file']
+            else:
+                self.start("Downloading language pack '%s'" % lang_code)
+                zip_filepath = get_language_pack(lang_code, software_version, callback=self.cb)
 
             # Unpack into locale directory
             self.next_stage("Unpacking language pack '%s'" % lang_code)
-            unpack_language(lang_code, zip_file)
-
-            # Update database with meta info
-            self.next_stage("Updating database for language pack '%s'" % lang_code)
-            update_database(lang_code)
+            unpack_language(lang_code, zip_filepath=zip_filepath)
 
             #
             self.next_stage("Creating static files for language pack '%s'" % lang_code)
             update_jsi18n_file(lang_code)
 
-            #
+
+            self.next_stage("Moving files to their appropriate local disk locations.")
+            move_dubbed_video_map(lang_code)
+            move_exercises(lang_code)
             move_srts(lang_code)
+
             self.complete("Finished processing language pack %s" % lang_code)
         except Exception as e:
             self.cancel(stage_status="error", notes="Error: %s" % e)
             raise
 
-def get_language_pack(lang_code, software_version):
+    def cb(self, percent):
+        self.update_stage(stage_percent=percent/100.)
+
+def get_language_pack(lang_code, software_version, callback):
     """Download language pack for specified language"""
 
     lang_code = lcode_to_ietf(lang_code)
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
-    r = requests.get(request_url)
-    try:
-        r.raise_for_status()
-    except Exception as e:
-        raise CommandError(e)
+    path, response = download_file(request_url, callback=callback_percent_proxy(callback))
+    return path
 
-    return r.content
-
-def unpack_language(lang_code, zip_file):
+def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     """Unpack zipped language pack into locale directory"""
     lang_code = lcode_to_django_dir(lang_code)
 
@@ -104,25 +108,32 @@ def unpack_language(lang_code, zip_file):
     ensure_dir(os.path.join(LOCALE_ROOT, lang_code, "LC_MESSAGES"))
 
     ## Unpack into temp dir
-    z = zipfile.ZipFile(StringIO(zip_file))
+    z = zipfile.ZipFile(zip_fp or (StringIO(zip_data) if zip_data else open(zip_filepath, "rb")))
     z.extractall(os.path.join(LOCALE_ROOT, lang_code))
 
+def move_dubbed_video_map(lang_code):
+    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    dvm_filepath = os.path.join(lang_pack_location, "dubbed_videos", os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
+    if not os.path.exists(dvm_filepath):
+        logging.error("Could not find downloaded dubbed video filepath: %s" % dvm_filepath)
+    else:
+        logging.debug("Moving dubbed video map to %s" % DUBBED_VIDEOS_MAPPING_FILEPATH)
+        ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
+        shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
 
-def update_database(lang_code):
-    """Create/update LanguagePack table in database based on given languages metadata"""
+def move_exercises(lang_code):
+    src_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=True)
+    dest_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=False)
+    if not os.path.exists(src_exercise_dir):
+        logging.warn("Could not find downloaded exercises; skipping: %s" % src_exercise_dir)
+    else:
+        # Move over one at a time, to combine with any other resources that were there before.
+        ensure_dir(dest_exercise_dir)
+        all_exercise_files = glob.glob(os.path.join(src_exercise_dir, "*.html"))
+        logging.info("Moving %d downloaded exercises to %s" % (len(all_exercise_files), dest_exercise_dir))
 
-    lang_code = lcode_to_ietf(lang_code)
-    with open(get_language_pack_metadata_filepath(lang_code)) as fp:
-        metadata = json.load(fp)
-
-    logging.info("Updating database for language pack: %s" % lang_code)
-
-    pack = get_object_or_None(LanguagePack, code=lang_code) or LanguagePack(code=lang_code)
-    for key, value in metadata.iteritems():
-        setattr(pack, key, value)
-    pack.save()
-
-    logging.info("Successfully updated database.")
+        for exercise_file in all_exercise_files:
+            shutil.move(exercise_file, os.path.join(dest_exercise_dir, os.path.basename(exercise_file)))
 
 def move_srts(lang_code):
     """
@@ -146,7 +157,9 @@ def move_srts(lang_code):
             os.remove(srt_dest_path)
         shutil.move(fil, srt_dest_path)
 
-    if os.listdir(src_dir):
+    if not os.path.exists(src_dir):
+        pass
+    elif os.listdir(src_dir):
         logging.warn("%s is not empty; will not remove.  Please check that all subtitles were moved." % src_dir)
     else:
         logging.info("Removing empty source directory (%s)." % src_dir)

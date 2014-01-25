@@ -224,7 +224,7 @@ def update_all_central_callback(request):
     except ValueError as e:
         message = { "error": unicode(e) }
     except Exception as e:
-        message = { u"Loading json object: %s" % e }
+        message = { "error": u"Loading json object: %s" % e }
 
     # If something broke on the distribute d server, we are SCREWED.
     #   For now, just show the error to users.

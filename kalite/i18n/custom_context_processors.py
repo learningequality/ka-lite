@@ -8,5 +8,5 @@ def languages(request):
     return {
         "default_language": lcode_to_ietf(request.session["default_language"]),
         "language_choices": request.session["language_choices"],
-        "current_language": lcode_to_ietf(request.session["django_language"]),
+        "current_language": request.language,
     }

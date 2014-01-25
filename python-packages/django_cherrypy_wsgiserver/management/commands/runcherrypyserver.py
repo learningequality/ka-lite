@@ -69,7 +69,7 @@ def change_uid_gid(uid, gid=None):
 
     Src: http://mail.mems-exchange.org/durusmail/quixote-users/4940/1/
     """
-    if not os.geteuid() == 0:
+    if hasattr(os, "geteuid") and not os.geteuid() == 0:
         # Do not try to change the gid/uid if not root.
         return
     (uid, gid) = get_uid_gid(uid, gid)
@@ -153,7 +153,7 @@ def port_is_available(host, port):
     Validates if the cherrypy server port is free;  This is needed in case the PID file
     for a currently running process does not exist or has the incorrect process ID recorded.
     """
-    if int(port) < 1024 and os.geteuid() != 0:
+    if int(port) < 1024 and hasattr(os, "geteuid") and os.geteuid() != 0:
         raise Exception("Port %s is less than 1024: you must be root to do this" % port)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

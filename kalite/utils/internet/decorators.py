@@ -4,7 +4,7 @@ from collections import OrderedDict
 from cStringIO import StringIO
 
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 from .classes import CsvResponse, JsonResponse, JsonpResponse
 
@@ -17,8 +17,10 @@ def api_handle_error_with_json(handler):
     def wrapper_fn(*args, **kwargs):
         try:
             return handler(*args, **kwargs)
-        except PermissionDenied as pe:
-            raise pe  # handled upstream
+        except PermissionDenied:
+            raise  # handled upstream
+        except Http404:
+            raise
         except Exception as e:
             return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
     return wrapper_fn

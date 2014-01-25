@@ -98,7 +98,7 @@ def refresh_topic_cache(handler, force=False):
                 "(and urls) " if stamp_urls else "",
                 node["path"],
             ))
-            (_a, _b, _c, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
+            (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
             if changed:
                 strip_counts_from_ancestors(node)
         return node
@@ -113,6 +113,9 @@ def refresh_topic_cache(handler, force=False):
         if not cached_nodes:
             cached_nodes = {"topics": topicdata.TOPICS}
 
+        def has_computed_urls(node):
+            return "subtitles" in node.get("availability", {}).get("en", {})
+
         for node in cached_nodes.values():
             if not node:
                 continue
@@ -120,13 +123,12 @@ def refresh_topic_cache(handler, force=False):
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or "availability" not in node:
-                    #stamp_availability_on_topic(node, force=force)  # will be done by force below
+                if force or not has_computed_urls(node):
                     recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
                 for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not "availability" in video:
+                    if not has_computed_urls(node):
                         stamp_availability_on_video(video, force=True)  # will be done by force below
 
             elif node["kind"] == "Topic":
@@ -149,6 +151,8 @@ def splat_handler(request, splat):
     current_node = topicdata.TOPICS
     while current_node:
         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
+        if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
+            match = [m for m in match if request.path == m["path"]]
         if not match:
             raise Http404
         current_node = match[0]
@@ -184,7 +188,7 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available')) for t in topics]
 
     exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
@@ -209,7 +213,6 @@ def topic_context(topic):
         "exercises": exercises,
         "exercise_langs": exercise_langs,
         "topics": my_topics,
-        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
@@ -258,7 +261,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
     Display an exercise
     """
-    lang = request.session["django_language"]
+    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
     exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
@@ -291,9 +294,6 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
 @backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
-    # Just grab the first path, whatever it is
-    paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
-
     slug = request.GET.get("topic")
     if not slug:
         title = _("Your Knowledge Map")
@@ -304,7 +304,6 @@ def exercise_dashboard(request):
 
     context = {
         "title": title,
-        "exercise_paths": json.dumps(paths),
     }
     return context
 
@@ -319,7 +318,6 @@ def homepage(request, topics):
     context = topic_context(topics)
     context.update({
         "title": "Home",
-        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
 
@@ -327,7 +325,6 @@ def homepage(request, topics):
 @check_setup_status
 @render_to("admin_distributed.html")
 def easy_admin(request):
-
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,

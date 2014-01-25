@@ -17,7 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared import topic_tools
+from shared import khanload, topic_tools
 from utils.general import datediff
 
 
@@ -56,7 +56,11 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
 
-def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJECT_PATH + "../_khanload_cache"):
+# Attributes that are OK for a while, but need to be scrubbed off by the end.
+temp_ok_atts = ["x_pos", "y_pos", "in_knowledge_map", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
+
+
+def download_khan_data(url, debug_cache_file=None, debug_cache_dir=khanload.KHANLOAD_CACHE_DIR):
     """Download data from the given url.
 
     In DEBUG mode, these downloads are slow.  So for the sake of faster iteration,
@@ -93,12 +97,12 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=settings.PROJ
     return data
 
 
-def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_unknown_exercises=False):
+def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=True):
     """Downloads topictree (and supporting) data from Khan Academy and uses it to
     rebuild the KA Lite topictree cache (topics.json).
     """
 
-    topictree = download_khan_data("http://www.khanacademy.org/api/v1/topictree?kind=Video,Exercise")
+    topic_tree = download_khan_data("http://www.khanacademy.org/api/v1/topictree?kind=Video,Exercise")
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
@@ -123,7 +127,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         node["slug"] = node[slug_key[kind]] if node[slug_key[kind]] != "root" else ""
         node["id"] = node[id_key[kind]]  # these used to be the same; now not. Easier if they stay the same (issue #233)
 
-        node["path"] = path + topic_tools.kind_slugs[kind] + node["slug"] + "/"
+        node["path"] = path + khanload.kind_slugs[kind] + node["slug"] + "/"
         node["title"] = node[title_key[kind]].strip()
 
         # Add some attribute that should have been on there to start with.
@@ -167,8 +171,13 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             elif child[slug_key[child_kind]] in slug_blacklist:
                 children_to_delete.append(i)
                 continue
-            elif not child.get("live", True):  # node is not live
+            elif not child.get("live", True) and remove_disabled_topics:  # node is not live
+                logging.debug("Remvong non-live child: %s" % child[slug_key[child_kind]])
                 children_to_delete.append(i)
+                continue
+            elif child.get("hide", False) and remove_disabled_topics:  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
+                children_to_delete.append(i)
+                logging.debug("Remvong hidden child: %s" % child[slug_key[child_kind]])
                 continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
@@ -189,7 +198,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             node["contains"] = list(child_kinds)
 
         return child_kinds
-    recurse_nodes(topictree)
+    recurse_nodes(topic_tree)
 
 
     def recurse_nodes_to_clean_related_videos(node):
@@ -211,14 +220,14 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         if node["kind"] == "Exercise":
             videos_to_delete = []
             for vi, video_slug in enumerate(node["related_video_slugs"]):
-                if not get_video_node(video_slug, topictree):
+                if not get_video_node(video_slug, topic_tree):
                     videos_to_delete.append(vi)
             for vi in reversed(videos_to_delete):
                 logging.warn("Deleting unknown video %s" % node["related_video_slugs"][vi])
                 del node["related_video_slugs"][vi]
         for child in node.get("children", []):
             recurse_nodes_to_clean_related_videos(child)
-    recurse_nodes_to_clean_related_videos(topictree)
+    recurse_nodes_to_clean_related_videos(topic_tree)
 
 
     # Limit exercises to only the previous list
@@ -261,7 +270,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
         return slugs_deleted
 
     if remove_unknown_exercises:
-        slugs_deleted = recurse_nodes_to_delete_exercise(topictree) # do this before [add related]
+        slugs_deleted = recurse_nodes_to_delete_exercise(topic_tree) # do this before [add related]
         for vid, ex in related_exercise.items():
             if ex and ex["slug"] in slugs_deleted:
                 related_exercise[vid] = None
@@ -276,7 +285,7 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
             node["related_exercise"] = related_exercise.get(node["slug"], None)
         for child in node.get("children", []):
             recurse_nodes_to_add_related_exercise(child)
-    recurse_nodes_to_add_related_exercise(topictree)
+    recurse_nodes_to_add_related_exercise(topic_tree)
 
 
     def recurse_nodes_to_remove_childless_nodes(node):
@@ -299,17 +308,12 @@ def rebuild_topictree(data_path=settings.PROJECT_PATH + "/static/data/", remove_
 
         for ci in reversed(children_to_delete):
             del node["children"][ci]
-    recurse_nodes_to_remove_childless_nodes(topictree)
+    recurse_nodes_to_remove_childless_nodes(topic_tree)
+
+    return topic_tree
 
 
-        # Do the actual deletion
-    with open(os.path.join(data_path, topic_tools.topics_file), "w") as fp:
-        fp.write(json.dumps(topictree, indent=2))
-
-    return topictree
-
-
-def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
+def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
     """
     Uses KA Lite topic data and supporting data from Khan Academy
     to rebuild the knowledge map (maplayout.json) and topicdata files.
@@ -326,7 +330,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
         """
         for slug in knowledge_map["topics"].keys():
             nodecache_node = node_cache["Topic"].get(slug, [{}])[0]
-            topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topictree)
+            topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topic_tree)
 
             if not nodecache_node or not topictree_node:
                 logging.warn("Removing unrecognized knowledge_map topic '%s'" % slug)
@@ -373,7 +377,7 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
 
         for child in [n for n in node.get("children", []) if n["kind"] == "Topic"]:
             recurse_nodes_to_extract_knowledge_map(child, node_cache)
-    recurse_nodes_to_extract_knowledge_map(topictree, node_cache)
+    recurse_nodes_to_extract_knowledge_map(topic_tree, node_cache)
 
 
     # Download icons
@@ -493,27 +497,58 @@ def rebuild_knowledge_map(topictree, node_cache, data_path=settings.PROJECT_PATH
             adjust_coord(children, "h_position")
 
         return knowledge_map, knowledge_topics
-
     normalize_tree(knowledge_map, knowledge_topics)
 
-    # Dump the knowledge map
-    with open(os.path.join(data_path, topic_tools.map_layout_file), "w") as fp:
-        fp.write(json.dumps(knowledge_map, indent=2))
+    def stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics):
+        """
+        Any topic node can have a "knowledge map" property.
+        If it does, it can have two components:
+        1. nodes: a dictionary containing node ids and a few values, including:
+            - kind (the kind of node)
+            - h_position / v_position
+            - optional "icon_url"
+        2. polylines (optional)
+          - defines the connections between nodes
 
-    # Rewrite topicdata, obliterating the old (to remove cruft)
-    topicdata_dir = os.path.join(data_path, "topicdata")
-    if os.path.exists(topicdata_dir):
-        shutil.rmtree(topicdata_dir)
-    os.mkdir(topicdata_dir)
+        So now, when you have a topic node, it contains in itself
+          enough data to pull together a knowledge map on the fly.
+        """
+        # Move over the root map
+        root_map = {}
+        for topic in knowledge_map["topics"].values():
+            root_map[topic["id"]] = {
+                "kind": "Topic",
+                "h_position": topic["x"],
+                "v_position": topic["y"],
+                "icon_url": topic["icon_url"],
+            }
+        root_node = node_cache["Topic"]["root"][0]
+        root_node["knowledge_map"] = {
+            "nodes": root_map,
+            "polylines": knowledge_map["polylines"],
+        }
 
-    for key, value in knowledge_topics.items():
-        with open(os.path.join(topicdata_dir, "%s.json" % key), "w") as fp:
-            fp.write(json.dumps(value, indent=2))
+        # Move over subtopic paths
+        for topic_id, subtopic_data in knowledge_topics.iteritems():
+            # Move over the root map
+            topic_map = {}
+            for subtopic in subtopic_data:
+                topic_map[subtopic["id"]] = {
+                    "kind": "Exercise",
+                    "h_position": subtopic["h_position"],
+                    "v_position": subtopic["v_position"],
+                }
+            for node in node_cache["Topic"][topic_id]:
+                node["icon_url"] = node["icon_src"]
+                node["knowledge_map"] = {
+                    "nodes": topic_map,
+                }
+    stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics)
 
     return knowledge_map, knowledge_topics
 
 
-def validate_data(topictree, node_cache, slug2id_map, knowledge_map):
+def validate_data(topic_tree, node_cache, slug2id_map, knowledge_map):
 
     # Validate related videos
     for exercise_nodes in node_cache['Exercise'].values():
@@ -535,32 +570,35 @@ def validate_data(topictree, node_cache, slug2id_map, knowledge_map):
     # Validate all topics have leaves
     for topic_nodes in node_cache["Topic"].values():
         topic = topic_nodes[0]
-        if not topic_tools.get_topic_by_path(topic["path"], root_node=topictree).get("children"):
+        if not topic_tools.get_topic_by_path(topic["path"], root_node=topic_tree).get("children"):
             sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
 
-    # Validate all topics in knowledge map are in the node cache
-    for slug in knowledge_map["topics"]:
-        if slug not in node_cache["Topic"]:
-            sys.stderr.write("Unknown topic in knowledge map: %s\n" % slug)
 
-        topicdata_path = os.path.join(settings.PROJECT_PATH + "/static/data/", "topicdata", "%s.json" % slug)
-        if not os.path.exists(topicdata_path):
-            sys.stderr.write("Could not find topic data in topicdata directory: '%s'\n" % slug)
+def scrub_topic_tree(node_cache):
+    # Now, remove unnecessary values
+    for kind_nodes in node_cache.values():
+        for node_list in kind_nodes.values():
+            for node in node_list:
+                for att in temp_ok_atts:
+                    if att in node:
+                        if att == "hide"and node["id"] != "root":
+                            assert node[att] == False, "All hidden nodes (%s) better be deleted by this point!" % node["id"]
+                        if att == "live":
+                            assert node[att] == True, "All non-live nodes (%s) better be deleted by this point!" % node["id"]
+                        del node[att]
 
-    # Validate all topics in node-cache are in (or out) of knowledge map, as requested.
-    for topic_nodes in node_cache["Topic"].values():
-        topic = topic_nodes[0]
-        if topic["in_knowledge_map"] and not topic["slug"] in knowledge_map["topics"]:
-            sys.stderr.write("Topic '%-40s' not in knowledge map, but node_cache says it should be.\n" % topic["slug"])
 
-        elif not topic["in_knowledge_map"] and topic["slug"] in knowledge_map["topics"]:
-            sys.stderr.write("Topic '%-40s' in knowledge map, but node_cache says it shouldn't be.\n" % topic["slug"])
+def save_topic_tree(topic_tree=None, node_cache=None, data_path=os.path.join(settings.PROJECT_PATH, "static", "data")):
+    assert bool(topic_tree) + bool(node_cache) == 1, "Must specify either topic_tree or node_cache parameter"
 
-        elif topic["in_knowledge_map"] and not topic_tools.get_topic_by_path(topic["path"], root_node=topictree).get("children"):
-            sys.stderr.write("Topic '%-40s' in knowledge map, but has no children.\n" % topic["slug"])
+    # Dump the topic tree (again)
+    topic_tree = topic_tree or node_cache["Topic"]["root"][0]
 
-        elif topic["in_knowledge_map"] and not topic_tools.get_all_leaves(topic_tools.get_topic_by_path(topic["path"], root_node=topictree), leaf_type="Exercise"):
-            sys.stderr.write("Topic '%40s' in knowledge map, but has no exercises.\n" % topic["slug"])
+    dest_filepath = os.path.join(data_path, topic_tools.topics_file)
+    logging.debug("Saving topic tree to %s" % dest_filepath)
+    with open(dest_filepath, "w") as fp:
+        fp.write(json.dumps(topic_tree, indent=2))
+
 
 
 class Command(BaseCommand):
@@ -590,15 +628,19 @@ class Command(BaseCommand):
 
         # TODO(bcipolli)
         # Make remove_unknown_exercises and force_icons into command-line arguments
-        topictree = rebuild_topictree(remove_unknown_exercises=not options["keep_new_exercises"])
-        node_cache = topic_tools.generate_node_cache(topictree)
+        topic_tree = rebuild_topictree(remove_unknown_exercises=not options["keep_new_exercises"])
+        node_cache = topic_tools.generate_node_cache(topic_tree)
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
 
-        knowledge_map, _ = rebuild_knowledge_map(topictree, node_cache, force_icons=options["force_icons"])
+        knowledge_map, _ = rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
 
-        validate_data(topictree, node_cache, slug2id_map, knowledge_map)
+        scrub_topic_tree(node_cache=node_cache)
 
-        sys.stdout.write("Downloaded topictree data for %d topics, %d videos, %d exercises\n" % (
+        validate_data(topic_tree, node_cache, slug2id_map, knowledge_map)
+
+        save_topic_tree(topic_tree)
+
+        sys.stdout.write("Downloaded topic_tree data for %d topics, %d videos, %d exercises\n" % (
             len(node_cache["Topic"]),
             len(node_cache["Video"]),
             len(node_cache["Exercise"]),

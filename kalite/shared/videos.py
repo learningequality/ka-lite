@@ -5,7 +5,26 @@ import utils.videos  # keep access to all functions
 from settings import logging
 from shared.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
+from utils.general import softload_json
 from utils.videos import *  # get all into the current namespace, override some.
+
+
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "content", "video_file_sizes.json")
+
+REMOTE_VIDEO_SIZES = None
+def get_remote_video_size(youtube_id, default=None, force=False):
+    global REMOTE_VIDEO_SIZES
+    if REMOTE_VIDEO_SIZES is None:
+        REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
+    return REMOTE_VIDEO_SIZES.get(youtube_id, default)
+
+
+def get_local_video_size(youtube_id, default=None):
+    try:
+        return os.path.getsize(os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id))
+    except Exception as e:
+        logging.debug(str(e))
+        return default
 
 
 def download_video(youtube_id, format="mp4", callback=None):
@@ -17,7 +36,6 @@ def download_video(youtube_id, format="mp4", callback=None):
 
 def delete_downloaded_files(youtube_id):
     return utils.videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
-
 
 
 def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT):
@@ -87,7 +105,8 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     video_map = get_id2oklang_map(video["id"]) or {}
 
     if not "on_disk" in video_availability:
-        for lang_code, youtube_id in video_map.iteritems():
+        for lang_code in video_map.keys():
+            youtube_id = video_map[lang_code].encode('utf-8')
             video_availability[lang_code] = compute_video_availability(youtube_id, format=format, videos_path=videos_path)
         video_availability["en"] = video_availability.get("en", {"on_disk": False})  # en should always be defined
 
@@ -149,33 +168,31 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     if len(topic["children"]) == 0:
         logging.debug("no children: %s" % topic["path"])
 
-    elif len(topic["children"]) > 0:
+    for child in topic["children"]:
         # RECURSIVE CALL:
         #  The children have children, let them figure things out themselves
-        # $ASSUMPTION: if first child is a branch, THEY'RE ALL BRANCHES.
-        #              if first child is a leaf, THEY'RE ALL LEAVES
-        if "children" in topic["children"][0]:
-            for child in topic["children"]:
-                if not force and "nvideos_local" in child:
-                    continue
-                stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
-                nvideos_local += child["nvideos_local"]
-                nvideos_known += child["nvideos_known"]
+        if "children" in child:
+            if not force and "nvideos_local" in child:
+                continue
+            stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
+            nvideos_local += child["nvideos_local"]
+            nvideos_known += child["nvideos_known"]
 
-        # BASE CASE:
-        # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
-        else:
-            videos = get_videos(topic)
-            for video in videos:
-                if force or "availability" not in video:
-                    stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
-                nvideos_local += int(video["on_disk"])
-
-            nvideos_known = len(videos)
+    # BASE CASE:
+    # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
+    videos = get_videos(topic)
+    for video in videos:
+        if force or "availability" not in video:
+            stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
+        nvideos_local += int(video["on_disk"])
+    nvideos_known += len(videos)
+    nvideos_available = nvideos_local if not settings.BACKUP_VIDEO_SOURCE else nvideos_known
 
     changed = "nvideos_local" in topic and topic["nvideos_local"] != nvideos_local
     changed = changed or ("nvideos_known" in topic and topic["nvideos_known"] != nvideos_known)
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
+    topic["nvideos_available"] = nvideos_available
     topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
-    return (topic, nvideos_local, nvideos_known, changed)
+
+    return (topic, nvideos_local, nvideos_known, nvideos_available, changed)

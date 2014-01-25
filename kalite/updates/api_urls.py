@@ -9,7 +9,6 @@ urlpatterns = patterns('updates.api_views',
 
     url(r'^languagepacks/start$', 'start_languagepack_download', {}, 'start_languagepack_download'),
     url(r'^languagepacks/installed$', 'installed_language_packs', {}, 'installed_language_packs'),
-    url(r'^languagepacks/refresh$', 'refresh_installed_language_packs', {}, 'refresh_installed_language_packs'),
 
     url(r'^updates/progress$', 'check_update_progress', {}, 'check_update_progress'),
     url(r'^updates/cancel$', 'cancel_update_progress', {}, 'cancel_update_progress'),

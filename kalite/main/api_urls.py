@@ -25,6 +25,9 @@ urlpatterns = patterns('main.api_views',
     # data used by the frontend search code
     url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
 
+    # For knowledge map
+    url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
+
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 
     url(r'^status$', 'status', {}, 'status'),

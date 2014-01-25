@@ -22,7 +22,7 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone,
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
 from utils.general import max_none
 from utils.internet import StatusException
 
@@ -86,7 +86,15 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, facility, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context["title"] = _("Timeline plot")
+    try:
+        context["title"] = _(u"%(yaxis_name)s over time") % {
+            "yaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == yaxis][0],
+        }
+    except:
+        pass
+    return context
 
 
 @require_authorized_admin
@@ -94,7 +102,16 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, facility, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context["title"] = _("Scatter plot")
+    try:
+        context["title"] = _(u"%(yaxis_name)s versus %(xaxis_name)s") % {
+            "xaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == xaxis][0],
+            "yaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == yaxis][0],
+        }
+    except:
+        pass
+    return context
 
 
 @require_authorized_access_to_student_data
@@ -115,10 +132,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     """
     user = get_user_from_request(request=request)
     if not user:
-        raise Http404
+        raise Http404("User not found.")
 
     node_cache = get_node_cache()
-    topic_ids = [t["id"] for t in get_knowledgemap_topics()]
+    topic_ids = get_knowledgemap_topics()
+    topic_ids += [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
     topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
@@ -185,8 +203,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
-         # total streak currently a pct, but expressed in max 100; convert to
-         # proportion (like other percentages here)
+        # total streak currently a pct, but expressed in max 100; convert to
+        # proportion (like other percentages here)
         stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
@@ -251,13 +269,13 @@ def tabular_view(request, facility, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = get_knowledgemap_topics()
+    topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "report_types": ("exercise", "video"),
         "request_report_type": report_type,
-        "topics": topics,
+        "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
     })
 
     # get querystring info

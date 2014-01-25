@@ -2,7 +2,6 @@
 Important constants and helpful functions
 """
 import glob
-import json
 import os
 from functools import partial
 
@@ -10,27 +9,30 @@ from django.utils.translation import ugettext as _
 
 import settings
 from settings import LOG as logging
-from shared import i18n
+from shared import i18n, khanload
+from utils.general import softload_json
 
-
-kind_slugs = {
-    "Video": "v/",
-    "Exercise": "e/",
-    "Topic": ""
-}
 
 topics_file = "topics.json"
-map_layout_file = "maplayout_data.json"
 
 
 # Globals that can be filled
 TOPICS          = None
-def get_topic_tree(force=False):
+def get_topic_tree(force=False, props=None):
     global TOPICS, topics_file
     if TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, topics_file), "r") as fp:
-            TOPICS = json.load(fp)
+        TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
+
+        # Limit the memory footprint by unloading particular values
+        if props:
+            node_cache = get_node_cache()
+            for kind, list_by_kind in node_cache.iteritems():
+                for node_list in list_by_kind.values():
+                    for node in node_list:
+                        for att in node.keys():
+                            if att not in props:
+                                del node[att]
     return TOPICS
 
 
@@ -47,11 +49,11 @@ def get_node_cache(node_type=None, force=False):
 
 KNOWLEDGEMAP_TOPICS = None
 def get_knowledgemap_topics(force=False):
-    global KNOWLEDGEMAP_TOPICS, map_layout_file
+    global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        with open(os.path.join(settings.DATA_PATH, map_layout_file), "r") as fp:
-            kmap = json.load(fp)
-        KNOWLEDGEMAP_TOPICS = sorted(kmap["topics"].values(), key=lambda k: (k["y"], k["x"]))
+        root_node = get_topic_tree(force=force)
+        sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
+        KNOWLEDGEMAP_TOPICS =  [k[0] for k in sorted_items]
     return KNOWLEDGEMAP_TOPICS
 
 
@@ -104,7 +106,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     slug2id_map = dict()
 
     # Make a map from youtube ID to video slug
-    for video_id, v in node_cache['Video'].iteritems():
+    for video_id, v in node_cache.get('Video', {}).iteritems():
         assert v[0]["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
         slug2id_map[v[0]['slug']] = video_id
 
@@ -179,12 +181,14 @@ def get_videos(topic):
 
 def get_exercises(topic):
     """Given a topic node, returns all exercise node children (non-recursively)"""
-    return filter(lambda node: node["kind"] == "Exercise" and node["live"], topic["children"])
+    # Note: "live" is currently not stamped on any nodes, but could be in the future, so keeping here.
+    return filter(lambda node: node["kind"] == "Exercise" and node.get("live", True), topic["children"])
 
 
 def get_live_topics(topic):
     """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
-    return filter(lambda node: node["kind"] == "Topic" and not node["hide"] and "Video" in node["contains"], topic["children"])
+    # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
+    return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and "Video" in node["contains"], topic["children"])
 
 
 def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
@@ -338,7 +342,7 @@ def get_related_videos(exercise, limit_to_available=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not kind_slugs[n["kind"]] else n["path"].split("/" + kind_slugs[n["kind"]])[0]
+    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
 
     parent_path1 = parse_path(node1)
     parent_path2 = parse_path(node2)

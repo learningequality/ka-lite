@@ -85,9 +85,6 @@ function force_sync() {
         .success(function() {
             show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."), "id_command")
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_command")
-        });
 }
 
 /**
@@ -120,7 +117,7 @@ var TotalPointView = Backbone.View.extend({
 
         // only display the points if they are greater than zero, and the user is logged in
         if (points > 0 && this.model.get("is_logged_in")) {
-            this.$el.text(gettext("Total Points") + ": " + points);
+            this.$el.text(sprintf(gettext("Total Points : %(points)d "), { points : points }));
             this.$el.show();
         } else {
             this.$el.hide();
@@ -162,7 +159,7 @@ $(function(){
             toggle_state("admin", data.is_admin);
             if (data.is_logged_in){
                 if (data.is_admin) {
-                    $('#nav_logout').text(data.username + " (" +  gettext("Logout") + ")");
+                    $('#nav_logout').text(sprintf(gettext("%(username)s (Logout)"), { username : data.username }));
                 }
                 else {
                     $('#logged-in-name').text(data.username);
@@ -170,9 +167,6 @@ $(function(){
             }
             show_django_messages(data.messages);
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_status")
-        });
 });
 
 // Related to student log progress
@@ -187,9 +181,6 @@ $(function(){
                     $("[data-video-id='" + video.video_id + "']").addClass(newClass);
                 });
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs")
-            });
     }
 
     // load progress data for all exercises linked on page, and render progress circles
@@ -202,9 +193,6 @@ $(function(){
                     $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
                 });
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
-            });
     }
 
 });
@@ -213,11 +201,10 @@ $(function(){
 $(function(){
     // If new language is selected, redirect after adding django_language session key
     $("#language_selector").change(function() {
-        window.location = "?set_language=" + $("#language_selector").val();
-    });
-    // If user is admin, they can set currently selected language as the default
-    $("#make_default_language").click(function() {
-        window.location = "?set_default_language=" + $("#language_selector").val();
+        var lang_code = $("#language_selector").val();
+        if (lang_code != "") {
+            window.location = "?set_language=" + lang_code;
+        }
     });
 });
 
@@ -257,7 +244,7 @@ function get_server_status(options, fields, callback) {
         data: {fields: (fields || []).join(",")}
     }).success(function(data) {
         callback(data);
-    }).error(function() {
+    }).fail(function() {
         callback({status: "error"});
     });
 }

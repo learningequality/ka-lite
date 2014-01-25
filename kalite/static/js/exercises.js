@@ -10,7 +10,7 @@ function updateStreakBar() {
 
 function updateQuestionPoints(points) {
     // show points for correct question, or none if not answered yet.
-    $("#questionpoints").html(points ? (points + " " + gettext("points") + "!") : "");
+    $("#questionpoints").html(points ? (sprintf(gettext("%(points)d points!"), { points : points })) : "");
 }
 
 function updatePercentCompleted(correct) {
@@ -68,7 +68,7 @@ $(function() {
     });
     $(Exercises).bind("checkAnswer", function(ev, data) {
         updatePercentCompleted(data.correct);
-        
+
         // after giving a correct answer, no penalty for viewing a hint.
         // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
         hintsResetPoints = !data.correct;

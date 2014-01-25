@@ -597,7 +597,8 @@
   },
   "es":{
     "name":"Spanish; Castilian",
-    "native_name":"español, castellano"
+    "native_name":"Español, Castellano",
+    "ka_name":"espanol"
   },
   "su":{
     "name":"Sundanese",
@@ -737,49 +738,48 @@
     "name":"Zhuang, Chuang",
     "native_name":"Saɯ cueŋƅ, Saw cuengh"
   },
-  "en_PT":{
+  "en-PT":{
     "name":"English, Pirate",
     "native_name":"Argh! Pirates!"
   },
-  "es_ES":{
+  "es-ES":{
     "name":"Spanish, Spain",
-    "native_name":"español",
-    "ka_name":"espanol"
+    "native_name":"Español"
   },
   "fil":{
     "name":"Filipino",
     "native_name":"Pilipino"
   },
-  "ne_NP":{
+  "ne-NP":{
     "name":"Nepali",
     "native_name":"नेपाली"
   },
-  "pt_BR":{
+  "pt-BR":{
     "name":"Portuguese, Brazil",
     "native_name":"Português, Brasil"
   },
-  "pt_PT":{
+  "pt-PT":{
     "name":"Portuguese, Portugal",
     "native_name":"Português",
     "ka_name":"portugal portugues"
   },
-  "sr_CS":{
+  "sr-CS":{
     "name":"Serbian, Cyrillic",
     "native_name":"српски језик"
   },
-  "sv_SE":{
+  "sv-SE":{
     "name":"Swedish",
     "native_name":"Svenska"
   },
-  "ur_PK":{
+  "ur-PK":{
     "name":"Swedish",
     "native_name":"Svenska"
   },
-  "zh_CN":{
+  "zh-CN":{
     "name":"Chinese, Simplified",
     "native_name":"中国大陆"
   },
-  "zh_TW":{
+  "zh-TW":{
     "name":"Chinese, Traditional",
     "native_name":"正體字/繁體字"
   },
@@ -809,11 +809,11 @@
   },
   "es-AR":{
     "name":"Spanish, Argentina",
-    "native_name":"español, argentina"
+    "native_name":"Español, Argentina"
   },
   "es-MX":{
     "name":"Spanish, Mexico",
-    "native_name":"español, mexico"
+    "native_name":"Español, Mexico"
   },
   "es-NI":{
     "name":"Spanish, Nicaraguan",

@@ -62,6 +62,7 @@ a:hover {
 #top-header #logo {
     position: absolute;
     top: 0;
+    z-index: 50; /*TODO(dylan): stopgap solution;*/
 }
 
 #logo-image-small img {
@@ -485,7 +486,7 @@ a.green_button:hover,input.green_button:hover{
     line-height: 14px;
     float: right;
     margin-left: 1px;
-    min-width: 50px;
+    min-width: 5px;
 }
 
 input#search {
