@@ -82,13 +82,21 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
+def get_exercise_filepath(exercise_id, lang_code=None, is_central_server=settings.CENTRAL_SERVER):
+    if settings.CENTRAL_SERVER:
+        exercise_filename = "%s.%s" % (exercise_id, "html")
+        exercise_localized_root = get_localized_exercise_dirpath(lang_code)
+        exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
+    else:
+        raise NotImplementedError
+
+    return exercise_dest_filepath
+
 def scrape_exercise(exercise_id, lang_code, force=False):
-    ka_lang_code = lang_code.lower()
     ietf_lang_code = lcode_to_ietf(lang_code)
 
-    exercise_filename = "%s.%s" % (exercise_id, "html")
-    exercise_localized_root = get_localized_exercise_dirpath(ka_lang_code)
-    exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
+    exercise_dest_filepath = get_exercise_path(exercise_id, lang_code=lang_code)
+    exercise_localized_root = os.path.dirname(exercise_dest_filepath)
 
     if os.path.exists(exercise_dest_filepath) and not force:
         return

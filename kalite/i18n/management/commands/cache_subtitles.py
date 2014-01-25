@@ -143,14 +143,15 @@ def download_if_criteria_met(videos, lang_code, force, response_code, date_since
 
     if date_specified:
         logging.info("Filtering based on date...")
-        videos_copy = copy.deepcopy(videos)
-        for k, v in videos.items():
-            if not v["last_attempt"] or datetime.datetime.strptime(v["last_attempt"], '%Y-%m-%d') < date_specified:
+        for k in videos.keys():
+            if not videos[k]["last_attempt"]:
+                continue
+            elif datetime.datetime.strptime(videos[k]["last_attempt"], '%Y-%m-%d') < date_specified:
+                continue
+            elif False:  # TODO(bcipolli): check output filename exists, as per # 1359
                 continue
             else:
-                del videos_copy[k]
-
-        videos = videos_copy
+                del videos[k]
 
         logging.info("%4d of %4d videos need refreshing (last refresh more recent than %s)" % (
             len(videos), n_videos, date_specified,
