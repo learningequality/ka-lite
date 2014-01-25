@@ -44,10 +44,12 @@ def get_language_pack_availability_filepath(version=VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "language_pack_availability.json")
 
 def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL_SERVER):
+    ka_lang_code = lang_code.lower()
+
     if is_central_server:
-        return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "exercises")
+        return os.path.join(get_lp_build_dir(ka_lang_code), "exercises")
     else:
-        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", lang_code.lower())
+        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", ka_lang_code)
 
 def get_lp_build_dir(lang_code=None, version=None):
     global LANGUAGE_PACK_BUILD_DIR
@@ -61,12 +63,14 @@ def get_lp_build_dir(lang_code=None, version=None):
 
     return build_dir
 
+
 def get_language_pack_metadata_filepath(lang_code, version=VERSION, is_central_server=settings.CENTRAL_SERVER):
-    lang_code = lcode_to_django_dir(lang_code)
+    lang_code = lcode_to_ietf(lang_code)
     metadata_filename = "%s_metadata.json" % lang_code
     if is_central_server:
         return os.path.join(get_lp_build_dir(lang_code, version=version), metadata_filename)
     else:
+        lang_code = lcode_to_django_dir(lang_code)
         return os.path.join(LOCALE_ROOT, lang_code, metadata_filename)
 
 def get_language_pack_filepath(lang_code, version=VERSION):
@@ -79,6 +83,9 @@ def get_language_pack_url(lang_code, version=VERSION):
     )
     return url
 
+def get_django_lc_message_file(lang_code, file_name="django.mo", locale_root=LOCALE_ROOT):
+    return os.path.join(locale_root, lc_to_django_dir(lang_code), "LC_MESSAGES", file_name)
+
 class LanguageNotFoundError(Exception):
     pass
 
@@ -87,11 +94,16 @@ SUPPORTED_LANGUAGE_MAP = None
 def get_supported_language_map(lang_code=None):
     lang_code = lcode_to_ietf(lang_code)
     global SUPPORTED_LANGUAGE_MAP
-    defaultmap = defaultdict(lambda: lang_code)
     if not SUPPORTED_LANGUAGE_MAP:
         with open(SUPPORTED_LANGUAGES_FILEPATH) as f:
             SUPPORTED_LANGUAGE_MAP = json.loads(f.read())
-    return SUPPORTED_LANGUAGE_MAP.get(lang_code) or defaultmap if lang_code else SUPPORTED_LANGUAGE_MAP
+
+    if not lang_code:
+        return SUPPORTED_LANGUAGE_MAP
+    else:
+        lang_map = defaultdict(lambda: lang_code)
+        lang_map.update(SUPPORTED_LANGUAGE_MAP.get(lang_code) or {})
+        return lang_map
 
 def get_supported_languages():
     return get_supported_language_map().keys()

@@ -43,7 +43,7 @@ import settings
 from settings import LOG as logging
 from shared.i18n import *
 from update_po import compile_po_files
-from utils.general import ensure_dir, softload_json, version_diff
+from utils.general import datediff, ensure_dir, softload_json, version_diff
 from version import VERSION
 
 
@@ -146,6 +146,9 @@ class Command(BaseCommand):
             if key.startswith("update_"):
                 options[key] = options[key] and not options["no_update"]
 
+        if version_diff(options["version"], "0.10.3") < 0:
+            raise CommandError("This command cannot be used for versions before 0.10.3")
+
         if options['low_mem']:
             logging.info('Making the GC more aggressive...')
             gc.set_threshold(36, 2, 2)
@@ -154,68 +157,92 @@ class Command(BaseCommand):
         upgrade_old_schema()
 
         # Now, we're going to build the language packs, collecting metadata long the way.
-        package_metadata = dict([(lang_code, {}) for lang_code in lang_codes])
+        package_metadata = update_language_packs(lang_codes, options)
 
+
+def update_language_packs(lang_codes, options):
+
+    package_metadata = {}
+
+    since_date = datetime.datetime.now() - datetime.timedelta(int(options["days"]))
+
+    if options['update_dubbed']:
+        # Get the latest dubbed video map; it's shared across language packs
+        force_dubbed_download = not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) \
+            or 0 < datediff(since_date, datetime.datetime.fromtimestamp(os.path.getctime(DUBBED_VIDEOS_MAPPING_FILEPATH)))
+        get_dubbed_video_map(force=force_dubbed_download)
+
+    for lang_code in lang_codes:
+        lang_code_map = get_supported_language_map(lang_code)
+        lang_metadata = {}
 
         # Step 1: Update / collect srts.  No version needed, we want to share latest always.
         if options['update_srts']:
-            update_srts(days=options["days"], lang_codes=lang_codes)
-        for lang_code in lang_codes:
-            package_metadata[lang_code]["subtitle_count"] = get_subtitle_count(lang_code)
+            update_srts(since_date=since_date, lang_codes=[lang_code_map["amara"]])
+        lang_metadata["subtitle_count"] = get_subtitle_count(lang_code_map["amara"])
 
         # Step 2: Update the dubbed video mappings. No version needed, we want to share latest always.
-        if options['update_dubbed']:
-            get_dubbed_video_map(force=True)
-        for lang_code in lang_codes:
-            dv_map = get_dubbed_video_map(lang_code)
-            package_metadata[lang_code]["num_dubbed_videos"] = len(dv_map) if dv_map else 0
+        dv_map = get_dubbed_video_map(lang_code_map["dubbed_videos"])
+        lang_metadata["num_dubbed_videos"] = len(dv_map) if dv_map and version_diff(options["version"], "0.10.3") > 0 else 0
 
         # Step 3: Update the exercises.  No version needed, we want to share latest always.
         #  TODO(bcipolli): make sure that each language pack only grabs exercises that are included in its topic tree.
-        for lang_code in lang_codes:
-            if options['update_exercises']:
-                call_command("scrape_exercises", lang_code=lang_code)
-            package_metadata[lang_code]["num_exercises"] = get_localized_exercise_count(lang_code)
+        if options['update_exercises'] and version_diff(options["version"], "0.10.3") > 0:
+            call_command("scrape_exercises", lang_code=lang_code_map["exercises"])
+        lang_metadata["num_exercises"] = get_localized_exercise_count(lang_code_map["exercises"]) if version_diff(options["version"], "0.10.3") > 0 else 0
 
         # Step 4: Update the crowdin translations.  Version needed!
         #   TODO(bcipolli): skip this when we're going backwards in version.
-        trans_metadata = update_translations(
-            lang_codes=lang_codes,
-            zip_file=options['zip_file'],
-            ka_zip_file=options['ka_zip_file'],
-            download_ka_translations=options['update_ka_trans'],
-            download_kalite_translations=options['update_kalite_trans'],
-            use_local=options["use_local"],
-            version=options["version"],
-        )
-        for lang_code in lang_codes:
-            package_metadata[lang_code].update(trans_metadata.get(lang_code, {}))
+        if options["no_update"] or version_diff(options["version"], "0.10.3") == 0:
+            trans_metadata = {lang_code: get_po_metadata(get_po_build_path(lang_code))}
+        else:
+            trans_metadata = update_translations(
+                lang_codes=[lang_code],  # will be converted, as needed
+                zip_file=options['zip_file'],
+                ka_zip_file=options['ka_zip_file'],
+                download_ka_translations=options['update_ka_trans'],
+                download_kalite_translations=options['update_kalite_trans'],
+                use_local=options["use_local"],
+                version=options["version"],
+            )
+        lang_metadata.update(trans_metadata.get(lang_code, {}))
 
         # Now create/update unified meta data
-        generate_metadata(package_metadata=package_metadata, version=options["version"])
+        generate_metadata(package_metadata={lang_code: lang_metadata}, version=options["version"])
 
         # Zip into language packs
-        package_sizes = zip_language_packs(lang_codes=lang_codes, version=options["version"])
+        package_sizes = zip_language_packs(lang_codes=[lang_code], version=options["version"])
         logging.debug("Package sizes: %s" % package_sizes)
 
+        lang_metadata.update(package_sizes)
+
         # Update the metadata with the package size information
-        update_metadata(package_sizes, version=options["version"])
+        update_metadata({lang_code: lang_metadata}, version=options["version"])
+
+        # Update package metadata
+        package_metadata[lang_code] = lang_metadata
+
+    return package_metadata
 
 
-def update_srts(days, lang_codes):
+def update_srts(since_date, lang_codes):
     """
     Run the commands to update subtitles that haven't been updated in the number of days provided.
     Default is to update all srt files that haven't been requested in 30 days
     """
-    date = '{0.month}/{0.day}/{0.year}'.format(datetime.date.today() - datetime.timedelta(int(days)))
-    logging.info("Updating subtitles that haven't been refreshed since %s" % date)
-    call_command("generate_subtitle_map", date_since_attempt=date)
+    date_as_str = '{0.month}/{0.day}/{0.year}'.format(since_date)
+    logging.info("Updating subtitles that haven't been refreshed since %s" % date_as_str)
+    call_command("generate_subtitle_map", date_since_attempt=date_as_str)
     if lang_codes:
         for lang_code in lang_codes:
-            call_command("cache_subtitles", date_since_attempt=date, lang_code=lang_code)
+            call_command("cache_subtitles", date_since_attempt=date_as_str, lang_code=lang_code)
     else:
-        call_command("cache_subtitles", date_since_attempt=date)
+        call_command("cache_subtitles", date_since_attempt=date_as_str)
 
+
+def get_po_build_path(lang_code, po_file="django.po", dest_path=None, version=VERSION):
+    dest_path = dest_path or get_lp_build_dir(lang_code, version=version)
+    return  os.path.join(dest_path, po_file)
 
 def update_translations(lang_codes=None,
                         download_kalite_translations=True,
@@ -234,7 +261,7 @@ def update_translations(lang_codes=None,
         for lang_code in lang_codes:
             lang_code = lcode_to_ietf(lang_code)
             package_metadata[lang_code] = {}
-            combined_po_file = os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "LC_MESSAGES", "django.po")
+            combined_po_file = get_po_build_path(lang_code, version=version)
             combined_metadata = get_po_metadata(combined_po_file)
             package_metadata[lang_code]["approved_translations"] = combined_metadata["approved_translations"]
             package_metadata[lang_code]["phrases"]               = combined_metadata["phrases"]
@@ -643,7 +670,7 @@ def update_metadata(updated_metadata, version=VERSION):
         lang_code_ietf = lcode_to_ietf(lc)
 
         # Gather existing metadata
-        metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf)
+        metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf, version=version)
         stored_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
         for att, val in meta.iteritems():
@@ -681,8 +708,13 @@ def increment_language_pack_version(stored_meta, updated_meta):
     """Increment language pack version if translations have been updated
 (start over if software version has incremented)
     """
+
     for att in VERSION_CHANGING_ATTRIBUTES:
-        assert att in updated_meta, "All VERSION_CHANGING_ATTRIBUTES must be set (%s is not?)" % att
+        # Everything is OK except for stored_metadata to contain something
+        #   that updated_metadata does not.
+        in_updated = att in updated_meta
+        in_stored = att in stored_meta
+        assert (not in_stored) or in_updated, "VERSION_CHANGING_ATTRIBUTES %s not contained in the update." % att
     assert "software_version" not in stored_meta or stored_meta["software_version"] == updated_meta["software_version"], "Metadata must be a version match."
 
     # Search for any attributes that would cause a version change.
@@ -703,19 +735,22 @@ def zip_language_packs(lang_codes=None, version=VERSION):
     converts all into ietf
     """
     sizes = {}
-    lang_codes = lang_codes or os.listdir(LOCALE_ROOT)
+    lang_codes = lang_codes or os.listdir(LANGUAGE_PACK_BUILD_DIR)
     lang_codes = [lcode_to_ietf(lc) for lc in lang_codes]
     logging.info("Zipping up %d language pack(s)" % len(lang_codes))
 
     for lang_code_ietf in lang_codes:
-        lang_code_django = lcode_to_django_dir(lang_code_ietf)
-        lang_locale_path = get_lp_build_dir(lang_code_django, version=version)
+        lang_code_map = get_supported_language_map(lang_code_ietf)
+
+        # Initialize values
         sizes[lang_code_ietf] = { "package_size": 0, "zip_size": 0}
 
+        #
+        lang_locale_path = get_lp_build_dir(lang_code_ietf, version=version)
         if not os.path.exists(lang_locale_path):
-            logging.warn("Unexpectedly skipping missing directory: %s" % lang_code_django)
+            logging.warn("Unexpectedly skipping missing directory: %s" % lang_code_ietf)
         elif not os.path.isdir(lang_locale_path):
-            logging.error("Skipping language where a file exists where a directory was expected: %s" % lang_code_django)
+            logging.error("Skipping language where a file exists where a directory was expected: %s" % lang_code_ietf)
 
         # Create a zipfile for this language
         zip_filepath = get_language_pack_filepath(lang_code_ietf, version=version)
@@ -737,17 +772,18 @@ def zip_language_packs(lang_codes=None, version=VERSION):
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
-        srt_dirpath = get_srt_path(lang_code_django)
+        srt_dirpath = get_srt_path(lcode_to_django_dir(lang_code_map["amara"]))
         for srt_file in glob.glob(os.path.join(srt_dirpath, "*.srt")):
             z.write(srt_file, arcname=os.path.join("subtitles", os.path.basename(srt_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(srt_file)
 
-        exercises_dirpath = get_localized_exercise_dirpath(lang_code_ietf)
-        for exercise_file in glob.glob(os.path.join(exercises_dirpath, "*.html")):
-            # Get every single compiled language file
-            filepath = os.path.join(exercises_dirpath, exercise_file)
-            z.write(filepath, arcname=os.path.join("exercises", os.path.basename(exercise_file)))
-            sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
+        if version_diff(version, "0.10.3") > 0:  # since these are globally available, need to check version.
+            exercises_dirpath = get_localized_exercise_dirpath(lang_code_map["exercises"])
+            for exercise_file in glob.glob(os.path.join(exercises_dirpath, "*.html")):
+                # Get every single compiled language file
+                filepath = os.path.join(exercises_dirpath, exercise_file)
+                z.write(filepath, arcname=os.path.join("exercises", os.path.basename(exercise_file)))
+                sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         # Add dubbed video map
         z.write(DUBBED_VIDEOS_MAPPING_FILEPATH, arcname=os.path.join("dubbed_videos", os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH)))

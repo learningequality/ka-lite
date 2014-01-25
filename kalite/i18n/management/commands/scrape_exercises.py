@@ -95,7 +95,7 @@ def get_exercise_filepath(exercise_id, lang_code=None, is_central_server=setting
 def scrape_exercise(exercise_id, lang_code, force=False):
     ietf_lang_code = lcode_to_ietf(lang_code)
 
-    exercise_dest_filepath = get_exercise_path(exercise_id, lang_code=lang_code)
+    exercise_dest_filepath = get_exercise_filepath(exercise_id, lang_code=lang_code)
     exercise_localized_root = os.path.dirname(exercise_dest_filepath)
 
     if os.path.exists(exercise_dest_filepath) and not force:
