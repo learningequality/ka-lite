@@ -17,6 +17,7 @@ import version
 from . import get_serialized_models, save_serialized_models, get_device_counters, serialize
 from .models import *
 from securesync.devices.models import *  # inter-dependence
+from settings import LOG as logging
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from stats.models import UnregisteredDevicePing
@@ -137,6 +138,7 @@ def device_upload(data, session):
         #   dest_version assumed to be this device's version
         result = save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
+        logging.debug("Exception uploading devices: %s" % e)
         result = { "error": e.message, "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
@@ -169,6 +171,7 @@ def model_upload(data, session):
         #   dest_version assumed to be this device's version
         result = save_serialized_models(data["models"], src_version=session.client_version)
     except Exception as e:
+        logging.debug("Exception uploading models: %s" % e)
         result = { "error": e.message, "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
@@ -189,6 +192,7 @@ def model_download(data, session):
         # Return the objects serialized to the version of the other device.
         result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, dest_version=session.client_version)
     except Exception as e:
+        logging.debug("Exception downloading models: %s" % e)
         result = { "error": e.message, "count": 0 }
 
     session.models_downloaded += result["count"]
