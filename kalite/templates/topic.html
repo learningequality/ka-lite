@@ -58,10 +58,7 @@
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-available" title="{{ subtopic.nvideos_local }}/{{ subtopic.nvideos_known }} {% trans "video(s) are available locally." %}">
-                {% trans subtopic.title %}
-            </a>
-            <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
+            <a href="{{ subtopic.path }}" class="topic-link topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
                 {% trans subtopic.title %}
             </a>
             </span>
