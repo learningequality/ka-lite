@@ -35,8 +35,7 @@ def get_language_pack_availability_filepath(ver=version.VERSION):
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 def get_language_pack_metadata_filepath(lang_code):
-    lang_code = lcode_to_django_dir(lang_code)
-    return os.path.join(LOCALE_ROOT, lang_code, "%s_metadata.json" % lang_code)
+    return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "%s_metadata.json" % lcode_to_ietf(lang_code))
 
 def get_language_pack_filepath(lang_code, version=version.VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))

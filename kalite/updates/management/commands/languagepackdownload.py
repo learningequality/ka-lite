@@ -13,12 +13,12 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
 
 import settings
-import version
 from .classes import UpdatesStaticCommand
 from i18n.models import LanguagePack
 from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, lcode_to_django_dir, lcode_to_ietf, get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_srt_path, update_jsi18n_file
 from utils.general import ensure_dir
+from version import VERSION
 
 
 class Command(UpdatesStaticCommand):
@@ -34,7 +34,7 @@ class Command(UpdatesStaticCommand):
         make_option('-s', '--software_version',
                     action='store',
                     dest='software_version',
-                    default=version.VERSION,
+                    default=VERSION,
                     metavar="SOFT_VERS",
                     help="Specify the software version to download a language pack for."),
     )
@@ -52,11 +52,6 @@ class Command(UpdatesStaticCommand):
 
         lang_code = lcode_to_ietf(options["lang_code"])
         software_version = options["software_version"]
-        if lcode_to_django_dir(lang_code) == settings.LANGUAGE_CODE:
-            logging.info("Note: language code set to default language. This is fine (and may be intentional), but you may specify a language other than '%s' with -l" % lang_code)
-        if software_version == version.VERSION:
-            logging.info("Note: software version set to default version. This is fine (and may be intentional), but you may specify a software version other than '%s' with -s" % version.VERSION)
-
 
         # Download the language pack
         try:
