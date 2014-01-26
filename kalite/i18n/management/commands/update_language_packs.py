@@ -16,6 +16,7 @@ Good test cases:
 
 NOTE: all language codes internally are assumed to be in django format (e.g. en_US)
 """
+import copy
 import datetime
 import fnmatch
 import gc
@@ -626,7 +627,7 @@ def generate_metadata(package_metadata=None, version=VERSION):
         crowdin_meta = next((meta for meta in crowdin_meta_dict if meta["code"] == lang_code_ietf), {})
         stored_meta = softload_json(metadata_filepath, logger=logging.info, errmsg="Could not open %s language pack metadata" % lc)
 
-        updated_meta = package_metadata.get(lang_code_ietf, {})
+        updated_meta = package_metadata.get(lang_code_ietf) or {}
         updated_meta.update({
             "code": lang_code_ietf,  # user-facing code
             "name": lang_name,
@@ -651,7 +652,7 @@ def generate_metadata(package_metadata=None, version=VERSION):
             json.dump(stored_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata[lang_code_ietf] = stored_meta
+        master_metadata[lang_code_ietf] = copy.deepcopy(stored_meta)
 
     # Save updated master
     ensure_dir(os.path.dirname(master_filepath))
@@ -660,7 +661,7 @@ def generate_metadata(package_metadata=None, version=VERSION):
     logging.info("Local record of translations updated")
 
 
-def update_metadata(updated_metadata, version=VERSION):
+def update_metadata(package_metadata, version=VERSION):
     """
     We've zipped the packages, and now have unzipped & zipped sizes.
     Update this info in the local metadata (but not inside the zip)
@@ -668,22 +669,22 @@ def update_metadata(updated_metadata, version=VERSION):
     master_filepath = get_language_pack_availability_filepath(version=version)
     master_metadata = softload_json(master_filepath, logger=logging.warn, errmsg="Error opening master language pack metadata")
 
-    for lc, meta in updated_metadata.iteritems():
+    for lc, updated_meta in package_metadata.iteritems():
         lang_code_ietf = lcode_to_ietf(lc)
 
         # Gather existing metadata
         metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf, version=version)
         stored_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
-        for att, val in meta.iteritems():
-            stored_meta[att] = val
+        print updated_meta
+        stored_meta.update(updated_meta)
 
         # Write locally (this is used on download by distributed server to update it's database)
         with open(metadata_filepath, 'w') as output:
             json.dump(stored_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata[lang_code_ietf] = stored_meta
+        master_metadata[lang_code_ietf] = copy.deepcopy(stored_meta)
 
     # Save updated master
     ensure_dir(os.path.dirname(master_filepath))
@@ -720,7 +721,7 @@ def increment_language_pack_version(stored_meta, updated_meta):
     assert "software_version" not in stored_meta or stored_meta["software_version"] == updated_meta["software_version"], "Metadata must be a version match."
 
     # Search for any attributes that would cause a version change.
-    language_pack_version = stored_meta.get("language_pack_version", 1)
+    language_pack_version = stored_meta.get("language_pack_version", 0)  # will increment to one
 
     for att in VERSION_CHANGING_ATTRIBUTES:
         if stored_meta.get(att) != updated_meta.get(att):
