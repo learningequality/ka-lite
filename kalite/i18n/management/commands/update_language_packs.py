@@ -642,17 +642,16 @@ def generate_metadata(package_metadata=None, version=VERSION):
             continue
 
         language_pack_version = increment_language_pack_version(stored_meta, updated_meta)
+
         updated_meta["language_pack_version"] = language_pack_version
         stored_meta.update(updated_meta)
-
-        logging.debug("%s" % stored_meta)
 
         # Write locally (this is used on download by distributed server to update it's database)
         with open(metadata_filepath, 'w') as output:
             json.dump(stored_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata[lang_code_ietf] = copy.deepcopy(stored_meta)
+        master_metadata[lang_code_ietf] = stored_meta
 
     # Save updated master
     ensure_dir(os.path.dirname(master_filepath))
@@ -676,7 +675,6 @@ def update_metadata(package_metadata, version=VERSION):
         metadata_filepath = get_language_pack_metadata_filepath(lang_code_ietf, version=version)
         stored_meta = softload_json(metadata_filepath, logger=logging.warn, errmsg="Error opening %s language pack metadata" % lc)
 
-        print updated_meta
         stored_meta.update(updated_meta)
 
         # Write locally (this is used on download by distributed server to update it's database)
@@ -684,7 +682,7 @@ def update_metadata(package_metadata, version=VERSION):
             json.dump(stored_meta, output)
 
         # Update master (this is used for central server to handle API requests for data)
-        master_metadata[lang_code_ietf] = copy.deepcopy(stored_meta)
+        master_metadata[lang_code_ietf] = stored_meta
 
     # Save updated master
     ensure_dir(os.path.dirname(master_filepath))
