@@ -298,10 +298,14 @@ def login_view(request, *args, **kwargs):
 
     # Note: prev used because referer is lost on a login / redirect.
     #   So paste it on the success redirect.
+    redirect_url = request.REQUEST.get("next", reverse('org_management'))
+    if prev:
+        redirect_url = set_query_params(redirect_url, {"prev": prev})
+
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
-            "url": set_query_params(request.REQUEST.get("next", reverse('org_management')), {"prev": prev}),
+            "url": redirect_url,
         },
         "auth_password_reset_url": reverse("auth_password_reset"),
         "registration_register_url": reverse("registration_register") if not request.next else set_query_params(reverse("registration_register"), {"next": request.next}),
