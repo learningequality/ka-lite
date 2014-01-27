@@ -35,12 +35,13 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         cherrypy.tree.graft(WSGIHandler())
 
         # Serve the content files
-        static_handler = cherrypy.tools.staticdir.handler(
-            section="/",
-            dir=os.path.split(settings.CONTENT_ROOT)[1],
-            root=os.path.abspath(os.path.split(settings.CONTENT_ROOT)[0])
-        )
-        cherrypy.tree.mount(static_handler, settings.CONTENT_URL)
+        if getattr(settings, "CONTENT_ROOT", None):
+            static_handler = cherrypy.tools.staticdir.handler(
+                section="/",
+                dir=os.path.split(settings.CONTENT_ROOT)[1],
+                root=os.path.abspath(os.path.split(settings.CONTENT_ROOT)[0])
+            )
+            cherrypy.tree.mount(static_handler, settings.CONTENT_URL)
 
         # Serve the static media files
         static_handler = cherrypy.tools.staticdir.handler(
@@ -49,6 +50,14 @@ class DjangoAppPlugin(plugins.SimplePlugin):
             root=os.path.abspath(os.path.split(settings.MEDIA_ROOT)[0])
         )
         cherrypy.tree.mount(static_handler, settings.MEDIA_URL)
+
+        # Serve the static files
+        static_handler = cherrypy.tools.staticdir.handler(
+            section="/",
+            dir=os.path.split(settings.STATIC_ROOT)[1],
+            root=os.path.abspath(os.path.split(settings.STATIC_ROOT)[0])
+        )
+        cherrypy.tree.mount(static_handler, settings.STATIC_URL)
 
         # Serve the static admin media. From django's internal (django.core.servers.basehttp)
         admin_static_dir = os.path.join(django.__path__[0], 'contrib', 'admin', 'static')
@@ -64,7 +73,7 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         override this method to provide your own loading
         mechanism. Simply return an instance of your settings module.
         """
-        
+
         name = os.environ['DJANGO_SETTINGS_MODULE']
         package, mod = name.rsplit('.', 1)
         fd, path, description = imp.find_module(mod, [package.replace('.', '/')])
@@ -76,7 +85,7 @@ class DjangoAppPlugin(plugins.SimplePlugin):
 
 def poll_process(pid):
     """
-    Poll for process with given pid up to 10 times waiting .25 seconds in between each poll. 
+    Poll for process with given pid up to 10 times waiting .25 seconds in between each poll.
     Returns False if the process no longer exists otherwise, True.
     """
     for n in range(10):
@@ -94,7 +103,7 @@ def poll_process(pid):
 
 def stop_server(pidfile):
     """
-    Stop process whose pid was written to supplied pidfile. 
+    Stop process whose pid was written to supplied pidfile.
     First try SIGTERM and if it fails, SIGKILL. If process is still running, an exception is raised.
     """
     if os.path.exists(pidfile):
@@ -114,7 +123,7 @@ def stop_server(pidfile):
 
 
 def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False, pidfile=None, autoreload=False):
-    
+
     if daemonize:
         if not pidfile:
             pidfile = '~/cpwsgi_%d.pid' % port
@@ -126,14 +135,14 @@ def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False
         fp = open(pidfile, 'w')
         fp.write("%d\n" % os.getpid())
         fp.close()
-    
+
     cherrypy.config.update({
         'server.socket_host': host,
         'server.socket_port': int(port),
         'server.thread_pool': int(threads),
         'checker.on': False,
     })
-    
+
     DjangoAppPlugin(cherrypy.engine).subscribe()
     if not autoreload:
         # cherrypyserver automatically reloads if any modules change
@@ -144,7 +153,7 @@ def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False
     cherrypy.quickstart()
     if pidfile:
         stop_server(pidfile)
-    
+
 if __name__=="__main__":
-        
+
     run_cherrypy_server()

@@ -2,7 +2,6 @@
 Views which allow users to create and activate accounts.
 
 """
-
 import copy
 
 from django.contrib import messages
@@ -23,6 +22,7 @@ from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
 from shared.decorators import central_server_only
+from utils.internet import set_query_params
 
 
 @central_server_only
@@ -286,19 +286,29 @@ def login_view(request, *args, **kwargs):
     if request.method=="POST":
         users = User.objects.filter(username__iexact=request.POST["username"])
         nusers = users.count()
-    
+
         # Coerce
         if nusers == 1 and users[0].username != request.POST["username"]:
             request.POST = copy.deepcopy(request.POST)
             request.POST['username'] = request.POST['username'].lower()
-    
+        prev = request.POST['prev']
+
+    else:
+        prev = request.META.get("HTTP_REFERER")
+
+    # Note: prev used because referer is lost on a login / redirect.
+    #   So paste it on the success redirect.
+    redirect_url = request.REQUEST.get("next", reverse('org_management'))
+    if prev:
+        redirect_url = set_query_params(redirect_url, {"prev": prev})
+
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
-            "url": request.REQUEST.get("next", reverse('org_management')),
+            "url": redirect_url,
         },
         "auth_password_reset_url": reverse("auth_password_reset"),
-        "registration_register_url": reverse("registration_register") + ("next=%s" % request.next if request.next else ""),
+        "registration_register_url": reverse("registration_register") if not request.next else set_query_params(reverse("registration_register"), {"next": request.next}),
     }
     kwargs["extra_context"] = extra_context
 

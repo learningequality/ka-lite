@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
+import settings
 from chronograph.models import Job
 from settings import LOG as logger
 
@@ -23,7 +24,7 @@ class CronThread(Thread):
     daemon = True
     def __init__(self, gc=False, mp=False, *args, **kwargs):
         self.do_gc = gc
-        
+
         if mp and not "memory_profiler" in sys.modules.keys():
             mp = False
             warnings.warn("memory_profiling disabled.")
@@ -31,7 +32,7 @@ class CronThread(Thread):
 
 
         return super(CronThread, self).__init__(*args, **kwargs)
-        
+
     def run(self):
         jobs = Job.objects.due()
         prof_string = "" if not self.do_profile else "[%8.2f MB] " % memory_profiler.memory_usage()[0]
@@ -49,7 +50,7 @@ class Command(BaseCommand):
     args = "time"
     help = _("Emulates a reoccurring cron call to run jobs at a specified "
              "interval.  This is meant primarily for development use.")
-    
+
     option_list = BaseCommand.option_list + (
         make_option('-g', '--nogc',
             action='store_false',
@@ -69,14 +70,14 @@ class Command(BaseCommand):
                             format="[%(asctime)-15s] %(message)s")
 
         try:
-            time_wait = 60 if not args else float(args[0])
+            time_wait = getattr(settings, "CRONSERVER_FREQUENCY", 60) if not args or not args[0].strip() else float(args[0])
         except:
             raise CommandError("Invalid wait time: %s is not a number." % args[0])
-            
+
         try:
             sys.stdout.write("Starting cronserver.  Jobs will run every %d seconds.\n" % time_wait)
             #sys.stdout.write("Quit the server with CONTROL-C.\n")
-                        
+
             # Run server until killed
             while True:
                 thread = CronThread(gc=options.get("gc", False), mp=options.get("prof", False))

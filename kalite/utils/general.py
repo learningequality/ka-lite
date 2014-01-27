@@ -5,8 +5,6 @@ General string, integer, date functions.
 """
 import datetime
 import json
-import logging
-import requests
 import os
 import errno
 
@@ -120,8 +118,9 @@ def version_diff(v1, v2):
 
     v1_parts = v1.split(".")
     v2_parts = v2.split(".")
-    if len(v1_parts) != len(v2_parts):
-        raise Exception("versions must have the same number of components (periods)")
+    
+    v1_parts += ["0"] * (len(v2_parts) - len(v1_parts))
+    v2_parts += ["0"] * (len(v1_parts) - len(v2_parts))
 
     for v1p,v2p in zip(v1_parts,v2_parts):
         cur_diff = int(v1p)-int(v2p)

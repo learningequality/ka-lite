@@ -2,7 +2,6 @@
 Important constants and helpful functions
 """
 import glob
-import json
 import os
 from functools import partial
 
@@ -19,11 +18,21 @@ topics_file = "topics.json"
 
 # Globals that can be filled
 TOPICS          = None
-def get_topic_tree(force=False):
+def get_topic_tree(force=False, props=None):
     global TOPICS, topics_file
     if TOPICS is None or force:
         TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
+
+        # Limit the memory footprint by unloading particular values
+        if props:
+            node_cache = get_node_cache()
+            for kind, list_by_kind in node_cache.iteritems():
+                for node_list in list_by_kind.values():
+                    for node in node_list:
+                        for att in node.keys():
+                            if att not in props:
+                                del node[att]
     return TOPICS
 
 
@@ -97,7 +106,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     slug2id_map = dict()
 
     # Make a map from youtube ID to video slug
-    for video_id, v in node_cache['Video'].iteritems():
+    for video_id, v in node_cache.get('Video', {}).iteritems():
         assert v[0]["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
         slug2id_map[v[0]['slug']] = video_id
 

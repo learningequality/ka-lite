@@ -52,18 +52,9 @@
         {% for subtopic in topics %}
         <li>
             <span>
-            {% comment %}Four scenarios:
-            1. Offline, local video
-            2. Offline, no local video
-            3. Online, local video
-            4. Online, no local video
-            {% endcomment %}
-            <a href="{{ subtopic.path }}" class="topic-link client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}">
-                {% trans subtopic.title %}
-            </a>
-            <a href="{{ subtopic.path }}" class="topic-link not-client-online-only topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{% blocktrans with nlocal=subtopic.nvideos_local nknown=subtopic.nvideos_known %}{{ nlocal }} / {{ nknown }} video(s) are available locally.{% endblocktrans %}" %}">
-                {% trans subtopic.title %}
-            </a>
+                <a href="{{ subtopic.path }}" class="topic-link topic-{% if subtopic.nvideos_available == 0 %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
+                    {% trans subtopic.title %}
+                </a>
             </span>
         </li>
         {% endfor %}

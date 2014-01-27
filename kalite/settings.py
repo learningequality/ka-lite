@@ -52,15 +52,39 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 
 ##############################
+# Basic setup of logging
+##############################
+
+# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+logging.basicConfig()
+LOG.setLevel(LOGGING_LEVEL)
+logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
+
+
+##############################
 # Basic App Settings
 ##############################
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+# the default encoding for strings read from various IO sources
+DEFAULT_ENCODING = getattr(local_settings, "DEFAULT_ENCODING", 'utf-8')
+
+# set the default encoding
+# OK, so why do we reload sys? Because apparently sys.setdefaultencoding
+# is deleted somewhere at startup. Reloading brings it back.
+# see: http://blog.ianbicking.org/illusive-setdefaultencoding.html
+reload(sys)
+sys.setdefaultencoding(DEFAULT_ENCODING)
+
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if not DEBUG else 5)  # 18 threads seems a sweet spot
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
@@ -119,7 +143,7 @@ LANGUAGE_CODE  = getattr(local_settings, "LANGUAGE_CODE", "en")
 # to load the internationalization machinery.
 USE_I18N       = getattr(local_settings, "USE_I18N", True)
 
-# If you set this to False, Django will not format dates, numbers and
+# If you set this to True, Django will format dates, numbers and
 # calendars according to the current locale
 USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
@@ -137,6 +161,9 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 
 TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
 TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
+
+HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
+HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -231,6 +258,7 @@ else:
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
     INSTALLED_APPS += ('i18n',)
+    LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
     CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
@@ -239,56 +267,6 @@ else:
 MIDDLEWARE_CLASSES += (
     'django.middleware.locale.LocaleMiddleware',
 )
-
-
-########################
-# Debugging and testing
-########################
-
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
-logging.basicConfig()
-LOG.setLevel(LOGGING_LEVEL)
-logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
-
-# Django debug_toolbar config
-if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
-    assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-        'ENABLE_STACKTRACES' : True,
-    }
-
-if DEBUG:
-    # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
-
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
-
-TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
-
-TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
-assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
-
-AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 
 
 ########################
@@ -367,54 +345,53 @@ CACHES = {
     }
 }
 
-if not CENTRAL_SERVER:
-    # Local memory cache is to expensive to use for the page cache.
-    #   instead, use a file-based cache.
-    # By default, cache for maximum possible time.
-    #   Note: caching for 100 years can be too large a value
-    #   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
-    #   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
-    _5_years = 5 * 365 * 24 * 60 * 60
-    _100_years = 100 * 365 * 24 * 60 * 60
-    _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-    CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
-    CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time if not CENTRAL_SERVER else 0)
+CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
 
-    # Cache is activated in every case,
-    #   EXCEPT: if CACHE_TIME=0
-    if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-        KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
+# Cache is activated in every case,
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
 
-        # File-based cache
-        install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
-        username = getpass.getuser() or "unknown_user"
-        cache_dir_name = "kalite_web_cache_%s" % (username)
-        CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
-        CACHES["file_based_cache"] = {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    # File-based cache
+    install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
+    username = getpass.getuser() or "unknown_user"
+    cache_dir_name = "kalite_web_cache_%s" % (username)
+    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
+    CACHES["file_based_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
 
-        # Memory-based cache
-        CACHES["mem_cache"] = {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
 
-        # The chosen cache
-        CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
-        if CACHE_NAME == "file_based_cache":
-            LOG.debug("Cache location = %s" % CACHE_LOCATION)
-        else:
-            LOG.debug("Using %s caching" % CACHE_NAME)
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+    if CACHE_NAME == "file_based_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+    else:
+        LOG.debug("Using %s caching" % CACHE_NAME)
 
 
 ########################
@@ -456,13 +433,6 @@ assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then
 # Debugging and testing
 ########################
 
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
     assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
@@ -499,9 +469,6 @@ assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKI
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 
-assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
-
-
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -527,8 +494,6 @@ if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
     assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    # 18 is the sweet-spot for cherrypy threads
-    CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
 

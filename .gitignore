@@ -35,7 +35,7 @@ writeup/
 /kalite/media
 /kalite/static/js/i18n
 /kalite/static/js/khan-exercises/exercises/*/
-/kalite/static/subtitles
+/kalite/static/srt
 /kalite/private_key.pem
 /kalite/secrets.py
 /scripts/youtube-dl
