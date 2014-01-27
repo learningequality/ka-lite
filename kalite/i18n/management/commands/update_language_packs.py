@@ -534,9 +534,16 @@ def build_new_po(lang_code, src_path, dest_path=None, combine_with_po_file=None,
             build_po = polib.POFile(fpath=build_file)
 
         for src_file in src_po_files:
-            logging.debug('Concatenating %s with %s...' % (src_file, build_file))
-            src_po = polib.pofile(src_file)
-            build_po.merge(src_po)
+            if fnmatch.fnmatch(os.path.basename(src_file), 'kalitejs-??.po'):
+                logging.debug('Compiling %s on its own...' % src_file)
+                js_po_file = polib.pofile(src_file)
+                js_mo_file = os.path.join(dest_path, 'djangojs.mo')
+                js_po_file.save(os.path.join(dest_path, 'djangojs.po'))
+                js_po_file.save_as_mofile(js_mo_file)
+            else:
+                logging.debug('Concatenating %s with %s...' % (src_file, build_file))
+                src_po = polib.pofile(src_file)
+                build_po.merge(src_po)
 
         # de-obsolete messages
         for poentry in build_po:
