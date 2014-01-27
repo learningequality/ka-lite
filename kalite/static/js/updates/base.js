@@ -1,3 +1,17 @@
+
+function server_restart() {
+    $.ajax({
+        url: URL_SERVER_RESTART,
+        cache: false,
+        datatype: "json",
+    }).success(function(installed) {
+        show_message("success", "Initiated server restart.")
+    }).error(function(data, status, error) {
+        handleFailedAPI(data, [status, error].join(" "));
+    });
+}
+
+
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information
@@ -256,3 +270,4 @@ function updatesReset(process_name) {
     }
 
 }
+

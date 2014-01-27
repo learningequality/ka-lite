@@ -23,11 +23,12 @@ from i18n.middleware import set_language_choices
 from settings import LOG as logging
 from shared.decorators import require_admin
 from shared.jobs import force_job
+from shared.server import server_restart as server_restart_util
 from shared.topic_tools import get_topic_tree
 from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
-from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 from utils.orderedset import OrderedSet
 
 
@@ -36,7 +37,7 @@ def process_log_from_request(handler):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
-                return JsonResponse({"error": _("process_id is not numeric.")}, status=500);
+                return JsonResponseMessageError(_("process_id is not numeric."));
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
@@ -61,7 +62,7 @@ def process_log_from_request(handler):
             except Exception as e:
                 # The process finished before we started checking, or it's been deleted.
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
-                return JsonResponse({"error": str(e)}, status=500);
+                return JsonResponseMessageError(unicode(e));
         else:
             return JsonResponse({"error": _("Must specify process_id or process_name")})
 
@@ -290,3 +291,13 @@ def start_update_kalite(request):
 @require_admin
 def cancel_update_kalite(request):
     return JsonResponse({})
+
+
+@require_admin
+@api_handle_error_with_json
+def server_restart(request):
+    try:
+        server_restart_util(request)
+        return JsonResponse({})
+    except Exception as e:
+        return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})
