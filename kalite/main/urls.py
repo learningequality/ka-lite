@@ -20,6 +20,12 @@ urlpatterns = patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
+#i18n
+js_info_dict = {'packages': settings.INSTALLED_APPS}
+urlpatterns += patterns('',
+    url(r'^js/i18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+)
+
 urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
