@@ -118,7 +118,7 @@ def version_diff(v1, v2):
 
     v1_parts = v1.split(".")
     v2_parts = v2.split(".")
-    
+
     v1_parts += ["0"] * (len(v2_parts) - len(v1_parts))
     v2_parts += ["0"] * (len(v1_parts) - len(v2_parts))
 
@@ -206,6 +206,8 @@ def max_none(data):
 
 
 def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    if default == {}:
+        default = {}
     try:
         with open(json_filepath, "r") as fp:
             return json.load(fp)
