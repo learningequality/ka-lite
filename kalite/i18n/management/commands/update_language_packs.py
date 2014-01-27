@@ -773,7 +773,7 @@ def zip_language_packs(lang_codes=None, version=VERSION):
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         # Get mo files from the directory
-        for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
+        for mo_file in glob.glob('%s/*.mo' % lang_locale_path):
             # Get every single compiled language file
             filepath = os.path.join(lang_locale_path, mo_file)
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
