@@ -534,7 +534,7 @@ def build_new_po(lang_code, src_path, dest_path=None, combine_with_po_file=None,
             build_po = polib.POFile(fpath=build_file)
 
         for src_file in src_po_files:
-            if fnmatch.fnmatch(os.path.basename(src_file), 'kalitejs-??.po'):
+            if os.path.basename(src_file).startswith('kalitejs'):
                 logging.debug('Compiling %s on its own...' % src_file)
                 js_po_file = polib.pofile(src_file)
                 js_mo_file = os.path.join(dest_path, 'djangojs.mo')
