@@ -262,7 +262,7 @@ window.VideoView = Backbone.View.extend({
 
         this._pointView = new PointView({model: this.model});
 
-        var player_id = this.$("video").attr("id");
+        var player_id = this.$("video, object").parent().attr("id");
 
         if (player_id) { // if it's using mplayer, there won't be a player here
             this.player = this.model.player = _V_(player_id);
