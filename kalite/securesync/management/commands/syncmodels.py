@@ -1,46 +1,54 @@
+"""
+This is the command that does the actual syncing of models from distributed
+servers to the central server, and back again.
+"""
+import time
+
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+import settings
 from securesync.engine.api_client import SyncClient
+from utils import set_process_priority
 
 
 class Command(BaseCommand):
     args = "<target server host (protocol://domain:port)> <num_retries>"
     help = "Synchronize the local SyncedModels with a remote server"
-
+    
     def stdout_writeln(self, str):  self.stdout.write("%s\n"%str)
     def stderr_writeln(self, str):  self.stderr.write("%s\n"%str)
 
     def handle(self, *args, **options):
 
+        # Parse input parameters
+        kwargs = {"host": args[0]} if len(args) >= 1 else {}
+        max_retries = args[1] if len(args) >= 2 else 5
+        
+        set_process_priority.lowest(logging=settings.LOG)  # don't block users from web access due to syncing
+
+        # Retry purgatory
         self.stdout_writeln(("Checking purgatory for unsaved models")+"...")
         call_command("retrypurgatory")
-
-        kwargs = {}
-        if len(args) >= 1:
-            kwargs["host"] = args[0]
-        if len(args) >= 2:
-            max_retries = args[1]
-        else:
-            max_retries = 5
 
         try:
             client = SyncClient(**kwargs)
         except Exception as e:
             raise CommandError(e)
 
-        if client.test_connection() != "success":
-            self.stderr_writeln(("KA Lite host is currently unreachable")+": %s" % client.url)
+        connection_status = client.test_connection()
+        if connection_status != "success":
+            self.stderr_writeln(("KA Lite host is currently unreachable") + " (%s): %s" % (connection_status, client.url))
             return
 
         self.stdout_writeln(("Initiating SyncSession")+"...")
         try:
             result = client.start_session()
+            if result != "success":
+                self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
+                return
         except Exception as e:
             raise CommandError(e)
-        if result != "success":
-            self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
-            return
                 
         self.stdout_writeln(("Syncing models")+"...")
 
@@ -72,16 +80,21 @@ class Command(BaseCommand):
             # Report any errors
             if error_count > 0:
                 if upload_results.has_key("error"):
-                    self.stderr_writeln("%s: %s"%(("Upload error"),upload_results["error"]))
+                    self.stderr_writeln("%s: %s" % (("Upload error"),upload_results["error"]))
                 if download_results.has_key("error"):
-                    self.stderr_writeln("%s: %s"%(("Download error"),download_results["error"]))
+                    self.stderr_writeln("%s: %s" % (("Download error"),download_results["error"]))
                 if upload_results.has_key("exceptions"):
-                    self.stderr_writeln("%s: %s"%(("Upload exceptions"),upload_results["exceptions"][:200]))
+                    self.stderr_writeln("%s: %s" % (("Upload exceptions"),upload_results["exceptions"][:200]))
 
             # stop when nothing is being transferred anymore
             if success_count == 0 and (fail_count == 0 or failure_tries >= max_retries):
                 break
             failure_tries += (fail_count > 0 and success_count == 0)
+
+            # Allow the user to throttle the syncing by inserting a wait, so that users
+            #   aren't overwhelmed by the computational need for signing during sync
+            if settings.SYNCING_THROTTLE_WAIT_TIME is not None:
+                time.sleep(settings.SYNCING_THROTTLE_WAIT_TIME)
 
         # Report summaries
         self.stdout_writeln("%s... (%s: %d, %s: %d, %s: %d)" % 
@@ -91,7 +104,7 @@ class Command(BaseCommand):
         if client.session.errors:
             self.stderr_writeln("Completed with %d errors."%client.session.errors)
         if failure_tries >= max_retries:
-            self.stderr_writeln("%s (%d)."%("Failed to upload all models (stopped after failed attempts)",failure_tries))
+            self.stderr_writeln("%s (%d)." % ("Failed to upload all models (stopped after failed attempts)",failure_tries))
 
         self.stdout_writeln(("Checking purgatory once more, to try saving any unsaved models")+"...")
         call_command("retrypurgatory")

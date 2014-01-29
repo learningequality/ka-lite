@@ -2,7 +2,7 @@
 <html data-require="math graphie graphie-helpers graphie-geometry math-format">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Angle Bisector Theorem</title>
+    <title>Angle bisector theorem</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
@@ -28,14 +28,14 @@
                 <var id="TR_B">
                     function(){
                         var trB = new Triangle( [0,0],[], 3, {}, [ TR_A.points[ 0 ], TR_A.points[ 1 ], POINT_D ] );
-                        trB.labels = { "angles" : clearArray( trB.niceAngles, [ 0 ] ), "sides" : mergeArray( clearArray( trB.niceSideLengths, SIDES_B[ 0 ] ), clearArray( [ "?", "?", "?" ], SIDES_B[ 1 ] ) ),  "points": [ "A", "B", "D" ] };
+                        trB.labels = { "angles" : ["{\\theta}^{\\circ}"], "sides" : mergeArray( clearArray( trB.niceSideLengths, SIDES_B[ 0 ] ), clearArray( [ "?", "?", "?" ], SIDES_B[ 1 ] ) ),  "points": [ "A", "B", "D" ] };
                         return trB;
                     }()
                 </var>
                 <var id="TR_C">
                     function(){
                         var trC = new Triangle( [0,0],[], 3, {}, [ TR_A.points[ 0 ], POINT_D, TR_A.points[ 2 ] ] );
-                        trC.labels = { "angles" : clearArray( trC.niceAngles, [ 0 ] ) , "sides" :  mergeArray( clearArray( trC.niceSideLengths, SIDES_C[ 0 ] ), clearArray( [ "?", "?", "?" ], SIDES_C[ 1 ] ) ),  "points": [ "", "", "C" ] };
+                        trC.labels = { "angles" : ["{\\theta}^{\\circ}"] , "sides" :  mergeArray( clearArray( trC.niceSideLengths, SIDES_C[ 0 ] ), clearArray( [ "?", "?", "?" ], SIDES_C[ 1 ] ) ),  "points": [ "", "", "C" ] };
                         return trC;
                         }()
                 </var>
@@ -79,7 +79,7 @@
                     What is the length of the side AC? (Round to 1 decimal place).
                 </div>
                 <div class="solution"><var>AC</var></div>
-                <div class="hints"  data-apply="appendContents">
+                <div class="hints" data-apply="appendContents">
                     <p><code>\dfrac{ <var>AB</var> }{ <var>BD</var> }    = \dfrac{ AC }{ <var>CD</var> }</code></p>
                     <p><code>AC = \dfrac{<var>AB</var> \cdot <var>CD</var> }{ <var>BD</var> }</code></p>
                     <p><code>AC = <var>AC </var></code></p>
@@ -95,7 +95,7 @@
                     What is the length of the side AB? (Round to 1 decimal place).
                 </div>
                 <div class="solution"><var>AB</var></div>
-                <div class="hints"  data-apply="appendContents">
+                <div class="hints" data-apply="appendContents">
                     <p><code>\dfrac{ AB }{ <var>BD</var> }    = \dfrac{ <var>AC</var> }{ <var>CD</var> }</code></p>
                     <p><code>AB = \dfrac{ <var>AC</var> \cdot <var>BD</var> }{ <var>CD</var> }</code></p>
                     <p><code>AB = <var>AB </var></code></p>
@@ -111,7 +111,7 @@
                     What is the length of the side CD?  (Round to 1 decimal place).
                 </div>
                 <div class="solution"><var>CD</var></div>
-                <div class="hints"  data-apply="appendContents">
+                <div class="hints" data-apply="appendContents">
                     <p><code>\dfrac{ <var> AB</var> }{ <var>BD</var> }    = \dfrac{ <var>AC</var> }{ CD }</code></p>
                     <p><code>CD = \dfrac{ <var>AC</var> \cdot <var>BD</var> }{ <var>AB</var> }</code></p>
                     <p><code>CD = <var>CD </var></code></p>
@@ -127,7 +127,7 @@
                     What is the length of the side BD?  (Round to 1 decimal place).
                 </div>
                 <div class="solution"><var>BD</var></div>
-                <div class="hints"  data-apply="appendContents">
+                <div class="hints" data-apply="appendContents">
                     <p><code>\dfrac{ <var> AB</var> }{ BD }    = \dfrac{ <var>AC</var> }{ <var>CD</var> }</code></p>
                     <p><code>BD = \dfrac{ <var>AB</var> \cdot <var>CD</var> }{ <var>AC</var> }</code></p>
                     <p><code>BD = <var>BD</var></code></p>

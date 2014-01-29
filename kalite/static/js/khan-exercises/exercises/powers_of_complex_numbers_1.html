@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html data-require="math graphie math-format graphie-helpers">
 <head>
-    <meta charset="UTF-8" />
-    <title>Powers of complex numbers 1</title>
+    <meta charset="UTF-8">
+    <title>Powers of complex numbers</title>
     <script src="../khan-exercise.js"></script>
+    <style>
+        .info-box .mini-button {
+            margin: 0px 10px 0px 0px;
+            padding: 0px 5px;
+            width: 25px;
+            height: 18px;
+        }
+
+        #number-label {
+            clear: both;
+            margin: 0px 0px;
+            padding: 14px 0px 0px 0px;
+        }
+    </style>
 </head>
 <body>
     <div class="exercise">
-    <div class="vars">
+    <div class="vars" data-ensure="!(ANSWER_ANGLE === 0 &amp;&amp; ANSWER_RADIUS === 1)">
         <var id="DENOMINATOR">24</var>
         <var id="BASE_ANGLE_NUMERATOR">randRange( 0, DENOMINATOR - 1 )</var>
         <var id="BASE_ANGLE">BASE_ANGLE_NUMERATOR / DENOMINATOR * 2 * PI</var>
@@ -52,7 +66,7 @@
                     range: [ [-5, 5], [-5, 5] ],
                     scale: 30,
                     tickStep: 1,
-                    axisArrows: "<->"
+                    axisArrows: "&lt;-&gt;"
                 });
 
                 drawComplexChart( 5, DENOMINATOR );
@@ -65,8 +79,45 @@
                 graph.currComplexPolar = new ComplexPolarForm( DENOMINATOR, 5, EULER_FORM );
                 redrawComplexPolarForm();
             </div>
-            <div class="solution" data-type="complexNumberPolarForm">
-                [ <var>ANSWER_ANGLE_NUMERATOR</var>, <var>ANSWER_RADIUS</var> ]
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <div>
+                        <div style="float: left;">Radius: <span id="current-radius"><code>1</code></span></div>
+                        <div style="float: right;">
+                            <input class="simple-button mini-button" onclick="updateComplexPolarForm(0, -1)" type="button" value="-">
+                            <input class="simple-button mini-button" onclick="updateComplexPolarForm(0, 1)" type="button" value="+">
+                        </div>
+                    </div>
+                    <div style="clear: both;">
+                        <div style="float: left;">Angle: <span id="current-angle"><code>0</code></span></div>
+                        <div style="float: right;">
+                            <input class="simple-button mini-button" onclick="updateComplexPolarForm(-1, 0)" type="button" value="-">
+                            <input class="simple-button mini-button" onclick="updateComplexPolarForm(1, 0)" type="button" value="+">
+                        </div>
+                    </div>
+                    <div id="number-label">1</div>
+                </div>
+                <div class="guess">[
+                    graph.currComplexPolar.getAngleNumerator(),
+                    graph.currComplexPolar.getRadius()
+                    ]</div>
+                <div class="validator-function">
+                    var angle = guess[0];
+                    var radius = guess[1];
+
+                    if (angle === 0 &amp;&amp; radius === 1) {
+                    return "";
+                    }
+
+                    return angle === ANSWER_ANGLE_NUMERATOR &amp;&amp;
+                           radius === ANSWER_RADIUS;
+                </div>
+                <div class="show-guess">
+                    redrawComplexPolarForm(guess[0], guess[1]);
+                </div>
+                <div class="show-guess-solutionarea">
+                    redrawComplexPolarForm(guess[0], guess[1]);
+                </div>
             </div>
             <div class="hints">
                 <div data-if="BASE_ANGLE === 0">
@@ -75,15 +126,15 @@
                     </p>
                 </div>
 
-                <div data-else data-unwrap>
-                    <div data-if="!EULER_FORM" data-unwrap>
+                <div data-else="" data-unwrap="">
+                    <div data-if="!EULER_FORM" data-unwrap="">
                         <p>
                             Let's express our complex number in Euler form first.
-                        <p>
+                        </p><p>
                         <code>
                             \color{<var>BLUE</var>}{<var>BASE_REP</var>} = \color{<var>BLUE</var>}{<var>BASE_EULER_REP</var>}
                         </code>
-                    </div>
+                    </p></div>
 
                     <p>
                         Since <code>(a ^ b) ^ c = a ^ {b \cdot c}</code>,
@@ -98,7 +149,7 @@
                         which is <code><var>ANGLE_MULTIPLE_REP</var></code>.
                     </p>
 
-                    <div data-if="ANGLE_MULTIPLE_NUMERATOR >= DENOMINATOR * 2" data-unwrap>
+                    <div data-if="ANGLE_MULTIPLE_NUMERATOR >= DENOMINATOR * 2" data-unwrap="">
                         <p>
                             <code><var>ANGLE_MULTIPLE_REP</var></code> is more than <code>2 \pi</code>.
                             It is a common practice to keep complex number angles between <code>0</code> and <code>2 \pi</code>,

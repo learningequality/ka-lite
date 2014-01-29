@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 from django.db import models, transaction
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -31,7 +32,7 @@ class Organization(ExtendedModel):
     zones = models.ManyToManyField(Zone)
     owner = models.ForeignKey(User, related_name="owned_organizations", null=True)
 
-    HEADLESS_ORG_NAME = "Headless Zones"
+    HEADLESS_ORG_NAME = "Unclaimed Networks"
     HEADLESS_ORG_PK = None  # keep the primary key of the headless org around, for efficiency
     HEADLESS_ORG_SAVE_FLAG = "internally_safe_headless_org_save"  # indicates safe save() call
 
@@ -40,13 +41,13 @@ class Organization(ExtendedModel):
         return self.zones.add(zone)
 
     def get_zones(self):
-        return list(self.zones.all())
+        return self.zones.all().order_by("name")
 
     def add_member(self, user):
         return self.users.add(user)
 
     def get_members(self):
-        return list(self.users.all())
+        return self.users.all()
 
     def is_member(self, user):
         return self.users.filter(pk=user.pk).count() > 0
@@ -58,7 +59,7 @@ class Organization(ExtendedModel):
         # backwards compatibility
         if not getattr(self, "owner_id", None):
             self.owner = owner
-            assert self.owner or self.name == Organization.HEADLESS_ORG_NAME, "Organization must have an owner (save for the 'headless' org)" 
+            assert self.owner or self.name == Organization.HEADLESS_ORG_NAME, "Organization must have an owner (save for the 'headless' org)"
 
         # Make org unique by name, for headless name only.
         #   So make sure that any save() call is coming either
@@ -69,6 +70,7 @@ class Organization(ExtendedModel):
                 del kwargs[Organization.HEADLESS_ORG_SAVE_FLAG]  # don't pass it on, it's an error
             elif self.pk != Organization.get_or_create_headless_organization().pk:
                 raise Exception("Cannot save to reserved organization name: %s" % Organization.HEADLESS_ORG_NAME)
+
         super(Organization, self).save(*args, **kwargs)
 
 
@@ -104,7 +106,7 @@ class Organization(ExtendedModel):
                 assert len(headless_orgs) == 1, "Cannot have multiple HEADLESS ZONE organizations"
                 cls.HEADLESS_ORG_PK = headless_orgs[0].pk
                 headless_org = headless_orgs[0]
-        
+
         # TODO(bcipolli): remove this code!
         #
         # In the future, when we self-register headless zones, we'll
@@ -125,11 +127,11 @@ class UserProfile(ExtendedModel):
     def get_organizations(self):
         """
         Return all organizations that this user manages.
-        
+
         If this user is a super-user, then the headless org will be appended at the end.
         """
         orgs = OrderedDict()  # no dictionary comprehensions, so have to loop
-        for org in self.user.organization_set.all():  # add in order queries (alphabetical?)
+        for org in self.user.organization_set.all().order_by("name"):  # add in order queries (alphabetical?)
             orgs[org.pk] = org
 
         # Add a headless organization for superusers, containing
@@ -149,6 +151,11 @@ class OrganizationInvitation(ExtendedModel):
 
     class Meta:
         unique_together = ('email_to_invite', 'organization')
+
+    def save(self, *args, **kwargs):
+        if self.invited_by and self.organization not in self.invited_by.organization_set.all():
+            raise PermissionDenied("User %s does not have permissions to invite people on this organization." % self.invited_by)
+        super(OrganizationInvitation, self).save(*args, **kwargs)
 
     def send(self, request):
         to_email = self.email_to_invite

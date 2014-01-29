@@ -16,12 +16,11 @@ import settings
 from config.models import Settings
 from main.models import UserLog
 from securesync import crypto
-from securesync.engine.api_client import SyncClient
+from securesync.devices.api_client import RegistrationClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
 from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
 from shared.jobs import force_job
-from utils.internet import set_query_params
 
 
 def register_public_key(request):
@@ -43,7 +42,7 @@ def register_public_key_client(request):
     if own_device.get_zone():
         set_as_registered()
         return {"already_registered": True}
-    client = SyncClient()
+    client = RegistrationClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
     reg_response = client.register()
@@ -55,6 +54,8 @@ def register_public_key_client(request):
         set_as_registered()
         return {"already_registered": True}
     if reg_status == "public_key_unregistered":
+        # Callback url used to redirect to the distributed server url
+        #   after successful registration on the central server.
         return {
             "unregistered": True,
             "registration_url": client.path_to_url(
@@ -73,9 +74,6 @@ def register_public_key_client(request):
 @login_required
 @render_to("securesync/register_public_key_server.html")
 def register_public_key_server(request):
-    # Localizing central-only import
-    from central.models import Organization
-
     if request.method == 'POST':
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():
@@ -92,6 +90,7 @@ def register_public_key_server(request):
                 # Old style, for clients that don't send a callback url
                 messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
                 return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
+
     else:
         # This is hackish--we now create default organizations and zones for users, based on their
         #   registration information.  For previous users, however, we don't.  And we don't
@@ -99,6 +98,8 @@ def register_public_key_server(request):
         # So, rather than block them, let's create an org and zone for them, so that
         #   at least they can proceed directly.
         if request.user.organization_set.count() == 0:
+            # Localizing central-only import
+            from central.models import Organization
             org = Organization(name="Your organization", owner=request.user)
             org.save()
             org.add_member(request.user)
@@ -109,9 +110,14 @@ def register_public_key_server(request):
             zone.save()
             org.add_zone(zone)
 
+        # callback_url: 0.10.3 and higher (distributed server)
+        # prev: 0.10.3 and higher (central server)
+        #
+        # Note: can't use referer, because this breaks if the user is redirected
+        #   to the central server login page--gets confusing.
         form = RegisteredDevicePublicKeyForm(
-            request.user, 
-            callback_url = request.REQUEST.get("callback_url", request.META.get("HTTP_REFERER", "")),
+            request.user,
+            callback_url = request.REQUEST.get("callback_url") or request.REQUEST.get("prev"),
         )
     return {
         "form": form,

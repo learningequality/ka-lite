@@ -1,4 +1,7 @@
+import os
+
 from django.core.management.base import BaseCommand, CommandError
+
 import settings
 
 script_template = """
@@ -20,12 +23,13 @@ script_template = """
 case "$1" in
     start)
         echo "Starting ka-lite!"
-        "%(project_path)s/../start.sh"
+        #run ka-lite as the owner of the project folder, and not as root
+        su `stat --format="%%U" "%(repo_path)s"` -c "%(script_path)s/start.sh"
         ;;
     stop)
         echo "Shutting down ka-lite!"
         echo
-        "%(project_path)s/../stop.sh"
+        "%(script_path)s/stop.sh"
         ;;
 esac
 
@@ -35,4 +39,6 @@ class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
-        self.stdout.write(script_template % {"project_path": settings.PROJECT_PATH})
+        repo_path = os.path.join(settings.PROJECT_PATH, "..")
+        script_path = os.path.join(repo_path, "scripts")
+        self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path })

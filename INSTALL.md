@@ -6,7 +6,7 @@ You will be completing the following steps:
 1. Install Python version 2.6 or 2.7
 2. Install git
 3. Download the KA Lite codebase using git
-4. Run the installation script to complete configuration
+4. Run the setup script to complete configuration
 5. Run the server
 
 Jump to below for [Windows installation instructions](#installing-on-windows) or [Mac OS X installation instructions](#installing-on-mac-os-x).
@@ -32,9 +32,9 @@ Clone the repository into a directory of your choice. Use `cd` to navigate into 
 
 (The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
 
-### 4. Run the installation script
+### 4. Run the setup script
 
-Inside the `ka-lite` directory (that you cloned above) you should find a script called `install.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./install.sh` to initialize the server database.
+Inside the `ka-lite` directory (that you cloned above) you should find a script called `setup_linux.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./setup_linux.sh` to initialize the server database.
 
 ### 5. Run the server
 
@@ -42,7 +42,7 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 To start the server, run the `start.sh` script in the `ka-lite` directory.
 
-You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the installation script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory.
+You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the setup script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory.
 
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
 
@@ -70,15 +70,15 @@ If you get the message `'git' is not recognized as an internal or external comma
 
 (The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
 
-### 4. Run the installation script
+### 4. Run the setup script
 
-Inside the `ka-lite` folder (that you cloned above) you should find a script called `install.bat`. Use `cd ka-lite` to navigate into the directory, and run this script by typing `install.bat` and pressing Enter, to initialize the server database.
+Inside the `ka-lite` folder (that you cloned above) you should find a script called `setup_windows.bat`. Double-click this script to run it, which will initialize the server database.
 
 ### 5. Run the server
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
-To start the server, run the `start.bat` script in the `ka-lite` folder.
+To start the server, double-click the `start.bat` script in the `ka-lite` folder.
 
 You may want to have this script run automatically when you start the computer, by creating a shortcut to `start.bat` and [copying it to the Startup folder in the Start Menu](http://windows.microsoft.com/en-US/windows-vista/Run-a-program-automatically-when-Windows-starts) -- the installation script should also have given you the option of having this done automatically.
 
@@ -107,15 +107,15 @@ Clone the repository into a directory of your choice. Use `cd` to navigate into 
 
 (The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
 
-### 4. Run the installation script
+### 4. Run the setup script
 
-Inside the `ka-lite` directory (that you cloned above) you should find a script called `install.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./install.sh` to initialize the server database.
+Inside the `ka-lite` directory (that you cloned above) you should find a script called `setup_mac.command`. Double-click that script to run it, which will initialize the server database.
 
 ### 5. Run the server
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
-To start the server, run the `start.sh` script in the `ka-lite` directory.
+To start the server, double-click the `start.command` script in the `ka-lite` directory.
 
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
 

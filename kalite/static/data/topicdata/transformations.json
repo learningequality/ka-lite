@@ -1,66 +1,86 @@
 [
   {
-    "related_video_readable_ids": [
-      "axis-of-symmetry"
-    ], 
-    "v_position": 43, 
+    "v_position": 11, 
     "path": "/math/geometry/transformations/e/axis_of_symmetry/", 
     "id": "axis_of_symmetry", 
     "display_name": "Axis of symmetry", 
     "title": "Axis of symmetry", 
+    "parent_id": "transformations", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "transformations"
+    ], 
+    "related_video_slugs": [
+      "axis-of-symmetry"
+    ], 
     "description": "", 
-    "basepoints": 12.0, 
-    "h_position": -30, 
+    "basepoints": 10.0, 
+    "h_position": 12, 
     "slug": "axis_of_symmetry", 
     "kind": "Exercise", 
     "name": "axis_of_symmetry", 
-    "seconds_per_fast_problem": 5.0, 
+    "seconds_per_fast_problem": 4.0, 
     "prerequisites": [
-      "similar_triangles_1"
-    ]
+      "recognizing_rays_lines_and_line_segments"
+    ], 
+    "exercise_id": "axis_of_symmetry"
   }, 
   {
-    "related_video_readable_ids": [
-      "translations-of-polygons", 
-      "determining-a-translation-for-a-shape"
-    ], 
-    "v_position": 44, 
+    "v_position": 12, 
     "path": "/math/geometry/transformations/e/translations_of_points_and_polygons/", 
     "id": "translations_of_points_and_polygons", 
     "display_name": "Translations of polygons", 
     "title": "Translations of polygons", 
+    "parent_id": "transformations", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "transformations"
+    ], 
+    "related_video_slugs": [
+      "translations-of-polygons", 
+      "determining-a-translation-for-a-shape"
+    ], 
     "description": "Applying translations to polygons in the coordinate plane\n", 
-    "basepoints": 19.0, 
-    "h_position": -31, 
+    "basepoints": 18.0, 
+    "h_position": 11, 
     "slug": "translations_of_points_and_polygons", 
     "kind": "Exercise", 
     "name": "translations_of_points_and_polygons", 
-    "seconds_per_fast_problem": 14.0, 
-    "prerequisites": [
-      "axis_of_symmetry"
-    ]
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [], 
+    "exercise_id": "translations_of_points_and_polygons"
   }, 
   {
-    "related_video_readable_ids": [
-      "rotation-of-polygons-example"
-    ], 
-    "v_position": 44, 
+    "v_position": 12, 
     "path": "/math/geometry/transformations/e/rotation_of_polygons/", 
     "id": "rotation_of_polygons", 
     "display_name": "Rotation of polygons", 
     "title": "Rotation of polygons", 
+    "parent_id": "transformations", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "transformations"
+    ], 
+    "related_video_slugs": [
+      "rotation-of-polygons-example"
+    ], 
     "description": "Applying rotations to polygons in the coordinate plane\n", 
-    "basepoints": 16.0, 
-    "h_position": -29, 
+    "basepoints": 15.0, 
+    "h_position": 10, 
     "slug": "rotation_of_polygons", 
     "kind": "Exercise", 
     "name": "rotation_of_polygons", 
-    "seconds_per_fast_problem": 9.0, 
-    "prerequisites": [
-      "axis_of_symmetry"
-    ]
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [], 
+    "exercise_id": "rotation_of_polygons"
   }
 ]

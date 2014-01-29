@@ -8,6 +8,8 @@ import khanload.api_urls
 import main.api_urls
 import securesync.urls
 import settings
+import updates.urls
+
 
 admin.autodiscover()
 
@@ -30,21 +32,16 @@ urlpatterns += patterns('',
     }),
 )
 
-# Javascript translations
-urlpatterns += patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
-)
-
 # Teaching / admin patterns
 urlpatterns += patterns('main.views',
     # For teachers
     url(r'^coachreports/', include(coachreports.urls)),
 
     # For admins
-    url(r'^update/$', 'update', {}, 'update'),
+    url(r'^update/', include(updates.urls)),
+
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
     url(r'^userlist/$', 'user_list', {}, 'user_list'),
-    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
 
     # API
     url(r'^api/', include(main.api_urls)),
@@ -66,7 +63,7 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
 urlpatterns += patterns('main.views',
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
-
+    url(r'^search/$', 'search', {}, 'search'),
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )

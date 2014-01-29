@@ -77,7 +77,7 @@ class DefaultBackend(object):
         else:
             site = RequestSite(request)
         new_user = RegistrationProfile.objects.create_inactive_user(username, first_name, last_name, email, 
-                                                                    password, site)
+                                                                    password, site, next=getattr(request, "next", None))
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=request)

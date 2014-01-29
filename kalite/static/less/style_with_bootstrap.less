@@ -1,4 +1,4 @@
-// style_with_bootstrap.less 
+// style_with_bootstrap.less
 // --------------------------------------------------
 
 @import "bootstrap/variables.less";
@@ -23,7 +23,7 @@ body{
     padding:0;
   }
 }
-body,p,td,.form-element{
+p,td,.form-element{
   font:@body-font;
 }
 
@@ -32,7 +32,7 @@ a:hover{
 }
 
 .container-fluid,.container{ //Used to limit the width of the content and add the leaf background
-  max-width: @container-max-width; // Puts a hard limit on the width of the layout 
+  max-width: @container-max-width; // Puts a hard limit on the width of the layout
   margin: 0 auto;
   background-image: url(/static/images/bg-header.png);
   background-repeat: no-repeat;
@@ -166,13 +166,13 @@ h4{font-size: 118%;}
 
 .button--small{
   .button;
-  .round-button(100px,3px, 13px, 5px, 20px); 
+  .round-button(100px,3px, 13px, 5px, 20px);
 }
 
 .button-popover{
-  .round-button(100px,50%, 13px, 5px, 10px); 
+  .round-button(100px,50%, 13px, 5px, 10px);
   margin-left: 10px;
-  cursor: pointer; 
+  cursor: pointer;
   color:@button-popover-font-color;
   border:@button-popover-border;
   font-family:Tahoma;
@@ -186,13 +186,17 @@ h4{font-size: 118%;}
   }
 }
 
-.button-install{
+.button-download{
   .button--large;
   background-color: @flashy-green;
+
+  text-align: center;
+  display: block;
 
   &:hover,
   &:focus {
     background-color:@light-flashy-green;
+    color: white;
   }
 }
 
@@ -213,7 +217,7 @@ h4{font-size: 118%;}
 
 .horizontal-list {
   li,form{
-    display: inline; 
+    display: inline;
     a, a:hover{
       text-decoration: none;
     }
@@ -265,10 +269,10 @@ h4{font-size: 118%;}
 }
 
 // Mobile-friendly menu
-@media (max-width: 767px){ 
+@media (max-width: 767px){
 
   .header__logo{
-    display:inline!important;    
+    display:inline!important;
     padding-left: 20px;
   }
 
@@ -302,7 +306,7 @@ h4{font-size: 118%;}
     display:inline;
     float:right;
     .button;
-    .round-button(auto,5px, 14px, 7px, 15px);   
+    .round-button(auto,5px, 14px, 7px, 15px);
   }
 }
 
@@ -315,7 +319,7 @@ h4{font-size: 118%;}
 // Content
 // --------------------------------------------------
 
-.content{ 
+.content{
   background-color: @white;
   border-top: 3px solid @dark-green;
 }
@@ -329,7 +333,7 @@ h4{font-size: 118%;}
   float:right;
 }
 
-.organization-container{ 
+.organization-container{
   padding-left: 20px;
 }
 
@@ -370,6 +374,7 @@ textarea{
 // --------------------------------------------------
 
 .cc-logo{
-  height:14px;
-  width:75px;
+  height:16px;
+  width:30px;
+  margin-left:5px;
 }

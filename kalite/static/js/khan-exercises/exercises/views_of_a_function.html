@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-require="math graphie interactive">
+<html data-require="math math-format graphie interactive">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Views of a function</title>
@@ -129,39 +129,39 @@
                 <div class="instruction">
                     <span>Enter your data in the table below.</span>
                     <table class="ttable">
-                        <tr class="labels">
+                        <tbody><tr class="labels">
                             <td><code>x</code></td>
                             <td class="second-col"><code>y</code></td>
                         </tr>
                         <tr class="cross-bar">
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
                         <tr>
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
                         <tr>
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
                         <tr>
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
                         <tr>
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
                         <tr>
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
                         <tr>
-                            <td><input type="text" /></td>
-                            <td class="second-col"><input type="text" /></td>
+                            <td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
                         </tr>
-                    </table>
+                    </tbody></table>
                 </div>
                 <div class="guess">
                     (function(){
@@ -181,34 +181,38 @@
                     var correct = 0;
                     var xs = [];
 
-                    for (var i = 0; i &lt; 8; ++i) {
+                    var i = 0;
+                    var validatePoint = Khan.answerTypes.predicate.createValidatorFunctional(function(x, maxError) {
+                        var validateY = Khan.answerTypes.predicate.createValidatorFunctional(function(y, maxError) {
+                            if (abs(FUNC(x) - y) &lt; maxError) {
+                                correct += 1;
+                                xs.push(x);
+                                return true;
+                            }
+                        }, {forms: 'decimal', inexact: true, maxError: maxError});
+                        var result = validateY(guess[i][1]);
+                        return result.correct;
+                    }, {forms: 'decimal', inexact: true, maxError: CORRECTOFFSET});
+
+                    for (i = 0; i &lt; 8; ++i) {
                         if ($.trim(guess[i][0]) !== "" &amp;&amp;
                             $.trim(guess[i][1]) !== "") {
                             attempted += 1;
-
-                            var x = parseFloat(guess[i][0]),
-                                y = parseFloat(guess[i][1]);
-
-                            if (abs(FUNC(x) - y) &lt; CORRECTOFFSET) {
-                                correct += 1;
-                                xs.push(x);
-                            }
+                            validatePoint(guess[i][0]);
                         }
                     }
 
                     if (attempted &lt; 5) {
-                        return "You must enter 5 or more points";
+                        return $._("You must enter 5 or more points");
                     }
 
                     xs = KhanUtil.sortNumbers(xs);
                     var different = 1;
-
                     for (var i = 0; i &lt; correct - 1; ++i) {
                         if (xs[i + 1] - xs[i] &gt;= 0.5) {
                             different += 1;
                         }
                     }
-
                     return different === attempted;
                 </div>
             </div>
@@ -277,7 +281,7 @@
 
             <div class="problem">
                 <table class="ttable">
-                    <tr class="labels">
+                    <tbody><tr class="labels">
                         <td class="data-col">
                             <code>x</code>
                         </td>
@@ -290,13 +294,19 @@
                             <code><var>x+"\\hphantom{.0}"</var></code>
                         </td>
                         <td class="second-col data-col">
-                            <code><var>
-                                roundToNearest(0.5, FUNC(x)).toFixed(1)
-                                    .replace(/\.0$/, "\\hphantom{.0}")
-                            </var></code>
+                            <code><var>(function() {
+                                var y = FUNC(x);
+                                var str = localeToFixed(roundToNearest(0.5, y), 1);
+
+                                if (Math.abs(KhanUtil.roundToNearest(1.0, y) - y) &lt; 0.25) {
+                                    str = str.replace(/(.{2})$/, "\\hphantom{$1}");
+                                }
+
+                                return str;
+                            })()</var></code>
                         </td>
                     </tr>
-                </table>
+                </tbody></table>
                 <div class="graphie" id="main">
                     graphInit({
                         range: 10,
@@ -418,7 +428,7 @@
                         var endpt = [EXAMPLES[0],
                             roundToNearest(0.5, FUNC(EXAMPLES[0]))];
 
-                        line([-4, 0], endpt, { arrows: "->" });
+                        line([-4, 0], endpt, { arrows: "-&gt;" });
                         graph.points[0].moveTo(endpt[0], endpt[1]);
 
                         graph.points[0].toFront();
@@ -472,7 +482,7 @@
                 created from the function. Enter the values in the table as
                 decimals.
             </p>
-            <p class="problem"><code><var>FUNCSHOW</var></code></p>
+            <p class="problem"><code>y = <var>FUNCSHOW</var></code></p>
             <div class="hints">
                 <p>You can look at a function in many different ways,
                     including an equation and a table. We have an equation,

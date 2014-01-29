@@ -2,7 +2,7 @@
 <html data-require="math graphie graphie-helpers word-problems">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Basic Fractions 0.5</title>
+    <title>Recognizing fractions 0.5</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
@@ -14,6 +14,13 @@
         <div class="vars">
             <var id="NUM_1">randRange(1, 8)</var>
             <var id="DEN_1">randRange(NUM_1 + 1, 9)</var>
+
+            <var id="RED_SLICES">$._("Red Slices")</var>
+            <var id="GRAY_SLICES">$._("Gray Slices")</var>
+            <var id="SLICES">$._("Slices")</var>
+            <var id="RED_BLOCKS">$._("Red Blocks")</var>
+            <var id="GRAY_BLOCKS">$._("Gray Blocks")</var>
+            <var id="BLOCKS">$._("Blocks")</var>
         </div>
         <div class="problems">
             <div id="pie-chart">
@@ -27,9 +34,9 @@
                 <p class="solution" data-simplify="optional"><var>NUM_1 / DEN_1</var></p>
                 <div class="hints">
                     <p>Count the red slices for the numerator.</p>
-                    <p>There <var>plural("is", NUM_1)</var> <var>pluralTex(NUM_1, "red slice")</var>.</p>
-                    <p>Count the total slices <code>\left(\color{#e00}{\text{Red Slices}} + \color{#999}{\text{Gray Slices}}\right)</code> for the denominator.</p>
-                    <p>There are <code>\color{#000}{<var>DEN_1</var>\text{ Slices}}</code> in total.</p>
+                    <p data-if="isSingular(NUM_1)">There is <var>NUM_1</var> red slice.</p><p data-else="">There are <var>NUM_1</var> red slices.</p>
+                    <p>Count the total slices <code>\left(\color{#e00}{\text{<var>RED_SLICES</var>}} + \color{#999}{\text{<var>GRAY_SLICES</var>}}\right)</code> for the denominator.</p>
+                    <p>There are <code>\color{#000}{<var>DEN_1</var>\text{ <var>SLICES</var>}}</code> in total.</p>
                     <p>So your answer should be <code>\dfrac{\color{#e00}{<var>NUM_1</var>}}{\color{#000}{\text{<var>DEN_1</var>}}}</code>.</p>
                 </div>
             </div>
@@ -46,42 +53,42 @@
 
                 <div class="hints">
                     <p>Count the red blocks for the numerator.</p>
-                    <p>There <var>plural( "is", NUM_1 )</var> <var>pluralTex(NUM_1, "red block")</var>.</p>
-                    <p>Count the total slices <code>\left(\color{#e00}{\text{Red Blocks}} + \color{#999}{\text{Gray Blocks}}\right)</code> for the denominator.</p>
-                    <p>There are <code>\color{#000}{<var>DEN_1</var>\text{ Blocks}}</code> in total.</p>
+                    <p data-if="isSingular(NUM_1)">There is <var>NUM_1</var> red block.</p><p data-else="">There are <var>NUM_1</var> red blocks.</p>
+                    <p>Count the total slices <code>\left(\color{#e00}{\text{<var>RED_BLOCKS</var>}} + \color{#999}{\text{<var>GRAY_BLOCKS</var>}}\right)</code> for the denominator.</p>
+                    <p>There are <code>\color{#000}{<var>DEN_1</var>\text{ <var>BLOCKS</var>}}</code> in total.</p>
                     <p>So your answer should be <code>\dfrac{\color{#e00}{<var>NUM_1</var>}}{\color{#000}{\text{<var>DEN_1</var>}}}</code>.</p>
                 </div>
             </div>
 
-            <div id="custom-1" data-weight="0" data-type="pie-chart">
+            <div id="custom-1" data-type="pie-chart" data-weight="0">
                 <div class="vars">
                     <var id="NUM_1">1</var>
                     <var id="DEN_1">2</var>
                 </div>
             </div>
 
-            <div id="custom-2" data-weight="0" data-type="pie-chart">
+            <div id="custom-2" data-type="pie-chart" data-weight="0">
                 <div class="vars">
                     <var id="NUM_1">1</var>
                     <var id="DEN_1">4</var>
                 </div>
             </div>
 
-            <div id="custom-6" data-weight="0" data-type="pie-chart">
+            <div id="custom-6" data-type="pie-chart" data-weight="0">
                 <div class="vars">
                     <var id="NUM_1">2</var>
                     <var id="DEN_1">4</var>
                 </div>
             </div>
 
-            <div id="custom-3" data-weight="0" data-type="pie-chart">
+            <div id="custom-3" data-type="pie-chart" data-weight="0">
                 <div class="vars">
                     <var id="NUM_1">1</var>
                     <var id="DEN_1">5</var>
                 </div>
             </div>
 
-            <div id="custom-4" data-weight="0" data-type="pie-chart">
+            <div id="custom-4" data-type="pie-chart" data-weight="0">
                 <div class="vars">
                     <var id="NUM_1">2</var>
                     <var id="DEN_1">5</var>

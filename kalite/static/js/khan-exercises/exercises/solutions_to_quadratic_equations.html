@@ -48,13 +48,12 @@
                         <p><code id="quadratic">\qquad
                             x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}
                         </code>
-                    </div>
+                    </p></div>
                     <div>
                         <div class="graphie">
-                            $("#quadratic").text("\\qquad x = \\dfrac{-b \\pm" +
-                                " \\sqrt{\\blue{b^2 - 4ac}}}{2a}");
-                            MathJax.Hub.Queue(["Reprocess", MathJax.Hub,
-                                $("#quadratic")[0]]);
+                            KhanUtil.processMath($("#quadratic")[0],
+                                "\\qquad x = \\dfrac{-b \\pm" +
+                                " \\sqrt{\\blue{b^2 - 4ac}}}{2a}", true);
                         </div>
                         <div>
                             Think about what the part of the quadratic
@@ -97,7 +96,7 @@
                         <code>\dfrac{-b \pm <var>sqrt(DISCRIMINANT)</var>}{2a}
                         </code>, which means there are two rational solutions.
                     </p>
-                    <p data-else>
+                    <p data-else="">
                         Because <code>\blue{b^2 - 4ac}</code> is not a perfect
                         square, its square root is irrational and the
                         quadratic formula reduces to
@@ -110,9 +109,9 @@
             <div id="two-rational" data-type="one-rational">
                 <div class="vars" data-apply="replace">
                     <var id="ANSWER">"Two rational solutions"</var>
-                    <div data-ensure="DISCRIMINANT > 0 &&
-                        sqrt(DISCRIMINANT) - floor(sqrt(DISCRIMINANT)) < 0.001
-                        && DISCRIMINANT <= 144">
+                    <div data-ensure="DISCRIMINANT &gt; 0 &amp;&amp;
+                        sqrt(DISCRIMINANT) - floor(sqrt(DISCRIMINANT)) &lt; 0.001
+                        &amp;&amp; DISCRIMINANT &lt;= 144">
                         <var id="A">randRangeNonZero(-9, 9)</var>
                         <var id="B">randRangeNonZero(-9, 9)</var>
                         <var id="C">randRangeNonZero(-9, 9)</var>
@@ -124,8 +123,8 @@
             <div id="two-irrational" data-type="one-rational">
                 <div class="vars" data-apply="replace">
                     <var id="ANSWER">"Two irrational solutions"</var>
-                    <div data-ensure="DISCRIMINANT > 0 &&
-                        sqrt(DISCRIMINANT) - floor(sqrt(DISCRIMINANT)) > 0.001">
+                    <div data-ensure="DISCRIMINANT &gt; 0 &amp;&amp;
+                        sqrt(DISCRIMINANT) - floor(sqrt(DISCRIMINANT)) &gt; 0.001">
                         <var id="A">randRangeNonZero(-9, 9)</var>
                         <var id="B">randRangeNonZero(-9, 9)</var>
                         <var id="C">randRangeNonZero(-9, 9)</var>
@@ -137,7 +136,7 @@
             <div id="two-complex" data-type="one-rational">
                 <div class="vars" data-apply="replace">
                     <var id="ANSWER">"Two complex solutions"</var>
-                    <div data-ensure="DISCRIMINANT < 0">
+                    <div data-ensure="DISCRIMINANT &lt; 0">
                         <var id="A">randRangeNonZero(-9, 9)</var>
                         <var id="B">randRangeNonZero(-9, 9)</var>
                         <var id="C">randRangeNonZero(-9, 9)</var>

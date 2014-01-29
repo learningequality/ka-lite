@@ -1,35 +1,48 @@
-from django.conf.urls.defaults import patterns, url
-from django.http import HttpResponse
-import settings
+from django.conf.urls.defaults import include, patterns, url
+from django.http import HttpResponseServerError
 
-# Note that these patterns are all under /api/, 
+import settings
+import updates.api_urls
+
+
+# Note that these patterns are all under /api/,
 # due to the way they've been included into main/urls.py
 urlpatterns = patterns('main.api_views',
 
-    # toss out any requests made to actual KA site urls
-    url(r'^v1/', lambda x: HttpResponse("{}")),
-    
-    url(r'^save_video_log$', 'save_video_log'),
-    url(r'^save_exercise_log$', 'save_exercise_log'),
+    # For video / exercise pages
+    url(r'^save_video_log$', 'save_video_log', {}, 'save_video_log'),
+    url(r'^save_exercise_log$', 'save_exercise_log', {}, 'save_exercise_log'),
 
-    url(r'^get_video_logs$', 'get_video_logs'),
-    url(r'^get_exercise_logs$', 'get_exercise_logs'),
+    # For topic pages with exercise/video leaves
+    url(r'^get_video_logs$', 'get_video_logs', {}, 'get_video_logs'),
+    url(r'^get_exercise_logs$', 'get_exercise_logs', {}, 'get_exercise_logs'),
 
-    url(r'^start_video_download$', 'start_video_download'),
-    url(r'^retry_video_download$', 'retry_video_download'),
-    url(r'^get_video_download_status$', 'get_video_download_status'),
-    url(r'^check_video_download$', 'check_video_download'),
-    url(r'^get_topic_tree$', 'get_topic_tree'),
-    url(r'^get_video_download_list$', 'get_video_download_list'),
-    
-    url(r'^start_subtitle_download$', 'start_subtitle_download'),
-    url(r'^check_subtitle_download$', 'check_subtitle_download'),
-    url(r'^get_subtitle_download_list$', 'get_subtitle_download_list'),
-    url(r'^cancel_downloads$', 'cancel_downloads'),
-    url(r'^delete_videos$', 'delete_videos'),
-    url(r'^remove_from_group$', 'remove_from_group'),
-    url(r'^move_to_group$', 'move_to_group'),
-    url(r'^delete_users$', 'delete_users'),
-    
+    # For user management
+    url(r'^remove_from_group$', 'remove_from_group', {}, 'remove_from_group'),
+    url(r'^move_to_group$', 'move_to_group', {}, 'move_to_group'),
+    url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
+
+    # data used by the frontend search code
+    url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
+
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
+
+    url(r'^status$', 'status', {}, 'status'),
+
+    #API endpoint for setting server time
+    url(r'^time_set/$', 'time_set', {}, 'time_set'),
+
+    # show pid for the running server (used bt stop to help kill the server)
+    url(r'^getpid$', 'getpid', {}, 'getpid'),
+)
+
+
+urlpatterns += patterns('updates.api_views',
+    url(r'^', include(updates.api_urls)),
+)
+
+# Placed at the bottom, so that it's the last to be checked (not first)
+urlpatterns += patterns('',
+    # toss out any requests made to actual KA site urls
+    url(r'^v1/', lambda x: HttpResponseServerError("This is an assert--you should disable these calls from KA in the javascript code!")),
 )

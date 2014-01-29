@@ -111,7 +111,7 @@ function initProof(segs, angs, triangles, supplementaryAngs, altIntAngs, depth, 
         }
         if (equalityType === "triangle") {
             // pick some triangles to be congruent, this will be the statement to be proven
-            var indices = KhanUtil.randRangeUnique(0, TRIANGLES.length, 2);
+            var indices = KhanUtil.randRangeUnique(0, TRIANGLES.length - 1, 2);
             var triangle1 = TRIANGLES[indices[0]];
             var triangle2 = TRIANGLES[indices[1]];
 
@@ -124,7 +124,7 @@ function initProof(segs, angs, triangles, supplementaryAngs, altIntAngs, depth, 
         }
         else if (equalityType === "angle") {
             // pick some angles to be congruent, this will be the statement to be proven
-            var indices = KhanUtil.randRangeUnique(0, ANGLES.length, 2);
+            var indices = KhanUtil.randRangeUnique(0, ANGLES.length - 1, 2);
             var angle1 = ANGLES[indices[0]];
             var angle2 = ANGLES[indices[1]];
 
@@ -137,7 +137,7 @@ function initProof(segs, angs, triangles, supplementaryAngs, altIntAngs, depth, 
         }
         else {
             // pick some segments to be congruent, this will be the statement to be proven
-            var indices = KhanUtil.randRangeUnique(0, SEGMENTS.length, 2);
+            var indices = KhanUtil.randRangeUnique(0, SEGMENTS.length - 1, 2);
             var segment1 = SEGMENTS[indices[0]];
             var segment2 = SEGMENTS[indices[1]];
 
@@ -446,7 +446,7 @@ function outputFinishedProof() {
 
     }
 
-    var indices = KhanUtil.randRangeUnique(0, possibleValids.length - 1, 2);
+    var indices = KhanUtil.randRangeUnique(0, possibleValids.length - 2, 2);
 
     return [proofText, possibleValids[indices[0]], possibleValids[indices[1]]];
 }
@@ -497,7 +497,7 @@ function outputKnownProof() {
 // returns a proof with a few blanks, blank statement fields will be wrapped by a div with id formatted according to divName
 function outputFillBlanksProof() {
     var reasonCodes = {"SSS" : 0, "ASA" : 1, "SAS" : 2, "AAS" : 3, "corresponding parts of congruent triangles are congruent" : 4,
-     "vertical angles are equal" : 5, "alternate interior angles are equal" : 6};
+     "vertical angles are congruent" : 5, "alternate interior angles are congruent" : 6};
     var proofText = "<h3>Givens</h3>";
     var blanks = 0;
     var blankStatements = 0;
@@ -549,8 +549,8 @@ function outputFillBlanksProof() {
                     + "<option value=\"SAS\">side-angle-side congruence</option>"
                     + "<option value=\"AAS\">angle-angle-side congruence</option>"
                     + "<option>corresponding parts of congruent triangles are congruent</option>"
-                    + "<option>vertical angles are equal</option>"
-                    + "<option>alternate interior angles are equal</option>"
+                    + "<option>vertical angles are congruent</option>"
+                    + "<option>alternate interior angles are congruent</option>"
                     + "</select> </div>" + "<br>";
                     blanks++;
                 }
@@ -633,7 +633,7 @@ function checkFillBlanksStatement(divID) {
             var reason = $("#" + divID).html();
             $("#" + divID).html(prettifyEquality([inputTriangle1, inputTriangle2]) + reason);
             $("#" + divID).removeClass("missing");
-            $.tmpl.type.code()($("#" + divID + " code")[0]);
+            $("#" + divID + " code").tex();
             return true;
         }
     }
@@ -665,7 +665,7 @@ function checkFillBlanksStatement(divID) {
             var reason = $("#" + divID).html();
             $("#" + divID).html(prettifyEquality([inputAngle1, inputAngle2]) + reason);
             $("#" + divID).removeClass("missing");
-            $.tmpl.type.code()($("#" + divID + " code")[0]);
+            $("#" + divID + " code").tex();
             return true;
         }
     }
@@ -690,7 +690,7 @@ function checkFillBlanksStatement(divID) {
             var reason = $("#" + divID).html();
             $("#" + divID).html(prettifyEquality([inputSeg1, inputSeg2]) + reason);
             $("#" + divID).removeClass("missing");
-            $.tmpl.type.code()($("#" + divID + " code")[0]);
+            $("#" + divID + " code").tex();
             return true;
         }
     }
@@ -857,7 +857,7 @@ function outputBadProof() {
             var ang2 = KhanUtil.randFromArray(ANGLES);
 
             var reasons = KhanUtil.shuffle(["corresponding parts of congruent triangles are congruent",
-                 "vertical angles are equal", "alternate interior angles are equal"]);
+                 "vertical angles are congruent", "alternate interior angles are congruent"]);
             for (var i = 0; i < reasons.length; i++) {
                 if (!checkAngEqual(ang1, ang2, reasons[i])) {
                     invalid = [ang1, ang2];
@@ -994,7 +994,7 @@ function outputBadProof() {
             }
             else if (finalRelation[0] instanceof Ang) {
                 proofText += " because "
-                + KhanUtil.randFromArray(["vertical angles are equal", "alternate angles are equal", "corresponding parts of congruent triangles are congruent"])
+                + KhanUtil.randFromArray(["vertical angles are congruent", "alternate angles are congruent", "corresponding parts of congruent triangles are congruent"])
                 + "</div>" + "<br>";
             }
             else {
@@ -1084,7 +1084,7 @@ Triang.prototype.equals = function(otherTriang) {
     var myPoints = [this.angs[0].mid, this.angs[1].mid, this.angs[2].mid];
     var otherPoints = [otherTriang.angs[0].mid, otherTriang.angs[1].mid, otherTriang.angs[2].mid];
 
-    return _.difference(myPoints, otherPoints).length === 0;
+    return _.difference(myPoints, otherPoints).length === 0 && _.difference(otherPoints, myPoints).length === 0;
 };
 
 // If two smaller angles share a midpoint and one of two endpoints, they can be
@@ -1312,8 +1312,8 @@ function traceBack(statementKey, depth) {
                     verticalAngs[0] = verticalAngs[1];
                 }
 
-                finishedEqualities[[triangle1.angs[verticalAngs[0]], triangle2.angs[verticalAngs[0]]]] = "vertical angles are equal";
-                finishedEqualities[[triangle2.angs[verticalAngs[0]], triangle1.angs[verticalAngs[0]]]] = "vertical angles are equal";
+                finishedEqualities[[triangle1.angs[verticalAngs[0]], triangle2.angs[verticalAngs[0]]]] = "vertical angles are congruent";
+                finishedEqualities[[triangle2.angs[verticalAngs[0]], triangle1.angs[verticalAngs[0]]]] = "vertical angles are congruent";
                 finishedEqualitiesList.push([triangle1.angs[verticalAngs[0]], triangle2.angs[verticalAngs[0]]]);
                 finishedEqualitiesList.push([triangle2.angs[verticalAngs[0]], triangle1.angs[verticalAngs[0]]]);
 
@@ -1369,8 +1369,8 @@ function traceBack(statementKey, depth) {
                     alternateAngs[0] = alternateAngs[1];
                 }
 
-                finishedEqualities[[triangle1.angs[alternateAngs[0]], triangle2.angs[alternateAngs[0]]]] = "alternate interior angles are equal";
-                finishedEqualities[[triangle2.angs[alternateAngs[0]], triangle1.angs[alternateAngs[0]]]] = "alternate interior angles are equal";
+                finishedEqualities[[triangle1.angs[alternateAngs[0]], triangle2.angs[alternateAngs[0]]]] = "alternate interior angles are congruent";
+                finishedEqualities[[triangle2.angs[alternateAngs[0]], triangle1.angs[alternateAngs[0]]]] = "alternate interior angles are congruent";
                 finishedEqualitiesList.push([triangle1.angs[alternateAngs[0]], triangle2.angs[alternateAngs[0]]]);
                 finishedEqualitiesList.push([triangle2.angs[alternateAngs[0]], triangle1.angs[alternateAngs[0]]]);
 
@@ -1909,9 +1909,9 @@ function checkAngEqual(ang1, ang2, reason) {
         }
 
         if (sharedLines === 4) {
-            if (reason === "vertical angles" || reason === "vertical angles are equal") {
-                knownEqualities[[ang1, ang2]] = "vertical angles are equal";
-                knownEqualities[[ang2, ang1]] = "vertical angles are equal";
+            if (reason === "vertical angles" || reason === "vertical angles are congruent") {
+                knownEqualities[[ang1, ang2]] = "vertical angles are congruent";
+                knownEqualities[[ang2, ang1]] = "vertical angles are congruent";
                 knownEqualitiesList.push([ang1, ang2]);
                 return true;
             }
@@ -1920,9 +1920,9 @@ function checkAngEqual(ang1, ang2, reason) {
 
     if (eqIn([ang1, ang2], altInteriorAngs) || eqIn([ang2, ang1], altInteriorAngs)) {
 
-        if (reason === "alternate angles" || reason === "alternate interior angles are equal") {
-            knownEqualities[[ang1, ang2]] = "alternate interior angles are equal";
-            knownEqualities[[ang2, ang1]] = "alternate interior angles are equal";
+        if (reason === "alternate angles" || reason === "alternate interior angles are congruent") {
+            knownEqualities[[ang1, ang2]] = "alternate interior angles are congruent";
+            knownEqualities[[ang2, ang1]] = "alternate interior angles are congruent";
             knownEqualitiesList.push([ang1, ang2]);
             return true;
         }
@@ -2208,7 +2208,7 @@ function sortEqualityList(equalityList, equalityObject) {
     if(equalityObject === finishedEqualities) {
         var sortedEqualityList = _.clone(newEqualityList);
         for (var i = 0; i < newEqualityList.length; i++) {
-            if (equalityObject[newEqualityList[i]] === "vertical angles are equal" || equalityObject[newEqualityList[i]] === "alternate interior angles are equal") {
+            if (equalityObject[newEqualityList[i]] === "vertical angles are congruent" || equalityObject[newEqualityList[i]] === "alternate interior angles are congruent") {
                 sortedEqualityList[i - 1] = newEqualityList[i];
                 sortedEqualityList[i] = newEqualityList[i - 1];
             }
@@ -2233,7 +2233,7 @@ function sortEqualityStringList(equalityList, equalityObject) {
     }
     var sortedEqualityList = _.clone(newEqualityList);
     for (var i = 0; i < newEqualityList.length; i++) {
-        if (equalityObject[newEqualityList[i]] === "vertical angles are equal" || equalityObject[newEqualityList[i]] === "alternate interior angles are equal") {
+        if (equalityObject[newEqualityList[i]] === "vertical angles are congruent" || equalityObject[newEqualityList[i]] === "alternate interior angles are congruent") {
             sortedEqualityList[i - 2] = newEqualityList[i];
             sortedEqualityList[i] = newEqualityList[i - 2];
         }

@@ -1,40 +1,17 @@
-{% extends 'base_distributed.html' %}
-
+{% extends base_template %}
 {% load i18n %}
 
 {% block login_active %}active{% endblock login_active %}
 
-{% block title %}{% trans "Log in" %}{% endblock title %}
+{% block title %}{% trans "Log in" %}{{ block.super }}{% endblock title %}
 
 {% block content %}
+    <form method="post" class="basic-form">
+        {% csrf_token %}
+        <h2>{% trans "Login" %}</h2>
 
-<form method="post" class="basic-form">
-    {% csrf_token %}
-    
-    <h2>{% trans "Login" %}</h2>
+        {{ form.as_p }}
 
-    <div style="{% if facilities.count < 2 %}display: none;{% endif %}">
-        {{ form.facility.errors }}
-        <p>
-            {% comment %}Translators: This will be a label in a form.{% endcomment %} 
-            <label for="id_facility">{% trans "Facility: " %}</label>
-            {{ form.facility }}
-        </p>
-    </div>
-    {{ form.username.errors }}
-    <p>            
-        {% comment %}Translators: This will be a label in a form.{% endcomment %} 
-        <label for="id_username">{% trans "Username: " %}</label>
-        {{ form.username }}
-    </p>
-    {{ form.password.errors }}
-    <p>
-        {% comment %}Translators: This will be a label in a form.{% endcomment %} 
-        <label for="id_password">{% trans "Password: " %}</label>
-        {{ form.password }}
-    </p>
-    {% trans "Login" as login %}
-<input type="submit" value="{{ login }}" class="submit"/>
-</form>
-
+        <input type="submit" value="{% trans 'Login' %}" class="submit"/>
+    </form>
 {% endblock content %}

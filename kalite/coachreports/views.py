@@ -10,25 +10,24 @@ from functools import partial
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from main.topicdata import ID2SLUG_MAP, NODE_CACHE
-from main.models import VideoLog, ExerciseLog, VideoFile, UserLog
+from main.models import VideoLog, ExerciseLog, UserLog
 from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
 from securesync.views import facility_required
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
+from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache
 from utils.general import max_none
 from utils.internet import StatusException
 
 
-def get_accessible_objects_from_logged_in_user(request):
+def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
     """
@@ -40,6 +39,7 @@ def get_accessible_objects_from_logged_in_user(request):
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
         groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
@@ -52,9 +52,12 @@ def get_accessible_objects_from_logged_in_user(request):
                 groups = []
             else:
                 groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
-    else:
+    elif facility:
         facilities = [facility]
         groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
+
+    else:
+        facilities = groups = None
 
     return (groups, facilities)
 
@@ -66,7 +69,7 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     return {
         "form": form.data,
@@ -111,8 +114,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     Context done separately, to be importable for similar pages.
     """
     user = get_user_from_request(request=request)
-    topic_slugs = [t["id"] for t in get_knowledgemap_topics()]
-    topics = [NODE_CACHE["Topic"][slug] for slug in topic_slugs]
+    if not user:
+        raise Http404
+
+    node_cache = get_node_cache()
+    topic_ids = [t["id"] for t in get_knowledgemap_topics()]
+    topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -120,7 +127,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
     video_logs = list(VideoLog.objects \
         .filter(user=user) \
-        .values("youtube_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+        .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
 
     exercise_sparklines = dict()
     stats = dict()
@@ -131,44 +138,56 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
-        parents = NODE_CACHE["Exercise"][elog["exercise_id"]]["parents"]
-        topic = set(parents).intersection(set(topic_slugs))
+        if not elog["exercise_id"] in node_cache["Exercise"]:
+            # Sometimes KA updates their topic tree and eliminates exercises;
+            #   we also want to support 3rd party switching of trees arbitrarily.
+            logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
+            continue
+
+        parent_ids = [topic for ex in node_cache["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
+        topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
-            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parents))
+            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
-            topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic]["path"])
+            topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        parents = NODE_CACHE["Video"][ID2SLUG_MAP[vlog["youtube_id"]]]["parents"]
-        topic = set(parents).intersection(set(topic_slugs))
+        if not vlog["video_id"] in node_cache["Video"]:
+            # Sometimes KA updates their topic tree and eliminates videos;
+            #   we also want to support 3rd party switching of trees arbitrarily.
+            logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
+            continue
+
+        parent_ids = [topic for vid in node_cache["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
+        topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
-            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["youtube_id"], parents))
+            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
-            topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic]["path"])
+            topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
 
 
     # Now compute stats
-    for topic in topic_slugs:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
-        n_exercises = len(topic_exercises.get(topic, []))
-        n_videos = len(topic_videos.get(topic, []))
+    for id in topic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+        n_exercises = len(topic_exercises.get(id, []))
+        n_videos = len(topic_videos.get(id, []))
 
-        exercises = exercises_by_topic.get(topic, [])
-        videos = videos_by_topic.get(topic, [])
+        exercises = exercises_by_topic.get(id, [])
+        videos = videos_by_topic.get(id, [])
         n_exercises_touched = len(exercises)
         n_videos_touched = len(videos)
 
-        exercise_sparklines[topic] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
+        exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
          # total streak currently a pct, but expressed in max 100; convert to
          # proportion (like other percentages here)
-        stats[topic] = {
+        stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
             "ex:average_points":   0 if not n_exercises_touched else sum([el["points"] for el in exercises]) / float(n_exercises_touched),
@@ -228,10 +247,12 @@ def landing_page(request, facility):
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
+    # Define how students are ordered--used to be as efficient as possible.
+    student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
     topics = get_knowledgemap_topics()
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request)
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "report_types": ("exercise", "video"),
@@ -249,24 +270,24 @@ def tabular_view(request, facility, report_type="exercise"):
     if group_id:
         # Narrow by group
         users = FacilityUser.objects.filter(
-            group=group_id, is_teacher=False).order_by("last_name", "first_name")
+            group=group_id, is_teacher=False).order_by(*student_ordering)
 
     elif facility:
         # Narrow by facility
-        search_groups = [dict["groups"] for dict in groups if dict["facility"] == facility.id]
-        assert len(search_groups) <= 1, "should only have one or zero matches."
+        search_groups = [groups_dict["groups"] for groups_dict in groups if groups_dict["facility"] == facility.id]
+        assert len(search_groups) <= 1, "Should only have one or zero matches."
 
         # Return groups and ungrouped
         search_groups = search_groups[0]  # make sure to include ungrouped students
         users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by("last_name", "first_name")
+            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by(*student_ordering)
 
     else:
         # Show all (including ungrouped)
         for groups_dict in groups:
             search_groups += groups_dict["groups"]
         users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by("last_name", "first_name")
+            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by(*student_ordering)
 
     # We have enough data to render over a group of students
     # Get type-specific information
@@ -282,7 +303,7 @@ def tabular_view(request, facility, report_type="exercise"):
         context["students"] = []
         exlogs = ExerciseLog.objects \
             .filter(user__in=users, exercise_id__in=exercise_names) \
-            .order_by("user__last_name", "user__first_name")\
+            .order_by(*["user__%s" % field for field in student_ordering]) \
             .values("user__id", "struggling", "complete", "exercise_id")
         exlogs = list(exlogs)  # force the query to be evaluated
 
@@ -307,20 +328,20 @@ def tabular_view(request, facility, report_type="exercise"):
         context["videos"] = get_topic_videos(topic_id=topic_id)
 
         # More code, but much faster
-        video_ids = [vid["youtube_id"] for vid in context["videos"]]
+        video_ids = [vid["id"] for vid in context["videos"]]
         # Get students
         context["students"] = []
         vidlogs = VideoLog.objects \
-            .filter(user__in=users, youtube_id__in=video_ids) \
-            .order_by("user__last_name", "user__first_name")\
-            .values("user__id", "complete", "youtube_id", "total_seconds_watched", "points")
+            .filter(user__in=users, video_id__in=video_ids) \
+            .order_by(*["user__%s" % field for field in student_ordering])\
+            .values("user__id", "complete", "video_id", "total_seconds_watched", "points")
         vidlogs = list(vidlogs)  # force the query to be executed now
 
         vidlog_idx = 0
         for user in users:
             log_table = {}
             while vidlog_idx < len(vidlogs) and vidlogs[vidlog_idx]["user__id"] == user.id:
-                log_table[vidlogs[vidlog_idx]["youtube_id"]] = vidlogs[vidlog_idx]
+                log_table[vidlogs[vidlog_idx]["video_id"]] = vidlogs[vidlog_idx]
                 vidlog_idx += 1
 
             context["students"].append({  # this could be DRYer
@@ -333,7 +354,7 @@ def tabular_view(request, facility, report_type="exercise"):
             })
 
     else:
-        raise Http404("Unknown report_type: %s" % report_type)
+        raise Http404(_("Unknown report_type: %(report_type)s") % {"report_type": report_type})
 
     if "facility_user" in request.session:
         try:

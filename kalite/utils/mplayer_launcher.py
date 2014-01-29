@@ -1,16 +1,15 @@
-import settings
 import thread
 import time
 
 from mplayer import *
 
 
-def play_video(youtube_id, *args, **kwargs):
+def play_video(youtube_id, content_root, *args, **kwargs):
     """
     Starts mplayer from the current thread, for the specified YouTube ID.
     Defaults to full screen, but can be overridden by passing a boolean `fullscreen` argument.
     """
-    player = Player("%s%s.mp4" % (settings.CONTENT_ROOT, youtube_id))
+    player = Player("%s%s.mp4" % (content_root, youtube_id))
     player.fullscreen = kwargs.get("fullscreen", True)
     return player
 

@@ -229,7 +229,7 @@ def write_po_file(pofile, potfile, domain, locale, verbosity, stdout,
     msgs, errors = _popen('msguniq %s %s --to-code=utf-8 "%s"' %
                             (wrap, location, potfile))
     if errors:
-        os.unlink(potfile)
+        #os.unlink(potfile)
         raise CommandError("errors happened while running msguniq\n%s" % errors)
     if os.path.exists(pofile):
         f = open(potfile, 'w')

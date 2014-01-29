@@ -23,7 +23,7 @@ $.extend(KhanUtil, {
         if (f[1] === 1) {
             return f[0];
         } else {
-            return "\\" + (dfrac ? "d" : "") + "frac{" + f[0] + "}{" + f[1] + "}";
+            return (n < 0 ? "-" : "") + "\\" + (dfrac ? "d" : "") + "frac{" + Math.abs(f[0]) + "}{" + Math.abs(f[1]) + "}";
         }
     },
 
@@ -232,11 +232,64 @@ $.extend(KhanUtil, {
         return KhanUtil.formattedSquareRootOf(n) !== ("\\sqrt{" + n + "}");
     },
 
+    // For numbers 0-20, return the spelling of the number, otherwise
+    // just return the number itself as a string.  This is superior to
+    // cardinal() in that it can be translated easily.
+    cardinalThrough20: function(n) {
+        var cardinalUnits = [$._("zero"), $._("one"), $._("two"), $._("three"),
+            $._("four"), $._("five"), $._("six"), $._("seven"), $._("eight"),
+            $._("nine"), $._("ten"), $._("eleven"), $._("twelve"),
+            $._("thirteen"), $._("fourteen"), $._("fifteen"), $._("sixteen"),
+            $._("seventeen"), $._("eighteen"), $._("nineteen"), $._("twenty")];
+        if (n >= 0 && n <= 20) {
+            return cardinalUnits[n];
+        }
+        return String(n);
+    },
+
+    CardinalThrough20: function(n) {
+        // NOTE(csilvers): I *think* this always does the right thing,
+        // since scripts that capitalize always do so the same way.
+        var card = KhanUtil.cardinalThrough20(n);
+        return card.charAt(0).toUpperCase() + card.slice(1);
+    },
+
+    ordinalThrough20: function(n) {
+        var ordinalUnits = [$._("zeroth"), $._("first"), $._("second"),
+            $._("third"), $._("fourth"), $._("fifth"), $._("sixth"),
+            $._("seventh"), $._("eighth"), $._("ninth"), $._("tenth"),
+            $._("eleventh"), $._("twelfth"), $._("thirteenth"),
+            $._("fourteenth"), $._("fifteenth"), $._("sixteenth"),
+            $._("seventeenth"), $._("eighteenth"), $._("nineteenth"),
+            $._("twentieth")];
+        if (n >= 0 && n <= 20) {
+            return ordinalUnits[n];
+        }
+        // This should "never" happen, but better to give weird results
+        // than to raise an error.  I think.
+        return n + "th";
+    },
+
     // Ported from https://github.com/clojure/clojure/blob/master/src/clj/clojure/pprint/cl_format.clj#L285
+    // TODO(csilvers): I18N: this doesn't work at all outside English.
+    // cf. https://github.com/kslazarev/numbers_and_words (Ruby, sadly).
     cardinal: function(n) {
-        var cardinalScales = ["", "thousand", "million", "billion", "trillion", "quadrillion", "quintillion", "sextillion", "septillion", "octillion", "nonillion", "decillion", "undecillion", "duodecillion", "tredecillion", "quattuordecillion", "quindecillion", "sexdecillion", "septendecillion", "octodecillion", "novemdecillion", "vigintillion"];
-        var cardinalUnits = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
-        var cardinalTens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+        var cardinalScales = ["", $._("thousand"), $._("million"),
+            $._("billion"), $._("trillion"), $._("quadrillion"),
+            $._("quintillion"), $._("sextillion"), $._("septillion"),
+            $._("octillion"), $._("nonillion"), $._("decillion"),
+            $._("undecillion"), $._("duodecillion"), $._("tredecillion"),
+            $._("quattuordecillion"), $._("quindecillion"),
+            $._("sexdecillion"), $._("septendecillion"), $._("octodecillion"),
+            $._("novemdecillion"), $._("vigintillion")];
+        var cardinalUnits = [$._("zero"), $._("one"), $._("two"), $._("three"),
+            $._("four"), $._("five"), $._("six"), $._("seven"), $._("eight"),
+            $._("nine"), $._("ten"), $._("eleven"), $._("twelve"),
+            $._("thirteen"), $._("fourteen"), $._("fifteen"), $._("sixteen"),
+            $._("seventeen"), $._("eighteen"), $._("nineteen")];
+        var cardinalTens = ["", "", $._("twenty"), $._("thirty"), $._("forty"),
+            $._("fifty"), $._("sixty"), $._("seventy"), $._("eighty"),
+            $._("ninety")];
         // For formatting numbers less than 1000
         var smallNumberWords = function(n) {
             var hundredDigit = Math.floor(n / 100);
@@ -244,7 +297,8 @@ $.extend(KhanUtil, {
             var str = "";
 
             if (hundredDigit) {
-                str += cardinalUnits[hundredDigit] + " hundred";
+                str += $._("%(unit)s hundred",
+                    {unit: cardinalUnits[hundredDigit]});
             }
 
             if (hundredDigit && rest) {
@@ -276,7 +330,7 @@ $.extend(KhanUtil, {
         };
 
         if (n === 0) {
-            return "zero";
+            return $._("zero");
         } else {
             var neg = false;
             if (n < 0) {
@@ -302,7 +356,7 @@ $.extend(KhanUtil, {
             }
 
             if (neg) {
-                words.unshift("negative");
+                words.unshift($._("negative"));
             }
 
             return words.join(" ");
@@ -332,8 +386,8 @@ $.extend(KhanUtil, {
         } else if (underRadical[1] === 1) {
             // The absolute value of the number under the radical is a perfect square
 
-            rootString += KhanUtil.fraction(-b + underRadical[0], 2 * a, true, true, true) + ","
-                + KhanUtil.fraction(-b - underRadical[0], 2 * a, true, true, true);
+            rootString += KhanUtil.fraction(-b + underRadical[0], 2 * a, true, true, true) + "," +
+                KhanUtil.fraction(-b - underRadical[0], 2 * a, true, true, true);
         } else {
             // under the radical can be partially simplified
             var divisor = KhanUtil.getGCD(b, 2 * a, underRadical[0]);
@@ -353,16 +407,26 @@ $.extend(KhanUtil, {
     // Thanks to Ghostoy on http://stackoverflow.com/questions/6784894/commafy/6786040#6786040
     commafy: function(num) {
         var str = num.toString().split(".");
+        var thousands = icu.getDecimalFormatSymbols().grouping_separator;
+        var decimal = icu.getDecimalFormatSymbols().decimal_separator;
+
+        // Note that this is not actually the space character. You can find
+        // this character in the icu.XX.js files that use space separators (for
+        // example, icu.fr.js)
+        if (thousands === " ") {
+            thousands = "\\;";
+        }
 
         if (str[0].length >= 5) {
-            str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, "$1{,}");
+            str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g,
+                                    "$1{" + thousands + "}");
         }
 
         if (str[1] && str[1].length >= 5) {
             str[1] = str[1].replace(/(\d{3})(?=\d)/g, "$1\\;");
         }
 
-        return str.join(".");
+        return str.join(decimal);
     },
 
     // Formats strings like "Axy + By + Cz + D" where A, B, and C are variables
@@ -437,7 +501,8 @@ $.extend(KhanUtil, {
     },
 
     randVar: function() {
-        return KhanUtil.randFromArray(["x", "k", "y", "a", "n", "r", "p", "u", "v"]);
+        // NOTE(jeresig): i18n: I assume it's OK to have roman letters here
+        return KhanUtil.randFromArray(["a", "k", "n", "p", "q", "r", "t", "x", "y", "z"]);
     },
 
     eulerFormExponent: function(angle) {
@@ -485,7 +550,7 @@ $.extend(KhanUtil, {
         if (real === 0 && imaginary === 0) {
             return "0";
         } else if (real === 0) {
-            return imaginary + "i";
+            return (imaginary === 1 ? "" : imaginary === -1 ? "-" : imaginary) + "i";
         } else if (imaginary === 0) {
             return real;
         } else {
@@ -495,15 +560,15 @@ $.extend(KhanUtil, {
 
     complexFraction: function(real, realDenominator, imag, imagDenominator) {
         var ret = "";
-        if (real == 0 && imag == 0) {
+        if (real === 0 && imag === 0) {
             ret = "0";
         }
-        if (real != 0) {
+        if (real !== 0) {
             ret += KhanUtil.fraction(real, realDenominator, false, true);
         }
-        if (imag != 0) {
+        if (imag !== 0) {
             if (imag / imagDenominator > 0) {
-                if (real != 0) {
+                if (real !== 0) {
                     ret += " + ";
                 }
                 ret += KhanUtil.fraction(imag, imagDenominator, false, true) + " i";
@@ -525,13 +590,13 @@ $.extend(KhanUtil, {
         var exponent = KhanUtil.scientificExponent(num);
         var factor = Math.pow(10, exponent);
         precision -= 1; // To account for the 1s digit
-        var mantissa = KhanUtil.roundTo(precision, num / factor).toFixed(precision);
+        var mantissa = KhanUtil.roundTo(precision, num / factor);
         return mantissa;
     },
 
     scientific: function(precision, num) {
         var exponent = KhanUtil.scientificExponent(num);
-        var mantissa = KhanUtil.scientificMantissa(precision, num);
+        var mantissa = KhanUtil.localeToFixed(KhanUtil.scientificMantissa(precision, num), precision);
         return "" + mantissa + "\\times 10^{" + exponent + "}";
     }
 });

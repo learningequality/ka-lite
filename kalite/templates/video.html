@@ -1,11 +1,16 @@
-{% extends 'base_distributed.html' %}
-
+{% extends base_template %}
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
+    <style>
+        .not-client-online-only {
+            display:none;
+        }
+    </style>
     <!--[if IE]>
     <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
     <![endif]-->
@@ -23,10 +28,8 @@
 
     <script>
     $(function() {
-    
-        // Keep this lean, in order to reduce caching filesize    
-        initialize_video("{{ video.youtube_id }}");
-
+        // Keep this lean, in order to reduce caching filesize
+        initialize_video("{{ video.id }}", "{{ video.youtube_id }}");
     });
     </script>
 
@@ -48,54 +51,54 @@
 
 
 {% block content %}
-<h2 class="title-header">
-    <span class="title">{% trans video.title %}</span><br/>
-    {% if video.description %}
-        <span class="long-description">{% trans video.description %}</span>
+    <h2 class="title-header">
+        <span class="title">{% trans video.title %}</span><br/>
+        {% if video.description %}
+            <span class="long-description">{% trans video.description %}</span>
+        {% endif %}
+        {% if video.related_exercise %}
+        <span style="float:right; margin-top: -17px; font-size: 14px;">
+            <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
+            {# Translators: Example usage=> Exercise: Name of Exercise #}
+            {% trans "Exercise" as exercise %}
+            <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
+        </span>
+        {% endif %}
+        <div class="clear"></div>
+
+        <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
+    </h2>
+    <div class="clear"></div>
+
+    {% if prev %}
+    <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
     {% endif %}
-    {% if video.related_exercise %}
-    <span style="float:right; margin-top: -17px; font-size: 14px;">
-        <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
-        {% comment %}Translators: Example usage=> Exercise: Name of Exercise {% endcomment %}
-        {% trans "Exercise" as exercise %}
-        <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
-    </span>
+
+    {% if next %}
+    <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
     <div class="clear"></div>
 
-    <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
-</h2>
-<div class="clear"></div>
+    {% if use_mplayer and video.available %}
 
-{% if prev %}
-<div class="vidprev"><a href="../{{ prev.readable_id }}/">&lt; {% trans prev.title %} <span class="progress-circle" data-youtube-id="{{ prev.youtube_id }}"></span></a></div>
-{% endif %}
+        <h2 id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
+            <a href="" id="launch_mplayer">
+                <img class="video-thumb" src="{{ video_urls.thumbnail }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
+                <br/><br/>
+                {% trans "Launch video in mplayer!" %}
+            </a>
+        </h2>
 
-{% if next %}
-<div class="vidnext"><a href="../{{ next.readable_id }}/"><span class="progress-circle" data-youtube-id="{{ next.youtube_id }}"></span> {% trans next.title %} &gt;</a></div>
-{% endif %}
-<div class="clear"></div>
+    {% elif video.available %}
+        <div id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
+            <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video_urls.thumbnail %}poster="{{ video_urls.thumbnail }}" {% endif %}data-setup="{}">
+                <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
+                {% for lang, subtitle_url in subtitle_urls.iteritems %}
+                <track kind="captions" src="{{ subtitle_url }}" srclang="{{ lang }}" label="{{ lang }}" {% if lang == selected_language and selected_language != "en" %}default="True" {% endif %}/>
+                {% endfor %}
+            </video>
+            {% if video_urls.thumbnail %}<img class="video-thumb" src="{{ video_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{% endif %}
+        </div>
 
-{% if use_mplayer %}
-
-    <h2 id="video-player" {% if not video.on_disk %} class="{% if not backup_vids_available %}not-{% endif %}client-online-only"{% endif %}>
-        <a href="" id="launch_mplayer">
-            <img class="video-thumb" src="{{ video.thumbnail_url }}" style="width: 100%;" title="Click to play!">
-            <br/><br/>
-            Launch video in mplayer!
-        </a>
-    </h2>
-
-{% else %}
-
-    <div id="video-player" {% if not video.on_disk %} class="{% if not backup_vids_available %}not-{% endif %}client-online-only"{% endif %}>
-        <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video.thumbnail_url %}poster="{{ video.thumbnail_url }}" {% endif %}data-setup="{}">
-            <source src="{{ video.stream_url }}" type="{{ video.stream_type }}" />
-            {% if video.subtitles_url %}<track kind="captions" src="{{ video.subtitles_url }}" srclang="en" label="On" />{% endif %}
-        </video>
-        {% if video.thumbnail_url %}<img class="video-thumb" src="{{ video.thumbnail_url }}" style="position: absolute; left: -9999999px;">{% endif %}
-    </div>
-
-{% endif %}
-
+    {% endif %}
 {% endblock content %}

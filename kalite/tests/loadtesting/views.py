@@ -21,7 +21,7 @@ def load_test(request, nusers=None):
         while n_users_created < int(request.GET.get("nusers", 1)):
             n_users_created += 1
             unpw = "s%d" % n_users_created
-            user = FacilityUser.get_or_initialize(username=unpw, facility=fac)
+            (user, _) = FacilityUser.get_or_initialize(username=unpw, facility=fac)
             user.set_password(unpw)
             user.save()
 

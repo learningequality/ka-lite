@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-require="math math-format">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Multiplying complex numbers</title>
     <script src="../khan-exercise.js"></script>
 </head>
@@ -34,9 +34,7 @@
         <div id="multiply-cplx">
             <p class="question">Multiply the following complex numbers:</p>
             <p><code>(<var>A_REP</var>) \cdot (<var>B_REP</var>)</code></p>
-            <div class="solution" data-type="complexNumberSeparate">
-                [ <var>ANSWER_REAL</var>, <var>ANSWER_IMAG</var> ]
-            </div>
+            <div class="solution" data-type="expression" data-simplify><var>ANSWER_REAL</var> + <var>ANSWER_IMAG</var>i</div>
             <div class="hints">
                 <p>
                     Complex numbers are multiplied like any two binomials.
@@ -45,8 +43,9 @@
                     <p>
                         First use the distributive property:
                     </p>
-                    <code>\qquad (<var>A_REP</var>) \cdot (<var>B_REP</var>) =
-                        (<var>A_REAL_COLORED</var> \cdot <var>B_REAL_COLORED</var>) + (<var>A_REAL_COLORED</var> \cdot <var>B_IMAG_COLORED</var>i) +
+                    <code>\qquad (<var>A_REP</var>) \cdot (<var>B_REP</var>) = </code><br>
+                    <code>
+                        \qquad \qquad (<var>A_REAL_COLORED</var> \cdot <var>B_REAL_COLORED</var>) + (<var>A_REAL_COLORED</var> \cdot <var>B_IMAG_COLORED</var>i) +
                         (<var>A_IMAG_COLORED</var>i \cdot <var>B_REAL_COLORED</var>) + (<var>A_IMAG_COLORED</var>i \cdot <var>B_IMAG_COLORED</var>i)
                     </code>
                 </div>
@@ -79,9 +78,6 @@
                     <code>
                         (<var>A_REAL * B_REAL</var> - <var>A_IMAG * B_IMAG</var>) + (<var>ANSWER_IMAG</var>i) = <var>complexNumber( ANSWER_REAL, ANSWER_IMAG)</var>
                     </code>
-                </p>
-                <p>
-                    The real part of the result is <code><var>ANSWER_REAL</var></code> and the imaginary part is <code><var>ANSWER_IMAG</var></code>.
                 </p>
             </div>
         </div>

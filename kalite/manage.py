@@ -12,5 +12,26 @@ sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(PROJEC
 from django.core.management import execute_manager
 import settings
 
+
+
+########################
+# ZERO CONFIG
+########################
+
+if settings.ZERO_CONFIG:
+    # Force all commands to run through our own serve command, which does auto-config if necessary
+    # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
+    if "runserver" in sys.argv:
+        sys.argv[sys.argv.index("runserver")] = "kaserve"
+    elif "runcherrypyserver" in sys.argv:
+        sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
+
+########################
+# PROXY SETUP
+########################
+
+if settings.HTTP_PROXY:
+    os.environ['http_proxy'] = settings.HTTP_PROXY
+
 if __name__ == "__main__":
     execute_manager(settings)

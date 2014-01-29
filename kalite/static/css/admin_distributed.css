@@ -1,0 +1,69 @@
+div.help {
+    margin-top:25px;
+}
+ul {
+    margin-left:20px;
+}
+.warn {
+    font-weight:bold;
+    color:#f00;
+}
+.floatleft {
+    float: left;
+}
+.link-div {
+    width: 250px;
+    float: left
+}
+.link {
+    width: 120px;
+    white-space: nowrap;
+}
+.link, .desc { 
+    padding-left: 25px;
+}
+.description {
+    width: 100%;
+}
+td.title { 
+    padding-top: 25px;
+}
+.green_button {
+    margin-right: 20px;
+}
+
+#time_select, #date_select {
+    width: 110px;
+}
+#standard-date {
+    visibility: hidden;
+}
+/*TODO: Delete this after Bootstrap integration on Distributed Server*/
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  list-style: none;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+}
+
+i.icon-chevron-up:before {
+    content: "∧";
+}
+
+i.icon-chevron-down:before {
+    content: "∨";
+}

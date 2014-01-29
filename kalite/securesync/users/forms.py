@@ -1,26 +1,43 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-
+from utils.django_utils import verify_raw_password
 
 class FacilityUserForm(forms.ModelForm):
+    """This form is used for 1) signing up, 2) creating users, and 3) editing users.
 
-    password = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    The views contain manual logic for processing passwords (hashing them, etc), so we use
+    custom fields here for the "password" and "confirm password" fields.
+    """
+
+    password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
 
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
+    def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
+        self.fields["facility"].initial = facility.id
+
+        # Passwords only required on new, not on edit
+        self.fields["password_first"].required = self.instance.pk == ""
+        self.fields["password_recheck"].required = self.instance.pk == ""
+
+        # Across POST and GET requests
+        self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        self.fields["facility"].initial = facility
 
     class Meta:
         model = FacilityUser
-        fields = ("facility", "group", "username", "first_name", "last_name",)
+        # Note: must preserve order
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "is_teacher")
         widgets = {
-            'facility': forms.HiddenInput(),
+            "facility": forms.HiddenInput(),
+            "is_teacher": forms.HiddenInput(),
         }
 
     def clean_username(self):
@@ -28,18 +45,31 @@ class FacilityUserForm(forms.ModelForm):
         username = self.cleaned_data.get('username', "")
 
         # check if given username is unique on both facility users and admins, whatever the casing
-        if FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0:
-            raise forms.ValidationError(_("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again."))
+        username_taken = FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0
+        username_changed = not self.instance or self.instance.username != username
+        if username_taken and username_changed:
+            if self.fields["facility"].queryset and self.fields["facility"].queryset.count() > 1:
+                error_message = _("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again.")
+            else:
+                error_message = _("A user with this username already exists. Please choose a new username and try again.")
+            raise forms.ValidationError(error_message)
 
-        if User.objects.filter(username__iexact=username).count() > 0:
+        elif User.objects.filter(username__iexact=username).count() > 0:
+            # Admin (django) user exists with the same name; we don't want overlap there!
             raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
 
         return self.cleaned_data['username']
 
-    def clean_password_recheck(self):
+    def clean_password_first(self):
+        password = self.cleaned_data.get('password_first', "")
+        verify_raw_password(password)
+        return password
 
-        if self.cleaned_data.get('password') != self.cleaned_data.get('password_recheck'):
+    def clean_password_recheck(self):
+        
+        if self.cleaned_data.get("password_first") and self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
             raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
+        return self.cleaned_data['password_recheck']
 
 
 class FacilityForm(forms.ModelForm):
@@ -47,6 +77,13 @@ class FacilityForm(forms.ModelForm):
     class Meta:
         model = Facility
         fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count",)
+
+    def clean_user_count(self):
+        user_count = self.cleaned_data['user_count']
+        if user_count is None:
+            return
+        if user_count < 1:
+            raise ValidationError(_("User count should should be at least one."), code='invalid_user_count')
 
 
 class FacilityGroupForm(forms.ModelForm):
@@ -67,6 +104,7 @@ class FacilityGroupForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
 
     class Meta:
         model = FacilityUser
@@ -76,6 +114,8 @@ class LoginForm(forms.ModelForm):
         self.user_cache = None
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['facility'].queryset = Facility.objects.all()
+        if self.fields["facility"].queryset.count() < 2:
+            self.fields["facility"].widget = forms.HiddenInput()
 
     def clean(self):
         username = self.cleaned_data.get('username', "")
@@ -91,12 +131,16 @@ class LoginForm(forms.ModelForm):
         try:
             self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
         except FacilityUser.DoesNotExist as e:
-            raise forms.ValidationError(_("Username was not found for this facility. Did you type your username correctly, and choose the right facility?"))
+            if self.fields["facility"].queryset.count() > 1:
+                error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
+            else:
+                error_message = _("Username was not found. Did you type your username correctly?")
+            raise forms.ValidationError(error_message)
 
         if not self.user_cache.check_password(password):
             self.user_cache = None
             if password and "password" not in self._errors:
-                self._errors["password"] = self.error_class([_("The password did not match. Please try again.")])
+                self._errors["password"] = self.error_class([_("The passwords do not match. Please try again.")])
 
         return self.cleaned_data
 

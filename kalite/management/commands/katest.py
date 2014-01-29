@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 from config.models import Settings
 from settings import LOG as logging
-from securesync.models import Device, DeviceZone, Zone, Facility
+from securesync.models import Device, DeviceZone, Zone, Facility, ZoneInvitation
 
 
 #@distributed_server_only 
@@ -48,8 +48,7 @@ def clean_db():
     logging.info("Cleaning Device")
     Device.objects.all().delete()
 
-           
-    
+
 class Command(BaseCommand):
     help = "KA Lite test help"
     option_list = BaseCommand.option_list + (
@@ -67,7 +66,6 @@ class Command(BaseCommand):
         elif args[0] == "clean_db":
             if self.confirm(options.get('interactive'), "clean_db will permanently delete data"):
                 clean_db()
-
         else:
             raise CommandError("Unrecognized test-only method: %s" % args[0])
 

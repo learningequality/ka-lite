@@ -15,7 +15,7 @@
     float: left;
 }
 
-#displaygrid > .userstatus {
+.userstatus {
     overflow: auto;
     width: 88%;
 }
@@ -58,8 +58,8 @@ th.username {
     text-overflow: ellipsis;
 }
 
-th.headrow {
-    /*width: 80px;*/
+th.headrow, th.headrow div {
+    width: 80px;
     font-weight: bold;
     background-color: white;
 }
@@ -87,3 +87,56 @@ th.headrowuser {
     /*white-space: nowrap;*/
 }
 
+#legend a {
+    height:12px;
+    margin:0px;
+    padding:0px;
+}   
+
+.student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
+    float:left; 
+    display:none;
+    overflow:hidden;
+    white-space:nowrap;
+    width:100%;
+    margin:0px 5px 0px 0px;
+    padding:0px;
+    text-align:right;
+    vertical-align:middle;
+}
+.student-name {
+    float:none;
+    text-align:left;
+    display:block;
+}
+#legend {
+    float:right;
+    vertical-align:middle;
+    margin:12px 25px 2px 10px;
+}
+.legend {
+    float:right;
+    width:120px;
+    height:20px;
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
+    overflow:hidden;
+    border-style:solid;
+    border-width: 1px;
+    padding:2px;
+    margin-right: 2px;
+/*display:none;*/
+
+}
+.legend div {
+    float:left;
+    width:35px;
+    height:21px;
+}
+#selection-bar {
+    overflow:hide;
+}
+#disp_options {
+    float:right;
+}

@@ -70,3 +70,35 @@ ul, li {
 a.edit-link {
     font-size:11pt;
 }
+
+.btn-large {
+    color: #fff;
+    background-color: #47a447;
+    border-color: #398439;
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.33;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    -webkit-user-select: none;
+}
+
+.btn-large:visited {
+    color: #fff;
+}
+
+.date {
+    float: left;
+}
+
+.hidden {
+    display: none;
+}

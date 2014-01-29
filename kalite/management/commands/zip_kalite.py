@@ -31,9 +31,9 @@ def select_package_dirs(dirnames, key_base, **kwargs):
     base_name = os.path.split(key_base)[1]
 
     if key_base == "":  # base directory
-        in_dirs = set(dirnames) - set(('.git', 'content', 'node_modules'))
+        in_dirs = set(dirnames) - set((".git", "content", "node_modules", "_khanload_cache", "_crowdin_cache"))
 
-    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", ""):
+    elif base_name in ["locale", "localflavor"] and kwargs.get("locale", "") not in [None, "", "all"]:
         # ONLY include files for the particular locale
 
         in_dirs = set((kwargs['locale'],))
@@ -42,7 +42,8 @@ def select_package_dirs(dirnames, key_base, **kwargs):
         # can't exclude 'test', which eliminates the Django test client (used in caching)
         #   as well as all the Khan academy tests
         in_dirs = set(dirnames)
-        in_dirs -= set(['tmp'])
+
+        in_dirs -= set(['tmp', "media"])  # media is like a temp dir
         if kwargs["remove_test"]:
             in_dirs -= set(('loadtesting', 'tests', 'testing', 'selenium', 'werkzeug', 'postmark'))
         #
@@ -50,6 +51,8 @@ def select_package_dirs(dirnames, key_base, **kwargs):
             in_dirs -= set(("central", "landing-page"))
             if base_name in ["kalite", "templates"]:  # remove central server apps & templates
                 in_dirs -= set(("contact", "faq", "registration"))
+            elif base_name in ["static"]:
+                in_dirs -= set(["language_packs", "less", "srt", "pot"])
             elif base_name in ["data"]:
                 in_dirs -= set(["subtitles"])
 
@@ -63,7 +66,7 @@ def file_in_blacklist_set(file_path):
 
     name = os.path.split(file_path)[1]
     ext = os.path.splitext(file_path)[1]
-    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ]) \
+    return (ext in [".pyc", ".sqlite", ".zip", ".xlsx", ".srt", ".pot", ".sublime-project", ".sublime-workspace", ".patch"]) \
         or (name in ["local_settings.py", ".gitignore", "tests.py", "faq", ".DS_Store", "Gruntfile.js", "package.json"])
 
 
@@ -110,7 +113,7 @@ def recursively_add_files(dirpath, files_dict=dict(), key_base="", **kwargs):
     return files_dict
 
 
-def create_local_settings_file(location, server_type="local", locale=None):
+def create_local_settings_file(location, server_type="local", locale=None, central_server=None):
     """Create an appropriate local_settings file for the installable server."""
 
     fil = tempfile.mkstemp()[1]
@@ -122,12 +125,17 @@ def create_local_settings_file(location, server_type="local", locale=None):
     elif os.path.exists(location):
         shutil.copy(location, fil)
 
-    ls = open(fil, "a") #append, to keep those settings, but override SOME
+    ls = open(fil, "a") # append, to keep those settings, but override SOME
 
     ls.write("\n") # never trust the previous file ended with a newline!
+    if settings.DEBUG:
+        ls.write("DEBUG = %s\n" % settings.DEBUG)
     ls.write("CENTRAL_SERVER = %s\n" % (server_type=="central"))
-    if locale:
+    if locale and locale != "all":
         ls.write("LANGUAGE_CODE = '%s'\n" % locale)
+    if server_type == "local" and central_server:
+        ls.write("CENTRAL_SERVER_HOST = '%s'\n" % central_server)
+        ls.write("SECURESYNC_PROTOCOL = '%s'\n" % ("http" if settings.DEBUG or ":" in central_server else "https"))
     ls.close()
 
     return fil
@@ -166,6 +174,12 @@ class Command(BaseCommand):
             dest='server_type',
             default="local",
             help='KA Lite server type'),
+        make_option('-c', '--central-server',
+            action='store',
+            dest='central_server',
+            default=getattr(settings, "CENTRAL_SERVER_HOST", None),
+            help='Central server host and port',
+            metavar="CENTRAL_SERVER"),
 
         # Functional options
         make_option('-r', '--remove-test',
@@ -181,16 +195,22 @@ class Command(BaseCommand):
         make_option('-f', '--file',
             action='store',
             dest='file',
-            default="__default__",
+            default=None,
             help='FILE to save zip to',
             metavar="FILE"),
         )
 
     def handle(self, *args, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("Disabled for distributed servers, until we can figure out what to do with ")
+
         options['platform'] = options['platform'].lower() # normalize
 
         if options['platform'] not in ["all", "linux", "macos", "darwin", "windows"]:
             raise CommandError("Unrecognized platform: %s; will include ALL files." % options['platform'])
+
+        # Step 0: refresh all resources
+        get_dubbed_video_map(force=True)  # force a remote download
 
         # Step 1: recursively add all static files
         kalite_base = os.path.realpath(settings.PROJECT_PATH + "/../")
@@ -199,18 +219,18 @@ class Command(BaseCommand):
         # Step 2: Add a local_settings.py file.
         #   For distributed servers, this is a copy of the local local_settings.py,
         #   with a few properties (specified as command-line options) overridden
-        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'])
+        ls_file = create_local_settings_file(location=os.path.realpath(kalite_base+"/kalite/local_settings.py"), server_type=options['server_type'], locale=options['locale'], central_server=options["central_server"])
         files_dict[ls_file] = { "dest_path": "kalite/local_settings.py" }
 
         # Step 3: select output file.
-        if options['file']=="__default__":
+        if not options['file']:
             options['file'] = create_default_archive_filename(options)
 
         # Step 4: package into a zip file
-        ensure_dir(os.path.realpath(os.path.dirname(options["file"])))
+        ensure_dir(os.path.realpath(os.path.dirname(options["file"])))  # allows relative paths to be passed.===
         system_specific_zipping(
-            files_dict = dict([(src_path, v["dest_path"]) for src_path, v in files_dict.iteritems()]), 
-            zip_file = options["file"], 
+            files_dict = dict([(v["dest_path"], src_path) for src_path, v in files_dict.iteritems()]),
+            zip_file = options["file"],
             compression=ZIP_DEFLATED if options['compress'] else ZIP_STORED,
             callback=_default_callback_zip if options["verbosity"] else None,
         )

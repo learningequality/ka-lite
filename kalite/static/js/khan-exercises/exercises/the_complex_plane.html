@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-require="math graphie math-format interactive">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>The complex plane</title>
     <script src="../khan-exercise.js"></script>
 </head>
@@ -26,26 +26,28 @@
                     scale: 30
                 });
 
-                label([6, 0.5], "Re", "left");
-                label([0.5, 5], "Im", "right");
+                // I18N: This is the abbreviated "Real" in regards to the complex plane
+                label([6, 0.5], $._("Re"), "left");
+                // I18N: This is the abbreviated "Imaginary" in regards to the complex plane
+                label([0.5, 5], $._("Im"), "right");
 
                 addMouseLayer();
-                this.movablePoint = addMovablePoint({constraints: {}, snapX: 0.5, snapY: 0.5});
-                movablePoint.onMove = function(x, y) {
-                    if (x &lt; LOWER_BOUND || x > UPPER_BOUND || y &lt; LOWER_BOUND || y > UPPER_BOUND) {
+                graph.movablePoint = addMovablePoint({constraints: {}, snapX: 0.5, snapY: 0.5});
+                graph.movablePoint.onMove = function(x, y) {
+                    if (x &lt; LOWER_BOUND || x &gt; UPPER_BOUND || y &lt; LOWER_BOUND || y &gt; UPPER_BOUND) {
                         return false;
                     }
                 };
             </div>
             <div class="solution" data-type="custom">
                 <div class="guess">
-                    movablePoint.coord
+                    graph.movablePoint.coord
                 </div>
                 <div class="validator-function">
-                    return movablePoint.coord.join() === [REAL, IMAG].join();
+                    return graph.movablePoint.coord.join() === [REAL, IMAG].join();
                 </div>
                 <div class="show-guess">
-                    movablePoint.setCoord(guess);
+                    graph.movablePoint.setCoord(guess);
                 </div>
             </div>
             <div class="hints">
@@ -60,21 +62,21 @@
                     <div class="graphie" data-update="gauss-plane">
                         style({stroke: ORANGE, strokeWidth: 2.0});
                         line([REAL, LOWER_BOUND - 1], [REAL, UPPER_BOUND + 1]);
-                        movablePoint.visibleShape.toFront();
+                        graph.movablePoint.visibleShape.toFront();
                     </div>
                     <p>The vertical <strong class="hint_orange">orange</strong> line represents all complex numbers with real part <code><var>REAL</var></code> (including <code><var>REP</var></code>).
-                </div>
+                </p></div>
                 <div>
                     <div class="graphie" data-update="gauss-plane">
                         style({stroke: BLUE, strokeWidth: 2.0});
                         line([LOWER_BOUND - 1, IMAG], [UPPER_BOUND + 1, IMAG]);
-                        movablePoint.visibleShape.toFront();
+                        graph.movablePoint.visibleShape.toFront();
                     </div>
                     <p>The horizontal <strong class="hint_blue">blue</strong> line represents all complex numbers with imaginary part <code><var>IMAG</var></code>, also including <code><var>REP</var></code>.
-                </div>
+                </p></div>
                 <div>
                     <div class="graphie" data-update="gauss-plane">
-                        movablePoint.moveTo(REAL, IMAG);
+                        graph.movablePoint.moveTo(REAL, IMAG);
                     </div>
                     <p>
                         The only complex number with real part <code><var>REAL</var></code> and imaginary part <code><var>IMAG</var></code> is <code><var>REP</var></code>,

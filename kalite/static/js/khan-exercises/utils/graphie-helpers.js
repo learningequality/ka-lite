@@ -11,6 +11,7 @@ function numberLine(start, end, step, x, y, denominator) {
     var graph = KhanUtil.currentGraph;
     var set = graph.raphael.set();
     set.push(graph.line([x, y], [x + end - start, y]));
+    set.labels = [];
     for (var i = 0; i <= end - start; i += step) {
         set.push(graph.line([x + i, y - 0.2], [x + i, y + 0.2]));
 
@@ -27,18 +28,27 @@ function numberLine(start, end, step, x, y, denominator) {
                     lab = base + "\\frac{" + Math.abs(Math.round(frac * denominator)) + "}{" + denominator + "}";
                 }
             }
-            graph.label([x + i, y - 0.2], "\\small{" + lab + "}", "below", { labelDistance: 3 });
+            var label = graph.label([x + i, y - 0.2], "\\small{" + lab + "}",
+                "below", { labelDistance: 3 });
+            set.labels.push(label);
+            set.push(label);
         }
         else {
-            graph.label([x + i, y - 0.2], "\\small{" + (start + i).toFixed(decPlaces) + "}", "below", { labelDistance: 3 });
+            var label = graph.label([x + i, y - 0.2],
+                "\\small{" + KhanUtil.localeToFixed(start + i, decPlaces) + "}",
+                "below", { labelDistance: 3 });
+            set.labels.push(label);
+            set.push(label);
         }
     }
     return set;
 }
 
-function piechart(divisions, colors, radius) {
+function piechart(divisions, colors, radius, strokeColor) {
     var graph = KhanUtil.currentGraph;
     var set = graph.raphael.set();
+    var arcColor = strokeColor || "none";
+    var lineColor = strokeColor || "#fff";
 
     var sum = 0;
     $.each(divisions, function(i, slice) {
@@ -48,20 +58,20 @@ function piechart(divisions, colors, radius) {
     var partial = 0;
     $.each(divisions, function(i, slice) {
         set.push(graph.arc([0, 0], radius, partial * 360 / sum, (partial + slice) * 360 / sum, true, {
-            stroke: colors[2] || "none",
+            stroke: arcColor,
             fill: colors[i]
         }));
         partial += slice;
     });
 
     for (var i = 0; i < sum; i++) {
-        set.push(graph.line([0, 0], graph.polar(radius, i * 360 / sum), { stroke: colors[2] || "#fff" }));
+        set.push(graph.line([0, 0], graph.polar(radius, i * 360 / sum), { stroke: lineColor }));
     }
 
     return set;
 }
 
-function rectchart(divisions, colors, y) {
+function rectchart(divisions, fills, y, strokes) {
     var graph = KhanUtil.currentGraph;
     var set = graph.raphael.set();
 
@@ -72,20 +82,32 @@ function rectchart(divisions, colors, y) {
         sum += slice;
     });
 
+    var unit = graph.unscaleVector([1, 1]);
     var partial = 0;
     $.each(divisions, function(i, slice) {
-        var x = partial / sum, w = slice / sum;
-        set.push(graph.path([[x, y], [x + w, y], [x + w, y + 1], [x, y + 1]], {
-            stroke: KhanUtil.BACKGROUND,
-            fill: colors[i]
-        }));
-        partial += slice;
-    });
+        var fill = fills[i];
+        // If no stroke is provided, match the fill color so the rectangle
+        // appears to be the same size
+        var stroke = strokes && strokes[i] || fill;
 
-    for (var i = 0; i <= sum; i++) {
-        var x = i / sum;
-        set.push(graph.line([x, y + 0], [x, y + 1], { stroke: KhanUtil.BACKGROUND }));
-    }
+        for (var j = 0; j < slice; j++) {
+            var x = partial / sum, w = 1 / sum;
+            set.push(graph.path(
+                [
+                    [x + 2 * unit[0], y + 2 * unit[1]],
+                    [x + w - 2 * unit[0], y + 2 * unit[1]],
+                    [x + w - 2 * unit[0], y + 1 - 2 * unit[1]],
+                    [x + 2 * unit[0], y + 1 - 2 * unit[1]],
+                    true
+                ],
+                {
+                    stroke: stroke,
+                    fill: fill
+                }
+            ));
+            partial += 1;
+        }
+    });
 
     return set;
 }
@@ -185,13 +207,13 @@ function redrawParabola(fShowFocusDirectrix) {
     var vertexY = currParabola.getVertexY();
 
     if (fShowFocusDirectrix) {
-        $("#focus-x-label").html("<code>" + currParabola.getFocusX() + "</code>").tmpl();
-        $("#focus-y-label").html("<code>" + currParabola.getFocusY().toFixed(2) + "</code>").tmpl();
-        $("#directrix-label").html("<code>" + "y = " + currParabola.getDirectrixK().toFixed(2) + "</code>").tmpl();
+        $("#focus-x-label").html("<code>" + currParabola.getFocusX() + "</code>").runModules();
+        $("#focus-y-label").html("<code>" + KhanUtil.localeToFixed(currParabola.getFocusY(), 2) + "</code>").runModules();
+        $("#directrix-label").html("<code>" + "y = " + KhanUtil.localeToFixed(currParabola.getDirectrixK(), 2) + "</code>").runModules();
     } else {
         var equation = "y - " + vertexY + "=" + leadingCoefficient + "(x - " + vertexX + ")^{2}";
         equation = KhanUtil.cleanMath(equation);
-        $("#equation-label").html("<code>" + equation + "</code>").tmpl();
+        $("#equation-label").html("<code>" + equation + "</code>").runModules();
     }
     $("#leading-coefficient input").val(leadingCoefficient);
     $("#vertex-x input").val(vertexX);
@@ -362,90 +384,6 @@ function ParallelLines(x1, y1, x2, y2, distance) {
     };
 }
 
-function Chart(data, pos) {
-    var graph = KhanUtil.currentGraph;
-    this.transformX = d3.scale.ordinal().domain(data.ordinals).rangeBands([pos.lx, pos.lx + pos.width], 0.75);
-    this.transformY = d3.scale.linear().domain([data.min, data.max]).range([pos.ly, pos.ly + pos.height]);
-
-    this.draw = function() {
-        // Draw axes
-        graph.style({ stroke: "#ccc"});
-        graph.line([pos.lx, pos.ly], [pos.lx + pos.width, pos.ly]);
-        graph.line([pos.lx, pos.ly], [pos.lx, pos.ly + pos.height]);
-
-        // Draw data points
-        for (var i = 0; i < data.ordinals.length; i++) {
-            this.drawDataPoint(i, "#aaa");
-        }
-
-        // Draw ticks
-        graph.style({ "stroke-width": 1 });
-        var ticks = this.transformY.ticks(data.tickCount);
-        for (var i = 0; i < ticks.length; i++) {
-            var tick = ticks[i];
-            graph.line([pos.lx - 0.1, this.transformY(tick)], [pos.lx + 0.1, this.transformY(tick)]);
-            graph.label([pos.lx, this.transformY(tick)], "\\small{" + tick + "}", "left");
-        }
-    };
-
-    this.highlightDataPoint = function(index, color) {
-        this.drawDataPoint(index, color);
-    }
-
-    this.labelDataPoint = function(index, color) {
-        color = color || KhanUtil.BLUE;
-        var val = data.values[index];
-        var x = this.transformX(data.ordinals[index]);
-        var y = this.transformY(val);
-        graph.label([x, y], "\\text{" + val + "}", "above", { color: color });
-        graph.style({ "stroke-dasharray": "-", "stroke-width": 1 });
-        graph.line([pos.lx, y], [x, y]);
-    }
-}
-
-function LineChart(data, pos) {
-    var graph = KhanUtil.currentGraph;
-    this.base = Chart;
-    this.base(data, pos);
-    var prevPoint = null;
-
-    this.drawDataPoint = function(index, color) {
-        color = color || KhanUtil.BLUE;
-        graph.style({ stroke: color, fill: color });
-        var ord = data.ordinals[index];
-        var x = this.transformX(ord);
-        var y = this.transformY(data.values[index]);
-        var coord = [x, y];
-        graph.circle([x, y], 0.1);
-        if (prevPoint) {
-            graph.line(prevPoint, coord);
-        }
-        prevPoint = coord;
-        graph.label([x, this.transformY(data.min)], "\\text{" + ord + "}", "below");
-    }
-
-    this.highlightDataPoint = function(index, color) {
-        prevPoint = null;
-        this.drawDataPoint(index, color);
-    }
-}
-
-function BarChart(data, pos) {
-    var graph = KhanUtil.currentGraph;
-    this.base = Chart;
-    this.base(data, pos);
-
-    this.drawDataPoint = function(index, color) {
-        color = color || KhanUtil.BLUE;
-        graph.style({ stroke: color, "stroke-width": 10 });
-        var ord = data.ordinals[index];
-        var x = this.transformX(ord);
-        var bottomCoord = [x, this.transformY(data.min)];
-        graph.line(bottomCoord, [x, this.transformY(data.values[index])]);
-        graph.label(bottomCoord, "\\text{" + ord + "}", "below");
-    };
-}
-
 function drawComplexChart(radius, denominator) {
     var graph = KhanUtil.currentGraph;
     var safeRadius = radius * Math.sqrt(2);
@@ -467,7 +405,7 @@ function drawComplexChart(radius, denominator) {
 
     for (var i = 0; i < denominator; i++) {
         var angle = i * 2 * Math.PI / denominator;
-        if (denominator % 4 === 0 && i % (denominator / 4) != 0) { // Don't draw over axes.
+        if (denominator % 4 === 0 && i % (denominator / 4) !== 0) { // Don't draw over axes.
             graph.line([0, 0], [Math.sin(angle) * safeRadius, Math.cos(angle) * safeRadius], {
                 stroke: color
             });
@@ -487,45 +425,47 @@ function ComplexPolarForm(angleDenominator, maxRadius, euler) {
 
     this.update = function(newAngle, newRadius) {
         angle = newAngle;
-        while (angle < 0) angle += denominator;
+        while (angle < 0) {
+            angle += denominator;
+        }
         angle %= denominator;
 
         radius = Math.max(1, Math.min(newRadius, maximumRadius)); // keep between 0 and maximumRadius...
 
         this.redraw();
-    }
+    };
 
     this.delta = function(deltaAngle, deltaRadius) {
         this.update(angle + deltaAngle, radius + deltaRadius);
-    }
+    };
 
     this.getAngleNumerator = function() {
         return angle;
-    }
+    };
 
     this.getAngleDenominator = function() {
         return denominator;
-    }
+    };
 
     this.getAngle = function() {
         return angle * 2 * Math.PI / denominator;
-    }
+    };
 
     this.getRadius = function() {
         return radius;
-    }
+    };
 
     this.getRealPart = function() {
         return Math.cos(this.getAngle()) * radius;
-    }
+    };
 
     this.getImaginaryPart = function() {
         return Math.sin(this.getAngle()) * radius;
-    }
+    };
 
     this.getUseEulerForm = function() {
         return useEulerForm;
-    }
+    };
 
     this.plot = function() {
         circle = KhanUtil.currentGraph.circle([this.getRealPart(), this.getImaginaryPart()], 1 / 4, {
@@ -539,7 +479,7 @@ function ComplexPolarForm(angleDenominator, maxRadius, euler) {
             circle.remove();
         }
         this.plot();
-    }
+    };
 }
 
 function updateComplexPolarForm(deltaAngle, deltaRadius) {
@@ -564,28 +504,118 @@ function redrawComplexPolarForm(angle, radius) {
 
     var equation = KhanUtil.polarForm(radius, angle, point.getUseEulerForm());
 
-    $("#number-label").html("<code>" + equation + "</code>").tmpl();
-    $("#current-radius").html("<code>" + radius + "</code>").tmpl();
-    $("#current-angle").html("<code>" + KhanUtil.piFraction(angle, true) + "</code>").tmpl();
+    $("#number-label").html("<code>" + equation + "</code>").runModules();
+    $("#current-radius").html("<code>" + radius + "</code>").runModules();
+    $("#current-angle").html("<code>" + KhanUtil.piFraction(angle, true) + "</code>").runModules();
 }
 
 function labelDirection(angle) {
     angle = angle % 360;
-    if (angle == 0) {
+    if (angle === 0) {
         return "right";
     } else if (angle > 0 && angle < 90) {
         return "above right";
-    } else if (angle == 90) {
+    } else if (angle === 90) {
         return "above";
     } else if (angle > 90 && angle < 180) {
         return "above left";
-    } else if (angle == 180) {
+    } else if (angle === 180) {
         return "left";
     } else if (angle > 180 && angle < 270) {
         return "below left";
-    } else if (angle == 270) {
+    } else if (angle === 270) {
         return "below";
     } else if (angle > 270 && angle < 360) {
         return "below right";
     }
+}
+
+// arc orientation is "top"|"left"|"bottom"|"right".
+// arrow direction is clockwise (true) or counter-clockwise (false)
+function curvyArrow(center, radius, arcOrientation, arrowDirection, styles) {
+    styles = styles || {};
+    var graph = KhanUtil.currentGraph;
+    var set = graph.raphael.set();
+    var angles;
+    if (arcOrientation === "left") {
+        angles = [90, 270];
+    } else if (arcOrientation === "right") {
+        angles = [270, 90];
+    } else if (arcOrientation === "top") {
+        angles = [0, 180];
+    } else if (arcOrientation === "bottom") {
+        angles = [180, 0];
+    }
+    angles.push(styles);
+    var arcArgs = [center, radius].concat(angles);
+    set.push(graph.arc.apply(graph, arcArgs));
+
+    var offset = graph.unscaleVector([1, 1]);
+
+    // draw Arrows
+    var from = _.clone(center);
+    var to = _.clone(center);
+    if (arcOrientation === "left" || arcOrientation === "right") {
+        var left = arcOrientation === "left";
+        from[1] = to[1] = to[1] + radius * (arrowDirection === left ? 1 : -1);
+        to[0] = from[0] + offset[0] * (left ? 1 : -1);
+    } else {
+        var bottom = arcOrientation === "bottom";
+        from[0] = to[0] = to[0] + radius * (arrowDirection === bottom ? 1 : -1);
+        to[1] = from[1] + offset[1] * (bottom ? 1 : -1);
+    }
+    set.push(graph.line(from, to, _.extend({arrows: "->"}, styles)));
+    return set;
+}
+
+function curlyBrace(startPointGraph, endPointGraph) {
+    var graph = KhanUtil.currentGraph;
+
+    var startPoint = graph.scalePoint(startPointGraph);
+    var endPoint = graph.scalePoint(endPointGraph);
+    var angle = KhanUtil.findAngle(endPoint, startPoint);
+    var length = KhanUtil.getDistance(endPoint, startPoint);
+    var midPoint = _.map(startPoint, function(start, i) {
+        return (start + endPoint[i]) / 2;
+    });
+
+    var specialLen = 16 * 2 + 13 * 2;
+    if (length < specialLen) {
+        throw new Error("Curly brace length is too short.");
+    }
+    var straight = (length - specialLen) / 2;
+    var half = length / 2;
+
+    var firstHook = "c 1 -3 6 -5 10 -6" +
+                    "c 0 0 3 -1 6 -1";
+
+    // Mirror of first hook.
+    var secondHook = "c 3 1 6 1 6 1" +
+                     "c 4 1 9 3 10 6";
+
+    var straightPart = "l " + straight + " 0";
+
+    var firstMiddle =
+            "c 5 0 10 -3 10 -3" +
+            "l 3 -4";
+
+    // Mirror of second middle
+    var secondMiddle =
+            "l 3 4" +
+            "c 0 0 5 3 10 3";
+
+    var path = [
+        "M -" + half + " 0",
+        firstHook,
+        straightPart,
+        firstMiddle,
+        secondMiddle,
+        straightPart,
+        secondHook
+    ].join("");
+
+    var brace = graph.raphael.path(path);
+    brace.rotate(angle);
+    brace.translate(midPoint[0], midPoint[1]);
+    return brace;
 }

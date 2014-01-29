@@ -28,7 +28,7 @@
                     }, false)
                 </var>
                 <var id="EXPONENT_HINT">_.map(EXPONENTS, function(num, prime) {
-                        return cardinal(num) + " &lt;code&gt;" + prime + "&lt;/code&gt;" + (num === 1 ? "" : "s");
+                        return cardinalThrough20(num) + " &lt;code&gt;" + prime + "&lt;/code&gt;" + (num === 1 ? "" : "s");
                     })
                 </var>
                 <var id="SOLUTION">_.reduce(PRIMES, function(factors, prime) {
@@ -93,8 +93,7 @@
                         }, []).join("\\cdot");
                         answerPreview += " = " + graph.computeTotal();
 
-                        $("#answer-preview code").text(answerPreview);
-                        MathJax.Hub.Queue(["Reprocess", MathJax.Hub, $("#answer-preview")[0]]);
+                        KhanUtil.processMath($("#answer-preview code")[0], answerPreview, true);
                     };
 
                     _.each(PRIMES, function(prime, y) {
@@ -169,7 +168,7 @@
 
             <div class="solution" data-type="custom">
                 <div class="instruction">
-                    Click the orange arrows to change your answer.
+                    <p>Click the orange arrows to change your answer.</p>
                     <p id="answer-preview"><code>=1</code></p>
                 </div>
                 <div class="guess">GRAPHIE.computeTotal()</div>
@@ -254,8 +253,11 @@
                 \qquad<var>FACTORIZATION.join("\\space\\color{black}{\\cdot}\\space")</var>
             </code></p>
             <div data-if="HAS_EXPONENTS">
-                <p>
-                    Because there <var>FACTORIZATION[0] === FACTORIZATION[1] ? "are" : "is"</var>
+                <p data-if="FACTORIZATION[0] === FACTORIZATION[1]">
+                    Because there are
+                    <var>toSentence(EXPONENT_HINT)</var>, we can use exponents to write the prime factorization as:
+                </p><p data-else="">
+                    Because there is
                     <var>toSentence(EXPONENT_HINT)</var>, we can use exponents to write the prime factorization as:
                 </p>
                 <p><code>\qquad\blue{<var>SOLUTION</var>} = <var>NUMBER</var></code></p>

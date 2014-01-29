@@ -1,10 +1,13 @@
 """
-Miscellaneous utility functions (no dependence on non-standard packages, such as Django) 
+Miscellaneous utility functions (no dependence on non-standard packages, such as Django)
 
 General string, integer, date functions.
 """
 import datetime
+import logging
+import requests
 import os
+import errno
 
 
 class InvalidDateFormat(Exception):
@@ -116,8 +119,9 @@ def version_diff(v1, v2):
 
     v1_parts = v1.split(".")
     v2_parts = v2.split(".")
-    if len(v1_parts) != len(v2_parts):
-        raise Exception("versions must have the same number of components (periods)")
+    
+    v1_parts += ["0"] * (len(v2_parts) - len(v1_parts))
+    v2_parts += ["0"] * (len(v1_parts) - len(v2_parts))
 
     for v1p,v2p in zip(v1_parts,v2_parts):
         cur_diff = int(v1p)-int(v2p)
@@ -127,17 +131,20 @@ def version_diff(v1, v2):
     return 0
 
 
+# http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    path_parts = path.split("/")
-    full_path = "/"
-    for part in path_parts:
-        if "." in part:
-            raise InvalidDirectoryFormat()
-        if part is not '':
-            full_path += part + "/"
-            if not os.path.exists(full_path):
-                os.makedirs(full_path)
+    try:
+        os.makedirs(path)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            # file already exists
+            if not os.path.isdir(path):
+                # file exists but is not a directory
+                raise OSError(errno.ENOTDIR, "Not a directory: '%s'" % path)
+            pass  # directory already exists
+        else:
+            raise
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
@@ -171,6 +178,18 @@ def convert_date_input(date_to_convert):
         return date_to_convert
 
 
+def get_module_source_file(module_name):
+    """
+    http://stackoverflow.com/questions/247770/retrieving-python-module-path
+    http://stackoverflow.com/questions/8718885/import-module-from-string-variable
+    """
+    module_name.split
+    source_file = __import__(module_name, fromlist=[""]).__file__
+    if source_file.endswith(".pyc"):
+        return source_file[0:-1]
+    return source_file
+
+
 def max_none(data):
     """
     Given a list of data, returns the max... removing None elements first, for comparison "safety".
@@ -185,3 +204,36 @@ def max_none(data):
         if d is not None:
             non_none_data.append(d)
     return max(non_none_data) if non_none_data else None
+
+
+def make_request(headers, url, max_retries=5):
+    """Return response from url; retry up to 5 times for server errors.
+    When returning an error, return human-readable status code.
+
+    codes: server-error, client-error
+    """
+    response = None
+    for retries in range(1, 1 + max_retries):
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code >= 500:
+                if retries == max_retries:
+                    logging.warn("Unexpected Error downloading %s: server-side error (%d)" % (
+                        url, response.status_code,
+                    ))
+                    response = "server-error"
+                    break;
+            elif response.status_code >= 400:
+                logging.debug("Error downloading %s: client-side error (%d)" % (
+                    url, response.status_code,
+                ))
+                response = "client-error"
+                break
+            # TODO(dylan): if internet connection goes down, we aren't catching
+            # that, and things just break
+            else:
+                break
+        except Exception as e:
+            logging.warn("Unexpected Error downloading %s: %s" % (url, e))
+
+    return response

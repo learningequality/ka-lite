@@ -23,7 +23,7 @@ class Command(BaseCommand):
     #   on the wiki, at http://kalitewiki.learningequality.org/user-s-manual/using-ka-lite/admins/run-management-commands
     allowable_commands = [
         "update",
-        "apacheconfig", "cache", "subtitledownload", "videoscan", "videodownload",
+        "apacheconfig", "cache", "videoscan", "videodownload",
         "changelocalpassword", "retrypurgatory", "syncmodels",
         "changepassword", "createsuperuser",
         "dumpdata", "loaddata", "validate", 

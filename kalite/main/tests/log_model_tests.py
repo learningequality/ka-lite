@@ -2,6 +2,7 @@ from django.utils import unittest
 
 from main.models import VideoLog, ExerciseLog
 from securesync.models import Facility, FacilityUser
+from shared import i18n
 from shared.testing import KALiteTestCase
 
 class TestExerciseLogs(KALiteTestCase):
@@ -18,7 +19,8 @@ class TestExerciseLogs(KALiteTestCase):
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
-        self.user = FacilityUser(username="testuser", password="dummy", facility=self.facility)
+        self.user = FacilityUser(username="testuser", facility=self.facility)
+        self.user.set_password("dumber")
         self.user.save()
 
         # create an initial ExerciseLog instance so we have something to collide with later
@@ -77,17 +79,19 @@ class TestVideoLogs(KALiteTestCase):
     NEW_POINTS = 22
     NEW_SECONDS_WATCHED = 5
     YOUTUBE_ID = "aNqG4ChKShI"
-    
+    VIDEO_ID = i18n.get_video_id(YOUTUBE_ID) or "dummy"
+
     def setUp(self):
         super(TestVideoLogs, self).setUp()
         # create a facility and user that can be referred to in models across tests
         self.facility = Facility(name="Test Facility")
         self.facility.save()
-        self.user = FacilityUser(username="testuser", password="dummy", facility=self.facility)
+        self.user = FacilityUser(username="testuser", facility=self.facility)
+        self.user.set_password("dumber")
         self.user.save()
 
         # create an initial VideoLog instance so we have something to collide with later
-        self.original_videolog = VideoLog(youtube_id=self.YOUTUBE_ID, user=self.user)
+        self.original_videolog = VideoLog(video_id=self.VIDEO_ID, youtube_id=self.YOUTUBE_ID, user=self.user)
         self.original_videolog.points = self.ORIGINAL_POINTS
         self.original_videolog.total_seconds_watched = self.ORIGINAL_SECONDS_WATCHED
         self.original_videolog.save()
@@ -120,7 +124,7 @@ class TestVideoLogs(KALiteTestCase):
     def test_videolog_collision(self):
         
         # create a new video log with the same youtube_id and user, but different points/total seconds watched
-        videolog = VideoLog(youtube_id=self.YOUTUBE_ID, user=self.user)
+        videolog = VideoLog(video_id=self.VIDEO_ID, youtube_id=self.YOUTUBE_ID, user=self.user)
         videolog.points = self.NEW_POINTS
         videolog.total_seconds_watched = self.NEW_SECONDS_WATCHED
         

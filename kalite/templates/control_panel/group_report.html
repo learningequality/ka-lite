@@ -1,9 +1,9 @@
 {% extends "control_panel/base_printable.html" %}
+{% load i18n %}
 {% load staticfiles %}
 {% load include_block %}
 
-{% block title %}{{ group.name }} - Group Report{% endblock title %}
-{% block control_panel_active %}active{% endblock control_panel_active %}
+{% block title %}{{ group.name }} - {% trans "Group Report" %}{{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
     {% include_block "coachreports/tabular_view.html" "headjs" %}
@@ -14,7 +14,7 @@
 {% endblock headcss %}
 
 {% block control_panel_content %}
-<div id="group_container">
-    {% include_block "coachreports/tabular_view.html" "content" %}
-</div>
+    <div id="group_container">
+        {% include_block "coachreports/tabular_view.html" "content" %}
+    </div>
 {% endblock control_panel_content %}

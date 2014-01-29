@@ -1,28 +1,28 @@
 {% extends "registration/base.html" %}
+{% load i18n %}
 
-{% block title %}Sign up{% endblock %}
+{% block title %}{% trans "Sign up" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}
-<style>
-    /* hackish way to show org details, if there are any errors or content */
-    #org_details {
-        display:none;
-    } /* default: off */
-{% for prop in org_form %}
-    {% comment "org.name is on the outside of the expanded form, so no need to expand" %}{% endcomment %}
-    {% if not prop.name == "name" %}
-        {% if prop.errors or prop.value %}
-    #org_details {
-        display:block;
-    } /* dynamically override if we find an error */
+    <style>
+        /* hackish way to show org details, if there are any errors or content */
+        #org_details {
+            display:none;
+        } /* default: off */
+    {% for prop in org_form %}
+        {% comment "org.name is on the outside of the expanded form, so no need to expand" %}{% endcomment %}
+        {% if not prop.name == "name" %}
+            {% if prop.errors or prop.value %}
+        #org_details {
+            display:block;
+        } /* dynamically override if we find an error */
+            {% endif %}
         {% endif %}
-    {% endif %}
-{% endfor %}
-</style>
+    {% endfor %}
+    </style>
 {% endblock headcss %}
 
 {% block content %}
-
   {% if form.non_field_errors %}
   <div class="errorlist">
       Please correct the errors below:
@@ -70,6 +70,7 @@
             <span style="margin-left:25px"><a href="#" onclick="$('#org_details').toggle()">Add details of your organization</a></span>
         </div>
     </div>
+    <br/>
     <div class="form-section" id="org_details">
         <div class="form-section">
           <div class="form-label"><label for="id_org_url">Organization URL:</label></div>
@@ -158,13 +159,13 @@
 {% endblock %}
 
 {% block content-related %}
-<div class="form-section">Fill out the form to the left (all fields are required), and your
-account will be created; you'll be sent an email with instructions on how
-to finish your registration.</div>
+    <div class="form-section">Fill out the form to the left (all fields are required), and your
+    account will be created; you'll be sent an email with instructions on how
+    to finish your registration.</div>
 
-<div class="form-section">We'll only use your email to send you signup instructions. We hate spam
-as much as you do.</div>
+    <div class="form-section">We'll only use your email to send you signup instructions. We hate spam
+    as much as you do.</div>
 
-<div class="form-section">This account will let you log into the ticket tracker, claim tickets,
-and be exempt from spam filtering.</div>
+    <div class="form-section">This account will let you log into the ticket tracker, claim tickets,
+    and be exempt from spam filtering.</div>
 {% endblock %}

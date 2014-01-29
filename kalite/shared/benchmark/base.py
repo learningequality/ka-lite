@@ -32,7 +32,10 @@ class Common(object):
         self.return_dict['class']=type(self).__name__
         self.return_dict['uname'] = platform.uname()
         self.return_dict['fixture'] = fixture
-        self.verbosity = int(kwargs.get("verbosity"))
+        try:
+            self.verbosity = int(kwargs.get("verbosity"))
+        except:
+            self.verbosity = 1
                                 
         try:
             branch = subprocess.Popen(["git", "describe", "--contains", "--all", "HEAD"], stdout=subprocess.PIPE).communicate()[0]
@@ -44,10 +47,16 @@ class Common(object):
             self.return_dict['head'] = None            
 
         # if setup fails, what could we do?
+        #   let the exception bubble up is the best.
         try:
             self._setup(**kwargs)
         except Exception as e:
-            logging.error(e)
+            logging.debug("Failed setup (%s); trying to tear down" % e)
+            try:
+                self._teardown()
+            except:
+                pass
+            raise e
 
     def execute(self, iterations=1):
 
@@ -71,13 +80,15 @@ class Common(object):
             except Exception as e:
                 self.return_dict['individual_elapsed'][i+1] = None
                 self.return_dict['exceptions'][i+1].append(e)
-
+                logging.error("Exception running execute: %s" % e)
+    
             try:
                 self.return_dict['post_execute_info'][i+1] = self._get_post_execute_info()
             except Exception as e:
                 self.return_dict['post_execute_info'][i+1] = None
                 self.return_dict['exceptions'][i+1].append(e)
-
+                logging.error("Exception getting execute info: %s" % e)
+    
 
 
         mean = lambda vals: sum(vals)/float(len(vals)) if len(vals) else None
@@ -95,9 +106,9 @@ class Common(object):
         All benchmarks can take a random seed,
         all should clean / recompile
         """
+        self.random=random.Random() #thread-safe local instance of random
         if behavior_profile:
             self.behavior_profile = behavior_profile
-            self.random=random.Random() #thread-safe local instance of random
             self.random.seed(self.behavior_profile)
 
     def _execute(self): pass
@@ -105,14 +116,21 @@ class Common(object):
     def _get_post_execute_info(self): pass
 
 
-class SeleniumCommon(Common):
-    def _setup(self, url="http://localhost:8008/", username="s1", password="s1", timeout=30, **kwargs):
+class UserCommon(Common):
+    def _setup(self, username="s1", password="s1", **kwargs):
+        # Note: user must exist
+        super(UserCommon, self)._setup(**kwargs)
+
+        self.username = username
+        self.password = password
+
+
+class SeleniumCommon(UserCommon):
+    def _setup(self, url="http://localhost:8008/", timeout=30, **kwargs):
         # Note: user must exist
         super(SeleniumCommon, self)._setup(**kwargs)
 
-        self.url = url
-        self.username = username
-        self.password = password
+        self.url = url if not url or url[-1] != "/" else url[:-1]
 
         self.browser = webdriver.Firefox()
         self.timeout = timeout
@@ -148,8 +166,8 @@ class SeleniumCommon(Common):
         wait.until(expected_conditions.visibility_of_element_located(["id", "id_username"]))
         self.browser.find_element_by_id("id_username").send_keys(self.username)
         wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.visibility_of_element_located(["id", "id_password"]))
-        self.browser.find_element_by_id("id_password").send_keys(self.password)
+        wait.until(expected_conditions.visibility_of_element_located(["id", "id_password_first"]))
+        self.browser.find_element_by_id("id_password_first").send_keys(self.password)
         self.browser.find_element_by_id("id_password_recheck").send_keys(self.password)
         self.browser.find_element_by_id("id_password_recheck").send_keys(Keys.TAB + Keys.RETURN)
         wait = ui.WebDriverWait(self.browser, self.timeout)

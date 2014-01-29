@@ -2,7 +2,6 @@
 Views which allow users to create and activate accounts.
 
 """
-
 import copy
 
 from django.contrib import messages
@@ -10,7 +9,7 @@ from django.contrib.auth import logout as auth_logout, views as auth_views, REDI
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -23,13 +22,17 @@ from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
 from shared.decorators import central_server_only
+from utils.internet import set_query_params
 
 
 @central_server_only
 def complete(request, *args, **kwargs):
     messages.success(request, "Congratulations! Your account is now active. To get started, "
         + "login to the central server below, to administer organizations and zones.")
-    return redirect("auth_login")
+    if hasattr(request, "next") and request.next:
+        return HttpResponseRedirect(request.next)
+    else:
+        return redirect("auth_login")
 
 
 @central_server_only
@@ -97,11 +100,14 @@ def activate(request, backend,
     account = backend.activate(request, **kwargs)
 
     if account:
-        if success_url is None:
+        if success_url:
+            return redirect(success_url)
+        elif getattr(request, "next") and request.next:
+            to, args, kwargs = backend.post_activation_redirect(request, account)
+            return HttpResponseRedirect(reverse(to) + "?next=" + request.next, *args, **kwargs)
+        else:
             to, args, kwargs = backend.post_activation_redirect(request, account)
             return redirect(to, *args, **kwargs)
-        else:
-            return redirect(success_url)
 
     if extra_context is None:
         extra_context = {}
@@ -225,7 +231,7 @@ def register(request, backend, success_url=None, form_class=None,
                 org.add_member(new_user)
 
                 # Now add a zone, and link to the org
-                zone = Zone(name=org_form.instance.name + " Default Zone")
+                zone = Zone(name=org_form.instance.name + " Sharing Network")
                 zone.save()
                 org.add_zone(zone)
 
@@ -280,17 +286,29 @@ def login_view(request, *args, **kwargs):
     if request.method=="POST":
         users = User.objects.filter(username__iexact=request.POST["username"])
         nusers = users.count()
-    
+
         # Coerce
         if nusers == 1 and users[0].username != request.POST["username"]:
             request.POST = copy.deepcopy(request.POST)
             request.POST['username'] = request.POST['username'].lower()
-    
+        prev = request.POST['prev']
+
+    else:
+        prev = request.META.get("HTTP_REFERER")
+
+    # Note: prev used because referer is lost on a login / redirect.
+    #   So paste it on the success redirect.
+    redirect_url = request.REQUEST.get("next", reverse('org_management'))
+    if prev:
+        redirect_url = set_query_params(redirect_url, {"prev": prev})
+
     extra_context = {
         "redirect": {
             "name": REDIRECT_FIELD_NAME,
-            "url": request.REQUEST.get("next", reverse('org_management')),
-        }
+            "url": redirect_url,
+        },
+        "auth_password_reset_url": reverse("auth_password_reset"),
+        "registration_register_url": reverse("registration_register") if not request.next else set_query_params(reverse("registration_register"), {"next": request.next}),
     }
     kwargs["extra_context"] = extra_context
 

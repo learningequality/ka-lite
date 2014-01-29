@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import datetime
 import uuid
 import zlib
@@ -16,7 +14,8 @@ import kalite
 import settings
 from . import add_syncing_models
 from config.models import Settings
-from utils.django_utils import ExtendedModel
+from settings import LOG as logging
+from utils.django_utils import validate_via_booleans, ExtendedModel
 
 
 ID_MAX_LENGTH=32
@@ -48,6 +47,10 @@ class SyncSession(ExtendedModel):
     class Meta:
         app_label = "securesync"
 
+    def __unicode__(self):
+        return u"%s... -> %s..." % (self.client_device.pk[0:5],
+            (self.server_device and self.server_device.pk[0:5] or "?????"))
+
     def _hashable_representation(self):
         return "%s:%s:%s:%s" % (
             self.client_nonce, self.client_device.pk,
@@ -78,10 +81,6 @@ class SyncSession(ExtendedModel):
             to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
             SyncSession.objects.filter(pk__in=to_discard).delete()
 
-    def __unicode__(self):
-        return u"%s... -> %s..." % (self.client_device.pk[0:5],
-            (self.server_device and self.server_device.pk[0:5] or "?????"))
-
 
 class SyncedModelManager(models.Manager):
 
@@ -89,22 +88,47 @@ class SyncedModelManager(models.Manager):
         app_label = "securesync"
 
     def by_zone(self, zone):
-        # get model instances that were signed by devices in the zone,
-        # or signed by a trusted authority that said they were for the zone
-        return self.filter(Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) |
-            Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone))
+        """Get model instances that were signed by devices in the zone,
+        or signed by a trusted authority that said they were for the zone,
+        or not signed at all and we're looking for models in our own zone.
+        """
+
+        condition = \
+            Q(signed_by__devicezone__zone=zone, signed_by__devicezone__revoked=False) | \
+            Q(signed_by__devicemetadata__is_trusted=True, zone_fallback=zone)
+
+        # Due to deferred signing, we need to consider completely unsigned models to be in our own zone.
+        if zone == _get_own_device().get_zone():
+            condition = condition | Q(signed_by=None)
+
+        return self.filter(condition)
 
 
 class SyncedModel(ExtendedModel):
     """
     The main class that makes this engine go.
-    
+
     A model that is cross-computer syncable.  All models sync'd across computers
     should inherit from this base class.
+
+    NOTE on signed_version (bcipolli; 2013/10/10):
+    signed_version is part of a design where schema changes forced models into ImportPurgatory,
+    where they would stay until a software upgrade.
+
+    Due to the deployment (and worldwide use) of code with a bug in the implementation of that design,
+    a second design was implemented and deployed.  There, unknown models and model fields (judged by
+    comparing the model/field's "minversion" property with the remote server's version) are
+    simply not shared over the wire.  This system only works for distributed-central interactions,
+    and interactions between peers of the same (schema) version, and will not work for any
+    mixed version P2P syncing.
+
+    For backwards compatibility reasons, signed_version must remain, and would be used
+    in future designs/implementations reusing the original (elegant) design that is appropriate
+    for mixed version P2P sync.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
-    counter = models.IntegerField(default=0)
-    signature = models.CharField(max_length=360, blank=True, editable=False)
+    counter = models.IntegerField(default=None, blank=True, null=True)
+    signature = models.CharField(max_length=360, blank=True, editable=False, null=True)
     signed_version = models.IntegerField(default=1, editable=False)
     signed_by = models.ForeignKey("Device", blank=True, null=True, related_name="+")
     zone_fallback = models.ForeignKey("Zone", blank=True, null=True, related_name="+")
@@ -112,9 +136,7 @@ class SyncedModel(ExtendedModel):
 
     objects = SyncedModelManager()
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
-    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize
-
-    requires_trusted_signature = False
+    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
 
     class Meta:
         abstract = True
@@ -125,31 +147,43 @@ class SyncedModel(ExtendedModel):
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
         then sign it with the specified device (if specified), or the current device.
         """
-        device = device or Device.get_own_device()
+        device = device or _get_own_device()
         assert device.get_key(), "Cannot sign with device %s: key does not exist." % (device.name or "")
 
-        self.id = self.id or self.get_uuid()
+        self.set_id()  #id = self.id or self.get_uuid()  # only assign a UUID ONCE
         self.signed_by = device
         self.full_clean()  # make sure the model data is of the appropriate types
         self.signature = self.signed_by.get_key().sign(self._hashable_representation())
 
-    def verify(self):
-        # if nobody signed it, verification fails
-        if not self.signed_by_id:
-            return False
-        # if it's not a trusted device...
-        if not self.signed_by.get_metadata().is_trusted:
-            # but it's a model class that requires trusted signatures, verification fails
-            if self.requires_trusted_signature:
-                return False
-            if settings.CENTRAL_SERVER:
-                # if it's not in a zone at all (or its DeviceZone was revoked), verification fails
-                if not self.signed_by.get_zone():
-                    return False
+    @validate_via_booleans
+    def validate(self):
+        try:
+            # if nobody signed it, verification fails
+            if not self.signed_by_id:
+                raise ValidationError("This model was not signed.")
+            # if it's not a trusted device...
+            if not self.signed_by.is_trusted():
+                if settings.CENTRAL_SERVER:
+                    if not self.signed_by.get_zone():
+                        raise ValidationError("This model was signed by a Device with no zone, but somehow synced to the central server.")
+                elif (_get_own_device().get_zone() is None) + (self.signed_by.get_zone() is None) == 1:
+                    # one has a zone, the other doesn't
+                    raise ValidationError("This model is on a different zone than this device.")
+
+                elif _get_own_device().get_zone() and not _get_own_device().get_zone().is_member(self.signed_by):
+                    # distributed server
+                    raise ValidationError("This model is on a different zone than this device.")
+            return True
+        except ValidationError as ve:
+            if settings.DEBUG:  # throw in debug mode, as validation errors should not be happening
+                raise ve
             else:
-                # or if it's not in the same zone as our device (or the DeviceZone was revoked), verification fails
-                if self.signed_by.get_zone() != _get_own_device().get_zone():
-                    return False
+                return False
+
+    def verify(self):
+        if not self.validate():
+            return False
+
         # by this point, we know that we're ok with accepting this model from the device that it says signed it
         # now, we just need to check whether or not it is actually signed by that model's private key
         try:
@@ -157,21 +191,22 @@ class SyncedModel(ExtendedModel):
         except:
             return False
 
-    def _hashable_fields(self, fields=None):
+    @classmethod
+    def _hashable_fields(cls, fields=None):
 
         # if no fields were specified, build a list of all the model's field names
         if not fields:
-            fields = [field.name for field in self._meta.fields if field.name not in self.__class__._unhashable_fields]
+            fields = [field.name for field in cls._meta.fields if field.name not in cls._unhashable_fields and not hasattr(field, "minversion")]
             # sort the list of fields, for consistency
             fields.sort()
 
         # certain fields should always be included
-        for field in self.__class__._always_hash_fields:
+        for field in cls._always_hash_fields:
             if field not in fields:
                 fields = [field] + fields
 
         # certain fields should never be included
-        fields = [field for field in fields if field not in self.__class__._unhashable_fields]
+        fields = [field for field in fields if field not in cls._unhashable_fields]
 
         return fields
 
@@ -205,7 +240,7 @@ class SyncedModel(ExtendedModel):
 
         return "&".join(chunks)
 
-    def save(self, imported=False, increment_counters=True, *args, **kwargs):
+    def save(self, imported=False, increment_counters=True, sign=True, *args, **kwargs):
         """
         Some of the heavy lifting happens here.  There are two saving scenarios:
         (a) We are saving an imported model.
@@ -219,24 +254,49 @@ class SyncedModel(ExtendedModel):
             if not self.signed_by_id:
                 raise ValidationError("Imported models must be signed.")
             if not self.verify():
-                raise ValidationError("Imported model's signature did not match.")
-        else:
-            own_device = _get_own_device()
+                raise ValidationError("Could not verify the imported model.")  #Imported model's signature did not match.")
 
+            # call the base Django Model save to write to the DB
+            super(SyncedModel, self).save(*args, **kwargs)
+
+            # For imported models, we want to keep track of the counter position we're at for that device.
+            #   so, if it's ahead of what we had, set it!
+            if increment_counters:
+                self.signed_by.set_counter_position(self.counter, soft_set=True)
+
+
+        else:
             # Two critical things to do:
             # 1. local models need to be signed by us
             # 2. and get our counter position
-            self.counter = own_device.increment_and_get_counter()
-            self.sign(device=own_device)
 
-        # call the base Django Model save to write to the DB
-        super(SyncedModel, self).save(*args, **kwargs)
+            own_device = _get_own_device()
 
-        # for imported models, we want to keep track of the counter position we're at for that device
-        if imported and increment_counters:
-            self.signed_by.set_counter_position(self.counter)
+            if increment_counters:
+                self.counter = own_device.increment_counter_position()
+            else:
+                self.counter = None  # will set this when we sync
+
+            if sign:
+                assert self.counter is not None, "Only sign data where count is set"
+                # Always sign on the central server.
+                self.sign(device=own_device)
+            else:
+                self.set_id()
+                self.signature = None  # make sure the signature will be recomputed on sync
+
+            # call the base Django Model save to write to the DB
+            super(SyncedModel, self).save(*args, **kwargs)
+
+
+    def set_id(self):
+        self.id = self.id or self.get_uuid()
 
     def get_uuid(self):
+        """
+        By default, all objects get an ID from the
+        device and the counter position at which it was created.
+        """
         assert self.counter is not None, "counter required for get_uuid"
 
         own_device = _get_own_device()
@@ -258,7 +318,7 @@ class SyncedModel(ExtendedModel):
         if not zone and self.signed_by:
             zone = self.signed_by.get_zone()
         # otherwise, if it's signed by a trusted authority, try getting the fallback zone
-        if not zone and self.signed_by and self.signed_by.get_metadata().is_trusted:
+        if not zone and self.signed_by and self.signed_by.is_trusted():
             zone = self.zone_fallback
         return zone
     get_zone.short_description = "Zone"
@@ -271,6 +331,48 @@ class SyncedModel(ExtendedModel):
         pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
         signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
         return u"%s... (Signed by: %s...)" % (pk, signed_by_pk)
+
+
+class DeferredSignSyncedModel(SyncedModel):
+    """
+    Synced model that we defer signing until it's time to sync.
+    """
+    def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
+        super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        app_label = "securesync"
+        abstract = True
+
+
+class DeferredCountSyncedModel(DeferredSignSyncedModel):
+    """
+    Defer incrementing counters until syncing.
+    """
+    def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
+        """
+        Note that increment_counters will set counters to None,
+        and that if the object must be created, counter will be incremented
+        and temporarily set, to create the object ID.
+        """
+        super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
+
+    def set_id(self):
+        if self.id:
+            pass
+        elif self.counter:
+            self.id = self.get_uuid()
+        else:
+            # UUID depends on counter position, so we *have* to get a counter
+            #   position to set an id
+            own_device = _get_own_device()
+            self.counter = own_device.increment_counter_position()
+            self.id = self.get_uuid()
+            self.counter = None
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        app_label = "securesync"
+        abstract = True
 
 
 class SyncedLog(SyncedModel):
@@ -297,7 +399,7 @@ class ImportPurgatory(ExtendedModel):
         app_label = "securesync"
 
     def save(self, *args, **kwargs):
-        self.counter = self.counter or _get_own_device().get_counter()
+        self.counter = self.counter or _get_own_device().get_counter_position()
         super(ImportPurgatory, self).save(*args, **kwargs)
 
 add_syncing_models([SyncedLog])

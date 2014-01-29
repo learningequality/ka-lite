@@ -4,18 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Equation of a hyperbola</title>
     <script src="../khan-exercise.js"></script>
-    <style type="text/css">
-        #answer_area input[type="text"] {
-            margin: 0 0 0 0;
-            width: 28px;
-        }
-    </style>
 </head>
 <body>
     <div class="exercise">
     <div class="vars">
         <var id="A">randRange( 2, 9 )</var>
-        <var id="B" data-ensure=" A !== B" >randRange( 2, 9 )</var>
+        <var id="B" data-ensure=" A !== B">randRange( 2, 9 )</var>
 
         <var id="H">randRange( -9, 9 )</var>
         <var id="K">randRange( -9, 9 )</var>
@@ -40,8 +34,8 @@
 
             <div class="solution" data-type="multiple">
                 <p style="font-size: 11px;">
-                    <code>y = \pm </code><span class="sol" data-fallback="1"><var>B/A</var></span>
-                    <code>(x + </code><span class="sol" data-fallback="0"><var>-H</var></span><code>) + </code><span class="sol" data-fallback="0"><var>K</var></span>
+                    <code>y = \pm </code><span class="sol short28" data-fallback="1"><var>B/A</var></span>
+                    <code>(x + </code><span class="sol short28" data-fallback="0"><var>-H</var></span><code>) + </code><span class="sol short28" data-fallback="0"><var>K</var></span>
                 </p>
 
                 <p class="example">enter integers, <em>simplified</em> fractions, or <em>exact</em> decimals for each term</p>
@@ -75,8 +69,8 @@
         <div>
             <p>
                 <span data-if="K > 0">Add <code><var>K</var></code> to both sides and rewrite</span>
-                <span data-else-if="K < 0">Subtract <code><var>-K</var></code> from both sides and rewrite</span>
-                <span data-else>Rewrite</span>
+                <span data-else-if="K &lt; 0">Subtract <code><var>-K</var></code> from both sides and rewrite</span>
+                <span data-else="">Rewrite</span>
                 as an equality in terms of <code>y</code> to get the equation of the asymptotes:
             </p>
             <p><code>y = \pm \dfrac{<var>reduce( A, B )[1]</var>}{<var>reduce( A, B )[0]</var>}(<var>plus( "x", -H )</var>)<var>K &gt;= 0 ? "+" : ""</var> <var>K</var></code></p>

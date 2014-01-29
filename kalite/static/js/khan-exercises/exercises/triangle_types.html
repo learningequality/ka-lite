@@ -2,7 +2,7 @@
 <html data-require="math graphie graphie-helpers graphie-geometry math-format">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Triangle Types</title>
+    <title>Triangle types</title>
     <script src="../khan-exercise.js"></script>
     <script>
         function scTriangle(){
@@ -21,7 +21,7 @@
             if ( Math.abs( a - b ) < 5 || Math.abs( a - c ) < 5  || Math.abs( b - c ) < 5 ){
                 return scTriangle();
             }
-            return [ [ a, b, c ] , [ sa.toFixed( 1 ), sb.toFixed( 1 ), sc.toFixed( 1 ) ] ];
+            return [ [ a, b, c ] , [ KhanUtil.localeToFixed(sa, 1), KhanUtil.localeToFixed(sb, 1), KhanUtil.localeToFixed(sc, 1) ] ];
         }
 
         function eqTriangle(){
@@ -38,7 +38,7 @@
             var sides = [ sa, sa, sa ];
             var oddside = KhanUtil.randRange( 0, 2 );
             ang[ oddside ] = c;
-            sides[ oddside ] = sc.toFixed( 1 );
+            sides[ oddside ] = KhanUtil.localeToFixed(sc, 1);
             if( a == 60 ){
                 return isoTriangle();
             }
@@ -51,7 +51,10 @@
     <div class="exercise">
         <div class="vars">
             <var id="TYPES">[ "Equilateral", "Isosceles", "Scalene" ]</var>
-            <var id="TYPE">randFromArray( TYPES )</var>
+            <var id="DISPLAY_TYPES">[ $._("Equilateral"), $._("Isosceles"), $._("Scalene") ]</var>
+            <var id="TYPE_NUM">randRange(0, 2)</var>
+            <var id="TYPE">TYPES[TYPE_NUM]</var>
+            <var id="DISPLAY_TYPE">DISPLAY_TYPES[TYPE_NUM]</var>
             <var id="TRIANGLE">function(){
                                 if ( TYPE === "Equilateral" ){
                                     return eqTriangle();
@@ -72,7 +75,7 @@
                     Is this triangle equilateral, isosceles, or scalene?
                 </div>
                 <div class="question">
-                    <div class="graphie" id="typeTr" >
+                    <div class="graphie" id="typeTr">
                         var tr = new Triangle( [ 0, 0 ],  TRIANGLE[ 0 ], 5, {} );
                         tr.labels = { "angles" : clearArray( tr.niceAngles, [ 0, 1 ] ) };
                         tr.rotate( randRange( 0, 90 ) );
@@ -86,22 +89,22 @@
                         graph.TR = tr;
                     </div>
                 </div>
-                <div class="solution"><var>TYPE</var></div>
+                <div class="solution"><var>DISPLAY_TYPE</var></div>
                 <ul class="choices" data-category="true">
-                    <li data-each="TYPES as t"><var>t</var></li>
+                    <li data-each="DISPLAY_TYPES as t"><var>t</var></li>
                 </ul>
                 <div class="hints">
                     <p>We know two angles of this triangle, so we can find the third by subtracting from <code>180</code></p>
                     <div>
                         <p><code>180 -<var>TRIANGLE[ 0 ][ 0 ]</var> - <var>TRIANGLE[ 0 ][ 1 ]</var> = <var>TRIANGLE[ 0 ][ 2 ]</var></code></p>
-                        <div class="graphie" data-update="typeTr" >
+                        <div class="graphie" data-update="typeTr">
                             graph.TR.labels = { "angles" : graph.TR.niceAngles };
                             graph.TR.drawLabels();
                         </div>
                     </div>
                 <p data-if="TYPE === 'Scalene'">Because all three angles are different, this triangle is scalene.</p>
                     <p data-else-if="TYPE === 'Isosceles'">Two angles are the same, therefore two corresponding sides are as well. Therefore, this triangle is isosceles. Isosceles means a triangle with same (iso) legs (sceles).</p>
-                    <p data-else>All angles equal 60. That means that all the sides are the same and that the triangle is equilateral. (Equilateral means equal(equi) sided(lateral).</p>
+                    <p data-else="">All angles equal 60. That means that all the sides are the same and that the triangle is equilateral. (Equilateral means equal(equi) sided(lateral).</p>
                 </div>
             </div>
             <div id="knownSides" data-type="knownAngles">
@@ -121,7 +124,7 @@
                 <div class="hints">
                     <p data-if="TYPE === 'Scalene'">Because all three sides are different, this triangle is scalene.</p>
                     <p data-else-if="TYPE === 'Isosceles'">Two sides are the same, therefore, this triangle is isosceles. Isosceles means a triangle with same (iso) legs (sceles).</p>
-                    <p data-else>All sides are the same. That means that all the angles are 60 and that the triangle is equilateral. Equilateral means equal (equi) sided (lateral).</p>
+                    <p data-else="">All sides are the same. That means that all the angles are 60 and that the triangle is equilateral. Equilateral means equal (equi) sided (lateral).</p>
                 </div>
             </div>
         </div>

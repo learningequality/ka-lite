@@ -5,7 +5,6 @@ from django import template
 from django.template import Library, Node, TemplateSyntaxError
 from django.template.loader import get_template
 from django.template.loader_tags import BlockNode, ExtendsNode
-from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.utils import simplejson
 

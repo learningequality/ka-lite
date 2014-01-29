@@ -2,6 +2,7 @@ import cgi
 import json
 import re
 import uuid
+from annoying.functions import get_object_or_None
 
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
@@ -16,18 +17,20 @@ from django.views.decorators.gzip import gzip_page
 import settings
 import version
 from .models import *
-from shared import serializers
+from securesync import engine
 from stats.models import UnregisteredDevicePing
 from utils.django_utils import get_request_ip
 from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
 
 
 @csrf_exempt
-@api_handle_error_with_json
+#@api_handle_error_with_json
 def register_device(request):
-    data = simplejson.loads(request.raw_post_data or "{}")
-
+    """Receives the client device info from the distributed server.
+    Tries to register either because the device has been pre-registered,
+    or because it has a valid INSTALL_CERTIFICATE."""
     # attempt to load the client device data from the request data
+    data = simplejson.loads(request.raw_post_data or "{}")
     if "client_device" not in data:
         return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
     try:
@@ -38,8 +41,8 @@ def register_device(request):
         #   this will only fail (currently) if the central server version
         #   is less than the version of a client--something that should never happen
         try:
-            own_device = Device.get_own_device()
-            models = serializers.deserialize("versioned-json", data["client_device"], src_version=own_device.get_version(), dest_version=own_device.get_version())
+            local_version = Device.get_own_device().get_version()
+            models = engine.deserialize(data["client_device"], src_version=local_version, dest_version=local_version)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -48,6 +51,8 @@ def register_device(request):
             "error": "Could not decode the client device model: %r" % e,
             "code": "client_device_corrupted",
         }, status=500)
+
+    # Validate the loaded data
     if not isinstance(client_device, Device):
         return JsonResponse({
             "error": "Client device must be an instance of the 'Device' model.",
@@ -59,11 +64,31 @@ def register_device(request):
             "code": "client_device_invalid_signature",
         }, status=500)
 
-    # we have a valid self-signed Device, so now check if its public key has been registered
     try:
-        registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
-        if registration.is_used():
-            if Device.objects.get(public_key=client_device.public_key):
+        zone = register_self_registered_device(client_device, models, data)
+    except Exception as e:
+        if e.message == "Client not yet on zone.":
+            zone = None
+        else:
+            # Client not on zone: allow fall-through via "old route"
+
+            # This is the codepath for unregistered devices trying to start a session.
+            #   This would only get hit, however, if they visit the registration page.
+            # But still, good to keep track of!
+            UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
+
+            return JsonResponse({
+                "error": "Failed to validate the chain of trust (%s)." % e,
+                "code": "chain_of_trust_invalid",
+            }, status=500)
+
+    if not zone: # old code-path
+        try:
+            registration = RegisteredDevicePublicKey.objects.get(public_key=client_device.public_key)
+            if not registration.is_used():
+                registration.use()
+
+            elif get_object_or_None(Device, public_key=client_device.public_key):
                 return JsonResponse({
                     "error": "This device has already been registered",
                     "code": "device_already_registered",
@@ -76,32 +101,75 @@ def register_device(request):
                 # So, pass through... no code :)
                 pass
 
-    except RegisteredDevicePublicKey.DoesNotExist:
-            # This is the codepath for unregistered devices trying to start a session.
-            #   This would only get hit, however, if they visit the registration page.
-            # But still, good to keep track of!
-            UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
-            return JsonResponse({
-                "error": "Device registration with public key not found; login and register first?",
-                "code": "public_key_unregistered",
-            }, status=500)
+            # Use the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
+            zone = registration.zone
 
-    client_device.signed_by = client_device
+        except RegisteredDevicePublicKey.DoesNotExist:
+            try:
+                device = Device.objects.get(public_key=client_device.public_key)
+                return JsonResponse({
+                    "error": "This device has already been registered",
+                    "code": "device_already_registered",
+                }, status=500)            
+            except Device.DoesNotExist:
+                return JsonResponse({
+                    "error": "Device registration with public key not found; login and register first?",
+                    "code": "public_key_unregistered",
+                }, status=500)
 
-    # the device checks out; let's save it!
     client_device.save(imported=True)
 
-    # create the DeviceZone for the new device
-    device_zone = DeviceZone(device=client_device, zone=registration.zone)
-    device_zone.save()
-
-    # Use the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
-    registration.use()
+    try:
+        device_zone = DeviceZone.objects.get(device=client_device, zone=zone)
+        device_zone.save()  # re-save, to give it a central server signature that will be honored by old clients
+    except DeviceZone.DoesNotExist:
+        device_zone = DeviceZone(device=client_device, zone=zone)
+        device_zone.save()     # create the DeviceZone for the new device, with an 'upgraded' signature
 
     # return our local (server) Device, its Zone, and the newly created DeviceZone, to the client
+    #   Note the order :)
+    #
+    # Addition: always back central server object--in case they didn't get it during install,
+    #   they need it for software updating.
     return JsonResponse(
-        serializers.serialize("versioned-json", [Device.get_own_device(), registration.zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        engine.serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
+
+
+@transaction.commit_on_success
+def register_self_registered_device(client_device, serialized_models, request_data):
+    
+    try:
+        model_count = 0
+        for model in serialized_models:
+            model.object.save(imported=True)
+
+            model_count += 1
+            if model_count > 3 * ChainOfTrust.MAX_CHAIN_LENGTH:
+                raise Exception("Chain of trust is too long.")
+
+        # Now try to build a chain of from the device to the (claimed) zone
+        client_zone = client_device.get_zone()
+        if not client_zone:
+            raise Exception("Client not yet on zone.")
+        elif not client_zone.is_member(client_device):
+            raise Exception("Chain of trust could not be established.")
+
+        # If that works, then we just need to prove that the device has
+        #   the private key of the ZoneInvitation.
+        #
+        # This would be easy to do if we had a session; could just sign the nonce.
+        #   However, we refuse to make a sync session if we don't know the device
+        #   why?  Would it be better to make a session, then register within the session?
+        # Let's talk.
+
+        # we got through!  we got the zone, either recognized it or added it,
+        #   and validated the certificate!
+        return client_zone
+
+    except StopIteration:
+        # Old codepath has no objects here; signal to the outside that we've hit it
+        return None
 
 
 @csrf_exempt
@@ -129,11 +197,8 @@ def get_server_info(request):
     for field in request.GET.get("fields", "").split(","):
         
         if field == "version":
-            device_info[field] = Device.get_own_device().get_version()
-
-        elif field == "video_count":
-            from main.models import VideoFile
-            device_info[field] = VideoFile.objects.filter(percent_complete=100).count() if not settings.CENTRAL_SERVER else 0
+            device = device or Device.get_own_device()
+            device_info[field] = device.get_version()
 
         elif field == "device_name":
             device = device or Device.get_own_device()

@@ -1,68 +1,94 @@
 [
   {
-    "related_video_readable_ids": [
-      "length-of-an-arc-that-subtends-a-central-angle", 
-      "finding-central-angle-measure-given-arc-length"
-    ], 
-    "v_position": 37, 
+    "v_position": 73, 
     "path": "/math/geometry/circles/e/circles_and_arcs/", 
     "id": "circles_and_arcs", 
     "display_name": "Circles and arcs", 
     "title": "Circles and arcs", 
+    "parent_id": "circles", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "circles"
+    ], 
+    "related_video_slugs": [
+      "length-of-an-arc-that-subtends-a-central-angle", 
+      "finding-central-angle-measure-given-arc-length"
+    ], 
     "description": "Relate the length of an arc to the circumference of a whole circle.\n", 
-    "basepoints": 27.0, 
-    "h_position": -21, 
+    "basepoints": 28.0, 
+    "h_position": 5, 
     "slug": "circles_and_arcs", 
     "kind": "Exercise", 
     "name": "circles_and_arcs", 
-    "seconds_per_fast_problem": 43.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
-      "area_of_parallelograms", 
-      "areas_of_trapezoids_rhombi_and_kites"
-    ]
+      "radius_diameter_and_circumference", 
+      "proportions_1", 
+      "measuring_angles"
+    ], 
+    "exercise_id": "circles_and_arcs"
   }, 
   {
-    "related_video_readable_ids": [
-      "area-of-a-sector-given-a-central-angle"
-    ], 
-    "v_position": 37, 
+    "v_position": 73, 
     "path": "/math/geometry/circles/e/areas_of_circles_and_sectors/", 
     "id": "areas_of_circles_and_sectors", 
     "display_name": "Areas of circles and sectors", 
     "title": "Areas of circles and sectors", 
+    "parent_id": "circles", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "circles"
+    ], 
+    "related_video_slugs": [
+      "area-of-a-sector-given-a-central-angle"
+    ], 
     "description": "Relate the area of a sector to the area of a whole circle.\n", 
-    "basepoints": 26.0, 
-    "h_position": -20, 
+    "basepoints": 28.0, 
+    "h_position": 4, 
     "slug": "areas_of_circles_and_sectors", 
     "kind": "Exercise", 
     "name": "areas_of_circles_and_sectors", 
-    "seconds_per_fast_problem": 41.0, 
+    "seconds_per_fast_problem": 52.0, 
     "prerequisites": [
-      "area_of_parallelograms", 
-      "areas_of_trapezoids_rhombi_and_kites"
-    ]
+      "proportions_1", 
+      "area_of_a_circle", 
+      "measuring_angles"
+    ], 
+    "exercise_id": "areas_of_circles_and_sectors"
   }, 
   {
-    "related_video_readable_ids": [
-      "inscribed-and-central-angles"
-    ], 
-    "v_position": 38, 
+    "v_position": 74, 
     "path": "/math/geometry/circles/e/inscribed_angles_1/", 
     "id": "inscribed_angles_1", 
     "display_name": "Inscribed angles 1", 
     "title": "Inscribed angles 1", 
+    "parent_id": "circles", 
     "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "circles"
+    ], 
+    "related_video_slugs": [
+      "inscribed-and-central-angles"
+    ], 
     "description": "", 
     "basepoints": 14.0, 
-    "h_position": -22, 
+    "h_position": 6, 
     "slug": "inscribed_angles_1", 
     "kind": "Exercise", 
     "name": "inscribed_angles_1", 
     "seconds_per_fast_problem": 7.0, 
     "prerequisites": [
       "circles_and_arcs"
-    ]
+    ], 
+    "exercise_id": "inscribed_angles_1"
   }
 ]

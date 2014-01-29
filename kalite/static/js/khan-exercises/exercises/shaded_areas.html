@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html data-require="math math-format graphie">
-    <head>
+<html data-require="math math-format graphie word-problems">
+<head>
         <title>Shaded areas</title>
         <script src="../khan-exercise.js"></script>
     </head>
     <body>
         <div class="exercise">
-            <div class="vars" data-ensure="(INNER_AREA &lt; OUTER_AREA) &&
+            <div class="vars" data-ensure="(INNER_AREA &lt; OUTER_AREA) &amp;&amp;
                                            (_.all(INNER.vertices, OUTER.contains))">
+                <!-- These aren't used in the actual exercise, so they don't need
+                     to be internationalized -->
                 <var id="SHAPES">["square", "circle", "triangle"]</var>
 
                 <var id="INNER_SHAPE">randFromArray(SHAPES)</var>
@@ -25,10 +27,11 @@
                              [x - size, y - size], true];
 
                         return {
+                            name: $._("square"),
                             vertices: _.initial(v),
                             contains: function(point) {
-                                return (point[0] &gt;= (x - size)) && (point[0] &lt;= (x + size)) &&
-                                       (point[1] &gt;= (y - size)) && (point[1] &lt;= (y + size));
+                                return (point[0] &gt;= (x - size)) &amp;&amp; (point[0] &lt;= (x + size)) &amp;&amp;
+                                       (point[1] &gt;= (y - size)) &amp;&amp; (point[1] &lt;= (y + size));
                             },
                             drawShape: function(g, style) {
                                 return g.path(v, style);
@@ -44,13 +47,14 @@
                                 };
                             },
                             hint: function() {
-                                return "\\text{area of a square} = s^2 = "+s+"^2";
+                                return "\\text{" + $._("area of a square") + "} = s^2 = "+s+"^2";
                             }
                         };
                     },
 
                     circle: function(x, y, size) {
                         return {
+                            name: $._("circle"),
                             vertices: _.map([0, 30, 45, 60, 90, 120, 135, 150, 180,
                                              210, 225, 240, 270, 300, 315, 330, 360],
                                             function(th) {
@@ -72,7 +76,7 @@
                                 };
                             },
                             hint: function() {
-                                return "\\text{area of a circle} = \\pi r^2 = \\pi "+size+"^2";
+                                return "\\text{" + $._("area of a circle") + "} = \\pi r^2 = \\pi "+size+"^2";
                             }
                         };
                     },
@@ -94,6 +98,7 @@
                         };
 
                         return {
+                            name: $._("equilateral triangle"),
                             vertices: _.initial(v),
                             contains: function(point) {
                                 var b1, b2, b3;
@@ -102,7 +107,7 @@
                                 b2 = sign(point, v[1], v[2]) &lt;= 0;
                                 b3 = sign(point, v[3], v[0]) &lt;= 0;
 
-                                return ((b1 == b2) && (b2 == b3));
+                                return ((b1 == b2) &amp;&amp; (b2 == b3));
                             },
                             drawShape: function(g, style) {
                                 return g.path(v, style);
@@ -114,7 +119,7 @@
                                 };
                             },
                             hint: function() {
-                                return "\\text{area of an equilateral triangle} = \\dfrac{\\sqrt{3}}{4}s^2 = \\dfrac{\\sqrt{3}}{4}"+s+"^2";
+                                return "\\text{" + $._("area of an equilateral triangle") + "} = \\dfrac{\\sqrt{3}}{4}s^2 = \\dfrac{\\sqrt{3}}{4}"+s+"^2";
                             }
                         };
                     }
@@ -139,13 +144,17 @@
                 <var id="INNER_AREA, PRETTY_INNER_AREA">AREAS[INNER_SHAPE](INNER_SIZE)</var>
 
                 <var id="SHADED_AREA">OUTER_AREA - INNER_AREA</var>
+                <var id="AREA_OF_WHOLE_FIGURE">$._("area of whole figure")</var>
+                <var id="AREA_OF_INNER_REGION">$._("area of inner region")</var>
+                <var id="AREA_OF_SHADED_REGION">$._("area of shaded region")</var>
             </div>
 
             <div class="problems">
                 <div>
+                    <div class="problem">The <var>INNER.name</var> is inside the <var>OUTER.name</var> in the diagram.</div>
                     <div class="question">What is the area of the shaded region?</div>
                     <div class="extra-info">(Round to the nearest hundredth.)</div>
-                    <div class="solution" data-inexact data-max-error="0.01" data-type="decimal"><var>SHADED_AREA</var></div>
+                    <div class="solution" data-inexact="" data-max-error="0.01" data-type="decimal"><var>SHADED_AREA</var></div>
                     <div class="graphie" id="shapes">
                         var g = init({ range: [[-14, 14], [-14, 14]], scale: [11, 11] });
 
@@ -165,11 +174,11 @@
                         OUTER.drawShape(KhanUtil.currentGraph, { fill: BLUE, opacity: 0.5 });
                     </div>
                 </div>
-                <p><code>\text{area of whole figure} = </code><br><code>\qquad<var>OUTER.hint()</var> = <var>PRETTY_OUTER_AREA</var></code></p>
-                <p><code>\text{area of inner region} = </code><br><code>\qquad<var>INNER.hint()</var> = <var>PRETTY_INNER_AREA</var></code></p>
+                <p><code>\text{<var>AREA_OF_WHOLE_FIGURE</var>} = </code><br><code>\qquad<var>OUTER.hint()</var> = <var>PRETTY_OUTER_AREA</var></code></p>
+                <p><code>\text{<var>AREA_OF_INNER_REGION</var>} = </code><br><code>\qquad<var>INNER.hint()</var> = <var>PRETTY_INNER_AREA</var></code></p>
                 <p>Then subtract the inner region's area from the whole figure's area to find the area of the shaded region (the difference between the two areas).</p>
-                <p><code>\text{area of shaded region} = <var>PRETTY_OUTER_AREA</var> - <var>PRETTY_INNER_AREA</var> = <var>roundTo(2, SHADED_AREA)</var></code></p>
+                <p><code>\text{<var>AREA_OF_SHADED_REGION</var>} = <var>PRETTY_OUTER_AREA</var> - <var>PRETTY_INNER_AREA</var> = <var>roundTo(2, SHADED_AREA)</var></code></p>
             </div>
         </div>
-    </body>
+</body>
 </html>

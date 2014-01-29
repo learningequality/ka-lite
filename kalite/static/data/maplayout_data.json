@@ -176,6 +176,14 @@
       "standalone_title": "Angles and intersecting lines", 
       "id": "parallel-and-perpendicular-lines"
     }, 
+    "algebra-matrices": {
+      "icon_url": "/images/power-mode/badges/algebra-matrices-40x40.png", 
+      "translated_standalone_title": "Matrices", 
+      "y": 51.5, 
+      "x": 18.0, 
+      "standalone_title": "Matrices", 
+      "id": "algebra-matrices"
+    }, 
     "solving-linear-equations-and-inequalities": {
       "icon_url": "/images/power-mode/badges/solving-linear-equations-and-inequalities-40x40.png", 
       "translated_standalone_title": "Linear equations", 
@@ -186,10 +194,10 @@
     }, 
     "quadratics": {
       "icon_url": "/images/power-mode/badges/quadratics-40x40.png", 
-      "translated_standalone_title": "Quadratics functions and equations", 
+      "translated_standalone_title": "Quadratic equations", 
       "y": 49.0, 
       "x": -1.0, 
-      "standalone_title": "Quadratics functions and equations", 
+      "standalone_title": "Quadratic equations", 
       "id": "quadratics"
     }, 
     "statistics-inferential": {
@@ -631,6 +639,18 @@
         {
           "y": 49, 
           "x": 10
+        }
+      ]
+    }, 
+    {
+      "path": [
+        {
+          "y": 49, 
+          "x": 10
+        }, 
+        {
+          "y": 51.5, 
+          "x": 18
         }
       ]
     }

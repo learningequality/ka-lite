@@ -28,22 +28,22 @@
             </div>
 
             <div class="question spin">
-                <p>{On a sunny morning|On a beautiful afternoon}, <var>person(1)</var> rode <var>his(1)</var> bicycle to a farm that sold bags of <var>plural(fruit(1))</var> for $<var>fruit_1</var> each and bags of <var>plural(fruit(2))</var> for $<var>fruit_2</var> each.</p>
-                <p><var>person(1)</var> decided to buy a bag of <var>plural(fruit(1))</var> and a bag of <var>plural(fruit(2))</var> {before heading home|because those were <var>his(1)</var> favorite kinds of fruit|}.</p>
-                <p class="question">How much did <var>person(1)</var> need to pay for <var>his(1)</var> produce?</p></div>
+                <p data-if="isMale(1)">{On a sunny morning|On a beautiful afternoon}, <var>person(1)</var> rode his bicycle to a farm that sold baskets of <var>plural_form(fruit(1))</var> for $<var>fruit_1</var> each and baskets of <var>plural_form(fruit(2))</var> for $<var>fruit_2</var> each.</p><p data-else="">{On a sunny morning|On a beautiful afternoon}, <var>person(1)</var> rode her bicycle to a farm that sold baskets of <var>plural_form(fruit(1))</var> for $<var>fruit_1</var> each and baskets of <var>plural_form(fruit(2))</var> for $<var>fruit_2</var> each.</p>
+                <p data-if="isMale(1)"><var>person(1)</var> decided to buy a basket of <var>plural_form(fruit(1))</var> and a basket of <var>plural_form(fruit(2))</var> {before heading home|because those were his favorite kinds of fruit|}.</p><p data-else=""><var>person(1)</var> decided to buy a basket of <var>plural_form(fruit(1))</var> and a basket of <var>plural_form(fruit(2))</var> {before heading home|because those were her favorite kinds of fruit|}.</p>
+                <p class="question" data-if="isMale(1)">How much did <var>person(1)</var> need to pay for his produce?</p><p class="question" data-else="">How much did <var>person(1)</var> need to pay for her produce?</p></div>
 
 
-            <div class="solution" data-forms="dollar"><var>fruit_1+fruit_2</var></div>
+            <div class="solution" data-type="multiple"><code>\$</code><span class="sol"><var>fruit_1+fruit_2</var></span></div>
 
             <div class="hints">
-                <p>To find the total amount <var>person(1)</var> needs to pay, we need to add the price of the <var>plural(fruit(1))</var> and the price of the <var>plural(fruit(2))</var>.</p>
-                <p>Price of <var>plural(fruit(1))</var> + price of <var>plural(fruit(2))</var> = total price.</p>
+                <p>To find the total amount <var>person(1)</var> needs to pay, we need to add the price of the <var>plural_form(fruit(1))</var> and the price of the <var>plural_form(fruit(2))</var>.</p>
+                <p>Price of <var>plural_form(fruit(1))</var> + price of <var>plural_form(fruit(2))</var> = total price.</p>
                 <div class="graphie" id="numbers">
                     graph.adder = new DecimalAdder( fruit_1_integer, fruit_1_decimal, fruit_2_integer, fruit_2_decimal );
                     graph.adder.show();
                     graph.adder.showDecimals();
                 </div>
-                <div class="graphie" data-update="numbers" data-each="DecimalAdder.numHintsFor( fruit_1_integer, fruit_1_decimal, fruit_2_integer, fruit_2_decimal ) times">
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( fruit_1_integer, fruit_1_decimal, fruit_2_integer, fruit_2_decimal ) times" data-update="numbers">
                     graph.adder.showHint();
                 </div>
 
@@ -70,21 +70,21 @@
 
             <div class="question spin">
                 <p>{On Monday|Last week}, <var>person(1)</var> and <var>person(2)</var> decided to see how fast they could sprint <var>meters</var> meters. They asked their friend <var>person(3)</var> to time them with a stopwatch.</p>
-                <p>{After <var>time_3</var> minutes, <var>person(3)</var> agreed to time the runners.|} <var>person(1)</var> sprinted first and ran <var>meters</var> meters in <var>time_1</var> seconds. When it was <var>person(2)</var>'s turn, <var>he(2)</var> sped off and completed the run in <var>time_2</var> seconds.</p>
+                <p data-if="isMale(2)">{After <var>time_3</var> minutes, <var>person(3)</var> agreed to time the runners.|} <var>person(1)</var> sprinted first and ran <var>meters</var> meters in <var>time_1</var> seconds. When it was <var>person(2)</var>'s turn, he sped off and completed the run in <var>time_2</var> seconds.</p><p data-else="">{After <var>time_3</var> minutes, <var>person(3)</var> agreed to time the runners.|} <var>person(1)</var> sprinted first and ran <var>meters</var> meters in <var>time_1</var> seconds. When it was <var>person(2)</var>'s turn, she sped off and completed the run in <var>time_2</var> seconds.</p>
                 <p class="question">How much faster was <var>person(2)</var> than <var>person(1)</var> in seconds?</p>
             </div>
             <div class="solution" data-type="multiple">
-                <p> <span class="sol"><var>time_1-time_2 </var></span> seconds</p>
+                <p> <span class="sol" data-forms="integer, decimal"><var>time_1-time_2 </var></span> seconds</p>
             </div>
             <div class="hints">
                 <p>To find how much faster <var>person(2)</var> was than <var>person(1)</var>, we need to find the difference between their times in seconds.
-                <p><var>person(1)</var>'s time - <var>person(2)</var>'s time = difference in times.
-                <div class="graphie" id="numbers">
+                </p><p><var>person(1)</var>'s time - <var>person(2)</var>'s time = difference in times.
+                </p><div class="graphie" id="numbers">
                     graph.subtractor = new DecimalSubtractor( time_1_integer, time_1_decimal, time_2_integer, time_2_decimal );
                     graph.subtractor.show();
                     graph.subtractor.showDecimals();
                 </div>
-                <div class="graphie" data-update="numbers" data-each="DecimalAdder.numHintsFor( time_1_integer, time_1_decimal, time_2_integer, time_2_decimal ) times">
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( time_1_integer, time_1_decimal, time_2_integer, time_2_decimal ) times" data-update="numbers">
                     graph.subtractor.showHint();
                 </div>
                 <p class="final_answer"><var>person(2)</var> was <var>solution</var> seconds faster than <var>person(1)</var>.</p>
@@ -94,20 +94,14 @@
         <div id="twinWeight">
 
             <div class="vars">
-                <var id="G">randRange(2,6)*100</var>
-                <var id="H">randRange(1,9)*10</var>
-                <var id="I">randRange(1,9)*1</var>
-                <var id="weight_1_integer">G+H+I</var>
+                <var id="weight_1_integer">randRange(620, 920)</var>
                 <var id="weight_1_decimal">(2)</var>
                 <var id="weight_1">truncate_to_max(weight_1_integer*pow(10,-weight_1_decimal), 2)</var>
-                <var id="J">randRange(3,5)*100</var>
-                <var id="K">randRange(1,9)*10</var>
-                <var id="L">randRange(1,9)*1</var>
-                <var id="weight_2_integer">J+K+L</var>
+                <var id="weight_2_integer">randRange(620, 920)</var>
                 <var id="weight_2_decimal">(2)</var>
                 <var id="weight_2">truncate_to_max(weight_2_integer*pow(10,-weight_2_decimal), 2)</var>
-                <var id="height_1">randRange(16.5,22.5)</var>
-                <var id="height_2">randRange(16.5,22.5)</var>
+                <var id="height_1">randRange(18.5,21.0)</var>
+                <var id="height_2">randRange(18.5,21.0)</var>
                 <var id="solution">truncate_to_max((weight_1+weight_2),2)</var>
                 <var id="DUMMY">[]</var>
             </div>
@@ -119,22 +113,22 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                    <p><span class="sol"><var> weight_1+weight_2 </var></span> pounds</p>
+                    <p><span class="sol" data-forms="integer, decimal"><var> weight_1+weight_2 </var></span> pounds</p>
             </div>
 
             <div class="hints">
                 <p>To find the weights of the 2 babies, we need to add their weights together.
-                <p><var>person(2)</var>'s weight + <var>person(3)</var>'s weight = total weight.</p>
+                </p><p><var>person(2)</var>'s weight + <var>person(3)</var>'s weight = total weight.</p>
                 <div class="graphie" id="numbers">
                     graph.adder = new DecimalAdder( weight_1_integer, weight_1_decimal, weight_2_integer, weight_2_decimal );
                     graph.adder.show();
                     graph.adder.showDecimals();
                 </div>
-                <div class="graphie" data-update="numbers" data-each="DecimalAdder.numHintsFor( weight_1_integer, weight_1_decimal, weight_2_integer, weight_2_decimal ) times">
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( weight_1_integer, weight_1_decimal, weight_2_integer, weight_2_decimal ) times" data-update="numbers">
                     graph.adder.showHint();
                 </div>
 
-                <div class="graphie" data-update="numbers" data-each="DUMMY as dummy">
+                <div class="graphie" data-each="DUMMY as dummy" data-update="numbers">
                     graph.adder.showHint();
                 </div>
                 <p class="final_answer">Together, the babies weigh <var>solution</var> pounds.</p>
@@ -162,20 +156,21 @@
             </div>
 
             <div class="question spin">
-                <p>{On Tuesday,|Last Thursday,|} <var>person(1)</var> walked to <var>an(store(1))</var> store {<var>timeofday(1)</var>|} and{, after browsing for <var>time_1</var> minutes,|} decided to buy a <var>storeItem(1,1)</var> for $<var>price_1</var>. <var>person(1)</var> handed the salesperson $<var>amount_paid</var> for <var>his(1)</var> purchase.</p>
+                <p data-if="isMale(1)">{On Tuesday,|Last Thursday,|} <var>person(1)</var> walked to a <var>store(1)</var> store {<var>timeofday(1)</var>|} and{, after browsing for <var>time_1</var> minutes,|} decided to buy a <var>storeItem(1,1)</var> for $<var>price_1</var>. <var>person(1)</var> handed the salesperson $<var>amount_paid</var> for his purchase.</p><p data-else="">{On Tuesday,|Last Thursday,|} <var>person(1)</var> walked to a <var>store(1)</var> store {<var>timeofday(1)</var>|} and{, after browsing for <var>time_1</var> minutes,|} decided to buy a <var>storeItem(1,1)</var> for $<var>price_1</var>. <var>person(1)</var> handed the salesperson $<var>amount_paid</var> for her purchase.</p>
                 <p class="question">How much change did <var>person(1)</var> receive?</p>
             </div>
-            <div class="solution" data-forms="dollar"><var>amount_paid-price_1</var></div>
+            <div class="solution" data-type="multiple"><code>\$</code><span class="sol"><var>amount_paid-price_1</var></span></div>
 
             <div class="hints">
-                <p>To find out how much change <var>person(1)</var> received, we can subtract the price of the <var>storeItem(1,1)</var> from the amount of money <var>he(1)</var> paid.
-                <p>The amount <var>person(1)</var> paid - the price of the <var>storeItem(1,1)</var> = the amount of change <var>person(1)</var> received.</p>
+                <p data-if="isMale(1)">To find out how much change <var>person(1)</var> received, we can subtract the price of the <var>storeItem(1,1)</var> from the amount of money he paid.
+                </p><p data-else="">To find out how much change <var>person(1)</var> received, we can subtract the price of the <var>storeItem(1,1)</var> from the amount of money she paid.
+                </p><p>The amount <var>person(1)</var> paid - the price of the <var>storeItem(1,1)</var> = the amount of change <var>person(1)</var> received.</p>
                 <div class="graphie" id="numbers">
                     graph.subtractor = new DecimalSubtractor( amount_paid_integer, amount_paid_decimal, price_1_integer, price_1_decimal );
                     graph.subtractor.show();
                     graph.subtractor.showDecimals();
                 </div>
-                <div class="graphie" data-update="numbers" data-each="DecimalAdder.numHintsFor( amount_paid_integer, amount_paid_decimal, price_1_integer, price_1_decimal ) times">
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( amount_paid_integer, amount_paid_decimal, price_1_integer, price_1_decimal ) times" data-update="numbers">
                     graph.subtractor.showHint();
                 </div>
                 <p class="final_answer"><var>person(1)</var> received $<var>solution</var> in change.</p>
@@ -202,17 +197,17 @@
             </div>
 
             <div class="solution" data-type="multiple">
-                <p> <span class="sol"><var>rain_2-rain_1 </var></span> inches</p>
+                <p> <span class="sol" data-forms="integer, decimal"><var>rain_2-rain_1 </var></span> inches</p>
             </div>
             <div class="hints">
                 <p>To find the difference in rainfall, we can subtract the amount of rain in <var>person(1)</var>'s town from the amount of rain in <var>person(2)</var>'s town.
-                <p>Rain in <var>person(2)</var>'s town - rain in <var>person(1)</var>'s town = the difference in rain between the two towns.</p>
+                </p><p>Rain in <var>person(2)</var>'s town - rain in <var>person(1)</var>'s town = the difference in rain between the two towns.</p>
                 <div class="graphie" id="numbers">
                     graph.subtractor = new DecimalSubtractor( rain_2_integer, rain_2_decimal, rain_1_integer, rain_1_decimal );
                     graph.subtractor.show();
                     graph.subtractor.showDecimals();
                 </div>
-                <div class="graphie" data-update="numbers" data-each="DecimalAdder.numHintsFor( rain_2_integer, rain_2_decimal, rain_1_integer, rain_1_decimal ) times">
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( rain_2_integer, rain_2_decimal, rain_1_integer, rain_1_decimal ) times" data-update="numbers">
                     graph.subtractor.showHint();
                 </div>
                 <p class="final_answer"><var>person(2)</var>'s town received <var>solution</var> inches more rain than <var>person(1)</var>'s town.</p>
@@ -234,33 +229,32 @@
             </div>
 
             <div class="question spin">
-                <p>{To get to school each morning|To get to work each morning|To visit <var>his(1)</var> grandmother}, <var>person(1)</var> takes <var>an(vehicle(1))</var> <var>distance_1</var> <var>plural(distance(1))</var> and <var>an(vehicle(2))</var> <var>distance_2</var> <var>plural(distance(1))</var>. {In total, the journey takes <var>time_1</var> minutes.|}</p>
-                <p class="question">How many <var>plural(distance(1))</var> is <var>person(1)</var>'s journey in total?</p>
+                <p data-if="isMale(1)">{To get to school each morning|To get to work each morning|To visit his grandmother}, <var>person(1)</var> takes a <var>vehicle(1)</var> <var>distance_1</var> <var>plural_form(distance(1), distance_1)</var> and a <var>vehicle(2)</var> <var>distance_2</var> <var>plural_form(distance(1), distance_2)</var>. {In total, the journey takes <var>time_1</var> minutes.|}</p><p data-else="">{To get to school each morning|To get to work each morning|To visit her grandmother}, <var>person(1)</var> takes a <var>vehicle(1)</var> <var>distance_1</var> <var>plural_form(distance(1), distance_1)</var> and a <var>vehicle(2)</var> <var>distance_2</var> <var>plural_form(distance(1), distance_2)</var>. {In total, the journey takes <var>time_1</var> minutes.|}</p>
+                <p class="question">How many <var>plural_form(distance(1))</var> is <var>person(1)</var>'s journey in total?</p>
             </div>
 
             <div class="solution" data-type="multiple">
-                <p> <span class="sol"><var>distance_1+distance_2</var></span> <var>plural(distance(1))</var></p>
+                <p> <span class="sol" data-forms="integer, decimal"><var>distance_1+distance_2</var></span> <var>plural(distance(1))</var></p>
             </div>
             <div class="hints">
                 <p>To find the total distance <var>person(1)</var> travels, we need to add the two distances together.
-                <p>Distance on <var>vehicle(1)</var> + distance on <var>vehicle(2)</var> = total distance.</p>
+                </p><p>Distance on <var>vehicle(1)</var> + distance on <var>vehicle(2)</var> = total distance.</p>
                 <div class="graphie" id="numbers">
                     graph.adder = new DecimalAdder( distance_1_integer, distance_1_decimal, distance_2_integer, distance_2_decimal );
                     graph.adder.show();
                     graph.adder.showDecimals();
                 </div>
-                <div class="graphie" data-update="numbers" data-each="DecimalAdder.numHintsFor( distance_1_integer, distance_1_decimal, distance_2_integer, distance_2_decimal ) times">
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( distance_1_integer, distance_1_decimal, distance_2_integer, distance_2_decimal ) times" data-update="numbers">
                     graph.adder.showHint();
                 </div>
 
-                <div class="graphie" data-update="numbers" data-each="DUMMY as dummy">
+                <div class="graphie" data-each="DUMMY as dummy" data-update="numbers">
                     graph.adder.showHint();
                 </div>
-                <p class="final_answer"><var>person(1)</var> travels <var>solution</var> <var>plural(distance(1))</var> in total.</p>
+                <p class="final_answer"><var>person(1)</var> travels <var>solution</var> <var>plural_form(distance(1), solution)</var> in total.</p>
             </div>
         </div>
     </div>
     </div>
-
 </body>
 </html>

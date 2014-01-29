@@ -31,7 +31,7 @@ class Command(BaseCommand):
             try:
                 unsaved = engine.save_serialized_models(data=purgatory)["unsaved_model_count"]
                 if not unsaved:
-                    self.stdout_writeln("\t%s :)"%(("All models were saved successfully!")))
+                    self.stdout_writeln("\t%s :)" % (("All models were saved successfully!")))
                 else:
                     self.stderr_writeln("\t%d %s" % (unsaved,("models still did not save.  Check 'exceptions' field in 'input purgatory' for failure details.")))
             except Exception as e:

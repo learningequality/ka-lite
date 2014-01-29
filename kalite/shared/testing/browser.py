@@ -2,6 +2,8 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.contrib.sessions.models import Session
+
 import settings
 from .base import create_test_admin, KALiteTestCase
 from settings import LOG as logging
@@ -10,14 +12,14 @@ from settings import LOG as logging
 browser = None # persistent browser
 def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password="test", test_email="test@learningequality.org", persistent_browser=False):
     """Create a django superuser, and connect to the specified browser.
-    peristent_browser: keep a static handle to the browser, rather than 
+    peristent_browser: keep a static handle to the browser, rather than
       re-launch for every testcase.  True currently doesn't work well, so just do False :("""
-      
+
     global browser
-        
+
     # Add the test user
     admin_user = create_test_admin(username=test_user, password=test_password, email=test_email)
-    
+
     # Launch the browser
     if not persistent_browser or (persistent_browser and not browser):
         local_browser = getattr(webdriver, browser_type)() # Get local session of firefox
@@ -25,22 +27,22 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
             browser = local_browser
     else:
         local_browser = browser
-       
+
     return (local_browser,admin_user,test_password)
-            
+
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
     """Given a selenium browser, open the given url and wait until the browser has completed."""
     if dest_url == browser.current_url:
         return True
-         
+
     source_url = browser.current_url
     page_source = browser.page_source
-    
+
     browser.get(dest_url)
-    
+
     return wait_for_page_change(browser, source_url=source_url, page_source=page_source, wait_time=wait_time, max_retries=max_retries)
-    
+
 
 def wait_for_page_change(browser, source_url=None, page_source=None, wait_time=0.1, max_retries=50):
     """Given a selenium browser, wait until the browser has completed.
@@ -55,7 +57,7 @@ def wait_for_page_change(browser, source_url=None, page_source=None, wait_time=0
             time.sleep(wait_time)
 
     return browser.current_url != source_url
-    
+
 
 
 class BrowserTestCase(KALiteTestCase):
@@ -76,11 +78,14 @@ class BrowserTestCase(KALiteTestCase):
         """Create a browser to use for test cases.  Try a bunch of different browsers; hopefully one of them works!"""
 
         super(BrowserTestCase, self).setUp()
-        
+
+        # Clear the session cache after ever test case, to keep things clean.
+        Session.objects.all().delete()
+
         # Can use already launched browser.
         if self.persistent_browser:
             (self.browser,self.admin_user,self.admin_pass) = setup_test_env(persistent_browser=self.persistent_browser)
-            
+
         # Must create a new browser to use
         else:
             for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
@@ -90,9 +95,9 @@ class BrowserTestCase(KALiteTestCase):
                 except Exception as e:
                     logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
-        
+
     def tearDown(self):
-        if not self.persistent_browser:
+        if not self.persistent_browser and hasattr(self, "browser") and self.browser:
             self.browser.quit()
         return super(BrowserTestCase, self).tearDown()
 
@@ -108,7 +113,7 @@ class BrowserTestCase(KALiteTestCase):
     def browse_to(self, *args, **kwargs):
         """
         When testing, we have to make sure that the page has loaded before testing the resulting page.
-        
+
         Three ways to specify the url to browse to:
         1. First positional argument
         2. dest_url keyword argument
@@ -139,14 +144,14 @@ class BrowserTestCase(KALiteTestCase):
             max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
-    
+
     def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None):
         """
         Given the identifier to a page element, make it active.
-        Currently done by clicking TODO(bcipolli): this won't work for buttons, 
+        Currently done by clicking TODO(bcipolli): this won't work for buttons,
         so find another way when that becomes an issue.
         """
-        
+
         if not elem:
             if id:
                 elem = self.browser.find_element_by_id(id)
@@ -160,23 +165,23 @@ class BrowserTestCase(KALiteTestCase):
     def browser_send_keys(self, keys):
         """Convenience method to send keys to active_element in the browser"""
         self.browser.switch_to_active_element().send_keys(keys)
-        
+
 
     def browser_check_django_message(self, message_type=None, contains=None, exact=None, num_messages=1):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
-        
+
         time.sleep(0.50) # wait for the message to get created via AJAX
 
-        # Get messages (and limit by type)    
-        messages = self.browser.find_elements_by_class_name("alert" if settings.CENTRAL_SERVER else "message")
+        # Get messages (and limit by type)
+        messages = self.browser.find_elements_by_class_name("alert")
         if message_type:
             messages = [m for m in messages if message_type in m.get_attribute("class")]
 
         # Check that we got as many as expected
         if num_messages is not None:
             self.assertEqual(num_messages, len(messages)), "Make sure there are %d message(s), type='%s'." % (num_messages, message_type if message_type else "(any)")
-        
+
         for message in messages:
             if contains is not None:
                 self.assertIn(contains, message.text, "Make sure message contains '%s'" % contains)
@@ -187,7 +192,7 @@ class BrowserTestCase(KALiteTestCase):
     def browser_next_form_element(self, num_expected_links=None):
         """
         Use keyboard navigation to traverse form elements.  Skip any intervening elements that have tab stops (namely, links).
-        
+
         If specified, validate the # links skipped, or the total # of tabs needed.
         """
 
@@ -223,7 +228,7 @@ class BrowserTestCase(KALiteTestCase):
         total_wait_time = 0
         element = None
         while total_wait_time < max_wait_time:
-            
+
             time.sleep(step_time)
             total_wait_time += step_time
             try:
@@ -236,7 +241,7 @@ class BrowserTestCase(KALiteTestCase):
     def browser_wait_for_no_element(self, css_selector, max_wait_time=4, step_time=0.25):
         total_wait_time = 0
         while total_wait_time < max_wait_time:
-            
+
             time.sleep(step_time)
             total_wait_time += step_time
             try:
@@ -251,7 +256,7 @@ class BrowserTestCase(KALiteTestCase):
         """
         Submit forms with no values, make sure there are no errors.
         """
-    
+
         self.browse_to(url)
         self.browser_activate_element(id=submission_element_id)  # explicitly set the focus, to start
         self.browser_send_keys(Keys.RETURN)

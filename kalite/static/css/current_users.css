@@ -32,7 +32,17 @@ th.username {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-
+td, th {
+    width:25%;
+    padding: 5px;
+}
+th {
+    background-color: #eee;
+}
+.selectcol { 
+    width:0px;
+    white-space: nowrap;
+}
 th.headrow {
     font-weight: bold;
     background-color: white;

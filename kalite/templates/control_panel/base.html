@@ -9,51 +9,51 @@
 
 {% block content %}
     {% block titlebar %}
-    <div class="titlebar">
-        <ul class="titlebar__title">
-        {% block titlebar_title %}
-            {% comment "Draw the top navigation bar %}{% endcomment %}
-            {% if org %}
-            <li><a href="{% url org_management %}"> {{ org.name }}</a></li>
-            {% endif %}
-
-            {% if zone %}
-            <li>
-                {% if org %}&gt;{% endif %}
-                {% if facility or device %}<a href="{%url zone_management org_id=org.id zone_id=zone.id %}">{% endif %}
-                    {{ zone.name }}
-                {% if facility or device %}</a>
-                {% elif own_device_is_trusted %} <a class="edit-link" href="{% url zone_form org_id=org.id zone_id=zone.id %}">(edit)</a>
+        <div class="titlebar">
+            <ul class="titlebar__title">
+            {% block titlebar_title %}
+                {% comment "Draw the top navigation bar %}{% endcomment %}
+                {% if org %}
+                <li><a href="{% url org_management %}"> {{ org.name }}</a></li>
                 {% endif %}
-            </li>
-            {% endif %}
 
-            {% if device %}
-            <li>{% if zone %}&gt; {% endif %}{% if device.name %}{{ device.name }}{% else %}{{ device.id }}{% endif %}</li>
-            {% endif %}
-
-            {% if facility %}
-            <li>
-                {% if zone %}&gt; {% endif %}
-                {{ facility.name }}
-                {% if not group %}
-                <a class="edit-link" href="{% url facility_form org_id=org.id zone_id=zone.id facility_id=facility.id%}">(edit)</a>
+                {% if zone %}
+                <li>
+                    {% if org %}&gt;{% endif %}
+                    {% if facility or device %}<a href="{%url zone_management org_id=org_id zone_id=zone_id %}">{% endif %}
+                        {{ zone.name }}
+                    {% if facility or device %}</a>
+                    {% elif own_device_is_trusted %} <a class="edit-link" href="{% url zone_form org_id=org_id zone_id=zone_id %}">(edit)</a>
+                    {% endif %}
+                </li>
                 {% endif %}
-            </li>
-            {% endif %}
 
-            {% if group %}
-            <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
-            {% endif %}
-        {% endblock titlebar_title %}
-            {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
-            <ul class="titlebar__buttons">
-            {% block buttons %}
-            {% endblock buttons %}
+                {% if device %}
+                <li>{% if zone %}&gt; {% endif %}{% if device.name %}{{ device.name }}{% else %}{{ device.id }}{% endif %}</li>
+                {% endif %}
+
+                {% if facility %}
+                <li>
+                    {% if zone %}&gt; {% endif %}
+                    {{ facility.name }}
+                    {% if not group %}
+                    <a class="edit-link" href="{% url facility_form org_id=org_id zone_id=zone_id facility_id=facility.id %}">(edit)</a>
+                    {% endif %}
+                </li>
+                {% endif %}
+
+                {% if group %}
+                <li>{% if facility %}&gt; {% endif %}{{ group.name }}</li>
+                {% endif %}
+            {% endblock titlebar_title %}
+                {% comment "Provide upload/download buttons; each button should be an LI" %}{% endcomment %}
+                <ul class="titlebar__buttons">
+                {% block buttons %}
+                {% endblock buttons %}
+                </ul>
+
             </ul>
-
-        </ul>
-    </div>
+        </div>
     {% endblock titlebar %}
 
     {% block control_panel_content %}

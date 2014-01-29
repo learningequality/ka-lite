@@ -2,10 +2,10 @@
 <html data-require="math graphie graphie-helpers graphie-geometry math-format interactive proofs congruency">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Simple Geometry Proofs</title>
+    <title>Basic triangle proofs</title>
     <script src="../khan-exercise.js"></script>
     <style type="text/css">
-        input[type=text] {
+        input.e-proofs-short {
             width: 30px;
             text-transform: uppercase;
         }
@@ -143,9 +143,9 @@
                     <var id="HINTS_LEFT">3</var>                 
                 </div>
                 <p class="question">
-                    <p>Prove <var> FINISHED </var>.</p>
+                    </p><p>Prove <var> FINISHED </var>.</p>
                     <p>This figure is not drawn to scale.</p>
-                </p>
+                <p></p>
 
                 <div class="problem">
                     <div class="graphie">
@@ -243,7 +243,7 @@
 
                             if(verifyTriangles === true || verifyAngles === true || verifySegments === true){
                                 $(".statements").html(outputKnownProof());
-                                _.each($(".statements code"), function(tag){ $.tmpl.type.code()(tag); });
+                                $(".statements code").tex();
                                 $("#thing1").val("");
                                 $("#thing2").val("");
                                 $("#reason").val("");
@@ -322,7 +322,7 @@
                                         $(".actualHints").append("&lt;p&gt;"+storedHint+"&lt;/p&gt;");
                                         storedHint = "";
                                     }
-                                    _.each($(".actualHints code"), function(tag){ $.tmpl.type.code()(tag); });
+                                    $(".actualHints code").tex();
                                     giveAway = !giveAway;
                                 }
                                 if(hintsLeft === 0){
@@ -338,15 +338,15 @@
 
                 <p class="statements"> <var> outputKnownProof() </var></p>
                 <p class="nextStatement">
-                    <input type="text" id="thing1" maxlength="3"></input> <code> \cong </code> <input type="text" id="thing2" maxlength="3"> </input> because 
+                    <input class="e-proofs-short" id="thing1" maxlength="3" type="text"> <code> \cong </code> <input class="e-proofs-short" id="thing2" maxlength="3" type="text">  because 
                     <select id="reason">
                         <option value="">select a reason</option>
                         <option value="SSS">side-side-side congruence</option>
                         <option value="ASA">angle-side-angle congruence</option>
                         <option value="SAS">side-angle-side congruence</option>
                         <option value="AAS">angle-angle-side congruence</option>
-                        <option value="vertical angles">vertical angles are equal</option>
-                        <option value="alternate angles">alternate interior angles are equal</option>
+                        <option value="vertical angles">vertical angles are congruent</option>
+                        <option value="alternate angles">alternate interior angles are congruent</option>
                         <option value="CPCTC">corresp. parts of congruent triangles are congruent</option>
                     </select>
                 </p>
@@ -423,9 +423,9 @@
                     
                 </div>
                 <p class="question">
-                    <p>Prove <var> FINISHED </var>.</p>
+                    </p><p>Prove <var> FINISHED </var>.</p>
                     <p> <code> \overline{AB} </code> is parallel to <code> \overline{DE} </code>. This figure is not drawn to scale.</p>
-                </p>
+                <p></p>
 
                 <div class="problem">
                     <div class="graphie">
@@ -528,7 +528,7 @@
 
                             if(verifyTriangles === true || verifyAngles === true || verifySegments === true){
                                 $(".statements").html(outputKnownProof());
-                                _.each($(".statements code"), function(tag){ $.tmpl.type.code()(tag); });
+                                $(".statements code").tex();
                                 $("#thing1").val("");
                                 $("#thing2").val("");
                                 $("#reason").val("");
@@ -608,7 +608,7 @@
                                         $(".actualHints").append("&lt;p&gt;"+storedHint+"&lt;/p&gt;");
                                         storedHint = "";
                                     }
-                                    _.each($(".actualHints code"), function(tag){ $.tmpl.type.code()(tag); });
+                                    $(".actualHints code").tex();
                                     giveAway = !giveAway;
                                 }
                                 if(hintsLeft === 0){
@@ -623,15 +623,15 @@
                 
                 <p class="statements"> <var> outputKnownProof() </var></p>
                 <p class="nextStatement">
-                    <input type="text" id="thing1"></input> <code> \cong </code> <input type="text" id="thing2" > </input> because 
+                    <input class="e-proofs-short" id="thing1" type="text"> <code> \cong </code> <input class="e-proofs-short" id="thing2" type="text">  because 
                     <select id="reason">
                         <option value="">select a reason</option>
                         <option value="SSS">side-side-side congruence</option>
                         <option value="ASA">angle-side-angle congruence</option>
                         <option value="SAS">side-angle-side congruence</option>
                         <option value="AAS">angle-angle-side congruence</option>
-                        <option value="vertical angles">vertical angles are equal</option>
-                        <option value="alternate angles">alternate interior angles are equal</option>
+                        <option value="vertical angles">vertical angles are congruent</option>
+                        <option value="alternate angles">alternate interior angles are congruent</option>
                         <option value="CPCTC">corresp. parts of congruent triangles are congruent</option>
                     </select>
                 </p>
@@ -702,9 +702,9 @@
                     <var id="FINISHED">STATEMENTS[1]</var>                    
                 </div>
                 <p class="question">
-                    <p>You are given <var> KNOWN </var>.</p>
+                    </p><p>You are given <var> KNOWN </var>.</p>
                     <p>Prove <var> FINISHED </var></p>
-                </p>
+                <p></p>
 
                 <div class="problem">
                     <div class="graphie">
@@ -793,7 +793,7 @@
 
                             if(verifyTriangles === true || verifyAngles === true || verifySegments === true){                          
                                 $(".statements").html(outputKnownProof());
-                                _.each($(".statements code"), function(tag){ $.tmpl.type.code()(tag); });
+                                $(".statements code").tex();
                                 $("#thing1").val("");
                                 $("#thing2").val("");
                                 $("#reason").val("");
@@ -869,7 +869,7 @@
                                         $(".actualHints").append("&lt;p&gt;"+storedHint+"&lt;/p&gt;");
                                         storedHint = "";
                                     }
-                                    _.each($(".actualHints code"), function(tag){ $.tmpl.type.code()(tag); });
+                                    $(".actualHints code").code();
                                     giveAway = !giveAway;
                                 }
                                 if(hintsLeft === 0){
@@ -885,15 +885,15 @@
 
                 <p class="statements"> <var> outputKnownProof() </var></p>
                 <p class="nextStatement">
-                    <input type="text" id="thing1"></input> <code> \cong </code> <input type="text" id="thing2" > </input> because 
+                    <input class="e-proofs-short" id="thing1" type="text"> <code> \cong </code> <input class="e-proofs-short" id="thing2" type="text">  because 
                     <select id="reason">
                         <option value="">select a reason</option>
                         <option value="SSS">side-side-side congruence</option>
                         <option value="ASA">angle-side-angle congruence</option>
                         <option value="SAS">side-angle-side congruence</option>
                         <option value="AAS">angle-angle-side congruence</option>
-                        <option value="vertical angles">vertical angles are equal</option>
-                        <option value="alternate angles">alternate interior angles are equal</option>
+                        <option value="vertical angles">vertical angles are congruent</option>
+                        <option value="alternate angles">alternate interior angles are congruent</option>
                         <option value="CPCTC">corresp. parts of congruent triangles are congruent</option>
                         <option value="reflexive property">reflexive property</option>
                     </select>

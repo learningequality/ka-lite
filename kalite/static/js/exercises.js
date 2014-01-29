@@ -58,14 +58,29 @@ function updatePercentCompleted(correct) {
 
 };
 
+var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
+
 $(function() {
-    $(Exercises).trigger("problemTemplateRendered");
-    $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
-    $(Khan).bind("checkAnswer", function(ev, data) {
-        updatePercentCompleted(data.pass);
+
+    $(Khan).bind("loaded", function() {
+        $(Exercises).trigger("problemTemplateRendered");
+        $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
-    $(Khan).bind("hintUsed", function(ev, data) {
-        if (exerciseData.hintUsed) { // only register the first hint used on a question
+    $(Exercises).bind("checkAnswer", function(ev, data) {
+        updatePercentCompleted(data.correct);
+        
+        // after giving a correct answer, no penalty for viewing a hint.
+        // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
+        hintsResetPoints = !data.correct;
+        $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
+    });
+    $(Exercises).bind("gotoNextProblem", function(ev, data) {
+        // When ready for the next problem, hints matter again!
+        hintsResetPoints = true;
+        $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
+    });
+    $(Exercises).bind("hintUsed", function(ev, data) {
+        if (exerciseData.hintUsed || !hintsResetPoints) { // only register the first hint used on a question
             return;
         }
         exerciseData.hintUsed = true;

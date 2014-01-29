@@ -172,6 +172,23 @@ class Migration(SchemaMigration):
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
+        },
+        'securesync.zoneinvitation': {
+            'Meta': {'object_name': 'ZoneInvitation'},
+            'counter': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
+            'invited_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': "orm['securesync.Device']"}),
+            'private_key': ('django.db.models.fields.CharField', [], {'max_length': '2500', 'null': 'True', 'blank': 'True'}),
+            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'public_key_signature': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'revoked': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'blank': 'True'}),
+            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'used_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Zone']"}),
+            'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         }
     }
 

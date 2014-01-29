@@ -2,7 +2,7 @@
 <html data-require="math math-format probability word-problems">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Probability of One Event</title>
+    <title>Probability 1</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
@@ -27,7 +27,7 @@
                 <code><var>GREENMAR</var></code> green <var>MARBLE</var>s, and <code><var>BLUEMAR</var></code> blue <var>MARBLE</var>s.</p>
 
                 <p>If a <var>MARBLE</var> is randomly chosen, what is the probability
-                that it is <em data-if="NOT">not</em> <var>CHOSEN_COLOR</var>? Write your answer as a simplified fraction.</p>
+                that it is <em data-if="NOT">not</em> <var>CHOSEN_COLOR</var>?</p>
             </div>
 
             <div class="solution"><var>NUMBER / TOTAL</var></div>
@@ -68,7 +68,7 @@
 
             <div class="question">
                 <p>A fair six-sided die is rolled. What is the probability that the
-                result is <var>RESULT_DESC</var>?  Write your answer as a simplified fraction.</p>
+                result is <var>RESULT_DESC</var>?</p>
             </div>
 
             <div class="solution"><var>RESULT_COUNT / 6</var></div>
@@ -76,7 +76,7 @@
             <div class="hints">
                 <p>When rolling a die, there are <code>6</code> possibilities: 1, 2, 3, 4, 5, and 6.</p>
                 <p data-if="RESULT_COUNT === 1">In this case, only <code>1</code> result is favorable: the number <var>RESULT_POSSIBLE[0]</var>.</p>
-                <p data-else>In this case, <code><var>RESULT_COUNT</var></code> results are favorable: <var>toSentence(RESULT_POSSIBLE)</var>.</p>
+                <p data-else="">In this case, <code><var>RESULT_COUNT</var></code> results are favorable: <var>toSentence(RESULT_POSSIBLE)</var>.</p>
                 <p>The probability is <code>\displaystyle <var>fractionSimplification(RESULT_COUNT, 6)</var></code>.</p>
             </div>
         </div>
@@ -92,10 +92,12 @@
                 <var id="GCD">getGCD(Math.pow(SMALL_RAD,2),Math.pow(BIG_RAD,2))</var>
             </div>
             <p>
-                You throw a dart at a circular dartboard with <var>BIG_GIVEN</var> <var>BIG_INFO</var> 
-                <code><var>BIG_GIVEN === "circumference" ? "\\pi" : ""</var></code>. Inside the dartboard is a circular target with
-                <var>SMALL_GIVEN</var> <var>SMALL_INFO</var> <code><var>SMALL_GIVEN === "circumference" ? "\\pi" : ""</var></code>.
-                Assume you're good enough to hit the dartboard every time, and you'll hit every point on the dartboard with equal probability.
+                <span data-if='BIG_GIVEN === "circumference"'>You throw a dart at a circular dartboard with <var>BIG_GIVEN</var> <code><var>BIG_INFO</var> 
+                \pi</code>.</span><span data-else="">You throw a dart at a circular dartboard with <var>BIG_GIVEN</var> <code><var>BIG_INFO</var></code>.</span>
+                <span data-if='SMALL_GIVEN === "circumference"'>Inside the dartboard is a circular target with
+                <var>SMALL_GIVEN</var> <code><var>SMALL_INFO</var> \pi</code>.</span><span data-else="">Inside the dartboard is a circular target with
+                <var>SMALL_GIVEN</var> <code><var>SMALL_INFO</var></code>.</span>
+                <span>Assume you're good enough to hit the dartboard every time, and you'll hit every point on the dartboard with equal probability.</span>
             </p>
             <p class="question">
                 What is the probability that you will hit the target?
@@ -125,7 +127,7 @@
                     So, the probability that you will hit the target is <code> \frac{<var>Math.pow(SMALL_RAD,2)</var>}{<var>Math.pow(BIG_RAD,2)</var>}
                     = \frac{<var>Math.pow(SMALL_RAD,2)/GCD</var>}{<var>Math.pow(BIG_RAD,2)/GCD</var>}</code>.
                 </p>
-                <p data-else>
+                <p data-else="">
                     So, the probability that you will hit the target is <code> \frac{<var>Math.pow(SMALL_RAD,2)</var>}{<var>Math.pow(BIG_RAD,2)</var>}
                     </code>.
                 </p>

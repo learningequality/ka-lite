@@ -50,7 +50,7 @@ a:hover {
 }
 
 #language-preferences {
-    position: relative; 
+    position: relative;
     top: 7px;
 }
 
@@ -100,7 +100,7 @@ nav {
     font-weight: normal;
     font-size: 16px;
     letter-spacing: -1px;
-    text-transform: uppercase;    
+    text-transform: uppercase;
     margin-bottom: 0;
     height: 30px;
     color: #fff;
@@ -129,6 +129,7 @@ nav {
     display: block;
     left: 50%;
     margin-left: -5px;
+    width: 15px;
 }
 
 #nav_registerdevice {
@@ -216,6 +217,7 @@ div.exercises-card {
     float: left;
     text-align: right;
     padding-right: 12px;
+    white-space: nowrap;
 }
 
 .basic-form p {
@@ -281,7 +283,7 @@ li .progress-circle {
 }
 
 #content_tree .partial span.dynatree-icon {
-    margin-top: 2px;    
+    margin-top: 2px;
     background: url(/static/images/circle-partial.png) no-repeat;
 }
 
@@ -307,7 +309,7 @@ li .progress-circle {
 
 .message.error {
     color: #FFFFFF;
-    background-color: #FF3030; 
+    background-color: #FF3030;
     border-color: #330000;
 }
 
@@ -323,7 +325,7 @@ li .progress-circle {
 
 .message.warning {
     color: #330000;
-    background-color: #FF9955; 
+    background-color: #FF9955;
     border-color: #330000;
 }
 
@@ -340,7 +342,7 @@ li .progress-circle {
 
 #totalpoints {
     font-weight: bold;
-    font-size: 1.2em;  
+    font-size: 1.2em;
     padding-top: 4px;
     color: #77C;
 }
@@ -360,7 +362,7 @@ li .progress-circle {
     padding-left: 5px;
     padding-right: 5px;
     margin-right: 4px;
-    margin-top: -10px;
+    margin-top: 10px;
     font-size: 0.8em;
     float: right;
     background-color: #EEEEFF;
@@ -463,4 +465,29 @@ a.green_button, a.green_button:hover,input.green_button, input.green_button:hove
 }
 a.green_button:hover,input.green_button:hover{
     background-color:#C0C0C0;
+}
+
+#search-box {
+    float: right;
+}
+
+#search-box input {
+    position: relative;
+    top: -1px;
+    float: right;
+}
+
+#search-button {
+    top: 1px;
+    position: relative;
+    padding: 3px 8px 2px 8px;
+    height: 14px;
+    line-height: 14px;
+    float: right;
+    margin-left: 1px;
+    min-width: 50px;
+}
+
+input#search {
+    width: 150px;
 }
