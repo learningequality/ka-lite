@@ -373,7 +373,6 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 
     return broken_codes
 
-
 def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
                                  project_key=settings.CROWDIN_PROJECT_KEY,
                                  lang_code="all",
@@ -385,6 +384,13 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     Download latest translations from CrowdIn to corresponding locale
     directory. If zip_file is given, use that as the zip file
     instead of going through CrowdIn.
+
+    Arguments:
+    - project_id -- the project ID in CrowdIn
+    - project_key -- the secret key used for accessing the po files in CrowdIn
+    - zip_file -- the location of a cached zip file. Stores the downloaded zip file in this location if nonexistent.
+    - rebuild -- ask CrowdIn to rebuild translations. Default is False.
+    - download_type -- whether it is a ka or ka_lite. Default is None, meaning ka_lite.
 
     """
     lang_code = lcode_to_ietf(lang_code)
@@ -528,9 +534,16 @@ def build_new_po(lang_code, src_path, dest_path=None, combine_with_po_file=None,
             build_po = polib.POFile(fpath=build_file)
 
         for src_file in src_po_files:
-            logging.debug('Concatenating %s with %s...' % (src_file, build_file))
-            src_po = polib.pofile(src_file)
-            build_po.merge(src_po)
+            if os.path.basename(src_file).startswith('kalitejs'):
+                logging.debug('Compiling %s on its own...' % src_file)
+                js_po_file = polib.pofile(src_file)
+                js_mo_file = os.path.join(dest_path, 'djangojs.mo')
+                js_po_file.save(os.path.join(dest_path, 'djangojs.po'))
+                js_po_file.save_as_mofile(js_mo_file)
+            else:
+                logging.debug('Concatenating %s with %s...' % (src_file, build_file))
+                src_po = polib.pofile(src_file)
+                build_po.merge(src_po)
 
         # de-obsolete messages
         for poentry in build_po:
@@ -767,7 +780,7 @@ def zip_language_packs(lang_codes=None, version=VERSION):
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         # Get mo files from the directory
-        for mo_file in glob.glob('%s/LC_MESSAGES/*.mo' % lang_locale_path):
+        for mo_file in glob.glob('%s/*.mo' % lang_locale_path):
             # Get every single compiled language file
             filepath = os.path.join(lang_locale_path, mo_file)
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
