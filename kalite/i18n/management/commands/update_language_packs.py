@@ -760,7 +760,7 @@ def zip_language_packs(lang_codes=None, version=VERSION):
         sizes[lang_code_ietf] = { "package_size": 0, "zip_size": 0}
 
         #
-        lang_locale_path = get_lp_build_dir(lang_code_ietf, version=version)
+        lang_locale_path = get_lp_build_dir(lcode_to_ietf(lang_code_map["crowdin"]), version=version)
         if not os.path.exists(lang_locale_path):
             logging.warn("Unexpectedly skipping missing directory: %s" % lang_code_ietf)
         elif not os.path.isdir(lang_locale_path):
