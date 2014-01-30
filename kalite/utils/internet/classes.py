@@ -53,7 +53,7 @@ class JsonResponseMessageError(JsonResponseMessage):
         super(JsonResponseMessageError, self).__init__(level="error", *args, **kwargs)
 
 class JsonResponseMessageWarning(JsonResponseMessage):
-    def __init__(self, message, data={}, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(JsonResponseMessageWarning, self).__init__(level="warning", *args, **kwargs)
 
 class JsonpResponse(HttpResponse):
