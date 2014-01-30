@@ -760,7 +760,7 @@ def zip_language_packs(lang_codes=None, version=VERSION):
         sizes[lang_code_ietf] = { "package_size": 0, "zip_size": 0}
 
         #
-        lang_locale_path = get_lp_build_dir(lcode_to_ietf(lang_code_map["crowdin"]), version=version)
+        lang_locale_path = get_lp_build_dir(lang_code_ietf, version=version)
         if not os.path.exists(lang_locale_path):
             logging.warn("Unexpectedly skipping missing directory: %s" % lang_code_ietf)
         elif not os.path.isdir(lang_locale_path):
@@ -773,14 +773,14 @@ def zip_language_packs(lang_codes=None, version=VERSION):
         z = zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED)
 
         # Get metadata from the versioned directory
-        for metadata_file in glob.glob('%s/*.json' % lang_locale_path):
+        for metadata_file in glob.glob('%s/*.json' % get_lp_build_dir(lang_code_ietf, version=version)):
             # Get every single file in the directory and zip it up
             filepath = os.path.join(lang_locale_path, metadata_file)
             z.write(filepath, arcname=os.path.basename(metadata_file))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         # Get mo files from the directory
-        for mo_file in glob.glob('%s/*.mo' % lang_locale_path):
+        for mo_file in glob.glob('%s/*.mo' % get_lp_build_dir(lcode_to_ietf(lang_code_map["crowdin"]), version=version)):
             # Get every single compiled language file
             filepath = os.path.join(lang_locale_path, mo_file)
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
