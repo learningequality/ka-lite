@@ -4,9 +4,9 @@
     "da": null,
     "de": null,
     "en": null,
-    "es-ES": {
-        "amara": "es",
-        "exercises": "es"
+    "es": {
+        "crowdin": "es-ES",
+        "dubbed_videos": "es-ES"
     },
     "fr": null,
     "pl": null,
