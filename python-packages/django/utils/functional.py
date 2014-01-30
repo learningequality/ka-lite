@@ -106,6 +106,14 @@ def lazy(func, *resultclasses):
                 # Automatically triggers the evaluation of a lazy value and
                 # applies the given magic method of the result type.
                 res = func(*self.__args, **self.__kw)
+
+                # TODO (Aron): find cleaner version of this hack right below.
+                # basically the reason for the next two lines below is that sometimes,
+                # self.__dispatch doesn't have information for the type of res. Thus,
+                # it reaches the type error below. Our hack is basically we try to cast
+                # it to one of the types that self.__dispatch can handle.
+                if type(res) not in self.__dispatch:
+                    res = self.__dispatch.keys()[0](res)
                 for t in type(res).mro():
                     if t in self.__dispatch:
                         return self.__dispatch[t][funcname](res, *args, **kw)
