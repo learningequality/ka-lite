@@ -182,7 +182,7 @@ def get_id2oklang_map(video_id, force=False):
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
     if not lang_code:  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lang_code).get(video_id, {})
+    return get_dubbed_video_map(lang_code).get(video_id)
 
 def get_video_id(youtube_id):
     """
