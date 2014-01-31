@@ -54,7 +54,7 @@ class Command(UpdatesDynamicCommand):
 
                 # update progress data
                 video_node = get_video_by_youtube_id(self.video.youtube_id)
-                video_title = video_node["title"] if video_node else self.video.youtube_id
+                video_title = _(video_node["title"]) if video_node else self.video.youtube_id
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
                 self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%s'") % video_title)

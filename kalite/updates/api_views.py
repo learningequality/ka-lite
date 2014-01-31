@@ -263,7 +263,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
             status = "partial"
 
         return {
-            "title": node["title"],
+            "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', node.get("description") or ""),
             "key": youtube_id,
             "addClass": status,
