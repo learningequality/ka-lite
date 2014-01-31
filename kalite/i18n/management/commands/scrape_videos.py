@@ -112,7 +112,6 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
     # Step 1: find or install the youtube-dl binary
     try:
         logging.info("Retrieving youtube video %s" % youtube_id)
-        subprocess.call([yt_dl_bin, '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
         subprocess.call([yt_dl_bin, '--id', '-k', '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
     except OSError as oe:
         if oe.errno != 2: # only hit the roll-our-own / install code for a very specific error.
