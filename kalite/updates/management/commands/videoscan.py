@@ -50,15 +50,15 @@ class Command(BaseCommand):
         # Files that exist, but are not in the DB, should be assumed to be good videos,
         #   and just needing to be added to the DB.  Add them to the DB in this way,
         #   so that these files also trigger the update code below (and trigger cache invalidation)
-        video_ids_needing_model_creation = list(videos_in_filesystem - videos_marked_at_all)
-        count = len(video_ids_needing_model_creation)
+        youtube_ids_needing_model_creation = list(videos_in_filesystem - videos_marked_at_all)
+        count = len(youtube_ids_needing_model_creation)
         if count:
             # OK to do bulk_create; cache invalidation triggered via save download
-            VideoFile.objects.bulk_create([VideoFile(youtube_id=id, percent_complete=100, download_in_progress=False) for id in video_ids_needing_model_creation])
-            self.stdout.write("Created %d VideoFile models (and marked them as complete, since the files exist)\n" % len(video_ids_needing_model_creation))
-            touched_video_ids += [i18n.get_video_id(yid) or yid for yid in video_ids_needing_model_creation]
-            for video in video_ids_needing_model_creation:
-                caching.invalidate_on_video_update(sender=self.handle, instance=VideoFile.objects.get(youtube_id=video))
+            VideoFile.objects.bulk_create([VideoFile(youtube_id=id, percent_complete=100, download_in_progress=False) for id in youtube_ids_needing_model_creation])
+            self.stdout.write("Created %d VideoFile models (and marked them as complete, since the files exist)\n" % len(youtube_ids_needing_model_creation))
+            touched_video_ids += [i18n.get_video_id(yid) or yid for yid in youtube_ids_needing_model_creation]
+            for youtube_id in youtube_ids_needing_model_creation:
+                caching.invalidate_on_video_update(sender=self.handle, instance=VideoFile.objects.get(youtube_id=youtube_id))
 
         # Files that exist, are in the DB, but have percent_complete=0, download_in_progress=False
         #   These should be individually saved to be 100% complete, to trigger their availability (and cache invalidation)
