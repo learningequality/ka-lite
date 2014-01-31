@@ -105,6 +105,9 @@ def get_supported_language_map(lang_code=None):
         lang_map.update(SUPPORTED_LANGUAGE_MAP.get(lang_code) or {})
         return lang_map
 
+def lang_best_name(l):
+    return l.get('native_name') or l.get('ka_name') or l.get('name')
+
 def get_supported_languages():
     return get_supported_language_map().keys()
 
