@@ -22,6 +22,7 @@ from .views import get_installed_language_packs
 from i18n.middleware import set_language_choices
 from settings import LOG as logging
 from shared.decorators import require_admin
+from shared.i18n import get_youtube_id
 from shared.jobs import force_job
 from shared.server import server_restart as server_restart_util
 from shared.topic_tools import get_topic_tree
@@ -198,7 +199,7 @@ def start_languagepack_download(request):
         return JsonResponse({'success': True})
 
 
-def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None):
+def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
     if not statusdict:
         statusdict = {}
 
@@ -212,16 +213,21 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None):
         complete = True
 
         for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict)
-            if child:
-                if child["addClass"] == "unstarted":
-                    complete = False
-                if child["addClass"] == "partial":
-                    complete = False
-                    unstarted = False
-                if child["addClass"] == "complete":
-                    unstarted = False
-                children.append(child)
+            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict, lang_code=lang_code)
+            if not child:
+                continue
+            elif child["addClass"] == "unstarted":
+                complete = False
+            elif child["addClass"] == "partial":
+                complete = False
+                unstarted = False
+            elif child["addClass"] == "complete":
+                unstarted = False
+            children.append(child)
+
+        if not children:
+            # All children were eliminated; so eliminate self.
+            return None
 
         return {
             "title": _(node["title"]),
@@ -234,25 +240,32 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None):
         }
 
     elif node["kind"] == "Video":
+        video_id = node["youtube_id"]
+        youtube_id = get_youtube_id(video_id, lang_code=lang_code)
+
+        if not youtube_id:
+            # This video doesn't exist in this language, so remove from the topic tree.
+            return None
+
         #statusdict contains an item for each video registered in the database
         # will be {} (empty dict) if there are no videos downloaded yet
-        percent = statusdict.get(node["youtube_id"], 0)
+        percent = statusdict.get(youtube_id, 0)
         vid_size = None
         status = None
 
         if not percent:
             status = "unstarted"
-            vid_size = get_remote_video_size(node["youtube_id"], 0) / float(2**20)  # express in MB
+            vid_size = get_remote_video_size(youtube_id, 0) / float(2**20)  # express in MB
         elif percent == 100:
             status = "complete"
-            vid_size = get_local_video_size(node["youtube_id"], 0) / float(2**20)  # express in MB
+            vid_size = get_local_video_size(youtube_id, 0) / float(2**20)  # express in MB
         else:
             status = "partial"
 
         return {
             "title": node["title"],
             "tooltip": re.sub(r'<[^>]*?>', '', node.get("description") or ""),
-            "key": node["youtube_id"],
+            "key": youtube_id,
             "addClass": status,
             "size": vid_size,
         }
@@ -262,9 +275,11 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None):
 
 @require_admin
 @api_handle_error_with_json
-def get_annotated_topic_tree(request):
+def get_annotated_topic_tree(request, lang_code=None):
+    lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
-    return JsonResponse(annotate_topic_tree(get_topic_tree(), statusdict=statusdict))
+
+    return JsonResponse(annotate_topic_tree(get_topic_tree(), statusdict=statusdict, lang_code=lang_code))
 
 
 """
