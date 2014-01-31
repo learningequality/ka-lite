@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .classes import UpdatesDynamicCommand
+from i18n.management.commands.scrape_videos import scrape_video
 from shared import caching, i18n
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
@@ -111,7 +112,13 @@ class Command(UpdatesDynamicCommand):
 
                 # Initiate the download process
                 try:
-                    download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
+                    if video.language == "en":  # could even try download_video, and fall back to scrape_video, for en...
+                        download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
+                    else:
+                    logging.info(_("Retrieving youtube video %s") % video.youtube_id)
+                        self.download_progress_callback(video, 0)
+                        scrape_video(video.youtube_id, suppress_output=True)
+                        self.download_progress_callback(video, 100)
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write("Download is complete!\n")
                 except Exception as e:

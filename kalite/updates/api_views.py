@@ -7,6 +7,7 @@ import os
 import re
 import math
 from annoying.functions import get_object_or_None
+from collections import defaultdict
 
 from django.core.management import call_command
 from django.db.models import Q
@@ -22,7 +23,7 @@ from .views import get_installed_language_packs
 from i18n.middleware import set_language_choices
 from settings import LOG as logging
 from shared.decorators import require_admin
-from shared.i18n import get_youtube_id
+from shared.i18n import get_youtube_id, get_video_language
 from shared.jobs import force_job
 from shared.server import server_restart as server_restart_util
 from shared.topic_tools import get_topic_tree
@@ -31,6 +32,19 @@ from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 from utils.orderedset import OrderedSet
+
+
+
+def divide_videos_by_language(youtube_ids):
+    """Utility function for separating a list of youtube ids
+    into a dictionary of lists, separated by video language
+    (as determined by the current dubbed video map)
+    """
+
+    buckets_by_lang = defaultdict(lambda: [])
+    for y_id in youtube_ids:
+        buckets_by_lang[get_video_language(y_id)].append(y_id)
+    return buckets_by_lang
 
 
 def process_log_from_request(handler):
@@ -125,11 +139,12 @@ def start_video_download(request):
 
     # One query per video (slow)
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
-    video_files_to_update = youtube_ids - OrderedSet(video_files_to_create)
 
     # OK to do bulk_create; cache invalidation triggered via save download
-    VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True) for id in video_files_to_create])
+    for lang_code, lang_youtube_ids in divide_videos_by_language(video_files_to_create).iteritems():
+        VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True, language=lang_code) for id in lang_youtube_ids])
 
+    # OK to update all, since we're not setting all props above.
     # One query per chunk
     for chunk in break_into_chunks(youtube_ids):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
@@ -276,6 +291,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 @require_admin
 @api_handle_error_with_json
 def get_annotated_topic_tree(request, lang_code=None):
+
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 

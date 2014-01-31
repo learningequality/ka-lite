@@ -197,6 +197,29 @@ def get_video_id(youtube_id):
     """
     return get_file2id_map().get(youtube_id, youtube_id)
 
+YT2LANG_MAP = None
+def get_file2lang_map(force=False):
+    """Map from youtube_id to language code"""
+    global YT2LANG_MAP
+    if YT2LANG_MAP is None or force:
+        YT2LANG_MAP = {}
+        for lang_code, dic in get_dubbed_video_map().iteritems():
+            for dubbed_youtube_id in dic.values():
+                if dubbed_youtube_id in YT2LANG_MAP:
+                    # Sanity check, but must be failsafe, since we don't control these data
+                    if YT2LANG_MAP[dubbed_youtube_id] == lang_code:
+                        logging.warn("Duplicate entry found in %s language map for dubbed video %s" % (lang_code, dubbed_youtube_id))
+                    else:
+                        logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
+                if not lang_code:
+                    import pdb; pdb.set_trace()
+                YT2LANG_MAP[dubbed_youtube_id] = lang_code
+    return YT2LANG_MAP
+
+def get_video_language(youtube_id, force=False):
+    lang_code = get_file2lang_map(force=force).get(youtube_id)
+    logging.debug("%s mapped to language %s" % (youtube_id, lang_code))
+    return lang_code or "en"  # default to "en"
 
 def get_srt_url(youtube_id, code):
     return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
