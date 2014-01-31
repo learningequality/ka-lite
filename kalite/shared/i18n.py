@@ -149,17 +149,24 @@ def get_dubbed_video_map(lang_code=None, force=False):
 
         DUBBED_VIDEO_MAP = {}
         for lang_name, video_map in DUBBED_VIDEO_MAP_RAW.iteritems():
+            logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
             DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
 
-    return DUBBED_VIDEO_MAP.get(lang_code) if lang_code else DUBBED_VIDEO_MAP
+    return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
 YT2ID_MAP = None
 def get_file2id_map(force=False):
     global YT2ID_MAP
     if YT2ID_MAP is None or force:
         YT2ID_MAP = {}
-        for dic in get_dubbed_video_map().values():
+        for lang_code, dic in get_dubbed_video_map().iteritems():
             for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                if dubbed_youtube_id in YT2ID_MAP:
+                    # Sanity check, but must be failsafe, since we don't control these data
+                    if YT2ID_MAP[dubbed_youtube_id] == english_youtube_id:
+                        logging.warn("Duplicate entry found in %s language map for english video %s" % (lang_code, english_youtube_id))
+                    else:
+                        logging.error("Conflicting entry found in %s language map for english video %s; overwriting previous entry." % (lang_code, english_youtube_id))
                 YT2ID_MAP[dubbed_youtube_id] = english_youtube_id  # assumes video id is the english youtube_id
     return YT2ID_MAP
 
