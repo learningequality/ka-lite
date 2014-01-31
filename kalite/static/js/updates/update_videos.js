@@ -148,7 +148,7 @@ $(function() {
                     } else {
                         $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
                             vid_count: oldVideoCount,
-                            vid_size: (oldVideoSize < 2) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
+                            vid_size: (oldVideoSize < Math.pow(2, 10)) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
                             vid_size_units: (oldVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
                         }));
                         $("#delete-videos").show();
