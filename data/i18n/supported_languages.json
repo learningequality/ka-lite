@@ -10,5 +10,7 @@
     },
     "fr": null,
     "pl": null,
-    "pt-BR": null
+    "pt-BR": {
+        "dubbed_videos": "pt"
+    }
 }

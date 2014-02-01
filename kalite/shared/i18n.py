@@ -40,6 +40,9 @@ LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH_SECURE, "i18n", "build
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
+def get_lang_map_filepath(lang_code):
+    return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
+
 def get_language_pack_availability_filepath(version=VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "language_pack_availability.json")
 
@@ -307,7 +310,10 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
 
 
 def get_language_code(language, for_django=False):
-    """Return ISO 639-1 language code full English or native language name from ; raise exception if it isn't hardcoded yet"""
+    """
+    Return ISO 639-1 language code full English or native language name from ;
+    raise exception if it isn't hardcoded yet
+    """
     global LANG_LOOKUP_FILEPATH
 
     lang_code = get_langcode_map().get(language.lower())
@@ -327,7 +333,6 @@ def lcode_to_django_dir(lang_code):
 
 def lcode_to_ietf(lang_code):
     return convert_language_code_format(lang_code, for_django=False)
-
 
 def convert_language_code_format(lang_code, for_django=True):
     """
@@ -351,11 +356,12 @@ def convert_language_code_format(lang_code, for_django=True):
 
     return lang_code
 
-def get_lang_map_filepath(lang_code):
-    return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
-
 LANG_NAMES_MAP = None
 def get_language_names(lang_code=None):
+    """
+    Returns dictionary of names (English name, "Native" name)
+    for a given language code.
+    """
     global LANG_NAMES_MAP
     lang_code = lcode_to_ietf(lang_code)
     if not LANG_NAMES_MAP:
@@ -441,6 +447,14 @@ def update_jsi18n_file(code="en"):
 
 
 def select_best_available_language(available_codes, target_code=settings.LANGUAGE_CODE):
+    """
+    Critical function for choosing the best available language for a resource,
+    given a target language code.
+
+    This is used by video and exercise pages, for example,
+    to determine what file to serve, based on available resources
+    and the current requested language.
+    """
     if not available_codes:
         return None
     elif target_code in available_codes:
