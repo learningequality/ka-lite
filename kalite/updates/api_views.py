@@ -23,7 +23,7 @@ from .views import get_installed_language_packs
 from i18n.middleware import set_language_choices
 from settings import LOG as logging
 from shared.decorators import require_admin
-from shared.i18n import get_youtube_id, get_video_language
+from shared.i18n import get_youtube_id, get_video_language, get_supported_language_map
 from shared.jobs import force_job
 from shared.server import server_restart as server_restart_util
 from shared.topic_tools import get_topic_tree
@@ -256,7 +256,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 
     elif node["kind"] == "Video":
         video_id = node["youtube_id"]
-        youtube_id = get_youtube_id(video_id, lang_code=lang_code)
+        youtube_id = get_youtube_id(video_id, lang_code=get_supported_language_map(lang_code)["dubbed_videos"])
 
         if not youtube_id:
             # This video doesn't exist in this language, so remove from the topic tree.

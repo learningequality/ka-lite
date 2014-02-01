@@ -214,8 +214,6 @@ def get_file2lang_map(force=False):
                         logging.warn("Duplicate entry found in %s language map for dubbed video %s" % (lang_code, dubbed_youtube_id))
                     else:
                         logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
-                if not lang_code:
-                    import pdb; pdb.set_trace()
                 YT2LANG_MAP[dubbed_youtube_id] = lang_code
     return YT2LANG_MAP
 
