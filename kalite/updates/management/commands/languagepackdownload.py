@@ -19,6 +19,7 @@ from settings import LOG as logging
 from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
 from shared.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
+from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH
 from utils.general import ensure_dir
 from utils.internet import callback_percent_proxy, download_file
 
@@ -82,6 +83,7 @@ class Command(UpdatesStaticCommand):
             move_dubbed_video_map(lang_code)
             move_exercises(lang_code)
             move_srts(lang_code)
+            move_video_sizes_file(lang_code)
 
             self.complete("Finished processing language pack %s" % lang_code)
         except Exception as e:
@@ -120,6 +122,15 @@ def move_dubbed_video_map(lang_code):
         logging.debug("Moving dubbed video map to %s" % DUBBED_VIDEOS_MAPPING_FILEPATH)
         ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
         shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
+
+def move_video_sizes_file(lang_code):
+    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    filename = os.path.basename(REMOTE_VIDEO_SIZE_FILEPATH)
+    src_path = os.path.join(lang_pack_location, filename)
+    dest_path = REMOTE_VIDEO_SIZE_FILEPATH
+    # replace the old remote_video_size json
+    logging.debug('Moving %s to %s' % (filename, dest_path))
+    shutil.move(src_path, dest_path)
 
 def move_exercises(lang_code):
     src_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=True)
