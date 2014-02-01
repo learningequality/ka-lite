@@ -396,7 +396,7 @@ def get_installed_language_packs():
                 metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % lcode_to_ietf(django_disk_code))
                 lang_meta = softload_json(metadata_filepath, raises=True)
 
-                logging.debug("Added language pack %s" % (django_disk_code))
+                logging.debug("Found language pack %s" % (django_disk_code))
             except Exception as e:
                 if isinstance(e, IOError) and e.errno == 2:
                     logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
