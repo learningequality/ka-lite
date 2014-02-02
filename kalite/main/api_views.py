@@ -365,7 +365,7 @@ def getpid(request):
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
 
-    if lang_code != request.language:
+    if lang_code.lower() != request.language.lower():
         return JsonResponseMessageError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current='%(current_lang)s', requested='%(requested_lang)s').") % {
             "current_lang": request.session.get(settings.LANGUAGE_COOKIE_NAME),
             "requested_lang": lang_code,
