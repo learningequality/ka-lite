@@ -1,4 +1,7 @@
-Khan Academy API (Py)
+Khan Academy API (Python wrapper)
 =========
 
-Python wrapper for Khan Academy API
+This is a Python wrapper for the Khan Academy API.
+
+Documentation
+Khan Academy API: https://github.com/Khan/khan-api/wiki/Khan-Academy-API
