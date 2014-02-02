@@ -43,6 +43,7 @@ from django.core.mail import mail_admins
 import settings
 from settings import LOG as logging
 from shared.i18n import *
+from shared.videos import get_all_remote_video_sizes
 from update_po import compile_po_files
 from utils.general import datediff, ensure_dir, softload_json, version_diff
 from version import VERSION
@@ -785,6 +786,10 @@ def zip_language_packs(lang_codes=None, version=VERSION):
             filepath = os.path.join(lang_locale_path, mo_file)
             z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
+
+        # include video file sizes
+        remote_video_size_list = get_all_remote_video_sizes()
+        z.writestr('video_file_sizes.json', str(remote_video_size_list))
 
         srt_dirpath = get_srt_path(lcode_to_django_dir(lang_code_map["amara"]))
         for srt_file in glob.glob(os.path.join(srt_dirpath, "*.srt")):
