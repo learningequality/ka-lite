@@ -167,7 +167,7 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     nvideos_known = 0
 
     # Can't deal with leaves
-    assert "children" in topic, "Should not be calling this function on leaves; it's inefficient!"
+    assert topic["kind"] == "Topic", "Should not be calling this function on leaves; it's inefficient!"
 
     # Only look for videos if there are more branches
     if len(topic["children"]) == 0:

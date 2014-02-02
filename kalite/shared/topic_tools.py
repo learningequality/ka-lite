@@ -188,7 +188,7 @@ def get_exercises(topic):
 def get_live_topics(topic):
     """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
     # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
-    return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and "Video" in node["contains"], topic["children"])
+    return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
 
 
 def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
@@ -214,8 +214,6 @@ def get_topic_by_path(path, root_node=None):
             cur_node = cur_node[0]
         else:
             break
-
-    assert not cur_node or cur_node["path"] == path, "Either didn't find it, or found the right thing."
 
     return cur_node or {}
 
