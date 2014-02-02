@@ -4,7 +4,8 @@ import os
 
 def get_language_alist(localepaths):
     for localepath in localepaths:
-        for langdir in os.listdir(localepath):
+        langdirs = os.listdir if os.path.exists(localepath) else []
+        for langdir in langdirs:
             try:
                 mdfiles = glob.glob(os.path.join(localepath, langdir, '*_metadata.json'))
                 for mdfile in mdfiles:
