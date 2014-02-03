@@ -29,6 +29,7 @@ from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
+from shared.i18n import lcode_to_ietf
 from shared.jobs import force_job, job_status
 from shared.topic_tools import get_flat_topic_tree
 from shared.videos import delete_downloaded_files
@@ -365,7 +366,7 @@ def getpid(request):
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
 
-    if lang_code.lower() != request.language.lower():
+    if lcode_to_ietf(lang_code) != request.language:
         return JsonResponseMessageError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current='%(current_lang)s', requested='%(requested_lang)s').") % {
             "current_lang": request.session.get(settings.LANGUAGE_COOKIE_NAME),
             "requested_lang": lang_code,
