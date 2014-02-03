@@ -13,7 +13,7 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
-        var TEMPLATE_GROUP_URL = "{% url student_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id='group_id' %}";
+        var TEMPLATE_GROUP_URL = "{% url user_list zone_id=zone_id facility_id=facility.id group_id='group_id' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/facility_user_management.js' %}"></script>
 {% endblock headjs %}
@@ -75,10 +75,10 @@
                     {% endfor %}
             </select>
             {% endif %}
-        
+
              {% if not group_id == "Ungrouped" %}
                      <button id="removegroup">{% trans "Remove Users from Group" %}</button>
-             {% endif %} 
+             {% endif %}
     <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
             <button id="delete">{% trans "Delete Users" %}</button>
         </div>
