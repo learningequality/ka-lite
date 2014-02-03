@@ -115,7 +115,8 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
 
 def move_dubbed_video_map(lang_code):
     lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
-    dvm_filepath = os.path.join(lang_pack_location, "dubbed_videos", os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
+    dubbed_video_dir = os.path.join(lang_pack_location, "dubbed_videos")
+    dvm_filepath = os.path.join(dubbed_video_dir, os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
     if not os.path.exists(dvm_filepath):
         logging.error("Could not find downloaded dubbed video filepath: %s" % dvm_filepath)
     else:
@@ -123,18 +124,30 @@ def move_dubbed_video_map(lang_code):
         ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
         shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
 
+        logging.debug("Removing emtpy directory")
+        try:
+            shutil.rmtree(dubbed_video_dir)
+        except Exception as e:
+            logging.error("Error removing dubbed video directory (%s): %s" % (dubbed_video_dir, e))
+
 def move_video_sizes_file(lang_code):
     lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
     filename = os.path.basename(REMOTE_VIDEO_SIZE_FILEPATH)
     src_path = os.path.join(lang_pack_location, filename)
     dest_path = REMOTE_VIDEO_SIZE_FILEPATH
+
     # replace the old remote_video_size json
-    logging.debug('Moving %s to %s' % (filename, dest_path))
-    shutil.move(src_path, dest_path)
+    if not os.path.exists(src_path):
+        logging.error("Could not find videos sizes file (%s)" % src_path)
+    else:
+        logging.debug('Moving %s to %s' % (src_path, dest_path))
+        shutil.move(src_path, dest_path)
 
 def move_exercises(lang_code):
-    src_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=True)
+    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    src_exercise_dir = os.path.join(lang_pack_location, "exercises")
     dest_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=False)
+
     if not os.path.exists(src_exercise_dir):
         logging.warn("Could not find downloaded exercises; skipping: %s" % src_exercise_dir)
     else:
@@ -145,6 +158,12 @@ def move_exercises(lang_code):
 
         for exercise_file in all_exercise_files:
             shutil.move(exercise_file, os.path.join(dest_exercise_dir, os.path.basename(exercise_file)))
+
+        logging.debug("Removing emtpy directory")
+        try:
+            shutil.rmtree(src_exercise_dir)
+        except Exception as e:
+            logging.error("Error removing dubbed video directory (%s): %s" % (src_exercise_dir, e))
 
 def move_srts(lang_code):
     """
@@ -165,11 +184,11 @@ def move_srts(lang_code):
     for fil in lang_subtitles:
         srt_dest_path = os.path.join(dest_dir, os.path.basename(fil))
         if os.path.exists(srt_dest_path):
-            os.remove(srt_dest_path)
+            os.remove(srt_dest_path)  # we're going to replace any srt with a newer version
         shutil.move(fil, srt_dest_path)
 
     if not os.path.exists(src_dir):
-        pass
+        logging.info("No subtitles for language pack %s" % lang_code)
     elif os.listdir(src_dir):
         logging.warn("%s is not empty; will not remove.  Please check that all subtitles were moved." % src_dir)
     else:
