@@ -55,11 +55,16 @@ def update(request):
 
 @require_admin
 @render_to("updates/update_videos.html")
-def update_videos(request, max_to_show=5):
+def update_videos(request, max_to_show=4):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
 
     installed_languages = set_language_choices(request, force=True)
+    if request.is_django_user or not request.session["facility_user"].default_language:
+        default_language = Settings.get("default_language", "en")
+    elif not request.is_django_user and request.session["facility_user"].default_language:
+        default_language = request.session["facility_user"].default_language
+    default_language = lang_best_name(installed_languages.pop(default_language))
     languages_to_show = [lang_best_name(l) for l in installed_languages.values()[:max_to_show]]
     other_languages_count = max(0, len(installed_languages) - max_to_show)
 
@@ -67,6 +72,7 @@ def update_videos(request, max_to_show=5):
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
         "languages": languages_to_show,
+        "default_language": default_language,
         "other_languages_count": other_languages_count,
     })
     return context

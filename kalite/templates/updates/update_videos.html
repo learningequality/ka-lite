@@ -57,6 +57,7 @@
         {% if not languages %}
             {% trans "No language packs installed." %}
         {% else %}
+            <b>{{ default_language }} ({% trans "default" %})</b>
             {{ languages|join:", " }} {% if other_languages_count %}and {{ other_languages_count }} more. {% endif %}
         {% endif %}
     </div>
