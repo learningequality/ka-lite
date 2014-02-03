@@ -18,6 +18,11 @@ def get_remote_video_size(youtube_id, default=None, force=False):
         REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
     return REMOTE_VIDEO_SIZES.get(youtube_id, default)
 
+def get_all_remote_video_sizes():
+    global REMOTE_VIDEO_SIZES
+    if REMOTE_VIDEO_SIZES is None:
+        REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
+    return REMOTE_VIDEO_SIZES
 
 def get_local_video_size(youtube_id, default=None):
     try:
@@ -162,7 +167,7 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     nvideos_known = 0
 
     # Can't deal with leaves
-    assert "children" in topic, "Should not be calling this function on leaves; it's inefficient!"
+    assert topic["kind"] == "Topic", "Should not be calling this function on leaves; it's inefficient!"
 
     # Only look for videos if there are more branches
     if len(topic["children"]) == 0:

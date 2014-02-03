@@ -7,7 +7,6 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -31,7 +30,7 @@ from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required
 from shared import topic_tools
 from shared.decorators import require_admin
-from shared.i18n import lcode_to_ietf, get_installed_language_packs
+from shared.i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
 from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
@@ -61,7 +60,7 @@ def update_videos(request, max_to_show=5):
     force_job("videodownload", _("Download Videos"))  # async request
 
     installed_languages = set_language_choices(request, force=True)
-    languages_to_show = [l['name'] for l in installed_languages.values()[:max_to_show]]
+    languages_to_show = [lang_best_name(l) for l in installed_languages.values()[:max_to_show]]
     other_languages_count = max(0, len(installed_languages) - max_to_show)
 
     context = update_context(request)

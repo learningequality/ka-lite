@@ -507,3 +507,15 @@ if package_selected("UserRestricted"):
 
     if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
         KEY_PREFIX += "|restricted"  # this option changes templates
+
+
+# (Aron): Setting the LANGUAGES configuration.
+# This is a bit more involved, as we need to hand out to a function to calculate
+# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
+# languages. Anything not in here is not accepted by Django, and will simply show
+# english instead of the selected language.
+if 'LANGUAGES' in dir(local_settings):
+    LANGUAGES = local_settings.LANGUAGES
+else:
+    from settingshelper import get_language_alist
+    LANGUAGES = set(get_language_alist(LOCALE_PATHS))

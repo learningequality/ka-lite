@@ -20,6 +20,11 @@ urlpatterns = patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
+#i18n
+urlpatterns += patterns('',
+    url(r'^js/i18n/$', 'main.views.javascript_catalog_cached', {}, 'javascript_catalog_cached'),
+)
+
 urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
