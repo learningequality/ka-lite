@@ -9,30 +9,34 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'VideoLog.language'
-        db.add_column('main_videolog', 'language',
-                      self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
-                      keep_default=False)
+        # MOD(jamalex): commented out because this was already added in an earlier migration
+        # db.add_column('main_videolog', 'language',
+        #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
+        #               keep_default=False)
 
 
         # Changing field 'VideoLog.counter'
         db.alter_column('main_videolog', 'counter', self.gf('django.db.models.fields.IntegerField')(null=True))
         # Adding field 'UserLog.language'
-        db.add_column('main_userlog', 'language',
-                      self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
-                      keep_default=False)
+        # MOD(jamalex): commented out because this was already added in an earlier migration
+        # db.add_column('main_userlog', 'language',
+        #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
+        #               keep_default=False)
 
         # Adding field 'UserLogSummary.language'
-        db.add_column('main_userlogsummary', 'language',
-                      self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
-                      keep_default=False)
+        # MOD(jamalex): commented out because this was already added in an earlier migration
+        # db.add_column('main_userlogsummary', 'language',
+        #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
+        #               keep_default=False)
 
 
         # Changing field 'UserLogSummary.counter'
         db.alter_column('main_userlogsummary', 'counter', self.gf('django.db.models.fields.IntegerField')(null=True))
         # Adding field 'ExerciseLog.language'
-        db.add_column('main_exerciselog', 'language',
-                      self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
-                      keep_default=False)
+        # MOD(jamalex): commented out because this was already added in an earlier migration
+        # db.add_column('main_exerciselog', 'language',
+        #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
+        #               keep_default=False)
 
 
         # Changing field 'ExerciseLog.counter'
@@ -68,22 +72,22 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         # Deleting field 'VideoLog.language'
-        db.delete_column('main_videolog', 'language')
+        # db.delete_column('main_videolog', 'language')
 
 
         # Changing field 'VideoLog.counter'
         db.alter_column('main_videolog', 'counter', self.gf('django.db.models.fields.IntegerField')())
         # Deleting field 'UserLog.language'
-        db.delete_column('main_userlog', 'language')
+        # db.delete_column('main_userlog', 'language')
 
         # Deleting field 'UserLogSummary.language'
-        db.delete_column('main_userlogsummary', 'language')
+        # db.delete_column('main_userlogsummary', 'language')
 
 
         # Changing field 'UserLogSummary.counter'
         db.alter_column('main_userlogsummary', 'counter', self.gf('django.db.models.fields.IntegerField')())
         # Deleting field 'ExerciseLog.language'
-        db.delete_column('main_exerciselog', 'language')
+        # db.delete_column('main_exerciselog', 'language')
 
 
         # Changing field 'ExerciseLog.counter'
