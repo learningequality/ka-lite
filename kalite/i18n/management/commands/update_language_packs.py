@@ -113,6 +113,11 @@ class Command(BaseCommand):
                     dest='ka_zip_file',
                     default=None,
                     help='a local zip file to be used for KA content instead of fetching to CrowdIn. Ignores -l if this is used.'),
+        make_option('--force-update',
+                    action='store_true',
+                    dest='force_update',
+                    default=False,
+                    help='Force the language pack version to update.'),
         make_option('-o', '--use_local',
                     action='store_true',
                     dest='use_local',
@@ -211,7 +216,7 @@ def update_language_packs(lang_codes, options):
 
         # Now create/update unified meta data
 
-        generate_metadata(package_metadata={lang_code: lang_metadata}, version=options["version"])
+        generate_metadata(package_metadata={lang_code: lang_metadata}, version=options["version"], force_version_update=options["force_update"])
 
         # Zip into language packs
         package_sizes = zip_language_packs(lang_codes=[lang_code], version=options["version"])
@@ -611,7 +616,7 @@ def all_po_files(dir):
                 yield os.path.join(current_dir, po_file)
 
 
-def generate_metadata(package_metadata=None, version=VERSION):
+def generate_metadata(package_metadata=None, version=VERSION, force_version_update=False):
     """Loop through locale folder, create or update language specific meta
     and create or update master file, skipping broken languages
     """
@@ -655,7 +660,10 @@ def generate_metadata(package_metadata=None, version=VERSION):
             logging.warning("Unrecognized language; unable to add extra naming metadata %s" % lang_code_django)
             continue
 
-        language_pack_version = increment_language_pack_version(stored_meta, updated_meta)
+        if force_version_update:
+            language_pack_version = 1 + stored_meta.get("language_pack_version", 0)  # will increment to one
+        else:
+            language_pack_version = increment_language_pack_version(stored_meta, updated_meta)
 
         updated_meta["language_pack_version"] = language_pack_version
         stored_meta.update(updated_meta)
