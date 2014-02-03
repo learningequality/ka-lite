@@ -38,7 +38,7 @@ class APIError(Exception):
         return "Khan API Error: %s %s" % (self.msg, inspection)
 
 
-def create_callback_server(REQUEST_TOKEN):
+def create_callback_server(session):
     """
     Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
     Simple server to handle callbacks from OAuth request to browser.
@@ -50,9 +50,9 @@ def create_callback_server(REQUEST_TOKEN):
 
             params = cgi.parse_qs(self.path.split(
                 '?', 1)[1], keep_blank_values=False)
-            REQUEST_TOKEN = OAuthToken(params['oauth_token'][
-                                       0], params['oauth_token_secret'][0])
-            REQUEST_TOKEN.set_verifier(params['oauth_verifier'][0])
+            session.REQUEST_TOKEN = OAuthToken(params['oauth_token'][
+                0], params['oauth_token_secret'][0])
+            session.REQUEST_TOKEN.set_verifier(params['oauth_verifier'][0])
 
             self.send_response(200)
             self.send_header('Content-Type', 'text/plain')
@@ -108,19 +108,21 @@ class APIModel(AttrDict):
         """
         if name in self.API_attributes and name not in self:
             self[name] = api_call("v1", self.API_url(name), self.session)
-            convert_items(name, self)
+            self.session.convert_items(name, self)
             return self[name]
         else:
             if name in self._related_field_types:
-                convert_items(name, self)
+                self.session.convert_items(name, self)
                 return self[name]
             else:
                 return super(APIModel, self).__getattr__(name)
 
-    def __init__(self, session, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
 
-        self.session = session
+        session = kwargs.get('session')
+        del kwargs['session']
         super(APIModel, self).__init__(*args, **kwargs)
+        self.session = session
 
     def API_url(self, name):
         """
@@ -130,6 +132,9 @@ class APIModel(AttrDict):
             self) if kind_to_id_map.get(self.kind) else ""
         get_param = "?" + get_key_to_get_param_map.get(kind_to_get_key_map.get(
             self.kind)) + "=" + self.get(kind_to_get_key_map.get(self.kind)) if kind_to_get_key_map.get(self.kind) else ""
+        if self.session.lang:
+            get_param = get_param + "&lang=" if get_param else "?lang="
+            get_param += self.session.lang
         return self.base_url + id + self.API_attributes[name] + get_param
 
 
@@ -143,8 +148,10 @@ def api_call(target_version, target_api_url, session, debug=False, authenticate=
     resource_url = "/api/" + target_version + target_api_url
     try:
         if authenticate and session.REQUEST_TOKEN and session.ACCESS_TOKEN:
-            client = TestOAuthClient(session.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
-            response = client.access_resource(resource_url, session.ACCESS_TOKEN)
+            client = TestOAuthClient(
+                session.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+            response = client.access_resource(
+                resource_url, session.ACCESS_TOKEN)
         else:
             response = requests.get(session.SERVER_URL + resource_url).content
         json_object = json.loads(response)
@@ -154,53 +161,6 @@ def api_call(target_version, target_api_url, session, debug=False, authenticate=
     if(debug):
         print json_object
     return json_object
-
-
-def class_by_kind(node):
-    """
-    Function to turn a dictionary into a Python object of the appropriate kind,
-    based on the "kind" attribute found in the dictionary.
-    """
-    # TODO: Fail better or prevent failure when "kind" is missing.
-    try:
-        return kind_to_class_map[node["kind"]](node)
-    except KeyError:
-        raise APIError(
-            "This kind of object should have a 'kind' attribute.", node)
-
-
-def convert_list_to_classes(self, nodelist, class_converter=class_by_kind):
-    """
-    Convert each element of the list (in-place) into an instance of a subclass of APIModel.
-    You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
-    """
-    print nodelist
-    for i in range(len(nodelist)):
-        nodelist[i] = class_converter(nodelist[i])
-
-    return nodelist  # just for good measure; it's already been changed
-
-
-def class_by_name(node, name):
-    """
-    Function to turn a dictionary into a Python object of the kind given by name.
-    """
-    return kind_to_class_map[name](node)
-
-
-def convert_items(name, self):
-    """
-    Convert attributes of an object to related object types.
-    If in a list call to convert each element of the list.
-    """
-
-    # convert dicts to the related type
-    if isinstance(self[name], dict):
-        self[name] = self._related_field_types[name](self[name])
-    # convert every item in related list to correct type
-    elif isinstance(self[name], list):
-        convert_list_to_classes(self[
-                                name], class_converter=self._related_field_types[name])
 
 
 def n_deep(obj, names):
@@ -227,51 +187,98 @@ class Khan():
         self.REQUEST_TOKEN = None
         self.ACCESS_TOKEN = None
 
-    # def require_authentication():
-    #     """
-    #     Decorator to require authentication for particular request events.
-    #     """
-    #     if not (self.REQUEST_TOKEN and self.ACCESS_TOKEN):
-    #         print "This data requires authentication."
-    #         self.authenticate()
-    #     return (self.REQUEST_TOKEN and self.ACCESS_TOKEN)
+    def require_authentication(self):
+        """
+        Decorator to require authentication for particular request events.
+        """
+        if not (self.REQUEST_TOKEN and self.ACCESS_TOKEN):
+            print "This data requires authentication."
+            self.authenticate()
+        return (self.REQUEST_TOKEN and self.ACCESS_TOKEN)
 
+    def authenticate(self):
+        """
+        Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
+        First pass at browser based OAuth authentication.
+        """
+        # TODO: Allow PIN access for non-browser enabled devices.
 
-    # def authenticate(self):
-    #     """
-    #     Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
-    #     First pass at browser based OAuth authentication.
-    #     """
-    #     # TODO: Allow PIN access for non-browser enabled devices.
+        server = create_callback_server(self)
 
-    #     server = create_callback_server(self.REQUEST_TOKEN)
+        client = TestOAuthClient(
+            self.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
 
-    #     client = TestOAuthClient(self.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+        client.start_fetch_request_token(
+            'http://127.0.0.1:%d/' % server.server_address[1])
 
-    #     client.start_fetch_request_token(
-    #         'http://127.0.0.1:%d/' % server.server_address[1])
+        server.handle_request()
 
-    #     server.handle_request()
+        server.server_close()
 
-    #     server.server_close()
+        self.ACCESS_TOKEN = client.fetch_access_token(self.REQUEST_TOKEN)
 
-    #     self.ACCESS_TOKEN = client.fetch_access_token(self.REQUEST_TOKEN)
+    def class_by_kind(self, node):
+        """
+        Function to turn a dictionary into a Python object of the appropriate kind,
+        based on the "kind" attribute found in the dictionary.
+        """
+        # TODO: Fail better or prevent failure when "kind" is missing.
+        try:
+            return kind_to_class_map[node["kind"]](node, session=self)
+        except KeyError:
+            raise APIError(
+                "This kind of object should have a 'kind' attribute.", node)
+
+    def convert_list_to_classes(self, nodelist, class_converter=None):
+        """
+        Convert each element of the list (in-place) into an instance of a subclass of APIModel.
+        You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
+        """
+        if not class_converter:
+            class_converter = self.class_by_kind
+        for i in range(len(nodelist)):
+            nodelist[i] = class_converter(nodelist[i])
+
+        return nodelist  # just for good measure; it's already been changed
+
+    def class_by_name(self, node, name):
+        """
+        Function to turn a dictionary into a Python object of the kind given by name.
+        """
+        return kind_to_class_map[name](node, session=self)
+
+    def convert_items(self, name, obj):
+        """
+        Convert attributes of an object to related object types.
+        If in a list call to convert each element of the list.
+        """
+
+        # convert dicts to the related type
+        if isinstance(obj[name], dict):
+            obj[name] = obj._related_field_types[name](obj[name], session=self)
+        # convert every item in related list to correct type
+        elif isinstance(obj[name], list):
+            self.convert_list_to_classes(obj[
+                name], class_converter=obj._related_field_types[name])
+
+    def params(self):
+        if self.lang:
+            return "?lang=" + self.lang
 
     def get_exercises(self):
-        return convert_list_to_classes(api_call("v1", Exercise.base_url, self))
+        return self.convert_list_to_classes(api_call("v1", Exercise.base_url + self.params(), self))
 
     def get_exercise(self, exercise_id):
-        print api_call("v1", Exercise.base_url + "/" + exercise_id, self)
-        return Exercise(api_call("v1", Exercise.base_url + "/" + exercise_id, self), self)
+        return Exercise(api_call("v1", Exercise.base_url + "/" + exercise_id + self.params(), self), session=self)
 
     def get_badges(self):
-        return convert_list_to_classes(api_call("v1", Badge.base_url, self))
+        return self.convert_list_to_classes(api_call("v1", Badge.base_url + self.params(), self))
 
     def get_badge_category(self, category_id=None):
         if category_id is not None:
-            return BadgeCategory(api_call("v1", BadgeCategory.base_url + "/categories/" + str(category_id), self)[0], self)
+            return BadgeCategory(api_call("v1", BadgeCategory.base_url + "/categories/" + str(category_id) + self.params(), session=self)[0], self)
         else:
-            return convert_list_to_classes(api_call("v1", BadgeCategory.base_url + "/categories", self))
+            return self.convert_list_to_classes(api_call("v1", BadgeCategory.base_url + "/categories" + self.params(), self))
 
     def get_user(self, user_id=""):
         """
@@ -279,57 +286,65 @@ class Khan():
         If no user specified, download logged in user's data.
         """
         if self.require_authentication():
-            return User(api_call("v1", User.base_url + "?userId=" + user_id))
+            return User(api_call("v1", User.base_url + "?userId=" + user_id + self.params(), self))
 
     def get_topic_tree(self, topic_slug=""):
         """
         Retrieve complete node tree starting at the specified root_slug and descending.
         """
         if topic_slug:
-            return Topic(api_call("v1", Topic.base_url + "/" + topic_slug, self), self)
+            return Topic(api_call("v1", Topic.base_url + "/" + topic_slug + self.params(), self), session=self)
         else:
-            return Topic(api_call("v1", "/topictree", self), self)
+            return Topic(api_call("v1", "/topictree" + self.params(), self), session=self)
 
     def get_topic_exercises(self, topic_slug):
         """
         This will return a list of exercises in the highest level of a topic.
         Not lazy loading from get_tree, as any load of the topic data includes these.
         """
-        return convert_list_to_classes(api_call("v1", Topic.base_url + "/" + topic_slug + "/exercises", self))
+        return self.convert_list_to_classes(api_call("v1", Topic.base_url + "/" + topic_slug + "/exercises" + self.params(), self))
 
     def get_topic_videos(self, topic_slug):
         """
         This will return a list of videos in the highest level of a topic.
         Not lazy loading from get_tree, as any load of the topic data includes these.
         """
-        return convert_list_to_classes(api_call("v1", Video.base_url + "/" + topic_slug + "/videos", self))
+        return self.convert_list_to_classes(api_call("v1", Video.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
     def get_video(self, video_id):
-        return Video(api_call("v1", self.base_url + "/" + video_id, self), self)
+        return Video(api_call("v1", Video.base_url + "/" + video_id + self.params(), self), session=self)
 
 
 class Exercise(APIModel):
 
     base_url = "/exercises"
 
-    _related_field_types = {
-        "related_videos": partial(class_by_name, name="Video"),
-        "followup_exercises": partial(class_by_name, name="Exercise"),
-    }
-
     API_attributes = {
         "related_videos": "/videos",
         "followup_exercises": "/followup_exercises"
     }
+
+    def __init__(self, *args, **kwargs):
+
+        super(Exercise, self).__init__(*args, **kwargs)
+        print self.session
+        self._related_field_types = {
+            "related_videos": partial(self.session.class_by_name, name="Video"),
+            "followup_exercises": partial(self.session.class_by_name, name="Exercise"),
+        }
 
 
 class Badge(APIModel):
 
     base_url = "/badges"
 
-    _related_field_types = {
-        "user_badges": class_by_kind,
-    }
+    def __init__(self, *args, **kwargs):
+
+        super(Badge, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "user_badges": self.session.class_by_kind,
+        }
 
 
 class BadgeCategory(APIModel):
@@ -350,46 +365,58 @@ class User(APIAuthModel):
 
     base_url = "/user"
 
-    _related_field_types = {
-        "videos": partial(class_by_name, name="UserVideo"),
-        "exercises": partial(class_by_name, name="UserExercise"),
-        "students": partial(class_by_name, name="User"),
-    }
-
     API_attributes = {
         "videos": "/videos",
         "exercises": "/exercises",
         "students": "/students",
     }
 
+    def __init__(self, *args, **kwargs):
+
+        super(User, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "videos": partial(self.session.class_by_name, name="UserVideo"),
+            "exercises": partial(self.session.class_by_name, name="UserExercise"),
+            "students": partial(self.session.class_by_name, name="User"),
+        }
+
 
 class UserExercise(APIAuthModel):
 
     base_url = "/user/exercises"
-
-    _related_field_types = {
-        "exercise_model": class_by_kind,
-        "followup_exercises": class_by_kind,
-        "log": partial(class_by_name, name="ProblemLog"),
-    }
 
     API_attributes = {
         "log": "/log",
         "followup_exercises": "/followup_exercises",
     }
 
+    def __init__(self, *args, **kwargs):
+
+        super(UserExercise, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "exercise_model": self.session.class_by_kind,
+            "followup_exercises": self.session.class_by_kind,
+            "log": partial(self.session.class_by_name, name="ProblemLog"),
+        }
+
 
 class UserVideo(APIAuthModel):
     base_url = "/user/videos"
 
-    _related_field_types = {
-        "video": class_by_kind,
-        "log": partial(class_by_name, name="VideoLog"),
-    }
-
     API_attributes = {
         "log": "/log",
     }
+
+    def __init__(self, *args, **kwargs):
+
+        super(UserVideo, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "video": self.session.class_by_kind,
+            "log": partial(self.session.class_by_name, name="VideoLog"),
+        }
 
 
 class UserBadge(APIAuthModel):
@@ -410,9 +437,13 @@ class Topic(APIModel):
 
     base_url = "/topic"
 
-    _related_field_types = {
-        "children": class_by_kind,
-    }
+    def __init__(self, *args, **kwargs):
+
+        super(Topic, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "children": self.session.class_by_kind,
+        }
 
 
 class Separator(APIModel):
@@ -431,11 +462,15 @@ class Video(APIModel):
 
     base_url = "/videos"
 
-    _related_field_types = {
-        "related_exercises": class_by_kind,
-    }
-
     API_attributes = {"related_exercises": "/exercises"}
+
+    def __init__(self, *args, **kwargs):
+
+        super(Video, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "related_exercises": self.session.class_by_kind,
+        }
 
 
 # kind_to_class_map maps from the kinds of data found in the topic tree,
