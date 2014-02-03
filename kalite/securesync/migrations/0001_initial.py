@@ -25,7 +25,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'RegisteredDevicePublicKey'
         db.create_table('securesync_registereddevicepublickey', (
-            ('public_key', self.gf('django.db.models.fields.CharField')(max_length=500, primary_key=True)),
+            ('public_key', self.gf('django.db.models.fields.CharField')(max_length=500)),
             ('zone', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.Zone'])),
         ))
         db.send_create_signal('securesync', ['RegisteredDevicePublicKey'])
@@ -203,7 +203,7 @@ class Migration(SchemaMigration):
         },
         'securesync.registereddevicepublickey': {
             'Meta': {'object_name': 'RegisteredDevicePublicKey'},
-            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500', 'primary_key': 'True'}),
+            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Zone']"})
         },
         'securesync.syncsession': {
