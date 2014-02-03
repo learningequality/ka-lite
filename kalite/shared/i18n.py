@@ -235,7 +235,7 @@ def get_code2lang_map(lang_code=None, force=False):
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
-            CODE2LANG_MAP[lcode_to_ietf(lc)] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+            CODE2LANG_MAP[lcode_to_ietf(lc)] = entry
 
     return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
 
