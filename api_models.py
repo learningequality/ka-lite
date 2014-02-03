@@ -13,13 +13,6 @@ from secrets import CONSUMER_KEY, CONSUMER_SECRET
 from test_oauth_client import TestOAuthClient
 from oauth import OAuthToken
 
-SERVER_URL = "http://www.khanacademy.org"
-
-# Set authorization objects to prevent errors when checking for Auth.
-
-REQUEST_TOKEN = None
-ACCESS_TOKEN = None
-
 
 class APIError(Exception):
 
@@ -45,41 +38,7 @@ class APIError(Exception):
         return "Khan API Error: %s %s" % (self.msg, inspection)
 
 
-@decorator
-def require_authentication(func, *args, **kwargs):
-    """
-    Decorator to require authentication for particular request events.
-    """
-    if not (REQUEST_TOKEN and ACCESS_TOKEN):
-        print "This data requires authentication."
-        authenticate()
-    return func(*args, **kwargs)
-
-
-def authenticate():
-    """
-    Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
-    First pass at browser based OAuth authentication.
-    """
-    # TODO: Allow PIN access for non-browser enabled devices.
-
-    server = create_callback_server()
-
-    client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
-
-    client.start_fetch_request_token(
-        'http://127.0.0.1:%d/' % server.server_address[1])
-
-    server.handle_request()
-
-    server.server_close()
-
-    global ACCESS_TOKEN
-
-    ACCESS_TOKEN = client.fetch_access_token(REQUEST_TOKEN)
-
-
-def create_callback_server():
+def create_callback_server(REQUEST_TOKEN):
     """
     Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
     Simple server to handle callbacks from OAuth request to browser.
@@ -88,7 +47,6 @@ def create_callback_server():
     class CallbackHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         def do_GET(self):
-            global REQUEST_TOKEN
 
             params = cgi.parse_qs(self.path.split(
                 '?', 1)[1], keep_blank_values=False)
@@ -149,7 +107,7 @@ class APIModel(AttrDict):
         into the object, so that repeated queries will not requery the API.
         """
         if name in self.API_attributes and name not in self:
-            self[name] = api_call("v1", self.API_url(name))
+            self[name] = api_call("v1", self.API_url(name), self.session)
             convert_items(name, self)
             return self[name]
         else:
@@ -159,8 +117,9 @@ class APIModel(AttrDict):
             else:
                 return super(APIModel, self).__getattr__(name)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, session, *args, **kwargs):
 
+        self.session = session
         super(APIModel, self).__init__(*args, **kwargs)
 
     def API_url(self, name):
@@ -174,7 +133,7 @@ class APIModel(AttrDict):
         return self.base_url + id + self.API_attributes[name] + get_param
 
 
-def api_call(target_version, target_api_url, debug=False, authenticate=True):
+def api_call(target_version, target_api_url, session, debug=False, authenticate=True):
     """
     Generic API call function, that will try to use an authenticated request if available,
     otherwise will fall back to non-authenticated request.
@@ -183,11 +142,11 @@ def api_call(target_version, target_api_url, debug=False, authenticate=True):
     # usage : api_call("v1", "/badges")
     resource_url = "/api/" + target_version + target_api_url
     try:
-        if authenticate and REQUEST_TOKEN and ACCESS_TOKEN:
-            client = TestOAuthClient(SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
-            response = client.access_resource(resource_url, ACCESS_TOKEN)
+        if authenticate and session.REQUEST_TOKEN and session.ACCESS_TOKEN:
+            client = TestOAuthClient(session.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+            response = client.access_resource(resource_url, session.ACCESS_TOKEN)
         else:
-            response = requests.get(SERVER_URL + resource_url).content
+            response = requests.get(session.SERVER_URL + resource_url).content
         json_object = json.loads(response)
     except Exception as e:
         print e
@@ -210,23 +169,23 @@ def class_by_kind(node):
             "This kind of object should have a 'kind' attribute.", node)
 
 
+def convert_list_to_classes(self, nodelist, class_converter=class_by_kind):
+    """
+    Convert each element of the list (in-place) into an instance of a subclass of APIModel.
+    You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
+    """
+    print nodelist
+    for i in range(len(nodelist)):
+        nodelist[i] = class_converter(nodelist[i])
+
+    return nodelist  # just for good measure; it's already been changed
+
+
 def class_by_name(node, name):
     """
     Function to turn a dictionary into a Python object of the kind given by name.
     """
     return kind_to_class_map[name](node)
-
-
-def convert_list_to_classes(nodelist, class_converter=class_by_kind):
-    """
-    Convert each element of the list (in-place) into an instance of a subclass of APIModel.
-    You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
-    """
-
-    for i in range(len(nodelist)):
-        nodelist[i] = class_converter(nodelist[i])
-
-    return nodelist  # just for good measure; it's already been changed
 
 
 def convert_items(name, self):
@@ -257,6 +216,98 @@ def n_deep(obj, names):
     return obj
 
 
+class Khan():
+
+    SERVER_URL = "http://www.khanacademy.org"
+
+    # Set authorization objects to prevent errors when checking for Auth.
+
+    def __init__(self, lang=None):
+        self.lang = lang
+        self.REQUEST_TOKEN = None
+        self.ACCESS_TOKEN = None
+
+    # def require_authentication():
+    #     """
+    #     Decorator to require authentication for particular request events.
+    #     """
+    #     if not (self.REQUEST_TOKEN and self.ACCESS_TOKEN):
+    #         print "This data requires authentication."
+    #         self.authenticate()
+    #     return (self.REQUEST_TOKEN and self.ACCESS_TOKEN)
+
+
+    # def authenticate(self):
+    #     """
+    #     Adapted from https://github.com/Khan/khan-api/blob/master/examples/test_client/test.py
+    #     First pass at browser based OAuth authentication.
+    #     """
+    #     # TODO: Allow PIN access for non-browser enabled devices.
+
+    #     server = create_callback_server(self.REQUEST_TOKEN)
+
+    #     client = TestOAuthClient(self.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+
+    #     client.start_fetch_request_token(
+    #         'http://127.0.0.1:%d/' % server.server_address[1])
+
+    #     server.handle_request()
+
+    #     server.server_close()
+
+    #     self.ACCESS_TOKEN = client.fetch_access_token(self.REQUEST_TOKEN)
+
+    def get_exercises(self):
+        return convert_list_to_classes(api_call("v1", Exercise.base_url, self))
+
+    def get_exercise(self, exercise_id):
+        print api_call("v1", Exercise.base_url + "/" + exercise_id, self)
+        return Exercise(api_call("v1", Exercise.base_url + "/" + exercise_id, self), self)
+
+    def get_badges(self):
+        return convert_list_to_classes(api_call("v1", Badge.base_url, self))
+
+    def get_badge_category(self, category_id=None):
+        if category_id is not None:
+            return BadgeCategory(api_call("v1", BadgeCategory.base_url + "/categories/" + str(category_id), self)[0], self)
+        else:
+            return convert_list_to_classes(api_call("v1", BadgeCategory.base_url + "/categories", self))
+
+    def get_user(self, user_id=""):
+        """
+        Download user data for a particular user.
+        If no user specified, download logged in user's data.
+        """
+        if self.require_authentication():
+            return User(api_call("v1", User.base_url + "?userId=" + user_id))
+
+    def get_topic_tree(self, topic_slug=""):
+        """
+        Retrieve complete node tree starting at the specified root_slug and descending.
+        """
+        if topic_slug:
+            return Topic(api_call("v1", Topic.base_url + "/" + topic_slug, self), self)
+        else:
+            return Topic(api_call("v1", "/topictree", self), self)
+
+    def get_topic_exercises(self, topic_slug):
+        """
+        This will return a list of exercises in the highest level of a topic.
+        Not lazy loading from get_tree, as any load of the topic data includes these.
+        """
+        return convert_list_to_classes(api_call("v1", Topic.base_url + "/" + topic_slug + "/exercises", self))
+
+    def get_topic_videos(self, topic_slug):
+        """
+        This will return a list of videos in the highest level of a topic.
+        Not lazy loading from get_tree, as any load of the topic data includes these.
+        """
+        return convert_list_to_classes(api_call("v1", Video.base_url + "/" + topic_slug + "/videos", self))
+
+    def get_video(self, video_id):
+        return Video(api_call("v1", self.base_url + "/" + video_id, self), self)
+
+
 class Exercise(APIModel):
 
     base_url = "/exercises"
@@ -271,14 +322,6 @@ class Exercise(APIModel):
         "followup_exercises": "/followup_exercises"
     }
 
-    @classmethod
-    def get_exercises(cls):
-        return convert_list_to_classes(api_call("v1", cls.base_url))
-
-    @classmethod
-    def get_exercise(cls, exercise_id):
-        return Exercise(api_call("v1", cls.base_url + "/" + exercise_id))
-
 
 class Badge(APIModel):
 
@@ -288,17 +331,6 @@ class Badge(APIModel):
         "user_badges": class_by_kind,
     }
 
-    @classmethod
-    def get_badges(cls):
-        return convert_list_to_classes(api_call("v1", cls.base_url), Badge)
-
-    @classmethod
-    def get_category(cls, category_id=None):
-        if category_id is not None:
-            return BadgeCategory(api_call("v1", cls.base_url + "/categories/" + str(category_id))[0])
-        else:
-            return convert_list_to_classes(api_call("v1", cls.base_url + "/categories"), BadgeCategory)
-
 
 class BadgeCategory(APIModel):
     pass
@@ -306,9 +338,9 @@ class BadgeCategory(APIModel):
 
 class APIAuthModel(APIModel):
 
-    @require_authentication
     def __getattr__(self, name):
-        return super(APIAuthModel, self).__getattr__(name)
+        if self.session.require_authentication():
+            return super(APIAuthModel, self).__getattr__(name)
 
     # TODO: Add API_url function to add "?userID=" + user_id to each item
     # Check that classes other than User have user_id field.
@@ -329,15 +361,6 @@ class User(APIAuthModel):
         "exercises": "/exercises",
         "students": "/students",
     }
-
-    @classmethod
-    @require_authentication
-    def get_user(cls, user_id=""):
-        """
-        Download user data for a particular user.
-        If no user specified, download logged in user's data.
-        """
-        return User(api_call("v1", cls.base_url + "?userId=" + user_id))
 
 
 class UserExercise(APIAuthModel):
@@ -391,32 +414,6 @@ class Topic(APIModel):
         "children": class_by_kind,
     }
 
-    @classmethod
-    def get_tree(cls, topic_slug=""):
-        """
-        Retrieve complete node tree starting at the specified root_slug and descending.
-        """
-        if topic_slug:
-            return Topic(api_call("v1", cls.base_url + "/" + topic_slug))
-        else:
-            return Topic(api_call("v1", "/topictree"))
-
-    @classmethod
-    def get_topic_exercises(cls, topic_slug):
-        """
-        This will return a list of exercises in the highest level of a topic.
-        Not lazy loading from get_tree, as any load of the topic data includes these.
-        """
-        return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/exercises"))
-
-    @classmethod
-    def get_topic_videos(cls, topic_slug):
-        """
-        This will return a list of videos in the highest level of a topic.
-        Not lazy loading from get_tree, as any load of the topic data includes these.
-        """
-        return convert_list_to_classes(api_call("v1", cls.base_url + "/" + topic_slug + "/videos"))
-
 
 class Separator(APIModel):
     pass
@@ -439,10 +436,6 @@ class Video(APIModel):
     }
 
     API_attributes = {"related_exercises": "/exercises"}
-
-    @classmethod
-    def get_video(cls, video_id):
-        return Video(api_call("v1", cls.base_url + "/" + video_id))
 
 
 # kind_to_class_map maps from the kinds of data found in the topic tree,
