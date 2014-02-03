@@ -51,6 +51,9 @@ from version import VERSION
 # Attributes whose value, if changed, should change the version of the language pack.
 VERSION_CHANGING_ATTRIBUTES = ["approved_translations", "phrases", "subtitle_count", "num_dubbed_videos", "num_exercises"]
 
+class SkipTranslations(Exception):
+    pass
+
 class Command(BaseCommand):
     help = 'Updates all requested language packs'
 
@@ -197,15 +200,18 @@ def update_language_packs(lang_codes, options):
         if options["no_update"] or version_diff(options["version"], "0.10.3") == 0:
             trans_metadata = {lang_code: get_po_metadata(get_po_build_path(lang_code))}
         else:
-            trans_metadata = update_translations(
-                lang_codes=[lang_code],  # will be converted, as needed
-                zip_file=options['zip_file'],
-                ka_zip_file=options['ka_zip_file'],
-                download_ka_translations=options['update_ka_trans'],
-                download_kalite_translations=options['update_kalite_trans'],
-                use_local=options["use_local"],
-                version=options["version"],
-            )
+            try:
+                trans_metadata = update_translations(
+                    lang_codes=[lang_code],  # will be converted, as needed
+                    zip_file=options['zip_file'],
+                    ka_zip_file=options['ka_zip_file'],
+                    download_ka_translations=options['update_ka_trans'],
+                    download_kalite_translations=options['update_kalite_trans'],
+                    use_local=options["use_local"],
+                    version=options["version"],
+                )
+            except SkipTranslations:
+                trans_metadata = {lang_code: get_po_metadata(get_po_build_path(lang_code))}
         lang_metadata.update(trans_metadata.get(lang_code, {}))
 
         # Now create/update unified meta data
@@ -277,6 +283,9 @@ def update_translations(lang_codes=None,
         for lang_code in (lang_codes or [None]):
             lang_code = lcode_to_ietf(lang_code)
             lang_code_crowdin = get_supported_language_map(lang_code)['crowdin']
+            if not lang_code_crowdin:
+                logging.warning('Interface translations for %s are disabled for now' % lang_code)
+                raise SkipTranslations
 
             # we make it a defaultdict so that if no value is present it's automatically 0
             package_metadata[lang_code] = defaultdict(
@@ -780,11 +789,13 @@ def zip_language_packs(lang_codes=None, version=VERSION):
             sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         # Get mo files from the directory
-        for mo_file in glob.glob('%s/*.mo' % get_lp_build_dir(lcode_to_ietf(lang_code_map["crowdin"]), version=version)):
-            # Get every single compiled language file
-            filepath = os.path.join(lang_locale_path, mo_file)
-            z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
-            sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
+        lang_code_crowdin = lang_code_map["crowdin"]
+        if lang_code_crowdin:
+            for mo_file in glob.glob('%s/*.mo' % get_lp_build_dir(lcode_to_ietf(lang_code_crowdin), version=version)):
+                # Get every single compiled language file
+                filepath = os.path.join(lang_locale_path, mo_file)
+                z.write(filepath, arcname=os.path.join("LC_MESSAGES", os.path.basename(mo_file)))
+                sizes[lang_code_ietf]["package_size"] += os.path.getsize(filepath)
 
         srt_dirpath = get_srt_path(lcode_to_django_dir(lang_code_map["amara"]))
         for srt_file in glob.glob(os.path.join(srt_dirpath, "*.srt")):
