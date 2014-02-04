@@ -273,7 +273,8 @@ def tabular_view(request, facility, report_type="exercise"):
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
-        "report_types": ("exercise", "video"),
+        # For translators: the following two translations are nouns
+        "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
         "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
     })
