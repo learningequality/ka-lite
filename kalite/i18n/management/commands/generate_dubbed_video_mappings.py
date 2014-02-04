@@ -18,17 +18,26 @@ from shared.topic_tools import get_node_cache
 from utils.general import ensure_dir, datediff
 
 
-DUBBED_VIDEOS_SPREADSHEET_CSV_URL = "https://docs.google.com/a/learningequality.org/spreadsheet/ccc?key=0AhvqOn88FUVedEM5U3drY3E1MENfeWlLMVBnbnczT3c&output=csv&ndplr=1#gid=13"
+SPREADSHEET_ID ="0AhvqOn88FUVedEJXM1ZhMG1XdGJuVTE4OEZ3WkNxYUE"
+SPREADSHEET_EXPORT_FORMAT = "csv"
+SPREADSHEET_GID = 0
+SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheet/ccc"
 
-def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_URL, csv_data=None):
+def generate_dubbed_video_mappings(download_url=None, csv_data=None):
     """
     Function to do the heavy lifting in getting the dubbed videos map.
 
     Could be moved into utils
     """
+    if not download_url:
+        download_url = SPREADSHEET_BASE_URL
+        params = {'key': SPREADSHEET_ID, 'gid': SPREADSHEET_GID, 'output': SPREADSHEET_EXPORT_FORMAT}
+    else:
+        params = {}
+
     if not csv_data:
         logging.info("Downloading dubbed video data from %s" % download_url)
-        response = requests.get(download_url)
+        response = requests.get(download_url, params=params)
         if response.status_code != 200:
             raise CommandError("Failed to download dubbed video CSV data: status=%s" % response.status)
         csv_data = response.content
@@ -51,11 +60,11 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
             row = reader.next()
 
 
-            if row_num < 5:
+            if row_num < 4:
                 # Rows 1-4 are crap.
                 continue
 
-            elif row_num == 5:
+            elif row_num == 4:
                 # Row 5 is the header row.
                 header_row = [v.lower() for v in row]  # lcase all header row values (including language names)
                 slug_idx = header_row.index("titled id")
