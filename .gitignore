@@ -37,3 +37,6 @@ writeup/
 /kalite/static/srt
 /kalite/private_key.pem
 /kalite/secrets.py
+/kalite/static/css/bootstrap/bootstrap.css
+/kalite/static/css/bootstrap/responsive.css
+/kalite/static/css/style.css
