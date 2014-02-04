@@ -10,7 +10,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="wot-verification" content="075abe861486e6bb3ab9"/>
         {% block titletag %}
-        <title>{% block title %}{{ title }}{% endblock title %} | KA Lite</title>
+        <title>{% block title %}{% trans title %}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}?{{ BUILD_ID }}">
@@ -163,7 +163,7 @@
                             <select id="language_selector">
                                 <option value="">--</option>{# any time the default language is not an installed language pack #}
                                 {% for lang_code, lang_meta in language_choices.iteritems %}
-                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{{ lang_meta.name }}{% endif %}</option>
+                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
                                 {% endfor %}
                             </select>
                         </form>
