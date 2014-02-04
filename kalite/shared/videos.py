@@ -10,9 +10,10 @@ from utils.videos import *  # get all into the current namespace, override some.
 
 
 REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "content", "video_file_sizes.json")
+AVERAGE_VIDEO_SIZE = 14000000
 
 REMOTE_VIDEO_SIZES = None
-def get_remote_video_size(youtube_id, default=None, force=False):
+def get_remote_video_size(youtube_id, default=AVERAGE_VIDEO_SIZE, force=False):
     global REMOTE_VIDEO_SIZES
     if REMOTE_VIDEO_SIZES is None:
         REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)

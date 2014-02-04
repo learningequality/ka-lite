@@ -270,7 +270,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 
         if not percent:
             status = "unstarted"
-            vid_size = get_remote_video_size(youtube_id, 0) / float(2**20)  # express in MB
+            vid_size = get_remote_video_size(youtube_id) / float(2**20)  # express in MB
         elif percent == 100:
             status = "complete"
             vid_size = get_local_video_size(youtube_id, 0) / float(2**20)  # express in MB
