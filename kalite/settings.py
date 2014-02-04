@@ -46,9 +46,11 @@ except ImportError:
 import mimetypes
 mimetypes.add_type("font/opentype", ".otf", True)
 
+# A lot of logic depends on CENTRAL_SERVER (including DEBUG), so set it up here
+CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
-# Used everywhere, so ... set it up top.
-DEBUG          = getattr(local_settings, "DEBUG", False)
+# Used everywhere, so ... set it up top. Default to True for CENTRAL_SERVER, and False otherwise
+DEBUG          = getattr(local_settings, "DEBUG", CENTRAL_SERVER)
 
 
 ##############################
@@ -68,8 +70,6 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 ##############################
 # Basic App Settings
 ##############################
-
-CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
