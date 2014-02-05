@@ -64,7 +64,7 @@ def update_videos(request, max_to_show=4):
         default_language = Settings.get("default_language", "en")
     elif not request.is_django_user and request.session["facility_user"].default_language:
         default_language = request.session["facility_user"].default_language
-    default_language = lang_best_name(installed_languages.pop(default_language))
+    default_language = lang_best_name(installed_languages.pop(lcode_to_ietf(default_language)))
     languages_to_show = [lang_best_name(l) for l in installed_languages.values()[:max_to_show]]
     other_languages_count = max(0, len(installed_languages) - max_to_show)
 
