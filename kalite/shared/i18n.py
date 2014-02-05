@@ -12,6 +12,7 @@ from collections import OrderedDict, defaultdict
 
 from django.core.management import call_command
 from django.http import HttpRequest
+from django.utils import translation
 from django.views.i18n import javascript_catalog
 
 import settings
@@ -434,6 +435,7 @@ def update_jsi18n_file(code="en"):
     js18n file.  So, generate that file here, then
     save to disk--it won't change until the next language pack update!
     """
+    translation.activate(code)  # we switch the language of the whole thread
     output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
