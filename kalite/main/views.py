@@ -238,7 +238,8 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         vid_lang = "en"
         messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
     else:
-        vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language)
+        target_language = request.GET.get('langvid', request.language)
+        vid_lang = select_best_available_language(available_urls.keys(), target_code=target_language)
 
 
     context = {
