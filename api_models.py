@@ -265,15 +265,27 @@ class Khan():
             return "?lang=" + self.lang
 
     def get_exercises(self):
+        """
+        Return list of all exercises in the Khan API
+        """
         return self.convert_list_to_classes(api_call("v1", Exercise.base_url + self.params(), self))
 
     def get_exercise(self, exercise_id):
+        """
+        Return particular exercise, by "exercise_id"
+        """
         return Exercise(api_call("v1", Exercise.base_url + "/" + exercise_id + self.params(), self), session=self)
 
     def get_badges(self):
+        """
+        Return list of all badges in the Khan API
+        """
         return self.convert_list_to_classes(api_call("v1", Badge.base_url + self.params(), self))
 
     def get_badge_category(self, category_id=None):
+        """
+        Return list of all badge categories in the Khan API, or a particular category.
+        """
         if category_id is not None:
             return BadgeCategory(api_call("v1", BadgeCategory.base_url + "/categories/" + str(category_id) + self.params(), session=self)[0], self)
         else:
@@ -311,6 +323,9 @@ class Khan():
         return self.convert_list_to_classes(api_call("v1", Video.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
     def get_video(self, video_id):
+        """
+        Return particular video, by "readable_id" or "youtube_id" (deprecated)
+        """
         return Video(api_call("v1", Video.base_url + "/" + video_id + self.params(), self), session=self)
 
 
