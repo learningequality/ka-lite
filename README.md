@@ -12,15 +12,18 @@ In order to support multiple authentication sessions to the Khan Academy API, an
 
 ```python
 from api_models import *
-
-#By default lang is set to "en", here we are setting it to Spanish.
+```
+By default lang is set to "en", here we are setting it to Spanish.
+```python
 khan = Khan(lang="es")
 
-#Get entire Khan Academy topic tree
+Get entire Khan Academy topic tree
+```python
 topic_tree = khan.get_topic_tree()
-
-#Get information for a user - by default it will be whatever user you log in as, but if you are a coach for other users, can retrieve their information also
-#If not already authenticated, this will create an OAuth authentication session which will need to be verified via the browser.
+```
+Get information for a user - by default it will be whatever user you log in as, but if you are a coach for other users, can retrieve their information also
+If not already authenticated, this will create an OAuth authentication session which will need to be verified via the browser.
+```python
 current_user = khan.get_user()
 ```
 
