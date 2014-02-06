@@ -2,7 +2,6 @@ import requests
 import json
 import cgi
 import os
-import readline
 import SocketServer
 import SimpleHTTPServer
 import sys
