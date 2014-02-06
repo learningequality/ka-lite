@@ -40,3 +40,8 @@ khan.get_topic_videos()
 khan.get_user()
 khan.get_video()
 ```
+
+No authentication is required for anything but user data. In order to authenticate to retrieve user data, the secrets.py.template needs to be copied to secrets.py and a CONSUMER_KEY and CONSUMER_SECRET entered.
+
+You can register your app with the Khan Academy API here to get these two items:
+https://www.khanacademy.org/api-apps/register

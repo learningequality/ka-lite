@@ -8,7 +8,11 @@ import sys
 from decorator import decorator
 from functools import partial
 
-from secrets import CONSUMER_KEY, CONSUMER_SECRET
+try:
+    from secrets import CONSUMER_KEY, CONSUMER_SECRET
+except ImportError:
+    CONSUMER_KEY = None
+    CONSUMER_SECRET = None
 from test_oauth_client import TestOAuthClient
 from oauth import OAuthToken
 
@@ -202,19 +206,23 @@ class Khan():
         """
         # TODO: Allow PIN access for non-browser enabled devices.
 
-        server = create_callback_server(self)
+        if CONSUMER_KEY and CONSUMER_SECRET:
 
-        client = TestOAuthClient(
-            self.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
+            server = create_callback_server(self)
 
-        client.start_fetch_request_token(
-            'http://127.0.0.1:%d/' % server.server_address[1])
+            client = TestOAuthClient(
+                self.SERVER_URL, CONSUMER_KEY, CONSUMER_SECRET)
 
-        server.handle_request()
+            client.start_fetch_request_token(
+                'http://127.0.0.1:%d/' % server.server_address[1])
 
-        server.server_close()
+            server.handle_request()
 
-        self.ACCESS_TOKEN = client.fetch_access_token(self.REQUEST_TOKEN)
+            server.server_close()
+
+            self.ACCESS_TOKEN = client.fetch_access_token(self.REQUEST_TOKEN)
+        else:
+            print "Consumer key and secret not set in secrets.py - authenticated access to API unavailable."
 
     def class_by_kind(self, node):
         """
