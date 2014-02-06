@@ -174,7 +174,11 @@ $(function () {
 
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
-    get_installed_languages();
+    // delay it by a few seconds so that the server can have time to complete the reboot
+    setTimeout(function() { get_installed_languages(); }, 3000);
+
+    // restart the server first, so that we get an updated list
+    server_restart();
 }
 
 var languagepack_callbacks = {
