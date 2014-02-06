@@ -16,7 +16,7 @@ from api_models import *
 By default lang is set to "en", here we are setting it to Spanish.
 ```python
 khan = Khan(lang="es")
-
+```
 Get entire Khan Academy topic tree
 ```python
 topic_tree = khan.get_topic_tree()
