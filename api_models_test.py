@@ -11,8 +11,8 @@ class ApiCallExerciseTest(unittest.TestCase):
 
 	def setUp(self):
 		"""Prepares the objects that will be tested."""
-		self.exercises_list_object = Exercise.get_exercises()
-		self.exercise_object = Exercise.get_exercise("logarithms_1")
+		self.exercises_list_object = Khan().get_exercises()
+		self.exercise_object = Khan().get_exercise("logarithms_1")
 	
 	def test_get_exercises(self):
 		"""Tests if the result is an empty list or if it is a list of Exercise objects."""
@@ -54,9 +54,9 @@ class ApiCallBadgeTest(unittest.TestCase):
 
 	def setUp(self):
 		"""Prepares the objects that will be tested."""
-		self.badges_list_object = Badge.get_badges()
-		self.badges_category_object = Badge.get_category(1)
-		self.badges_category_list_object = Badge.get_category()
+		self.badges_list_object = Khan().get_badges()
+		self.badges_category_object = Khan().get_badge_category(1)
+		self.badges_category_list_object = Khan().get_badge_category()
 
 	def test_get_badges(self):
 		"""Tests if the result is an empty list or if it is a list of Bagde objects."""
@@ -92,8 +92,8 @@ class ApiCallUserTest(unittest.TestCase):
 
 	def setUp(self):
 		"""Prepares the objects that will be tested."""
-		self.user_object = User.get_user()
-		self.badges_object = Badge.get_badges()
+		self.user_object = Khan().get_user()
+		self.badges_object = Khan().get_badges()
 
 	def test_get_user(self):
 		"""Tests if the result is an instance of User. The object is created if the result of the API call is a success."""
@@ -160,10 +160,10 @@ class ApiCallTopicTest(unittest.TestCase):
 
 	def setUp(self):
 		"""Prepares the objects that will be tested."""
-		self.topic_tree_object = Topic.get_tree()
-		self.topic_subtree_object = Topic.get_tree("addition-subtraction")
-		self.topic_exercises_list_object = Topic.get_topic_exercises("addition-subtraction")
-		self.topic_videos_list_object = Topic.get_topic_videos("addition-subtraction")
+		self.topic_tree_object = Khan().get_topic_tree()
+		self.topic_subtree_object = Khan().get_topic_tree("addition-subtraction")
+		self.topic_exercises_list_object = Khan().get_topic_exercises("addition-subtraction")
+		self.topic_videos_list_object = Khan().get_topic_videos("addition-subtraction")
 	
 	def test_get_tree(self):
 		"""Tests if the result is an instance of Topic."""
@@ -200,7 +200,7 @@ class ApiCallVideoTest(unittest.TestCase):
 
 	def setUp(self):
 		"""Prepares the objects that will be tested."""
-		self.video_object = Video.get_video("adding-subtracting-negative-numbers")
+		self.video_object = Khan().get_video("adding-subtracting-negative-numbers")
 	
 	def test_get_video(self):
 		"""Tests if the result object contains the requested video readable id."""
