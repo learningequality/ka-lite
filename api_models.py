@@ -271,6 +271,8 @@ class Khan():
     def params(self):
         if self.lang:
             return "?lang=" + self.lang
+        else:
+            return ""
 
     def get_exercises(self):
         """
@@ -349,7 +351,6 @@ class Exercise(APIModel):
     def __init__(self, *args, **kwargs):
 
         super(Exercise, self).__init__(*args, **kwargs)
-        print self.session
         self._related_field_types = {
             "related_videos": partial(self.session.class_by_name, name="Video"),
             "followup_exercises": partial(self.session.class_by_name, name="Exercise"),
