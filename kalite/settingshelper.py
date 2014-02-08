@@ -3,7 +3,14 @@ import json
 import os
 
 def allow_all_languages_alist(langlookupfile):
-    pass
+    with open(langlookupfile) as f:
+        langlookup = json.load(f)
+    for lc, metadata in langlookup.iteritems():
+        lc = (lc.
+              lower().          # django only accepts lowercase languages
+              replace('-', '_') # django needs the underscore
+        )
+        yield (lc, metadata['name'])
 
 def allow_languages_in_locale_path_alist(localepaths):
     for localepath in localepaths:

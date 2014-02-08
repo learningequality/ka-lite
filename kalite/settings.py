@@ -517,5 +517,7 @@ if package_selected("UserRestricted"):
 if getattr(local_settings, 'LANGUAGES', None):
     LANGUAGES = local_settings.LANGUAGES
 else:
-    from settingshelper import allow_all_languages_in_locale_path_alist
-    LANGUAGES = set(allow_all_languages_in_locale_path_alist(LOCALE_PATHS))
+    from settingshelper import allow_all_languages_alist
+    # copied from shared.i18n
+    LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH_SECURE, "i18n", "languagelookup.json")
+    LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
