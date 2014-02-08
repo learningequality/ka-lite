@@ -197,7 +197,7 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    return JsonResponse(get_installed_language_packs(force=True))
+    return JsonResponse(get_installed_language_packs(force=True).values())
 
 @require_admin
 @api_handle_error_with_json
