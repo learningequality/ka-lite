@@ -235,7 +235,7 @@ def invalidate_inmemory_caches():
          ["DUBBED_VIDEO_MAP", "DUBBED_VIDEO_MAP_RAW", "YT2ID_MAP", "ID2OKLANG_MAP", "YT2LANG_MAP",
           "CODE2LANG_MAP", "LANG2CODE_MAP", "LANG_NAMES_MAP"]),
         (topic_tools,
-         ["TOPICS", "NODE_CACHE", "KNOWLEDGEMAP_TOPICS", "SLUG2ID_MAP", "REMOTE_VIDEO_SIZES"])
+         ["TOPICS", "FLAT_TOPIC_TREE", "NODE_CACHE", "KNOWLEDGEMAP_TOPICS", "SLUG2ID_MAP", "REMOTE_VIDEO_SIZES"])
     ]
 
     for module, module_caches in inmemory_caches:
