@@ -59,21 +59,12 @@ def set_request_language(request, lang_code):
 
     request.language = lcode_to_ietf(lang_code)
 
-def set_language_choices(request, force=False):
-    """
-    Read available languages from language pack metadata, if needed
-    """
-    if force or "language_choices" not in request.session:
-        # Set the set of available languages
-        request.session["language_choices"] = get_installed_language_packs()
-    return request.session["language_choices"]
-
 def set_language_data(request):
     """
     Process requests to set language, redirect to the same URL to continue processing
     without leaving the "set" in the browser history.
     """
-    set_language_choices(request)
+    get_installed_language_packs()
 
     if "set_server_language" in request.GET:
         # Set the current server default language, and redirect (to clean browser history)

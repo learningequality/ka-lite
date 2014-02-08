@@ -370,7 +370,14 @@ def get_language_names(lang_code=None):
         LANG_NAMES_MAP = softload_json(LANG_LOOKUP_FILEPATH)
     return LANG_NAMES_MAP.get(lang_code) if lang_code else LANG_NAMES_MAP
 
-def get_installed_language_packs():
+INSTALLED_LANGUAGES_CACHE = None
+def get_installed_language_packs(force=False):
+    global INSTALLED_LANGUAGES_CACHE
+    if not INSTALLED_LANGUAGES_CACHE or force:
+        INSTALLED_LANGUAGES_CACHE = _get_installed_language_packs()
+    return INSTALLED_LANGUAGES_CACHE
+
+def _get_installed_language_packs():
     """
     On-disk method to show currently installed languages and meta data.
     """
