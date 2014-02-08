@@ -514,7 +514,7 @@ if package_selected("UserRestricted"):
 # the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
 # languages. Anything not in here is not accepted by Django, and will simply show
 # english instead of the selected language.
-if 'LANGUAGES' in dir(local_settings):
+if getattr(local_settings, 'LANGUAGES', None):
     LANGUAGES = local_settings.LANGUAGES
 else:
     from settingshelper import get_language_alist
