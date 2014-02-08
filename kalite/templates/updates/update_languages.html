@@ -47,6 +47,7 @@
     <script type="text/javascript">
         var start_languagepackdownload_url = "{% url start_languagepack_download %}";
         var installed_languages_url = "{% url installed_language_packs %}"
+        var clear_cache_url = "{% url clear_all_caches %}"
         var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
         var defaultLanguage = "{{ default_language }}";
     </script>

@@ -173,6 +173,20 @@ $(function () {
     });
 });
 
+function clear_cache() {
+    $.ajax({
+        url: clear_cache_url,
+        cache: false,
+        datatype: "json",
+    }).success(function() {
+        show_message(
+            "success",
+            sprintf(gettext("Cache cleared.")),
+            "id_cacheclear"
+        );
+    })
+}
+
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
