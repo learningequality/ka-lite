@@ -27,7 +27,7 @@ from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog
 from config.models import Settings
 from securesync.models import FacilityGroup, FacilityUser
-from shared.caching import backend_cache_page
+from shared.caching import backend_cache_page, invalidate_all_caches
 from shared.decorators import allow_api_profiling, require_admin
 from shared.i18n import lcode_to_ietf
 from shared.jobs import force_job, job_status
@@ -352,6 +352,11 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
+
+
+def clear_all_caches(request):
+    invalidate_all_caches()
+    return HttpResponse("Cleared.")
 
 
 def getpid(request):
