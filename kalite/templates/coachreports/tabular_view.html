@@ -172,7 +172,7 @@
                         <tr>
                             {% for exercise in exercises %}
                                 <th class="headrow data">
-                                    <div><a href="{{ exercise.path }}" title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</a></div>
+                                    <div><a href="{{ exercise.path }}" title='"{% trans exercise.display_name %}"{% if exercise.description %} ({% trans exercise.description %}){% endif %}'>{% trans exercise.title %}</a></div>
                                 </th>
                             {% endfor %}
                         </tr>
@@ -207,7 +207,7 @@
                         <tr>
                             {% for video in videos %}
                                 <th class="headrow data">
-                                    <div><a href="{{ video.path }}"><span title='"{{ video.title }}"{% if video.description %} ({{ video.description }}){% endif %}'>{{ video.title }}</span></a></div>
+                                    <div><a href="{{ video.path }}"><span title='"{% trans video.title %}"{% if video.description %} ({% trans video.description %}){% endif %}'>{% trans video.title %}</span></a></div>
                                 </th>
                             {% endfor %}
                         </tr>
