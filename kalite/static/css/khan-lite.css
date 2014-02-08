@@ -411,7 +411,7 @@ li .progress-circle {
     font-size: .85em;
     display: block;
     position: relative;
-    left: 135px;
+    float: right;
     top: -3px;
 }
 
