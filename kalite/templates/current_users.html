@@ -13,7 +13,11 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
-        var TEMPLATE_GROUP_URL = "{% url user_list zone_id=zone_id facility_id=facility.id group_id='group_id' %}";
+        var GetParams = {
+            "zone_id": "{{ zone_id }}",
+            "facility_id": "{{ facility.id }}",
+            "group_id": {% if group_id == "Ungrouped" %}""{% else %}"{{ group_id }}"{% endif %}
+        };
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/facility_user_management.js' %}"></script>
 {% endblock headjs %}
@@ -48,7 +52,7 @@
                 {% for group in groups %}
                 <option value="{{ group.id }}" {% if group_id == group.id %}selected{% endif %}>{{ group }}</option>
                 {% endfor %}
-                <option {% if group_id == "Ungrouped" %}selected{% endif %}>{% trans "Ungrouped" %}</option>
+                <option value="" {% if group_id == "Ungrouped" %}selected{% endif %}>{% trans "Ungrouped" %}</option>
                 </select>
             </div>
         </div>
