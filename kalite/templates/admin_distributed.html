@@ -105,11 +105,11 @@
                 </td>
             </tr>
             <tr class="client-online-only">
-                <td class="link"><a href="http://translate.google.com/translate?hl=en&sl=auto&tl={{ request.language }}&u={{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
+                <td class="link"><a href="{% if request.lang and request.lang != "en" %}http://translate.google.com/translate?hl=en&sl=auto&tl={{ request.language }}&u={% endif %}{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
                 <td class="desc"> {% trans "Contains the latest information about setting up and using KA Lite." %}</td>
             </tr>
             <tr class="client-online-only">
-                <td class="link"><a href="http://translate.google.com/translate?hl=en&sl=auto&tl={{ request.language }}&u=http://{{central_server_host}}/faq" target="_blank">{% trans "FAQ" %}</a></td>
+                <td class="link"><a href="{% if request.lang and request.lang != "en" %}http://translate.google.com/translate?hl=en&sl=auto&tl={{ request.language }}&u={% endif %}http://{{central_server_host}}/faq" target="_blank">{% trans "FAQ" %}</a></td>
                 <td class="desc">{% trans "Contains the latest FAQ for troubleshooting." %}</td>
             </tr>
 
