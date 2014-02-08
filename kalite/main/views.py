@@ -343,7 +343,7 @@ def easy_admin(request):
 def user_list(request, facility):
 
     # Use default group
-    group_id = request.REQUEST.get("group")
+    group_id = request.REQUEST.get("group_id")
     if not group_id:
         groups = FacilityGroup.objects \
             .annotate(Count("facilityuser")) \
