@@ -58,7 +58,7 @@ def update_videos(request, max_to_show=4):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
 
-    installed_languages = get_installed_language_packs(force=True)
+    installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
     if request.is_django_user or not request.session["facility_user"].default_language:
         default_language = Settings.get("default_language", "en")
     elif not request.is_django_user and request.session["facility_user"].default_language:
