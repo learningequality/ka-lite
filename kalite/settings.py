@@ -517,5 +517,5 @@ if package_selected("UserRestricted"):
 if getattr(local_settings, 'LANGUAGES', None):
     LANGUAGES = local_settings.LANGUAGES
 else:
-    from settingshelper import get_language_alist
-    LANGUAGES = set(get_language_alist(LOCALE_PATHS))
+    from settingshelper import allow_all_languages_in_locale_path_alist
+    LANGUAGES = set(allow_all_languages_in_locale_path_alist(LOCALE_PATHS))
