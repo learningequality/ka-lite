@@ -177,19 +177,20 @@ function clear_cache() {
     $.ajax({
         url: clear_cache_url,
         cache: false,
-        datatype: "json",
+        datatype: "json"
     }).success(function() {
         show_message(
             "success",
-            sprintf(gettext("Cache cleared.")),
+            gettext("Cache cleared."),
             "id_cacheclear"
         );
-    })
+    });
 }
 
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
+    clear_cache();
 }
 
 var languagepack_callbacks = {

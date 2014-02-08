@@ -356,7 +356,7 @@ def status(request):
 
 def clear_all_caches(request):
     invalidate_all_caches()
-    return HttpResponse("Cleared.")
+    return JsonResponseMessage("Cache cleared.")
 
 
 def getpid(request):
