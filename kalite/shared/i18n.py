@@ -21,6 +21,8 @@ from settings import LOG as logging
 from utils.general import ensure_dir, softload_json
 from version import VERSION
 
+CACHE_VARS = []
+
 
 if settings.CENTRAL_SERVER:
     AMARA_HEADERS = {
@@ -95,6 +97,7 @@ class LanguageNotFoundError(Exception):
 
 
 SUPPORTED_LANGUAGE_MAP = None
+CACHE_VARS.append("SUPPORTED_LANGUAGE_MAP")
 def get_supported_language_map(lang_code=None):
     lang_code = lcode_to_ietf(lang_code)
     global SUPPORTED_LANGUAGE_MAP
@@ -116,7 +119,9 @@ def get_supported_languages():
     return get_supported_language_map().keys()
 
 DUBBED_VIDEO_MAP_RAW = None
+CACHE_VARS.append("DUBBED_VIDEO_MAP_RAW")
 DUBBED_VIDEO_MAP = None
+CACHE_VARS.append("DUBBED_VIDEO_MAP")
 def get_dubbed_video_map(lang_code=None, force=False):
     """
     Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
@@ -162,6 +167,7 @@ def get_dubbed_video_map(lang_code=None, force=False):
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
 YT2ID_MAP = None
+CACHE_VARS.append("YT2ID_MAP")
 def get_file2id_map(force=False):
     global YT2ID_MAP
     if YT2ID_MAP is None or force:
@@ -178,6 +184,7 @@ def get_file2id_map(force=False):
     return YT2ID_MAP
 
 ID2OKLANG_MAP = None
+CACHE_VARS.append("ID2OKLANG_MAP")
 def get_id2oklang_map(video_id, force=False):
     global ID2OKLANG_MAP
     if ID2OKLANG_MAP is None or force:
@@ -205,6 +212,7 @@ def get_video_id(youtube_id):
     return get_file2id_map().get(youtube_id, youtube_id)
 
 YT2LANG_MAP = None
+CACHE_VARS.append("YT2LANG_MAP")
 def get_file2lang_map(force=False):
     """Map from youtube_id to language code"""
     global YT2LANG_MAP
@@ -257,6 +265,7 @@ def get_subtitle_count(lang_code):
     return len(all_srts)
 
 CODE2LANG_MAP = None
+CACHE_VARS.append("CODE2LANG_MAP")
 def get_code2lang_map(lang_code=None, force=False):
     """
     """
@@ -272,6 +281,7 @@ def get_code2lang_map(lang_code=None, force=False):
     return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
 
 LANG2CODE_MAP = None
+CACHE_VARS.append("LANG2CODE_MAP")
 def get_langcode_map(lang_name=None, force=False):
     """
     """
@@ -359,6 +369,7 @@ def convert_language_code_format(lang_code, for_django=True):
     return lang_code
 
 LANG_NAMES_MAP = None
+CACHE_VARS.append("LANG_NAMES_MAP")
 def get_language_names(lang_code=None):
     """
     Returns dictionary of names (English name, "Native" name)
@@ -371,6 +382,7 @@ def get_language_names(lang_code=None):
     return LANG_NAMES_MAP.get(lang_code) if lang_code else LANG_NAMES_MAP
 
 INSTALLED_LANGUAGES_CACHE = None
+CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
 def get_installed_language_packs(force=False):
     global INSTALLED_LANGUAGES_CACHE
     if not INSTALLED_LANGUAGES_CACHE or force:

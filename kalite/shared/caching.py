@@ -228,18 +228,9 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
 
 def invalidate_inmemory_caches():
-    from shared import i18n, topic_tools
-    # the list of in-memory caches is organized as [(module, "cache name as string")]
-    inmemory_caches = [
-        (i18n,
-         ["DUBBED_VIDEO_MAP", "DUBBED_VIDEO_MAP_RAW", "YT2ID_MAP", "ID2OKLANG_MAP", "YT2LANG_MAP",
-          "CODE2LANG_MAP", "LANG2CODE_MAP", "LANG_NAMES_MAP"]),
-        (topic_tools,
-         ["TOPICS", "FLAT_TOPIC_TREE", "NODE_CACHE", "KNOWLEDGEMAP_TOPICS", "SLUG2ID_MAP", "REMOTE_VIDEO_SIZES"])
-    ]
-
-    for module, module_caches in inmemory_caches:
-        for cache_var in module_caches:
+    from shared import i18n, topic_tools # modules with cache variables
+    for module in (i18n, topic_tools):
+        for cache_var in getattr(i18n, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)
 
