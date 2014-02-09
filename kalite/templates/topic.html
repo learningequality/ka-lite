@@ -85,7 +85,7 @@
             {% for lang, avail in video.availability.iteritems %}
                 {% if avail.on_disk %}
                 <span class="dubbedvideo-indicator">
-                    <a href="{{ video.path }}?lang={{ lang }}">
+                    <a href="{{ video.path }}?langvid={{ lang }}">
                         {{ lang }}
                     </a></span>
                 {% endif %}
@@ -94,7 +94,7 @@
             {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
             {% for lang in video.availability.en.subtitles.keys %}
                 <span class="subtitle-indicator">
-                    <a href="{{ video.path }}?lang={{ lang }}">
+                    <a href="{{ video.path }}?langvid={{ lang }}">
                 {{ lang }}
 </a>
                 </span>
