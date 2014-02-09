@@ -354,6 +354,7 @@ def status(request):
     return JsonResponse(data)
 
 
+@require_admin
 def clear_all_caches(request):
     invalidate_all_caches()
     return JsonResponseMessage("Cache cleared.")
