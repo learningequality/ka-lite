@@ -203,7 +203,7 @@ $(function(){
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
-            window.location = "?set_language=" + lang_code;
+            window.location = CHANGE_USER_LANGUAGE_URL + lang_code;
         }
     });
 });
