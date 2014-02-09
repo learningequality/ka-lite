@@ -520,4 +520,7 @@ else:
     from settingshelper import allow_all_languages_alist
     # copied from shared.i18n
     LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH_SECURE, "i18n", "languagelookup.json")
-    LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+    try:
+        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+    except Exception:
+        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)
