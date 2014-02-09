@@ -239,7 +239,7 @@ function updateDisplay(process_name, progress_log) {
 
 function clear_all_caches() {
     $.ajax({
-        url: clear_cache_url,
+        url: CLEAR_CACHE_URL,
         cache: false,
         datatype: "json"
     }).success(function() {
