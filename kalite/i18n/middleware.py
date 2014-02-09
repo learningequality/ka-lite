@@ -64,9 +64,7 @@ def set_language_data(request):
     Process requests to set language, redirect to the same URL to continue processing
     without leaving the "set" in the browser history.
     """
-    get_installed_language_packs()
-
-    if "set_server_language" in request.GET:
+    if "set_default_language" in request.GET:
         # Set the current server default language, and redirect (to clean browser history)
         if not request.is_admin:
             raise PermissionDenied(_("You don't have permissions to set the server's default language."))
