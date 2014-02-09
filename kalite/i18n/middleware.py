@@ -11,7 +11,8 @@ Here, we have three major pieces of code:
 Other values set here:
   request.session["default_language"] - if no "lang" GET parameter is specified, this is the language to use on the current request.
   request.session["language_choices"] - available languages (based on language pack metadata)
-
+  request.session["django_language"] - (via settings.LANGUAGE_COOKIE_NAME) used by Django, it's what it uses as the request language.
+  request.language - proxy for request.session["django_language"] / request.session[settings.LANGUAGE_COOKIE_NAME]
 """
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
@@ -52,7 +53,7 @@ def set_request_language(request, lang_code):
 
     lang_code = lcode_to_django_lang(lang_code)
     if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
-        logging.debug("setting session language to %s" % lang_code)
+        logging.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
         # Just in case we have a db-backed session, don't write unless we have to.
         request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
 
@@ -106,7 +107,6 @@ def set_language_data(request):
 
     # Set this request's language based on the listed priority
     cur_lang = request.GET.get("lang") \
-        or request.session.get(settings.LANGUAGE_COOKIE_NAME) \
         or request.session.get("default_language")
 
     set_request_language(request, lang_code=cur_lang)
