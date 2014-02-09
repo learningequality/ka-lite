@@ -65,9 +65,11 @@ def get_slug2id_map(force=False):
     return SLUG2ID_MAP
 
 
-FLAT_TOPIC_TREE = {}
+FLAT_TOPIC_TREE = None
 def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
     global FLAT_TOPIC_TREE
+    if FLAT_TOPIC_TREE is None:
+        FLAT_TOPIC_TREE = {}
     if lang_code not in FLAT_TOPIC_TREE or force:
         FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
     return FLAT_TOPIC_TREE[lang_code]
