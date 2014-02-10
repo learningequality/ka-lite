@@ -207,7 +207,7 @@ def start_languagepack_download(request):
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
         call_command_async(
             'languagepackdownload',
-            language=data['lang'],
+            lang_code=data['lang'],
         ) # TODO: migrate to force_job once it can accept command_args
         return JsonResponse({'success': True})
 
