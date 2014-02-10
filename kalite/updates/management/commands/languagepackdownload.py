@@ -16,6 +16,7 @@ import settings
 import version
 from .classes import UpdatesStaticCommand
 from settings import LOG as logging
+from shared import caching
 from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
 from shared.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
@@ -51,6 +52,7 @@ class Command(UpdatesStaticCommand):
         "unpack_language_pack",
         "add_js18n_file",
         "move_files",
+        "invalidate_caches",
     )
 
     def handle(self, *args, **options):
@@ -84,6 +86,9 @@ class Command(UpdatesStaticCommand):
             move_exercises(lang_code)
             move_srts(lang_code)
             move_video_sizes_file(lang_code)
+
+            self.next_stage("Invalidate caches")
+            caching.invalidate_all_caches()
 
             self.complete("Finished processing language pack %s" % lang_code)
         except Exception as e:

@@ -37,7 +37,7 @@ def invalidate_on_video_update(sender, **kwargs):
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
         logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
-        invalidate_all_pages_related_to_video(video_id=i18n.get_video_id(kwargs["instance"].youtube_id))
+        invalidate_all_caches()
 
 @receiver(pre_delete, sender=VideoFile)
 def invalidate_on_video_delete(sender, **kwargs):
@@ -47,7 +47,7 @@ def invalidate_on_video_delete(sender, **kwargs):
     was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
     if was_available:
         logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
-        invalidate_all_pages_related_to_video(video_id=i18n.get_video_id(kwargs["instance"].youtube_id))
+        invalidate_all_caches()
 
 # Decorators
 
@@ -230,7 +230,7 @@ def regenerate_all_pages_related_to_videos(video_ids):
 def invalidate_inmemory_caches():
     from shared import i18n, topic_tools # modules with cache variables
     for module in (i18n, topic_tools):
-        for cache_var in getattr(i18n, "CACHE_VARS", []):
+        for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)
 

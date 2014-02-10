@@ -176,7 +176,6 @@ $(function () {
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
-    clear_all_caches();
 }
 
 var languagepack_callbacks = {

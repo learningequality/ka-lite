@@ -237,21 +237,6 @@ function updateDisplay(process_name, progress_log) {
     }
 }
 
-function clear_all_caches() {
-    $.ajax({
-        url: CLEAR_CACHE_URL,
-        cache: false,
-        datatype: "json"
-    }).success(function() {
-        show_message(
-            "success",
-            gettext("Cache cleared."),
-            "id_cacheclear"
-        );
-    });
-}
-
-
 function updatesReset(process_name) {
 
     // With no args, reset all

@@ -17,7 +17,6 @@ function video_reset_callback() {
     lastKey = null;
     nErrors = 0;
     videos_downloading = false;
-    clear_all_caches();
 }
 
 function video_check_callback(progress_log, resp) {

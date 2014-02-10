@@ -60,10 +60,8 @@ class Command(BaseCommand):
                     lang_video_files = [VideoFile(youtube_id=id, percent_complete=100, download_in_progress=False, language=lang_code) for id in youtube_ids]
                     VideoFile.objects.bulk_create(lang_video_files)
                     new_video_files += lang_video_files
+                    caching.invalidate_all_caches()  # Do this within the loop, to update users ASAP
                 self.stdout.write("Created %d VideoFile models (and marked them as complete, since the files exist)\n" % len(new_video_files))
-
-                for video_file in new_video_files:
-                    caching.invalidate_on_video_update(sender=self.handle, instance=video_file)
 
             return [i18n.get_video_id(video_file.youtube_id) for video_file in new_video_files]
 
@@ -75,9 +73,10 @@ class Command(BaseCommand):
             for chunk in break_into_chunks(youtube_ids_in_filesystem):
                 video_files_needing_model_update = VideoFile.objects.filter(percent_complete=0, download_in_progress=False, youtube_id__in=chunk)
                 video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
-                for video_file in video_files_needing_model_update:
-                    caching.invalidate_on_video_update(sender=self.handle, instance=video_file)
-                    updated_video_ids.append(i18n.get_video_id(video_file.youtube_id))
+
+                caching.invalidate_all_caches()  # Do this within the loop, to update users ASAP
+                updated_video_ids += [i18n.get_video_id(video_file.youtube_id) for video_file in video_files_needing_model_update]
+
             if updated_video_ids:
                 self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % len(updated_video_ids))
             return updated_video_ids

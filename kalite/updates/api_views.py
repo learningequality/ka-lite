@@ -21,7 +21,6 @@ import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from settings import LOG as logging
-from shared.caching import invalidate_all_caches
 from shared.decorators import require_admin
 from shared.i18n import get_youtube_id, get_video_language, get_supported_language_map
 from shared.jobs import force_job
@@ -151,11 +150,6 @@ def start_video_download(request):
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
     force_job("videodownload", _("Download Videos"))
-
-    # invalidate here due to the possibility of the updates framework
-    # not triggering the end of a video download. Remove once it gets
-    # more reliable.
-    invalidate_all_caches()
 
     return JsonResponse({})
 

@@ -35,9 +35,6 @@ urlpatterns = patterns('main.api_views',
     #API endpoint for setting server time
     url(r'^time_set/$', 'time_set', {}, 'time_set'),
 
-    # API endpoint for clearing the entire cache
-    url(r'^clear_all_caches$', 'clear_all_caches', {}, 'clear_all_caches'),
-
     # show pid for the running server (used bt stop to help kill the server)
     url(r'^getpid$', 'getpid', {}, 'getpid'),
 )
