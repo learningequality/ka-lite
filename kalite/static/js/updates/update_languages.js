@@ -19,7 +19,7 @@ function get_available_languages() {
 
 function get_installed_languages() {
     $.ajax({
-        url: installed_languages_url,
+        url: INSTALLED_LANGUAGES_URL,
         cache: false,
         datatype: "json",
     }).success(function(installed) {
@@ -47,7 +47,8 @@ function display_languages() {
         if (lang['name']) { // nonempty name
             var link_text;
             if (!(lang['code'] === defaultLanguage)) {
-                link_text = sprintf("<a href='?set_default_language=%(lang.code)s'>(%(link_text)s)</a>", {
+                link_text = sprintf("<a href='%(CHANGE_SERVER_LANGUAGE_URL)s%(lang.code)s'>(%(link_text)s)</a>", {
+                    CHANGE_SERVER_LANGUAGE_URL: CHANGE_SERVER_LANGUAGE_URL,
                     lang: lang,
                     link_text: gettext("Set as default")
                 });

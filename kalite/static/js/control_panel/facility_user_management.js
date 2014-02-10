@@ -10,11 +10,9 @@ function getSelectedUsers() {
 $(function() {
 
     $("#group").change(function(){
-        // Change the URL to the selcted group.
-        var group_id = $("#group option:selected").val();
-        if (group_id) {
-            window.location.href = TEMPLATE_GROUP_URL.replace("group_id", group_id);
-        }
+        // Change the URL to the selected group.
+        GetParams["group_id"] = $("#group option:selected").val();
+        window.location.href = setGetParamDict(window.location.href, GetParams);
     });
 
     $("#all").click(function(){

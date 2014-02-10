@@ -8,8 +8,8 @@ from annoying.functions import get_object_or_None
 from functools import partial
 
 from django.contrib import messages
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
@@ -18,6 +18,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from django.views.i18n import javascript_catalog
 
 import settings
 from config.models import Settings
@@ -30,7 +31,7 @@ from securesync.views import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
-from shared.decorators import require_admin
+from shared.decorators import require_admin, distributed_server_only
 from shared.i18n import select_best_available_language
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
@@ -342,7 +343,7 @@ def easy_admin(request):
 def user_list(request, facility):
 
     # Use default group
-    group_id = request.REQUEST.get("group")
+    group_id = request.REQUEST.get("group_id")
     if not group_id:
         groups = FacilityGroup.objects \
             .annotate(Count("facilityuser")) \
@@ -387,6 +388,22 @@ def device_redirect(request):
         return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
     else:
         raise Http404(_("This device is not on any zone."))
+
+JS_CATALOG_CACHE = {}
+@distributed_server_only
+def javascript_catalog_cached(request):
+    global JS_CATALOG_CACHE
+    lang = request.session['default_language']
+    if lang in JS_CATALOG_CACHE:
+        logging.debug('Using js translation catalog cache for %s' % lang)
+        src = JS_CATALOG_CACHE[lang]
+        return HttpResponse(src, 'text/javascript')
+    else:
+        logging.debug('Generating js translation catalog for %s' % lang)
+        resp = javascript_catalog(request, 'djangojs', settings.INSTALLED_APPS)
+        src = resp.content
+        JS_CATALOG_CACHE[lang] = src
+        return resp
 
 @render_to('search_page.html')
 @refresh_topic_cache
@@ -445,7 +462,7 @@ def handler_403(request, *args, **kwargs):
     #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
+        return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())

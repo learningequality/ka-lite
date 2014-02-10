@@ -107,6 +107,18 @@ class Command(BaseCommand):
         ),
     )
 
+    class_map = {
+        "loginlogout": LoginLogout,
+        "seleniumstudent": SeleniumStudentExercisesOnly,
+        "ss_classic": SeleniumStudent,
+        "generatedata": GenerateRealData,
+        "1000reads": OneThousandRandomReads,
+        "100updates": OneHundredRandomLogUpdates,
+        "100updates_transact": OneHundredRandomLogUpdatesSingleTransaction,
+        "helloworld": HelloWorld,
+        "validate": ValidateModels,
+    }
+
     def handle(self, *args, **options):
         if len(args) < 1:
             raise CommandError("Must specify the benchmark type.")
@@ -114,26 +126,10 @@ class Command(BaseCommand):
         print "Running %s %s times in %s clients" % (args[0], options["niters"], options["nclients"])
 
         # Choose the benchmark class, based on the input string
-        if args[0] == "loginlogout":  # testcase
-            cls = LoginLogout
-        elif args[0] == "seleniumstudent":
-            cls = SeleniumStudentExercisesOnly
-        elif args[0] == "ss_classic":
-            cls = SeleniumStudent
-        elif args[0] == "generatedata":
-            cls = GenerateRealData
-        elif args[0] == "1000reads":
-            cls = OneThousandRandomReads
-        elif args[0] == "100updates":
-            cls = OneHundredRandomLogUpdates
-        elif args[0] == "100updates_transact":
-            cls = OneHundredRandomLogUpdatesSingleTransaction
-        elif args[0] == "helloworld":
-            cls = HelloWorld
-        elif args[0] == "validate":
-            cls = ValidateModels
+        if args[0] in self.class_map:
+            cls = self.class_map[args[0]]
         else:
-            raise CommandError("Unknown test case: %s" % args[0])
+            raise CommandError("Unknown test case: %s;\nSelect from %s" % (args[0], self.class_map.keys()))
 
 
         # Now, use the class to make a lambda function
@@ -154,7 +150,7 @@ class Command(BaseCommand):
 
             # Now, use the class to make a lambda function
             #   Since each thread can have a different user and profile,
-            #   
+            #
             fn = partial(lambda kwargs: cls(**kwargs).execute(iterations=options["niters"]), kwargs=kwargs)
 
             th = BenchmarkThread(
@@ -163,7 +159,7 @@ class Command(BaseCommand):
                 fn=fn,
             )
             threads.append(th)
-        
+
         # Run the threads
         for th in threads:
             time.sleep(3)

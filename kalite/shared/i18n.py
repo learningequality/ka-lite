@@ -12,12 +12,16 @@ from collections import OrderedDict, defaultdict
 
 from django.core.management import call_command
 from django.http import HttpRequest
+from django.utils import translation
 from django.views.i18n import javascript_catalog
 
 import settings
+from settings import LANG_LOOKUP_FILEPATH
 from settings import LOG as logging
 from utils.general import ensure_dir, softload_json
 from version import VERSION
+
+CACHE_VARS = []
 
 
 if settings.CENTRAL_SERVER:
@@ -33,21 +37,25 @@ LANGUAGE_SRT_SUFFIX = "_download_status.json"
 SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
-LANG_LOOKUP_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "languagelookup.json")
 SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "supported_languages.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH_SECURE, "i18n", "build")
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
+def get_lang_map_filepath(lang_code):
+    return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
+
 def get_language_pack_availability_filepath(version=VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "language_pack_availability.json")
 
 def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL_SERVER):
+    ka_lang_code = lang_code.lower()
+
     if is_central_server:
-        return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code), "exercises")
+        return os.path.join(get_lp_build_dir(ka_lang_code), "exercises")
     else:
-        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", lang_code.lower())
+        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", ka_lang_code)
 
 def get_lp_build_dir(lang_code=None, version=None):
     global LANGUAGE_PACK_BUILD_DIR
@@ -61,12 +69,14 @@ def get_lp_build_dir(lang_code=None, version=None):
 
     return build_dir
 
+
 def get_language_pack_metadata_filepath(lang_code, version=VERSION, is_central_server=settings.CENTRAL_SERVER):
-    lang_code = lcode_to_django_dir(lang_code)
+    lang_code = lcode_to_ietf(lang_code)
     metadata_filename = "%s_metadata.json" % lang_code
     if is_central_server:
         return os.path.join(get_lp_build_dir(lang_code, version=version), metadata_filename)
     else:
+        lang_code = lcode_to_django_dir(lang_code)
         return os.path.join(LOCALE_ROOT, lang_code, metadata_filename)
 
 def get_language_pack_filepath(lang_code, version=VERSION):
@@ -79,25 +89,39 @@ def get_language_pack_url(lang_code, version=VERSION):
     )
     return url
 
+def get_django_lc_message_file(lang_code, file_name="django.mo", locale_root=LOCALE_ROOT):
+    return os.path.join(locale_root, lcode_to_django_dir(lang_code), "LC_MESSAGES", file_name)
+
 class LanguageNotFoundError(Exception):
     pass
 
 
 SUPPORTED_LANGUAGE_MAP = None
+CACHE_VARS.append("SUPPORTED_LANGUAGE_MAP")
 def get_supported_language_map(lang_code=None):
     lang_code = lcode_to_ietf(lang_code)
     global SUPPORTED_LANGUAGE_MAP
-    defaultmap = defaultdict(lambda: lang_code)
     if not SUPPORTED_LANGUAGE_MAP:
         with open(SUPPORTED_LANGUAGES_FILEPATH) as f:
             SUPPORTED_LANGUAGE_MAP = json.loads(f.read())
-    return SUPPORTED_LANGUAGE_MAP.get(lang_code) or defaultmap if lang_code else SUPPORTED_LANGUAGE_MAP
+
+    if not lang_code:
+        return SUPPORTED_LANGUAGE_MAP
+    else:
+        lang_map = defaultdict(lambda: lang_code)
+        lang_map.update(SUPPORTED_LANGUAGE_MAP.get(lang_code) or {})
+        return lang_map
+
+def lang_best_name(l):
+    return l.get('native_name') or l.get('ka_name') or l.get('name')
 
 def get_supported_languages():
     return get_supported_language_map().keys()
 
 DUBBED_VIDEO_MAP_RAW = None
+CACHE_VARS.append("DUBBED_VIDEO_MAP_RAW")
 DUBBED_VIDEO_MAP = None
+CACHE_VARS.append("DUBBED_VIDEO_MAP")
 def get_dubbed_video_map(lang_code=None, force=False):
     """
     Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
@@ -137,21 +161,30 @@ def get_dubbed_video_map(lang_code=None, force=False):
 
         DUBBED_VIDEO_MAP = {}
         for lang_name, video_map in DUBBED_VIDEO_MAP_RAW.iteritems():
+            logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
             DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
 
-    return DUBBED_VIDEO_MAP.get(lang_code) if lang_code else DUBBED_VIDEO_MAP
+    return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
 YT2ID_MAP = None
+CACHE_VARS.append("YT2ID_MAP")
 def get_file2id_map(force=False):
     global YT2ID_MAP
     if YT2ID_MAP is None or force:
         YT2ID_MAP = {}
-        for dic in get_dubbed_video_map().values():
+        for lang_code, dic in get_dubbed_video_map().iteritems():
             for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                if dubbed_youtube_id in YT2ID_MAP:
+                    # Sanity check, but must be failsafe, since we don't control these data
+                    if YT2ID_MAP[dubbed_youtube_id] == english_youtube_id:
+                        logging.warn("Duplicate entry found in %s language map for english video %s" % (lang_code, english_youtube_id))
+                    else:
+                        logging.error("Conflicting entry found in %s language map for english video %s; overwriting previous entry." % (lang_code, english_youtube_id))
                 YT2ID_MAP[dubbed_youtube_id] = english_youtube_id  # assumes video id is the english youtube_id
     return YT2ID_MAP
 
 ID2OKLANG_MAP = None
+CACHE_VARS.append("ID2OKLANG_MAP")
 def get_id2oklang_map(video_id, force=False):
     global ID2OKLANG_MAP
     if ID2OKLANG_MAP is None or force:
@@ -170,7 +203,7 @@ def get_id2oklang_map(video_id, force=False):
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
     if not lang_code:  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lang_code).get(video_id, {})
+    return get_dubbed_video_map(lang_code).get(video_id)
 
 def get_video_id(youtube_id):
     """
@@ -178,6 +211,28 @@ def get_video_id(youtube_id):
     """
     return get_file2id_map().get(youtube_id, youtube_id)
 
+YT2LANG_MAP = None
+CACHE_VARS.append("YT2LANG_MAP")
+def get_file2lang_map(force=False):
+    """Map from youtube_id to language code"""
+    global YT2LANG_MAP
+    if YT2LANG_MAP is None or force:
+        YT2LANG_MAP = {}
+        for lang_code, dic in get_dubbed_video_map().iteritems():
+            for dubbed_youtube_id in dic.values():
+                if dubbed_youtube_id in YT2LANG_MAP:
+                    # Sanity check, but must be failsafe, since we don't control these data
+                    if YT2LANG_MAP[dubbed_youtube_id] == lang_code:
+                        logging.warn("Duplicate entry found in %s language map for dubbed video %s" % (lang_code, dubbed_youtube_id))
+                    else:
+                        logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
+                YT2LANG_MAP[dubbed_youtube_id] = lang_code
+    return YT2LANG_MAP
+
+def get_video_language(youtube_id, force=False):
+    lang_code = get_file2lang_map(force=force).get(youtube_id)
+    logging.debug("%s mapped to language %s" % (youtube_id, lang_code))
+    return lang_code or "en"  # default to "en"
 
 def get_srt_url(youtube_id, code):
     return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
@@ -209,6 +264,7 @@ def get_subtitle_count(lang_code):
     return len(all_srts)
 
 CODE2LANG_MAP = None
+CACHE_VARS.append("CODE2LANG_MAP")
 def get_code2lang_map(lang_code=None, force=False):
     """
     """
@@ -219,11 +275,12 @@ def get_code2lang_map(lang_code=None, force=False):
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
-            CODE2LANG_MAP[lcode_to_ietf(lc)] = dict(zip(entry.keys(), [v.lower() for v in entry.values()]))
+            CODE2LANG_MAP[lcode_to_ietf(lc)] = entry
 
     return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
 
 LANG2CODE_MAP = None
+CACHE_VARS.append("LANG2CODE_MAP")
 def get_langcode_map(lang_name=None, force=False):
     """
     """
@@ -264,7 +321,10 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
 
 
 def get_language_code(language, for_django=False):
-    """Return ISO 639-1 language code full English or native language name from ; raise exception if it isn't hardcoded yet"""
+    """
+    Return ISO 639-1 language code full English or native language name from ;
+    raise exception if it isn't hardcoded yet
+    """
     global LANG_LOOKUP_FILEPATH
 
     lang_code = get_langcode_map().get(language.lower())
@@ -284,7 +344,6 @@ def lcode_to_django_dir(lang_code):
 
 def lcode_to_ietf(lang_code):
     return convert_language_code_format(lang_code, for_django=False)
-
 
 def convert_language_code_format(lang_code, for_django=True):
     """
@@ -308,18 +367,28 @@ def convert_language_code_format(lang_code, for_django=True):
 
     return lang_code
 
-def get_lang_map_filepath(lang_code):
-    return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
-
 LANG_NAMES_MAP = None
+CACHE_VARS.append("LANG_NAMES_MAP")
 def get_language_names(lang_code=None):
+    """
+    Returns dictionary of names (English name, "Native" name)
+    for a given language code.
+    """
     global LANG_NAMES_MAP
     lang_code = lcode_to_ietf(lang_code)
     if not LANG_NAMES_MAP:
         LANG_NAMES_MAP = softload_json(LANG_LOOKUP_FILEPATH)
     return LANG_NAMES_MAP.get(lang_code) if lang_code else LANG_NAMES_MAP
 
-def get_installed_language_packs():
+INSTALLED_LANGUAGES_CACHE = None
+CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
+def get_installed_language_packs(force=False):
+    global INSTALLED_LANGUAGES_CACHE
+    if not INSTALLED_LANGUAGES_CACHE or force:
+        INSTALLED_LANGUAGES_CACHE = _get_installed_language_packs()
+    return INSTALLED_LANGUAGES_CACHE
+
+def _get_installed_language_packs():
     """
     On-disk method to show currently installed languages and meta data.
     """
@@ -346,10 +415,10 @@ def get_installed_language_packs():
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
                 # Get the metadata
-                metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % django_disk_code)
+                metadata_filepath = os.path.join(locale_dir, django_disk_code, "%s_metadata.json" % lcode_to_ietf(django_disk_code))
                 lang_meta = softload_json(metadata_filepath, raises=True)
 
-                logging.debug("Added language pack %s" % (django_disk_code))
+                logging.debug("Found language pack %s" % (django_disk_code))
             except Exception as e:
                 if isinstance(e, IOError) and e.errno == 2:
                     logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
@@ -384,6 +453,7 @@ def update_jsi18n_file(code="en"):
     js18n file.  So, generate that file here, then
     save to disk--it won't change until the next language pack update!
     """
+    translation.activate(code)  # we switch the language of the whole thread
     output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
@@ -398,6 +468,14 @@ def update_jsi18n_file(code="en"):
 
 
 def select_best_available_language(available_codes, target_code=settings.LANGUAGE_CODE):
+    """
+    Critical function for choosing the best available language for a resource,
+    given a target language code.
+
+    This is used by video and exercise pages, for example,
+    to determine what file to serve, based on available resources
+    and the current requested language.
+    """
     if not available_codes:
         return None
     elif target_code in available_codes:

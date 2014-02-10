@@ -14,7 +14,7 @@ from urllib import urlencode
 
 def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
     """Test whether we are online or not.
-    returns True or False.  
+    returns True or False.
     Eats all exceptions!
     """
     assert not (search_string and expected_val is not None), "Search string and expected value cannot both be set"
@@ -30,15 +30,15 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
             return False
         elif not allow_redirects and response.url != url:
             return False
-        
+
         # Check the output, if expected values are specified
         if expected_val is not None:
             return expected_val == response.text
         elif search_string:
             return search_string in response.text
-        
+
         return True
-        
+
     except Exception as e:
         return False
 
@@ -57,10 +57,10 @@ def is_loopback_connection(request):
 def generate_all_paths(path, base_path="/"):
     if not base_path.endswith("/"):   # Must have trailing slash to work.
         base_path += "/"
-        
+
     if path.endswith("/"):        # Must NOT have trailing slash to work.
         path = path[0:-1]
-        
+
     all_paths = []
     cur_path = base_path[0:-1]
     for dirname in path[len(base_path)-1:].split("/"): # start AFTER the base path
@@ -79,7 +79,7 @@ def set_query_params(url, param_dict):
     modified from http://stackoverflow.com/questions/4293460/how-to-add-custom-parameters-to-an-url-query-string-with-python
     """
     scheme, netloc, path, query_string, fragment = urlsplit(url)
-    query_params = parse_qs(query_string)
+    query_params = parse_qs(query_string, keep_blank_values=True)
 
     for param_name, param_value in param_dict.items():
         query_params[param_name] = [param_value]

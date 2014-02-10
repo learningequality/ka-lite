@@ -16,6 +16,7 @@ import subprocess
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.translation import ugettext as _
 
 import settings
 from settings import LOG as logging
@@ -100,7 +101,7 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
-def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
+def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', suppress_output=False):
     """
     Assumes it's in the path; if not, we try to download & install.
     """
@@ -111,9 +112,16 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
 
     # Step 1: find or install the youtube-dl binary
     try:
-        logging.info("Retrieving youtube video %s" % youtube_id)
-        subprocess.call([yt_dl_bin, '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
-        subprocess.call([yt_dl_bin, '--id', '-k', '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
+        if not suppress_output:
+            logging.info("Retrieving youtube video %s" % youtube_id)
+        if suppress_output:
+            from functools import partial
+            import StringIO
+            fn = partial(subprocess.check_output, stderr=subprocess.STDOUT)
+        else:
+            fn = subprocess.call
+        # '--write-thumbnail' gets a jpg, so don't bother getting a thumbnail.
+        fn([yt_dl_bin, '--id', '-k', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
     except OSError as oe:
         if oe.errno != 2: # only hit the roll-our-own / install code for a very specific error.
             raise
@@ -130,7 +138,7 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
             logging.info("youtube-dl binary installed at %s" % new_bin)
 
         # Recursive call
-        return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin)
+        return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin, suppress_output=suppress_output)
 
     for fil in glob.glob(youtube_id + ".*"):
         if not os.path.exists(os.path.join(settings.CONTENT_ROOT, fil)):

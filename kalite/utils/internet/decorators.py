@@ -5,8 +5,9 @@ from cStringIO import StringIO
 
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, Http404
+from django.utils.translation import ugettext as _
 
-from .classes import CsvResponse, JsonResponse, JsonpResponse
+from .classes import CsvResponse, JsonResponse, JsonResponseMessageError, JsonpResponse
 
 
 def api_handle_error_with_json(handler):
@@ -22,7 +23,7 @@ def api_handle_error_with_json(handler):
         except Http404:
             raise
         except Exception as e:
-            return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
+            return JsonResponseMessageError(_("Unexpected exception: %s") % e)
     return wrapper_fn
 
 

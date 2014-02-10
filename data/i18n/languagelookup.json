@@ -146,7 +146,7 @@
   },
   "da":{
     "name":"Danish",
-    "native_name":"dansk"
+    "native_name":"Dansk"
   },
   "dv":{
     "name":"Divehi; Dhivehi; Maldivian;",
@@ -186,7 +186,7 @@
   },
   "fr":{
     "name":"French",
-    "native_name":"français, langue française",
+    "native_name":"Français, langue française",
     "ka_name":"francais"
   },
   "ff":{
@@ -507,7 +507,7 @@
   },
   "pl":{
     "name":"Polish",
-    "native_name":"polski"
+    "native_name":"Polski"
   },
   "ps":{
     "name":"Pashto, Pushto",
@@ -821,7 +821,7 @@
   },
   "fr-CA":{
     "name":"French, Canada",
-    "native_name":"français, canada"
+    "native_name":"Français, canada"
   },
   "ful":{
     "name":"Fula",
@@ -866,10 +866,6 @@
   "pnb":{
     "name":"Punjabi",
     "native_name":"ਪੰਜਾਬੀ"
-  },
-  "pt-BR":{
-    "name":"Portuguese, Brazil",
-    "native_name":"português, brasil"
   },
   "que":{
     "name":"Quechua",

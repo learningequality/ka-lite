@@ -36,7 +36,7 @@ Examples:
 
   Run a CherryPy server as a daemon and write the spawned PID in a file
     $ manage.py runcherrypyserver daemonize=true pidfile=/var/run/django-cpwsgi.pid
-  
+
 """
 
 CPWSGI_OPTIONS = {
@@ -61,7 +61,7 @@ class Command(BaseCommand):
         except AttributeError:
             pass
         runcherrypyserver(args)
-        
+
 
 def change_uid_gid(uid, gid=None):
     """Try to change UID and GID to the provided values.
@@ -88,15 +88,15 @@ def get_uid_gid(uid, gid=None):
         gid = default_grp
     else:
         try:
-            gid = grp.getgrnam(gid)[2]            
+            gid = grp.getgrnam(gid)[2]
         except KeyError:
             gid = default_grp
     return (uid, gid)
-    
-    
+
+
 def poll_process(pid):
     """
-    Poll for process with given pid up to 10 times waiting .25 seconds in between each poll. 
+    Poll for process with given pid up to 10 times waiting .25 seconds in between each poll.
     Returns False if the process no longer exists otherwise, True.
     """
     for n in range(10):
@@ -115,21 +115,23 @@ def poll_process(pid):
 
 def stop_server(pidfile):
     """
-    Stop process whose pid was written to supplied pidfile. 
+    Stop process whose pid was written to supplied pidfile.
     """
     if os.path.exists(pidfile):
-        handle = open(pidfile)
-        pid = int(handle.read())
-        handle.close()
-        
-        stop_server_using_pid(pid)
+        try:
+            with open(pidfile, "r") as fp:
+                pid = int(fp.read())
+            stop_server_using_pid(pid)
+        except Exception as e:
+            logging.warn("Error getting the PID and stopping the server: %s" % e)
+
         # if stop_server_using_pid did not raise an exception,
         #  we drop into the next line to remove the pidfile
         os.remove(pidfile)
     else:
         pass
 
-        
+
 def stop_server_using_pid(pid):
     """
     Stop process whose pid is supplied
@@ -194,11 +196,11 @@ def runcherrypyserver(argset=[], **kwargs):
         if v=='False' or v=='false':
             v = False
         options[k.lower()] = v
-        
+
     if "help" in options:
         print CPWSGI_HELP
         return
-        
+
     if "stop" in options:
         if options['pidfile']:
             stop_server(options['pidfile'])
@@ -208,7 +210,7 @@ def runcherrypyserver(argset=[], **kwargs):
             pass
         else:
             raise Exception("must have pidfile or host+port")
-        
+
     if port_is_available(options['host'], options['port']):
         pass
     else:
@@ -223,7 +225,7 @@ def runcherrypyserver(argset=[], **kwargs):
                 raise Exception("Existing kalite process cannot be stopped")
         else:
             raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
-    
+
         if port_is_available(options['host'], options['port']):
             # Make a final check that the port is free.  This is needed in case someone downloaded
             #  and started another copy of KA Lite, and ran it with the default settings
@@ -236,7 +238,7 @@ def runcherrypyserver(argset=[], **kwargs):
     if "stop" in options:
         #we are done, get out
         return True
-        
+
     cherrypyserver.run_cherrypy_server(**options)
 
 

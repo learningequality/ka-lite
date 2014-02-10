@@ -20,7 +20,7 @@ from .models import *
 from securesync import engine
 from stats.models import UnregisteredDevicePing
 from utils.django_utils import get_request_ip
-from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse
+from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
 
 
 @csrf_exempt
@@ -32,7 +32,7 @@ def register_device(request):
     # attempt to load the client device data from the request data
     data = simplejson.loads(request.raw_post_data or "{}")
     if "client_device" not in data:
-        return JsonResponse({"error": "Serialized client device must be provided."}, status=500)
+        return JsonResponseMessageError("Serialized client device must be provided.")
     try:
         # When hand-shaking on the device models, since we don't yet know the version,
         #   we have to just TRY with our own version.
@@ -47,22 +47,13 @@ def register_device(request):
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
     except Exception as e:
-        return JsonResponse({
-            "error": "Could not decode the client device model: %r" % e,
-            "code": "client_device_corrupted",
-        }, status=500)
+        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code="client_device_corrupted")
 
     # Validate the loaded data
     if not isinstance(client_device, Device):
-        return JsonResponse({
-            "error": "Client device must be an instance of the 'Device' model.",
-            "code": "client_device_not_device",
-        }, status=500)
+        return JsonResponseMessageError("Client device must be an instance of the 'Device' model.", code="client_device_not_device")
     if not client_device.verify():
-        return JsonResponse({
-            "error": "Client device must be self-signed with a signature matching its own public key.",
-            "code": "client_device_invalid_signature",
-        }, status=500)
+        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key.", code="client_device_invalid_signature")
 
     try:
         zone = register_self_registered_device(client_device, models, data)
@@ -77,10 +68,7 @@ def register_device(request):
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
 
-            return JsonResponse({
-                "error": "Failed to validate the chain of trust (%s)." % e,
-                "code": "chain_of_trust_invalid",
-            }, status=500)
+            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code="chain_of_trust_invalid")
 
     if not zone: # old code-path
         try:
@@ -89,10 +77,7 @@ def register_device(request):
                 registration.use()
 
             elif get_object_or_None(Device, public_key=client_device.public_key):
-                return JsonResponse({
-                    "error": "This device has already been registered",
-                    "code": "device_already_registered",
-                }, status=500)
+                return JsonResponseMessageError("This device has already been registered", code="device_already_registered")
             else:
                 # If not... we're in a very weird state--we have a record of their
                 #   registration, but no device record.
@@ -107,15 +92,9 @@ def register_device(request):
         except RegisteredDevicePublicKey.DoesNotExist:
             try:
                 device = Device.objects.get(public_key=client_device.public_key)
-                return JsonResponse({
-                    "error": "This device has already been registered",
-                    "code": "device_already_registered",
-                }, status=500)            
+                return JsonResponseMessageError("This device has already been registered", code="device_already_registered")
             except Device.DoesNotExist:
-                return JsonResponse({
-                    "error": "Device registration with public key not found; login and register first?",
-                    "code": "public_key_unregistered",
-                }, status=500)
+                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code="public_key_unregistered")
 
     client_device.save(imported=True)
 
@@ -138,7 +117,7 @@ def register_device(request):
 
 @transaction.commit_on_success
 def register_self_registered_device(client_device, serialized_models, request_data):
-    
+
     try:
         model_count = 0
         for model in serialized_models:
@@ -187,7 +166,7 @@ def get_server_info(request):
 
     Returns:
         A json object containing general data from the server.
-    
+
     """
     device = None
     zone = None
@@ -195,7 +174,7 @@ def get_server_info(request):
     device_info = {"status": "OK", "invalid_fields": []}
 
     for field in request.GET.get("fields", "").split(","):
-        
+
         if field == "version":
             device = device or Device.get_own_device()
             device_info[field] = device.get_version()
@@ -229,15 +208,15 @@ def get_server_info(request):
             device = device or Device.get_own_device()
             zone = zone or device.get_zone()
             device_info[field] = zone.id if zone else None
-        
+
         elif field == "online":
             if settings.CENTRAL_SERVER:
                 device_info[field] =  True
             else:
                 device_info[field] = am_i_online(url="%s://%s%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST, reverse("get_server_info")))
-                
+
         elif field:
             # the field isn't one we know about, so add it to the list of invalid fields
             device_info["invalid_fields"].append(field)
-            
+
     return JsonResponse(device_info)
