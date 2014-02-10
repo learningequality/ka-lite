@@ -245,5 +245,6 @@ def invalidate_web_cache():
 
 
 def invalidate_all_caches():
-    invalidate_inmemory_caches()
-    invalidate_web_cache()
+    if settings.CACHE_TIME:
+        invalidate_inmemory_caches()
+        invalidate_web_cache()
