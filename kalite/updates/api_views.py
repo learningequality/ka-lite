@@ -20,7 +20,6 @@ from django.utils.translation import ugettext as _
 import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
-from i18n.middleware import set_language_choices
 from settings import LOG as logging
 from shared.decorators import require_admin
 from shared.i18n import get_youtube_id, get_video_language, get_supported_language_map
@@ -151,6 +150,7 @@ def start_video_download(request):
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
     force_job("videodownload", _("Download Videos"))
+
     return JsonResponse({})
 
 
@@ -198,9 +198,7 @@ def cancel_video_download(request):
 
 @api_handle_error_with_json
 def installed_language_packs(request):
-    set_language_choices(request, force=True)
-    return JsonResponse(request.session['language_choices'].values())
-
+    return JsonResponse(get_installed_language_packs(force=True).values())
 
 @require_admin
 @api_handle_error_with_json
@@ -209,8 +207,8 @@ def start_languagepack_download(request):
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
         call_command_async(
             'languagepackdownload',
-            manage_py_dir=settings.PROJECT_PATH,
-            language=data['lang']) # TODO: migrate to force_job once it can accept command_args
+            lang_code=data['lang'],
+        ) # TODO: migrate to force_job once it can accept command_args
         return JsonResponse({'success': True})
 
 
@@ -308,14 +306,14 @@ def start_update_kalite(request):
 
     if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
         # Got a download url
-        call_command_async("update", url=data["url"], manage_py_dir=settings.PROJECT_PATH)
+        call_command_async("update", url=data["url"], in_proc=False, manage_py_dir=settings.PROJECT_PATH)
 
     elif request.META.get("CONTENT_TYPE", "") == "application/zip":
         # Streamed a file; save and call
         fp, tempfile = tempfile.mkstmp()
         with fp:
             write(request.content)
-        call_command_async("update", zip_file=tempfile, manage_py_dir=settings.PROJECT_PATH)
+        call_command_async("update", zip_file=tempfile, in_proc=False, manage_py_dir=settings.PROJECT_PATH)
 
     return JsonResponse({})
 

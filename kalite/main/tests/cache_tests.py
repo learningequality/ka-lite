@@ -40,7 +40,7 @@ class CachingTest(KALiteTestCase):
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
 
         # Invalidate the cache item, and check it
-        caching.invalidate_all_pages_related_to_video(video_id=video_id) # test the convenience function
+        caching.invalidate_all_caches() # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
 

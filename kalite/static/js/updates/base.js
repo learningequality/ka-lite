@@ -237,7 +237,6 @@ function updateDisplay(process_name, progress_log) {
     }
 }
 
-
 function updatesReset(process_name) {
 
     // With no args, reset all
@@ -270,4 +269,3 @@ function updatesReset(process_name) {
     }
 
 }
-

@@ -19,7 +19,7 @@ function get_available_languages() {
 
 function get_installed_languages() {
     $.ajax({
-        url: installed_languages_url,
+        url: INSTALLED_LANGUAGES_URL,
         cache: false,
         datatype: "json",
     }).success(function(installed) {

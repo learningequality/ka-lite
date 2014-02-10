@@ -12,12 +12,14 @@ from settings import LOG as logging
 from shared import i18n, khanload
 from utils.general import softload_json
 
+CACHE_VARS = []
 
 topics_file = "topics.json"
 
 
 # Globals that can be filled
 TOPICS          = None
+CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
     global TOPICS, topics_file
     if TOPICS is None or force:
@@ -37,6 +39,7 @@ def get_topic_tree(force=False, props=None):
 
 
 NODE_CACHE = None
+CACHE_VARS.append("NODE_CACHE")
 def get_node_cache(node_type=None, force=False):
     global NODE_CACHE
     if NODE_CACHE is None or force:
@@ -48,6 +51,7 @@ def get_node_cache(node_type=None, force=False):
 
 
 KNOWLEDGEMAP_TOPICS = None
+CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
@@ -58,6 +62,7 @@ def get_knowledgemap_topics(force=False):
 
 
 SLUG2ID_MAP = None
+CACHE_VARS.append("SLUG2ID_MAP")
 def get_slug2id_map(force=False):
     global SLUG2ID_MAP
     if SLUG2ID_MAP is None or force:
@@ -65,9 +70,12 @@ def get_slug2id_map(force=False):
     return SLUG2ID_MAP
 
 
-FLAT_TOPIC_TREE = {}
+FLAT_TOPIC_TREE = None
+CACHE_VARS.append("FLAT_TOPIC_TREE")
 def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
     global FLAT_TOPIC_TREE
+    if FLAT_TOPIC_TREE is None:
+        FLAT_TOPIC_TREE = {}
     if lang_code not in FLAT_TOPIC_TREE or force:
         FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
     return FLAT_TOPIC_TREE[lang_code]
