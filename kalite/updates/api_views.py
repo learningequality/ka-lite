@@ -207,8 +207,8 @@ def start_languagepack_download(request):
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
         call_command_async(
             'languagepackdownload',
-            manage_py_dir=settings.PROJECT_PATH,
-            language=data['lang']) # TODO: migrate to force_job once it can accept command_args
+            language=data['lang'],
+        ) # TODO: migrate to force_job once it can accept command_args
         return JsonResponse({'success': True})
 
 
@@ -306,14 +306,14 @@ def start_update_kalite(request):
 
     if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
         # Got a download url
-        call_command_async("update", url=data["url"], manage_py_dir=settings.PROJECT_PATH)
+        call_command_async("update", url=data["url"], in_proc=False, manage_py_dir=settings.PROJECT_PATH)
 
     elif request.META.get("CONTENT_TYPE", "") == "application/zip":
         # Streamed a file; save and call
         fp, tempfile = tempfile.mkstmp()
         with fp:
             write(request.content)
-        call_command_async("update", zip_file=tempfile, manage_py_dir=settings.PROJECT_PATH)
+        call_command_async("update", zip_file=tempfile, in_proc=False, manage_py_dir=settings.PROJECT_PATH)
 
     return JsonResponse({})
 

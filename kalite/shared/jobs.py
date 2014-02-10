@@ -31,11 +31,11 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
 
     if launch_cron and not job.is_running:  # don't run the same job twice
         # Just start cron directly, so that the process starts immediately.
-        # Note that if you're calling force_job frequently, then 
+        # Note that if you're calling force_job frequently, then
         # you probably want to avoid doing this on every call.
         if get_ready_count() > 0:
             logging.debug("Ready to launch command '%s'" % command)
-            call_command_async("cron", manage_py_dir=settings.PROJECT_PATH)
+            call_command_async("cron")
 
 @receiver(post_save, sender=Job)
 def my_handler(sender, **kwargs):
