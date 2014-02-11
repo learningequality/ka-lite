@@ -337,7 +337,7 @@ def get_language_code(language, for_django=False):
 
 
 def lcode_to_django_lang(lang_code):
-    return lcode_to_ietf(lang_code).lower()
+    return convert_language_code_format(lang_code, for_django=True).lower()
 
 def lcode_to_django_dir(lang_code):
     return convert_language_code_format(lang_code, for_django=True)
