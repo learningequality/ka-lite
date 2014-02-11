@@ -112,8 +112,7 @@ $(function() {
         doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {}).success(function(treeData) {
 
             if ($.isEmptyObject(treeData)) {
-                $("#content_tree").empty();
-                $("#content_tree").append(gettext("<h2>We're sorry, but there are no videos available for this language.</h2>"));
+                $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
             }
 
             $("#content_tree").dynatree({
