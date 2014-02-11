@@ -61,8 +61,6 @@
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
          var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
          var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}";
-         var CHANGE_USER_LANGUAGE_URL = "{{ request.path }}" + "?set_user_language="
-         var CHANGE_SERVER_LANGUAGE_URL = "{{ request.path }}" + "?set_server_language="
          var DEFAULT_LANGUAGE = "{{ default_language }}"
         </script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
