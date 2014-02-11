@@ -320,7 +320,7 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
     def get_users_from_group(group_id, facility=None):
-        if group_id == _("Ungrouped"):
+        if _(group_id) == _("Ungrouped"):
             return FacilityUser.objects \
                 .filter(facility=facility, group__isnull=True) \
                 .order_by("first_name", "last_name")
@@ -362,6 +362,7 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
         "groups": groups,
         "group_id": group_id,
         "facility_id": facility_id,
+        "ungrouped": _("Ungrouped"),
     }
     if users:
         context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
