@@ -19,9 +19,9 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
 
 import settings
+from i18n import get_dubbed_video_map, lcode_to_ietf
 from settings import LOG as logging
 from shared.topic_tools import get_topic_videos, get_node_cache
-from shared.i18n import get_dubbed_video_map, lcode_to_ietf
 from utils.general import ensure_dir
 from utils.videos import get_outside_video_urls
 

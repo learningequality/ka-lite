@@ -2,8 +2,8 @@ import os
 
 import settings
 import utils.videos  # keep access to all functions
+from i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_code
 from settings import logging
-from shared.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_code
 from shared.topic_tools import get_topic_tree, get_videos
 from utils.general import softload_json
 from utils.videos import *  # get all into the current namespace, override some.

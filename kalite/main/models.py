@@ -12,11 +12,11 @@ from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
+import i18n
 import settings
 from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, FacilityUser, Device
 from settings import LOG as logging
-from shared import i18n
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
