@@ -51,7 +51,7 @@
                 {% for group in groups %}
                 <option value="{{ group.id }}" {% if group_id == group.id %}selected{% endif %}>{{ group }}</option>
                 {% endfor %}
-                <option value="Ungrouped" {% if group_id == "Ungrouped" %}selected{% endif %}>{% trans "Ungrouped" %}</option>
+                <option value="{% trans "Ungrouped" %}" {% if group_id == ungrouped %}selected{% endif %}>{% trans "Ungrouped" %}</option>
                 </select>
             </div>
         </div>
