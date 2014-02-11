@@ -418,8 +418,9 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
             return []
         else:
             return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
+    
     user_list = get_users_from_group(group_id, facility=facility)
-
+    
     # Get the user list from the group
     if not user_list:
         users = []
