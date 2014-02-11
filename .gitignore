@@ -22,9 +22,10 @@ writeup/
 /start.*
 /stop.*
 /content/*.jpg
+/content/*.json
 /content/*.png
 /content/*.mp4
-/content/*.json
+/content/*.mp4.part
 /content/*.srt
 /data/i18n
 /data/subtitles
