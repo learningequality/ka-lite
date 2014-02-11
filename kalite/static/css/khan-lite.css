@@ -224,12 +224,10 @@ div.exercises-card {
 
 .basic-form p {
     padding-top: 2px;
-    overflow: hidden;
     position: relative;
 }
 
 .basic-form input {
-    position: absolute;
     bottom: 0px;
 }
 
@@ -409,9 +407,6 @@ li .progress-circle {
 
 .helptext {
     font-size: .85em;
-    display: block;
-    position: relative;
-    float: right;
     top: -3px;
 }
 
