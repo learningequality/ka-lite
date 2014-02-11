@@ -12,6 +12,7 @@ urlpatterns = patterns('securesync.users.views',
     url(r'^facility/(?P<id>\w+)/$', 'facility_edit', {}, 'facility_edit'),
 
     url(r'^addgroup/$', 'add_group', {}, 'add_group'),
+    url(r'^userlist/$', 'user_list', {}, 'user_list'),
 
     url(r'^login/$', 'login', {}, 'login'),
     url(r'^logout/$', 'logout', {}, 'logout'),

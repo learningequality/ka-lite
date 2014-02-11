@@ -1,4 +1,4 @@
-{% extends "control_panel/base.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -8,7 +8,7 @@
 {% block title %}{% trans "Current Users" %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-    <link rel='stylesheet' type='text/css' href='{% static "css/control_panel/facility_user_management.css" %}'>
+    <link rel='stylesheet' type='text/css' href='{% static "css/securesync/facility_user_management.css" %}'>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -18,7 +18,7 @@
             "group_id": "{{ group_id }}"
         };
     </script>
-    <script type="text/javascript" src="{% static 'js/control_panel/facility_user_management.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/securesync/facility_user_management.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}

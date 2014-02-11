@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
@@ -279,3 +280,89 @@ def logout(request):
     if next[0] != "/":
         next = "/"
     return HttpResponseRedirect(next)
+
+
+@require_admin
+@facility_required
+@render_to("securesync/current_users.html")
+def user_list(request, facility):
+
+    # Use default group
+    group_id = request.REQUEST.get("group_id")
+    if not group_id:
+        groups = FacilityGroup.objects \
+            .annotate(models.Count("facilityuser")) \
+            .filter(facilityuser__count__gt=0)
+        ngroups = groups.count()
+        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
+        if ngroups == 1:
+            group_id = groups[0].id if groups.count() else "Ungrouped"
+
+    context = user_management_context(
+        request=request,
+        facility_id=facility.id,
+        group_id=group_id,
+        page=request.REQUEST.get("page","1"),
+    )
+    context.update({
+        "singlefacility": Facility.objects.count() == 1,
+    })
+    return context
+
+
+def user_management_context(request, facility_id, group_id, page=1, per_page=25):
+    facility = Facility.objects.get(id=facility_id)
+    groups = FacilityGroup.objects \
+        .filter(facility=facility) \
+        .order_by("name")
+
+    # This could be moved into a function shared across files, if necessary.
+    #   For now, moving into function, as outside if function it looks more
+    #   general-purpose than it's being used / tested now.
+    def get_users_from_group(group_id, facility=None):
+        if group_id == _("Ungrouped"):
+            return FacilityUser.objects \
+                .filter(facility=facility, group__isnull=True) \
+                .order_by("first_name", "last_name")
+        elif not group_id:
+            return []
+        else:
+            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
+    
+    user_list = get_users_from_group(group_id, facility=facility)
+
+    # Get the user list from the group
+    if not user_list:
+        users = []
+    else:
+        paginator = Paginator(user_list, per_page)
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+
+    if users:
+        if users.has_previous():
+            prevGETParam = request.GET.copy()
+            prevGETParam["page"] = users.previous_page_number()
+            previous_page_url = "?" + prevGETParam.urlencode()
+        else:
+            previous_page_url = ""
+        if users.has_next():
+            nextGETParam = request.GET.copy()
+            nextGETParam["page"] = users.next_page_number()
+            next_page_url = "?" + nextGETParam.urlencode()
+        else:
+            next_page_url = ""
+    context = {
+        "facility": facility,
+        "users": users,
+        "groups": groups,
+        "group_id": group_id,
+        "facility_id": facility_id,
+    }
+    if users:
+        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
+    return context
