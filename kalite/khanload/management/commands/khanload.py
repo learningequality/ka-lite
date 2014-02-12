@@ -15,9 +15,10 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
+import khanload
 import settings
 from settings import LOG as logging
-from shared import khanload, topic_tools
+from shared import topic_tools
 from utils.general import datediff
 
 

@@ -8,9 +8,9 @@ from functools import partial
 from django.utils.translation import ugettext as _
 
 import i18n
+import khanload
 import settings
 from settings import LOG as logging
-from shared import khanload
 from utils.general import softload_json
 
 CACHE_VARS = []
