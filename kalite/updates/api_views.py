@@ -24,14 +24,13 @@ from i18n import get_youtube_id, get_video_language, get_supported_language_map
 from settings import LOG as logging
 from shared.decorators import require_admin
 from shared.jobs import force_job
-from shared.server import server_restart as server_restart_util
 from shared.topic_tools import get_topic_tree
 from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 from utils.orderedset import OrderedSet
-
+from utils.server import server_restart as server_restart_util
 
 
 def divide_videos_by_language(youtube_ids):
