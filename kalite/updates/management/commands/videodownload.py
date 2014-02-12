@@ -5,11 +5,12 @@ from optparse import make_option
 
 from django.utils.translation import ugettext as _
 
+import i18n
 import settings
 from .classes import UpdatesDynamicCommand
 from i18n.management.commands.scrape_videos import scrape_video
 from settings import LOG as logging
-from shared import caching, i18n
+from shared import caching
 from shared.topic_tools import get_video_by_youtube_id
 from shared.videos import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile

@@ -41,8 +41,8 @@ from django.core.management import call_command
 from django.core.mail import mail_admins
 
 import settings
+from i18n import *
 from settings import LOG as logging
-from shared.i18n import *
 from shared.videos import get_all_remote_video_sizes
 from update_po import compile_po_files
 from utils.general import datediff, ensure_dir, softload_json, version_diff

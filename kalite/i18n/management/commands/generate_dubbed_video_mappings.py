@@ -12,8 +12,8 @@ from StringIO import StringIO
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
 from settings import LOG as logging
-from shared.i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
 from shared.topic_tools import get_node_cache
 from utils.general import ensure_dir, datediff
 

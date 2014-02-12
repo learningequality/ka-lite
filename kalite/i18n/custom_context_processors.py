@@ -1,4 +1,4 @@
-from shared.i18n import lcode_to_ietf, get_language_name, get_installed_language_packs
+from . import lcode_to_ietf, get_language_name, get_installed_language_packs
 
 
 def languages(request):

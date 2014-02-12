@@ -20,9 +20,9 @@ from django.utils.translation import ugettext as _
 import settings
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
+from i18n import get_youtube_id, get_video_language, get_supported_language_map
 from settings import LOG as logging
 from shared.decorators import require_admin
-from shared.i18n import get_youtube_id, get_video_language, get_supported_language_map
 from shared.jobs import force_job
 from shared.server import server_restart as server_restart_util
 from shared.topic_tools import get_topic_tree
