@@ -6,7 +6,7 @@ These require a test server to be running, and multiple ports
 ".
 """
 from central.tests import KALiteCentralBrowserTestCase
-from shared.testing import central_server_test
+from tests import central_server_test
 
 @central_server_test
 class ContactEmptyFormSubmitCaseTest(KALiteCentralBrowserTestCase):
