@@ -72,13 +72,14 @@ function display_languages() {
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
                         var subtitle_count_diff = matching_installable.subtitle_count - lang.subtitle_count;
                         lang_description += sprintf(
-                            "<div class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> (+%(translated)d%% %(translated_text)s / +%(srt)d %(srt_text)s)</div>", {
+                            "<div class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> (+%(translated)d%% %(translated_text)s / +%(srt)d %(srt_text)s / %(size)s)</div>", {
                                 lang: lang,
                                 upgrade_text: gettext("Upgrade"),
                                 translated: percent_translated_diff,
                                 translated_text: gettext("Translated"),
                                 srt: subtitle_count_diff,
-                                srt_text: gettext("Subtitles")
+                                srt_text: gettext("Subtitles"),
+                                size: sprintf("%5.2f MB", matching_installable.zip_size/1.0E6 || 0)
                         });
                     }
                 }
