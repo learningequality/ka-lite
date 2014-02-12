@@ -260,7 +260,7 @@ else:
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
-    INSTALLED_APPS += ('i18n',)
+    INSTALLED_APPS += ('i18n', 'tests')
     LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
