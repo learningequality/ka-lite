@@ -8,7 +8,7 @@ from django.test import TestCase
 
 from securesync.forms import FacilityUserForm
 from securesync.models import Facility, FacilityUser
-from shared.testing import distributed_server_test, KALiteTestCase
+from tests import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test

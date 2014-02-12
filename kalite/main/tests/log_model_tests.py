@@ -3,7 +3,7 @@ from django.utils import unittest
 import i18n
 from main.models import VideoLog, ExerciseLog
 from securesync.models import Facility, FacilityUser
-from shared.testing import KALiteTestCase
+from tests import KALiteTestCase
 
 class TestExerciseLogs(KALiteTestCase):
 

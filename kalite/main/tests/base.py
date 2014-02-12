@@ -13,7 +13,7 @@ import settings
 from config.models import Settings
 from securesync.models import Device
 from shared.topic_tools import get_node_cache
-from shared.testing.base import KALiteTestCase
+from tests.base import KALiteTestCase
 
 
 class MainTestCase(KALiteTestCase):

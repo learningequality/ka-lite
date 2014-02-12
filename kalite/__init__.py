@@ -2,7 +2,7 @@ from version import *
 
 # testing isn't always available; just ignore if not
 try:
-    import shared.testing.testrunner
+    import tests.testrunner
 except Exception as e:
     pass
 try:

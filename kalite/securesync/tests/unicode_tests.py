@@ -4,7 +4,7 @@ from django.utils import unittest
 
 import settings
 from securesync.models import *
-from shared.testing.unicode import UnicodeModelsTest
+from tests.unicode import UnicodeModelsTest
 
 class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
 
@@ -33,10 +33,10 @@ class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
 
         # Classes using other classes
         fu = FacilityUser(
-            facility=fac, 
-            group=fg, 
-            first_name=self.korean_string, 
-            last_name=self.korean_string, 
+            facility=fac,
+            group=fg,
+            first_name=self.korean_string,
+            last_name=self.korean_string,
             username=self.korean_string,
             notes=self.korean_string,
         )
@@ -44,10 +44,10 @@ class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
         self.assertNotIn(unicode(fu), "Bad Unicode data", "FacilityUser: Bad conversion to unicode.")
 
         syncsess = SyncSession(
-            client_device=dev, 
-            server_device=dev, 
-            client_nonce=self.korean_string, 
-            server_nonce=self.korean_string, 
+            client_device=dev,
+            server_device=dev,
+            client_nonce=self.korean_string,
+            server_nonce=self.korean_string,
             client_version=self.korean_string,
             client_os=self.korean_string,
         )

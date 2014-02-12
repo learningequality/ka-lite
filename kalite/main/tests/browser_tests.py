@@ -20,9 +20,9 @@ from main.models import ExerciseLog
 from main.topicdata import NODE_CACHE
 from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
-from shared.testing.browser import BrowserTestCase
-from shared.testing.decorators import distributed_server_test
 from shared.topic_tools import get_exercise_paths
+from tests.browser import BrowserTestCase
+from tests.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
 
