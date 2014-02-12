@@ -25,12 +25,12 @@ import version
 from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .models import VideoLog, ExerciseLog
+from chronograph import force_job, job_status
 from config.models import Settings
 from i18n import lcode_to_ietf
 from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
-from shared.jobs import force_job, job_status
 from shared.topic_tools import get_flat_topic_tree
 from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
