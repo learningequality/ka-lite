@@ -20,7 +20,7 @@ from i18n import get_language_pack_metadata_filepath, get_language_pack_filepath
 from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from settings import LOG as logging
 from shared import caching
-from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH
+from updates import REMOTE_VIDEO_SIZE_FILEPATH
 from utils.general import ensure_dir
 from utils.internet import callback_percent_proxy, download_file
 

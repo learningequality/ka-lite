@@ -12,7 +12,7 @@ from i18n.management.commands.scrape_videos import scrape_video
 from settings import LOG as logging
 from shared import caching
 from shared.topic_tools import get_video_by_youtube_id
-from shared.videos import download_video, DownloadCancelled, URLNotFound
+from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
 from utils import set_process_priority
 

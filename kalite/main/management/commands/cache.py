@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from shared import caching, topic_tools
-from shared.videos import download_video, DownloadCancelled
 
 
 class Command(BaseCommand):

@@ -32,7 +32,6 @@ from securesync.models import FacilityGroup, FacilityUser
 from shared.caching import backend_cache_page
 from shared.decorators import allow_api_profiling, require_admin
 from shared.topic_tools import get_flat_topic_tree
-from shared.videos import delete_downloaded_files
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from utils.mplayer_launcher import play_video_in_new_thread

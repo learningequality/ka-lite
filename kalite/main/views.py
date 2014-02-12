@@ -35,7 +35,7 @@ from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin, distributed_server_only
 from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
 from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
 
