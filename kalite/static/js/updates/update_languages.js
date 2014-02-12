@@ -47,9 +47,8 @@ function display_languages() {
         if (lang['name']) { // nonempty name
             var link_text;
             if (!(lang['code'] === defaultLanguage)) {
-                link_text = sprintf("<a href='%(CHANGE_SERVER_LANGUAGE_URL)s%(lang.code)s'>(%(link_text)s)</a>", {
-                    CHANGE_SERVER_LANGUAGE_URL: CHANGE_SERVER_LANGUAGE_URL,
-                    lang: lang,
+                link_text = sprintf("<a href='%(CHANGE_SERVER_LANGUAGE_URL)s'>(%(link_text)s)</a>", {
+                    CHANGE_SERVER_LANGUAGE_URL: setGetParam("set_server_language", lang.code),
                     link_text: gettext("Set as default")
                 });
             } else {
