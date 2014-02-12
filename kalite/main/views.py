@@ -23,6 +23,7 @@ from django.views.i18n import javascript_catalog
 import settings
 from config.models import Settings
 from control_panel.views import user_management_context
+from i18n import select_best_available_language
 from main import topicdata
 from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
@@ -32,7 +33,6 @@ from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
 from shared.decorators import require_admin, distributed_server_only
-from shared.i18n import select_best_available_language
 from shared.jobs import force_job
 from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update

@@ -1,9 +1,9 @@
 """
 This command helps to identify SRT files that are empty or malformed, and
-some translations that are broken and need a-fixin'. 
+some translations that are broken and need a-fixin'.
 
-When it identifies issues, it will either auto-fix 
-(for example, by deleting rogue SRTs), or halt language pack 
+When it identifies issues, it will either auto-fix
+(for example, by deleting rogue SRTs), or halt language pack
 creation for languages with errors
 
 NOTE: all language codes internally are assumed to be in django format (e.g. en_US)
@@ -18,8 +18,8 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import lcode_to_django
 from settings import LOG as logging
-from shared.i18n import lcode_to_django
 from shared.topic_tools import get_node_cache
 from update_language_packs import handle_po_compile_errors
 from update_po import compile_po_files
@@ -66,7 +66,7 @@ def validate_srts(lang_codes, forcefully=False):
             - YouTube ID must be in topic tree
             - line counters in srt file proceed in order and that it isn't empty
             - the timestamps for the subtitles make sense for the video
-            - basic string validation: the strings aren't duplicate characters 
+            - basic string validation: the strings aren't duplicate characters
         """
         #logging.debug("Validating %s" % srt_file)
         srt_issues = []

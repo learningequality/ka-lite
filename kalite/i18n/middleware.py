@@ -19,9 +19,9 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
 import settings
+from . import lcode_to_django_lang, lcode_to_ietf, get_installed_language_packs
 from config.models import Settings
 from settings import LOG as logging
-from shared.i18n import lcode_to_django_lang, lcode_to_ietf, get_installed_language_packs
 
 
 def set_default_language(request, lang_code, global_set=False):
