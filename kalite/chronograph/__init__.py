@@ -1,11 +1,6 @@
 from datetime import datetime
 from chronograph.models import Job
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-import settings
-from settings import LOG as logging
 from updates.models import UpdateProgressLog
 from utils.django_utils import call_command_async
 
@@ -34,17 +29,8 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
         # Note that if you're calling force_job frequently, then
         # you probably want to avoid doing this on every call.
         if get_ready_count() > 0:
-            logging.debug("Ready to launch command '%s'" % command)
+            # logging.debug("Ready to launch command '%s'" % command)
             call_command_async("cron")
-
-@receiver(post_save, sender=Job)
-def my_handler(sender, **kwargs):
-    job = kwargs['instance']
-    if not job.is_running:
-        # Update progress log to be cancelled as well.
-        UpdateProgressLog.objects \
-            .filter(process_name=job.command, completed=False) \
-            .update(completed=True)
 
 def get_ready_count():
     return Job.objects.filter(disabled=False, is_running=False, next_run__lte=datetime.now()).count()
