@@ -384,10 +384,8 @@ def device_redirect(request):
     """
     device = Device.get_own_device()
     zone = device.get_zone()
-    if zone:
-        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
-    else:
-        raise Http404(_("This device is not on any zone."))
+
+    return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
 
 JS_CATALOG_CACHE = {}
 @distributed_server_only
