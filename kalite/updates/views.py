@@ -24,7 +24,7 @@ import settings
 import version
 from .models import VideoFile
 from config.models import Settings
-from control_panel.views import local_device_context, user_management_context
+from control_panel.views import local_device_context
 from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
 from securesync.models import Facility, FacilityUser, FacilityGroup, Device
 from securesync.views import require_admin, facility_required

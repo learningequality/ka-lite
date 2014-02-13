@@ -53,7 +53,7 @@ $(function() {
         } else if(!confirm(gettext("You are about to remove selected users from their current group."))) {
             return;
         } else {
-            doRequest("/secursync/api/remove_from_group", {users: users})
+            doRequest("/securesync/api/remove_from_group", {users: users})
                 .success(function() {
                     location.reload();
                 });

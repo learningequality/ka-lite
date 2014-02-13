@@ -9,9 +9,7 @@ from functools import partial
 
 from django.contrib import messages
 from django.core.management import call_command
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -22,13 +20,12 @@ from django.views.i18n import javascript_catalog
 
 import settings
 from config.models import Settings
-from control_panel.views import user_management_context
 from i18n import select_best_available_language
 from main import topicdata
 from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
-from securesync.views import require_admin, facility_required
+from shared.decorators import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
 from shared.caching import backend_cache_page
@@ -334,34 +331,6 @@ def easy_admin(request):
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }
-    return context
-
-
-@require_admin
-@facility_required
-@render_to("current_users.html")
-def user_list(request, facility):
-
-    # Use default group
-    group_id = request.REQUEST.get("group_id")
-    if not group_id:
-        groups = FacilityGroup.objects \
-            .annotate(Count("facilityuser")) \
-            .filter(facilityuser__count__gt=0)
-        ngroups = groups.count()
-        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
-        if ngroups == 1:
-            group_id = groups[0].id if groups.count() else "Ungrouped"
-
-    context = user_management_context(
-        request=request,
-        facility_id=facility.id,
-        group_id=group_id,
-        page=request.REQUEST.get("page","1"),
-    )
-    context.update({
-        "singlefacility": Facility.objects.count() == 1,
-    })
     return context
 
 

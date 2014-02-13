@@ -46,7 +46,6 @@ urlpatterns += patterns('main.views',
     url(r'^update/', include(updates.urls)),
 
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
-    url(r'^userlist/$', 'user_list', {}, 'user_list'),
 
     # API
     url(r'^api/', include(main.api_urls)),
