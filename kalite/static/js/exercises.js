@@ -111,7 +111,8 @@ $(function() {
         })
         .fail(function (resp) {
             // Expects to receive messages ({ type: message } format) about failures
-            communicate_api_failure(resp, "id_student_logs");
+            // turned off because this duplicates the "Progress not loaded" message    
+            // communicate_api_failure(resp, "id_student_logs");
         });
 });
 

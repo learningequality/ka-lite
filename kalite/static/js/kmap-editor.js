@@ -254,7 +254,8 @@ $(document).ready(function() {
                         KMapEditor.init(exercises, [], exercisesCompleted, 8);
                     })
                     .fail(function (resp) {
-                        communicate_api_failure(resp, "id_student_logs");
+                        // Turned off because it duplicates "Progress not loaded" message
+                        // communicate_api_failure(resp, "id_student_logs");
                         KMapEditor.init(exercises, [], [], 8);
                     });
             });
