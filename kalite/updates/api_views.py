@@ -192,7 +192,7 @@ def cancel_video_download(request):
     # unflag all video downloads
     VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
 
-    force_job("videodownload", stop=True, launch_cron=False)
+    force_job("videodownload", stop=True)
 
     return JsonResponse({})
 

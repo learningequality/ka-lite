@@ -25,6 +25,7 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
 
     if stop:
         job.is_running = False
+        launch_cron = False
     else:
         job.next_run = datetime.now()
     job.save()
