@@ -102,22 +102,14 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
-TMP_DIR = None
 def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', suppress_output=False):
     """
     Assumes it's in the path; if not, we try to download & install.
     """
-    global TMP_DIR
-    if not TMP_DIR:
-        TMP_DIR = tempfile.mkdtemp()
-
     video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
-    video_file_dest_path = os.path.join(settings.CONTENT_ROOT, video_filename)
-    video_file_download_path = os.path.join(TMP_DIR, video_filename)
-    if os.path.exists(video_file_dest_path) and not force:
+    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
+    if os.path.exists(video_file_download_path) and not force:
         return
-
-    ensure_dir(TMP_DIR)
 
     # Step 1: find or install the youtube-dl binary
     try:
@@ -150,10 +142,6 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', 
 
         # Recursive call
         return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin, suppress_output=suppress_output)
-
-    if not os.path.exists(video_file_dest_path):
-        logging.debug('moving %s to %s', video_file_download_path, video_file_dest_path)
-        shutil.move(video_file_download_path, video_file_dest_path)
 
 """
 def scrape_thumbnail(youtube_id, format="png", force=False):
