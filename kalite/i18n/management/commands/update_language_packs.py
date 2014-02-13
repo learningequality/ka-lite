@@ -303,13 +303,17 @@ def update_translations(lang_codes=None,
                     'kalite_nphrases': 0,
                 })                   # these values will likely yield the wrong values when download_kalite_translations == False.
 
-            logging.info("Downloading KA Lite translations...")
-            kalite_po_file = download_latest_translations(
-                lang_code=lang_code_crowdin,
-                project_id=settings.CROWDIN_PROJECT_ID,
-                project_key=settings.CROWDIN_PROJECT_KEY,
-                zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
-            )
+            if not download_kalite_translations:
+                logging.info("Skipping KA Lite translations")
+                kalite_po_file = None
+            else:
+                logging.info("Downloading KA Lite translations...")
+                kalite_po_file = download_latest_translations(
+                    lang_code=lang_code_crowdin,
+                    project_id=settings.CROWDIN_PROJECT_ID,
+                    project_key=settings.CROWDIN_PROJECT_KEY,
+                    zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
+                )
 
             # We have the po file, now get metadata.
             kalite_metadata = get_po_metadata(kalite_po_file)
@@ -319,16 +323,20 @@ def update_translations(lang_codes=None,
             package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
 
             # Download Khan Academy translations too
-            logging.info("Downloading Khan Academy translations...")
-            combined_po_file = download_latest_translations(
-                lang_code=lang_code_crowdin,
-                project_id=settings.KA_CROWDIN_PROJECT_ID,
-                project_key=settings.KA_CROWDIN_PROJECT_KEY,
-                zip_file=ka_zip_file or (os.path.join(CROWDIN_CACHE_DIR, "ka-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
-                combine_with_po_file=kalite_po_file,
-                rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
-                download_type="ka",
-            )
+            if not download_ka_translations:
+                logging.info("Skipping KA translations")
+                combined_po_file = None
+            else:
+                logging.info("Downloading Khan Academy translations...")
+                combined_po_file = download_latest_translations(
+                    lang_code=lang_code_crowdin,
+                    project_id=settings.KA_CROWDIN_PROJECT_ID,
+                    project_key=settings.KA_CROWDIN_PROJECT_KEY,
+                    zip_file=ka_zip_file or (os.path.join(CROWDIN_CACHE_DIR, "ka-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
+                    combine_with_po_file=kalite_po_file,
+                    rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
+                    download_type="ka",
+                )
 
             # we have the po file; now
             ka_metadata = get_po_metadata(combined_po_file)
