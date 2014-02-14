@@ -26,7 +26,8 @@ from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
-from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
+from shared.decorators import require_admin, facility_required, facility_from_request
+from tests.asserts import central_server_only, distributed_server_only
 from utils.internet import set_query_params
 
 @require_admin

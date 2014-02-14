@@ -9,7 +9,7 @@ from django.http import HttpResponse, Http404
 import settings
 from . import get_language_pack_availability_filepath, SUBTITLES_DATA_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from settings import LOG as logging
-from shared.decorators import central_server_only
+from tests.asserts import central_server_only
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
 
 

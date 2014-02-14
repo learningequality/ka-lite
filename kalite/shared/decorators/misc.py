@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -18,27 +18,6 @@ from securesync.middleware import refresh_session_facility_info
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
 from utils.internet import JsonResponse, JsonpResponse
 
-
-def central_server_only(handler):
-    """
-    Decorator that marks a function for use only on the central server.
-    """
-    def wrapper_fn(*args, **kwargs):
-        if not settings.CENTRAL_SERVER:
-            raise Http404(_("This path is only available on the central server."))
-        return handler(*args, **kwargs)
-    return wrapper_fn
-
-
-def distributed_server_only(handler):
-    """
-    Decorator that marks a function for use only on a distributed server.
-    """
-    def wrapper_fn(*args, **kwargs):
-        if settings.CENTRAL_SERVER:
-            raise Http404(_("This path is only available on distributed servers."))
-        return handler(*args, **kwargs)
-    return wrapper_fn
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
