@@ -19,17 +19,17 @@ from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
 import settings
+import topicdata
+from .caching import backend_cache_page
+from .models import VideoLog, ExerciseLog
 from chronograph import force_job
 from config.models import Settings
 from i18n import select_best_available_language
-from main import topicdata
-from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
 from shared.decorators import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
-from shared.caching import backend_cache_page
 from shared.decorators import require_admin, distributed_server_only
 from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update

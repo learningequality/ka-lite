@@ -9,8 +9,8 @@ from django.core.management.base import CommandError
 from django.utils import unittest
 
 import settings
+from main import caching
 from main.tests.base import MainTestCase
-from shared import caching
 from tests.client import KALiteClient
 from tests.decorators import distributed_server_test
 from updates.models import VideoFile

@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from shared import caching, topic_tools
+from main import caching
+from shared import topic_tools
 
 
 class Command(BaseCommand):
