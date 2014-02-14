@@ -396,8 +396,8 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 
     return broken_codes
 
-def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
-                                 project_key=settings.CROWDIN_PROJECT_KEY,
+def download_latest_translations(project_id=None,
+                                 project_key=None,
                                  lang_code="all",
                                  zip_file=None,
                                  combine_with_po_file=None,
@@ -416,6 +416,11 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     - download_type -- whether it is a ka or ka_lite. Default is None, meaning ka_lite.
 
     """
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+       project_key = settings.CROWDIN_PROJECT_KEY
+
     lang_code = lcode_to_ietf(lang_code)
 
     # Get zip file of translations
@@ -479,8 +484,13 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     return po_file
 
 
-def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def build_translations(project_id=None, project_key=None):
     """Build latest translations into zip archive on CrowdIn."""
+
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+       project_key = settings.CROWDIN_PROJECT_KEY
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
@@ -730,8 +740,13 @@ def update_metadata(package_metadata, version=VERSION):
     logging.info("Local record of translations updated")
 
 
-def download_crowdin_metadata(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def download_crowdin_metadata(project_id=None, project_key=None):
     """Return tuple in format (total_strings, total_translated, percent_translated)"""
+
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+        project_key = settings.CROWDIN_PROJECT_KEY
 
     request_url = "http://api.crowdin.net/api/project/%s/status?key=%s&json=True" % (project_id, project_key)
     try:
