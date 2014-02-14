@@ -30,8 +30,9 @@ from chronograph import force_job, job_status
 from config.models import Settings
 from i18n import lcode_to_ietf
 from securesync.models import FacilityGroup, FacilityUser
-from shared.decorators import allow_api_profiling, require_admin
+from shared.decorators import require_admin
 from shared.topic_tools import get_flat_topic_tree
+from testing.decorators import allow_api_profiling
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from utils.mplayer_launcher import play_video_in_new_thread
