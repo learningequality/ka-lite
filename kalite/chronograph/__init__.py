@@ -5,7 +5,7 @@ from updates.models import UpdateProgressLog
 from utils.django_utils import call_command_async
 
 
-def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True):
+def force_job(command, name="", frequency="YEARLY", stop=False):
     """
     Mark a job as to run immediately (or to stop).
     By default, call cron directly, to resolve.
@@ -24,7 +24,9 @@ def force_job(command, name="", frequency="YEARLY", stop=False, launch_cron=True
         job.next_run = datetime.now()
     job.save()
 
-    if launch_cron and not job.is_running:  # don't run the same job twice
+    # Set as variable so that we could pass as param later, if we want to!
+    launch_job = not stop and not job.is_running
+    if launch_job:  # don't run the same job twice
         # Just start cron directly, so that the process starts immediately.
         # Note that if you're calling force_job frequently, then
         # you probably want to avoid doing this on every call.

@@ -123,6 +123,13 @@ class Command(UpdatesDynamicCommand):
                         self.download_progress_callback(video, 100)
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
+                except DownloadCancelled:
+                    #Cancellation event
+                    video.percent_complete = 0
+                    video.flagged_for_download = False
+                    video.download_in_progress = False
+                    video.save()
+                    failed_youtube_ids.append(video.youtube_id)
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
@@ -132,8 +139,8 @@ class Command(UpdatesDynamicCommand):
                     video.flagged_for_download = not isinstance(e, URLNotFound)  # URLNotFound means, we won't try again
                     video.save()
                     # Rather than getting stuck on one video, continue to the next video.
-                    failed_youtube_ids.append(video.youtube_id)
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
+                    failed_youtube_ids.append(video.youtube_id)
                     continue
 
             # This can take a long time, without any further update, so ... best to avoid.
