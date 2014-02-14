@@ -21,6 +21,7 @@ import settings
 from config.models import Settings
 from securesync.middleware import refresh_session_facility_info
 from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
+from testing.asserts import distributed_server_only
 from utils.internet import JsonResponse, JsonpResponse
 
 
