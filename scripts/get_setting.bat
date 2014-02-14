@@ -3,7 +3,8 @@
 rem have to change directory, in order to make sure we can import settings
 set OLD_DIR=%CD%
 set SCRIPT_DIR=%~dp0
-set KALITE_DIR=%SCRIPT_DIR%\..\kalite
+set "KALITE_DIR=%SCRIPT_DIR%\..\kalite"
+
 cd %KALITE_DIR%
 
 if "%1" == "" (
