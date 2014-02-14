@@ -12,7 +12,8 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
-from securesync.models import Device, Facility
+from facility.models import Facility
+from securesync.models import Device
 from settings import LOG as logging
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
@@ -64,7 +65,7 @@ class Command(BaseCommand):
             del options[opt.dest]
 
         # Parse the crappy way that runcherrypy takes args,
-        #   or the host/port 
+        #   or the host/port
         for arg in args:
             if "=" in arg:
                 (key,val) = arg.split("=")

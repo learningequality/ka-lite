@@ -5,7 +5,7 @@ from django.utils import unittest
 
 import settings
 import version
-from securesync.models import Device, Facility, FacilityGroup, FacilityUser
+from facility.models import Facility, FacilityGroup, FacilityUser
 from testing import KALiteTestCase, UnicodeModelsTest
 from updates.models import *
 

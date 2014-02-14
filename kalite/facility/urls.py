@@ -1,8 +1,9 @@
 from django.conf.urls.defaults import include, patterns, url
 
-import api_urls
+from . import api_urls
 
-urlpatterns = patterns('securesync.users.views',
+
+urlpatterns = patterns('facility.views',
     url(r'^add/teacher/$', 'add_facility_teacher', {},'add_facility_teacher'),
     url(r'^add/student/$', 'add_facility_student', {}, 'add_facility_student'),
     url(r'^edit/(?P<id>\w+)/$', 'edit_facility_user', {}, 'edit_facility_user'),

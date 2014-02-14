@@ -23,10 +23,11 @@ except:
     class Organization(models.Model):
         pass
 from coachreports.views import student_view_context
+from facility.forms import FacilityForm
+from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from main.topic_tools import get_node_cache
-from securesync.forms import FacilityForm
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
+from securesync.models import DeviceZone, Device, Zone, SyncSession
 from settings import LOG as logging
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 from utils.internet import CsvResponse, render_to_csv

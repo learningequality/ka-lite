@@ -4,8 +4,8 @@ from django.test import TestCase
 from django.utils import unittest
 
 import settings
+from facility.models import Facility, FacilityUser, FacilityGroup
 from securesync import crypto
-from securesync.models import Facility, FacilityUser, FacilityGroup
 from testing import KALiteTestCase
 from utils.django_utils import call_command_with_output
 

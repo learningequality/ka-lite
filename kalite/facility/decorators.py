@@ -18,18 +18,18 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
+from .middleware import refresh_session_facility_info
 from config.models import Settings
-from securesync.middleware import refresh_session_facility_info
-from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
+from securesync.models import Device
 from testing.asserts import distributed_server_only
 from utils.internet import JsonResponse, JsonpResponse
-
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
     """
     Goes through the request object to retrieve facility information, if possible.
     """
+    from .models import Facility
     assert handler or request
     if not handler:
         handler = lambda request, facility, *args, **kwargs: facility

@@ -16,16 +16,14 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
-from . import facility_required, facility_from_request
+from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
-from .models import Facility, FacilityGroup
+from .models import Facility, FacilityGroup, FacilityUser
 from chronograph import force_job
 from config.models import Settings
 from main.models import UserLog
 from securesync.devices.views import *
-from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
@@ -33,7 +31,7 @@ from utils.internet import set_query_params
 
 @require_admin
 @distributed_server_only
-@render_to("securesync/facility_admin.html")
+@render_to("facility/facility_admin.html")
 def facility_admin(request):
     facilities = Facility.objects.all()
     context = {"facilities": facilities}
@@ -42,7 +40,7 @@ def facility_admin(request):
 
 @require_admin
 @distributed_server_only
-@render_to("securesync/facility_edit.html")
+@render_to("facility/facility_edit.html")
 def facility_edit(request, id=None):
     if id != "new":
         facil = get_object_or_404(Facility, pk=id)
@@ -75,7 +73,7 @@ def add_facility_student(request):
 
 @distributed_server_only
 @facility_required
-@render_to("securesync/facility_user.html")
+@render_to("facility/facility_user.html")
 def edit_facility_user(request, facility, is_teacher=None, id=None):
     """Different codepaths for the following:
     * Django admin/teacher creates user, teacher
@@ -159,7 +157,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
 
 @require_admin
-@render_to("securesync/add_facility.html")
+@render_to("facility/add_facility.html")
 def add_facility(request):
     if request.method == "POST":
         form = FacilityForm(data=request.POST)
@@ -175,7 +173,7 @@ def add_facility(request):
 
 @require_admin
 @facility_required
-@render_to("securesync/add_group.html")
+@render_to("facility/add_group.html")
 def add_group(request, facility):
     groups = FacilityGroup.objects.all()
     if request.method == 'POST' and request.is_admin:
@@ -203,7 +201,7 @@ def add_group(request, facility):
 
 @distributed_server_only
 @facility_from_request
-@render_to("securesync/login.html")
+@render_to("facility/login.html")
 def login(request, facility):
     facility_id = facility and facility.id or None
     facilities = list(Facility.objects.all())
@@ -286,7 +284,7 @@ def logout(request):
 
 @require_admin
 @facility_required
-@render_to("securesync/current_users.html")
+@render_to("facility/current_users.html")
 def user_list(request, facility):
 
     # Use default group

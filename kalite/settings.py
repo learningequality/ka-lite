@@ -215,6 +215,7 @@ INSTALLED_APPS = (
     "chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
+    "facility",
     "config",
     "main", # in order for securesync to work, this needs to be here.
     "control_panel",  # in both apps
@@ -250,12 +251,12 @@ if CENTRAL_SERVER:
 else:
     ROOT_URLCONF = "main.urls"
     MIDDLEWARE_CLASSES += (
-        "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
-        "securesync.middleware.FacilityCheck",
+        "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
+        "facility.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
         "kalite.i18n.middleware.SessionLanguage",
-        "securesync.middleware.LockdownCheck",
+        "facility.middleware.LockdownCheck",
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)

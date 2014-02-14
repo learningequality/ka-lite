@@ -29,8 +29,8 @@ from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree
 from chronograph import force_job, job_status
 from config.models import Settings
+from facility.models import FacilityGroup, FacilityUser
 from i18n import lcode_to_ietf
-from securesync.models import FacilityGroup, FacilityUser
 from shared.decorators import require_admin
 from testing.decorators import allow_api_profiling
 from utils.general import break_into_chunks
