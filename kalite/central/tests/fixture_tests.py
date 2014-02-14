@@ -8,7 +8,7 @@ from django.test import LiveServerTestCase, TestCase
 from django.core.management import call_command
 
 import settings
-from shared.testing import central_server_test
+from testing import central_server_test
 
 
 @central_server_test

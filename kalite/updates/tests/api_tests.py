@@ -9,9 +9,9 @@ from django.utils import unittest
 
 import settings
 from main.tests.base import MainTestCase
-from main.tests.command_tests import VideoScanTests
+from .command_tests import VideoScanTests
 from securesync.models import Facility, FacilityUser
-from shared.testing import distributed_server_test, KALiteClient, KALiteTestCase
+from testing import distributed_server_test, KALiteClient, KALiteTestCase
 from updates.models import VideoFile
 
 

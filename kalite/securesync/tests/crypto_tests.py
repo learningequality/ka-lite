@@ -6,7 +6,7 @@ from django.utils import unittest
 import settings
 from securesync import crypto
 from securesync.models import Facility, FacilityUser, FacilityGroup
-from shared.testing import KALiteTestCase
+from testing import KALiteTestCase
 from utils.django_utils import call_command_with_output
 
 

@@ -18,8 +18,8 @@ from django.views.decorators.http import condition
 
 import i18n
 import settings
+import topic_tools
 from settings import LOG as logging
-from shared import topic_tools
 from updates.models import VideoFile
 from utils.internet import generate_all_paths
 
@@ -176,33 +176,14 @@ def expire_page(path=None, url_name=None, failure_ok=False):
         get_web_cache().delete(key)
 
 
-def get_video_page_paths(video_id=None):
-    try:
-        return [n["path"] for n in topic_tools.get_node_cache("Video")[video_id]]
-    except:
-        return []
-
-
-def get_exercise_page_paths(video_id=None):
-
-    try:
-        exercise_paths = set()
-        for exercise in topic_tools.get_related_exercises(videos=topic_tools.get_node_cache("Video")[video_id]):
-            exercise_paths = exercise_paths.union(set([exercise["path"]]))
-        return list(exercise_paths)
-    except Exception as e:
-        logging.debug("Exception while getting exercise paths: %s" % e)
-        return []
-
-
 def invalidate_all_pages_related_to_video(video_id=None):
     """Given a video file, recurse backwards up the hierarchy and invalidate all pages.
     Also include video pages and related exercise pages.
     """
 
     # Expire all video files and related paths
-    video_paths = get_video_page_paths(video_id=video_id)
-    exercise_paths = get_exercise_page_paths(video_id=video_id)
+    video_paths = topic_tools.get_video_page_paths(video_id=video_id)
+    exercise_paths = topic_tools.get_exercise_page_paths(video_id=video_id)
     leaf_paths = set(video_paths).union(set(exercise_paths))
 
     for leaf_path in leaf_paths:
@@ -216,9 +197,9 @@ def regenerate_all_pages_related_to_videos(video_ids):
     paths_to_regenerate = set() # unique set
     for video_id in video_ids:
 
-        for video_path in get_video_page_paths(video_id=video_id):
+        for video_path in topic_tools.get_video_page_paths(video_id=video_id):
             paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=video_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
-        for exercise_path in get_exercise_page_paths(video_id=video_id):
+        for exercise_path in topic_tools.get_exercise_page_paths(video_id=video_id):
             paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=exercise_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
 
     # Now, regenerate any page.
@@ -229,7 +210,6 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
 
 def invalidate_inmemory_caches():
-    from shared import i18n, topic_tools # modules with cache variables
     for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))

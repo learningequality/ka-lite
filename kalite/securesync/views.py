@@ -8,14 +8,14 @@ from django.http import HttpResponseRedirect, HttpResponseServerError
 from .devices.views import *
 from .users.views import *
 from securesync.models import SyncSession
-from shared.decorators import distributed_server_only
+from testing.asserts import distributed_server_only
 
 
 @distributed_server_only
 def crypto_login(request):
     """
     Remote admin endpoint, for login to a distributed server (given its IP address; see central/views.py:crypto_login)
-    
+
     An admin login is negotiated using the nonce system inside SyncSession
     """
     if "client_nonce" in request.GET:

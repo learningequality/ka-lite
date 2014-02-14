@@ -13,11 +13,10 @@ from settings import LOG as logging
 from securesync.models import Device, DeviceZone, Zone, Facility, ZoneInvitation
 
 
-#@distributed_server_only 
 def unregister_distributed_server():
     """
     All local steps necessary for unregistering a server with a central server.
-    
+
     Note that the remote steps (central-server-side) are NOT done.
       * Login as Django admin, go to admin page, select "devices", find your device and delete.
     """
@@ -25,7 +24,7 @@ def unregister_distributed_server():
         raise CommandError("'Unregister' does not make sense for a central server.  Aborting!")
 
     own_device = Device.get_own_device()
-    
+
     # Delete zone info
     DeviceZone.objects.filter(device=own_device).delete()
     Zone.objects.all().delete()
@@ -56,13 +55,13 @@ class Command(BaseCommand):
             help='Tells Django to NOT prompt the user for input of any kind.'),)
 
     def handle(self, *args, **options):
-        
+
         if not args:
             raise CommandError("Must specify a test-only method to run..")
 
         elif args[0] == "unregister":
             unregister_distributed_server()
-            
+
         elif args[0] == "clean_db":
             if self.confirm(options.get('interactive'), "clean_db will permanently delete data"):
                 clean_db()
@@ -75,4 +74,4 @@ class Command(BaseCommand):
             confirm = raw_input(("%s \n Type 'yes' to continue, or 'no' to cancel: ") % (info_message))
             return confirm == "yes"
         else:
-            return True  #not interactive, so default to confirmed 
+            return True  #not interactive, so default to confirmed

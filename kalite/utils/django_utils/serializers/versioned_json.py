@@ -12,9 +12,8 @@ from django.utils import simplejson
 from django.utils.encoding import smart_unicode
 from django.utils.timezone import is_aware
 
-import kalite
+from .versioned_python import Deserializer as PythonDeserializer
 from utils.general import version_diff
-from versioned_python import Deserializer as PythonDeserializer
 
 
 class Serializer(json.Serializer):
@@ -36,7 +35,7 @@ class Serializer(json.Serializer):
         self.selected_fields = options.pop("fields", None)
         self.use_natural_keys = options.pop("use_natural_keys", False)
 
-        dest_version = options.pop("dest_version", kalite.VERSION)  # We're serializing to send to a machine of this version.
+        dest_version = options.pop("dest_version")  # We're serializing to send to a machine of this version.
 
         self.start_serialization()
         for obj in queryset:
@@ -81,8 +80,8 @@ class Serializer(json.Serializer):
 def Deserializer(stream_or_string, **options):
     """
     Deserialize a stream or string of JSON data.
-    
-    Note: no change from Django version, 
+
+    Note: no change from Django version,
       but needed to import here to use the versioned python deserializer
       (see the import at the top for PythonDeserializer)
     """

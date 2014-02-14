@@ -16,17 +16,19 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from . import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup
+from chronograph import force_job
 from config.models import Settings
 from main.models import UserLog
 from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
-from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
-from shared.jobs import force_job
+from shared.decorators import require_admin
+from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import set_query_params
 
 @require_admin
@@ -328,7 +330,7 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
             return []
         else:
             return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
-    
+
     user_list = get_users_from_group(group_id, facility=facility)
 
     # Get the user list from the group

@@ -16,7 +16,7 @@ import settings
 from central.models import Organization
 from registration.models import RegistrationProfile
 from securesync.models import Zone, Facility, Device, DeviceZone
-from shared.testing import central_server_test, BrowserTestCase
+from testing import central_server_test, BrowserTestCase
 
 
 @central_server_test

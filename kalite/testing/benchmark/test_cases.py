@@ -53,10 +53,10 @@ from selenium.webdriver.common.by import By
 
 from . import base
 from main.models import ExerciseLog, VideoLog, UserLog
+from main.topic_tools import get_node_cache
 from securesync.models import Facility, FacilityUser, FacilityGroup
 from settings import LOG as logging
-from shared.testing.browser import BrowserTestCase
-from shared.topic_tools import get_node_cache
+from testing.browser import BrowserTestCase
 
 
 class HelloWorld(base.Common):

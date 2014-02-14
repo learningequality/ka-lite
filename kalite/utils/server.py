@@ -1,7 +1,5 @@
 import os
 
-import settings
-
 
 def get_server_type(request):
     return request.META.get('SERVER_SOFTWARE')
@@ -13,7 +11,7 @@ def server_restart(request):
         import cherrypy
         cherrypy.engine.restart()
     elif "WSGIServer" in server_type: # dev server
-        fpath = settings.__file__.replace("pyc", "py")
+        fpath = __file__.replace("pyc", "py")
         os.utime(fpath, None)   # we "touch" it to force the dev server to restart
     else:
         raise NotImplementedError("Do not know how to restart server of type %s" % server_type)

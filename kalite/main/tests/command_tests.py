@@ -11,8 +11,8 @@ from django.utils import unittest
 import settings
 from .base import MainTestCase
 from securesync.models import Facility, FacilityUser
-from shared.testing.client import KALiteClient
-from shared.testing.decorators import distributed_server_test
+from testing.client import KALiteClient
+from testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 
 

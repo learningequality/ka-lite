@@ -3,7 +3,7 @@ import sys
 from django.utils import unittest
 
 from contact.models import *
-from shared.testing.unicode import UnicodeModelsTest
+from testing.unicode import UnicodeModelsTest
 
 class ContactUnicodeModelsTest(UnicodeModelsTest):
 
@@ -23,30 +23,30 @@ class ContactUnicodeModelsTest(UnicodeModelsTest):
 
         # Classes using other classes
         dep = Deployment(
-            contact=contact, 
-            countries=self.korean_string, 
-            facilities=self.korean_string, 
+            contact=contact,
+            countries=self.korean_string,
+            facilities=self.korean_string,
             low_cost_bundle=self.korean_string,
             other=self.korean_string,
         )
         self.assertNotIn(unicode(dep), "Bad Unicode data", "Deployment: Bad conversion to unicode.")
 
         supp = Support(
-            contact=contact, 
-            type=self.korean_string, 
-            issue=self.korean_string, 
+            contact=contact,
+            type=self.korean_string,
+            issue=self.korean_string,
         )
         self.assertNotIn(unicode(supp), "Bad Unicode data", "Support: Bad conversion to unicode.")
 
         contrib = Contribute(
-            contact=contact, 
-            type=self.korean_string, 
-            issue=self.korean_string, 
+            contact=contact,
+            type=self.korean_string,
+            issue=self.korean_string,
         )
         self.assertNotIn(unicode(contrib), "Bad Unicode data", "Contribute: Bad conversion to unicode.")
 
         info = Info(
-            contact=contact, 
-            issue=self.korean_string, 
+            contact=contact,
+            issue=self.korean_string,
         )
         self.assertNotIn(unicode(info), "Bad Unicode data", "Info: Bad conversion to unicode.")

@@ -6,8 +6,8 @@ from django.core.exceptions import PermissionDenied
 from django.test import LiveServerTestCase, TestCase, Client
 
 import settings
-from shared.testing import central_server_test
 from central.models import Organization, OrganizationInvitation
+from testing import central_server_test
 
 
 @central_server_test
