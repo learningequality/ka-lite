@@ -18,8 +18,8 @@ from django.views.decorators.http import condition
 
 import i18n
 import settings
+import topic_tools
 from settings import LOG as logging
-from shared import topic_tools
 from updates.models import VideoFile
 from utils.internet import generate_all_paths
 
@@ -210,7 +210,6 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
 
 def invalidate_inmemory_caches():
-    from shared import i18n, topic_tools # modules with cache variables
     for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))

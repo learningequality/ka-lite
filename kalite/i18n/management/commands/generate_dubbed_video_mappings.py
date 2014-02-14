@@ -13,8 +13,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
+from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from shared.topic_tools import get_node_cache
 from utils.general import ensure_dir, datediff
 
 

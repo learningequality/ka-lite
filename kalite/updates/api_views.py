@@ -23,9 +23,9 @@ from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from chronograph import force_job
 from i18n import get_youtube_id, get_video_language, get_supported_language_map
+from main.topic_tools import get_topic_tree
 from settings import LOG as logging
 from shared.decorators import require_admin
-from shared.topic_tools import get_topic_tree
 from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError

@@ -11,7 +11,7 @@ from .classes import UpdatesDynamicCommand
 from i18n.management.commands.scrape_videos import scrape_video
 from settings import LOG as logging
 from main import caching
-from shared.topic_tools import get_video_by_youtube_id
+from main.topic_tools import get_video_by_youtube_id
 from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
 from utils import set_process_priority

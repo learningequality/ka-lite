@@ -17,8 +17,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 import khanload
 import settings
+from main import topic_tools
 from settings import LOG as logging
-from shared import topic_tools
 from utils.general import datediff
 
 
@@ -317,7 +317,7 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
 def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
     """
     Uses KA Lite topic data and supporting data from Khan Academy
-    to rebuild the knowledge map (maplayout.json) and topicdata files.
+    to rebuild the knowledge map (maplayout.json) and topics.json files.
     """
 
     knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")

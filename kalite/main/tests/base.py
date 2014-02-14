@@ -11,8 +11,8 @@ from django.core.cache.backends.locmem import LocMemCache
 
 import settings
 from config.models import Settings
+from main.topic_tools import get_node_cache
 from securesync.models import Device
-from shared.topic_tools import get_node_cache
 from testing.base import KALiteTestCase
 
 
