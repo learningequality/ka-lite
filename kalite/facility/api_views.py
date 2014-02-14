@@ -1,7 +1,7 @@
 from django.utils import simplejson
 
 
-from securesync.models import FacilityGroup, FacilityUser
+from .models import FacilityGroup, FacilityUser
 from shared.decorators import require_admin
 from utils.internet import api_handle_error_with_json, JsonResponse
 

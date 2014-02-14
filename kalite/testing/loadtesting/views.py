@@ -1,6 +1,6 @@
 from annoying.decorators import render_to
 
-from securesync.models import Facility, FacilityUser
+from facility.models import Facility, FacilityUser
 
 
 n_users_created = 0  # keep a global, to let us know if we've initialized, or need to re-initialize.

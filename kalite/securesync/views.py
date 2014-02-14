@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseServerError
 
 from .devices.views import *
-from .users.views import *
 from securesync.models import SyncSession
 from testing.asserts import distributed_server_only
 

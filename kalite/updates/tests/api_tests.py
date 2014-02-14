@@ -8,9 +8,9 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 import settings
-from main.tests.base import MainTestCase
 from .command_tests import VideoScanTests
-from securesync.models import Facility, FacilityUser
+from facility.models import Facility, FacilityUser
+from main.tests.base import MainTestCase
 from testing import distributed_server_test, KALiteClient, KALiteTestCase
 from updates.models import VideoFile
 

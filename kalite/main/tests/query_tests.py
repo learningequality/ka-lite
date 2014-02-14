@@ -8,8 +8,8 @@ from django.utils import unittest
 
 import settings
 from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from facility.models import FacilityUser
 from main.models import UserLog
-from securesync.models import FacilityUser
 from testing.decorators import distributed_server_test
 
 

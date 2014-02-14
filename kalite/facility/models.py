@@ -38,7 +38,7 @@ class Facility(DeferredCountSyncedModel):
 
     class Meta:
         verbose_name_plural = "Facilities"
-        app_label = "securesync"
+        app_label = "securesync"  # for back-compat reasons
 
     def __unicode__(self):
         if not self.id:
@@ -66,7 +66,7 @@ class FacilityGroup(DeferredCountSyncedModel):
     name = models.CharField(max_length=30, verbose_name=_("Name"))
 
     class Meta:
-        app_label = "securesync"
+        app_label = "securesync"  # for back-compat reasons
 
     def __unicode__(self):
         return self.name
@@ -91,7 +91,7 @@ class FacilityUser(DeferredCountSyncedModel):
 
     class Meta:
         unique_together = ("facility", "username")
-        app_label = "securesync"
+        app_label = "securesync"  # for back-compat reasons
 
     def __unicode__(self):
         return u"%s (Facility: %s)" % (self.get_name(), self.facility)
@@ -237,6 +237,6 @@ class CachedPassword(models.Model):
                 logging.error(e)
 
     class Meta:
-        app_label = "securesync"
+        app_label = "securesync"  # for back-compat reasons
 
 engine.add_syncing_models([Facility, FacilityGroup, FacilityUser])

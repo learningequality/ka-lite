@@ -8,7 +8,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
-from securesync.models import Facility, FacilityUser
+from facility.models import Facility, FacilityUser
 from testing.benchmark.test_cases import *
 
 

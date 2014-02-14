@@ -18,8 +18,8 @@ from config.models import Settings
 from main.models import UserLog
 from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
-from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
+from securesync.forms import RegisteredDevicePublicKeyForm
+from securesync.models import SyncSession, Device, Zone
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 
