@@ -8,7 +8,7 @@ from django.db import DatabaseError
 from django.utils import unittest
 
 import settings
-from tests import distributed_server_test, KALiteTestCase
+from testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test

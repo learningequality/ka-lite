@@ -4,7 +4,7 @@ from django.utils import unittest
 
 import settings
 from securesync.models import *
-from tests.unicode import UnicodeModelsTest
+from testing.unicode import UnicodeModelsTest
 
 class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
 

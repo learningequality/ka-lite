@@ -8,7 +8,7 @@ import version
 from i18n.models import *
 from securesync.models import Device, Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
-from tests import KALiteTestCase, UnicodeModelsTest
+from testing import KALiteTestCase, UnicodeModelsTest
 
 class i18nUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
 

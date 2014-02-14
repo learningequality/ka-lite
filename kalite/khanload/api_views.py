@@ -42,7 +42,7 @@ from settings import LOG as logging
 from securesync.models import FacilityUser
 from shared.decorators import require_login
 from shared.topic_tools import get_node_cache
-from tests.asserts import central_server_only, distributed_server_only
+from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import JsonResponse, JsonResponseMessageError
 
 

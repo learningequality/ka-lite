@@ -7,7 +7,7 @@ from django.test import LiveServerTestCase, TestCase, Client
 
 import settings
 from central.models import Organization, OrganizationInvitation
-from tests import central_server_test
+from testing import central_server_test
 
 
 @central_server_test

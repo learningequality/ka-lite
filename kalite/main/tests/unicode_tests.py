@@ -8,7 +8,7 @@ import version
 from main.models import *
 from main.tests.base import MainTestCase
 from securesync.models import Device, Facility, FacilityGroup, FacilityUser
-from tests import UnicodeModelsTest
+from testing import UnicodeModelsTest
 
 class MainUnicodeModelsTest(MainTestCase, UnicodeModelsTest):
 

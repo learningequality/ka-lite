@@ -11,7 +11,7 @@ import settings
 from main.tests.base import MainTestCase
 from .command_tests import VideoScanTests
 from securesync.models import Facility, FacilityUser
-from tests import distributed_server_test, KALiteClient, KALiteTestCase
+from testing import distributed_server_test, KALiteClient, KALiteTestCase
 from updates.models import VideoFile
 
 

@@ -3,7 +3,8 @@ import sys
 from django.utils import unittest
 
 from central.models import *
-from tests.unicode import UnicodeModelsTest
+from testing.unicode import UnicodeModelsTest
+
 
 class CentralUnicodeModelsTest(UnicodeModelsTest):
 

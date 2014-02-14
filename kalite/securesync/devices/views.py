@@ -21,7 +21,7 @@ from securesync.devices.api_client import RegistrationClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
 from shared.decorators import require_admin, facility_required, facility_from_request
-from tests.asserts import central_server_only, distributed_server_only
+from testing.asserts import central_server_only, distributed_server_only
 
 
 def register_public_key(request):

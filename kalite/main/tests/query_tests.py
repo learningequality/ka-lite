@@ -10,7 +10,7 @@ import settings
 from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
 from main.models import UserLog
 from securesync.models import FacilityUser
-from tests.decorators import distributed_server_test
+from testing.decorators import distributed_server_test
 
 
 @distributed_server_test

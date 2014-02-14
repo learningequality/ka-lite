@@ -21,7 +21,7 @@ from central.models import Organization
 from contact.views import contact_subscribe
 from registration.backends import get_backend
 from securesync.models import Zone
-from tests.asserts import central_server_only
+from testing.asserts import central_server_only
 from utils.internet import set_query_params
 
 

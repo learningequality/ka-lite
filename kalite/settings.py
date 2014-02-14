@@ -260,7 +260,7 @@ else:
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
-    INSTALLED_APPS += ('i18n', 'tests')
+    INSTALLED_APPS += ('i18n', 'testing')
     LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
@@ -462,10 +462,10 @@ if DEBUG:
     # add ?prof to URL, to see performance stats
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
+if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
+        INSTALLED_APPS += ("testing.loadtesting",)
 
-TEST_RUNNER = 'kalite.tests.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'
 
 TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
 assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"

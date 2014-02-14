@@ -11,8 +11,8 @@ from django.utils import unittest
 import settings
 from main import caching
 from main.tests.base import MainTestCase
-from tests.client import KALiteClient
-from tests.decorators import distributed_server_test
+from testing.client import KALiteClient
+from testing.decorators import distributed_server_test
 from updates.models import VideoFile
 from utils.django_utils import call_command_with_output
 

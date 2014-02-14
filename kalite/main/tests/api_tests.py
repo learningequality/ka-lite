@@ -12,7 +12,7 @@ import settings
 from .base import MainTestCase
 from main.models import VideoLog, ExerciseLog
 from securesync.models import Facility, FacilityUser
-from tests import distributed_server_test, KALiteClient, KALiteTestCase
+from testing import distributed_server_test, KALiteClient, KALiteTestCase
 
 
 @distributed_server_test
