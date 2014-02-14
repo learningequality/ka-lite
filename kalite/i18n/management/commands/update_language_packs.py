@@ -303,13 +303,17 @@ def update_translations(lang_codes=None,
                     'kalite_nphrases': 0,
                 })                   # these values will likely yield the wrong values when download_kalite_translations == False.
 
-            logging.info("Downloading KA Lite translations...")
-            kalite_po_file = download_latest_translations(
-                lang_code=lang_code_crowdin,
-                project_id=settings.CROWDIN_PROJECT_ID,
-                project_key=settings.CROWDIN_PROJECT_KEY,
-                zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
-            )
+            if not download_kalite_translations:
+                logging.info("Skipping KA Lite translations")
+                kalite_po_file = None
+            else:
+                logging.info("Downloading KA Lite translations...")
+                kalite_po_file = download_latest_translations(
+                    lang_code=lang_code_crowdin,
+                    project_id=settings.CROWDIN_PROJECT_ID,
+                    project_key=settings.CROWDIN_PROJECT_KEY,
+                    zip_file=zip_file or (os.path.join(CROWDIN_CACHE_DIR, "kalite-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
+                )
 
             # We have the po file, now get metadata.
             kalite_metadata = get_po_metadata(kalite_po_file)
@@ -319,16 +323,20 @@ def update_translations(lang_codes=None,
             package_metadata[lang_code]["kalite_nphrases"]       = kalite_metadata["phrases"]
 
             # Download Khan Academy translations too
-            logging.info("Downloading Khan Academy translations...")
-            combined_po_file = download_latest_translations(
-                lang_code=lang_code_crowdin,
-                project_id=settings.KA_CROWDIN_PROJECT_ID,
-                project_key=settings.KA_CROWDIN_PROJECT_KEY,
-                zip_file=ka_zip_file or (os.path.join(CROWDIN_CACHE_DIR, "ka-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
-                combine_with_po_file=kalite_po_file,
-                rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
-                download_type="ka",
-            )
+            if not download_ka_translations:
+                logging.info("Skipping KA translations")
+                combined_po_file = None
+            else:
+                logging.info("Downloading Khan Academy translations...")
+                combined_po_file = download_latest_translations(
+                    lang_code=lang_code_crowdin,
+                    project_id=settings.KA_CROWDIN_PROJECT_ID,
+                    project_key=settings.KA_CROWDIN_PROJECT_KEY,
+                    zip_file=ka_zip_file or (os.path.join(CROWDIN_CACHE_DIR, "ka-%s.zip" % lang_code_crowdin) if settings.DEBUG else None),
+                    combine_with_po_file=kalite_po_file,
+                    rebuild=False,  # just to be friendly to KA--we shouldn't force a rebuild
+                    download_type="ka",
+                )
 
             # we have the po file; now
             ka_metadata = get_po_metadata(combined_po_file)
@@ -388,8 +396,8 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 
     return broken_codes
 
-def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
-                                 project_key=settings.CROWDIN_PROJECT_KEY,
+def download_latest_translations(project_id=None,
+                                 project_key=None,
                                  lang_code="all",
                                  zip_file=None,
                                  combine_with_po_file=None,
@@ -408,6 +416,11 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     - download_type -- whether it is a ka or ka_lite. Default is None, meaning ka_lite.
 
     """
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+       project_key = settings.CROWDIN_PROJECT_KEY
+
     lang_code = lcode_to_ietf(lang_code)
 
     # Get zip file of translations
@@ -471,8 +484,13 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     return po_file
 
 
-def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def build_translations(project_id=None, project_key=None):
     """Build latest translations into zip archive on CrowdIn."""
+
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+       project_key = settings.CROWDIN_PROJECT_KEY
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
@@ -722,8 +740,13 @@ def update_metadata(package_metadata, version=VERSION):
     logging.info("Local record of translations updated")
 
 
-def download_crowdin_metadata(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def download_crowdin_metadata(project_id=None, project_key=None):
     """Return tuple in format (total_strings, total_translated, percent_translated)"""
+
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+        project_key = settings.CROWDIN_PROJECT_KEY
 
     request_url = "http://api.crowdin.net/api/project/%s/status?key=%s&json=True" % (project_id, project_key)
     try:
