@@ -27,7 +27,6 @@ from config.models import Settings
 from i18n import select_best_available_language
 from securesync.api_client import BaseClient
 from securesync.models import Facility, FacilityUser,FacilityGroup, Device
-from shared.decorators import require_admin, facility_required
 from settings import LOG as logging
 from shared import topic_tools
 from shared.decorators import require_admin

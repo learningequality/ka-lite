@@ -16,6 +16,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from . import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup
@@ -26,7 +27,7 @@ from securesync.devices.views import *
 from securesync.forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
-from shared.decorators import require_admin, facility_required, facility_from_request
+from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import set_query_params
 

@@ -20,7 +20,7 @@ from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
 from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
-from shared.decorators import require_admin, facility_required, facility_from_request
+from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 
 
