@@ -19,6 +19,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .middleware import refresh_session_facility_info
+from .models import Facility
 from config.models import Settings
 from securesync.models import Device
 from testing.asserts import distributed_server_only
@@ -99,7 +100,7 @@ def facility_required(handler):
 
         else:
             @distributed_server_only
-            @render_to("securesync/facility_selection.html")
+            @render_to("facility/facility_selection.html")
             def facility_selection(request):
                 facilities = list(Facility.objects.all())
                 refresh_session_facility_info(request, len(facilities))
