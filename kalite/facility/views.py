@@ -313,7 +313,7 @@ def user_list(request, facility):
 
 
 def user_management_context(request, facility_id, group_id, page=1, per_page=25):
-    facility = Facility.objects.get(id=facility_id)
+    facility = get_object_or_None(Facility, id=facility_id)
     groups = FacilityGroup.objects \
         .filter(facility=facility) \
         .order_by("name")
