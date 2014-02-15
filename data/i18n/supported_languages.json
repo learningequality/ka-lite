@@ -1,14 +1,15 @@
 {
     "ar": null,
     "bg": null,
+    "da": null,
     "de": null,
     "en": null,
-    "es-ES": {
-        "amara": "es",
-        "crowdin": "es-ES",
-        "exercises": "es"
+    "es": {
+        "crowdin": "es-ES"
     },
     "fr": null,
     "pl": null,
-    "pt-BR": null
+    "pt-BR": {
+        "dubbed_videos": "pt"
+    }
 }

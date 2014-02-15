@@ -91,7 +91,7 @@ class Migration(SchemaMigration):
         },
         'securesync.registereddevicepublickey': {
             'Meta': {'object_name': 'RegisteredDevicePublicKey'},
-            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500', 'primary_key': 'True'}),
+            'public_key': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Zone']"})
         },
         'securesync.syncsession': {

@@ -110,6 +110,11 @@ $(function() {
 
     setTimeout(function() {
         doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {}).success(function(treeData) {
+
+            if ($.isEmptyObject(treeData)) {
+                $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
+            }
+
             $("#content_tree").dynatree({
                 imagePath:"../images/",
                 checkbox: true,
@@ -148,7 +153,7 @@ $(function() {
                     } else {
                         $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
                             vid_count: oldVideoCount,
-                            vid_size: (oldVideoSize < 2) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
+                            vid_size: (oldVideoSize < Math.pow(2, 10)) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
                             vid_size_units: (oldVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
                         }));
                         $("#delete-videos").show();
@@ -207,7 +212,7 @@ $(function() {
 
         // Prep
         // Get all videos marked for download
-        var youtube_ids = getSelectedStarted("youtube_id");
+        var youtube_ids = getSelectedStartedMetadata("youtube_id");
 
         // Do the request
         doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
@@ -218,7 +223,7 @@ $(function() {
                 });
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error downloading subtitles"), "id_video_download");
+                handleFailedAPI(resp, gettext("Error deleting videos"), "id_video_download");
                 $(".progress-waiting").hide();
             });
 
@@ -293,9 +298,10 @@ function getSelectedVideos(vid_type) {
     }
 
     var arr = $("#content_tree").dynatree("getSelectedNodes");
-    return _.uniq($.grep(arr, function(node) {
+    var vids = _.uniq($.grep(arr, function(node) {
         return node.data.addClass != avoid_type && node.childList == null;
     }));
+    return vids;
 }
 
 

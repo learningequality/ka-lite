@@ -6,7 +6,6 @@ from collections import OrderedDict, namedtuple
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -18,12 +17,13 @@ import settings
 import version
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from coachreports.views import student_view_context
+from facility.forms import FacilityForm
+from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from securesync.forms import FacilityForm
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
+from main.topic_tools import get_node_cache
+from securesync.models import DeviceZone, Device, Zone, SyncSession
 from settings import LOG as logging
-from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data, facility_required
-from shared.topic_tools import get_node_cache
+from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 from utils.internet import CsvResponse, render_to_csv
 
 
@@ -440,4 +440,3 @@ def local_device_context(request):
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
-

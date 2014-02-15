@@ -17,9 +17,9 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang, get_localized_exercise_dirpath
+from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from shared.topic_tools import get_node_cache
-from shared.i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang, get_localized_exercise_dirpath
 from utils.general import ensure_dir
 
 AVAILABLE_EXERCISE_LANGUAGE_CODES = ["da", "he", "pt-BR", "tr", "es", "fr"]
@@ -82,13 +82,21 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
+def get_exercise_filepath(exercise_id, lang_code=None, is_central_server=settings.CENTRAL_SERVER):
+    if settings.CENTRAL_SERVER:
+        exercise_filename = "%s.%s" % (exercise_id, "html")
+        exercise_localized_root = get_localized_exercise_dirpath(lang_code)
+        exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
+    else:
+        raise NotImplementedError
+
+    return exercise_dest_filepath
+
 def scrape_exercise(exercise_id, lang_code, force=False):
-    ka_lang_code = lang_code.lower()
     ietf_lang_code = lcode_to_ietf(lang_code)
 
-    exercise_filename = "%s.%s" % (exercise_id, "html")
-    exercise_localized_root = get_localized_exercise_dirpath(ka_lang_code)
-    exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
+    exercise_dest_filepath = get_exercise_filepath(exercise_id, lang_code=lang_code)
+    exercise_localized_root = os.path.dirname(exercise_dest_filepath)
 
     if os.path.exists(exercise_dest_filepath) and not force:
         return

@@ -156,6 +156,9 @@ STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
 DATA_PATH_SECURE = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
 
+# JSON file of all languages and their names
+LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH_SECURE, "i18n", "languagelookup.json")
+
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
@@ -212,6 +215,7 @@ INSTALLED_APPS = (
     "chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
+    "facility",
     "config",
     "main", # in order for securesync to work, this needs to be here.
     "control_panel",  # in both apps
@@ -247,17 +251,17 @@ if CENTRAL_SERVER:
 else:
     ROOT_URLCONF = "main.urls"
     MIDDLEWARE_CLASSES += (
-        "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
-        "securesync.middleware.FacilityCheck",
+        "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
+        "facility.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
         "kalite.i18n.middleware.SessionLanguage",
-        "securesync.middleware.LockdownCheck",
+        "facility.middleware.LockdownCheck",
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
     MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
-    INSTALLED_APPS += ('i18n',)
+    INSTALLED_APPS += ('i18n', 'testing')
     LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
@@ -459,10 +463,10 @@ if DEBUG:
     # add ?prof to URL, to see performance stats
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
+if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
+        INSTALLED_APPS += ("testing.loadtesting",)
 
-TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'
 
 TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
 assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
@@ -507,3 +511,19 @@ if package_selected("UserRestricted"):
 
     if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
         KEY_PREFIX += "|restricted"  # this option changes templates
+
+
+# (Aron): Setting the LANGUAGES configuration.
+# This is a bit more involved, as we need to hand out to a function to calculate
+# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
+# languages. Anything not in here is not accepted by Django, and will simply show
+# english instead of the selected language.
+if getattr(local_settings, 'LANGUAGES', None):
+    LANGUAGES = local_settings.LANGUAGES
+else:
+    from settingshelper import allow_all_languages_alist
+    # copied from shared.i18n
+    try:
+        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+    except Exception:
+        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)

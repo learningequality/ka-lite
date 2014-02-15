@@ -22,10 +22,10 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
+from i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
+from main.topic_tools import get_slug2id_map
 from settings import LOG as logging
-from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
-from shared.i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
-from shared.topic_tools import get_slug2id_map
 from utils.general import convert_date_input, ensure_dir, softload_json
 from utils.internet import make_request
 

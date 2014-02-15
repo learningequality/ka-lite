@@ -17,12 +17,12 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
+from facility.decorators import facility_required
+from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import VideoLog, ExerciseLog, UserLog
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
-from securesync.views import facility_required
+from main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
 from settings import LOG as logging
 from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
 from utils.general import max_none
 from utils.internet import StatusException
 
@@ -273,7 +273,8 @@ def tabular_view(request, facility, report_type="exercise"):
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
-        "report_types": ("exercise", "video"),
+        # For translators: the following two translations are nouns
+        "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
         "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
     })

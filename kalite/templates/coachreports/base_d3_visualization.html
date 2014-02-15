@@ -267,7 +267,7 @@
                 <option value="">----</option>
                 {% for stat in stats %}
                 {% if stat.type == "number" %}
-                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
+                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
                 {% endif %}
                 {% endfor %}
             {% endblock data_options %}

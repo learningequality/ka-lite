@@ -13,14 +13,16 @@ import os
 import shutil
 import stat
 import subprocess
+import tempfile
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.translation import ugettext as _
 
 import settings
+from i18n import get_dubbed_video_map, lcode_to_ietf
+from main.topic_tools import get_topic_videos, get_node_cache
 from settings import LOG as logging
-from shared.topic_tools import get_topic_videos, get_node_cache
-from shared.i18n import get_dubbed_video_map, lcode_to_ietf
 from utils.general import ensure_dir
 from utils.videos import get_outside_video_urls
 
@@ -100,20 +102,29 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
-def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
+def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', suppress_output=False):
     """
     Assumes it's in the path; if not, we try to download & install.
     """
-    video_filename = "%s.%s" % (youtube_id, format)
-    video_filepath = os.path.join(settings.CONTENT_ROOT, video_filename)
-    if os.path.exists(video_filepath) and not force:
+    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
+    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
+    if os.path.exists(video_file_download_path) and not force:
         return
 
     # Step 1: find or install the youtube-dl binary
     try:
-        logging.info("Retrieving youtube video %s" % youtube_id)
-        subprocess.call([yt_dl_bin, '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
-        subprocess.call([yt_dl_bin, '--id', '-k', '--id', '-f', format, 'www.youtube.com/watch?v=%s' % youtube_id])
+        if not suppress_output:
+            logging.info("Retrieving youtube video %s" % youtube_id)
+        if suppress_output:
+            from functools import partial
+            import StringIO
+            fn = partial(subprocess.check_output, stderr=subprocess.STDOUT)
+        else:
+            fn = subprocess.call
+
+        # '--write-thumbnail' gets a jpg, so don't bother getting a thumbnail.
+        logging.debug("Downloading to %s" % video_file_download_path)
+        fn([yt_dl_bin, '-k', '-f', format, '--output', video_file_download_path, 'www.youtube.com/watch?v=%s' % youtube_id])
     except OSError as oe:
         if oe.errno != 2: # only hit the roll-our-own / install code for a very specific error.
             raise
@@ -130,11 +141,7 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl'):
             logging.info("youtube-dl binary installed at %s" % new_bin)
 
         # Recursive call
-        return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin)
-
-    for fil in glob.glob(youtube_id + ".*"):
-        if not os.path.exists(os.path.join(settings.CONTENT_ROOT, fil)):
-            shutil.move(fil, settings.CONTENT_ROOT)
+        return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin, suppress_output=suppress_output)
 
 """
 def scrape_thumbnail(youtube_id, format="png", force=False):

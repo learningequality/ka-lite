@@ -8,32 +8,31 @@ from annoying.functions import get_object_or_None
 from functools import partial
 
 from django.contrib import messages
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from django.views.i18n import javascript_catalog
 
 import settings
+import topic_tools
+import topicdata
+from .caching import backend_cache_page
+from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from chronograph import force_job
 from config.models import Settings
-from main import topicdata
-from main.models import VideoLog, ExerciseLog
+from facility.models import Facility, FacilityUser,FacilityGroup
+from i18n import select_best_available_language
 from securesync.api_client import BaseClient
-from securesync.models import Facility, FacilityUser,FacilityGroup, Device
-from securesync.views import require_admin, facility_required
+from securesync.models import Device
 from settings import LOG as logging
-from shared import topic_tools
-from shared.caching import backend_cache_page
 from shared.decorators import require_admin
-from shared.i18n import select_best_available_language
-from shared.jobs import force_job
-from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from testing.asserts import central_server_only, distributed_server_only
+from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
 from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
 
 
@@ -366,10 +365,24 @@ def device_redirect(request):
     """
     device = Device.get_own_device()
     zone = device.get_zone()
-    if zone:
-        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
+
+    return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
+
+JS_CATALOG_CACHE = {}
+@distributed_server_only
+def javascript_catalog_cached(request):
+    global JS_CATALOG_CACHE
+    lang = request.session['default_language']
+    if lang in JS_CATALOG_CACHE:
+        logging.debug('Using js translation catalog cache for %s' % lang)
+        src = JS_CATALOG_CACHE[lang]
+        return HttpResponse(src, 'text/javascript')
     else:
-        raise Http404(_("This device is not on any zone."))
+        logging.debug('Generating js translation catalog for %s' % lang)
+        resp = javascript_catalog(request, 'djangojs', settings.INSTALLED_APPS)
+        src = resp.content
+        JS_CATALOG_CACHE[lang] = src
+        return resp
 
 @render_to('search_page.html')
 @refresh_topic_cache
@@ -428,7 +441,7 @@ def handler_403(request, *args, **kwargs):
     #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
+        return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())

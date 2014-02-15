@@ -81,7 +81,7 @@
             <select id="report_type">
                 <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
-                    <option value="{{ report_type }}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
+                    <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
                 {% endfor %}
             </select>
         {% else %}
@@ -103,7 +103,7 @@
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
-                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{{ topic.title }}</option>
+                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
                 {% endfor %}
             </select>
         {% endif %}
@@ -172,7 +172,7 @@
                         <tr>
                             {% for exercise in exercises %}
                                 <th class="headrow data">
-                                    <div><a href="{{ exercise.path }}" title='"{{ exercise.display_name }}"{% if exercise.description %} ({{ exercise.description }}){% endif %}'>{{ exercise.title }}</a></div>
+                                    <div><a href="{{ exercise.path }}" title='"{% trans exercise.display_name %}"{% if exercise.description %} ({% trans exercise.description %}){% endif %}'>{% trans exercise.title %}</a></div>
                                 </th>
                             {% endfor %}
                         </tr>
@@ -207,7 +207,7 @@
                         <tr>
                             {% for video in videos %}
                                 <th class="headrow data">
-                                    <div><a href="{{ video.path }}"><span title='"{{ video.title }}"{% if video.description %} ({{ video.description }}){% endif %}'>{{ video.title }}</span></a></div>
+                                    <div><a href="{{ video.path }}"><span title='"{% trans video.title %}"{% if video.description %} ({% trans video.description %}){% endif %}'>{% trans video.title %}</span></a></div>
                                 </th>
                             {% endfor %}
                         </tr>

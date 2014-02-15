@@ -30,17 +30,14 @@
 
 {% block content %}
     <div class="download-actions vertical-shadow">
-        <h2 id="download-legend-unselected" class="button_text">
-            {% trans "Please select videos to download (below)" %}
+
+        <h2>
+            {% blocktrans with lang_name=current_language_native_name %}Videos for language {{ lang_name }}{% endblocktrans %}
         </h2>
 
-        <div class="client-online-only">
-            <div id="help-info">
-                <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-                    {% trans "Q: How do I bulk-download videos?" %}
-                </a>
-            </div>
-        </div>
+        <h4 id="download-legend-unselected" class="button_text">
+            {% trans "Please select videos to download (below)" %}
+        </h4>
 
         <button id="download-videos" type="button" class="enable-when-server-online">
             <span id="download-videos-text" class="new-video-count"></span>
@@ -49,6 +46,17 @@
         <button id="delete-videos" type="button">
             <span id="delete-videos-text" class="old-video-count"></span>
         </button>
+    </div>
+
+    <div class="download-actions vertical-shadow client-online-only">
+
+        <div>
+            <div id="help-info">
+                <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+                    {% trans "Q: How do I bulk-download videos?" %}
+                </a>
+            </div>
+        </div>
     </div>
 
     <div style="clear: both;"></div>

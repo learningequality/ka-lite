@@ -13,14 +13,15 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from chronograph import force_job
 from config.models import Settings
 from main.models import UserLog
 from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
-from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
-from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
-from shared.jobs import force_job
+from securesync.forms import RegisteredDevicePublicKeyForm
+from securesync.models import SyncSession, Device, Zone
+from shared.decorators import require_admin
+from testing.asserts import central_server_only, distributed_server_only
 
 
 def register_public_key(request):

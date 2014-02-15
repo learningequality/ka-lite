@@ -7,7 +7,6 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -24,15 +23,13 @@ from django.views.decorators.cache import cache_page
 import settings
 import version
 from .models import VideoFile
+from chronograph import force_job
 from config.models import Settings
 from control_panel.views import local_device_context
-from i18n.middleware import set_language_choices
-from securesync.models import Facility, FacilityUser, FacilityGroup, Device
-from securesync.views import require_admin, facility_required
-from shared import topic_tools
+from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
+from main import topic_tools
+from securesync.models import Device
 from shared.decorators import require_admin
-from shared.i18n import lcode_to_ietf, get_installed_language_packs
-from shared.jobs import force_job
 from utils.internet import am_i_online, JsonResponse
 
 
@@ -56,18 +53,24 @@ def update(request):
 
 @require_admin
 @render_to("updates/update_videos.html")
-def update_videos(request, max_to_show=5):
+def update_videos(request, max_to_show=4):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
     force_job("videodownload", _("Download Videos"))  # async request
 
-    installed_languages = set_language_choices(request, force=True)
-    languages_to_show = [l['name'] for l in installed_languages.values()[:max_to_show]]
+    installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
+    if request.is_django_user or not request.session["facility_user"].default_language:
+        default_language = Settings.get("default_language", "en")
+    elif not request.is_django_user and request.session["facility_user"].default_language:
+        default_language = request.session["facility_user"].default_language
+    default_language = lang_best_name(installed_languages.pop(lcode_to_ietf(default_language)))
+    languages_to_show = [lang_best_name(l) for l in installed_languages.values()[:max_to_show]]
     other_languages_count = max(0, len(installed_languages) - max_to_show)
 
     context = update_context(request)
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
         "languages": languages_to_show,
+        "default_language": default_language,
         "other_languages_count": other_languages_count,
     })
     return context
@@ -77,12 +80,12 @@ def update_videos(request, max_to_show=5):
 @render_to("updates/update_languages.html")
 def update_languages(request):
     # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
-    set_language_choices(request, force=True)
+    installed_languages = get_installed_language_packs(force=True)
 
     # here we want to reference the language meta data we've loaded into memory
     context = update_context(request)
     context.update({
-        "installed_languages": request.session['language_choices'].values(),
+        "installed_languages": installed_languages.values(),
     })
     return context
 
