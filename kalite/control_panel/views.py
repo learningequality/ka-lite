@@ -17,6 +17,7 @@ import settings
 import version
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from coachreports.views import student_view_context
+from facility.decorators import facility_required
 from facility.forms import FacilityForm
 from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
