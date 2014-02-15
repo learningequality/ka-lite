@@ -26,6 +26,7 @@ from coachreports.views import student_view_context
 from facility.decorators import facility_required
 from facility.forms import FacilityForm
 from facility.models import Facility, FacilityUser, FacilityGroup
+from facility.views import user_management_context
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from main.topic_tools import get_node_cache
 from securesync.models import DeviceZone, Device, Zone, SyncSession
