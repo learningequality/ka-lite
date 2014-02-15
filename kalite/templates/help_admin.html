@@ -13,7 +13,7 @@
     {% trans "This page can help you administer your installation of KA Lite." %}
 
     <table>
-        <tr>
+        <!--tr>
             <td class="title" colspan="2">
                 <h2>{% trans "(Offline) Management and Reporting Tools" %}</h2>
             </td>
@@ -25,7 +25,7 @@
         <tr>
             <td class="link"><a href="{% url zone_redirect %}">{% trans "Network management" %}</a></td>
             <td class="desc">{%trans "Access to summary data over all facilities and devices." %}</td>
-        </tr>
+        </tr-->
 
         <tr class="client-online-only">
             <td class="title" colspan="2">
@@ -41,7 +41,7 @@
             <td class="desc">{% trans "Contains the latest FAQ for troubleshooting." %}</td>
         </tr>
 
-        <tr>
+        <!--tr>
             <td class="title" colspan="2">
                 <h2>{% trans "Advanced User Tools" %}</h2>
             </td>
@@ -55,7 +55,7 @@
             <td class="desc">
                 <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
             </td>
-        </tr>
+        </tr-->
 
         {% if ips %}
         <tr>
