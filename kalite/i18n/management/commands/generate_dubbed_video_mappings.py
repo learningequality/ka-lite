@@ -103,6 +103,9 @@ def generate_dubbed_video_mappings(download_url=None, csv_data=None):
     extra_videos = set(video_map["english"].keys()) - set(known_videos)
     if missing_videos:
         logging.warn("There are %d known videos not in the list of dubbed videos" % len(missing_videos))
+        logging.warn("Adding missing English videos to English dubbed video map")
+        for video in missing_videos:
+            video_map["english"][video] = video
     if extra_videos:
         logging.warn("There are %d videos in the list of dubbed videos that we have never heard of." % len(extra_videos))
 
