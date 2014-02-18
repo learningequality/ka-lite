@@ -1,6 +1,10 @@
 var KMapEditor = {
     ZOOM_EXERCISES: 8,
     ZOOM_TOPICS: 6,
+    ptaklist: {"1-digit addition": [-6,0],
+               "1-digit subtraction": [-6,5],
+               "2-digit addition": [-6,8]},
+              
 
     exercises: null,
     maplayout: null,
@@ -114,10 +118,12 @@ var KMapEditor = {
     drawMap: function() {
         $("#map").empty();
         this.createCanvas();
+        console.log("mark was here");
 
         // add topics
         if (this.zoomLevel === this.ZOOM_TOPICS) {
             $.each(this.maplayout.nodes, function(topicId, topic) {
+                console.log(topicId);
                 var newDiv = $("<div>")
                     .addClass("exercise")
                     .css({
@@ -155,10 +161,15 @@ var KMapEditor = {
                 KMapEditor.raphael.path(path).attr({"stroke-width": 1, "stroke": "#999"});
             });
         }
-
+        
         // add exercises
         if (this.zoomLevel === this.ZOOM_EXERCISES || this.zoomLevel === this.ZOOM_HYBRID) {
             _.each(this.exercises, function(ex) {
+                //console.log(ex.title);
+                //console.log("here too");
+                if (ex.title == "1-digit addition"){console.log(KMapEditor.ptaklist["1-digit addition"][0])};
+                if (ex.title == "1-digit addition"){ex.h_position=KMapEditor.ptaklist["1-digit addition"][0]};
+                if (ex.title == "1-digit subtraction"){ex.h_position=KMapEditor.ptaklist["1-digit subtraction"][0]};
                 var newDiv = $("<div>")
                     .appendTo($("#map"))
                     .css({
@@ -167,7 +178,6 @@ var KMapEditor = {
                         "width": KMapEditor.LABEL_WIDTH
                     })
                     .addClass("exercise");
-
                 var newEx = $("<a>")
                     .attr("href", ex.path)
                     .appendTo(newDiv);
@@ -196,6 +206,8 @@ var KMapEditor = {
                     .text(ex.title)
                     .css({"width": KMapEditor.LABEL_WIDTH + "px"})
                     .appendTo(newEx);
+                    
+                   //console.log(ex.title);  
 
                 $.each(ex.prerequisites, function(n, prereq) {
                     KMapEditor.addPath(prereq, ex.id);
