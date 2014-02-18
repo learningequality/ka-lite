@@ -1,9 +1,9 @@
 var KMapEditor = {
     ZOOM_EXERCISES: 8,
     ZOOM_TOPICS: 6,
-    ptaklist: {"1-digit addition": [-6,0],
-               "1-digit subtraction": [-6,5],
-               "2-digit addition": [-6,8]},
+    ptaklist: {"1-digit addition": [-3,1],
+               "1-digit subtraction": [-2,1],
+               "2-digit addition": [-1,1]},
               
 
     exercises: null,
@@ -165,11 +165,7 @@ var KMapEditor = {
         // add exercises
         if (this.zoomLevel === this.ZOOM_EXERCISES || this.zoomLevel === this.ZOOM_HYBRID) {
             _.each(this.exercises, function(ex) {
-                //console.log(ex.title);
-                //console.log("here too");
-                if (ex.title == "1-digit addition"){console.log(KMapEditor.ptaklist["1-digit addition"][0])};
-                if (ex.title == "1-digit addition"){ex.h_position=KMapEditor.ptaklist["1-digit addition"][0]};
-                if (ex.title == "1-digit subtraction"){ex.h_position=KMapEditor.ptaklist["1-digit subtraction"][0]};
+                if (ex.title in KMapEditor.ptaklist){ex.h_position=KMapEditor.ptaklist[ex.title][0];ex.v_position=KMapEditor.ptaklist[ex.title][1]};
                 var newDiv = $("<div>")
                     .appendTo($("#map"))
                     .css({
