@@ -354,6 +354,11 @@ def update_translations(lang_codes=None,
                 else:
                     pmlc["percent_translated"] = 100. * (pmlc['kalite_ntranslations'] + pmlc['ka_ntranslations']) / float(pmlc['kalite_nphrases'] + pmlc['ka_nphrases'])
 
+
+            # english is always 100% translated
+            if lang_code == 'en':
+                pmlc['percent_translated'] = 100
+
     return package_metadata
 
 
