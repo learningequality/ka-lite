@@ -15,6 +15,7 @@ from main.topic_tools import get_video_by_youtube_id
 from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
 from utils import set_process_priority
+from utils.general import ensure_dir
 
 
 class Command(UpdatesDynamicCommand):
@@ -114,6 +115,8 @@ class Command(UpdatesDynamicCommand):
 
                 # Initiate the download process
                 try:
+                    ensure_dir(settings.CONTENT_ROOT)
+
                     if video.language == "en":  # could even try download_video, and fall back to scrape_video, for en...
                         download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
                     else:
