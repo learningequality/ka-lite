@@ -314,15 +314,17 @@ function getSelectedStartedVideos() {
 }
 
 function getSelectedMetadata(vid_type, data_type) {
-    var videos = getSelectedVideos(vid_type);
-    var metadata = _.uniq($.map(videos, function(node) {
+    var videos = _.uniq(getSelectedVideos(vid_type), function(node) {
+        return node.data.key;
+    });
+    var metadata = $.map(videos, function(node) {
         switch (data_type) {
             case null:
             case undefined: return node.data;
             case "youtube_id": return node.data.key;
             default: assert(false, sprintf("Unknown data type: %s", data_type)); break;
         }
-    }));
+    });
     return metadata;
 }
 function getSelectedIncompleteMetadata(data_type) {
