@@ -93,7 +93,6 @@ function display_languages() {
     // show list of installable languages in the dropdown box
     //
     $('#language-packs').find('option').remove()
-    $('#language-packs').append("<option value='' selected=''>--</option>");
     installables.forEach(function(langdata, langindex) {
         var srtcount = langdata["subtitle_count"];
         var percent_translated = langdata["percent_translated"];
@@ -107,6 +106,10 @@ function display_languages() {
             }
         }
     });
+
+    if (installables.length > 0) {
+        $('#language-packs').change(); // trigger the 'Get Language' Button update
+    }
 }
 
 //
@@ -140,15 +143,15 @@ function start_languagepack_download(lang_code) {
 }
 
 // when we make a selection on the language pack select box, enable the 'Get Language' Button
-// TODO: change so that if they already have a valid selection, activate button anyway
 $(function() {
     $("#language-packs").change(function(event) {
         var lang_code = $("#language-packs").val();
         var found = false;
 
-        $("#get-language-button").removeAttr("disabled");
         var matching_installable = installable_languages.filter(function(installable_lang) { return lang_code === installable_lang.code; });
         var found = (matching_installable.length != 0);
+
+        $("#get-language-button").prop("disabled", !found);
 
         if (found) {
             var langdata = matching_installable[0];
