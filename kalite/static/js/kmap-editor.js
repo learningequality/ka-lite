@@ -1,9 +1,10 @@
 var KMapEditor = {
     ZOOM_EXERCISES: 8,
     ZOOM_TOPICS: 6,
-    ptaklist: {"1-digit addition": [-3,1],
-               "1-digit subtraction": [-2,1],
-               "2-digit addition": [-1,1]},
+    ptaklist: {"1-digit addition": [0,0],
+               "1-digit subtraction": [-15,0],
+               "2-digit addition": [0,7],
+               "2 and 3-digit subtraction": [-15,7]},
               
 
     exercises: null,
@@ -98,11 +99,17 @@ var KMapEditor = {
             this.maxX = Math.max.apply(Math, _.pluck(topicList, "h_position"));
             this.maxY = Math.max.apply(Math, _.pluck(topicList, "v_position"));
         }
+        console.log(this.maxX-this.minX);
+        console.log(this.maxY-this.minY);
 
         this.raphael.setSize(
             (this.maxX - this.minX + 2) * this.X_SPACING,
             (this.maxY - this.minY + 2) * this.Y_SPACING
         );
+        var temp=(this.maxX - this.minX + 2) * this.X_SPACING;
+        console.log(temp);
+        temp=(this.maxY - this.minY + 2) * this.Y_SPACING
+         console.log(temp);
 
         $("#map-container").css("min-height", (this.maxY - this.minY) * this.Y_SPACING + 120);
 
@@ -118,7 +125,7 @@ var KMapEditor = {
     drawMap: function() {
         $("#map").empty();
         this.createCanvas();
-        console.log("mark was here");
+       
 
         // add topics
         if (this.zoomLevel === this.ZOOM_TOPICS) {
@@ -208,13 +215,20 @@ var KMapEditor = {
                 $.each(ex.prerequisites, function(n, prereq) {
                     KMapEditor.addPath(prereq, ex.id);
                 });
+                
             });
+            
         }
+        KMapEditor.addPath2([0,0],[-8,0],1); 
+                        //console.log("just after");
     },
 
     addPath: function(src, dst) {
+        //console.log(src);
+        //console.log(dst);
         var src_ex = this.exercises.get(src);
         var dst_ex = this.exercises.get(dst);
+        //console.log(src_ex);
 
         if (src_ex == null || dst_ex == null) {
             return;
@@ -230,6 +244,142 @@ var KMapEditor = {
             "stroke-width": 1,
             "stroke": "#777"
         });
+        console.log(src_ex.h_position+" "+src_ex.v_position);
+        console.log(this.minX+" "+this.maxX);
+        console.log(this.minY+" "+this.maxY);
+        console.log(this.X_SPACING+" "+this.Y_SPACING);
+        console.log(this.LABEL_WIDTH)
+        },
+
+    addPath2: function(from, to, scale) {
+        
+        //console.log(this.Y_SPACING + " " + this.X_SPACING);
+        //console.log(this);
+
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}l{4},{5}L{6},{7}",
+            0,0,0,390,390,0,0,0
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}l{4},{5}L{6},{7}",
+            0,0,390,0,0,390,0,0
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}",
+            195,195,195,-195
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}",
+            195,195,-195,195
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}",
+            195,195,200,0
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}",
+            195,195,-200,0
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}",
+            195,195,0,200
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#777"
+        });
+        this.raphael.path(
+            Raphael.format("M{0},{1}l{2},{3}",
+            195,195,0,-200
+            
+            
+                
+        )).attr({
+            "stroke-width": 5,
+            "stroke": "#999"
+        });
+        
+        tile=this.raphael.text(100,20,"KA Mothership").attr({
+            "stroke-width": 1,
+            "stroke": "#777",
+            "font-size": 32,
+            "fill": "#777",
+            "font-family": "Arial, Helvetica, sans-serif",
+            "href": "http://www.khanacademy.org",
+            "target": "_blank"
+        });
+        
+        tile.mouseover(function(e) {
+        pX = e.pageX;
+        pY = e.pageY;
+        });
+        tile.click(function() {
+        console.log('x: '+pX+'| y:'+pY);
+        this.attr({"font-size":16});
+        });
+        
+        tile2=this.raphael.text(100,60,"Herb Gross").attr({
+            "stroke-width": 1,
+            "stroke": "#777",
+            "font-size": 32,
+            "fill": "#777",
+            "font-family": "Arial, Helvetica, sans-serif",
+            "href": "http://www.adjectivenounmath.com",
+            "target": "_blank"
+        });
+        
+        tile2.mouseover(function(e) {
+        pX = e.pageX;
+        pY = e.pageY;
+        });
+        tile2.click(function() {
+        console.log('x: '+pX+'| y:'+pY);
+        this.attr({"font-size":16});
+        });
+            
+        console.log("this is the object");
+        console.log(this);
+        
+        
+        
     }
 };
 
@@ -238,7 +388,7 @@ $(document).ready(function() {
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
-
+    
     if (!vars["topic"]) {
         // Top level of the topic tree
         $(".topic-button").hide();
@@ -260,12 +410,15 @@ $(document).ready(function() {
                             exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
                         });
                         KMapEditor.init(exercises, [], exercisesCompleted, 8);
+                        
                     })
                     .fail(function (resp) {
                         // Turned off because it duplicates "Progress not loaded" message
                         // communicate_api_failure(resp, "id_student_logs");
                         KMapEditor.init(exercises, [], [], 8);
                     });
+                 
             });
+            
     }
 });
