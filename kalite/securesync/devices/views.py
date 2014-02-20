@@ -42,7 +42,10 @@ def register_public_key_client(request):
     own_device = Device.get_own_device()
     if own_device.is_registered():
         initialize_registration()
-        return {"already_registered": True}
+        if request.next:
+            return HttpResponseRedirect(request.next)
+        else:
+            return {"already_registered": True}
 
     client = RegistrationClient()
     if client.test_connection() != "success":

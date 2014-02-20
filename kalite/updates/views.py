@@ -29,6 +29,7 @@ from control_panel.views import local_device_context
 from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
 from main import topic_tools
 from securesync.models import Device
+from securesync.devices import require_registration
 from securesync.views import require_admin
 from shared.decorators import require_admin
 from utils.internet import am_i_online, JsonResponse
@@ -53,10 +54,11 @@ def update(request):
     return context
 
 @require_admin
+@require_registration(_("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", _("Download Videos"))  # async request
+    force_job("videodownload", _("Download Videos"))  # async request, to trigger any outstanding video downloads
 
     installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
     if request.is_django_user or not request.session["facility_user"].default_language:
@@ -78,6 +80,7 @@ def update_videos(request, max_to_show=4):
 
 
 @require_admin
+@require_registration(_("language packs"))
 @render_to("updates/update_languages.html")
 def update_languages(request):
     # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
