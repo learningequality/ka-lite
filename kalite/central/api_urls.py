@@ -17,3 +17,11 @@ urlpatterns += patterns('coachreports.api_views',
 urlpatterns += patterns('i18n.api_views',
     url(r'^i18n/', include(i18n.api_urls)),
 )
+
+
+# APIs exposed for version compatibility with the previous versions
+# (ARON) to other devs: put in the version you're maintaining compatibility for
+from i18n.api_views import  get_subtitle_counts
+urlpatterns += patterns('',
+    url(r'^subtitles/counts/$', get_subtitle_counts, {}), # v0.10.0: fetching subtitles
+)
