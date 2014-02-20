@@ -30,7 +30,6 @@ def import_objects(options, style):
 
         app_aliases = model_aliases.get(app_name, {})
         model_labels = []
-        print app_models
 
         for model in app_models:
             try:
