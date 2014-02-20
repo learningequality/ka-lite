@@ -22,6 +22,7 @@ from securesync.forms import RegisteredDevicePublicKeyForm
 from securesync.models import SyncSession, Device, Zone
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
+from utils.internet import set_query_params
 
 
 def register_public_key(request):
@@ -70,11 +71,13 @@ def register_public_key_client(request):
     elif reg_status == "public_key_unregistered":
         # Callback url used to redirect to the distributed server url
         #   after successful registration on the central server.
+        base_registration_url = client.path_to_url(set_query_params(reverse("register_public_key"), {
+            "device_key": urllib.quote(own_device.public_key),
+        }))
         return {
             "unregistered": True,
-            "registration_url": client.path_to_url(
-                reverse("register_public_key") + "?" + urllib.quote(own_device.public_key)
-            ),
+            "auto_registration_url": set_query_params(base_registration_url, {"auto": True}),
+            "classic_registration_url": set_query_params(base_registration_url, {"auto": False}),
             "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }

@@ -5,6 +5,15 @@
 
 {% block title %}{% trans "Register a Device" %} {{ block.super }}{% endblock title %}
 
+{% block headcss %}{{ block.super }}
+    <style>
+        .blurb {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+    </style>
+{% endblock headcss %}
+
 {% block headjs %}{{ block.super }}
     <script>
 
@@ -40,6 +49,81 @@
     {% endif %}
 
     {% if unregistered %}
-    <p>{% blocktrans %}Please <a href="{{ registration_url }}">login to the central server and register this device in a sharing network.{% endblocktrans %}</a></p>
+    <div style="width:100%">
+        <p>
+        If you "register" your installation, then data can be uploaded to our "central server" when KA Lite is online, and:<br/>
+        </p>
+        <p style="margin-left: 25px;">
+            <b>Your data will be backed up online.</b>
+            <br/><!--span style="margin-left: 25px;"> If your local data becomes corrupt, you can reinstall KA Lite and access your online backup.</span>
+            <br/-->
+            <b>Your data can be viewed online.</b>
+            <br/><!--span style="margin-left: 25px;">This means that you can monitor student activity remotely, through the internet.</span>
+            <br/-->
+            <b>We can use your data to prove our impact.</b>
+            <!--br/><span style="margin-left: 25px;">  This helps us when searching for funding to continue building free, open-source software for you!</span-->
+        </p>
+    </div>
+
+    <table>
+        <tr>
+            <td width="10%"></td>
+            <td width="20%"><h3 class="blurb">Register with full online access!</h3></td>
+            <td width="20%"><h3 class="blurb">Register, but I don't need online access.</h3></td>
+            <td width="20%"><h3 class="blurb">No thank you.</h3></td>
+        </tr>
+        <tr>
+            <th>You need to:</th>
+            <td>
+                <p class="blurb">
+                    Click the button below to create an online account, then follow instructions for
+                    registering your device to your account.
+                </p>
+            </td>
+            <td>
+                <p class="blurb">
+                    Click the button below--nothing more!
+                </p>
+            </td>
+            <td>
+                <p class="blurb">
+                    Click the button below--nothing more!
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <th>Benefits</th>
+            <td>
+                <p class="blurb">
+                    You will have online access to your uploaded data and
+                    the ability to connect multiple installations
+                    to the same data.
+                </p>
+            </td>
+            <td>
+                <p class="blurb">
+                    We will back up your data to our servers whenever possible,
+                    but you will not have direct online access to the data.
+                </p>
+            </td>
+            <td>
+                <p class="blurb">
+                    Sadly, none.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <center><a class="green_button" href="{{ classic_registration_url }}">Register with an online account now!</a></center>
+            </td>
+            <td>
+                <center><a class="green_button" href="{{ auto_registration_url }}">1-click registration now!</a></center>
+            </td>
+            <td>
+                <center><a class="green_button" href="{{ auto_registration_url }}">I do not wish to register.</a></center>
+            </td>
+        </tr>
+    </table>
     {% endif %}
 {% endblock content %}
