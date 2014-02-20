@@ -16,7 +16,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
@@ -54,7 +54,7 @@ def update(request):
     return context
 
 @require_admin
-@require_registration(_("video downloads"))
+@require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     call_command("videoscan")  # Could potentially be very slow, blocking request.
@@ -80,7 +80,7 @@ def update_videos(request, max_to_show=4):
 
 
 @require_admin
-@require_registration(_("language packs"))
+@require_registration(ugettext_lazy("language packs"))
 @render_to("updates/update_languages.html")
 def update_languages(request):
     # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway

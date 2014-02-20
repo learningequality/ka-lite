@@ -18,11 +18,12 @@ from config.models import Settings
 from main.models import UserLog
 from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
+from securesync.devices.models import RegisteredDevicePublicKey
 from securesync.forms import RegisteredDevicePublicKeyForm
 from securesync.models import SyncSession, Device, Zone
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import set_query_params
+from utils.internet import JsonResponse, allow_jsonp, set_query_params
 
 
 def register_public_key(request):
@@ -142,22 +143,29 @@ def register_public_key_server(request):
     }
 
 
-from utils.internet import JsonResponse, allow_jsonp
-
 @allow_jsonp
 @central_server_only
 def register_public_key_server_auto(request):
-    import urllib
-    from securesync.devices.models import RegisteredDevicePublicKey
+    """This function allows an anonymous client to request a device key
+    to be associated with a new zone.
+
+    This allows registration to occur without a single login; the device
+    will be associated with a headless zone.
+    """
     public_key = urllib.unquote(request.GET.get("device_key", ""))
     if RegisteredDevicePublicKey.objects.filter(public_key=public_key):
         return HttpResponseForbidden("Device is already registered.")
 
+    # Create some zone.
     zone = Zone(name="Zone for public key %s" % public_key[:50])
     zone.save()
 
+    # Add an association between a device 's public key and this zone,
+    #   so that when registration is attempted by the distributed server
+    #   with this key, it will register and receive this zone info.
     RegisteredDevicePublicKey(zone=zone, public_key=public_key).save()
 
+    # Report success
     return JsonResponse({})
 
 
