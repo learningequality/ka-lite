@@ -10,9 +10,13 @@
         $(function() {
             var cururl = $.url(window.location);
             var public_key = null;
-            for (key in cururl.param()) {
+            var params = cururl.param();
+            for (key in params) {
                 if (key.length > 50 && cururl.param(key) == "") {
                     public_key = key;
+                    break;
+                } else if (params[key].length > 50) {
+                    public_key = params[key];
                     break;
                 }
             }

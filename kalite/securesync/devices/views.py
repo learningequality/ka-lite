@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
@@ -25,10 +25,12 @@ from testing.asserts import central_server_only, distributed_server_only
 
 
 def register_public_key(request):
-    if settings.CENTRAL_SERVER:
-        return register_public_key_server(request)
-    else:
+    if not settings.CENTRAL_SERVER:
         return register_public_key_client(request)
+    elif request.REQUEST.get("auto") == "True":
+        return register_public_key_server_auto(request)
+    else:
+        return register_public_key_server(request)
 
 
 def initialize_registration():
@@ -55,10 +57,16 @@ def register_public_key_client(request):
     reg_status = reg_response.get("code")
     if reg_status == "registered":
         initialize_registration()
-        return {"newly_registered": True}
+        if request.next:
+            return HttpResponseRedirect(request.next)
+        else:
+            return {"newly_registered": True}
     elif reg_status == "device_already_registered":
         initialize_registration()
-        return {"already_registered": True}
+        if request.next:
+            return HttpResponseRedirect(request.next)
+        else:
+            return {"already_registered": True}
     elif reg_status == "public_key_unregistered":
         # Callback url used to redirect to the distributed server url
         #   after successful registration on the central server.
@@ -129,5 +137,24 @@ def register_public_key_server(request):
     return {
         "form": form,
     }
+
+
+from utils.internet import JsonResponse, allow_jsonp
+
+@allow_jsonp
+@central_server_only
+def register_public_key_server_auto(request):
+    import urllib
+    from securesync.devices.models import RegisteredDevicePublicKey
+    public_key = urllib.unquote(request.GET.get("device_key", ""))
+    if RegisteredDevicePublicKey.objects.filter(public_key=public_key):
+        return HttpResponseForbidden("Device is already registered.")
+
+    zone = Zone(name="Zone for public key %s" % public_key[:50])
+    zone.save()
+
+    RegisteredDevicePublicKey(zone=zone, public_key=public_key).save()
+
+    return JsonResponse({})
 
 
