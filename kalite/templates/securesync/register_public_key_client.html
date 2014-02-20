@@ -7,6 +7,15 @@
 
 {% block headcss %}{{ block.super }}
     <style>
+        .chunk-container {
+            margin: 15px;
+            padding: 10px 30px 25px 30px;
+        }
+        .well-wrapper {
+            border: 1px solid rgb(226, 226, 226);
+            background-color: rgb(247, 247, 247);
+            border-radius: 10px;
+        }
         .blurb {
             margin-left: 20px;
             margin-right: 20px;
@@ -27,6 +36,9 @@
         }
         .nudge-right {
             margin-left: 20px;
+        }
+        .table-header > td > h3 {
+            margin-bottom: 0px;
         }
     </style>
 {% endblock headcss %}
@@ -56,8 +68,9 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h2>{% trans "Device registration" %}</h2>
-
+    {% if not unregistered %}
+        <h2>{% trans "Device registration" %}</h2>
+    {% endif %}
     {% if error_msg %}
         {% comment %}Translators: Please do not edit the variable text: %(command)s {% endcomment %}
         <p>{% blocktrans with command="<b>python manage.py update</b>" %}Sorry, there was an error during registration. Please make sure your device is fully up to date (run {{ command }} and then stop/start the server)." {% endblocktrans %}</p>
@@ -76,7 +89,10 @@
     <p>{% trans "The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a>.</p>
     {% endif %}
 
+
     {% if unregistered %}
+    <div class="chunk-container">
+        <h2>What is device registration?</h2>
         <p class="normal-size">
          Once you register your installation with us, your data can be synced to our online repository when KA Lite you have access to the Internet. This is a good thing! Here's why:
         </p>
@@ -85,44 +101,49 @@
             <li>You can login online and review your usage data</li>
             <li>Our team can use this data to objectively assess the impact our work is having around the world!</li>
         </ul>
-        <p class="normal-size">
-            Ready to register? You have two options. 
-        </p>    
+    </div>
 
-    <table class="normalized-table">
-        <tr>
-            <td width="10%"></td>
-            <td width="45%"><h3 class="blurb">Register with online access to data!</h3></td>
-            <td width="45%"><h3 class="blurb">1-click registration without online access</h3></td>
-        </tr>
-        <tr>
-            <th>Benefits:</th>
-            <td>
-                <p class="blurb">
-                    This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account. 
-                </p>
-                 <p class="blurb">
-                    <strong>The perfect option for adminstrators of larger projects!</strong> 
-                </p>
-            </td>
-            <td>
-                <p class="blurb">
-                    This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use.</p>
+    <div class="chunk-container">
+        <h2>Ready to register? You have two options:</h2>
 
-                <p class="blurb">
-                    <strong>The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data.</strong>
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <a class="green_button nudge-right" href="{{ classic_registration_url }}">Register with an online account now!</a>
-            </td>
-            <td>
-                <a class="green_button nudge-right" href="javascript:auto_register()">1-click registration now!</a>
-            </td>
-        </tr>
-    </table>
+        <table class="normalized-table">
+            <tr class="table-header">
+                <td width="10%"></td>
+                <td width="45%"><h3 class="blurb">Register with online access to data!</h3></td>
+                <td width="45%"><h3 class="blurb">1-click registration without online access</h3></td>
+            </tr>
+            <tr>
+                <th>Benefits:</th>
+                <td>
+                    <p class="blurb">
+                        This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account. 
+                    </p>
+                     <p class="blurb">
+                        <strong>The perfect option for adminstrators of larger projects!</strong> 
+                    </p>
+                </td>
+                <td>
+                    <p class="blurb">
+                        This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use.</p>
+
+                    <p class="blurb">
+                        <strong>The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data.</strong>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <a class="green_button nudge-right" href="{{ classic_registration_url }}">Register with an online account now!</a>
+                </td>
+                <td>
+                    <a class="green_button nudge-right" href="javascript:auto_register()">1-click registration now!</a>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    
     {% endif %}
 {% endblock content %}
