@@ -39,7 +39,7 @@ def update_context(request):
     zone = device.get_zone()
 
     context = {
-        "registered": Settings.get("registered"),
+        "registered": Device.get_own_device().is_registered(),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
     }

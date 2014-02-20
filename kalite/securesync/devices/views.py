@@ -31,30 +31,32 @@ def register_public_key(request):
         return register_public_key_client(request)
 
 
-def set_as_registered():
+def initialize_registration():
     force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
-    Settings.set("registered", True)
 
 
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
+
     own_device = Device.get_own_device()
-    if own_device.get_zone():
-        set_as_registered()
+    if own_device.is_registered():
+        initialize_registration()
         return {"already_registered": True}
+
     client = RegistrationClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
+
     reg_response = client.register()
     reg_status = reg_response.get("code")
     if reg_status == "registered":
-        set_as_registered()
+        initialize_registration()
         return {"newly_registered": True}
-    if reg_status == "device_already_registered":
-        set_as_registered()
+    elif reg_status == "device_already_registered":
+        initialize_registration()
         return {"already_registered": True}
-    if reg_status == "public_key_unregistered":
+    elif reg_status == "public_key_unregistered":
         # Callback url used to redirect to the distributed server url
         #   after successful registration on the central server.
         return {
@@ -65,6 +67,7 @@ def register_public_key_client(request):
             "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }
+
     error_msg = reg_response.get("error", "")
     if error_msg:
         return {"error_msg": error_msg}
