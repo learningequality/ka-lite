@@ -50,7 +50,7 @@ function video_check_callback(progress_log, resp) {
 
                 if (nErrors != 0) {
                     // Redisplay the download message as a warning.
-                    set_message("warning", get_message("id_videodownload"), "id_videodownload");
+                    show_message("warning", get_message("id_videodownload"), "id_videodownload");
                     // could show the retry button, but we'd have to store which videos
                     //   went poorly.
                 }
