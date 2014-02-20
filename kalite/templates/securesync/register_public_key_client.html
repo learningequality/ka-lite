@@ -24,6 +24,17 @@
         $(function() {
             $(".refresh-link").click(reload);
         });
+
+        function auto_register() {
+            var auto_registration_url = "{{ auto_registration_url }}";
+            $.ajax({
+                url: auto_registration_url,
+                dataType: "jsonp"
+            }).success(function() {
+                show_message("success", "Auto-registered.");
+                window.location.reload();
+            });
+        }
     </script>
 {% endblock headjs %}
 
@@ -118,10 +129,10 @@
                 <center><a class="green_button" href="{{ classic_registration_url }}">Register with an online account now!</a></center>
             </td>
             <td>
-                <center><a class="green_button" href="{{ auto_registration_url }}">1-click registration now!</a></center>
+                <center><a class="green_button" href="javascript:auto_register()">1-click registration now!</a></center>
             </td>
             <td>
-                <center><a class="green_button" href="{{ auto_registration_url }}">I do not wish to register.</a></center>
+                <center><a class="green_button" href="javascript:auto_register()">I do not wish to register.</a></center>
             </td>
         </tr>
     </table>
