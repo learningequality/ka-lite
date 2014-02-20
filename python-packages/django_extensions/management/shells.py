@@ -30,10 +30,11 @@ def import_objects(options, style):
 
         app_aliases = model_aliases.get(app_name, {})
         model_labels = []
+        print app_models
 
         for model in app_models:
             try:
-                imported_object = getattr(__import__(app_mod.__name__, {}, {}, model.__name__), model.__name__)
+                imported_object = getattr(__import__(model.__module__, {}, {}, model.__name__), model.__name__)
                 model_name = model.__name__
 
                 if "%s.%s" % (app_name, model_name) in dont_load:
