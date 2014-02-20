@@ -11,6 +11,23 @@
             margin-left: 20px;
             margin-right: 20px;
         }
+        .normalized-list {
+            margin-left: 50px;
+            list-style-type: circle;
+        } 
+        .normalized-list > li {
+            font-size: 15px;
+            line-height: 1.5em;
+        }
+        .normal-size {
+            font-size: 14px;
+        }
+        .normalized-table > tbody > tr > th {
+            font-size: 15px;
+        }
+        .nudge-right {
+            margin-left: 20px;
+        }
     </style>
 {% endblock headcss %}
 
@@ -60,79 +77,50 @@
     {% endif %}
 
     {% if unregistered %}
-    <div style="width:100%">
-        <p>
-        If you "register" your installation, then data can be uploaded to our "central server" when KA Lite is online, and:<br/>
+        <p class="normal-size">
+         Once you register your installation with us, your data can be synced to our online repository when KA Lite you have access to the Internet. This is a good thing! Here's why:
         </p>
-        <p style="margin-left: 25px;">
-            <b>Your data will be backed up online.</b>
-            <br/><!--span style="margin-left: 25px;"> If your local data becomes corrupt, you can reinstall KA Lite and access your online backup.</span>
-            <br/-->
-            <b>Your data can be viewed online.</b>
-            <br/><!--span style="margin-left: 25px;">This means that you can monitor student activity remotely, through the internet.</span>
-            <br/-->
-            <b>We can use your data to prove our impact.</b>
-            <!--br/><span style="margin-left: 25px;">  This helps us when searching for funding to continue building free, open-source software for you!</span-->
-        </p>
-    </div>
+        <ul class="normalized-list">
+            <li>Your data will be backed up online</li>
+            <li>You can login online and review your usage data</li>
+            <li>Our team can use this data to objectively assess the impact our work is having around the world!</li>
+        </ul>
+        <p class="normal-size">
+            Ready to register? You have two options. 
+        </p>    
 
-    <table>
+    <table class="normalized-table">
         <tr>
             <td width="10%"></td>
-            <td width="20%"><h3 class="blurb">Register with full online access!</h3></td>
-            <td width="20%"><h3 class="blurb">Register, but I don't need online access.</h3></td>
-            <td width="20%"><h3 class="blurb">No thank you.</h3></td>
+            <td width="45%"><h3 class="blurb">Register with online access to data!</h3></td>
+            <td width="45%"><h3 class="blurb">1-click registration without online access</h3></td>
         </tr>
         <tr>
-            <th>You need to:</th>
+            <th>Benefits:</th>
             <td>
                 <p class="blurb">
-                    Click the button below to create an online account, then follow instructions for
-                    registering your device to your account.
+                    This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account. 
+                </p>
+                 <p class="blurb">
+                    <strong>The perfect option for adminstrators of larger projects!</strong> 
                 </p>
             </td>
             <td>
                 <p class="blurb">
-                    Click the button below--nothing more!
-                </p>
-            </td>
-            <td>
+                    This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use.</p>
+
                 <p class="blurb">
-                    Click the button below--nothing more!
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <th>Benefits</th>
-            <td>
-                <p class="blurb">
-                    You will have online access to your uploaded data and
-                    the ability to connect multiple installations
-                    to the same data.
-                </p>
-            </td>
-            <td>
-                <p class="blurb">
-                    We will back up your data to our servers whenever possible,
-                    but you will not have direct online access to the data.
-                </p>
-            </td>
-            <td>
-                <p class="blurb">
-                    Sadly, none.
+                    <strong>The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data.</strong>
                 </p>
             </td>
         </tr>
         <tr>
             <td></td>
             <td>
-                <center><a class="green_button" href="{{ classic_registration_url }}">Register with an online account now!</a></center>
+                <a class="green_button nudge-right" href="{{ classic_registration_url }}">Register with an online account now!</a>
             </td>
             <td>
-                <center><a class="green_button" href="javascript:auto_register()">1-click registration now!</a></center>
-            </td>
-            <td>
-                <center><a class="green_button" href="javascript:auto_register()">I do not wish to register.</a></center>
+                <a class="green_button nudge-right" href="javascript:auto_register()">1-click registration now!</a>
             </td>
         </tr>
     </table>
