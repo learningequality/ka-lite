@@ -340,7 +340,7 @@ var KMapEditor = {
         tile=this.raphael.text(100,20,"KA Mothership").attr({
             "stroke-width": 1,
             "stroke": "#777",
-            "font-size": 32,
+            "font-size": 12,
             "fill": "#777",
             "font-family": "Arial, Helvetica, sans-serif",
             "href": "http://www.khanacademy.org",
@@ -350,7 +350,9 @@ var KMapEditor = {
         tile.mouseover(function(e) {
         pX = e.pageX;
         pY = e.pageY;
-        });
+        this.attr({"font-size":24});
+        }).mouseout(function(e){
+        this.attr({"font-size":12});});
         tile.click(function() {
         console.log('x: '+pX+'| y:'+pY);
         this.attr({"font-size":16});
@@ -359,7 +361,7 @@ var KMapEditor = {
         tile2=this.raphael.text(100,60,"Herb Gross").attr({
             "stroke-width": 1,
             "stroke": "#777",
-            "font-size": 32,
+            "font-size": 12,
             "fill": "#777",
             "font-family": "Arial, Helvetica, sans-serif",
             "href": "http://www.adjectivenounmath.com",
@@ -369,7 +371,9 @@ var KMapEditor = {
         tile2.mouseover(function(e) {
         pX = e.pageX;
         pY = e.pageY;
-        });
+        this.attr({"font-size":24});
+        }).mouseout(function(e){
+        this.attr({"font-size":12});});
         tile2.click(function() {
         console.log('x: '+pX+'| y:'+pY);
         this.attr({"font-size":16});
