@@ -93,6 +93,7 @@ function display_languages() {
     // show list of installable languages in the dropdown box
     //
     $('#language-packs').find('option').remove()
+    $('#language-packs').append("<option value='' selected=''>--</option>");
     installables.forEach(function(langdata, langindex) {
         var srtcount = langdata["subtitle_count"];
         var percent_translated = langdata["percent_translated"];
