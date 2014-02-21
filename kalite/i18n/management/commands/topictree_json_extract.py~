@@ -4,7 +4,7 @@ Script (not command) for extracting app-specific data.
 Not usually run.
 """
 
-"""DocString"""
+"""Test DocString"""
 import json
 import polib
 
