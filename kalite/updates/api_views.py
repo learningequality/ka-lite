@@ -24,7 +24,6 @@ from .views import get_installed_language_packs
 from chronograph import force_job
 from i18n import get_youtube_id, get_video_language, get_supported_language_map
 from main.topic_tools import get_topic_tree
-from stats import stats_logger
 from settings import LOG as logging
 from shared.decorators import require_admin
 from utils.django_utils import call_command_async
@@ -149,7 +148,6 @@ def start_video_download(request):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
-    stats_logger().info('%s initiated video download', request.META.get('REMOTE_ADDR'))
     force_job("videodownload", _("Download Videos"))
 
     return JsonResponse({})
@@ -206,7 +204,6 @@ def installed_language_packs(request):
 def start_languagepack_download(request):
     if request.POST:
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
-        stats_logger().info('%s initiated %s language pack download', request.META.get('REMOTE_ADDR'), data['lang'])
         call_command_async(
             'languagepackdownload',
             lang_code=data['lang'],

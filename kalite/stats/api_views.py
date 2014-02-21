@@ -8,10 +8,13 @@ from i18n import get_language_pack_filepath
 from utils.django_utils import get_request_ip
 from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
+import stats_logger
 from settings import LOG as logger  #temporary, while testing
-#logger = logging.getLogger("stats")
+
+logger = stats_logger()
 
 
+# central server
 def download_video(request, video_path):
     """Dummy function for capturing a video download request and logging
     to output, so we can collect stats."""
@@ -24,6 +27,7 @@ def download_video(request, video_path):
     return HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + video_path)
 
 
+# central server
 def download_language_pack(request, version, lang_code):
     """Dummy function for capturing a language pack download request and logging
     to output, so we can collect stats."""
@@ -42,3 +46,5 @@ def download_language_pack(request, version, lang_code):
     response['Content-Disposition'] = 'attachment; filename="%s"' % (lang_code + ".zip")
 
     return response
+
+# central server
