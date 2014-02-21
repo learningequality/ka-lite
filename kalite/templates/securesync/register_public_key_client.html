@@ -66,6 +66,9 @@
                 show_message("success", "Auto-registered.");
                 window.location.reload();
             });
+            $("a#1-click-register").css("background-color", "#C0C0C0");
+            $("a#1-click-register").toggleClass("disabled", true);
+            show_message("warning", gettext("Querying central server for 1-click registration"), "id_message");
         }
     </script>
 {% endblock headjs %}
@@ -134,10 +137,10 @@
             </tr>
             <tr>
                 <td>
-                    <a class="green_button nudge-right" href="javascript:auto_register()">{% trans "1-click registration now!" %}</a>
+                    <a class="green_button nudge-right" id="1-click-register" href="javascript:auto_register()">{% trans "1-click registration now!" %}</a>
                 </td>
                 <td>
-                    <a class="green_button nudge-right" href="{{ classic_registration_url }}">{% trans "Register with an online account now!" %}</a>
+                    <a class="green_button nudge-right" id="online-register" href="{{ classic_registration_url }}">{% trans "Register with an online account now!" %}</a>
                 </td>
             </tr>
         </table>
