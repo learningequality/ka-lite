@@ -33,7 +33,7 @@ def import_objects(options, style):
 
         for model in app_models:
             try:
-                imported_object = getattr(__import__(app_mod.__name__, {}, {}, model.__name__), model.__name__)
+                imported_object = getattr(__import__(model.__module__, {}, {}, model.__name__), model.__name__)
                 model_name = model.__name__
 
                 if "%s.%s" % (app_name, model_name) in dont_load:

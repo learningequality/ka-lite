@@ -33,10 +33,11 @@ from django.db import transaction
 
 import settings
 import securesync
+from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import ExerciseLog, VideoLog, UserLog
-from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
+from main.topic_tools import get_topic_videos, get_topic_exercises
+from securesync.models import Device, DeviceMetadata
 from settings import LOG as logging
-from shared.topic_tools import get_topic_videos, get_topic_exercises
 from utils.general import datediff
 
 

@@ -7,63 +7,82 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 import settings
+from chronograph import force_job
 from config.models import Settings
 from main.models import UserLog
 from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
-from securesync.forms import RegisteredDevicePublicKeyForm, FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from securesync.models import SyncSession, Device, Facility, FacilityGroup, Zone
-from shared.decorators import require_admin, central_server_only, distributed_server_only, facility_required, facility_from_request
-from shared.jobs import force_job
+from securesync.devices.models import RegisteredDevicePublicKey
+from securesync.forms import RegisteredDevicePublicKeyForm
+from securesync.models import SyncSession, Device, Zone
+from shared.decorators import require_admin
+from testing.asserts import central_server_only, distributed_server_only
+from utils.internet import JsonResponse, allow_jsonp, set_query_params
 
 
 def register_public_key(request):
-    if settings.CENTRAL_SERVER:
-        return register_public_key_server(request)
-    else:
+    if not settings.CENTRAL_SERVER:
         return register_public_key_client(request)
+    elif request.REQUEST.get("auto") == "True":
+        return register_public_key_server_auto(request)
+    else:
+        return register_public_key_server(request)
 
 
-def set_as_registered():
+def initialize_registration():
     force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
-    Settings.set("registered", True)
 
 
 @require_admin
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
+
     own_device = Device.get_own_device()
-    if own_device.get_zone():
-        set_as_registered()
-        return {"already_registered": True}
+    if own_device.is_registered():
+        initialize_registration()
+        if request.next:
+            return HttpResponseRedirect(request.next)
+        else:
+            return {"already_registered": True}
+
     client = RegistrationClient()
     if client.test_connection() != "success":
         return {"no_internet": True}
+
     reg_response = client.register()
     reg_status = reg_response.get("code")
     if reg_status == "registered":
-        set_as_registered()
-        return {"newly_registered": True}
-    if reg_status == "device_already_registered":
-        set_as_registered()
-        return {"already_registered": True}
-    if reg_status == "public_key_unregistered":
+        initialize_registration()
+        if request.next:
+            return HttpResponseRedirect(request.next)
+        else:
+            return {"newly_registered": True}
+    elif reg_status == "device_already_registered":
+        initialize_registration()
+        if request.next:
+            return HttpResponseRedirect(request.next)
+        else:
+            return {"already_registered": True}
+    elif reg_status == "public_key_unregistered":
         # Callback url used to redirect to the distributed server url
         #   after successful registration on the central server.
+        base_registration_url = client.path_to_url(set_query_params(reverse("register_public_key"), {
+            "device_key": urllib.quote(own_device.public_key),
+        }))
         return {
             "unregistered": True,
-            "registration_url": client.path_to_url(
-                reverse("register_public_key") + "?" + urllib.quote(own_device.public_key)
-            ),
+            "auto_registration_url": set_query_params(base_registration_url, {"auto": True}),
+            "classic_registration_url": set_query_params(base_registration_url, {"auto": False}),
             "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
             "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }
+
     error_msg = reg_response.get("error", "")
     if error_msg:
         return {"error_msg": error_msg}
@@ -122,5 +141,31 @@ def register_public_key_server(request):
     return {
         "form": form,
     }
+
+
+@allow_jsonp
+@central_server_only
+def register_public_key_server_auto(request):
+    """This function allows an anonymous client to request a device key
+    to be associated with a new zone.
+
+    This allows registration to occur without a single login; the device
+    will be associated with a headless zone.
+    """
+    public_key = urllib.unquote(request.GET.get("device_key", ""))
+    if RegisteredDevicePublicKey.objects.filter(public_key=public_key):
+        return HttpResponseForbidden("Device is already registered.")
+
+    # Create some zone.
+    zone = Zone(name="Zone for public key %s" % public_key[:50])
+    zone.save()
+
+    # Add an association between a device 's public key and this zone,
+    #   so that when registration is attempted by the distributed server
+    #   with this key, it will register and receive this zone info.
+    RegisteredDevicePublicKey(zone=zone, public_key=public_key).save()
+
+    # Report success
+    return JsonResponse({})
 
 

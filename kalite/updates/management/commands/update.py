@@ -17,9 +17,9 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import get_dubbed_video_map
 from securesync.models import Device
 from settings import LOG as logging
-from shared.i18n import get_dubbed_video_map
 from updates.management.commands.classes import UpdatesStaticCommand
 from utils import crypto
 from utils.django_utils import call_outside_command_with_output

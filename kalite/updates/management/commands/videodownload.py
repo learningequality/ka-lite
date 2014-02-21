@@ -5,15 +5,17 @@ from optparse import make_option
 
 from django.utils.translation import ugettext as _
 
+import i18n
 import settings
 from .classes import UpdatesDynamicCommand
 from i18n.management.commands.scrape_videos import scrape_video
 from settings import LOG as logging
-from shared import caching, i18n
-from shared.topic_tools import get_video_by_youtube_id
-from shared.videos import download_video, DownloadCancelled, URLNotFound
+from main import caching
+from main.topic_tools import get_video_by_youtube_id
+from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
 from utils import set_process_priority
+from utils.general import ensure_dir
 
 
 class Command(UpdatesDynamicCommand):
@@ -113,6 +115,8 @@ class Command(UpdatesDynamicCommand):
 
                 # Initiate the download process
                 try:
+                    ensure_dir(settings.CONTENT_ROOT)
+
                     if video.language == "en":  # could even try download_video, and fall back to scrape_video, for en...
                         download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
                     else:
@@ -122,6 +126,13 @@ class Command(UpdatesDynamicCommand):
                         self.download_progress_callback(video, 100)
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
+                except DownloadCancelled:
+                    #Cancellation event
+                    video.percent_complete = 0
+                    video.flagged_for_download = False
+                    video.download_in_progress = False
+                    video.save()
+                    failed_youtube_ids.append(video.youtube_id)
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
@@ -131,8 +142,8 @@ class Command(UpdatesDynamicCommand):
                     video.flagged_for_download = not isinstance(e, URLNotFound)  # URLNotFound means, we won't try again
                     video.save()
                     # Rather than getting stuck on one video, continue to the next video.
-                    failed_youtube_ids.append(video.youtube_id)
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
+                    failed_youtube_ids.append(video.youtube_id)
                     continue
 
             # This can take a long time, without any further update, so ... best to avoid.

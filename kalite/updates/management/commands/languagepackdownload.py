@@ -15,12 +15,12 @@ from django.utils.translation import ugettext as _
 import settings
 import version
 from .classes import UpdatesStaticCommand
+from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
+from i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
+from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
+from main import caching
 from settings import LOG as logging
-from shared import caching
-from shared.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
-from shared.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
-from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH
+from updates import REMOTE_VIDEO_SIZE_FILEPATH
 from utils.general import ensure_dir
 from utils.internet import callback_percent_proxy, download_file
 

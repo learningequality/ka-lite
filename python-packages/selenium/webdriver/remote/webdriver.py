@@ -26,10 +26,9 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.html5.application_cache import ApplicationCache
 
 try:
-    bytes
-except NameError: # Python 2.x compatibility
-    bytes = str
-    str = unicode
+    str = basestring
+except NameError:
+    pass
 
 class WebDriver(object):
     """
@@ -46,7 +45,7 @@ class WebDriver(object):
     """
 
     def __init__(self, command_executor='http://127.0.0.1:4444/wd/hub',
-        desired_capabilities=None, browser_profile=None, proxy=None):
+        desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False):
         """
         Create a new driver that will issue commands using the wire protocol.
 
@@ -63,7 +62,7 @@ class WebDriver(object):
             proxy.add_to_capabilities(desired_capabilities)
         self.command_executor = command_executor
         if type(self.command_executor) is bytes or type(self.command_executor) is str:
-            self.command_executor = RemoteConnection(command_executor)
+            self.command_executor = RemoteConnection(command_executor, keep_alive=keep_alive)
         self._is_remote = True
         self.session_id = None
         self.capabilities = {}
@@ -672,8 +671,10 @@ class WebDriver(object):
 
         :Usage:
             Use the corresponding find_element_by_* instead of this.
+
+        :rtype: WebElement
         """
-        if isinstance(by, tuple) or isinstance(value, int) or value==None:
+        if not By.is_valid(by) or not isinstance(value, str):
             raise InvalidSelectorException("Invalid locator values passed in")
 
         return self.execute(Command.FIND_ELEMENT,
@@ -685,8 +686,10 @@ class WebDriver(object):
 
         :Usage:
             Use the corresponding find_elements_by_* instead of this.
+
+        :rtype: list of WebElement
         """
-        if isinstance(by, tuple) or isinstance(value, int) or value==None:
+        if not By.is_valid(by) or not isinstance(value, str):
             raise InvalidSelectorException("Invalid locator values passed in")
 
         return self.execute(Command.FIND_ELEMENTS,

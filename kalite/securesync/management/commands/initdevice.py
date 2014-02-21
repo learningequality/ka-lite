@@ -11,8 +11,9 @@ from django.db import IntegrityError, transaction
 import settings
 import version
 from config.models import Settings
+from facility.models import Facility
 from securesync import engine
-from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation, Facility
+from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
 from securesync.views import set_as_registered
 from settings import LOG as logging
 from utils.general import get_host_name
