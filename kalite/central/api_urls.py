@@ -23,5 +23,6 @@ urlpatterns += patterns('i18n.api_views',
 # (ARON) to other devs: put in the version you're maintaining compatibility for
 from i18n.api_views import  get_subtitle_counts
 urlpatterns += patterns('',
-    url(r'^subtitles/counts/$', get_subtitle_counts, {}), # v0.10.0: fetching subtitles
+    # note: this will also be the canonical endpoint for this, since only old versions need get_subtitle_counts anyway
+    url(r'^subtitles/counts/$', get_subtitle_counts, {}), # v0.10.0: fetching subtitles.
 )
