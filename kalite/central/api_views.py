@@ -48,5 +48,5 @@ def get_download_urls(request):
             "size": size,
             "url": "%s%s" % (base_url, reverse("download_kalite_public", kwargs=urlargs)),
         }
-
+    #allow json response to download
     return JsonResponse(downloads)
