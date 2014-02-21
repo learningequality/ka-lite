@@ -5,7 +5,10 @@ var KMapEditor = {
                "1-digit subtraction": [-15,0],
                "2-digit addition": [0,7],
                "2 and 3-digit subtraction": [-15,7]},
-              
+               
+    ptakidlist: {"addition_1": [0,0],
+               "subtraction_1": [-15,0]},
+               
 
     exercises: null,
     maplayout: null,
@@ -172,7 +175,8 @@ var KMapEditor = {
         // add exercises
         if (this.zoomLevel === this.ZOOM_EXERCISES || this.zoomLevel === this.ZOOM_HYBRID) {
             _.each(this.exercises, function(ex) {
-                if (ex.title in KMapEditor.ptaklist){ex.h_position=KMapEditor.ptaklist[ex.title][0];ex.v_position=KMapEditor.ptaklist[ex.title][1]};
+                //if (ex.title in KMapEditor.ptaklist){ex.h_position=KMapEditor.ptaklist[ex.title][0];ex.v_position=KMapEditor.ptaklist[ex.title][1]};
+                if (ex.id in KMapEditor.ptakidlist){ex.h_position=KMapEditor.ptakidlist[ex.id][0];ex.v_position=KMapEditor.ptakidlist[ex.id][1]};
                 var newDiv = $("<div>")
                     .appendTo($("#map"))
                     .css({
