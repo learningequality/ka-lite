@@ -16,8 +16,9 @@ def download_video(request, video_path):
     to output, so we can collect stats."""
 
     # Log the info
-    youtube_id = video_path.split(".")[0]
-    stats_logger("videos").info("vd;%s;%s" % (get_request_ip(request), youtube_id))
+    youtube_id, file_ext = os.path.splitext(os.path.basename(video_path))
+    if file_ext.lower() in [".mp4"]:
+        stats_logger("videos").info("vd;%s;%s" % (get_request_ip(request), youtube_id))
 
     # Redirect to amazon
     return HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + video_path)
