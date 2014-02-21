@@ -1,6 +1,7 @@
 """
 Important constants and helpful functions
 """
+"""DOCSTRING to topic_tools.py"""
 import glob
 import os
 from functools import partial
