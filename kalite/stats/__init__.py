@@ -32,6 +32,6 @@ def _file_handler(filename=None, loggername=None):
     logger_filepath = os.path.join(STATS_LOG_DIRPATH, filename)
 
     handler = logging.FileHandler(logger_filepath, encoding='utf-8', delay=True)
-    handler.setFormatter(logging.Formatter('%(message)s'))
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
 
     return handler

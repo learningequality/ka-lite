@@ -1,4 +1,3 @@
-import datetime
 import os
 
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -18,7 +17,7 @@ def download_video(request, video_path):
 
     # Log the info
     youtube_id = video_path.split(".")[0]
-    stats_logger("videos").info("vd;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), youtube_id))
+    stats_logger("videos").info("vd;%s;%s" % (get_request_ip(request), youtube_id))
 
     # Redirect to amazon
     return HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + video_path)
@@ -30,7 +29,7 @@ def download_language_pack(request, version, lang_code):
     to output, so we can collect stats."""
 
     # Log the event
-    stats_logger("language_packs").info("lpd;%s;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), lang_code, version))
+    stats_logger("language_packs").info("lpd;%s;%s;%s" % (get_request_ip(request), lang_code, version))
 
     # Find the file to return
     zip_filepath = get_language_pack_filepath(lang_code, version=version)
@@ -51,7 +50,7 @@ def download_subtitle(request, lang_code, youtube_id):
     to output, so we can collect stats."""
 
     # Log the info
-    stats_logger("subtitles").info("sd;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), lang_code, youtube_id))
+    stats_logger("subtitles").info("sd;%s;%s" % (get_request_ip(request), lang_code, youtube_id))
 
     # Find the file to return
     srt_filepath = get_srt_path(lang_code, youtube_id=youtube_id)
