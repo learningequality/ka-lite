@@ -16,6 +16,7 @@ from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
 from utils import set_process_priority
 from utils.general import ensure_dir
+from utils.internet import URLNotFound
 
 
 class Command(UpdatesDynamicCommand):
@@ -34,8 +35,9 @@ class Command(UpdatesDynamicCommand):
     def download_progress_callback(self, videofile, percent):
         video_changed = (not self.video) or self.video.pk != videofile.pk
         video_done = self.video and percent == 100
+        video_error = self.video and not video_changed and (percent - self.video.percent_complete > 50)
 
-        if self.video and (percent - self.video.percent_complete) < 1 and not video_done and not video_changed:
+        if self.video and (percent - self.video.percent_complete) < 1 and not video_done and not video_changed and not video_error:
             return
 
         self.video = VideoFile.objects.get(pk=videofile.pk)
@@ -44,17 +46,23 @@ class Command(UpdatesDynamicCommand):
             if self.video.cancel_download:
                 raise DownloadCancelled()
 
-            elif (percent - self.video.percent_complete) >= 1 or video_done or video_changed:
-                # Update to output (saved in chronograph log, so be a bit more efficient
-                if int(percent) % 5 == 0 or percent == 100:
-                    self.stdout.write("%d\n" % percent)
+            else:
+                if video_error:
+                    self.video.percent_complete = 0
+                    self.video.save()
+                    return
 
-                # Update video data in the database
-                if percent == 100:
-                    self.video.flagged_for_download = False
-                    self.video.download_in_progress = False
-                self.video.percent_complete = percent
-                self.video.save()
+                elif (percent - self.video.percent_complete) >= 1 or video_done or video_changed:
+                    # Update to output (saved in chronograph log, so be a bit more efficient
+                    if int(percent) % 5 == 0 or percent == 100:
+                        self.stdout.write("%d\n" % percent)
+
+                    # Update video data in the database
+                    if percent == 100:
+                        self.video.flagged_for_download = False
+                        self.video.download_in_progress = False
+                    self.video.percent_complete = percent
+                    self.video.save()
 
                 # update progress data
                 video_node = get_video_by_youtube_id(self.video.youtube_id)
@@ -117,13 +125,19 @@ class Command(UpdatesDynamicCommand):
                 try:
                     ensure_dir(settings.CONTENT_ROOT)
 
-                    if video.language == "en":  # could even try download_video, and fall back to scrape_video, for en...
+                    try:
                         download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
-                    else:
-                        logging.info(_("Retrieving youtube video %(youtube_id)s") % {"youtube_id": video.youtube_id})
+                    except URLNotFound:
+                        # Video was not found on amazon cloud service,
+                        #   either due to a KA mistake, or due to the fact
+                        #   that it's a dubbed video.
+                        #
+                        # We can use youtube-dl to get that video!!
+                        logging.info(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.youtube_id})
                         self.download_progress_callback(video, 0)
                         scrape_video(video.youtube_id, suppress_output=not settings.DEBUG)
                         self.download_progress_callback(video, 100)
+
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
                 except DownloadCancelled:
