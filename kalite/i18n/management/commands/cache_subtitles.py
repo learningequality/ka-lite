@@ -404,4 +404,33 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown argument: %s" % args[0])
 
+        # for compatibility with KA Lite versions less than 0.10.3
+        for lang in lang_codes:
+            generate_srt_availability_file(lang)
+
         logging.info("Process complete.")
+
+def generate_srt_availability_file(lang_code):
+    '''
+    For compatibility with versions less than 0.10.3, we need to generate this
+    json file that contains the srts for the videos.
+    '''
+
+    # this path is a direct copy of the path found in the old function that generated this file
+    srts_file_dest_path = os.path.join(settings.STATIC_ROOT, 'data', 'subtitles', 'languages', "%s_available_srts.json") % lang_code
+    ensure_dir(os.path.dirname(srts_file_dest_path))
+
+    srts_path = get_srt_path(lang_code) # not sure yet about this; change once command is complete
+    try:
+        files = os.listdir(srts_path)
+    except OSError:             # directory doesnt exist or we cant read it
+        files = []
+
+    yt_ids = [f.rstrip(".srt") for f in files]
+    srts_dict = { 'srt_files': yt_ids }
+
+    with open(srts_file_dest_path, 'wb') as fp:
+        logging.debug('Creating %s', srts_file_dest_path)
+        json.dump(srts_dict, fp)
+
+    return yt_ids
