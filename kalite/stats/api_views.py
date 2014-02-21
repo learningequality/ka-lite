@@ -8,10 +8,7 @@ from i18n import get_language_pack_filepath
 from utils.django_utils import get_request_ip
 from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
-import stats_logger
-from settings import LOG as logger  #temporary, while testing
-
-logger = stats_logger()
+from . import stats_logger
 
 
 # central server
@@ -21,7 +18,7 @@ def download_video(request, video_path):
 
     # Log the info
     youtube_id = video_path.split(".")[0]
-    logger.info("%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), youtube_id))
+    stats_logger("videos").info("vd;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), youtube_id))
 
     # Redirect to amazon
     return HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + video_path)
@@ -33,18 +30,38 @@ def download_language_pack(request, version, lang_code):
     to output, so we can collect stats."""
 
     # Log the event
-    logger.info("%s;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), lang_code, version))
+    stats_logger("language_packs").info("lpd;%s;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), lang_code, version))
 
     # Find the file to return
-    zip_file = get_language_pack_filepath(lang_code, version=version)
-    if not os.path.exists(zip_file):
+    zip_filepath = get_language_pack_filepath(lang_code, version=version)
+    if not os.path.exists(zip_filepath):
         raise Http404
 
     # Stream it back to the user
-    zh = open(zip_file,"rb")
+    zh = open(zip_filepath, "rb")
     response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % (lang_code + ".zip")
+    response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(zip_filepath)
 
     return response
 
+
 # central server
+def download_subtitle(request, lang_code, youtube_id):
+    """Dummy function for capturing a video download request and logging
+    to output, so we can collect stats."""
+
+    # Log the info
+    stats_logger("subtitles").info("sd;%s;%s;%s" % (get_request_ip(request), datetime.datetime.now(), lang_code, youtube_id))
+
+    # Find the file to return
+    srt_filepath = get_srt_path(lang_code, youtube_id=youtube_id)
+    if not os.path.exists(srt_filepath):
+        raise Http404
+
+    # Stream it back to the user
+    # Stream it back to the user
+    zh = open(srt_filepath,"rb")
+    response = HttpResponse(content=zh, mimetype='text/plain', content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(srt_filepath)
+
+    return response
