@@ -160,7 +160,6 @@
                         {% if language_choices %}
                         <form id="language-preferences" >
                             <select id="language_selector">
-                                <option value="">--</option>{# any time the default language is not an installed language pack #}
                                 {% for lang_code, lang_meta in language_choices.iteritems %}
                                 <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
                                 {% endfor %}
