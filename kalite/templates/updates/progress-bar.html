@@ -1,12 +1,15 @@
 {% load i18n %}
 <div class="progress-section">
-    <!-- stage progress -->
-    <h2 class="progress-text">
-        <span class="stage-header"></span>
-        <span class="stage-name"> </span>
-        <span class="ellipsis">...</span>
-    </h2>
-    <div class="progressbar progressbar-current"></div>
+    <!-- stage progress; note: only works with english currently
+        because we are using youtube-dl for dubbed videos -->
+    {% if current_language == "en" %}
+        <h2 class="progress-text">
+            <span class="stage-header"></span>
+            <span class="stage-name"> </span>
+            <span class="ellipsis">...</span>
+        </h2>
+        <div class="progressbar progressbar-current"></div>
+    {% endif %}
 
     <!-- process progress -->
     <h2 id="stage-summary">
