@@ -109,35 +109,35 @@
         <table class="normalized-table">
             <tr class="table-header">
                 <td width="10%"></td>
-                <td width="45%"><h3 class="blurb">{% trans "Register with online access to data!" %}</h3></td>
                 <td width="45%"><h3 class="blurb">{% trans "1-click registration without online access" %}</h3></td>
+                <td width="45%"><h3 class="blurb">{% trans "Register with online access to data!" %}</h3></td>
             </tr>
             <tr>
                 <th>{% trans "Benefits:" %}</th>
                 <td>
                     <p class="blurb">
-                        {% trans "This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account." %} 
-                    </p>
-                     <p class="blurb">
                         <strong>{% trans "The perfect option for adminstrators of larger projects!" %}</strong> 
+                    </p>
+                    <p class="blurb">
+                        {% trans "This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account." %} 
                     </p>
                 </td>
                 <td>
                     <p class="blurb">
-                        {% trans "This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use." %}</p>
-
-                    <p class="blurb">
                         <strong>{% trans "The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data." %}</strong>
+                    </p>
+                    <p class="blurb">
+                        {% trans "This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use." %}
                     </p>
                 </td>
             </tr>
             <tr>
                 <td></td>
                 <td>
-                    <a class="green_button nudge-right" href="{{ classic_registration_url }}">{% trans "Register with an online account now!" %}</a>
+                    <a class="green_button nudge-right" href="javascript:auto_register()">{% trans "1-click registration now!" %}</a>
                 </td>
                 <td>
-                    <a class="green_button nudge-right" href="javascript:auto_register()">{% trans "1-click registration now!" %}</a>
+                    <a class="green_button nudge-right" href="{{ classic_registration_url }}">{% trans "Register with an online account now!" %}</a>
                 </td>
             </tr>
         </table>
