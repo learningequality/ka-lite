@@ -428,6 +428,12 @@ def _get_installed_language_packs():
     sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 
+def get_langs_with_subtitles():
+    subtitles_path = get_srt_path()
+    if os.path.exists(subtitles_path):
+        return os.listdir(subtitles_path)
+    else:
+        return []
 
 def get_langs_with_subtitle(youtube_id):
     """
