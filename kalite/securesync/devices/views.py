@@ -78,9 +78,10 @@ def register_public_key_client(request):
         return {
             "unregistered": True,
             "auto_registration_url": set_query_params(base_registration_url, {"auto": True}),
-            "classic_registration_url": set_query_params(base_registration_url, {"auto": False}),
+            "classic_registration_url": set_query_params(base_registration_url, {
+                "callback_url": request.build_absolute_uri(reverse("register_public_key")),
+            }),
             "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
-            "callback_url": request.build_absolute_uri(reverse("register_public_key")),
         }
 
     error_msg = reg_response.get("error", "")
