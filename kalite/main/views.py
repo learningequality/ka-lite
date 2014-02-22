@@ -34,7 +34,8 @@ from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
 from utils.django_utils import is_loopback_connection
-from utils.internet import JsonResponse, get_ip_addresses
+from utils.internet import JsonResponse, get_ip_addresses, set_query_params
+
 
 def check_setup_status(handler):
     """
@@ -444,7 +445,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())
+        return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
 
 def handler_404(request):
