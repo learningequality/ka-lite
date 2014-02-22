@@ -149,7 +149,7 @@ def start_video_download(request):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
-    force_job("videodownload", _("Download Videos"))
+    force_job("videodownload", _("Download Videos"), locale=request.language)
 
     return JsonResponse({})
 
@@ -161,7 +161,7 @@ def retry_video_download(request):
     Clear any video still accidentally marked as in-progress, and restart the download job.
     """
     VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
-    force_job("videodownload", _("Download Videos"))
+    force_job("videodownload", _("Download Videos"), locale=request.language)
     return JsonResponse({})
 
 
@@ -192,7 +192,7 @@ def cancel_video_download(request):
     # unflag all video downloads
     VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
 
-    force_job("videodownload", stop=True)
+    force_job("videodownload", stop=True, locale=request.language)
 
     return JsonResponse({})
 
@@ -205,10 +205,8 @@ def installed_language_packs(request):
 def start_languagepack_download(request):
     if request.POST:
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
-        call_command_async(
-            'languagepackdownload',
-            lang_code=data['lang'],
-        ) # TODO: migrate to force_job once it can accept command_args
+        force_job('languagepackdownload', _("Language pack download"), lang_code=data['lang'], locale=request.language)
+
         return JsonResponse({'success': True})
 
 

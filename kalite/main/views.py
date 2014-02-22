@@ -24,7 +24,6 @@ import topicdata
 from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from chronograph import force_job
 from config.models import Settings
 from facility.models import Facility, FacilityUser,FacilityGroup
 from i18n import select_best_available_language
@@ -237,7 +236,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         vid_lang = "en"
         messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
     else:
-        vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language)
+        vid_lang = select_best_available_language(request.language, available_urls.keys())
 
 
     context = {
@@ -273,7 +272,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
 
     # Return the best available exercise template
-    exercise_lang = select_best_available_language(available_langs, target_code=request.language)
+    exercise_lang = select_best_available_language(request.language, available_langs)
     if exercise_lang == "en":
         exercise_template = exercise_file
     else:

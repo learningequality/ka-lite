@@ -28,7 +28,6 @@ from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree
-from chronograph import force_job, job_status
 from config.models import Settings
 from facility.models import FacilityGroup, FacilityUser
 from i18n import lcode_to_ietf

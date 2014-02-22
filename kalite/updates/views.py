@@ -56,7 +56,7 @@ def update(request):
 @require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
-    force_job("videodownload", _("Download Videos"))  # async request, to trigger any outstanding video downloads
+    force_job("videodownload", _("Download Videos"), locale=request.language)  # async request, to trigger any outstanding video downloads
 
     installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
     default_language_name = lang_best_name(installed_languages.pop(request.session["default_language"]))
