@@ -89,7 +89,7 @@ def call_command_threaded(cmd, *args, **kwargs):
 
     logging.debug("Threaded launch of command %s with parameters %s, %s)" % (cmd, args, kwargs))
     if cmd in JOB_THREADS and JOB_THREADS[cmd].is_alive():
-        raise Exception(_("Command %(cmd)s is already currently running.  Please stop the previous job before trying to start.") % {"cmd": cmd})
+        pass#raise Exception(_("Command %(cmd)s is already currently running.  Please stop the previous job before trying to start.") % {"cmd": cmd})
     th = CommandThread(cmd=cmd, *args, **kwargs)
     th.start()
     JOB_THREADS[cmd] = th

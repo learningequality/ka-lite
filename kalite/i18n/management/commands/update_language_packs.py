@@ -41,10 +41,10 @@ from django.core.management import call_command
 from django.core.mail import mail_admins
 
 import settings
+from .update_po import compile_po_files
+from i18n import *
 from settings import LOG as logging
-from shared.i18n import *
-from shared.videos import get_all_remote_video_sizes
-from update_po import compile_po_files
+from updates import get_all_remote_video_sizes
 from utils.general import datediff, ensure_dir, softload_json, version_diff
 from version import VERSION
 
@@ -353,6 +353,11 @@ def update_translations(lang_codes=None,
                     pmlc['percent_translated'] = 0
                 else:
                     pmlc["percent_translated"] = 100. * (pmlc['kalite_ntranslations'] + pmlc['ka_ntranslations']) / float(pmlc['kalite_nphrases'] + pmlc['ka_nphrases'])
+
+
+            # english is always 100% translated
+            if lang_code == 'en':
+                pmlc['percent_translated'] = 100
 
     return package_metadata
 
@@ -757,7 +762,6 @@ def download_crowdin_metadata(project_id=None, project_key=None):
         logging.error("Error getting crowdin metadata: %s" % e)
         crowdin_meta_dict = {}
     return crowdin_meta_dict
-
 
 def increment_language_pack_version(stored_meta, updated_meta):
     """Increment language pack version if translations have been updated

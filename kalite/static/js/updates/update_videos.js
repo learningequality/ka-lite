@@ -50,7 +50,7 @@ function video_check_callback(progress_log, resp) {
 
                 if (nErrors != 0) {
                     // Redisplay the download message as a warning.
-                    set_message("warning", get_message("id_videodownload"), "id_videodownload");
+                    show_message("warning", get_message("id_videodownload"), "id_videodownload");
                     // could show the retry button, but we'd have to store which videos
                     //   went poorly.
                 }
@@ -314,15 +314,17 @@ function getSelectedStartedVideos() {
 }
 
 function getSelectedMetadata(vid_type, data_type) {
-    var videos = getSelectedVideos(vid_type);
-    var metadata = _.uniq($.map(videos, function(node) {
+    var videos = _.uniq(getSelectedVideos(vid_type), function(node) {
+        return node.data.key;
+    });
+    var metadata = $.map(videos, function(node) {
         switch (data_type) {
             case null:
             case undefined: return node.data;
             case "youtube_id": return node.data.key;
             default: assert(false, sprintf("Unknown data type: %s", data_type)); break;
         }
-    }));
+    });
     return metadata;
 }
 function getSelectedIncompleteMetadata(data_type) {

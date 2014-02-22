@@ -2,11 +2,11 @@ from version import *
 
 # testing isn't always available; just ignore if not
 try:
-    import shared.testing.testrunner
+    import testing.testrunner
 except Exception as e:
     pass
 try:
-    import tests.loadtesting as loadtesting
+    import testing.loadtesting as loadtesting
 except Exception as e:
     pass
 
@@ -19,3 +19,5 @@ except:
         OS = sys.platform
     except:
         OS = ""
+
+

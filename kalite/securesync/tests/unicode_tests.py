@@ -4,7 +4,7 @@ from django.utils import unittest
 
 import settings
 from securesync.models import *
-from shared.testing.unicode import UnicodeModelsTest
+from testing.unicode import UnicodeModelsTest
 
 class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
 
@@ -13,7 +13,7 @@ class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
         # Make sure we're testing all classes
         self.check_unicode_class_coverage(
             models_module="securesync.models",
-            known_classes = [DeferredSignSyncedModel, Device, DeviceMetadata, DeviceZone, Facility, FacilityGroup, FacilityUser, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone],
+            known_classes = [DeferredSignSyncedModel, Device, DeviceMetadata, DeviceZone, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone],
         )
 
 
@@ -22,32 +22,14 @@ class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
         dev = Device(name=self.korean_string)
         self.assertNotIn(unicode(dev), "Bad Unicode data", "Device: Bad conversion to unicode.")
 
-        fac = Facility(name=self.korean_string)
-        self.assertNotIn(unicode(fac), "Bad Unicode data", "Facility: Bad conversion to unicode.")
-
-        fg = FacilityGroup(facility=fac, name=self.korean_string)
-        self.assertNotIn(unicode(fg), "Bad Unicode data", "FacilityGroup: Bad conversion to unicode.")
-
         zon = Zone(name=self.korean_string)
         self.assertNotIn(unicode(zon), "Bad Unicode data", "Zone: Bad conversion to unicode.")
 
-        # Classes using other classes
-        fu = FacilityUser(
-            facility=fac, 
-            group=fg, 
-            first_name=self.korean_string, 
-            last_name=self.korean_string, 
-            username=self.korean_string,
-            notes=self.korean_string,
-        )
-        fu.set_password(self.korean_string * settings.PASSWORD_CONSTRAINTS["min_length"]),
-        self.assertNotIn(unicode(fu), "Bad Unicode data", "FacilityUser: Bad conversion to unicode.")
-
         syncsess = SyncSession(
-            client_device=dev, 
-            server_device=dev, 
-            client_nonce=self.korean_string, 
-            server_nonce=self.korean_string, 
+            client_device=dev,
+            server_device=dev,
+            client_nonce=self.korean_string,
+            server_nonce=self.korean_string,
             client_version=self.korean_string,
             client_os=self.korean_string,
         )

@@ -4,8 +4,9 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
+import i18n
 import settings
-from shared import caching, i18n
+from main import caching
 from updates.api_views import divide_videos_by_language
 from updates.models import VideoFile
 from utils.general import break_into_chunks

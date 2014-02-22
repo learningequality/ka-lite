@@ -24,6 +24,7 @@ from central.models import Organization, OrganizationInvitation, DeletionRecord,
 from securesync.engine.api_client import SyncClient
 from securesync.models import Zone
 from shared.decorators import require_authorized_admin
+from utils.django_utils import get_request_ip
 
 
 def get_central_server_host(request):
@@ -97,7 +98,7 @@ def org_management(request, org_id=None):
 def add_subscription(request):
     if request.method == "POST":
         sub = Subscription(email=request.POST.get("email"))
-        sub.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
+        sub.ip = get_request_ip(request) or ""
         sub.save()
         messages.success(request, _("A subscription for '%s' was added.") % request.POST.get("email"))
     return HttpResponseRedirect(reverse("homepage"))

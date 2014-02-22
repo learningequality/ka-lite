@@ -42,6 +42,7 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
 
     except DownloadCancelled:
         delete_downloaded_files(youtube_id, download_path)
+        raise
 
     except Exception as e:
         delete_downloaded_files(youtube_id, download_path)

@@ -14,9 +14,10 @@ from django.utils.translation import ugettext as _
 
 import settings
 from central.models import Organization
+from facility.models import Facility
 from registration.models import RegistrationProfile
-from securesync.models import Zone, Facility, Device, DeviceZone
-from shared.testing import central_server_test, BrowserTestCase
+from securesync.models import Zone, Device, DeviceZone
+from testing import central_server_test, BrowserTestCase
 
 
 @central_server_test

@@ -16,6 +16,7 @@ from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
@@ -24,15 +25,15 @@ import settings
 import version
 from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
+from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
+from .topic_tools import get_flat_topic_tree
+from chronograph import force_job, job_status
 from config.models import Settings
-from securesync.models import FacilityGroup, FacilityUser
-from shared.caching import backend_cache_page
-from shared.decorators import allow_api_profiling, require_admin
-from shared.i18n import lcode_to_ietf
-from shared.jobs import force_job, job_status
-from shared.topic_tools import get_flat_topic_tree
-from shared.videos import delete_downloaded_files
+from facility.models import FacilityGroup, FacilityUser
+from i18n import lcode_to_ietf
+from shared.decorators import require_admin
+from testing.decorators import allow_api_profiling
 from utils.general import break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from utils.mplayer_launcher import play_video_in_new_thread
@@ -57,7 +58,7 @@ class student_log_api(object):
         return wrapper_fn
 
 
-@student_log_api(logged_out_message=_("Video progress not saved."))
+@student_log_api(logged_out_message=ugettext_lazy("Video progress not saved."))
 def save_video_log(request):
     """
     Receives a video_id and relevant data,
@@ -93,7 +94,7 @@ def save_video_log(request):
     })
 
 
-@student_log_api(logged_out_message=_("Exercise progress not saved."))
+@student_log_api(logged_out_message=ugettext_lazy("Exercise progress not saved."))
 def save_exercise_log(request):
     """
     Receives an exercise_id and relevant data,
@@ -135,7 +136,7 @@ def save_exercise_log(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=_("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_video_logs(request):
     """
     Given a list of video_ids, retrieve a list of video logs for this user.
@@ -153,7 +154,7 @@ def get_video_logs(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=_("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.
@@ -200,38 +201,6 @@ def time_set(request):
 
 
 # Functions below here focused on users
-
-@require_admin
-@api_handle_error_with_json
-def remove_from_group(request):
-    """
-    API endpoint for removing users from group
-    (from user management page)
-    """
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
-    users_to_remove = FacilityUser.objects.filter(username__in=users)
-    users_to_remove.update(group=None)
-    return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def move_to_group(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
-    group_update = FacilityGroup.objects.get(pk=group)
-    users_to_move = FacilityUser.objects.filter(username__in=users)
-    users_to_move.update(group=group_update)
-    return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def delete_users(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    users_to_delete = FacilityUser.objects.filter(username__in=users)
-    users_to_delete.delete()
-    return JsonResponse({})
 
 
 @api_handle_error_with_json
