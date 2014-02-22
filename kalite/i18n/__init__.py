@@ -175,11 +175,7 @@ def get_file2id_map(force=False):
         for lang_code, dic in get_dubbed_video_map().iteritems():
             for english_youtube_id, dubbed_youtube_id in dic.iteritems():
                 if dubbed_youtube_id in YT2ID_MAP:
-                    # Sanity check, but must be failsafe, since we don't control these data
-                    if YT2ID_MAP[dubbed_youtube_id] == english_youtube_id:
-                        logging.warn("Duplicate entry found in %s language map for english video %s" % (lang_code, english_youtube_id))
-                    else:
-                        logging.error("Conflicting entry found in %s language map for english video %s; overwriting previous entry." % (lang_code, english_youtube_id))
+                    logging.debug("conflicting entry of dubbed_youtube_id %s in %s dubbed video map" % (dubbed_youtube_id, lang_code))
                 YT2ID_MAP[dubbed_youtube_id] = english_youtube_id  # assumes video id is the english youtube_id
     return YT2ID_MAP
 
@@ -432,6 +428,12 @@ def _get_installed_language_packs():
     sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 
+def get_langs_with_subtitles():
+    subtitles_path = get_srt_path()
+    if os.path.exists(subtitles_path):
+        return os.listdir(subtitles_path)
+    else:
+        return []
 
 def get_langs_with_subtitle(youtube_id):
     """
@@ -468,7 +470,7 @@ def update_jsi18n_file(code="en"):
         fp.write(response.content)
 
 
-def select_best_available_language(available_codes, target_code=settings.LANGUAGE_CODE):
+def select_best_available_language(target_code, available_codes=None):
     """
     Critical function for choosing the best available language for a resource,
     given a target language code.
@@ -477,9 +479,16 @@ def select_best_available_language(available_codes, target_code=settings.LANGUAG
     to determine what file to serve, based on available resources
     and the current requested language.
     """
-    if not available_codes:
-        return None
-    elif target_code in available_codes:
+
+    # Scrub the input
+    target_code = lcode_to_django_lang(target_code)
+    if available_codes is None:
+        available_codes = get_installed_language_packs()
+    else:
+        available_codes = [lcode_to_django_lang(lc) for lc in available_codes]
+
+    # Hierarchy of language selection
+    if target_code in available_codes:
         return target_code
     elif target_code.split("-", 1)[0] in available_codes:
         return target_code.split("-", 1)[0]

@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from settings import LOG as logging
-from shared.videos import REMOTE_VIDEO_SIZE_FILEPATH
+from updates import REMOTE_VIDEO_SIZE_FILEPATH
 from utils.general import ensure_dir, softload_json
 
 

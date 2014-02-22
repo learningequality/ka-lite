@@ -37,11 +37,12 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
 import settings
+from facility.models import FacilityUser
 from main.models import ExerciseLog, VideoLog
+from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from securesync.models import FacilityUser
-from shared.decorators import require_login, distributed_server_only, central_server_only
-from shared.topic_tools import get_node_cache
+from shared.decorators import require_login
+from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import JsonResponse, JsonResponseMessageError
 
 

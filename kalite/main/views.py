@@ -9,9 +9,7 @@ from functools import partial
 
 from django.contrib import messages
 from django.core.management import call_command
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -21,22 +19,23 @@ from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
 import settings
+import topic_tools
+import topicdata
+from .caching import backend_cache_page
+from .models import VideoLog, ExerciseLog
+from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from chronograph import force_job
 from config.models import Settings
-from control_panel.views import user_management_context
+from facility.models import Facility, FacilityUser,FacilityGroup
 from i18n import select_best_available_language
-from main import topicdata
-from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
-from securesync.models import Facility, FacilityUser,FacilityGroup, Device
-from securesync.views import require_admin, facility_required
+from securesync.models import Device
 from settings import LOG as logging
-from shared import topic_tools
-from shared.caching import backend_cache_page
-from shared.decorators import require_admin, distributed_server_only
-from shared.jobs import force_job
-from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
-from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
+from shared.decorators import require_admin
+from testing.asserts import central_server_only, distributed_server_only
+from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from utils.django_utils import is_loopback_connection
+from utils.internet import JsonResponse, get_ip_addresses, set_query_params
 
 
 def check_setup_status(handler):
@@ -238,7 +237,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         vid_lang = "en"
         messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
     else:
-        vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language)
+        vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
 
 
     context = {
@@ -274,7 +273,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
 
     # Return the best available exercise template
-    exercise_lang = select_best_available_language(available_langs, target_code=request.language)
+    exercise_lang = select_best_available_language(request.language, available_codes=available_langs)
     if exercise_lang == "en":
         exercise_template = exercise_file
     else:
@@ -334,34 +333,6 @@ def easy_admin(request):
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }
-    return context
-
-
-@require_admin
-@facility_required
-@render_to("current_users.html")
-def user_list(request, facility):
-
-    # Use default group
-    group_id = request.REQUEST.get("group_id")
-    if not group_id:
-        groups = FacilityGroup.objects \
-            .annotate(Count("facilityuser")) \
-            .filter(facilityuser__count__gt=0)
-        ngroups = groups.count()
-        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
-        if ngroups == 1:
-            group_id = groups[0].id if groups.count() else "Ungrouped"
-
-    context = user_management_context(
-        request=request,
-        facility_id=facility.id,
-        group_id=group_id,
-        page=request.REQUEST.get("page","1"),
-    )
-    context.update({
-        "singlefacility": Facility.objects.count() == 1,
-    })
     return context
 
 
@@ -463,7 +434,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())
+        return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
 
 def handler_404(request):

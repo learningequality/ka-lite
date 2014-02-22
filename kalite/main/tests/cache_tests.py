@@ -10,10 +10,10 @@ from django.test.client import Client
 from django.utils import unittest
 
 import settings
-from shared import caching
-from shared.testing.base import KALiteTestCase
-from shared.testing.decorators import distributed_server_test
-from shared.topic_tools import get_node_cache
+from main import caching
+from main.topic_tools import get_node_cache
+from testing.base import KALiteTestCase
+from testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 
 

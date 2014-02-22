@@ -41,10 +41,10 @@ from django.core.management import call_command
 from django.core.mail import mail_admins
 
 import settings
+from .update_po import compile_po_files
 from i18n import *
 from settings import LOG as logging
-from shared.videos import get_all_remote_video_sizes
-from update_po import compile_po_files
+from updates import get_all_remote_video_sizes
 from utils.general import datediff, ensure_dir, softload_json, version_diff
 from version import VERSION
 
@@ -354,6 +354,11 @@ def update_translations(lang_codes=None,
                 else:
                     pmlc["percent_translated"] = 100. * (pmlc['kalite_ntranslations'] + pmlc['ka_ntranslations']) / float(pmlc['kalite_nphrases'] + pmlc['ka_nphrases'])
 
+
+            # english is always 100% translated
+            if lang_code == 'en':
+                pmlc['percent_translated'] = 100
+
     return package_metadata
 
 
@@ -396,8 +401,8 @@ def handle_po_compile_errors(lang_codes=None, out=None, err=None, rc=None):
 
     return broken_codes
 
-def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
-                                 project_key=settings.CROWDIN_PROJECT_KEY,
+def download_latest_translations(project_id=None,
+                                 project_key=None,
                                  lang_code="all",
                                  zip_file=None,
                                  combine_with_po_file=None,
@@ -416,6 +421,11 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     - download_type -- whether it is a ka or ka_lite. Default is None, meaning ka_lite.
 
     """
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+       project_key = settings.CROWDIN_PROJECT_KEY
+
     lang_code = lcode_to_ietf(lang_code)
 
     # Get zip file of translations
@@ -479,8 +489,13 @@ def download_latest_translations(project_id=settings.CROWDIN_PROJECT_ID,
     return po_file
 
 
-def build_translations(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def build_translations(project_id=None, project_key=None):
     """Build latest translations into zip archive on CrowdIn."""
+
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+       project_key = settings.CROWDIN_PROJECT_KEY
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
@@ -730,8 +745,13 @@ def update_metadata(package_metadata, version=VERSION):
     logging.info("Local record of translations updated")
 
 
-def download_crowdin_metadata(project_id=settings.CROWDIN_PROJECT_ID, project_key=settings.CROWDIN_PROJECT_KEY):
+def download_crowdin_metadata(project_id=None, project_key=None):
     """Return tuple in format (total_strings, total_translated, percent_translated)"""
+
+    if not project_id:
+        project_id = settings.CROWDIN_PROJECT_ID
+    if not project_key:
+        project_key = settings.CROWDIN_PROJECT_KEY
 
     request_url = "http://api.crowdin.net/api/project/%s/status?key=%s&json=True" % (project_id, project_key)
     try:
@@ -742,7 +762,6 @@ def download_crowdin_metadata(project_id=settings.CROWDIN_PROJECT_ID, project_ke
         logging.error("Error getting crowdin metadata: %s" % e)
         crowdin_meta_dict = {}
     return crowdin_meta_dict
-
 
 def increment_language_pack_version(stored_meta, updated_meta):
     """Increment language pack version if translations have been updated

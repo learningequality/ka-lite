@@ -13,8 +13,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 import settings
 from i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
+from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from shared.topic_tools import get_node_cache
 from utils.general import ensure_dir, datediff
 
 
@@ -87,10 +87,24 @@ def generate_dubbed_video_mappings(download_url=None, csv_data=None):
                 # Loop through those columns and, if a video exists,
                 #   add it to the dictionary.
                 for idx in range(english_idx, len(row)):
-                    if row[idx]:  # make sure there's a dubbed video
-                        lang = header_row[idx]
-                        if lang not in video_map:  # add the first level if it doesn't exist
-                            video_map[lang] = {}
+                    if not row[idx]:  # make sure there's a dubbed video
+                        continue
+
+                    lang = header_row[idx]
+                    if lang not in video_map:  # add the first level if it doesn't exist
+                        video_map[lang] = {}
+                    dubbed_youtube_id = row[idx]
+                    if english_video_id == dubbed_youtube_id and lang != "english":
+                        logging.error("Removing entry for (%s, %s): dubbed and english youtube ID are the same." % (lang, english_video_id))
+                    #elif dubbed_youtube_id in video_map[lang].values():
+                        # Talked to Bilal, and this is actually supposed to be OK.  Would throw us for a loop!
+                        #    For now, just keep one.
+                        #for key in video_map[lang].keys():
+                        #    if video_map[lang][key] == dubbed_youtube_id:
+                        #        del video_map[lang][key]
+                        #        break
+                        #logging.error("Removing entry for (%s, %s): the same dubbed video ID is used in two places, and we can only keep one in our current system." % (lang, english_video_id))
+                    else:
                         video_map[lang][english_video_id] = row[idx]  # add the corresponding video id for the video, in this language.
 
     except StopIteration:
@@ -103,6 +117,9 @@ def generate_dubbed_video_mappings(download_url=None, csv_data=None):
     extra_videos = set(video_map["english"].keys()) - set(known_videos)
     if missing_videos:
         logging.warn("There are %d known videos not in the list of dubbed videos" % len(missing_videos))
+        logging.warn("Adding missing English videos to English dubbed video map")
+        for video in missing_videos:
+            video_map["english"][video] = video
     if extra_videos:
         logging.warn("There are %d videos in the list of dubbed videos that we have never heard of." % len(extra_videos))
 

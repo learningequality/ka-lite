@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from securesync.forms import FacilityUserForm
-from securesync.models import Facility, FacilityUser
-from shared.testing import distributed_server_test, KALiteTestCase
+from facility.forms import FacilityUserForm
+from facility.models import Facility, FacilityUser
+from testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test

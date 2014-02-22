@@ -14,8 +14,9 @@ from django.dispatch import receiver
 
 import i18n
 import settings
+from facility.models import FacilityUser
 from securesync import engine
-from securesync.models import DeferredCountSyncedModel, SyncedModel, FacilityUser, Device
+from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric

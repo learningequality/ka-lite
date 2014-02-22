@@ -3,13 +3,13 @@ VERSION = "0.11.1"
 VERSION_INFO = {
 
     "0.11.1": {
-        "release_date": "2013/11/28",
-        "git_commit": "cd55e92ebbd3ad5ac0283ddf3de302d1cd26b608",
+        "release_date": "2014/02/19",
+        "git_commit": "3534335e8a6a1c1e367f2922055ad0831f21a870",
         "new_features": {
-            "all": ["over 5x faster performance"],
-            "students": [],
+            "all": [],
+            "students": ["translated interface", "dubbed video support"],
             "coaches": [],
-            "admins": [],
+            "admins": ["language pack downloads and updates", "dubbed video downloads"],
         },
         "bugs_fixed": {
             "all": [],
@@ -41,9 +41,14 @@ VERSION_INFO = {
         "git_commit": "6e56d05e6f53661aea433d72ce7bddacacddc4b8",
         "new_features": {
             "all": [],
-            "students": [],
+            "students": [
+                "Better performance (faster save times and login times)",
+                "Integration with latest exercises",
+            ],
             "coaches": [],
-            "admins": ["Better performance (faster save times and login times)"],
+            "admins": [
+                "Easier updates for subtitles",
+            ],
         },
         "bugs_fixed": {
             "all": [],
@@ -58,9 +63,9 @@ VERSION_INFO = {
         "git_commit": "5831abb8d2ee0815416a17885790679c4672bf97",
         "new_features": {
             "all": [],
-            "students": ["import your KA progress into KA Lite"],
+            "students": ["Import your KA progress into KA Lite"],
             "coaches": [],
-            "admins": ["now start KA Lite by double-clicking the start script"],
+            "admins": ["Now start KA Lite by double-clicking the start script"],
         },
         "bugs_fixed": {
             "all": [],

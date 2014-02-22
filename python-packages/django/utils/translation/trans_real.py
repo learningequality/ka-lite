@@ -258,7 +258,12 @@ def do_translate(message, translation_function):
     """
     global _default
 
-    eol_message = message.replace('\r\n', '\n').replace('\r', '\n')
+    # KA-LITE-MOD (bcipolli)
+    #  Django chokes when translation string is None, which is hard to detect upstream.
+    #  Django - be more robust!!
+    #  Change: translated None is ... None!
+    eol_message = message.replace('\r\n', '\n').replace('\r', '\n') if message is not None else None
+
     t = getattr(_active, "value", None)
     if t is not None:
         result = getattr(t, translation_function)(eol_message)

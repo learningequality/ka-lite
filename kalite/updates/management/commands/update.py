@@ -139,7 +139,7 @@ class Command(UpdatesStaticCommand):
         ]
 
         # step 1: clean_pyc (has to be first)
-        call_command("clean_pyc")
+        call_command("clean_pyc", path=os.path.join(settings.PROJECT_ROOT, ".."))
         self.start(notes="Clean up pyc files")
 
         # Step 2: update via git
