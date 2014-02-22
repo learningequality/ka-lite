@@ -10,6 +10,7 @@ NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us). However,
 """
 import glob
 import os
+import requests
 import shutil
 import stat
 import subprocess
@@ -136,7 +137,10 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', 
         if not os.path.exists(new_bin):
             logging.info("No youtube-dl binary found. Installing...")
             ensure_dir(settings.SCRIPTS_PATH)
-            subprocess.call(['curl', 'https://yt-dl.org/downloads/2013.12.03/youtube-dl', '-o', new_bin])
+            req = requests.get('http://yt-dl.org/downloads/2013.12.03/youtube-dl')
+            req.raise_for_status()
+            with open(new_bin, 'wb') as f:
+                f.write(req.content)
             os.chmod(new_bin, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)  #  set correct permissions
             logging.info("youtube-dl binary installed at %s" % new_bin)
 
