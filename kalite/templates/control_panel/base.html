@@ -24,7 +24,11 @@
                         {% if zone %}
                             {{ zone.name }}
                         {% elif not zone %}
+                            {% if is_central %}
+                            {% trans "New Sharing Network" %}
+                            {% else %}
                             Unregistered Device {{ device.name }} - <a class="not-registered-only" href="{% url register_public_key %}">Register Now!</a>
+                            {% endif %}
                         {% endif %}
                     {% if facility or device %}</a>
                     {% elif own_device_is_trusted %} <a class="edit-link" href="{% url zone_form org_id=org_id zone_id=zone_id %}">(edit)</a>

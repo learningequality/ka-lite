@@ -24,9 +24,9 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
+from i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, get_srt_path, LanguageNotFoundError, get_supported_language_map, get_langs_with_subtitles
 from settings import LOG as logging
-from shared.i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
-from shared.i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, get_srt_path, LanguageNotFoundError, get_supported_language_map
 from utils.general import convert_date_input, ensure_dir, softload_json
 from utils.internet import make_request
 
@@ -44,7 +44,7 @@ def clear_subtitles_cache(lang_codes=None, locale_root=LOCALE_ROOT):
     """
     Language codes will be converted to django format (e.g. en_US)
     """
-    lang_codes = lang_codes or os.listdir(locale_root)
+    lang_codes = lang_codes or get_langs_with_subtitles()
     for lang_code in lang_codes:
         lang_code = lcode_to_ietf(lang_code)
 
@@ -386,7 +386,18 @@ class Command(BaseCommand):
         lang_codes = [lcode_to_ietf(options["lang_code"])] if options["lang_code"] else None
         del options["lang_code"]
 
-        if len(args) == 0:
+        if len(args) > 1:
+            raise CommandError("Max 1 arg")
+
+        elif len(args) == 1:
+            if args[0] == "clear":
+                logging.info("Clearing subtitles...")
+                clear_subtitles_cache(lang_codes)
+
+            else:
+                raise CommandError("Unknown argument: %s" % args[0])
+
+        else:
             validate_language_map(lang_codes)
 
             logging.info("Downloading...")
@@ -394,14 +405,34 @@ class Command(BaseCommand):
 
             validate_language_map(lang_codes)  # again at the end, so output is visible
 
-        elif len(args) > 1:
-            raise CommandError("Max 1 arg")
-
-        elif args[0] == "clear":
-            logging.info("Clearing subtitles...")
-            clear_subtitles_cache(lang_codes)
-
-        else:
-            raise CommandError("Unknown argument: %s" % args[0])
+            # for compatibility with KA Lite versions less than 0.10.3
+            for lang in (lang_codes or get_langs_with_subtitles()):
+                generate_srt_availability_file(lang)
 
         logging.info("Process complete.")
+
+
+def generate_srt_availability_file(lang_code):
+    '''
+    For compatibility with versions less than 0.10.3, we need to generate this
+    json file that contains the srts for the videos.
+    '''
+
+    # this path is a direct copy of the path found in the old function that generated this file
+    srts_file_dest_path = os.path.join(settings.STATIC_ROOT, 'data', 'subtitles', 'languages', "%s_available_srts.json") % lang_code
+    ensure_dir(os.path.dirname(srts_file_dest_path))
+
+    srts_path = get_srt_path(lang_code) # not sure yet about this; change once command is complete
+    try:
+        files = os.listdir(srts_path)
+    except OSError:             # directory doesnt exist or we cant read it
+        files = []
+
+    yt_ids = [f.rstrip(".srt") for f in files]
+    srts_dict = { 'srt_files': yt_ids }
+
+    with open(srts_file_dest_path, 'wb') as fp:
+        logging.debug('Creating %s', srts_file_dest_path)
+        json.dump(srts_dict, fp)
+
+    return yt_ids

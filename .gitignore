@@ -22,10 +22,12 @@ writeup/
 /start.*
 /stop.*
 /content/*.jpg
+/content/*.json
 /content/*.png
 /content/*.mp4
-/content/*.json
+/content/*.mp4.part
 /content/*.srt
+/data/logs
 /data/i18n
 /data/subtitles
 /kalite/*.jpg
@@ -36,6 +38,7 @@ writeup/
 /kalite/static/js/i18n
 /kalite/static/js/khan-exercises/exercises/*/
 /kalite/static/srt
+/kalite/static/data/subtitles/languages
 /kalite/private_key.pem
 /kalite/secrets.py
 /scripts/youtube-dl

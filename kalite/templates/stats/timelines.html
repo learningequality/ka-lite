@@ -44,6 +44,9 @@
           //
           for (var k in raw_data){
             var row = raw_data[k];
+            if (!row["completion_timestamp"]) {
+              continue;
+            }
             var cur_date = new Date(row["completion_timestamp"].substr(0, 10));  // parse the date, forget the time
 
             // Date changed; store the last date info into the database

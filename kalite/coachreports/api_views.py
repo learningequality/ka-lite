@@ -20,12 +20,12 @@ from django.utils.translation import ugettext as _
 
 from .forms import DataForm
 from config.models import Settings
+from facility.decorators import facility_required
+from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
-from securesync.views import facility_required
+from main.topic_tools import get_topic_by_path, get_node_cache
 from settings import LOG as logging
-from shared.decorators import allow_api_profiling
-from shared.topic_tools import get_topic_by_path, get_node_cache
+from testing.decorators import allow_api_profiling
 from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 
 

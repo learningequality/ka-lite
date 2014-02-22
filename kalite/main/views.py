@@ -9,9 +9,7 @@ from functools import partial
 
 from django.contrib import messages
 from django.core.management import call_command
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
@@ -21,23 +19,23 @@ from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
 import settings
+import topic_tools
+import topicdata
+from .caching import backend_cache_page
+from .models import VideoLog, ExerciseLog
+from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from chronograph import force_job
 from config.models import Settings
-from control_panel.views import user_management_context
-from main import topicdata
-from main.models import VideoLog, ExerciseLog
+from facility.models import Facility, FacilityUser,FacilityGroup
+from i18n import select_best_available_language
 from securesync.api_client import BaseClient
-from securesync.models import Facility, FacilityUser,FacilityGroup, Device
-from securesync.views import require_admin, facility_required
+from securesync.models import Device
 from settings import LOG as logging
-from shared import topic_tools
-from shared.caching import backend_cache_page
-from shared.decorators import require_admin, distributed_server_only
-from shared.i18n import select_best_available_language
-from shared.jobs import force_job
-from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
-from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
-
+from shared.decorators import require_admin
+from testing.asserts import central_server_only, distributed_server_only
+from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from utils.django_utils import is_loopback_connection
+from utils.internet import JsonResponse, get_ip_addresses
 
 def check_setup_status(handler):
     """
@@ -338,34 +336,6 @@ def easy_admin(request):
 
 
 @require_admin
-@facility_required
-@render_to("current_users.html")
-def user_list(request, facility):
-
-    # Use default group
-    group_id = request.REQUEST.get("group_id")
-    if not group_id:
-        groups = FacilityGroup.objects \
-            .annotate(Count("facilityuser")) \
-            .filter(facilityuser__count__gt=0)
-        ngroups = groups.count()
-        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
-        if ngroups == 1:
-            group_id = groups[0].id if groups.count() else "Ungrouped"
-
-    context = user_management_context(
-        request=request,
-        facility_id=facility.id,
-        group_id=group_id,
-        page=request.REQUEST.get("page","1"),
-    )
-    context.update({
-        "singlefacility": Facility.objects.count() == 1,
-    })
-    return context
-
-
-@require_admin
 def zone_redirect(request):
     """
     Dummy view to generate a helpful dynamic redirect to interface with 'control_panel' app
@@ -384,10 +354,8 @@ def device_redirect(request):
     """
     device = Device.get_own_device()
     zone = device.get_zone()
-    if zone:
-        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
-    else:
-        raise Http404(_("This device is not on any zone."))
+
+    return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
 
 JS_CATALOG_CACHE = {}
 @distributed_server_only
