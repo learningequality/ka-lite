@@ -279,8 +279,22 @@ $(function() {
         ga_track("send", "event", "update", "click-retry-download", "Retry Download");
     });
 
+
+    if ($("#download_language_selector option").length > 1) {
+        $("#toggle_language_dropdown").attr("href", "javascript:show_language_selector()");
+    }
+
+    $("#download_language_selector").change(function() {
+         var lang_code = $("#download_language_selector option:selected")[0].value;
+         window.location.href = setGetParam(window.location.href, "lang", lang_code);
+    });
     // end onload functions
 });
+
+function show_language_selector() {
+    $("#download_language_selector").show();
+    $("#toggle_language_dropdown").hide()
+}
 
 /* script functions for doing stuff with the topic tree*/
 function unselectAllNodes() {

@@ -62,3 +62,6 @@ ul.dynatree-container li, .ui-widget-content {
     display: none;
 }
 
+#download_language_selector {
+    display: none;
+}
