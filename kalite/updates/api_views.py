@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import settings
@@ -212,6 +213,13 @@ def start_languagepack_download(request):
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
+    # Not needed when on an api request (since translation.activate is already called),
+    #   but just to do things right / in an encapsulated way...
+    # Though to be honest, this isn't quite right; we should be DE-activating translation
+    #   at the end.  But with so many function exit-points... just a nightmare.
+    if level == 0:
+        translation.activate(lang_code)
+
     if not statusdict:
         statusdict = {}
 

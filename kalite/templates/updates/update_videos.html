@@ -13,8 +13,8 @@
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
 
     <script type="text/javascript">
-        var URL_GET_ANNOTATED_TOPIC_TREE = "{% url get_annotated_topic_tree %}";
-        var URL_START_VIDEO_DOWNLOADS = "{% url start_video_download %}";
+        var URL_GET_ANNOTATED_TOPIC_TREE = "{% url get_annotated_topic_tree %}?lang={{ current_language }}";
+        var URL_START_VIDEO_DOWNLOADS = "{% url start_video_download %}?lang={{ current_language }}";
         var URL_DELETE_VIDEOS = "{% url delete_videos %}";
         var URL_CANCEL_VIDEO_DOWNLOADS = "{% url cancel_video_download %}";
     </script>
@@ -65,7 +65,14 @@
     {% if current_language != "en" %}
     <div style="clear: both; padding-top: 15px;">
         <h2>
-            {% blocktrans with lang_name=current_language_native_name %}Videos for language {{ lang_name }}{% endblocktrans %}
+            {% blocktrans with lang_name=current_language_native_name %}
+                Videos for language <a id="toggle_language_dropdown">{{ lang_name }}</a>
+            {% endblocktrans %}
+            <select id="download_language_selector">
+            {% for lang_code, lang_meta in language_choices.iteritems %}
+                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
+            {% endfor %}
+            </select>
         </h2>
     </div>
     {% endif %}
