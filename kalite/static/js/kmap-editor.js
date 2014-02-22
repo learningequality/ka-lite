@@ -173,6 +173,7 @@ var KMapEditor = {
         }
         
         // add exercises
+        console.log(this.exercises);
         if (this.zoomLevel === this.ZOOM_EXERCISES || this.zoomLevel === this.ZOOM_HYBRID) {
             _.each(this.exercises, function(ex) {
                 //if (ex.title in KMapEditor.ptaklist){ex.h_position=KMapEditor.ptaklist[ex.title][0];ex.v_position=KMapEditor.ptaklist[ex.title][1]};
