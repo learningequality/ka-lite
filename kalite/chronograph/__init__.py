@@ -1,7 +1,6 @@
 from datetime import datetime
 from chronograph.models import Job
 
-from updates.models import UpdateProgressLog
 from utils.django_utils import call_command_async
 
 
