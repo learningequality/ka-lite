@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-less": "~0.6.4"
+    "grunt-contrib-less": "~0.6.4",
+    "grunt-contrib-jshint": "~0.8.0"
   }
 }
