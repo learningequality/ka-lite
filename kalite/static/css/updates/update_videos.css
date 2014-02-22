@@ -12,6 +12,7 @@ ul.dynatree-container li, .ui-widget-content {
     margin-top: 5px;
     height: 60px;
     padding: 10px;
+    width: 45%;
 }
 
 .subtitles-download {
@@ -53,7 +54,7 @@ ul.dynatree-container li, .ui-widget-content {
     margin-top: 15px;
 }
 
-#help-info, #download-videos {
+#download-videos {
     display:none;
 }
 .progress-waiting {

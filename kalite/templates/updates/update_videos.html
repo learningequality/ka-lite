@@ -30,7 +30,6 @@
 
 {% block content %}
     <div class="download-actions vertical-shadow">
-
         <h2>
             {% blocktrans with lang_name=current_language_native_name %}Videos for language {{ lang_name }}{% endblocktrans %}
         </h2>
@@ -49,23 +48,13 @@
     </div>
 
     <div class="download-actions vertical-shadow client-online-only">
-        <h2>{% trans "Installed Language Packs" %}
-            {# Translators: this text is a link; when clicked, admins will be able to manage locally installed resources. #}
-          <a href="{% url update_languages %}">({% trans "Manage" %})</a>
+        <h2>
+        {% trans "Help for downloading videos" %}
         </h2>
-        {% if not languages %}
-            {% trans "No language packs installed." %}
-        {% else %}
-            <b>{{ default_language_name }} ({% trans "default" %})</b>
-            {{ languages|join:", " }} {% if other_languages_count %}and {{ other_languages_count }} more. {% endif %}
-        {% endif %}
-
-        <div>
-            <div id="help-info">
-                <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-                    {% trans "Q: How do I bulk-download videos?" %}
-                </a>
-            </div>
+        <div id="help-info">
+            <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+                {% trans "Q: How do I bulk-download videos?" %}
+            </a>
         </div>
     </div>
 
