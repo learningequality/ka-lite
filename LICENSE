@@ -41,6 +41,7 @@ django_extensions
 django-faq
 GitPython
 django-postmark
+ifcfg
 pyasn1
 werkzeug
 

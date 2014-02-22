@@ -1,3 +1,9 @@
+function assert(val, msg) {
+    if (!val) {
+        show_message("error", msg, "id_assert");
+    }
+}
+
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
@@ -28,9 +34,11 @@ function doRequest(url, data) {
         data: data ? JSON.stringify(data) : "",
         contentType: "application/json",
         dataType: "json"
+    })
+    .fail(function(resp) {
+        communicate_api_failure(resp, "id_do_request");
     });
 }
-
 
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
@@ -45,12 +53,14 @@ function show_message(msg_class, msg_text, msg_id) {
         clear_message(msg_id);
     }
 
-    msg_html = "<div class='message " + msg_class + "'";
+    x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+
+    msg_html = "<div class='alert alert-" + msg_class + "'";
     if (msg_id) {
         clear_message(msg_id);
         msg_html += " id='" + msg_id + "'";
     }
-    msg_html += ">" + msg_text + "</div>"
+    msg_html += ">" + x_button + msg_text + "</div>"
     $("#message_container").append(msg_html);
     return $("#message_container");
 }
@@ -65,6 +75,10 @@ function clear_messages() {
     // Clear all messages
     $("#message_container .message").remove();
     return $("#message_container");
+}
+
+function get_message(msg_id) {
+    return $("#" + msg_id).text();
 }
 
 function setGetParam(href, name, val) {

@@ -1,176 +1,96 @@
-{% extends 'base_distributed.html' %}
-
+{% extends "updates/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
-{% block update_active %}active{% endblock update_active %}
+{% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
-{% block title %}{% trans "Update Subtitles" %}{% endblock %}
+{% block headcss %}{{ block.super }}
+    <style>
+        .download-actions {
+            width: 600px;
+            float: left;
+            margin: 5px 10px 20px 0px;
+            padding: 10px;
+        }
+        #language-packs {
+            margin-top: 20px;
+        }
+        .lang-link, .lang-name, .lang-data, .upgrade-link {
+            float: left;
+            font-size: 12pt;
+        }
+        .upgrade-link a {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .lang-link { width: 120px; }
+        .lang-name { width: 250px; }
+        .lang-data { width: 250px; }
+        .upgrade-link { width: 300px; }
 
-{% block headcss %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/updates.css' %}" />
-<style>
-.download-actions {
-    width: 400px;
-    float: left;
-    margin-right: 10px;
-    margin-top: 5px;
-    height: 60px;
-    padding: 10px;
-}
+        #langpack-details {
+            margin-top: 10px;
+            display: none;
+        }
+        #langpack-details span {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        #languagepackdownload-progressbar {
+            margin-bottom: 25px;
+        }
 
-.subtitles-download {
-    width: 500px;
-}
-
-#download-legend-selected, #download-videos, #delete-videos {
-    display: none;
-}
-
-#content_tree {
-    margin-top: 15px;
-}
-
-#cancel-download {
-    display: none;
-    margin-top: 10px;
-}
-
-#download-videos {
-    font-weight: bold;
-    padding: 4px 10px 5px 10px;
-    margin-bottom: 5px;
-    color: #52A852;
-}
-
-#delete-videos {
-    color: #AC4343;
-    padding: 0 10px 0 10px;
-}
-
-#retry-video-download, #retry-subtitle-download {
-    color: red;
-    padding: 0 10px 0 10px;
-    display: none;
-    margin-top: 15px;
-}
-#help-info, #download-videos {
-    display:none;
-}
-.progress-waiting {
-    padding: 5px 0px 0px 0px;
-    display: none;
-}
-</style>
+    </style>
 {% endblock headcss %}
-{% block headjs %}
-<script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
-<script src="{% static 'js/updates.js' %}"></script>
 
-<script type="text/javascript">
-    $(function() {
-
-        setTimeout(function() {
-            get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
-                // We assume the distributed server is offline.
-                //   if it's online, then we show all tools only usable when online.
-                //
-                // Best to assume offline, as online check returns much faster than offline check.
-                if(!status || !status["online"]){
-                    show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
-                } else {
-                    $("#help-info").show();
-                    $("#download-videos").removeAttr("disabled");
-                    clear_message("id_offline_message")
-                }
-            });
-        }, 200);
-                // onload    
-    });
-
-    function show_language_packs(languagePacks) {
-        // gets the current number of subs per language
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var start_languagepackdownload_url = "{% url start_languagepack_download %}";
+        var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}"
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
         var defaultLanguage = "{{ default_language }}";
-        $.each(languagePacks, function(langName, langData) {
-            // var langCode = langData["code"];
-            // var srtCount = langData["count"];
-            // // adds it to update page
-            // if(srtCount > 0){
-            //     if(langCode === defaultLanguage) {
-            //         $('#language').append('<option value="' + langCode + '" selected>' + langName + ' (' + srtCount +' {% trans "total" %})</option>')
-            //     } else {
-            //         $('#language').append('<option value="' + langCode + '">'+ langName + ' (' + srtCount +')</option>')
-            //     }
-            // }
-        });
-    }
-
-</script>
+    </script>
+    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
-<div class="installed-languages">
-    <h2>{% trans "Installed Languages" %}</h2>
-    {% if installed_languages %}
-        {% for lang in installed_languages %}
-            {{lang.name}} - {{lang.percent_translated}} {% trans "Complete" %}
-        {% endfor %}
-    {% else %}
-        <p>{% trans "You currently have no languages installed" %}</p>
-    {% endif %}
-    
-</div>
+    <div class="download-actions get-language vertical-shadow">
+        <h2 class="button_text">{% trans "Download or Update Language Packs" %}</h2>
 
-<div class="download-actions subtitles-download vertical-shadow">
-    <h2 class="button_text">{% trans "Download or update Languages" %}</h2> 
-<!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages 
-    Assume we are getting something like: 
-    [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
--->
-    <span class= "button_style">
-        <select id="language-packs">
-        </select>
-    </span>
+        <span>
+            {% trans "Language packs contain all available translations for the interface and video subtitles." %}
+        </span>
+        <br/>
 
-    <button class="download-subtitles" type="button" disabled>{% trans "Get Language" %}</button>
-    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
+        <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
+            Assume we are getting something like:
+            [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
+        -->
+        <div id="langpacks">
+            <span class= "button_style">
+                <select id="language-packs"></select>
+            </span>
 
-</div>
-<!-- 
-<div class="download-actions subtitles-download vertical-shadow">
-    <h2 class="button_text">{% trans "Download/update subtitles for existing videos" %}</h2>
-    <span class= "button_style">
-        <select id="language">
-            {% if languages %}
-                {% for language in languages %}
-                    <option value="{{ language.id }}" {% ifequal language.id default_language %} selected {% endifequal %}>{{ language.name }}</option>
-                {% endfor %}
-            {% endif %}
-        </select>
-    </span>
-
-    <button class="download-subtitles" type="button" disabled>{% trans "Get/Update All Subtitles" %}</button>
-    <button class="download-subtitles" new_only=true type="button" disabled>{% trans "Get Missing Subtitles Only" %}</button>
-
-</div>
-
---> 
-
-
-<div>
-    <!-- note: id must match the "updates" app process name -->
-    <div id="subtitledownload-progressbar">
-        {% include "updates/progress-bar.html" %}
-        {# <button id="retry-subtitle-download" type="button">{% trans "Subtitle download error... click to retry" %}</button> #}
+            <button id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
+        </div>
+        <div id="langpack-details">
+            <span id="lp-num-srts"></span><label> {% trans "subtitle(s)" %}</label>
+            <span id="lp-pct-trans"></span><label> {% trans "translated" %}</label>
+            <span id="lp-down-size"></span><label> ({% trans "to download" %})</label>
+            <span id="lp-disk-size"></span><label> ({% trans "on disk" %})</label>
+            <span id="lp-num-exers"></span><label> {% trans "exercise(s)" %}</label>
+        </div>
     </div>
+    <div class="clear"></div>
+
+    <div id="languagepackdownload-progressbar">
+        {% include "updates/progress-bar.html" %}
+    </div>
+    <div class="clear"></div>
 
     <div>
-        <button id="cancel-download" type="button">{% trans "Cancel All Downloads" %}</button>
+        <h2>{% trans "Installed Languages" %}</h2>
+        <div class="installed-languages">
+        </div>
     </div>
-</div>
-
-<div style="clear: both;"></div>
-<script src="http://{{ central_server_host }}/api/language_packs/available/?callback=show_language_packs"></script>
-
 {% endblock content %}

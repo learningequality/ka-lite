@@ -28,16 +28,20 @@ from django.core.management.base import BaseCommand, CommandError
 import settings
 import utils.platforms
 from kalite.management.commands.zip_kalite import create_default_archive_filename, Command as ZipCommand
-from kalite.management.commands.update import Command as UpdateCommand
 from securesync import engine
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
 from settings import LOG as logging
 from utils.general import get_module_source_file
 from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
+from updates.management.commands.update import Command as UpdateCommand
 
 
-def install_from_package(install_json_file, signature_file, zip_file, dest_dir=None):
+def install_from_package(data_json_file, signature_file, zip_file, dest_dir=None, install_files=[]):
+    """
+    NOTE: This docstring (below this line) will be dumped as a README file.
+    Congratulations on downloading KA Lite!  These instructions will help you install KA Lite.
+    """
     import glob
     import os
     import shutil
@@ -45,32 +49,37 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
 
     # Make the true paths
     src_dir = os.path.dirname(__file__) or os.getcwd()  # necessary on Windows
-    install_json_file = os.path.join(src_dir, install_json_file)
+    data_json_file = os.path.join(src_dir, data_json_file)
     signature_file = os.path.join(src_dir, signature_file)
     zip_file = os.path.join(src_dir, zip_file)
 
     # Validate the unpacked files
-    for file in [install_json_file, signature_file, zip_file]:
+    for file in [data_json_file, signature_file, zip_file]:
         if not os.path.exists(file):
             raise Exception("Could not find expected file from zip package: %s" % file)
 
     # get the destination directory
-    while not dest_dir or not os.path.exists(dest_dir):
-        if dest_dir:
-            sys.stderr.write("Path does not exist: %s" % dest_dir)
+    while not dest_dir or not os.path.exists(dest_dir) or raw_input("%s: Directory exists; install? [Y/n] " % dest_dir) not in ["", "y", "Y"]:
+        if dest_dir and raw_input("%s: Directory does not exist; Create and install? [y/N] " % dest_dir) in ["y","Y"]:
+            try:
+                os.makedirs(os.path.realpath(dest_dir)) # can't use ensure_dir; external dependency.
+                break
+            except Exception as e:
+                sys.stderr.write("Failed to create dest dir (%s): %s\n" % (dest_dir, e))
         dest_dir = raw_input("Please enter the directory where you'd like to install KA Lite (blank=%s): " % src_dir) or src_dir
 
     # unpack the inner zip to the destination
     system_specific_unzipping(zip_file, dest_dir)
     sys.stdout.write("\n")
 
-    shutil.copy(install_json_file, os.path.join(dest_dir, "kalite/static/data/"))
+    # Copy, so that if the installation fails, it can be restarted
+    shutil.copy(data_json_file, os.path.join(dest_dir, "kalite/static/data/"))
 
-    # Run the install/start scripts
-    files = [f for f in glob.glob(os.path.join(dest_dir, "install*%s" % system_script_extension())) if not "from_zip" in f]
+    # Run the setup/start scripts
+    files = [f for f in glob.glob(os.path.join(dest_dir, "setup*%s" % system_script_extension())) if not "from_zip" in f]
     return_code = os.system('"%s"' % files[0])
     if return_code:
-        sys.stderr.write("Failed to install KA Lite: exit-code = %s" % return_code)
+        sys.stderr.write("Failed to set up KA Lite: exit-code = %s" % return_code)
         sys.exit(return_code)
     return_code = os.system('"%s"' % os.path.join(dest_dir, "start%s" % system_script_extension()))
     if return_code:
@@ -78,11 +87,23 @@ def install_from_package(install_json_file, signature_file, zip_file, dest_dir=N
         sys.exit(return_code)
 
     # move the data file to the expected location
-    os.mkdir(os.path.join(dest_dir, "kalite/static/zip"))
-    shutil.move(zip_file, os.path.join(dest_dir, "kalite/static/zip/"))
-    shutil.move(signature_file, os.path.join(dest_dir, "kalite/static/zip/"))
-    os.remove(install_json_file)  # was copied in earlier
+    static_zip_dir = os.path.join(dest_dir, "kalite/static/zip")
+    if not os.path.exists(static_zip_dir):
+        os.mkdir(static_zip_dir)
+    shutil.move(zip_file, static_zip_dir)
+    shutil.move(signature_file, static_zip_dir)
 
+    # Remove the remaining install files
+    os.remove(data_json_file)  # was copied in earlier
+    for f in install_files:
+        fpath = os.path.join(src_dir, f)
+        if not os.path.exists(fpath):
+            continue
+        try:
+            os.remove(fpath)
+            sys.stdout.write("Removed installation file %s\n" % fpath)
+        except Exception as e:
+            sys.stderr.write("Failed to delete installation file %s: %s\n" % (fpath, e))
 
 class Command(BaseCommand):
     """
@@ -117,7 +138,7 @@ class Command(BaseCommand):
         ),
     )
     
-    install_py_file = "install_from_zip.py"
+    install_py_file = "install.py"
 
     def handle(self, *args, **options):
 
@@ -169,58 +190,6 @@ class Command(BaseCommand):
         models_file = create_json_file(options["include_data"])
 
         # Pre-zip prep #2:
-        #   Create the install script.
-        def create_install_files():
-            install_files = {}
-
-            # Create the install_from_package python script,
-            #   by outputting the install_from_package function (extracting here
-            #   through inspection and dumping line-by-line), and its dependencies
-            #   (utils.platforms, grabbed here through force).
-            #
-            # Also output a call to the function.
-            install_files[self.install_py_file] = tempfile.mkstemp()[1]
-            with open(install_files[self.install_py_file], "w") as fp:
-                for srcline in inspect.getsourcelines(install_from_package)[0]:
-                    fp.write(srcline)
-                fp.write("\n%s\n" % open(get_module_source_file("utils.platforms"), "r").read())
-                fp.write("\ninstall_from_package(\n")
-                fp.write("    zip_file='%s',\n" % UpdateCommand.inner_zip_filename)
-                fp.write("    signature_file='%s',\n" % UpdateCommand.signature_filename)
-                fp.write("    install_json_file='%s',\n" % InitCommand.install_json_filename)
-                fp.write(")\n")
-                fp.write("print 'Installation completed!'")
-            
-            # Create clickable scripts: unix
-            install_sh_file = self.install_py_file[:-3] + ".sh"
-            install_files[install_sh_file] = tempfile.mkstemp()[1]
-            with open(install_files[install_sh_file], "w") as fp:
-                fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
-                fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
-                fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)
-
-            # Create clickable scripts: mac
-            install_command_file = self.install_py_file[:-3] + ".command"
-            install_files[install_command_file] = tempfile.mkstemp()[1]
-            with open(install_files[install_command_file], "w") as fp:
-                fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
-                fp.write('\nsource "$current_dir/%s"' % install_sh_file)
-
-            # Create clickable scripts: windows
-            install_bat_file = self.install_py_file[:-3] + ".bat"
-            install_files[install_bat_file] = tempfile.mkstemp()[1]
-            with open(install_files[install_bat_file], "w") as fp:
-                fp.write("start /b /wait python.exe %s" % self.install_py_file)
-
-            # Change permissions--I WISH THIS WORKED!!
-            if not is_windows():
-                for fil in install_files.values():
-                    os.chmod(fil, 0775)
-
-            return install_files
-        install_files = create_install_files()
-
-        # Pre-zip prep #3:
         #   Generate the INNER zip
         def create_inner_zip_file():
             zip_file = os.path.join(settings.MEDIA_ROOT, "zip", os.path.basename(create_default_archive_filename(options)))
@@ -232,7 +201,7 @@ class Command(BaseCommand):
             return zip_file
         inner_zip_file = create_inner_zip_file()
 
-        # Pre-zip prep #4:
+        # Pre-zip prep #3:
         #   Create a file with the inner zip file signature.
         def create_signature_file(inner_zip_file):
             signature_file = os.path.splitext(inner_zip_file)[0] + "_signature.txt"
@@ -247,12 +216,74 @@ class Command(BaseCommand):
             return signature_file
         signature_file = create_signature_file(inner_zip_file)
 
-        # Create the outer (wrapper) zip
+        # Gather files together
         files_dict = {
             UpdateCommand.inner_zip_filename: inner_zip_file,
             UpdateCommand.signature_filename: signature_file,
-            InitCommand.install_json_filename: models_file,
+            InitCommand.data_json_filename:   models_file,
         }
+
+        # Pre-zip prep #4:
+        #   Create the install scripts.
+        def create_install_files(files_dict={}):
+            install_files = {}  # need to keep track of, for later cleanup
+
+            # Create clickable scripts: unix
+            install_sh_file = self.install_py_file[:-3] + "_linux.sh"
+            install_files[install_sh_file] = tempfile.mkstemp()[1]
+            with open(install_files[install_sh_file], "w") as fp:
+                fp.write("echo 'Searching for python path...'\n")
+                fp.write(open(os.path.realpath(settings.PROJECT_PATH + "/../scripts/python.sh"), "r").read())
+                fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
+                fp.write('\n$PYEXEC "$current_dir/%s"' % self.install_py_file)
+
+            # Create clickable scripts: mac
+            install_command_file = self.install_py_file[:-3] + "_mac.command"
+            install_files[install_command_file] = tempfile.mkstemp()[1]
+            with open(install_files[install_command_file], "w") as fp:
+                fp.write('\ncurrent_dir=`dirname "${BASH_SOURCE[0]}"`')
+                fp.write('\nsource "$current_dir/%s"' % install_sh_file)
+
+            # Create clickable scripts: windows
+            install_bat_file = self.install_py_file[:-3] + "_windows.bat"
+            install_files[install_bat_file] = tempfile.mkstemp()[1]
+            with open(install_files[install_bat_file], "w") as fp:
+                fp.write("start /b /wait python.exe %s" % self.install_py_file)
+
+            # Dump readme file
+            readme_file = "README"
+            install_files[readme_file] = tempfile.mkstemp()[1]
+            with open(install_files[readme_file], "w") as fp:
+                # First line of docstring is a message that the docstring will
+                #   be the readme.  Remove that, dump the rest raw!
+                fp.write(inspect.getdoc(install_from_package).split("\n", 2)[1])
+
+            # NOTE: do this last, so we can pass the set of install files in the 
+            #   function call, for effective cleanup.
+
+            # Create the install python script,
+            #   by outputting the install_from_package function (extracting here
+            #   through inspection and dumping line-by-line), and its dependencies
+            #   (utils.platforms, grabbed here through force).
+            #
+            # Also output a call to the function.
+            install_files[self.install_py_file] = tempfile.mkstemp()[1]
+            with open(install_files[self.install_py_file], "w") as fp:
+                for srcline in inspect.getsourcelines(install_from_package)[0]:
+                    fp.write(srcline)
+                fp.write("\n%s\n" % open(get_module_source_file("utils.platforms"), "r").read())
+                fp.write("\ninstall_from_package(\n")
+                fp.write("    zip_file='%s',\n" % UpdateCommand.inner_zip_filename)
+                fp.write("    signature_file='%s',\n" % UpdateCommand.signature_filename)
+                fp.write("    data_json_file='%s',\n" % InitCommand.data_json_filename)
+                fp.write("    install_files=%s,\n" % (files_dict.keys() + install_files.keys()))
+                fp.write(")\n")
+                fp.write("print 'Installation completed!'")
+
+            return install_files
+        install_files = create_install_files(files_dict=files_dict)
+
+        # FINAL: Create the outer (wrapper) zip
         files_dict.update(install_files)
         system_specific_zipping(
             files_dict = files_dict,

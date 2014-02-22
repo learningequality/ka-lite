@@ -20,7 +20,7 @@ def is_windows(system=None):
 
 def is_osx(system=None):
     system = system or platform.system()
-    return system.lower() == "darwin"
+    return system.lower() in ["darwin", "macosx"]
 
 
 def system_script_extension(system=None):
@@ -84,10 +84,7 @@ def system_specific_zipping(files_dict, zip_file=None, compression=ZIP_DEFLATED,
             # Add with exec perms
             else:
                 info = ZipInfo(dest_path)
-                if ext in system_specific_scripts(system="linux"):
-                    info.external_attr = 0775 << 16L # give full access to included file
-                else:
-                    info.external_attr = 0775        # give full access to included file
+                info.external_attr = 0775 << ((1 - is_osx()) * 16L) # give full access to included file
                 with open(src_path, "r") as fh:
                     zfile.writestr(info, fh.read())
         zfile.close()
@@ -128,4 +125,4 @@ def system_specific_unzipping(zip_file, dest_dir, callback=_default_callback_unz
         zip.extract(afile, path=dest_dir)
         # If it's a unix script or manage.py, give permissions to execute
         if (not is_windows()) and (os.path.splitext(afile)[1] in system_specific_scripts() or afile.endswith("manage.py")):
-            os.chmod(os.path.realpath(dest_dir + "/" + afile), 0755 if is_osx() else (0755 << 16L))
+            os.chmod(os.path.realpath(dest_dir + "/" + afile), 0775)

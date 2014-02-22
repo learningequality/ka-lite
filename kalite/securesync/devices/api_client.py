@@ -25,17 +25,18 @@ class RegistrationClient(BaseClient):
 
         2. register_via_preregistered_key (deprecated):
             We have no zone information; instead, we connect with the
-            central server directly, and get zone information from 
+            central server directly, and get zone information from
             there.  This requires a previous manual step, where the
             public key of this device has been registered to be accepted
             onto that zone.
         """
         # Get the required model data by registering (online and offline options available)
         try:
-            if prove_self:
-                (models,response) = self.register_prove_self_registration()
-            else:
-                models = self.register_via_preregistered_key()
+#            if not prove_self:
+            models = self.register_via_preregistered_key()
+#            else:
+#                (models,response) = self.register_prove_self_registration()
+
         except Exception as e:
             # Some of our exceptions are actually json blobs from the server.
             #   Try loading them to pass on that error info.
@@ -44,19 +45,19 @@ class RegistrationClient(BaseClient):
             except:
                 return { "code": "unexpected_exception", "error": e.message }
 
-        # If we got here, we've successfully registered, and 
+        # If we got here, we've successfully registered, and
         #   have the model data necessary for completing registration!
         for model in models:
             # BUG(bcipolli)
             # Shouldn't we care when things fail to verify??
             if not model.object.verify():
-                logging.warn("\n\n\nFailed to verify model: %s!\n\n\n" % str(model.object))
-                
+                logging.warn("\n\n\nFailed to verify model: %s!\n\n\n" % unicode(model.object))
+
             # save the imported model, and mark the returned Device as trusted
             if isinstance(model.object, Device):
-                model.object.save(is_trusted=True, imported=True)
+                model.object.save(is_trusted=True, imported=True, increment_counters=False)
             else:
-                model.object.save(imported=True)
+                model.object.save(imported=True, increment_counters=False)
 
         # If that all completes successfully, then we've registered!  Woot!
         return {"code": "registered"}
@@ -67,7 +68,7 @@ class RegistrationClient(BaseClient):
         Prove that we belong on our zone by providing the chain of trust,
         from us to the creator of the zone.
         """
-        # Get all the 
+        # Get all the
         own_device = Device.get_own_device()
         try:
             own_devicezone = DeviceZone.objects.get(device=own_device)  # We exit if not found
@@ -102,7 +103,7 @@ class RegistrationClient(BaseClient):
 
     def register_via_preregistered_key(self):
         """Register this device with a zone, through the central server directly"""
-        
+
         own_device = Device.get_own_device()
 
         # Since we can't know the version of the remote device (yet),
@@ -123,6 +124,6 @@ class RegistrationClient(BaseClient):
             raise Exception(r.content)
 
         else:
-            # Save to our local store.  By NOT passing a src_version, 
+            # Save to our local store.  By NOT passing a src_version,
             #   we're saying it's OK to just store what we can.
             return engine.deserialize(r.content, src_version=None, dest_version=own_device.get_version())

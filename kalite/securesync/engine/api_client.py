@@ -9,13 +9,14 @@ from .models import *
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
+from settings import LOG as logging
 
 
 class SyncClient(BaseClient):
     """ This is for the distributed server, for establishing a client session with
     the central server.  Over that session, syncing can occur in multiple requests.
-    
-    Note that in the future, this object may be used to sync 
+
+    Note that in the future, this object may be used to sync
     between two distributed servers (i.e. peer-to-peer sync)!"""
     session = None
 
@@ -38,7 +39,7 @@ class SyncClient(BaseClient):
         self.session = SyncSession()
 
         # Request one: validate me as a sessionable partner
-        (self.session.client_nonce, 
+        (self.session.client_nonce,
          self.session.client_device,
          data) = self.validate_me_on_server()
 
@@ -96,12 +97,12 @@ class SyncClient(BaseClient):
         try:
             data = json.loads(raw_data)
         except ValueError as e:
-            z = re.search(r'exception_value">([^<]+)<', str(raw_data), re.MULTILINE)
+            z = re.search(r'exception_value">([^<]+)<', unicode(raw_data), re.MULTILINE)
             if z:
                 raise Exception("Could not load JSON\n; server error=%s" % z.group(1))
             else:
                 raise Exception("Could not load JSON\n; raw content=%s" % raw_data)
-            
+
         # Happens if the server reports an error
         if data.get("error"):
             # This happens when a device points to a new central server,
@@ -174,7 +175,8 @@ class SyncClient(BaseClient):
         for device_id in devices_to_download: # force
             try:
                 d = Device.objects.get(id=device_id)
-            except:
+            except Exception as e:
+                logging.error("Exception locating device %s for metadata creation: %s" % (device_id, e))
                 continue
 
             if not d.get_counter_position():  # this would be nonzero if the device sync'd models
@@ -194,7 +196,7 @@ class SyncClient(BaseClient):
         """
         This method first syncs device counters and device objects, so that the two computers
         can determine who has what and, in comparison, what it needs to request.
-        
+
         Then, it uses those device records to partially download and partially upload.
         Not all at once--that would be less robust!
 
@@ -220,6 +222,7 @@ class SyncClient(BaseClient):
             self.session.errors += download_results.has_key("error")
             self.session.errors += download_results.has_key("exceptions")
         except Exception as e:
+            logging.debug("Exception downloading models: %s" % e)
             download_results["error"] = e
             self.session.errors += 1
 
@@ -237,6 +240,7 @@ class SyncClient(BaseClient):
             self.session.errors += upload_results.has_key("error")
             self.session.errors += upload_results.has_key("exceptions")
         except Exception as e:
+            logging.debug("Exception uploading models: %s" % e)
             upload_results["error"] = e
             self.session.errors += 1
 

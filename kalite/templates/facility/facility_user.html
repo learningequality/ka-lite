@@ -1,0 +1,51 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block addteacher_active %}{% if user_id == "new" and teacher %}active{% endif %}{% endblock addteacher_active %}
+{% block addstudent_active %}{% if user_id == "new" and not teacher %}active{% endif %}{% endblock addstudent_active %}
+{% block signup_active %}{% if user_id == "new" and not request.admin %}active{% endif %}{% endblock signup_active %}
+{% block easy_admin_active %}{% if user_id != "new" and request.admin %}active{% endif %}{% endblock easy_admin_active %}
+
+
+{% block headjs %}{{ block.super }}
+<script>
+    $(function() {
+    {% if request.is_admin %}
+        {% trans "Add a new group" as add_new_group %}
+        $('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
+    {% elif num_groups == 0 %}
+        $('#id_group').parent().hide();
+    {% endif %}
+    {% if request.is_admin and teacher %}
+        $("#id_group").attr('disabled',true);
+        $("#id_group").parent().hide();
+    {% endif %}
+    });
+</script>
+{% endblock headjs %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post" class="basic-form">
+    {% csrf_token %}
+
+    {% if not singlefacility %}
+        <p>
+            <label>{% trans "Facility: " %}</label>
+            {{ facility }}
+            {% if request.is_admin %}
+                <a href="?facility=select">{% trans "(Select a different facility)" %}</a>
+            {% endif %}
+        </p>
+    {% endif %}
+
+    {{ form.as_p }}
+
+    {% if user_id == "new" %}
+    <input type="submit" value="{% trans 'Create user' %}" class="submit"/>
+    {% else %}
+    <input type="submit" value="{% trans 'Update user' %}" class="submit"/>
+    {% endif %}
+</form>
+{% endblock content %}

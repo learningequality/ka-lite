@@ -20,23 +20,22 @@ from django.utils.translation import ugettext as _
 
 from .forms import DataForm
 from config.models import Settings
-from main import topicdata
-from main.models import VideoLog, ExerciseLog, VideoFile, UserLog, UserLogSummary
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
-from securesync.views import facility_required
+from facility.decorators import facility_required
+from facility.models import Facility, FacilityUser, FacilityGroup
+from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
+from main.topic_tools import get_topic_by_path, get_node_cache
 from settings import LOG as logging
-from shared.decorators import allow_api_profiling
-from shared.topic_tools import get_topic_by_path
+from testing.decorators import allow_api_profiling
 from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 
 
 # Global variable of all the known stats, their internal and external names,
 #    and their "datatype" (which is a value that Google Visualizations uses)
 stats_dict = [
-    {"key": "pct_mastery",        "name": _("% Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)"), "timeline": True},
-    {"key": "effort",             "name": _("% Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
-    {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
-    {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
+    {"key": "pct_mastery",        "name": _("Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)"), "timeline": True},
+    {"key": "effort",             "name": _("Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
+    {"key": "ex:attempts",        "name": _("Attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
+    {"key": "ex:streak_progress", "name": _("Streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
     {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
     { "key": "ex:completion_timestamp", "name": _("Time exercise completed"),"type": "datetime", "description": _("Day/time the exercise was completed.") },
     {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},
@@ -46,7 +45,7 @@ stats_dict = [
 
 user_log_stats_dict = [
     { "key": "usersum:total_seconds", "name": _("Time Active (s)"), "type": "number", "description": _("Total time spent actively logged in.")},
-    { "key": "user:total_seconds", "name": _("Active Time Per Login"), "type": "number", "description": "Duration of each login session.", "noscatter": True, "timeline": True},
+    { "key": "user:total_seconds", "name": _("Active Time Per Login"), "type": "number", "description": _("Duration of each login session."), "noscatter": True, "timeline": True},
     { "key": "user:last_active_datetime", "name": _("Time Session Completed"),"type": "datetime", "description": _("Day/time the login session finished.")},
 ]
 
@@ -111,17 +110,17 @@ def get_data_form(request, *args, **kwargs):
         if not request.is_admin:
             if group and form.data["group"] and group.id != form.data["group"]:  # can't go outside group
                 # We could also redirect
-                raise PermissionDenied("You cannot choose a group outside of your group.")
+                raise PermissionDenied(_("You cannot choose a group outside of your group."))
             elif facility and form.data["facility"] and facility.id != form.data["facility"]:
                 # We could also redirect
-                raise PermissionDenied("You cannot choose a facility outside of your own facility.")
+                raise PermissionDenied(_("You cannot choose a facility outside of your own facility."))
             elif not request.is_admin:
                 if not form.data["user"]:
                     # We could also redirect
-                    raise PermissionDenied("You cannot choose facility/group-wide data.")
+                    raise PermissionDenied(_("You cannot choose facility/group-wide data."))
                 elif user and form.data["user"] and user.id != form.data["user"]:
                     # We could also redirect
-                    raise PermissionDenied("You cannot choose a user outside of yourself.")
+                    raise PermissionDenied(_("You cannot choose a user outside of yourself."))
 
     # Fill in backwards: a user implies a group
     if form.data.get("user") and not form.data.get("group"):
@@ -154,8 +153,8 @@ def query_logs(users, items, logtype, logdict):
         all_logs = ExerciseLog.objects.filter(user__in=users, exercise_id__in=items).values(
                         'user', 'complete', 'exercise_id', 'attempts', 'points', 'struggling', 'completion_timestamp', 'streak_progress').order_by('completion_timestamp')
     elif logtype == "video":
-        all_logs = VideoLog.objects.filter(user__in=users, youtube_id__in=items).values(
-            'user', 'complete', 'youtube_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
+        all_logs = VideoLog.objects.filter(user__in=users, video_id__in=items).values(
+            'user', 'complete', 'video_id', 'total_seconds_watched', 'completion_timestamp', 'points').order_by('completion_timestamp')
     elif logtype == "activity" and UserLog.is_enabled():
         all_logs = UserLog.objects.filter(user__in=users).values(
             'user', 'last_active_datetime', 'total_seconds').order_by('last_active_datetime')
@@ -163,7 +162,8 @@ def query_logs(users, items, logtype, logdict):
         all_logs = UserLogSummary.objects.filter(user__in=users).values(
             'user', 'device', 'total_seconds').order_by('end_datetime')
     else:
-        raise Exception("Unknown log type: '%s'" % logtype)
+        assert False, "Unknown log type: '%s'" % logtype  # indicates a programming error
+
     for log in all_logs:
         logdict[log['user']].append(log)
     return logdict
@@ -198,16 +198,16 @@ def compute_data(data_types, who, where):
     #   Only do them if they haven't been done yet (tell this by passing in a value to the lambda function)
     # Topics: topics.
     # Exercises: names (ids for ExerciseLog objects)
-    # Videos: youtube_id (ids for VideoLog objects)
+    # Videos: video_id (ids for VideoLog objects)
 
-    # This lambda partial creates a function to return all items with a particular path from the NODECACHE.
+    # This lambda partial creates a function to return all items with a particular path from the NODE_CACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
-    # This lambda partial creates a function to return all items with paths matching a list of paths from NODECACHE.
-    search_fun_multi_path = partial(lambda t, p: any([tp.startswith(p) for tp in t["paths"]]),  p=tuple(where))
+    # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
+    search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex["name"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid["youtube_id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, get_node_cache('Exercise').values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -255,7 +255,7 @@ def compute_data(data_types, who, where):
             elif data_type.startswith("vid:") and data_type[4:] in [f.name for f in VideoLog._meta.fields]:
 
                 for user in data.keys():
-                    data[user][data_type] = OrderedDict([(v['youtube_id'], v[data_type[4:]]) for v in vid_logs[user]])
+                    data[user][data_type] = OrderedDict([(v['video_id'], v[data_type[4:]]) for v in vid_logs[user]])
 
             # Just querying out data directly: Exercise
             elif data_type.startswith("ex:") and data_type[3:] in [f.name for f in ExerciseLog._meta.fields]:
@@ -296,26 +296,28 @@ def compute_data(data_types, who, where):
     }
 
 
-def convert_topic_tree_for_dynatree(node, level=0):
+def convert_topic_tree_for_dynatree(node):
     """Converts topic tree from standard dictionary nodes
     to dictionary nodes usable by the dynatree app"""
 
     if node["kind"] == "Topic":
+        # Only show topics with exercises
         if "Exercise" not in node["contains"]:
             return None
+
         children = []
         for child_node in node["children"]:
-            child = convert_topic_tree_for_dynatree(child_node, level=level + 1)
+            child = convert_topic_tree_for_dynatree(child_node)
             if child:
                 children.append(child)
 
         return {
-            "title": node["title"],
+            "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
             "isFolder": True,
             "key": node["path"],
             "children": children,
-            "expand": level < 1,
+            "expand": False,  # top level
         }
     return None
 
@@ -323,7 +325,7 @@ def convert_topic_tree_for_dynatree(node, level=0):
 # view endpoints #######
 
 @api_handle_error_with_json
-def get_topic_tree(request, topic_path):
+def get_exercise_topic_tree(request, topic_path):
     return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
 
 
@@ -355,11 +357,11 @@ def api_data(request, xaxis="", yaxis=""):
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
         users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], is_teacher=False).order_by("last_name", "first_name")
     else:
-        return HttpResponseNotFound("Did not specify facility, group, nor user.")
+        return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
 
     # Query out the data: where?
     if not form.data.get("topic_path"):
-        return HttpResponseNotFound("Must specify a topic path")
+        return HttpResponseNotFound(_("Must specify a topic path"))
 
     # Query out the data: what?
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))

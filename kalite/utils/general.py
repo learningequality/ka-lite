@@ -1,12 +1,12 @@
 """
-Miscellaneous utility functions (no dependence on non-standard packages, such as Django) 
+Miscellaneous utility functions (no dependence on non-standard packages, such as Django)
 
 General string, integer, date functions.
 """
 import datetime
-import logging
-import requests
+import json
 import os
+import errno
 
 
 class InvalidDateFormat(Exception):
@@ -118,8 +118,9 @@ def version_diff(v1, v2):
 
     v1_parts = v1.split(".")
     v2_parts = v2.split(".")
-    if len(v1_parts) != len(v2_parts):
-        raise Exception("versions must have the same number of components (periods)")
+
+    v1_parts += ["0"] * (len(v2_parts) - len(v1_parts))
+    v2_parts += ["0"] * (len(v1_parts) - len(v2_parts))
 
     for v1p,v2p in zip(v1_parts,v2_parts):
         cur_diff = int(v1p)-int(v2p)
@@ -129,10 +130,20 @@ def version_diff(v1, v2):
     return 0
 
 
+# http://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 def ensure_dir(path):
     """Create the entire directory path, if it doesn't exist already."""
-    if not os.path.exists(path):
+    try:
         os.makedirs(path)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            # file already exists
+            if not os.path.isdir(path):
+                # file exists but is not a directory
+                raise OSError(errno.ENOTDIR, "Not a directory: '%s'" % path)
+            pass  # directory already exists
+        else:
+            raise
 
 # http://code.activestate.com/recipes/82465-a-friendly-mkdir/
 #def _mkdir(newdir):
@@ -194,30 +205,15 @@ def max_none(data):
     return max(non_none_data) if non_none_data else None
 
 
-def make_request(headers, url, max_retries=5):
-    """Return response from url; retry up to 5 times for server errors.
-    When returning an error, return human-readable status code.
-
-    codes: server-error, client-error
-    """
-    for retries in range(1, 1 + max_retries):
-        try:
-            r = requests.get(url, headers=headers)
-            if r.status_code > 499:
-                if retries == max_retries:
-                    logging.warn(
-                        "Error downloading %s: server-side error (%d)" % (url, r.status_code))
-                    r = "server-error"
-                    break;
-            elif r.status_code > 399:
-                logging.warn(
-                    "Error downloading %s: client-side error (%d)" % (url, r.status_code))
-                r = "client-error"
-                break
-            # TODO(dylan): if internet connection goes down, we aren't catching
-            # that, and things just break
-            else:
-                break
-        except Exception as e:
-            logging.warn("Error downloading %s: %s" % (url, e))
-    return r
+def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    if default == {}:
+        default = {}
+    try:
+        with open(json_filepath, "r") as fp:
+            return json.load(fp)
+    except Exception as e:
+        if logger:
+            logger("%s %s: %s" % (errmsg, json_filepath, e))
+        if raises:
+            raise
+        return default

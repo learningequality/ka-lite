@@ -1,6 +1,6 @@
 from django import forms
 
-from main.topicdata import ID2SLUG_MAP, NODE_CACHE
+from .topic_tools import get_node_cache
 
 
 class ExerciseLogForm(forms.Form):
@@ -15,24 +15,25 @@ class ExerciseLogForm(forms.Form):
         """
         Make sure the exercise ID is found.
         """
-        if not self.cleaned_data.get("exercise_id", "") in NODE_CACHE['Exercise']:
+        if not self.cleaned_data.get("exercise_id", "") in get_node_cache('Exercise'):
             raise forms.ValidationError(_("Exercise ID not recognized"))
 
 
 class VideoLogForm(forms.Form):
     """Form that represents the schema for data API requests"""
 
-    youtube_id = forms.CharField(max_length=25)
+    video_id = forms.CharField(max_length=100)
+    youtube_id = forms.CharField(max_length=20)
     total_seconds_watched = forms.FloatField(required=False)
     seconds_watched = forms.FloatField(required=False)
     points = forms.IntegerField()
 
-    def clean_youtube_id(self):
+    def clean_video_id(self):
         """
-        Make sure the youtube ID is found.
+        Make sure the video ID is found.
         """
-        if not self.cleaned_data.get("youtube_id", "") in ID2SLUG_MAP:
-            raise forms.ValidationError(_("Youtube ID not recognized."))
+        if self.cleaned_data["video_id"] not in get_node_cache("Video"):
+            raise forms.ValidationError(_("Video ID not recognized."))
 
 class DateTimeForm(forms.Form):
     """Form that validates DateTimes to be set on the server for the RPi"""

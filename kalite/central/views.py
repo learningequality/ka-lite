@@ -24,6 +24,7 @@ from central.models import Organization, OrganizationInvitation, DeletionRecord,
 from securesync.engine.api_client import SyncClient
 from securesync.models import Zone
 from shared.decorators import require_authorized_admin
+from utils.django_utils import get_request_ip
 
 
 def get_central_server_host(request):
@@ -62,7 +63,7 @@ def org_management(request, org_id=None):
         if form.is_valid():
             # ensure that the current user is a member of the organization to which someone is being invited
             if not form.instance.organization.is_member(request.user):
-                raise PermissionDenied("Unfortunately for you, you do not have permission to do that.")
+                raise PermissionDenied(_("Unfortunately for you, you do not have permission to do that."))
             # send the invitation email, and save the invitation record
             form.instance.send(request)
             form.save()
@@ -75,7 +76,7 @@ def org_management(request, org_id=None):
     zones = {}
     for org in organizations.values():
         zones[org.pk] = []
-        for zone in org.get_zones():
+        for zone in list(org.get_zones()):
             zones[org.pk].append({
                 "id": zone.id,
                 "name": zone.name,
@@ -86,9 +87,10 @@ def org_management(request, org_id=None):
         "organizations": organizations,
         "zones": zones,
         "HEADLESS_ORG_NAME": Organization.HEADLESS_ORG_NAME,
-        "invitations": OrganizationInvitation.objects \
+        "my_invitations": list(OrganizationInvitation.objects \
             .filter(email_to_invite=request.user.email)
-            .order_by("organization__name")
+            .order_by("organization__name")),
+        "download_url": reverse("install"),
     }
 
 
@@ -96,24 +98,25 @@ def org_management(request, org_id=None):
 def add_subscription(request):
     if request.method == "POST":
         sub = Subscription(email=request.POST.get("email"))
-        sub.ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get('REMOTE_ADDR', ""))
+        sub.ip = get_request_ip(request) or ""
         sub.save()
-        messages.success(request, "A subscription for '%s' was added." % request.POST.get("email"))
+        messages.success(request, _("A subscription for '%s' was added.") % request.POST.get("email"))
     return HttpResponseRedirect(reverse("homepage"))
+
 
 @login_required
 def org_invite_action(request, invite_id):
     invite = OrganizationInvitation.objects.get(pk=invite_id)
     org = invite.organization
     if request.user.email != invite.email_to_invite:
-        raise PermissionDenied("It's not nice to force your way into groups.")
+        raise PermissionDenied(_("It's not nice to force your way into groups."))
     if request.method == "POST":
         data = request.POST
         if data.get("join"):
-            messages.success(request, "You have joined " + org.name + " as an admin.")
+            messages.success(request, _("You have joined ") + org.name + _(" as an admin."))
             org.add_member(request.user)
         if data.get("decline"):
-            messages.warning(request, "You have declined to join " + org.name + " as an admin.")
+            messages.warning(request, _("You have declined to join ") + org.name + _(" as an admin."))
         invite.delete()
     return HttpResponseRedirect(reverse("org_management"))
 
@@ -123,14 +126,14 @@ def delete_admin(request, org_id, user_id):
     org = Organization.objects.get(pk=org_id)
     admin = org.users.get(pk=user_id)
     if org.owner == admin:
-        raise PermissionDenied("The owner of an organization cannot be removed.")
+        raise PermissionDenied(_("The owner of an organization cannot be removed."))
     if request.user == admin:
-        raise PermissionDenied("Your personal views are your own, but in this case " +
-            "you are not allowed to delete yourself.")
+        raise PermissionDenied(_("Your personal views are your own, but in this case ") +
+            _("you are not allowed to delete yourself."))
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_user=admin)
     deletion.save()
     org.users.remove(admin)
-    messages.success(request, "You have successfully removed " + admin.username + " as an administrator for " + org.name + ".")
+    messages.success(request, _("You have successfully removed ") + admin.username + _(" as an administrator for ") + org.name + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -141,7 +144,7 @@ def delete_invite(request, org_id, invite_id):
     deletion = DeletionRecord(organization=org, deleter=request.user, deleted_invite=invite)
     deletion.save()
     invite.delete()
-    messages.success(request, "You have successfully revoked the invitation for " + invite.email_to_invite + ".")
+    messages.success(request, _("You have successfully revoked the invitation for ") + invite.email_to_invite + ".")
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -173,11 +176,26 @@ def organization_form(request, org_id):
 @require_authorized_admin
 def delete_organization(request, org_id):
     org = Organization.objects.get(pk=org_id)
-    if org.get_zones():
-        messages.error(request, "You cannot delete '%s' because it has %d sharing network(s) affiliated with it." %(org.name, len(org.get_zones())))
+    num_zones = org.get_zones().count()
+    if num_zones > 0:
+        messages.error(request, _("You cannot delete '%(name)s' because it has %(num_zones)s sharing network(s) affiliated with it.") % {
+            "name": org.name,
+            "num_zones": num_zones,
+        })
     else:
-        messages.success(request, "You have successfully deleted " + org.name + ".")
+        messages.success(request, _("You have successfully deleted %(org_name)s.") % {"org_name": org.name})
         org.delete()
+    return HttpResponseRedirect(reverse("org_management"))
+
+
+@require_authorized_admin
+def delete_zone(request, org_id, zone_id):
+    zone = get_object_or_404(Zone, id=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, _("You have successfully deleted ") + zone.name + ".")
+    else:
+        messages.warning(request, _("You cannot delete this zone because it is syncing data with with %d device(s)") % zone.devicezone_set.count())
     return HttpResponseRedirect(reverse("org_management"))
 
 
@@ -201,8 +219,8 @@ def get_request_var(request, var_name, default_val="__empty__"):
     """
     return  request.POST.get(var_name, request.GET.get(var_name, default_val))
 
-@render_to("central/install_wizard.html")
-def install_wizard(request, edition=None):
+
+def download_wizard(request, edition=None):
     """
     NOTE that this wizard is ONLY PARTIALLY FUNCTIONAL (see below)
 
@@ -215,40 +233,54 @@ def install_wizard(request, edition=None):
     When they submit the form (to choose the zone), they get the download package.
 
     TODO(bcipolli):
-    * Don't show org, only show zone.  
+    * Don't show org, only show zone.
     * If a user has more than one organization, you only get zone information for the first zone.
     there's no way to show information from other orgs.
         If the user is logged in, theyIf not sent, the user has two options: "single server" or "multiple server".
-    
+
     """
     if not edition and request.user.is_anonymous():
-        return {}
+        @render_to("central/download_wizard.html")
+        def wizard_fn(request):
+            return {}
+        return wizard_fn(request)
 
     elif edition == "multiple-server" or not request.user.is_anonymous():
-        return install_multiple_server_edition(request)
+        return download_multiple_server_edition(request)
 
     elif edition == "single-server":
-        return install_single_server_edition(request)
+        return download_single_server_edition(request)
 
     else:
         raise Http404("Unknown server edition: %s" % edition)
 
 
-def install_single_server_edition(request):
+
+@render_to("central/download_thankyou.html")
+def download_thankyou(request, **kwargs):
+    return kwargs
+
+
+def download_single_server_edition(request):
     """
     """
     version = get_request_var(request, "version",  kalite.VERSION)
     platform = get_request_var(request, "platform", "all")
     locale = get_request_var(request, "locale", "en")
-    return HttpResponseRedirect(reverse("download_kalite_public", kwargs={
-        "version": kalite.VERSION,
-        "platform": platform,
-        "locale": locale,
-    }))
+
+    return download_thankyou(
+        request,
+        version=kalite.VERSION,
+        download_url=reverse("download_kalite_public", kwargs={
+            "version": kalite.VERSION,
+            "platform": platform,
+            "locale": locale,
+        }),
+    )
 
 
 @login_required
-def install_multiple_server_edition(request):
+def download_multiple_server_edition(request):
     # get a list of all the organizations this user helps administer,
     #   then choose the selected organization (if possible)
     # Get all data
@@ -262,13 +294,17 @@ def install_multiple_server_edition(request):
 
     # Loop over orgs and zones, building the dict of all zones
     #   while searching for the zone_id.
-    
+
     zones = []
     for org in request.user.organization_set.all().order_by("name"):
         for zone in org.zones.all().order_by("name"):
             if zone_id and zone_id == zone.id:
                 kwargs["zone_id"] = zone_id
-                return HttpResponseRedirect(reverse("download_kalite_private", kwargs=kwargs))
+                return download_thankyou(
+                    request,
+                    version=kwargs["version"],
+                    download_url=reverse("download_kalite_private", kwargs=kwargs),
+                )
             else:
                 zones.append({
                     "id": zone.id,
@@ -282,17 +318,20 @@ def install_multiple_server_edition(request):
             raise PermissionDenied()
         else:
             # We didnt't find it because it doesn't exist
-            raise Http404("Zone ID not found: %s" % zone_id)
+            raise Http404(_("Zone ID not found: %s") % zone_id)
 
     # If we get here, then no zone was specified.  So list the options.
     if len(zones) == 1:
         zone_id = zones[0]["id"]
 
-    return {
-        "zones": zones,
-        "selected_zone": zone_id or (zones[0]["id"] if len(zones) == 1 else None),
-        "edition": "multiple-server",
-    }
+    @render_to("central/download_wizard.html")
+    def wizard_fn(request):
+        return {
+            "zones": zones,
+            "selected_zone": zone_id or (zones[0]["id"] if len(zones) == 1 else None),
+            "edition": "multiple-server",
+        }
+    return wizard_fn(request)
 
 
 def download_kalite_public(request, *args, **kwargs):
@@ -301,20 +340,20 @@ def download_kalite_public(request, *args, **kwargs):
     try to sneak in unauthorized zone info!
     """
     if "zone_id" in kwargs or "zone" in request.REQUEST:
-        raise PermissionDenied("Must be logged in to download with zone information.")
+        raise PermissionDenied(_("Must be logged in to download with zone information."))
     return download_kalite(request, *args, **kwargs)
 
 
 @login_required
 def download_kalite_private(request, *args, **kwargs):
     """
-    Download with zone info--will authenticate that zone info 
+    Download with zone info--will authenticate that zone info
     below.
     """
     zone_id = kwargs.get("zone_id") or request.REQUEST.get("zone")
     if not zone_id:
         # No zone information = bad request (400)
-        return HttpResponse("Must specify zone information.", status=400)
+        return HttpResponse(_("Must specify zone information."), status=400)
 
     kwargs["zone_id"] = zone_id
     return download_kalite(request, *args, **kwargs)
@@ -324,9 +363,9 @@ def download_kalite(request, *args, **kwargs):
     """
     A request to download KA Lite, either without zone info, or with it.
     If with it, then we have to make sure it's OK for this user.
-    
+
     This endpoint is also set up to deal with platform, locale, and version,
-    though right now only direct URLs would set this (not via the install_wizard).
+    though right now only direct URLs would set this (not via the download wizard).
     """
 
     # Parse args
@@ -339,11 +378,11 @@ def download_kalite(request, *args, **kwargs):
 
     # Make sure this user has permission to admin this zone
     if zone and not request.user.is_authenticated():
-        raise PermissionDenied("Requires authentication")
+        raise PermissionDenied(_("Requires authentication"))
     elif zone:
         zone_orgs = Organization.from_zone(zone)
         if not zone_orgs or not set([org.id for org in zone_orgs]).intersection(set(get_or_create_user_profile(request.user).get_organizations().keys())):
-            raise PermissionDenied("You are not authorized to access this zone information.")
+            raise PermissionDenied(_("You are not authorized to access this zone information."))
 
     # Generate the zip file.  Pre-specify the zip filename,
     #   as we won't know the output location otherwise.
@@ -366,7 +405,7 @@ def download_kalite(request, *args, **kwargs):
     response = HttpResponse(content=zh, mimetype='application/zip', content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="%s"' % user_facing_filename
 
-    # Not sure if we could remove the zip file here; possibly not, 
+    # Not sure if we could remove the zip file here; possibly not,
     #   if it's a streaming response or byte-range reesponse
     return response
 
@@ -375,21 +414,21 @@ def download_kalite(request, *args, **kwargs):
 def crypto_login(request):
     """
     Remote admin endpoint, for login to a distributed server (given its IP address; see also securesync/views.py:crypto_login)
-    
+
     An admin login is negotiated using the nonce system inside SyncSession
     """
     if not request.user.is_superuser:
         raise PermissionDenied()
     ip = request.GET.get("ip", "")
     if not ip:
-        return HttpResponseNotFound("Please specify an IP (as a GET param).")
+        return HttpResponseNotFound(_("Please specify an IP (as a GET param)."))
     host = "http://%s/" % ip
     client = SyncClient(host=host, require_trusted=False)
     if client.test_connection() != "success":
-        return HttpResponse("Unable to connect to a KA Lite server at %s" % host)
+        return HttpResponse(_("Unable to connect to a KA Lite server at %s") % host)
     client.start_session()
     if not client.session or not client.session.client_nonce:
-        return HttpResponse("Unable to establish a session with KA Lite server at %s" % host)
+        return HttpResponse(_("Unable to establish a session with KA Lite server at %s") % host)
     return HttpResponseRedirect("%ssecuresync/cryptologin/?client_nonce=%s" % (host, client.session.client_nonce))
 
 

@@ -11,9 +11,11 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
-from .misc import *
 from config.models import Settings
-from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
+from facility.decorators import facility_from_request
+from facility.models import FacilityUser
+from securesync.models import Device, Zone
+from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import JsonResponse, JsonpResponse
 
 
@@ -30,7 +32,6 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
         user = user or request.session.get("facility_user", None)
         return handler(request, *args, user=user, **kwargs)
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
-
 
 def require_login(handler):
     """
@@ -51,7 +52,7 @@ def require_admin(handler):
     Level 2: Require an admin:
     * Central server: any user with an account
     * Distributed server: any Django admin or teacher.
-    
+
     Note: different behavior for api_request or not
     """
 
@@ -71,9 +72,9 @@ def require_admin(handler):
 def require_authorized_access_to_student_data(handler):
     """
     WARNING: this is a crappy function with a crappy name.
-    
+
     This should only be used for limiting data access to single-student data.
-    
+
     Students requesting their own data (either implicitly, without querystring params)
     or explicitly (specifying their own user ID) get through.
     Admins and teachers also get through.
@@ -91,7 +92,7 @@ def require_authorized_access_to_student_data(handler):
             """
             if getattr(request, "is_admin", False):
                 return handler(request, *args, **kwargs)
-            else: 
+            else:
                 user = get_user_from_request(request=request)
                 if request.session.get("facility_user", None) == user:
                     return handler(request, *args, **kwargs)
@@ -104,7 +105,7 @@ def require_authorized_access_to_student_data(handler):
 def require_authorized_admin(handler):
     """
     Level 1.5 or 2.5 :) : require an admin user that has access to all requested objects.
-    
+
     Central server: this is by organization permissions.
     Distributed server: you have to be an admin (Django admin/teacher), or requesting only your own user data.
 
@@ -150,7 +151,7 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = device.get_zone()
                 if not zone:
-                    raise PermissionDenied("You requested device information for a device without a zone.  Only super users can do this!")
+                    raise PermissionDenied(_("You requested device information for a device without a zone.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate device through zone
@@ -158,7 +159,7 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = facility.get_zone()
                 if not zone:
-                    raise PermissionDenied("You requested facility information for a facility with no zone.  Only super users can do this!")
+                    raise PermissionDenied(_("You requested facility information for a facility with no zone.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate zone through org
@@ -169,14 +170,14 @@ def require_authorized_admin(handler):
                 for org in Organization.from_zone(zone):
                     if org.is_member(logged_in_user):
                         return handler(request, *args, **kwargs)
-                raise PermissionDenied("You requested information from an organization that you're not authorized on.")
+                raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
 
         if org_id and org_id != "new":
             org = get_object_or_404(Organization, pk=org_id)
             if not org.is_member(logged_in_user):
-                raise PermissionDenied("You requested information from an organization that you're not authorized on.")
+                raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
             elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
-                raise PermissionDenied("This organization does not have permissions for this zone.")
+                raise PermissionDenied(_("This organization does not have permissions for this zone."))
 
         # Made it through, we're safe!
         return handler(request, *args, **kwargs)
@@ -188,15 +189,15 @@ def require_authorized_admin(handler):
 def require_superuser(handler):
     """
     Level 4: require a Django admin (superuser)
-    
+
     ***
     *** Note: Not yet used, nor tested. ***
     ***
-    
+
     """
     def wrapper_fn(request, *args, **kwargs):
         if getattr(request.user, is_superuser, False):
             return handler(request, *args, **kwargs)
         else:
-            raise PermissionDenied(_("Must be logged in as a superuser to access this endpoint."))
+            raise PermissionDenied(_("You must be logged in as a superuser to access this endpoint."))
     return wrapper_fn

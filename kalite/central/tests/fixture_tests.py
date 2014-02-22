@@ -1,24 +1,23 @@
 """
 Test the basic ability to load and dump data to a fixture.  Very basic.
 """
-
 import os
 import unittest
 
-from django.test import TestCase
+from django.test import LiveServerTestCase, TestCase
 from django.core.management import call_command
 
 import settings
-from shared.testing import central_server_test, KALiteTestCase
+from testing import central_server_test
 
 
 @central_server_test
-class FixtureTestCases(KALiteTestCase):
+class FixtureTestCases(TestCase):
     """Test the basic ability to load and dump data to a fixture.  Very basic."""
 
     def test_loaddata(self):
         cur_dir = os.path.split(__file__)[0]
-        
+
         fixture_file = cur_dir + "/central_fixture.json"
         out = call_command("loaddata", fixture_file)
 

@@ -36,6 +36,7 @@ function show_api_messages(messages, msg_id) {
             break;
         default:
             // Programming error; this should not happen
+            // NOTE: DO NOT WRAP THIS STRING.
             throw "do not call show_api_messages object of type " + (typeof messages);
     }
 }
@@ -48,16 +49,42 @@ function communicate_api_failure(resp, msg_id) {
 }
 
 
+function handleSuccessAPI(error_id) {
+    if (error_id === undefined) {
+        error_id = "id_updates";  // ID of message element
+    }
+    clear_message(error_id)
+}
+
+function handleFailedAPI(resp, error_text, error_id) {
+    if (error_id === undefined) {
+        error_id = "id_updates";  // ID of message element
+    }
+
+    switch (resp.status) {
+        case 403:
+            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id)
+            break;
+        default:
+            //communicate_api_failure(resp)
+            messages = $.parseJSON(resp.responseText);
+            if (messages && !("error" in messages)) {
+                // this should be an assert--should never happen
+                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
+            } else {
+                show_message("error", error_text + ": " + messages["error"], error_id);
+            }
+            break;
+    }
+}
+
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
     doRequest("/securesync/api/force_sync")
         .success(function() {
-            show_message("success", "Successfully launched data syncing job.  Please visit <a href='/management/device/'>your device management page</a> to view sync status.", "id_command")
+            show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."), "id_command")
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_command")
-        });
 }
 
 /**
@@ -90,7 +117,7 @@ var TotalPointView = Backbone.View.extend({
 
         // only display the points if they are greater than zero, and the user is logged in
         if (points > 0 && this.model.get("is_logged_in")) {
-            this.$el.text("Total Points: " + points);
+            this.$el.text(sprintf(gettext("Total Points : %(points)d "), { points : points }));
             this.$el.show();
         } else {
             this.$el.hide();
@@ -99,7 +126,7 @@ var TotalPointView = Backbone.View.extend({
 
 });
 
-
+// Related to showing elements on screen
 $(function(){
     // global Backbone model instance to store state related to the user (username, points, admin status, etc)
     window.userModel = new UserModel();
@@ -117,7 +144,7 @@ $(function(){
     }
 
     // Do the AJAX request to async-load user and message data
-    $("[class$=-only]").hide();
+    //$("[class$=-only]").hide();
     doRequest("/api/status")
         .success(function(data){
 
@@ -132,7 +159,7 @@ $(function(){
             toggle_state("admin", data.is_admin);
             if (data.is_logged_in){
                 if (data.is_admin) {
-                    $('#nav_logout').text(data.username + " (Logout)");
+                    $('#nav_logout').text(sprintf(gettext("%(username)s (Logout)"), { username : data.username }));
                 }
                 else {
                     $('#logged-in-name').text(data.username);
@@ -140,23 +167,20 @@ $(function(){
             }
             show_django_messages(data.messages);
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_status")
-        });
+});
 
+// Related to student log progress
+$(function(){
     // load progress data for all videos linked on page, and render progress circles
-    var youtube_ids = $.map($(".progress-circle[data-youtube-id]"), function(el) { return $(el).data("youtube-id") });
-    if (youtube_ids.length > 0) {
-        doRequest("/api/get_video_logs", youtube_ids)
+    var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id") });
+    if (video_ids.length > 0) {
+        doRequest("/api/get_video_logs", video_ids)
             .success(function(data) {
                 $.each(data, function(ind, video) {
                     var newClass = video.complete ? "complete" : "partial";
-                    $("[data-youtube-id='" + video.youtube_id + "']").addClass(newClass);
+                    $("[data-video-id='" + video.video_id + "']").addClass(newClass);
                 });
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs")
-            });
     }
 
     // load progress data for all exercises linked on page, and render progress circles
@@ -169,13 +193,20 @@ $(function(){
                     $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
                 });
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
-            });
     }
 
 });
 
+// Related to language bar function
+$(function(){
+    // If new language is selected, redirect after adding django_language session key
+    $("#language_selector").change(function() {
+        var lang_code = $("#language_selector").val();
+        if (lang_code != "") {
+            window.location = setGetParam(window.location.href, "set_user_language", lang_code);
+        }
+    });
+});
 
 // Code related to checking internet connectivity status
 
@@ -210,11 +241,10 @@ function get_server_status(options, fields, callback) {
     var request = $.ajax({
         url:  prefix + args.path,
         dataType: args.hostname ? "jsonp" : "json",
-        jsonpCallback: "temp_callback", // TODO(jamalex): remove this line once the central server has this endpoint properly running
         data: {fields: (fields || []).join(",")}
     }).success(function(data) {
         callback(data);
-    }).error(function() {
+    }).fail(function() {
         callback({status: "error"});
     });
 }

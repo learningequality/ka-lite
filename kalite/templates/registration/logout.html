@@ -1,8 +1,8 @@
 {% extends "registration/base.html" %}
-
-{% block title %}Logged out{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Logged out" %}{{ block.super }}{% endblock title %}
 
 {% block content %}
-<h1>You've been logged out.</h1>
-<p>Thanks for stopping by; when you come back, don't forget to <a href="/accounts/login/">log in</a> again.</p>
-{% endblock %}
+    <h1>{% trans 'You've been logged out.' %}</h1>
+    <p>{% trans 'Thanks for stopping by; when you come back, don't forget to <a href="/accounts/login/">log in</a> again.' %}</p>
+{% endblock content %}

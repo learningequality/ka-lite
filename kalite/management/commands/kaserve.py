@@ -12,7 +12,8 @@ from django.utils.translation import ugettext as _
 
 import settings
 from config.models import Settings
-from securesync.models import Device, Facility
+from facility.models import Facility
+from securesync.models import Device
 from settings import LOG as logging
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
@@ -64,7 +65,7 @@ class Command(BaseCommand):
             del options[opt.dest]
 
         # Parse the crappy way that runcherrypy takes args,
-        #   or the host/port 
+        #   or the host/port
         for arg in args:
             if "=" in arg:
                 (key,val) = arg.split("=")
@@ -85,7 +86,7 @@ class Command(BaseCommand):
 
             elif not Device.objects.count():
                 # Nothing we can do to recover
-                raise CommandError("You are screwed, buddy--you went through the install but have no devices!")
+                raise CommandError("You are screwed, buddy--you went through setup but you have no devices defined!  Call for help!")
 
             else:
                 # Force hitting recovery code, by raising a generic error
@@ -93,14 +94,14 @@ class Command(BaseCommand):
                 raise DatabaseError
 
         except DatabaseError:
-            self.stdout.write("Installing KA Lite; this may take a few minutes; please wait!\n")
+            self.stdout.write("Setting up KA Lite; this may take a few minutes; please wait!\n")
 
-            call_command("install", interactive=False)  # show output to the user
-            #out = call_command_with_output("install", interactive=False)
+            call_command("setup", interactive=False)  # show output to the user
+            #out = call_command_with_output("setup", interactive=False)
             #if out[1] or out[2]:
             #    # Failed; report and exit
             #    self.stderr.write(out[1])
-            #    raise CommandError("Failed to install/recover.")
+            #    raise CommandError("Failed to setup/recover.")
 
         # Now call the proper command
         if options["run_in_proc"]:

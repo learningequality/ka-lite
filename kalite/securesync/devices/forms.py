@@ -41,15 +41,15 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
         """
         zone_id = self.cleaned_data["zone"]
         if zone_id not in [tup[0] for tup in self.fields["zone"].choices]:
-            raise forms.ValidationError("You must select a zone from the given choices.")
+            raise forms.ValidationError(_("You must select a zone from the given choices."))
         try:
             zone = Zone.objects.get(id=zone_id)
         except:
-            raise forms.ValidationError("You must select a valid Zone.")
+            raise forms.ValidationError(_("You must select a valid Zone."))
         return zone
 
     def clean_public_key(self):
         public_key = self.cleaned_data["public_key"]
         if RegisteredDevicePublicKey.objects.filter(public_key=public_key).count() > 0:
-            raise forms.ValidationError("This public key has already been registered!")
+            raise forms.ValidationError(_("This public key has already been registered!"))
         return public_key

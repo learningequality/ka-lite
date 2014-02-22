@@ -1,35 +1,33 @@
 """
+CENTRAL SERVER ONLY
+
 Command used to cache data from Amara's API about which languages videos
-have been subtitled in. This data is then used by the command cache_subtitles 
-to intelligently request srt files from Amara's API, rather than blindly requesting 
-tons of srt files that don't exist. This command should be run infrequently, but 
+have been subtitled in. This data is then used by the command cache_subtitles
+to intelligently request srt files from Amara's API, rather than blindly requesting
+tons of srt files that don't exist. This command should be run infrequently, but
 regularly, to ensure we are at least putting in requests for the srts that exist.
+
+NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us).
 """
 
 import datetime
 import json
 import os
+import requests
 import sys
 import tempfile
 
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
 
 import settings
+from i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
+from i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
+from main.topic_tools import get_slug2id_map
 from settings import LOG as logging
-from shared.topic_tools import get_node_cache
-from utils.general import convert_date_input, ensure_dir, make_request
-
-
-headers = {
-    "X-api-username": "kalite",
-    "X-apikey": "9931eb077687297823e8a23fd6c2bfafae25c543",
-}
-
-SRTS_JSON_FILENAME = "srts_remote_availability.json"
-LANGUAGE_SRT_SUFFIX = "_download_status.json"
+from utils.general import convert_date_input, ensure_dir, softload_json
+from utils.internet import make_request
 
 
 class OutDatedSchema(Exception):
@@ -37,51 +35,62 @@ class OutDatedSchema(Exception):
         return "The current data schema is outdated and doesn't store the important bits. Please run 'generate_subtitles_map.py -f' to generate a totally new file and the correct schema."
 
 
-def create_all_mappings(force=False, frequency_to_save=100, response_to_check=None, date_to_check=None):
+def create_all_mappings(force=False, frequency_to_save=100, response_to_check=None, date_to_check=None, map_file=SRTS_JSON_FILEPATH):
     """
     Write or update JSON file that maps from YouTube ID to Amara code and languages available.
 
-    This command updates the json file that records what languages videos have been subtitled in. 
+    This command updates the json file that records what languages videos have been subtitled in.
     It loops through all video ids, records a list of which languages Amara says it has been subtitled in
     and meta data about the request (e.g. date, response code).
-        
+
     See the schema in the docstring for fcn update_video_entry.
     """
-    videos = get_node_cache('Video')
+    youtube_ids = get_slug2id_map().values()
 
     # Initialize the data
-    out_file = settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME
+    if not os.path.exists(map_file):
+        ensure_dir(os.path.dirname(map_file))
+        if not settings.DEBUG:
+            raise CommandError("TRUE central server's srts dict should never be empty; where is your %s?" % map_file)
+        else:
+            # Pull it from the central server
+            try:
+                logging.debug("Fetching central server's srt availability file.")
+                resp = requests.get("http://kalite.learningequality.org:7007/media/testing/%s" % (os.path.basename(map_file)))
+                resp.raise_for_status()
+                with open(map_file, "w") as fp:
+                    fp.write(resp.content)
+                srts_dict = json.loads(resp.content)
+            except Exception as e:
+                logging.error("Failed to download TRUE central server's srts availability file: %s" % e)
+                srts_dict = {}
 
-    if not os.path.exists(out_file):
-        ensure_dir(os.path.dirname(out_file))
-        srts_dict = {}
     else:
         # Open the file, read, and clean out old videos.
-        try:
-            with open(out_file, "r") as fp:
-                srts_dict = json.load(fp)
-        except Exception as e:
-            logging.error("JSON file corrupted, using empty json and starting from scratch (%s)" % e)
-            srts_dict = {}
-        else:
+        #   only handle the error if force=True.
+        #   Otherwise, these data are too valuable to lose, so just assume a temp problem.
+        srts_dict = softload_json(map_file, raises=not force, logger=logging.error)
+        if srts_dict:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
 
         # Set of videos no longer used by KA Lite
-        removed_videos = set(srts_dict.keys()) - set([v["youtube_id"] for v in videos.values()])
+        removed_videos = set(srts_dict.keys()) - set(youtube_ids)
         if removed_videos:
             logging.info("Removing subtitle information for %d videos (no longer used)." % len(removed_videos))
             for vid in removed_videos:
                 del srts_dict[vid]
-    logging.info("Querying %d mappings." % (len(videos) - (0 if (force or date_to_check) else len(srts_dict))))
+    logging.info("Querying %d mappings." % (len(youtube_ids) - (0 if (force or date_to_check) else len(srts_dict))))
 
     # Once we have the current mapping, proceed through logic to update the mapping
-    n_new_entries = 0
-    n_failures = 0
-    for video, data in videos.iteritems():
-        # Decide whether or not to update this video based on the arguments provided at the command line 
-        youtube_id = data['youtube_id']
+    n_refreshed = 0     # keep track to avoid writing if nothing's been refreshed.
+    n_new_entries = 0   # keep track for reporting
+    n_failures = 0      # keep track for reporting
+    for youtube_id in youtube_ids:
+
+        # Decide whether or not to update this video based on the arguments provided at the command line
         cached = youtube_id in srts_dict
-        if not force and cached: 
+        if not force and cached:
+
             # First, check against date
             flag_for_refresh = True # not (response_code or last_attempt)
             last_attempt = srts_dict[youtube_id].get("last_attempt")
@@ -90,6 +99,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             if not flag_for_refresh:
                 logging.debug("Skipping %s for date-check" % youtube_id)
                 continue
+
             # Second, check against response code
             response_code = srts_dict[youtube_id].get("api_response")
             flag_for_refresh = flag_for_refresh and (not response_to_check or response_to_check == "all" or response_to_check == response_code)
@@ -99,35 +109,41 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             if not response_to_check and not date_to_check and cached: # no flags specified and already cached - skip
                 logging.debug("Skipping %s for already-cached and no flags specified" % youtube_id)
                 continue
+
+        # We're gonna check; just report the reason why.
+        if force and not cached:
+            logging.debug("Updating %s because force flag (-f) given and video not cached." % youtube_id)
+        elif force and cached:
+            logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
         else:
-            if force and not cached:
-                logging.debug("Updating %s because force flag (-f) given and video not cached." % youtube_id)
-            elif force and cached:
-                logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
-            else: 
-                logging.debug("Updating %s because video not yet cached." % youtube_id)
+            logging.debug("Updating %s because video subtitles metadata not yet cached." % youtube_id)
 
         # If it makes it to here without hitting a continue, then update the entry
+
         try:
             srts_dict[youtube_id] = update_video_entry(youtube_id, entry=srts_dict.get(youtube_id, {}))
+            n_refreshed += 1
         except Exception as e:
             logging.warn("Error updating video %s: %s" % (youtube_id, e))
             n_failures += 1
             continue
 
         if n_new_entries % frequency_to_save == 0:
-            logging.info("On loop %d dumping dictionary into %s" %(n_new_entries, out_file))
-            with open(out_file, 'wb') as fp:
+            logging.info("On loop %d dumping dictionary into %s" % (n_new_entries, map_file))
+            with open(map_file, 'wb') as fp:
                 json.dump(srts_dict, fp)
         n_new_entries += 1
 
     # Finished the loop: save and report
-    with open(out_file, 'wb') as fp:
-        json.dump(srts_dict, fp)
+    if n_refreshed > 0:
+        with open(map_file, 'wb') as fp:
+            json.dump(srts_dict, fp)
     if n_failures == 0:
-        logging.info("Great success! Stored %d fresh entries, %d total." % (n_new_entries, len(srts_dict)))
+        logging.info("Great success! Added %d entries, updated %d entries, of %d total." % (n_new_entries, n_refreshed, len(srts_dict)))
     else:
-        logging.warn("Stored %s fresh entries, but with %s failures." % (n_new_entries, n_failures))
+        logging.warn("Stored %d new entries, refreshed %d entries, but with %s failures, of %d total." % (n_new_entries, n_refreshed, n_failures, len(srts_dict)))
+
+    return n_refreshed != 0
 
 
 def update_video_entry(youtube_id, entry={}):
@@ -140,25 +156,26 @@ def update_video_entry(youtube_id, entry={}):
                             "last_attempt": "2013-07-06",
                         }
     To update an entry, pass it in.
+
+    Note: language_codes are in IETF format (e.g. en-US)
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = make_request(headers, request_url)
+    resp = make_request(AMARA_HEADERS, request_url)
     # add api response first to prevent empty json on errors
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
-    if isinstance(r, basestring):  # string responses mean some type of error
-        logging.info("%s at %s" %(r, request_url))
-        entry["api_response"] = r
+    if isinstance(resp, basestring):  # string responses mean some type of error
+        entry["api_response"] = resp
         return entry
 
     try:
-        content = json.loads(r.content)
+        content = json.loads(resp.content)
         assert "objects" in content  # just index in, to make sure the expected data is there.
         assert len(content["objects"]) == 1
         languages = content["objects"][0]["languages"]
     except Exception as e:
-        logging.warn("%s: Could not load json response: %s" % (youtube_id, e))
+        logging.warn("Error updating video entry %s: Could not load json response: %s" % (youtube_id, e))
         entry["api_response"] = "client-error"
         return entry
 
@@ -194,24 +211,22 @@ def update_video_entry(youtube_id, entry={}):
         return entry
 
 
-def update_language_srt_map():
+def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
     """
     Translate the srts_remote_availability dictionary into language specific files
-    that can be used by the cache_subtitles command. 
+    that can be used by the cache_subtitles command.
+
+    Note: srt map deals with amara, so uses ietf codes (e.g. en-us)
     """
     # Load the current download status
-    try:
-        api_info_map = json.loads(open(settings.SUBTITLES_DATA_ROOT + SRTS_JSON_FILENAME).read())
-    except Exception as e:
-        # Must be corrupted; start from scratch!
-        logging.warn("Could not open %s for updates; starting from scratch.  Error=%s" % (srt_download_info_filepath, e))
-        api_info_map = {}
+    api_info_map = softload_json(map_file, logger=logging.warn)
 
     # Next we want to iterate through those and create a big srt dictionary organized by language code
     remote_availability_map = {}
     for youtube_id, data in api_info_map.items():
         languages = data.get("language_codes", [])
         for lang_code in languages:
+            lang_code = lcode_to_ietf(lang_code)
             if not lang_code in remote_availability_map:
                 #logging.info("Creating language section '%s'" % lang_code)
                 remote_availability_map[lang_code] = {}
@@ -223,19 +238,15 @@ def update_language_srt_map():
                 "last_success": "",
             }
 
-    # Finally we need to iterate through that dictionary and create individual files for each language code 
+    # Finally we need to iterate through that dictionary and create individual files for each language code
     for lang_code, new_data in remote_availability_map.items():
 
-        # Try to open previous language file 
+        # Try to open previous language file
         lang_map_filepath = get_lang_map_filepath(lang_code)
         if not os.path.exists(lang_map_filepath):
             lang_map = {}
         else:
-            try:
-                lang_map = json.loads(open(lang_map_filepath).read())
-            except Exception as e:
-                logging.error("Language download status mapping for (%s) is corrupted (%s), rewriting it." % (lang_code, e))
-                lang_map = {}
+            lang_map = softload_json(lang_map_filepath, logger=logging.error)
 
         # First, check to see if it's empty (e.g. no subtitles available for any videos)
         if not new_data:
@@ -244,7 +255,7 @@ def update_language_srt_map():
                 os.remove(lang_map_filepath)
             continue
 
-        # Compare how many empty entries you are adding and add them to master map 
+        # Compare how many empty entries you are adding and add them to master map
         old_yt_ids = set(new_data.keys())
         new_yt_ids = set(lang_map.keys())
         yt_ids_to_add = set(new_data.keys()) - set(lang_map.keys())
@@ -256,31 +267,41 @@ def update_language_srt_map():
                 lang_map[yt_id] = new_data.get(yt_id)
 
         if yt_ids_to_delete:
-            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." %(len(yt_ids_to_delete), lang_code))
+            logging.info("Deleting %d old YouTube IDs from language (%s) because they are no longer supported." % (len(yt_ids_to_delete), lang_code))
             for yt_id in yt_ids_to_delete:
                 lang_map.pop(yt_id, None)
 
-        # Write the new file to the correct location 
-        logging.info("Writing %s" % lang_map_filepath)
+        # Write the new file to the correct location
+        logging.debug("Writing %s" % lang_map_filepath)
         ensure_dir(os.path.dirname(lang_map_filepath))
         with open(lang_map_filepath, 'w') as outfile:
             json.dump(lang_map, outfile)
 
-        # Update the big mapping with the most accurate numbers 
+        # Update the big mapping with the most accurate numbers
         remote_availability_map[lang_code].update(lang_map)
 
     # Finally, remove any files not found in the current map at all.
-    for filename in os.listdir(os.path.dirname(lang_map_filepath)):
-        lang_code = lang_code = filename.split("_")[0]
-        if not lang_code in remote_availability_map:
-            file_to_remove = get_lang_map_filepath(lang_code)
-            logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
-            os.remove(file_to_remove)
+    if lang_map_filepath:
+        for filename in os.listdir(os.path.dirname(lang_map_filepath)):
+            lang_code = lang_code = filename.split("_")[0]
+            if not lang_code in remote_availability_map:
+                file_to_remove = get_lang_map_filepath(lang_code)
+                logging.info("Subtitle support for %s has been terminated; removing." % lang_code)
+                if os.path.exists(file_to_remove):
+                    os.remove(file_to_remove)
+                else:
+                    logging.warn("Subtitles metadata for %s not found; skipping deletion of non-existent file %s." % (lang_code, file_to_remove))
 
     return remote_availability_map
 
 
 def print_language_availability_table(language_srt_map):
+    """
+    Prints the # of srts available for each known language code.
+
+    Note: srt map deals with amara, so uses ietf codes (e.g. en-US)
+    """
+
     logging.info("=============================================")
     logging.info("=\tLanguage\t=\tNum Videos\t=")
     for lang_code in sorted(language_srt_map.keys()):
@@ -288,13 +309,14 @@ def print_language_availability_table(language_srt_map):
     logging.info("=============================================")
 
     n_srts = sum([len(dict) for dict in language_srt_map.values()])
-    logging.info("Great success! Subtitles support found for %d languages, %d total dubbings!" % (len(language_srt_map), n_srts))
-
-def get_lang_map_filepath(lang_code):
-    return settings.SUBTITLES_DATA_ROOT + "languages/" + lang_code + LANGUAGE_SRT_SUFFIX
+    logging.info("Great success! Subtitles support found for %d languages, %d total dubbings!" % (
+        len(language_srt_map), n_srts,
+    ))
 
 class Command(BaseCommand):
-    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (settings.SUBTITLES_DATA_ROOT + "<lang_code>" + LANGUAGE_SRT_SUFFIX)
+    help = "Update the mapping of subtitles available by language for each video. Location: %s" % (
+        get_lang_map_filepath("<lang_code>"),
+    )
 
     option_list = BaseCommand.option_list + (
         # Basic options
@@ -315,13 +337,28 @@ class Command(BaseCommand):
                     dest='date_since_attempt',
                     default=None,
                     help="Setting a date flag will update only those entries which have not been attempted since that date. Can be combined with -r. This could potentially be useful for updating old subtitles. USAGE: '-d MM/DD/YYYY'"),
+        make_option('-y', '--days-since-attempt',
+                    action='store',
+                    dest='days_since_attempt',
+                    default=1,
+                    help="Setting # of days since last attempt; will compute date.  USAGE: '-y 1'"),
     )
 
     def handle(self, *args, **options):
+        if not settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on the central server.")
+
+        # Set up the refresh date
+        if not options["date_since_attempt"]:
+            date_since_attempt = datetime.datetime.now() - datetime.timedelta(days=options["days_since_attempt"])
+            options["date_since_attempt"] = date_since_attempt.strftime("%m/%d/%Y")
         converted_date = convert_date_input(options.get("date_since_attempt"))
-        create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
+
+        updated_mappings = create_all_mappings(force=options.get("force"), frequency_to_save=5, response_to_check=options.get("response_code"), date_to_check=converted_date)
         logging.info("Executed successfully. Updating language => subtitle mapping to record any changes!")
 
-        language_srt_map = update_language_srt_map()
-        print_language_availability_table(language_srt_map)
+        if updated_mappings:
+            language_srt_map = update_language_srt_map()
+            print_language_availability_table(language_srt_map)
+
         logging.info("Process complete.")

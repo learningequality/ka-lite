@@ -6,16 +6,16 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from securesync.forms import FacilityUserForm
-from securesync.models import Facility, FacilityUser
-from shared.testing import distributed_server_test, KALiteTestCase
+from facility.forms import FacilityUserForm
+from facility.models import Facility, FacilityUser
+from testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test
-class UserRegistration(KALiteTestCase):
+class UserRegistrationTest(KALiteTestCase):
 
     def setUp(self):
-        super(UserRegistration, self).setUp()
+        super(UserRegistrationTest, self).setUp()
         self.f = Facility.objects.create(name='testfac')
         password = make_password('insecure')
         self.admin = User.objects.create(username='testadmin',password=password)
@@ -27,8 +27,8 @@ class UserRegistration(KALiteTestCase):
     def test_facility_user_form_works(self):
         """Valid password should work"""
         response = self.client.post(reverse('add_facility_student'), self.data)
-        self.assertEqual(response.status_code, 302, "Status code must be 302")
         self.assertNotIn("errorlist", response.content, "Must be no form errors")
+        self.assertEqual(response.status_code, 302, "Status code must be 302")
 
         FacilityUser.objects.get(username=self.data['username']) # should not raise error
 
@@ -41,25 +41,24 @@ class UserRegistration(KALiteTestCase):
 
     def test_password_length_valid(self):
         response = self.client.post(reverse('add_facility_student'), self.data)
-        self.assertEqual(response.status_code, 302, "Status code must be 302")
         self.assertNotIn("errorlist", response.content, "Must be no form errors")
+        self.assertEqual(response.status_code, 302, "Status code must be 302")
 
         FacilityUser.objects.get(username=self.data['username']) # should not raise error
 
     def test_password_length_enforced(self):
         # always make passwd shorter than passwd min length setting
-        self.data['password'] = self.data['password_recheck'] =  self.data['password'][:settings.PASSWORD_CONSTRAINTS['min_length']-1]
+        self.data['password_first'] = self.data['password_recheck'] =  self.data['password_first'][:settings.PASSWORD_CONSTRAINTS['min_length']-1]
 
         response = self.client.post(reverse('add_facility_student'), self.data)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
-        self.assertFormError(response, 'form', 'password', "Password should be at least %d characters." % settings.PASSWORD_CONSTRAINTS['min_length'])
+        self.assertFormError(response, 'form', 'password_first', "Password should be at least %d characters." % settings.PASSWORD_CONSTRAINTS['min_length'])
 
     def test_only_ascii_letters_allowed(self):
-        self.data['password'] = string.whitespace.join([self.data['password']] * 2)
+        self.data['password_first'] = self.data['password_recheck'] = string.whitespace.join([self.data['password_first']] * 2)
 
         response = self.client.post(reverse('add_facility_student'), self.data)
-        self.assertEqual(response.status_code, 302, "Status code must be 302")
         self.assertNotIn("errorlist", response.content, "Must be no form errors")
+        self.assertEqual(response.status_code, 302, "Status code must be 302")
 
         FacilityUser.objects.get(username=self.data['username']) # should not raise error
-        #self.assertFormError(response, 'form', 'password', "Password should not contain any whitespace characters.")

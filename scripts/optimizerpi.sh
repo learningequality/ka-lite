@@ -124,8 +124,8 @@ http {
 
     ##
     # Gzip Settings
-    gzip on;
-    gzip_disable "msie6";
+    # We are CPU limited, not bandwidth limited, so don't gzip
+    gzip off;
 
     ##
     # Virtual Host Configs

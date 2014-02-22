@@ -9,7 +9,7 @@ import settings
 
 class BaseClient(object):
 
-    def __init__(self, host="%s://%s/"%(settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
+    def __init__(self, host="%s://%s/" % (settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True):
         self.parsed_url = urllib2.urlparse.urlparse(host)
         self.url = "%s://%s" % (self.parsed_url.scheme, self.parsed_url.netloc)
         self.require_trusted = require_trusted

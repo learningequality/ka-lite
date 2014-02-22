@@ -7,7 +7,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
 import settings
-from shared.serializers import serialize
+from utils.django_utils.serializers import serialize
 from utils.internet.classes import _dthandler
 
 

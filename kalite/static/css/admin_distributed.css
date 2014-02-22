@@ -17,6 +17,7 @@ ul {
 }
 .link {
     width: 120px;
+    white-space: nowrap;
 }
 .link, .desc { 
     padding-left: 25px;

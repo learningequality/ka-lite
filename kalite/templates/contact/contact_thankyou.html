@@ -1,17 +1,14 @@
-{% extends "central/base.html" %}
+{% extends base_template %}
 
-{% block title %}Thanks for contacting us!{% endblock %}
+{% block title %}Thanks for contacting us!{{ block.super }}{% endblock title %}
 
 {% block contact_active %}active{% endblock contact_active %}
 
-
-{% block headcss %}
-{% endblock headcss %}
-
 {% block content %}
+    <h1>Thanks for contacting us!</h1>
 
-<h1>Thanks for contacting us!</h1>
-
-<p>We will follow up with you as soon as we can!</p>
-
-{% endblock %}
+    <p>
+        We will follow up with you as soon as we can! 
+        Meanwhile, feel free to check out our <a href="http://forums.learningequality.org/">forums</a>
+    </p>
+{% endblock content %}

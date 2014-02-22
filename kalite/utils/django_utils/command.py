@@ -2,16 +2,20 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from cStringIO import StringIO
 
 from django.core.management import call_command
+from django.utils.translation import ugettext as _
+
+from settings import LOG as logging
 
 
-def call_command_with_output(cmd, *args, **kwargs): 
+def call_command_with_output(cmd, *args, **kwargs):
     """
     Run call_command while capturing stdout/stderr and calls to sys.exit
     """
-    
+
     backups = [sys.stdout, sys.stderr, sys.exit]
     try:
         sys.stdout = StringIO()     # capture output
@@ -22,37 +26,28 @@ def call_command_with_output(cmd, *args, **kwargs):
 
         out = sys.stdout.getvalue() # release output
         err = sys.stderr.getvalue() # release err
-        
+
         # parse off exit code from stderr
         match = re.match(r".*Exit code: ([0-9]+)$", err.replace("\n",""), re.M)
         if match is None:
             val = 0
         else:
             val = int(match.groups()[0])
-            
+
             # Having trouble regexp-ing with newlines :(  Here's my hacky solution
             match = re.match(r"^(.*)__newline__Exit code: [0-9]+$", err.replace("\n", "__newline__"), re.M)
             assert match is not None
             err = match.groups()[0].replace("__newline__", "\n")
 
         return (out,err, val)
-        
+
     finally:
         sys.stdout = backups[0]
         sys.stderr = backups[1]
         sys.exit   = backups[2]
 
 
-def call_command_async(cmd, *args, **kwargs):
-    """
-    Runs a manage.py command asynchronously, by calling into
-    the subprocess module.
-
-    This may be finicky, as it requires stringifying kwargs, but
-    it works well for the current needs and should be safe for types
-    that stringify in a way that commands can parse
-    (which will work for str, bool, int, etc).
-    """
+def call_command_subprocess(cmd, *args, **kwargs):
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
     manage_py_dir = kwargs["manage_py_dir"]
     del kwargs["manage_py_dir"]
@@ -74,6 +69,48 @@ def call_command_async(cmd, *args, **kwargs):
     subprocess.Popen(call_args)
 
 
+
+
+JOB_THREADS = {}
+
+class CommandThread(threading.Thread):
+    def __init__(self, cmd, *args, **kwargs):
+        super(CommandThread, self).__init__()
+        self.cmd = cmd
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
+        call_command(self.cmd, *self.args, **self.kwargs)
+
+def call_command_threaded(cmd, *args, **kwargs):
+    global JOB_THREADS
+
+    logging.debug("Threaded launch of command %s with parameters %s, %s)" % (cmd, args, kwargs))
+    if cmd in JOB_THREADS and JOB_THREADS[cmd].is_alive():
+        pass#raise Exception(_("Command %(cmd)s is already currently running.  Please stop the previous job before trying to start.") % {"cmd": cmd})
+    th = CommandThread(cmd=cmd, *args, **kwargs)
+    th.start()
+    JOB_THREADS[cmd] = th
+
+
+def call_command_async(cmd, in_proc=True, *args, **kwargs):
+    """
+    Runs a manage.py command asynchronously, by calling into
+    the subprocess module.
+
+    This may be finicky, as it requires stringifying kwargs, but
+    it works well for the current needs and should be safe for types
+    that stringify in a way that commands can parse
+    (which will work for str, bool, int, etc).
+    """
+    if in_proc:
+        call_command_threaded(cmd, *args, **kwargs)
+    else:
+        call_command_subprocess(cmd, *args, **kwargs)
+
+
 def call_outside_command_with_output(command, *args, **kwargs):
     """
     Runs call_command for a KA Lite installation at the given location,
@@ -88,12 +125,12 @@ def call_outside_command_with_output(command, *args, **kwargs):
     for arg in args:
         cmd += (arg,)
     for key, val in kwargs.items():
-        key = key.replace("_","-")
-        prefix = "--" if command != "runcherrypyserver" else ""  # hack, but ... whatever!
+        key = key.replace(u"_",u"-")
+        prefix = u"--" if command != "runcherrypyserver" else u""  # hack, but ... whatever!
         if isinstance(val, bool):
-            cmd += ("%s%s" % (prefix, key),)
+            cmd += (u"%s%s" % (prefix, key),)
         else:
-            cmd += ("%s%s=%s" % (prefix, key, str(val)),)
+            cmd += (u"%s%s=%s" % (prefix, key, unicode(val)),)
 
     # Execute the command, using subprocess/Popen
     cwd = os.getcwd()

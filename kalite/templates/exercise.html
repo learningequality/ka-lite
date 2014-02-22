@@ -1,85 +1,89 @@
-{% extends 'base_distributed.html' %}
-
+{% extends base_template %}
 {% load i18n %}
 {% load staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
-{% block headcss %}
-<link rel="stylesheet" type="text/css" href="{% static "js/khan-exercises/css/khan-exercise.css" %}"></link>
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}?{{ BUILD_ID }}"></link>
 
-<style>
-.return-link {
-    font-size: 13px;
-    padding-bottom: 4px;
-    opacity: 0.8;
-    margin-top: -2px;
-}
-</style>
+    <!-- Used by KA to dynamically add styling to the exercise -->
+    <style id="exercise-inline-style"></style>
 
-<style id="exercise-inline-style"></style>
-
+    <style>
+        .return-link {
+            font-size: 13px;
+            padding-bottom: 4px;
+            opacity: 0.8;
+            margin-top: -2px;
+        }
+    </style>
 {% endblock headcss %}
 
-{% block headjs %}
-<script>
-
-    var urlBaseOverride = "{% static "js/khan-exercises/" %}";
-    // some dummy features on the Exercises object to make khan-exercises.js happy
-    Exercises = {
-        completeStack: {
-            getUid: function() { return 0; },
-            getCustomStackID: function() { return 0; }
-        },
-        currentCard: {
-            attributes: {},
-            get: function() {}
-        },
-        RelatedVideos: {
-            render: function() {}
-        },
-        getCurrentFramework: function() { return "khan-exercises"; },
-        incompleteStack: [0],
-        PerseusBridge: {
-            cleanupProblem: function() {}
-        },
-    };
-        
-</script>
-<script type="text/javascript" src="/jsi18n/"></script>
-<script src="{% static "js/khan-exercises/khan-exercise.js" %}"></script>
-<script>
-    var exerciseData = {
-        "basepoints": {{ exercise.basepoints }},
-        "description": "{{ exercise.description|linebreaksbr }}",
-        "title": "{{ exercise.display_name }}",
-        "exerciseModel": {
-            "displayName": "{{ exercise.display_name }}",
-            "name": "{{ exercise.name }}",
-            "secondsPerFastProblem": {{ exercise.seconds_per_fast_problem }},
-            "authorName": "{{ exercise.author_name }}",
-            "relatedVideos": [],
-            "fileName": "{{ exercise.name }}.html"
-        },
-        "readOnly": false,
-        "percentCompleted": 0,
-        "points": 0,
-        "starting_points": 0,
-        "attempts": 0,
-        "exerciseProgress": {
-            "level": ""
-        },
-        "lastCountHints": 0
-    };    
-</script>
-<script src="{% static "js/exercises.js" %}"></script>
-
+{% block headjs %}{{ block.super }}
+    <script>
+        var urlBaseOverride = "{% static 'js/khan-exercises/' %}";
+        // some dummy features on the Exercises object to make khan-exercises.js happy
+        Exercises = {
+            completeStack: {
+                getUid: function() { return 0; },
+                getCustomStackID: function() { return 0; }
+            },
+            currentCard: {
+                attributes: {},
+                get: function() {}
+            },
+            RelatedVideos: {
+                render: function() {}
+            },
+            getCurrentFramework: function() { return "khan-exercises"; },
+            incompleteStack: [0],
+            PerseusBridge: {
+                cleanupProblem: function() {}
+            },
+        };
+    </script>
+    <script src="{% static 'js/khan-exercises/khan-exercise.js' %}?{{ BUILD_ID }}"></script>
+    <script>
+        {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
+        var exerciseData = {
+            "basepoints": {{ exercise.basepoints }},
+            "description": "{{ exercise.description|linebreaksbr }}",
+            "title": "{{ exercise.display_name }}",
+            "exerciseModel": {
+                "displayName": "{{ exercise.display_name }}",
+                "name": "{{ exercise.name }}",
+                "secondsPerFastProblem": {{ exercise.seconds_per_fast_problem }},
+                "authorName": "{{ exercise.author_name }}",
+                "relatedVideos": [],
+                "fileName": "{{ exercise_template }}"
+            },
+            "readOnly": false,
+            "percentCompleted": 0,
+            "points": 0,
+            "starting_points": 0,
+            "attempts": 0,
+            "exerciseProgress": {
+                "level": ""
+            },
+            "lastCountHints": 0
+        };
+    </script>
+    <script src="{% static 'js/exercises.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
-
     <div class="exercises-header">
-        <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}javascript.history.go(-1){% endif %}" class="return-link" >&#60;{% trans "Return" %}</a>
+
+        {% if prev %}
+        <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
+        {% endif %}
+
+        {% if next %}
+        <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+        {% endif %}
+        <div class="clear"></div>
+
         <h2>
             <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
             {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
@@ -139,11 +143,11 @@
                                                     <li>
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
-                                                                <div class="thumb">
-                                                                    <img class="thumbimage" {% if video.thumbnail_url %}src="{{ video.thumbnail_url }}{% endif %}"/>
+                                                                <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
+                                                                    <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
-                                                                            <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
+                                                                            <span class="progress-circle" data-video-id="{{ video.id }}"></span>
                                                                             <span>{% trans video.title %}</span>
                                                                         </div>
                                                                         <div class="thumbnail_teaser" style="height: 0px; ">{% if video.description %}{% trans video.description %}{% endif %}</div>
@@ -152,12 +156,12 @@
                                                             </a>
                                                         </div>
                                                     </li>
-                                                    
+
                                                 {% else %}
                                                     <li>
                                                         <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                             <span class="video-title">
-                                                                <span class="progress-circle" data-youtube-id="{{ video.youtube_id }}"></span>
+                                                                <span class="progress-circle" data-video-id="{{ video.id }}"></span>
                                                                 {% trans video.title %}
                                                             </span>
                                                         </a>
@@ -187,5 +191,4 @@
             </div>
         </div>
     </div>
-    
 {% endblock content %}

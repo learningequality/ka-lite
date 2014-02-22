@@ -7,15 +7,15 @@ Replace this with more appropriate tests for your application.
 
 import os
 
-from django.test import TestCase, Client
+from django.test import LiveServerTestCase, TestCase, Client
 from django.core.management import call_command
 
 import settings
-from shared.testing import central_server_test, KALiteTestCase
+from testing import central_server_test
 
 
 @central_server_test
-class UrlTestCases(KALiteTestCase):
+class UrlTestCases(LiveServerTestCase):
     """Walk through a set of URLs, and validate very basic properties (status code, some text)
     A good test to weed out untested view/template errors"""
 

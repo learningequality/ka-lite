@@ -4,6 +4,7 @@ from django.contrib import admin
 
 import coachreports.urls
 import control_panel.urls
+import facility.urls
 import khanload.api_urls
 import main.api_urls
 import securesync.urls
@@ -17,7 +18,13 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
     url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images" + request.path)),
+    url(r'^securesync/', include(facility.urls)),  # for backwards compat
     url(r'^securesync/', include(securesync.urls)),
+)
+
+#i18n
+urlpatterns += patterns('',
+    url(r'^js/i18n/$', 'main.views.javascript_catalog_cached', {}, 'javascript_catalog_cached'),
 )
 
 urlpatterns += patterns('',
@@ -32,11 +39,6 @@ urlpatterns += patterns('',
     }),
 )
 
-# Javascript translations
-urlpatterns += patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('ka-lite.locale')}, 'i18n_javascript_catalog'),
-)
-
 # Teaching / admin patterns
 urlpatterns += patterns('main.views',
     # For teachers
@@ -46,8 +48,6 @@ urlpatterns += patterns('main.views',
     url(r'^update/', include(updates.urls)),
 
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
-    url(r'^userlist/$', 'user_list', {}, 'user_list'),
-    url(r'^stats/$', 'summary_stats', {}, 'summary_stats'),
 
     # API
     url(r'^api/', include(main.api_urls)),

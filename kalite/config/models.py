@@ -4,12 +4,12 @@ class Settings(models.Model):
     name = models.CharField(max_length=30, primary_key=True)
     value = models.TextField(blank=True)
     datatype = models.CharField(max_length=10, default="str")
-    
+
     @staticmethod
     def set(name, value):
-        setting = Settings(name=name, value=str(value), datatype=value.__class__.__name__)
+        setting = Settings(name=name, value=unicode(value), datatype=value.__class__.__name__)
         setting.save()
-        
+
     @staticmethod
     def get(name, default=""):
         try:

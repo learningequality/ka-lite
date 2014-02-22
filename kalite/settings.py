@@ -1,4 +1,5 @@
 import getpass
+import hashlib
 import json
 import logging
 import os
@@ -8,6 +9,21 @@ import tempfile
 import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+
+
+##############################
+# Functions for querying settings
+##############################
+
+def package_selected(package_name):
+    global CONFIG_PACKAGE
+    return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
+
+def user_facing_port():
+    global PROXY_PORT
+    global PRODUCTION_PORT
+    return PROXY_PORT or PRODUCTION_PORT
+
 
 ##############################
 # Basic setup (no options)
@@ -36,29 +52,53 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 
 ##############################
+# Basic setup of logging
+##############################
+
+# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
+LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+logging.basicConfig()
+LOG.setLevel(LOGGING_LEVEL)
+logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
+
+
+##############################
 # Basic App Settings
 ##############################
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 
+# the default encoding for strings read from various IO sources
+DEFAULT_ENCODING = getattr(local_settings, "DEFAULT_ENCODING", 'utf-8')
+
+# set the default encoding
+# OK, so why do we reload sys? Because apparently sys.setdefaultencoding
+# is deleted somewhere at startup. Reloading brings it back.
+# see: http://blog.ianbicking.org/illusive-setdefaultencoding.html
+reload(sys)
+sys.setdefaultencoding(DEFAULT_ENCODING)
+
 PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
-CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 50 if not DEBUG else 5)
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if not DEBUG else 5)  # 18 threads seems a sweet spot
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
-CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "adhocsync.com")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   "kalite.%s"%CENTRAL_SERVER_DOMAIN)
-CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.learningequality.org/")#http://%kalitewiki.s/%CENTRAL_SERVER_DOMAIN
-CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s"%CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("kalite.%s" % CENTRAL_SERVER_DOMAIN) + (":7007" if DEBUG else ""))
+CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
+CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s" % CENTRAL_SERVER_DOMAIN)
 CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
 CENTRAL_SUPPORT_EMAIL = getattr(local_settings, "CENTRAL_SUPPORT_EMAIL",    "support@learningequality.org")
 CENTRAL_DEV_EMAIL     = getattr(local_settings, "CENTRAL_DEV_EMAIL",        "dev@learningequality.org")
 CENTRAL_INFO_EMAIL    = getattr(local_settings, "CENTRAL_INFO_EMAIL",       "info@learningequality.org")
-CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
-CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@learningequality.org")#"kalite@%s"%CENTRAL_SERVER_DOMAIN
+CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@%s" % CENTRAL_SERVER_DOMAIN)
+CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@%s" % CENTRAL_SERVER_DOMAIN)
 
 CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 
@@ -67,21 +107,17 @@ PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.pat
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
+SCRIPTS_PATH   = getattr(local_settings, "SCRIPTS_PATH", os.path.join(PROJECT_PATH, '..', 'scripts'))
+
 DATABASES      = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
-        "NAME"  : getattr(local_settings, "DATABASE_PATH", PROJECT_PATH + "/database/data.sqlite"),
+        "NAME"  : getattr(local_settings, "DATABASE_PATH", os.path.join(PROJECT_PATH, "database", "data.sqlite")),
         "OPTIONS": {
             "timeout": 60,
         },
     }
 })
-
-CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
-CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
-PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {'min_length': getattr(local_settings,
-                                                                                              'PASSWORD_MIN_LENGTH',
-                                                                                              6)})
 
 
 ##############################
@@ -96,7 +132,8 @@ MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE      = getattr(local_settings, "TIME_ZONE", "America/Los_Angeles")
+TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
+#USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -106,7 +143,7 @@ LANGUAGE_CODE  = getattr(local_settings, "LANGUAGE_CODE", "en")
 # to load the internationalization machinery.
 USE_I18N       = getattr(local_settings, "USE_I18N", True)
 
-# If you set this to False, Django will not format dates, numbers and
+# If you set this to True, Django will format dates, numbers and
 # calendars according to the current locale
 USE_L10N       = getattr(local_settings, "USE_L10N", False)
 
@@ -117,8 +154,10 @@ STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT
 
 # Other defined paths
 DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
-SUBTITLES_DATA_ROOT = os.path.realpath(getattr(local_settings, "SUBTITLES_DATA_ROOT", DATA_PATH + "subtitles/")) + "/"
-LANGUAGE_PACK_ROOT = os.path.realpath(getattr(local_settings, "LANGUAGE_PACK_ROOT", STATIC_ROOT + "language_packs/")) + "/"
+DATA_PATH_SECURE = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
+
+# JSON file of all languages and their names
+LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH_SECURE, "i18n", "languagelookup.json")
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -126,9 +165,16 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
 TEMPLATE_DIRS  = tuple([os.path.realpath(td) + "/" for td in TEMPLATE_DIRS])
 
+HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
+HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
+)
+if USE_I18N:
+    TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.i18n",)
+TEMPLATE_CONTEXT_PROCESSORS += (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
@@ -142,11 +188,12 @@ TEMPLATE_LOADERS = (
     "django.template.loaders.app_directories.Loader",
 #     "django.template.loaders.eggs.Loader",
 )
+#    if USE_I18N:
+TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
 
 MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -168,14 +215,16 @@ INSTALLED_APPS = (
     "chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
+    "facility",
     "config",
     "main", # in order for securesync to work, this needs to be here.
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
     "khanload",  # khan academy interactions
+    "updates",  #
+    "i18n",  #
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
-
 
 if DEBUG or CENTRAL_SERVER:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
@@ -190,70 +239,38 @@ if CENTRAL_SERVER:
     CSRF_COOKIE_NAME        = "csrftoken_central"
     LANGUAGE_COOKIE_NAME    = "django_language_central"
     SESSION_COOKIE_NAME     = "sessionid_central"
-    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", "ka-lite")
+
+    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", None)
     CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
+    AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
+    AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
+
+    CONTENT_ROOT   = None  # needed for shared functions that are main-only
+    CONTENT_URL    = None
 
 else:
     ROOT_URLCONF = "main.urls"
-    INSTALLED_APPS += ("updates",)
     MIDDLEWARE_CLASSES += (
-        "securesync.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
-        "securesync.middleware.FacilityCheck",
+        "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
+        "facility.middleware.FacilityCheck",
         "securesync.middleware.RegisteredCheck",
         "securesync.middleware.DBCheck",
-        "main.middleware.SessionLanguage",
+        "kalite.i18n.middleware.SessionLanguage",
+        "facility.middleware.LockdownCheck",
     )
-    if USE_I18N:
-        TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.i18n",)
-        INSTALLED_APPS              += ("i18n",)
 
+    TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
+    MIDDLEWARE_CLASSES += ("i18n.middleware.SessionLanguage",)
+    INSTALLED_APPS += ('i18n', 'testing')
+    LANGUAGE_COOKIE_NAME    = "django_language"
 
-########################
-# Debugging and testing
-########################
+    CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
+    CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
-# Django debug_toolbar config
-if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
-    assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-        'ENABLE_STACKTRACES' : True,
-    }
-
-if DEBUG:
-    # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
-
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
-
-TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
-
-TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
-assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
-
-AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
+# Must define after i18n.middleware.SessionLanguage
+MIDDLEWARE_CLASSES += (
+    'django.middleware.locale.LocaleMiddleware',
+)
 
 
 ########################
@@ -275,7 +292,7 @@ INSTALL_FACILITY_NAME = getattr(local_settings, "INSTALL_FACILITY_NAME", None if
 # Syncing and synced data
 ########################
 
-SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https")
+SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https" if not DEBUG else "http")
 
 CRONSERVER_FREQUENCY = getattr(local_settings, "CRONSERVER_FREQUENCY", 600) # 10 mins (in seconds)
 
@@ -289,7 +306,7 @@ SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS",
 
 # Used for user logs.  By default, completely off.
 #  Note: None means infinite (just like caching)
-USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 0)
+USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 1)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
 
 
@@ -307,7 +324,13 @@ assert PASSWORD_ITERATIONS_STUDENT is None or PASSWORD_ITERATIONS_STUDENT >= 1, 
 PASSWORD_ITERATIONS_TEACHER_SYNCED = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER_SYNCED", 5000)
 PASSWORD_ITERATIONS_STUDENT_SYNCED = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT_SYNCED", 2500)
 assert PASSWORD_ITERATIONS_TEACHER_SYNCED >= 5000, "PASSWORD_ITERATIONS_TEACHER_SYNCED must be >= 5000"
-assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_SYNCED must be >= 5000"
+assert PASSWORD_ITERATIONS_STUDENT_SYNCED >= 2500, "PASSWORD_ITERATIONS_STUDENT_SYNCED must be >= 2500"
+
+PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
+    'min_length': getattr(local_settings, 'PASSWORD_MIN_LENGTH', 6),
+})
+
+LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 
 
 ########################
@@ -326,50 +349,53 @@ CACHES = {
     }
 }
 
-if not CENTRAL_SERVER:
-    # Local memory cache is to expensive to use for the page cache.
-    #   instead, use a file-based cache.
-    # By default, cache for maximum possible time.
-    #   Note: caching for 100 years can be too large a value
-    #   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
-    #   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
-    _5_years = 5 * 365 * 24 * 60 * 60
-    _100_years = 100 * 365 * 24 * 60 * 60
-    _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-    CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
-    CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time if not CENTRAL_SERVER else 0)
+CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
 
-    # Cache is activated in every case,
-    #   EXCEPT: if CACHE_TIME=0
-    if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-        KEY_PREFIX = version.VERSION
+# Cache is activated in every case,
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
 
-        # File-based cache
-        CACHE_LOCATION = getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), "kalite_web_cache_" + (getpass.getuser() or "unknown_user"))) + "/"
-        CACHES["file_based_cache"] = {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    # File-based cache
+    install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
+    username = getpass.getuser() or "unknown_user"
+    cache_dir_name = "kalite_web_cache_%s" % (username)
+    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
+    CACHES["file_based_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
 
-        # Memory-based cache
-        CACHES["mem_cache"] = {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
-            'TIMEOUT': CACHE_TIME, # should be consistent
-            'OPTIONS': {
-                'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-            },
-        }
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
 
-        # The chosen cache
-        CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
-        if CACHE_NAME == "file_base_cache":
-            LOG.debug("Cache location = %s" % CACHE_LOCATION)
-
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+    if CACHE_NAME == "file_based_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+    else:
+        LOG.debug("Using %s caching" % CACHE_NAME)
 
 
 ########################
@@ -383,7 +409,7 @@ if CENTRAL_SERVER:
     #   We do this so that we have control over our own key/secret (secretly, of course!)
     KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
     KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
-    
+
     # Postmark settings, to enable sending registration/invitation emails
     POSTMARK_API_KEY = getattr(local_settings, "POSTMARK_API_KEY", "")
     POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", CENTRAL_FROM_EMAIL)
@@ -411,13 +437,6 @@ assert not BACKUP_VIDEO_SOURCE or CACHE_TIME == 0, "If BACKUP_VIDEO_SOURCE, then
 # Debugging and testing
 ########################
 
-# Set logging level based on the value of DEBUG (evaluates to 0 if False, 1 if True)
-logging.basicConfig()
-LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-LOG.setLevel(logging.DEBUG*DEBUG + logging.INFO*(1-DEBUG))
-
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
-
 # Django debug_toolbar config
 if getattr(local_settings, "USE_DEBUG_TOOLBAR", False):
     assert CACHE_TIME == 0, "Debug toolbar must be set in conjunction with CACHE_TIME=0"
@@ -444,18 +463,15 @@ if DEBUG:
     # add ?prof to URL, to see performance stats
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/tests/loadtesting/"):
-        INSTALLED_APPS += ("tests.loadtesting",)
+if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
+        INSTALLED_APPS += ("testing.loadtesting",)
 
-TEST_RUNNER = 'kalite.shared.testing.testrunner.KALiteTestRunner'
+TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'
 
 TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
 assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
-
-assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local server"
-
 
 
 ########################
@@ -469,33 +485,45 @@ assert not AUTO_LOAD_TEST or not CENTRAL_SERVER, "AUTO_LOAD_TEST only on local s
 CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
                    ("RPi" if platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l" and not CENTRAL_SERVER
                    else []))
-                        
+
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
 
-def package_selected(package_name):
-    global CONFIG_PACKAGE
-    return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
-
-
 # Config for Raspberry Pi distributed server
 if package_selected("RPi"):
+    logging.info("RPi package selected.")
     # nginx proxy will normally be on 8008 and production port on 7007
     # If ports are overridden in local_settings, run the optimizerpi script
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
     assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    # 18 is the sweet-spot for cherrypy threads
-    CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
 
-
     PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
-    PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 1000)
+    PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 500)
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 if package_selected("UserRestricted"):
-    KEY_PREFIX += "|restricted"  # this option changes templates
+    LOG.info("UserRestricted package selected.")
+
+    if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
+        KEY_PREFIX += "|restricted"  # this option changes templates
+
+
+# (Aron): Setting the LANGUAGES configuration.
+# This is a bit more involved, as we need to hand out to a function to calculate
+# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
+# languages. Anything not in here is not accepted by Django, and will simply show
+# english instead of the selected language.
+if getattr(local_settings, 'LANGUAGES', None):
+    LANGUAGES = local_settings.LANGUAGES
+else:
+    from settingshelper import allow_all_languages_alist
+    # copied from shared.i18n
+    try:
+        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+    except Exception:
+        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)

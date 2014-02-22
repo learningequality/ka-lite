@@ -19,6 +19,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         possible_points: 750,
         starting_points: 0,
         youtube_id: "",
+        video_id: "",
         player_state: VideoPlayerState.UNSTARTED,
         seconds_between_saves: 30,
         percent_between_saves: 0.1
@@ -41,7 +42,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         var self = this;
 
-        doRequest("/api/get_video_logs", [this.get("youtube_id")])
+        doRequest("/api/get_video_logs", [this.get("video_id")])
             .success(function(data) {
                 if (data.length === 0) {
                     return;
@@ -54,9 +55,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 });
                 self.pointsSaved = data[0].points;
             })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
-            });
     },
 
     save: function() {
@@ -74,6 +72,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         var lastSavedBeforeError = this.get("wall_time_last_saved");
 
         data = {
+            video_id: this.get("video_id"),
             youtube_id: this.get("youtube_id"),
             seconds_watched: this.get("seconds_watched_since_save"),
             total_seconds_watched: this.get("total_seconds_watched"),
@@ -92,8 +91,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
                 self.saving = false;
-
-                communicate_api_failure(resp, "id_student_logs");
             });
 
         this.set({
@@ -149,10 +146,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         var duration = this.getDuration();
         if (duration === 0) return;
 
-        var secondsSinceSave = this.get("seconds_watched_since_save");
-        var percentSinceSave = Math.min(1.0, secondsSinceSave / duration);
-        var percentTotal = percentSinceSave +
-            (this.pointsSaved / this.get("possible_points"));
+        var percentTotal = this.get("total_seconds_watched") / duration;
         if (percentTotal > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
             percentTotal = 1.0;
         }
@@ -263,7 +257,7 @@ window.VideoView = Backbone.View.extend({
 
         this._pointView = new PointView({model: this.model});
 
-        var player_id = this.$("video").attr("id");
+        var player_id = this.$(".video-js").attr("id");
 
         if (player_id) { // if it's using mplayer, there won't be a player here
             this.player = this.model.player = _V_(player_id);
@@ -273,7 +267,7 @@ window.VideoView = Backbone.View.extend({
     },
 
     _initializeEventListeners: function() {
-
+        
         var self = this;
 
         this.player
@@ -374,8 +368,8 @@ window.VideoView = Backbone.View.extend({
         }
     },
 
-    seekTo: function(seconds) {
-        this.model.player.seekTo(seconds);
+    seek: function(seconds) {
+        this.model.player.currentTime(seconds);
     },
 
     close: function() {
@@ -391,7 +385,7 @@ window.PointView = Backbone.View.extend({
     Passively display the point count to the user (and listen to changes on the model to know when to update).
     */
 
-    el: $(".points-container"),
+    el: ".points-container",
 
     initialize: function() {
 
@@ -411,13 +405,14 @@ window.PointView = Backbone.View.extend({
 });
 
 
-function initialize_video(video_youtube_id) {
+function initialize_video(video_id, youtube_id) {
 
     var create_video_view = _.once(function(width, height) {
 
         window.videoView = new VideoView({
             el: $("#video-player"),
-            youtube_id: video_youtube_id,
+            video_id: video_id,
+            youtube_id: youtube_id,
             width: width,
             height: height
         });
@@ -454,10 +449,8 @@ function initialize_video(video_youtube_id) {
 
     $("#launch_mplayer").click(_.throttle(function() {
         // launch mplayer in the background to play the video
-        doRequest("/api/launch_mplayer?youtube_id=" + video_youtube_id)
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_mplayer");
-            });
+        doRequest("/api/launch_mplayer?youtube_id=" + youtube_id)
+
         // after mplayer closes and focus returns to the website, refresh the points from the server
         $(window).focus(function() {
             $(window).unbind("focus");

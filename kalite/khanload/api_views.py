@@ -37,24 +37,17 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
 import settings
+from facility.models import FacilityUser
 from main.models import ExerciseLog, VideoLog
-from main.topicdata import NODE_CACHE, ID2SLUG_MAP
+from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from securesync.models import FacilityUser
-from shared.decorators import require_login, distributed_server_only, central_server_only
-from utils.internet import JsonResponse
+from shared.decorators import require_login
+from testing.asserts import central_server_only, distributed_server_only
+from utils.internet import JsonResponse, JsonResponseMessageError
 
 
 KHAN_SERVER_URL = "http://www.khanacademy.org"
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
-
-
-def requests_response_to_django_response(requests_response):
-    django_response = HttpResponse(requests_response.content, status=requests_response.status_code)
-    for key, val in requests_response.headers.items(): 
-        django_response[key] = val
-    print str(django_response)
-    return django_response
 
 
 @central_server_only
@@ -80,7 +73,7 @@ def finish_auth(request):
         request.session["REQUEST_TOKEN"] = OAuthToken(params['oauth_token'], params['oauth_token_secret'])
         request.session["REQUEST_TOKEN"].set_verifier(params['oauth_verifier'])
     except MultiValueDictKeyError as e:
-        # we just want to generate a 500 anyway; 
+        # we just want to generate a 500 anyway;
         #   nothing we could do here except give a slightly more meaningful error
         raise e
 
@@ -123,7 +116,7 @@ def update_all_central(request):
     request.session["distributed_user_id"] = request.GET["user_id"]
     request.session["distributed_callback_url"] = request.GET["callback"]
     request.session["distributed_redirect_url"] = request.next or request.META.get("HTTP_REFERER", "") or "/"
-    request.session["distributed_csrf_token"] = request._cookies["csrftoken"]
+    request.session["distributed_csrf_token"] = request._cookies.get("csrftoken")
 
     # TODO(bcipolli)
     # Disabled oauth caching, as we don't have a good way
@@ -151,34 +144,37 @@ def update_all_central_callback(request):
     """
     if not "ACCESS_TOKEN" in request.session:
         finish_auth(request)
-    
+
     exercises = get_api_resource(request, "/api/v1/user/exercises")
     videos = get_api_resource(request, "/api/v1/user/videos")
+    node_cache = get_node_cache()
 
     # Save videos
     video_logs = []
     for video in videos:
-        youtube_id =video.get('video', {}).get('youtube_id', "")
+        # Assume that KA videos are all english-language, not dubbed (for now)
+        video_id = youtube_id = video.get('video', {}).get('youtube_id', "")
 
         # Only save videos with progress
         if not video.get('seconds_watched', None):
             continue
 
         # Only save video logs for videos that we recognize.
-        if youtube_id not in ID2SLUG_MAP:
-            logging.warn("Skipping unknown video %s" % youtube_id)
+        if video_id not in node_cache["Video"]:
+            logging.warn("Skipping unknown video %s" % video_id)
             continue
 
         try:
             video_logs.append({
+                "video_id": video_id,
                 "youtube_id": youtube_id,
                 "total_seconds_watched": video['seconds_watched'],
                 "points": VideoLog.calc_points(video['seconds_watched'], video['duration']),
                 "complete": video['completed'],
                 "completion_timestamp": convert_ka_date(video['last_watched']) if video['completed'] else None,
             })
-            logging.debug("Got video log for %s: %s" % (youtube_id, video_logs[-1]))
-        except KeyError:  # 
+            logging.debug("Got video log for %s: %s" % (video_id, video_logs[-1]))
+        except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
 
     # Save exercises
@@ -190,13 +186,13 @@ def update_all_central_callback(request):
 
         # Only save video logs for videos that we recognize.
         slug = exercise.get('exercise', "")
-        if slug not in NODE_CACHE['Exercise']:
+        if slug not in node_cache['Exercise']:
             logging.warn("Skipping unknown video %s" % slug)
             continue
 
         try:
             completed = exercise['streak'] >= 10
-            basepoints = NODE_CACHE['Exercise'][slug]['basepoints']
+            basepoints = node_cache['Exercise'][slug][0]['basepoints']
             exercise_logs.append({
                 "exercise_id": slug,
                 "streak_progress": min(100, 100 * exercise['streak']/10),  # duplicates logic elsewhere
@@ -224,7 +220,12 @@ def update_all_central_callback(request):
         }
     )
     logging.debug("Response (%d): %s" % (response.status_code, response.content))
-    message = json.loads(response.content)
+    try:
+        message = json.loads(response.content)
+    except ValueError as e:
+        message = { "error": unicode(e) }
+    except Exception as e:
+        message = { "error": u"Loading json object: %s" % e }
 
     # If something broke on the distribute d server, we are SCREWED.
     #   For now, just show the error to users.
@@ -265,35 +266,36 @@ def update_all_distributed_callback(request):
     videos = json.loads(request.POST["video_logs"])
     exercises = json.loads(request.POST["exercise_logs"])
     user = FacilityUser.objects.get(id=request.POST["user_id"])
-
+    node_cache = get_node_cache()
     # Save videos
     n_videos_uploaded = 0
     for video in videos:
-        youtube_id =video['youtube_id']
+        video_id = video['video_id']
+        youtube_id = video['youtube_id']
 
         # Only save video logs for videos that we recognize.
-        if youtube_id not in ID2SLUG_MAP:
-            logging.warn("Skipping unknown video %s" % youtube_id)
+        if video_id not in node_cache["Video"]:
+            logging.warn("Skipping unknown video %s" % video_id)
             continue
 
         try:
-            (vl, _) = VideoLog.get_or_initialize(user=user, youtube_id=video["youtube_id"])
+            (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id, youtube_id=youtube_id)
             for key,val in video.iteritems():
                 setattr(vl, key, val)
-            logging.debug("Saving video log for %s: %s" % (youtube_id, vl))
+            logging.debug("Saving video log for %s: %s" % (video_id, vl))
             vl.save()
             n_videos_uploaded += 1
-        except KeyError:  # 
+        except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = "Unexpected error importing videos: %s" % e
-            return JsonResponse({"error": error_message}, status=500)
+            return JsonResponseMessageError(error_message)
 
     # Save exercises
     n_exercises_uploaded = 0
     for exercise in exercises:
         # Only save video logs for videos that we recognize.
-        if exercise['exercise_id'] not in NODE_CACHE['Exercise']:
+        if exercise['exercise_id'] not in node_cache['Exercise']:
             logging.warn("Skipping unknown video %s" % exercise['exercise_id'])
             continue
 
@@ -308,6 +310,6 @@ def update_all_distributed_callback(request):
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
             error_message = "Unexpected error importing exercises: %s" % e
-            return JsonResponse({"error": error_message}, status=500)
+            return JsonResponseMessageError(error_message)
 
     return JsonResponse({"success": "Uploaded %d exercises and %d videos" % (n_exercises_uploaded, n_videos_uploaded)})
