@@ -26,7 +26,7 @@ from .models import VideoFile
 from chronograph import force_job
 from config.models import Settings
 from control_panel.views import local_device_context
-from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
+from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name, get_language_name
 from main import topic_tools
 from securesync.models import Device
 from securesync.devices import require_registration
@@ -61,11 +61,7 @@ def update_videos(request, max_to_show=4):
     force_job("videodownload", _("Download Videos"))  # async request, to trigger any outstanding video downloads
 
     installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
-    if request.is_django_user or not request.session["facility_user"].default_language:
-        default_language = Settings.get("default_language", "en")
-    elif not request.is_django_user and request.session["facility_user"].default_language:
-        default_language = request.session["facility_user"].default_language
-    default_language = lang_best_name(installed_languages.pop(lcode_to_ietf(default_language)))
+    default_language_name = lang_best_name(installed_languages.pop(request.session["default_language"]))
     languages_to_show = [lang_best_name(l) for l in installed_languages.values()[:max_to_show]]
     other_languages_count = max(0, len(installed_languages) - max_to_show)
 
@@ -73,7 +69,7 @@ def update_videos(request, max_to_show=4):
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
         "languages": languages_to_show,
-        "default_language": default_language,
+        "default_language_name": default_language_name,
         "other_languages_count": other_languages_count,
     })
     return context
