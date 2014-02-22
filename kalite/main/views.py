@@ -35,7 +35,8 @@ from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
 from utils.django_utils import is_loopback_connection
-from utils.internet import JsonResponse, get_ip_addresses
+from utils.internet import JsonResponse, get_ip_addresses, set_query_params
+
 
 def check_setup_status(handler):
     """
@@ -236,7 +237,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         vid_lang = "en"
         messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
     else:
-        vid_lang = select_best_available_language(available_urls.keys(), target_code=request.language)
+        vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
 
 
     context = {
@@ -272,7 +273,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
 
     # Return the best available exercise template
-    exercise_lang = select_best_available_language(available_langs, target_code=request.language)
+    exercise_lang = select_best_available_language(request.language, available_codes=available_langs)
     if exercise_lang == "en":
         exercise_template = exercise_file
     else:
@@ -433,7 +434,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())
+        return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
 
 def handler_404(request):
