@@ -16,10 +16,11 @@ Other values set here:
 """
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 import settings
-from . import lcode_to_django_lang, lcode_to_ietf, get_installed_language_packs
+from . import lcode_to_django_lang, lcode_to_ietf, select_best_available_language
 from config.models import Settings
 from settings import LOG as logging
 
@@ -31,7 +32,7 @@ def set_default_language(request, lang_code, global_set=False):
     For teachers, it means their personal default language
     For django users, it means the server language.
     """
-    lang_code = lcode_to_django_lang(lang_code)
+    lang_code = select_best_available_language(lang_code)  # output is in django_lang format
 
     if lang_code != request.session.get("default_language"):
         logging.debug("setting session language to %s" % lang_code)
@@ -48,16 +49,20 @@ def set_default_language(request, lang_code, global_set=False):
 
     set_request_language(request, lang_code)
 
+
 def set_request_language(request, lang_code):
     # each request can get the language from the querystring, or from the currently set session language
 
-    lang_code = lcode_to_django_lang(lang_code)
+    lang_code = select_best_available_language(lang_code)  # output is in django_lang format
+
     if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
         logging.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
         # Just in case we have a db-backed session, don't write unless we have to.
         request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
 
     request.language = lcode_to_ietf(lang_code)
+    translation.activate(request.language)
+
 
 def set_language_data(request):
     """
@@ -90,9 +95,11 @@ def set_language_data(request):
         #   facility user's individual setting
         #   config.Settings object's value
         #   settings' value
-        request.session["default_language"] = getattr(request.session.get("facility_user"), "default_language", None) \
+        request.session["default_language"] = select_best_available_language( \
+            getattr(request.session.get("facility_user"), "default_language", None) \
             or Settings.get("default_language") \
             or settings.LANGUAGE_CODE
+        )
 
     # Set this request's language based on the listed priority
     cur_lang = request.GET.get("lang") \
