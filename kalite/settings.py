@@ -197,7 +197,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "kalite.middleware.GetNextParam",
+    "utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
