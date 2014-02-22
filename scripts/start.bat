@@ -2,19 +2,18 @@
 
 rem determine the script directory (could be in scripts, could be in root folder)
 set SCRIPT_DIR=%~dp0
-if exist "%SCRIPT_DIR%\python.bat" (
-    set KALITE_DIR=%SCRIPT_DIR%\..\kalite
-) else (
-    set SCRIPT_DIR=%SCRIPT_DIR%\scripts
-    set KALITE_DIR=%SCRIPT_DIR%\kalite
-)
 
+if exist "%SCRIPT_DIR%\python.bat" (
+    set "KALITE_DIR=%SCRIPT_DIR%\..\kalite"
+) else (
+    set "SCRIPT_DIR=%SCRIPT_DIR%\scripts"
+    set "KALITE_DIR=%SCRIPT_DIR%\kalite"
+)
 
 call "%SCRIPT_DIR%\get_port.bat" %*
 
 if not exist "%KALITE_DIR%\database\data.sqlite" (
     echo Please run install.bat first!
-
 ) else (
     REM transfer any previously downloaded content from the old location to the new
     move "%KALITE_DIR%\static\videos\*" "%KALITE_DIR%\..\content" > nul 2> nul
@@ -23,7 +22,11 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
     if exist "%KALITE_DIR%\cronserver.pid" set file_exist=0
     if exist "%KALITE_DIR%\runcherrypyserver.pid" set file_exist=0
     if defined file_exist (
-        call "%SCRIPT_DIR%\stop.bat"
+        echo -------------------------------------------------------------------
+        echo KA Lite server is still running.
+        echo Please run stop.bat and then start.bat again.
+        echo -------------------------------------------------------------------
+        exit /b
     )
 
     call "%SCRIPT_DIR%\python.bat"

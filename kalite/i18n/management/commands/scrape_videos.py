@@ -14,6 +14,7 @@ import shutil
 import stat
 import subprocess
 import tempfile
+import youtube_dl
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -111,37 +112,9 @@ def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', 
     if os.path.exists(video_file_download_path) and not force:
         return
 
-    # Step 1: find or install the youtube-dl binary
-    try:
-        if not suppress_output:
-            logging.info("Retrieving youtube video %s" % youtube_id)
-        if suppress_output:
-            from functools import partial
-            import StringIO
-            fn = partial(subprocess.check_output, stderr=subprocess.STDOUT)
-        else:
-            fn = subprocess.call
-
-        # '--write-thumbnail' gets a jpg, so don't bother getting a thumbnail.
-        logging.debug("Downloading to %s" % video_file_download_path)
-        fn([yt_dl_bin, '-k', '-f', format, '--output', video_file_download_path, 'www.youtube.com/watch?v=%s' % youtube_id])
-    except OSError as oe:
-        if oe.errno != 2: # only hit the roll-our-own / install code for a very specific error.
-            raise
-
-        # Below here: try to use / install a local copy of youtube-dl
-        new_bin = os.path.join(settings.SCRIPTS_PATH, 'youtube-dl')
-        assert yt_dl_bin != new_bin, "Recursive call should never get us here."
-
-        if not os.path.exists(new_bin):
-            logging.info("No youtube-dl binary found. Installing...")
-            ensure_dir(settings.SCRIPTS_PATH)
-            subprocess.call(['curl', 'https://yt-dl.org/downloads/2013.12.03/youtube-dl', '-o', new_bin])
-            os.chmod(new_bin, stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)  #  set correct permissions
-            logging.info("youtube-dl binary installed at %s" % new_bin)
-
-        # Recursive call
-        return scrape_video(youtube_id, format=format, force=force, yt_dl_bin=new_bin, suppress_output=suppress_output)
+    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path})
+    yt_dl.add_default_info_extractors()
+    yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
 
 """
 def scrape_thumbnail(youtube_id, format="png", force=False):

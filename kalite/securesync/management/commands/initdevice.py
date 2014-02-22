@@ -14,7 +14,7 @@ from config.models import Settings
 from facility.models import Facility
 from securesync import engine
 from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
-from securesync.views import set_as_registered
+from securesync.views import initialize_registration
 from settings import LOG as logging
 from utils.general import get_host_name
 
@@ -83,7 +83,7 @@ def confirm_or_generate_zone(invitation=None, device_zone=None):
         call_command("generate_zone")
         sys.stdout.write("Successfully generated a sharing network, and joined!.\n")
 
-    set_as_registered()  # would try to sync
+    initialize_registration()  # would try to sync
 
 
 def initialize_facility(facility_name=None):
@@ -128,6 +128,8 @@ class Command(BaseCommand):
 
         # Nothing to do with a central server
         if settings.CENTRAL_SERVER:
+            return
+        elif True:  # for 0.10.3, short-cut to avoid invitation logic.
             return
 
         # Now we're definitely not central server, so ... go for it!

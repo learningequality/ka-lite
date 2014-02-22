@@ -44,7 +44,7 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(password)  #password (again)
         self.browser_form_fill(Keys.SPACE)  # checkbox 1: EULA
         self.browser_form_fill(Keys.SPACE)  # checkbox 2: EULA2
-        self.browser_form_fill("")  #newsletter subscription
+        self.browser_form_fill(Keys.TAB)  #newsletter subscription
         self.browser_send_keys(Keys.RETURN)  # submit the form
 
         # Make sure that the page changed to the "thank you" confirmation page

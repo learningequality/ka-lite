@@ -84,6 +84,18 @@
 
             <div class="top-header-links"><nav><span class="nav-subheader">
                 {% block sitewide_navigation %}
+                <span class="not-admin-only">
+                {% if multiple_language_choices %}
+                <form id="language-preferences">
+                    <select id="language_selector">
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
+                        <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
+                    {% endfor %}
+                    </select>
+                </form>
+                {% endif %}
+                </span>
+
                 {# Note that the following links are listed in the opposite order to how they will be displayed, as they are float:right #}
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -165,22 +177,14 @@
         <footer id="footer" class="short">
             <div id="leaves">
                 <div class="inner">
-                    <div style="float:left">
+                    <div style="float:left;margin-top: 5px;" class="tiny">
                         {% block footerleft %}
-                        {% if language_choices %}
-                        <form id="language-preferences" >
-                            <select id="language_selector">
-                                <option value="">--</option>{# any time the default language is not an installed language pack #}
-                                {% for lang_code, lang_meta in language_choices.iteritems %}
-                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                        {% endif %}
-                    {% endblock footerleft %}
+                        <div style="float:left"><img src="{% static 'images/FLE.png' %}" style="height:18px;margin-right: 5px;margin-top:5px;margin-left:10px;"></img></div>
+                        <div style="float:left; margin-top:4px;">creators of KA Lite &copy; 2014</div>
+                        {% endblock footerleft %}
                     </div>
                     <div id="copyright" class="tiny">
-                      {% trans "Videos and Exercises" %} &copy; 2013 Khan Academy
+                      {% trans "Videos and Exercises" %} &copy; 2014 Khan Academy
                       <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
                     </div>
                 </div>
@@ -189,3 +193,4 @@
 
     </body>
 </html>
+

@@ -16,6 +16,7 @@ from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
@@ -57,7 +58,7 @@ class student_log_api(object):
         return wrapper_fn
 
 
-@student_log_api(logged_out_message=_("Video progress not saved."))
+@student_log_api(logged_out_message=ugettext_lazy("Video progress not saved."))
 def save_video_log(request):
     """
     Receives a video_id and relevant data,
@@ -93,7 +94,7 @@ def save_video_log(request):
     })
 
 
-@student_log_api(logged_out_message=_("Exercise progress not saved."))
+@student_log_api(logged_out_message=ugettext_lazy("Exercise progress not saved."))
 def save_exercise_log(request):
     """
     Receives an exercise_id and relevant data,
@@ -135,7 +136,7 @@ def save_exercise_log(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=_("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_video_logs(request):
     """
     Given a list of video_ids, retrieve a list of video logs for this user.
@@ -153,7 +154,7 @@ def get_video_logs(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=_("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.

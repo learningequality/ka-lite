@@ -56,7 +56,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
             # Pull it from the central server
             try:
                 logging.debug("Fetching central server's srt availability file.")
-                resp = requests.get("http://kalite.learningequality.org/media/testing/%s" % (os.path.basename(map_file)))
+                resp = requests.get("http://kalite.learningequality.org:7007/media/testing/%s" % (os.path.basename(map_file)))
                 resp.raise_for_status()
                 with open(map_file, "w") as fp:
                     fp.write(resp.content)

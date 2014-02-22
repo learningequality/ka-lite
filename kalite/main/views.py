@@ -33,8 +33,8 @@ from settings import LOG as logging
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
-from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
-
+from utils.django_utils import is_loopback_connection
+from utils.internet import JsonResponse, get_ip_addresses
 
 def check_setup_status(handler):
     """
