@@ -51,7 +51,13 @@ a:hover {
 
 #language-preferences {
     position: relative;
-    top: 7px;
+    top: -2px;
+    float: right;
+    width: 75px;
+}
+
+#language_selector {
+    width:75px;
 }
 
 #top-header {
