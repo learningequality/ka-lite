@@ -88,18 +88,17 @@
                                     <span class="nav-subheader">
                                         {# Note that the following links are listed in the opposite order to how they will be displayed, as they are float:right #}
                                         {% block sitewide_navigation %}
-                                        <span class="not-admin-only"><span class="logged-in-onlya">
-                                        {% if language_choices %}
-                                        <form id="language-preferences" style="float:right; width:75px;">
-                                            <select id="language_selector" style="width:75px;top:-9px;position:relative">
-                                                <option value="">--</option>{# any time the default language is not an installed language pack #}
+                                            <span class="not-admin-only">
+                                            {% if language_choices %}
+                                            <form id="language-preferences">
+                                                <select id="language_selector">
                                                 {% for lang_code, lang_meta in language_choices.iteritems %}
-                                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
+                                                    <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
                                                 {% endfor %}
-                                            </select>
-                                        </form>
-                                        {% endif %}
-                                        </span></span>
+                                                </select>
+                                            </form>
+                                            {% endif %}
+                                            </span>
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                                             <a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a>
                                             <a href="{% url account_management %}" id="logged-in-name" class="logged-in-only not-admin-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a>
