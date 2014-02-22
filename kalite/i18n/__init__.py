@@ -470,7 +470,7 @@ def update_jsi18n_file(code="en"):
         fp.write(response.content)
 
 
-def select_best_available_language(available_codes, target_code=settings.LANGUAGE_CODE):
+def select_best_available_language(target_code, available_codes=None):
     """
     Critical function for choosing the best available language for a resource,
     given a target language code.
@@ -479,9 +479,16 @@ def select_best_available_language(available_codes, target_code=settings.LANGUAG
     to determine what file to serve, based on available resources
     and the current requested language.
     """
-    if not available_codes:
-        return None
-    elif target_code in available_codes:
+
+    # Scrub the input
+    target_code = lcode_to_django_lang(target_code)
+    if available_codes is None:
+        available_codes = get_installed_language_packs()
+    else:
+        available_codes = [lcode_to_django_lang(lc) for lc in available_codes]
+
+    # Hierarchy of language selection
+    if target_code in available_codes:
         return target_code
     elif target_code.split("-", 1)[0] in available_codes:
         return target_code.split("-", 1)[0]
