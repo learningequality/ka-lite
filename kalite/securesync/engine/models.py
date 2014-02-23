@@ -312,14 +312,25 @@ class SyncedModel(ExtendedModel):
 
 
     def get_zone(self):
+        """
+        Key function for determining which (syncable) objects are associated
+        with which zones.
+        """
         # some models have a direct zone attribute; try for that
         zone = getattr(self, "zone", None)
+
+        # Otherwise, if it's not yet synced, then get the zone from the local machine
+        if not zone and not self.signed_by:
+            zone = _get_own_device().get_zone()
+
         # otherwise, try getting the zone of the device that signed it
         if not zone and self.signed_by:
             zone = self.signed_by.get_zone()
+
         # otherwise, if it's signed by a trusted authority, try getting the fallback zone
         if not zone and self.signed_by and self.signed_by.is_trusted():
             zone = self.zone_fallback
+
         return zone
     get_zone.short_description = "Zone"
 
