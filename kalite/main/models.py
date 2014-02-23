@@ -28,8 +28,9 @@ class VideoLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
     youtube_id = models.CharField(max_length=20)
+    position_in_seconds = models.IntegerField(default=0); position_in_seconds.minversion="0.11.2"
     total_seconds_watched = models.IntegerField(default=0)
-    points = models.IntegerField(default=0)
+    points = models.IntegerField(default=0);
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
