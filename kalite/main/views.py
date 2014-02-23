@@ -193,7 +193,7 @@ def topic_context(topic):
     exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
 
-    for lang_code in os.listdir(exercises_path):
+    for lang_code in (set(os.listdir(exercises_path)) - set(["test"])):  # hard-code out test
         loc_path = os.path.join(exercises_path, lang_code)
         if not os.path.isdir(loc_path):
             continue
