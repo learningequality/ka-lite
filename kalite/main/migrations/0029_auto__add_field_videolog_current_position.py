@@ -4,21 +4,20 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-import i18n
-#from main.models import VideoLog
-
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        pass
-        ## Setting the video ID
-        #for vlog in VideoLog.objects.all():
-        #    vlog.video_id = i18n.get_video_id(vlog.youtube_id) or vlog.youtube_id
+        # Adding field 'VideoLog.current_position'
+        db.add_column('main_videolog', 'current_position',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        pass
+        # Deleting field 'VideoLog.current_position'
+        db.delete_column('main_videolog', 'current_position')
+
 
     models = {
         'main.exerciselog': {
@@ -78,6 +77,7 @@ class Migration(SchemaMigration):
             'completion_counter': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'completion_timestamp': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'current_position': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
@@ -141,6 +141,7 @@ class Migration(SchemaMigration):
         'securesync.facilityuser': {
             'Meta': {'unique_together': "(('facility', 'username'),)", 'object_name': 'FacilityUser'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'default_language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Facility']"}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
