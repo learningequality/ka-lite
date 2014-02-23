@@ -44,9 +44,9 @@ class Command(BaseCommand):
         ),
         make_option(
             '--daemonize',
-            action='store_false',
-            dest='run_in_proc',
-            default=True,
+            action='store_true',
+            dest='daemonize',
+            default=False,
             help="Daemonize"
         ),
         make_option(
@@ -103,8 +103,12 @@ class Command(BaseCommand):
             #    self.stderr.write(out[1])
             #    raise CommandError("Failed to setup/recover.")
 
+        # Next, call videoscan.
+        if not settings.CENTRAL_SERVER:
+            call_command("videoscan")
+
         # Now call the proper command
-        if options["run_in_proc"]:
+        if not options["daemonize"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
             call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()])

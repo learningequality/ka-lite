@@ -15,7 +15,7 @@ then
 fi
 
 echo "Trying to start the web server on port $port."
-"$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver host=0.0.0.0 port=$port threads=$nthreads daemonize=true pidfile="$KALITE_DIR/runcherrypyserver.pid"
+"$pyexec" "$KALITE_DIR/manage.py" kaserve host=0.0.0.0 port=$port threads=$nthreads daemonize=true pidfile="$KALITE_DIR/runcherrypyserver.pid"
 rc=$?
 if [[ $rc != 0 ]] ; then
     echo "Error: The web server was not started"
