@@ -1,3 +1,4 @@
+import datetime
 import os
 from annoying.decorators import render_to
 from collections import Counter, OrderedDict
@@ -10,6 +11,7 @@ from i18n import get_video_language, get_video_id
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_id2slug_map
 from securesync.models import SyncSession, Device
+from settings import LOG as logging
 from shared.decorators import require_authorized_admin
 
 
@@ -111,7 +113,7 @@ def show_logs(request, ndays=None):
     def get_logger_filename(logger_type):
         return stats_logger(logger_type).handlers[0].baseFilename
 
-    def parse_data(logger_type, data_fields, windowsize=128):
+    def parse_data(logger_type, data_fields, windowsize=128, ndays=None):
         parsed_data = {}
         nparts = len(data_fields)
         summary_data = dict([(fld, {}) for fld in (data_fields + ["date"])])
@@ -151,7 +153,6 @@ def show_logs(request, ndays=None):
 
                     if not cur_data:
                         break;
-                    print cur_data
                 except:
                     break
 
@@ -170,6 +171,14 @@ def show_logs(request, ndays=None):
                     tim = parts[0]
                     dat = tim.split(" ")[0]
 
+                    # Validate that this date is within the accepted range
+                    parsed_date = datetime.datetime.strptime(dat, "%Y-%m-%d")
+                    logging.debug("%s %s" % (parsed_date, (datetime.datetime.now() - timedelta(days=ndays))))
+                    if ndays is not None and datetime.datetime.now() - timedelta(days=ndays) > parsed_date:
+                        last_loop = True
+                        old_data = ""
+                        break;
+
                     # The rest is semicolon-delimited
                     parts = parts[1].split(";")  # vd;127.0.0.1;xvnpSRO9IDM
 
@@ -180,10 +189,11 @@ def show_logs(request, ndays=None):
                         summary_data[data_fields[idx]][parts[idx]] = 1 + summary_data[data_fields[idx]].get(parts[idx], 0)
         return (parsed_data, summary_data)
 
-    (video_raw_data, video_summary_data) = parse_data("videos", ["task_id", "ip_address", "youtube_id"])
-    (lp_raw_data, lp_summary_data)    = parse_data("language_packs", ["task_id", "ip_address", "lang_code", "version"])
+    (video_raw_data, video_summary_data) = parse_data("videos", ["task_id", "ip_address", "youtube_id"], ndays=ndays)
+    (lp_raw_data, lp_summary_data)       = parse_data("language_packs", ["task_id", "ip_address", "lang_code", "version"], ndays=ndays)
 
     return {
+        "ndays": ndays,
         "videos": {
             "raw": video_raw_data,
             "dates": video_summary_data["date"],
