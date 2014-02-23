@@ -2125,6 +2125,12 @@ var Khan = (function() {
         var src, deps = [];
 
         if (typeof modNameOrObject === "string") {
+            // KA-LITE-MOD
+            // Short-term HACK for overcoming broken
+            //   include for jquery.mobile.vmouse
+            if (modNameOrObject == "jquery.mobile.vmouse") {
+                modNameOrObject = "../third_party/" + modNameOrObject;
+            }
             src = urlBase + "utils/" + modNameOrObject + ".js";
             deps = Khan.moduleDependencies[modNameOrObject] || [];
         } else {
