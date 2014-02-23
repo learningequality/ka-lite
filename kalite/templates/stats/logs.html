@@ -1,0 +1,38 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+
+{% block title %}Sharing Networks with recent data uploads{% endblock title %}
+
+{% block content %}
+    <style>
+        .block {
+            margin-bottom: 50px;
+        }
+    </style>
+
+    <div class="block">
+        <h2>Videos</h2>
+        <hr/>
+        <h3>IP Addresses</h3>
+        {{ videos.ips }}
+        <h3>Dates</h3>
+        {{ videos.dates }}
+        <h3>Languages</h3>
+        {{ videos.lang_codes }}
+        <h3>Videos</h3>
+        {{ videos.slugs }}
+    </div>
+
+    <div class="block">
+        <h2>Language Packs</h2>
+        <hr/>
+        <h3>IP Addresses</h3>
+        {{ language_packs.ips }}
+        <h3>Dates</h3>
+        {{ language_packs.dates }}
+        <h3>Languages</h3>
+        {{ language_packs.lang_codes }}
+        <h3>Versions</h3>
+        {{ language_packs.versions }}
+    </div>
+{% endblock content %}
