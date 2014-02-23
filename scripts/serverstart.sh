@@ -39,6 +39,3 @@ else
     echo "computer and append ':$port', so if the IP were 10.0.0.3, the url would then be:"
     echo "http://10.0.0.3:$port/"
 fi
-
-# load a page from the server, silently, to avoid a long delay the first time it's accessed from a browser
-curl -s http://127.0.0.1:$port/ > /dev/null 2> /dev/null

@@ -94,8 +94,9 @@ def refresh_topic_cache(handler, force=False):
         do_it = do_it or "nvideos_local" not in node
         do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
         if do_it:
-            logging.debug("Adding video counts %sto topic (and all descendants) %s" % (
+            logging.debug("Adding video counts %s%sto topic (and all descendants) %s" % (
                 "(and urls) " if stamp_urls else "",
+                "(forced) " if force else "",
                 node["path"],
             ))
             (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)

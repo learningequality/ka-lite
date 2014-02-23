@@ -148,7 +148,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     return video
 
 
-def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=True, stamp_urls=True):
+def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=True, stamp_urls=True, counts_need_update=None):
     """ Uses the (json) topic tree to query the django database for which video files exist
 
     Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -160,6 +160,9 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     Input Parameters:
     * videos_path: the path to video files
     """
+    if counts_need_update is None:
+        counts_need_update = video_counts_need_update()
+
 
     if not force and "nvideos_local" in topic:
         return (topic, topic["nvideos_local"], topic["nvideos_known"], False)
@@ -180,7 +183,7 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
         if "children" in child:
             if not force and "nvideos_local" in child:
                 continue
-            stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
+            stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls, counts_need_update=counts_need_update)
             nvideos_local += child["nvideos_local"]
             nvideos_known += child["nvideos_known"]
 
@@ -188,8 +191,8 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
     videos = get_videos(topic)
     for video in videos:
-        if force or "availability" not in video:
-            stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
+        if force or counts_need_update or "availability" not in video:
+            stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls, videos_path=videos_path)
         nvideos_local += int(video["on_disk"])
     nvideos_known += len(videos)
     nvideos_available = nvideos_local if not settings.BACKUP_VIDEO_SOURCE else nvideos_known

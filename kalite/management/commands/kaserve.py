@@ -107,6 +107,13 @@ class Command(BaseCommand):
         if not settings.CENTRAL_SERVER:
             call_command("videoscan")
 
+        # Finally, pre-load global data
+        def preload_global_data():
+            from main.topic_tools import get_topic_tree
+            from updates import stamp_availability_on_topic
+            stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
+        preload_global_data()
+
         # Now call the proper command
         if not options["daemonize"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
