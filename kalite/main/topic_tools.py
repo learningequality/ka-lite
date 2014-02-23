@@ -71,6 +71,17 @@ def get_slug2id_map(force=False):
     return SLUG2ID_MAP
 
 
+ID2SLUG_MAP = None
+CACHE_VARS.append("ID2SLUG_MAP")
+def get_id2slug_map(force=False):
+    global ID2SLUG_MAP
+    if ID2SLUG_MAP is None or force:
+        ID2SLUG_MAP = {}
+        for slug, id in get_slug2id_map(force=force).iteritems():
+            ID2SLUG_MAP[id] = slug
+    return ID2SLUG_MAP
+
+
 FLAT_TOPIC_TREE = None
 CACHE_VARS.append("FLAT_TOPIC_TREE")
 def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
