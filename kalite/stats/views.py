@@ -104,6 +104,18 @@ def timelines(request, ndays=None):
     }
 
 
+
+def sorted_dict(d, key=lambda t: t[1], reverse=True, **kwargs):
+    return OrderedDict(sorted(d.items(), key=key, reverse=reverse, **kwargs))
+
+def sum_counter(d_in, fn, **kwargs):
+    d_out = dict()
+    for key, val in d_in.iteritems():
+        new_key = fn(key)
+        d_out[new_key] = val + d_out.get(new_key, 0)
+    return sorted_dict(d_out, **kwargs)
+
+
 @require_authorized_admin
 @render_to("stats/logs.html")
 def show_logs(request, ndays=None):
@@ -187,6 +199,10 @@ def show_logs(request, ndays=None):
                     summary_data["date"][dat] = 1 + summary_data["date"].get(dat, 0)
                     for idx in range(nparts):
                         summary_data[data_fields[idx]][parts[idx]] = 1 + summary_data[data_fields[idx]].get(parts[idx], 0)
+
+        for key, val in summary_data.iteritems():
+            summary_data[key] = sorted_dict(val, key=lambda t: t[0])
+
         return (parsed_data, summary_data)
 
     (video_raw_data, video_summary_data) = parse_data("videos", ["task_id", "ip_address", "youtube_id"], ndays=ndays)
@@ -198,8 +214,8 @@ def show_logs(request, ndays=None):
             "raw": video_raw_data,
             "dates": video_summary_data["date"],
             "ips": video_summary_data["ip_address"],
-            "slugs": Counter([get_id2slug_map().get(get_video_id(yid)) for yid in video_summary_data["youtube_id"]]),
-            "lang_codes": Counter([get_video_language(yid) for yid in video_summary_data["youtube_id"]]),
+            "slugs": sum_counter(video_summary_data["youtube_id"], fn=lambda yid: get_id2slug_map().get(get_video_id(yid))),
+            "lang_codes": sum_counter(video_summary_data["youtube_id"], fn=lambda yid: get_video_language(yid)),
         },
         "language_packs": {
             "raw": lp_raw_data,
