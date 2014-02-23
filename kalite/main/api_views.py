@@ -42,8 +42,9 @@ from utils.orderedset import OrderedSet
 
 class student_log_api(object):
 
-    def __init__(self, logged_out_message):
+    def __init__(self, logged_out_message, pre_fail=False):
         self.logged_out_message = logged_out_message
+        self.pre_fail = pre_fail
 
     def __call__(self, handler):
         @api_handle_error_with_json
@@ -51,10 +52,20 @@ class student_log_api(object):
             # TODO(bcipolli): send user info in the post data,
             #   allowing cross-checking of user information
             #   and better error reporting
-            if "facility_user" not in request.session:
-                return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
+            fu_logged_in = "facility_user" in request.session
+
+            if not self.pre_fail or fu_logged_in:
+                response = handler(request)
             else:
-                return handler(request)
+                # Force failure message below
+                response = JsonResponse({})
+
+            if not fu_logged_in and isinstance(response, JsonResponse) and response.status_code == 200:
+                response = JsonResponseMessageWarning(
+                    self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."),
+                    data = json.loads(response.content),
+                )
+            return response
         return wrapper_fn
 
 
@@ -70,7 +81,7 @@ def save_video_log(request):
     if not form.is_valid():
         raise ValidationError(form.errors)
     data = form.data
-    user = request.session["facility_user"]
+    user = request.session.get("facility_user")
     try:
         videolog = VideoLog.update_video_log(
             facility_user=user,
@@ -108,7 +119,7 @@ def save_exercise_log(request):
     data = form.data
 
     # More robust extraction of previous object
-    user = request.session["facility_user"]
+    user = request.session.get("facility_user")
     (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=user, exercise_id=data["exercise_id"])
     previously_complete = exerciselog.complete
 
@@ -144,7 +155,7 @@ def save_exercise_log(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."), pre_fail=True)
 def get_video_logs(request):
     """
     Given a list of video_ids, retrieve a list of video logs for this user.
@@ -162,7 +173,7 @@ def get_video_logs(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."), pre_fail=True)
 def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.

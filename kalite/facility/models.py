@@ -89,6 +89,9 @@ class FacilityUser(DeferredCountSyncedModel):
     password = models.CharField(max_length=128)
     default_language = models.CharField(max_length=8, blank=True, null=True); default_language.minversion="0.11.1"
 
+    #ANONYMOUS_USER_HEXID = str(uuid.uuid5(uuid.NAMESPACE_URL, "kalite::__anonymous__"))  # this can NEVER be changed.
+    ANONYMOUS_USER_HEXID = "1234567890abcdef1234567890abcdef"#__anonymous__"
+
     class Meta:
         unique_together = ("facility", "username")
         app_label = "securesync"  # for back-compat reasons

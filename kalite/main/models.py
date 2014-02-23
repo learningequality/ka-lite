@@ -22,18 +22,35 @@ from utils.django_utils import ExtendedModel
 from utils.general import datediff, isnumeric
 
 
-class VideoLog(DeferredCountSyncedModel):
-    POINTS_PER_VIDEO = 750
-
+class AbstractCompletionLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
-    youtube_id = models.CharField(max_length=20)
-    total_seconds_watched = models.IntegerField(default=0)
-    points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def get_or_initialize(cls, **kwargs):
+        """Force this function to segregate anonymous users by machine."""
+        if "user" in kwargs and not kwargs["user"] and "signed_by" not in kwargs:
+            try:
+                return cls.objects.get(signed_by=Device.get_own_device(), **kwargs)
+            except cls.DoesNotExist:
+                return super(AbstractCompletionLog, cls).get_or_initialize(signed_by=None, **kwargs)
+        else:
+            return super(AbstractCompletionLog, cls).get_or_initialize(**kwargs)
+
+
+class VideoLog(AbstractCompletionLog):
+    POINTS_PER_VIDEO = 750
+
+    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
+    youtube_id = models.CharField(max_length=20)
+    total_seconds_watched = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -77,10 +94,10 @@ class VideoLog(DeferredCountSyncedModel):
         super(VideoLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
-        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        #assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
         assert self.youtube_id is not None, "Youtube ID required for get_uuid"
 
-        namespace = uuid.UUID(self.user.id)
+        namespace = uuid.UUID(self.user.id if self.user else FacilityUser.ANONYMOUS_USER_HEXID)
         # can be video_id because that's set to the english youtube_id, to match past code.
         return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex
 
@@ -95,7 +112,7 @@ class VideoLog(DeferredCountSyncedModel):
 
     @classmethod
     def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, points=0, new_points=0):
-        assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
+        assert video_id and youtube_id, "Updating a video log requires a video ID and a YouTube ID"
 
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, video_id=video_id)
@@ -117,18 +134,12 @@ class VideoLog(DeferredCountSyncedModel):
         return videolog
 
 
-class ExerciseLog(DeferredCountSyncedModel):
-    user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
+class ExerciseLog(AbstractCompletionLog):
     exercise_id = models.CharField(max_length=100, db_index=True)
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
-    complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
-    attempts_before_completion = models.IntegerField(blank=True, null=True)
-    completion_timestamp = models.DateTimeField(blank=True, null=True)
-    completion_counter = models.IntegerField(blank=True, null=True)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -161,10 +172,10 @@ class ExerciseLog(DeferredCountSyncedModel):
         super(ExerciseLog, self).save(*args, **kwargs)
 
     def get_uuid(self, *args, **kwargs):
-        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        #assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
         assert self.exercise_id is not None, "Exercise ID required for get_uuid"
 
-        namespace = uuid.UUID(self.user.id)
+        namespace = uuid.UUID(self.user.id if self.user else FacilityUser.ANONYMOUS_USER_HEXID)
         return uuid.uuid5(namespace, self.exercise_id.encode("utf-8")).hex
 
     @classmethod
@@ -333,7 +344,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
         # Do nothing if the max # of records is zero
         # (i.e. this functionality is disabled)
-        if not self.is_enabled():
+        if not self.is_enabled() or not self.user:
             return
 
         # Setting up data consistency now falls into the pre-save listener.
@@ -376,7 +387,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             return
 
         if not user:
-            raise ValidationError("A valid user must always be specified.")
+            return#raise ValidationError("A valid user must always be specified.")
         if not start_datetime:  # must be done outside the function header (else becomes static)
             start_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
@@ -411,7 +422,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             return
 
         if not user:
-            raise ValidationError("A valid user must always be specified.")
+            return#raise ValidationError("A valid user must always be specified.")
         if not update_datetime:  # must be done outside the function header (else becomes static)
             update_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
@@ -443,7 +454,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             return
 
         if not user:
-            raise ValidationError("A valid user must always be specified.")
+            return#raise ValidationError("A valid user must always be specified.")
         if not end_datetime:  # must be done outside the function header (else becomes static)
             end_datetime = datetime.now()
         activity_type = cls.get_activity_int(activity_type)
