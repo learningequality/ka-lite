@@ -230,11 +230,8 @@ class Command(BaseCommand):
             sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
             shutil.move(database_file, dest_file)
 
-        # Got this far, it's OK to stop the server.
-        import serverstop
-
         # Should clean_pyc for (clean) reinstall purposes
-        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_ROOT, ".."))
+        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
