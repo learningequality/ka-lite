@@ -20,7 +20,7 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 import settings
-from . import lcode_to_django_lang, lcode_to_ietf, select_best_available_language
+from . import get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language
 from config.models import Settings
 from settings import LOG as logging
 from utils.internet import set_query_params
@@ -33,7 +33,10 @@ def set_default_language(request, lang_code, global_set=False):
     For teachers, it means their personal default language
     For django users, it means the server language.
     """
-    lang_code = select_best_available_language(lang_code)  # output is in django_lang format
+
+    # Get lang packs directly, to force reloading, as they may have changed.
+    lang_packs = get_installed_language_packs(force=True)
+    lang_code = select_best_available_language(lang_code, available_codes=lang_packs)  # Make sure to reload available languages; output is in django_lang format
 
     if lang_code != request.session.get("default_language"):
         logging.debug("setting session language to %s" % lang_code)
