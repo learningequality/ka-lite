@@ -5,7 +5,8 @@ from main import caching, topic_tools
 
 
 class Command(BaseCommand):
-
+     
+    #  Django will use whenever a model instance needs to be coerced and displayed , act on a single instance of a model object 
     def usage(self, argname):
         return """cache <command>
     View / manipulate the HTML cache. Pass one arg:
@@ -15,7 +16,8 @@ class Command(BaseCommand):
     show - show a list of urls that are currently in the cache
     clear - remove all items from the cache"""
 
-
+    # defining handler 
+    # Uses the system check framework to inspect the entire Django project for potential problems
     def handle(self, *args, **options):
 
         if settings.CACHE_TIME == 0:
@@ -33,7 +35,7 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown option: %s" % cmd)
 
-
+    # create the cache table
     def create_cache(self, force=False):
         for node_type in ['Topic', 'Video', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
@@ -41,7 +43,8 @@ class Command(BaseCommand):
                 for n in narr:
                     self.create_page_cache(path=n["path"], force=force)
 
-
+    
+    # cache the output of specific views : granularity
     def create_page_cache(self, path, force=False):
         """Go through each cacheable page, and either:
         (a) Cache each page that is not
