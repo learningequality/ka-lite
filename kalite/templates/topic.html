@@ -94,9 +94,7 @@
             {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
             {% for lang in video.availability.en.subtitles.keys %}
                 <span class="subtitle-indicator">
-                    <a href="{{ video.path }}?lang={{ lang }}">
-                {{ lang }}
-</a>
+                    {{ lang }}
                 </span>
             {% endfor %}
         </li>

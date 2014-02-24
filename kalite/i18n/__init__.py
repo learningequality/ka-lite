@@ -470,7 +470,7 @@ def update_jsi18n_file(code="en"):
         fp.write(response.content)
 
 
-def select_best_available_language(available_codes, target_code=settings.LANGUAGE_CODE):
+def select_best_available_language(target_code, available_codes=None):
     """
     Critical function for choosing the best available language for a resource,
     given a target language code.
@@ -479,21 +479,31 @@ def select_best_available_language(available_codes, target_code=settings.LANGUAG
     to determine what file to serve, based on available resources
     and the current requested language.
     """
-    if not available_codes:
-        return None
-    elif target_code in available_codes:
-        return target_code
-    elif target_code.split("-", 1)[0] in available_codes:
-        return target_code.split("-", 1)[0]
-    elif settings.LANGUAGE_CODE in available_codes:
-        return settings.LANGUAGE_CODE
-    elif "en" in available_codes:
-        return "en"
-    elif available_codes:
-        return available_codes[0]
-    else:
-        return None
 
+    # Scrub the input
+    target_code = lcode_to_django_lang(target_code)
+    if available_codes is None:
+        available_codes = get_installed_language_packs()
+    else:
+        available_codes = [lcode_to_django_lang(lc) for lc in available_codes]
+
+    # Hierarchy of language selection
+    if target_code in available_codes:
+        actual_code = target_code
+    elif target_code.split("-", 1)[0] in available_codes:
+        actual_code = target_code.split("-", 1)[0]
+    elif settings.LANGUAGE_CODE in available_codes:
+        actual_code = settings.LANGUAGE_CODE
+    elif "en" in available_codes:
+        actual_code = "en"
+    elif available_codes:
+        actual_code = available_codes[0]
+    else:
+        actual_code = None
+
+    if actual_code != target_code:
+        logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    return actual_code
 
 def scrub_locale_paths():
     for locale_root in settings.LOCALE_PATHS:

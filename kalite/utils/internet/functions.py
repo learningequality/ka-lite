@@ -71,7 +71,11 @@ def set_query_params(url, param_dict):
     query_params = parse_qs(query_string, keep_blank_values=True)
 
     for param_name, param_value in param_dict.items():
-        query_params[param_name] = [param_value]
+        if param_value is None:
+            del query_params[param_name]
+        else:
+            query_params[param_name] = [param_value]
+
     new_query_string = urlencode(query_params, doseq=True)
 
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
