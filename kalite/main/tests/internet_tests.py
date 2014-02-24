@@ -7,7 +7,7 @@ from django.test import LiveServerTestCase
 from testing.decorators import distributed_server_test
 from utils.internet import am_i_online
 
-
+# Online test implementation method
 @distributed_server_test
 class OnlineTests(LiveServerTestCase):
     def test_am_online(self):
