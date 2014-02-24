@@ -16,12 +16,12 @@ from testing.base import KALiteTestCase
 from testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 
-# Method for caching test case in KALite.
+" Method for caching test case in KALite."
 @distributed_server_test
 class CachingTest(KALiteTestCase):
     video_cache = get_node_cache("Video")
 
-    # Building a test cache for invalidation.
+    " Building a test cache for invalidation."
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_invalidation(self):
         """Create the cache item, then invalidate it and show that it is deleted."""
@@ -32,19 +32,19 @@ class CachingTest(KALiteTestCase):
         sys.stdout.write("Testing on video_id = %s\n" % video_id)
         video_path = self.video_cache[video_id][0]['path']
 
-        # Clean the cache for this item.
+        " Clean the cache for this item. "
         caching.expire_page(path=video_path, failure_ok=True)
 
-        # Create the cache item, and check it.
+        " Create the cache item, and check it. "
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
         caching.regenerate_all_pages_related_to_videos(video_ids=[video_id])
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
 
-        # Invalidate the cache item, and check it.
+        " Invalidate the cache item, and check it. "
         caching.invalidate_all_caches() # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
-    # Testing relevance across client when caching enabled.
+    " Testing relevance across client when caching enabled. "
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_across_clients(self):
         """Show that caching is accessible across all clients
@@ -56,11 +56,11 @@ class CachingTest(KALiteTestCase):
         sys.stdout.write("Testing on video_id = %s\n" % video_id)
         video_path = self.video_cache[video_id][0]['path']
 
-        # Clean the cache for this item.
+        " Clean the cache for this item. "
         caching.expire_page(path=video_path, failure_ok=True)
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: No cache key after expiring the page")
 
-        # Set up the cache with Django client.
+        " Set up the cache with Django client. "
         Client().get(video_path)
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
         caching.expire_page(path=video_path) # clean cache
