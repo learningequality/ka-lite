@@ -22,17 +22,17 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.persistent_browser = False
         super(QueryTest, self).__init__(*args, **kwargs)
     
-    # Generating a valid password.
+    " Generating a valid password. "
     @staticmethod
     def _gen_valid_password():
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
     
-    # Query to execute admin login.
+    " Query to execute admin login. "
     def test_query_login_admin(self):
         with self.assertNumQueries(38 + 0*UserLog.is_enabled()):
             self.browser_login_admin()
     
-    # Query to execute teacher login.
+    " Query to execute teacher login. "
     def test_query_login_teacher(self):
         """Check the # of queries when logging in as a teacher."""
         teacher = FacilityUser(is_teacher=True, username="t1", facility=self.facility)
@@ -43,7 +43,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         with self.assertNumQueries(39 + 3*UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
     
-    # Query to execute student login.
+    " Query to execute student login. "
     def test_query_login_student(self):
         """Check the # of queries when logging in as a student."""
         student = FacilityUser(is_teacher=False, username="s1", facility=self.facility)
@@ -54,7 +54,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         with self.assertNumQueries(39 + 3*UserLog.is_enabled()):
             self.browser_login_student("s1", passwd, self.facility)
 
-    # Query to determine status.
+    " Query to determine status. "
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
@@ -73,7 +73,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         with self.assertNumQueries(0):
             self.browse_to(self.reverse("status"))
 
-    # Query determining logout.
+    " Query determining logout. "
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
