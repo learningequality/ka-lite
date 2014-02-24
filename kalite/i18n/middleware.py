@@ -23,6 +23,7 @@ import settings
 from . import lcode_to_django_lang, lcode_to_ietf, select_best_available_language
 from config.models import Settings
 from settings import LOG as logging
+from utils.internet import set_query_params
 
 
 def set_default_language(request, lang_code, global_set=False):
@@ -78,7 +79,7 @@ def set_language_data(request):
 
         # Redirect to the same URL, but without the GET param,
         #   to remove the language setting from the browser history.
-        redirect_url = request.get_full_path().replace("set_server_language=" + request.GET["set_server_language"], "")
+        redirect_url = set_query_params(request.get_full_path(), {"set_server_language": None})
         return HttpResponseRedirect(redirect_url)
 
     elif "set_user_language" in request.GET:
@@ -87,7 +88,7 @@ def set_language_data(request):
 
         # Redirect to the same URL, but without the GET param,
         #   to remove the language setting from the browser history.
-        redirect_url = request.get_full_path().replace("set_user_language=" + request.GET["set_user_language"], "")
+        redirect_url = set_query_params(request.get_full_path(), {"set_user_language": None})
         return HttpResponseRedirect(redirect_url)
 
     if not "default_language" in request.session:

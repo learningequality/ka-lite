@@ -95,11 +95,16 @@ function setGetParam(href, name, val) {
         vars[name] = val;
     }
 
-    var url = base + "?";
+    var url = base + (vars.length > 0) ? "?" : "";
+    var idx = 0;
     for (key in vars) {
-        url += "&" + key + "=" + vars[key];//         + $.param(vars);
+        if (idx > 0) {
+            url += "&";
+        }
+        url += key + "=" + vars[key];//         + $.param(vars);
+        idx++;
     }
-    return url
+    return url;
 }
 
 function setGetParamDict(href, dict) {

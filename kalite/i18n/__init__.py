@@ -489,18 +489,21 @@ def select_best_available_language(target_code, available_codes=None):
 
     # Hierarchy of language selection
     if target_code in available_codes:
-        return target_code
+        actual_code = target_code
     elif target_code.split("-", 1)[0] in available_codes:
-        return target_code.split("-", 1)[0]
+        actual_code = target_code.split("-", 1)[0]
     elif settings.LANGUAGE_CODE in available_codes:
-        return settings.LANGUAGE_CODE
+        actual_code = settings.LANGUAGE_CODE
     elif "en" in available_codes:
-        return "en"
+        actual_code = "en"
     elif available_codes:
-        return available_codes[0]
+        actual_code = available_codes[0]
     else:
-        return None
+        actual_code = None
 
+    if actual_code != target_code:
+        logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    return actual_code
 
 def scrub_locale_paths():
     for locale_root in settings.LOCALE_PATHS:
