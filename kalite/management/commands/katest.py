@@ -30,9 +30,6 @@ def unregister_distributed_server():
     DeviceZone.objects.filter(device=own_device).delete()
     Zone.objects.all().delete()
 
-    # Delete registered info
-    Settings.delete("registered")  # setting to False doesn't work.
-
     # Delete central server
     Device.objects.filter(devicemetadata__is_trusted=True).delete()
 

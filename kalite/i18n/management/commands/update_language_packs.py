@@ -763,7 +763,6 @@ def download_crowdin_metadata(project_id=None, project_key=None):
         crowdin_meta_dict = {}
     return crowdin_meta_dict
 
-
 def increment_language_pack_version(stored_meta, updated_meta):
     """Increment language pack version if translations have been updated
 (start over if software version has incremented)

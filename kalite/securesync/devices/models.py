@@ -319,6 +319,9 @@ class Device(SyncedModel):
     def is_own_device(self):
         return self.get_metadata().is_own_device
 
+    def is_registered(self):
+        return self.get_zone() is not None
+
 
 class ZoneInvitation(SyncedModel):
     """
@@ -359,7 +362,7 @@ class ZoneInvitation(SyncedModel):
         self.key = key
         self.public_key = key.get_public_key_string()
         self.private_key = key.get_private_key_string()
-        
+
         self.invited_by = invited_by or self.invited_by
         assert self.invited_by, "must set invited_by, or pass in as parameter."
         assert self.invited_by.get_key(), "inviting Device must have a valid key."
@@ -418,7 +421,7 @@ class ZoneInvitation(SyncedModel):
         Authorized to be in the chain / generate Invitations
         """
         is_auth = False
-        is_auth = is_auth or self.zone.signed_by == device 
+        is_auth = is_auth or self.zone.signed_by == device
         is_auth = is_auth or self.zone == device.get_zone()
         is_auth = is_auth or device.is_trusted()
         return is_auth
@@ -444,7 +447,7 @@ class ChainOfTrust(object):
     """
     Object for computing and validating a chain of signatures
     linking a device to a zone through a set of ZoneInvitations or DeviceZones.
-    
+
     Note: This currently subclasses object, but a version subclassing Model
     could act as a ChainOfTrust cache, so that _compute would not need
     to be called every time, but instead only when a Model didn't exist in the
@@ -455,7 +458,7 @@ class ChainOfTrust(object):
     def __init__(self, zone=None, device=None):
         """
         Represents a chain of trust, establishing membership of a device on a zone.
-        
+
         Output
         """
         self.device = device or Device.get_own_device()
@@ -593,5 +596,5 @@ class ChainOfTrust(object):
             logging.warn("Could not verify chain of trust.")
         return chain
 
-# No device data gets "synced" through the same sync mechanism as data--it is only synced 
+# No device data gets "synced" through the same sync mechanism as data--it is only synced
 #   through the special hand-shaking mechanism
