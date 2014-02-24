@@ -6,8 +6,16 @@ body {
     background: url(/static/images/light-page-bg.png) repeat-x;
 }
 
-#page-container, #page-container-inner {
-    background: transparent url(/static/images/content-border.1.png) no-repeat right 50px;
+#page-container-inner {
+    background: transparent url(/static/images/content-border.1.png) no-repeat;
+    background-position: right 60px;
+}
+#page-container {
+    background: none;
+}
+#container {
+    background: transparent url(/static/images/content-border.1.png) no-repeat;
+    background-position: 0px 0px;
 }
 
 #page-container {
@@ -61,18 +69,33 @@ a:hover {
 }
 
 #top-header {
-    height: 50px;
+    height: 60px;
     position: relative;
+    top: 0px;
 }
+
+footer.short {
+    margin-top: 32px;
+    height: 39px;
+    padding: 2px 0px 3px 0px;
+}
+
+#fle-logo {
+    height:18px;
+    margin-right: 5px;
+    margin-left:10px;
+    margin-top: 5px;
+}
+
 
 #top-header #logo {
     position: absolute;
-    top: 0;
+    top: 5px;
     z-index: 50; /*TODO(dylan): stopgap solution;*/
 }
 
 #logo-image-small img {
-    height: 33px;
+    height: 35px;
     margin-top: 10px;
     margin-left: 5px;
 }
@@ -81,7 +104,7 @@ a:hover {
 
 .top-header-links {
     position: absolute;
-    top: 0;
+    top: 5px;
     right: 10px;
     min-width: 280px;
     height: 50px;
@@ -132,7 +155,7 @@ nav {
 .nav-subheader a.active:after {
     content: url(/static/images/nav-selector.gif);
     position: relative;
-    top: -12px;
+    top: -7px;
     display: block;
     left: 50%;
     margin-left: -5px;
@@ -390,7 +413,7 @@ li .progress-circle {
 #sitepoints {
     font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
     float: right;
-    margin-top: 4px;
+    margin-top: 7px;
     margin-right: 19px;
     opacity: 0.7;
     font-size: 1.05em;
