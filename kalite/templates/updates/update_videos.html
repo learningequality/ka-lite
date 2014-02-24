@@ -62,11 +62,10 @@
         {% endif %}
     </div>
 
-    {% if current_language != "en" %}
     <div style="clear: both; padding-top: 15px;">
         <h2>
             {% blocktrans with lang_name=current_language_native_name %}
-                Videos for language <a id="toggle_language_dropdown">{{ lang_name }}</a>
+                Videos for <a id="toggle_language_dropdown">{{ lang_name }}</a>
             {% endblocktrans %}
             <select id="download_language_selector">
             {% for lang_code, lang_meta in language_choices.iteritems %}
@@ -75,7 +74,6 @@
             </select>
         </h2>
     </div>
-    {% endif %}
 
     <div style="clear: both;"></div>
 
