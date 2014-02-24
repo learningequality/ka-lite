@@ -21,6 +21,7 @@ from utils.django_utils import call_command_with_output
 class CachingTest(KALiteTestCase):
     video_cache = get_node_cache("Video")
 
+    # building a test cache for invalidation
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_invalidation(self):
         """Create the cache item, then invalidate it and show that it is deleted."""
@@ -43,7 +44,7 @@ class CachingTest(KALiteTestCase):
         caching.invalidate_all_caches() # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
-
+    # testing relevance across client when caching enabled
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
     def test_cache_across_clients(self):
         """Show that caching is accessible across all clients
