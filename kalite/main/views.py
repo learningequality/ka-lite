@@ -24,7 +24,6 @@ import topicdata
 from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from chronograph import force_job
 from config.models import Settings
 from facility.models import Facility, FacilityUser,FacilityGroup
 from i18n import select_best_available_language

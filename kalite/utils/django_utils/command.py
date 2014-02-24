@@ -4,11 +4,14 @@ import subprocess
 import sys
 import threading
 from cStringIO import StringIO
+from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
+from django.core.management.base import BaseCommand
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from settings import LOG as logging
 
 
 def call_command_with_output(cmd, *args, **kwargs):
@@ -81,13 +84,13 @@ class CommandThread(threading.Thread):
         self.kwargs = kwargs
 
     def run(self):
-        logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
+        #logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
         call_command(self.cmd, *self.args, **self.kwargs)
 
 def call_command_threaded(cmd, *args, **kwargs):
     global JOB_THREADS
 
-    logging.debug("Threaded launch of command %s with parameters %s, %s)" % (cmd, args, kwargs))
+    #logging.debug("Threaded launch of command %s with parameters %s, %s)" % (cmd, args, kwargs))
     if cmd in JOB_THREADS and JOB_THREADS[cmd].is_alive():
         pass#raise Exception(_("Command %(cmd)s is already currently running.  Please stop the previous job before trying to start.") % {"cmd": cmd})
     th = CommandThread(cmd=cmd, *args, **kwargs)
@@ -141,3 +144,29 @@ def call_outside_command_with_output(command, *args, **kwargs):
 
     # tuple output of stdout, stderr, and exit code
     return out + (1 if out[1] else 0,)
+
+
+class LocaleAwareCommand(BaseCommand):
+    option_list = BaseCommand.option_list + (
+        make_option('--locale',
+            action='store',
+            dest='locale',
+            default=settings.LANGUAGE_CODE,
+            help='Language code',  # when I localized this, I got an error...
+            metavar="LANG_CODE"),
+    )
+
+    def execute(self, *args, **kwargs):
+        """Set the language up before execute calls into handle.
+        Better to do this way, so subclasses aren't forced to call
+        into a superclass handle function"""
+        saved_import_settings = self.can_import_settings
+        self.can_import_settings = False  # HACK to force Django (with their unusually unoverridable decision to hard-code setting en-us)
+
+        self.locale = kwargs["locale"]
+        translation.activate(self.locale)
+
+        super(LocaleAwareCommand, self).execute(*args, **kwargs)
+
+        # Aaaaand back to normal.
+        self.can_import_settings = saved_import_settings
