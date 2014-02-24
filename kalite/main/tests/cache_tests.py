@@ -16,7 +16,7 @@ from testing.base import KALiteTestCase
 from testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 
-
+# method for caching test case in KALite
 @distributed_server_test
 class CachingTest(KALiteTestCase):
     video_cache = get_node_cache("Video")
