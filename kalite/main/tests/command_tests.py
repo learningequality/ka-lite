@@ -19,7 +19,7 @@ from utils.django_utils import call_command_with_output
 @distributed_server_test
 class ChangeLocalUserPassword(MainTestCase):
     """Tests for the changelocalpassword command"""
-    # Setuping facility for users.
+    "Setuping facility for users "
     def setUp(self):
         """Create a new facility and facility user"""
         super(ChangeLocalUserPassword, self).setUp()
@@ -32,7 +32,7 @@ class ChangeLocalUserPassword(MainTestCase):
         self.user.set_password(self.old_password)
         self.user.save()
 
-    # Change password for existing user.
+    " Change password for existing user "
     def test_change_password_on_existing_user(self):
         """Change the password on an existing user."""
 
@@ -49,7 +49,7 @@ class ChangeLocalUserPassword(MainTestCase):
         success = c.login(username=self.user.username, password=new_password, facility=self.facility.id)
         self.assertTrue(success, "Was not able to login as the test user")
 
-    # Change password for nonexisting user.
+    " Change password for nonexisting user "
     def test_change_password_on_nonexistent_user(self):
         nonexistent_username = "voiduser"
         with self.assertRaises(CommandError):
