@@ -83,7 +83,7 @@ def calc_last_modified(request, *args, **kwargs):
 
     return last_modified
 
-
+# method defining backend cache page handler
 def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=settings.CACHE_NAME):
     """
     Applies all logic for getting a page to cache in our backend,
@@ -111,10 +111,11 @@ def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=setti
 def caching_is_enabled():
     return settings.CACHE_TIME != 0
 
+# to extract web cache 
 def get_web_cache():
     return get_cache(settings.CACHE_NAME) if caching_is_enabled() else None
 
-
+# to retrieve a cache key
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
     """Call into Django to retrieve a cache key for the given url, or given url name
 
@@ -147,7 +148,7 @@ def has_cache_key(path=None, url_name=None, cache=None):
     else:
         return cache.has_key( get_cache_key(path=path, url_name=url_name, failure_ok=True, cache=cache) )
 
-
+# create cache 
 def create_cache(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
 
@@ -166,7 +167,7 @@ def create_cache(path=None, url_name=None, cache=None, force=False):
     if not has_cache_key(path=path, cache=cache):
         logging.warn("Did not create cache entry for %s" % path)
 
-
+# a robust cache system that save dynamic pages  then the page will be cached until the expiry time
 def expire_page(path=None, url_name=None, failure_ok=False):
     assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
 
@@ -175,7 +176,8 @@ def expire_page(path=None, url_name=None, failure_ok=False):
     if get_web_cache().has_key(key):
         get_web_cache().delete(key)
 
-
+# efficiently invalidate groups of related cached items
+# solves the issue of expiring all the sub pages
 def invalidate_all_pages_related_to_video(video_id=None):
     """Given a video file, recurse backwards up the hierarchy and invalidate all pages.
     Also include video pages and related exercise pages.
@@ -191,7 +193,7 @@ def invalidate_all_pages_related_to_video(video_id=None):
         for path in filter(has_cache_key, all_paths):  # start at the root
             expire_page(path=path)
 
-
+# regenerate the session key value that is sent back to the user , videos derived from the uploaded ﬁles will be regenerated 
 def regenerate_all_pages_related_to_videos(video_ids):
     """Same as above, but on a list of videos"""
     paths_to_regenerate = set() # unique set
@@ -208,7 +210,7 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
     return paths_to_regenerate
 
-
+# data is stored directly in memory, so there’s no overhead of database or filesystem usage
 def invalidate_inmemory_caches():
     for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
@@ -217,14 +219,14 @@ def invalidate_inmemory_caches():
 
     logging.info("Great success emptying the in-memory cache.")
 
-
+# cache invalidation handler of the website
 def invalidate_web_cache():
     logging.debug("Clearing the web cache.")
     cache = get_web_cache()
     cache.clear()
     logging.debug("Great success emptying the web cache.")
 
-
+# invalidating or overwriting a cached item
 def invalidate_all_caches():
     if settings.CACHE_TIME:
         invalidate_inmemory_caches()
