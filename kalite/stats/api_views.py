@@ -67,8 +67,8 @@ def download_subtitle(request, lang_code, youtube_id):
     return response
 
 
-def download_windows_installer(request, version=""):
-    installer_name = "KALiteSetup.exe"
-    installer_url = 'http://adhoc.learningequality.org/media/installer/%s' % installer_name
-    stats_logger("installer").info("wi;%s" % get_request_ip(request))
+def download_windows_installer(request, version):
+    installer_name = "KALiteSetup-%s.exe" % version
+    installer_url = settings.INSTALLER_BASE_URL + installer_name
+    stats_logger("installer").info("wi;%s;%s" % (get_request_ip(request), installer_name))
     return HttpResponseRedirect(installer_url)
