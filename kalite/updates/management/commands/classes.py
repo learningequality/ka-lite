@@ -1,10 +1,13 @@
 import sys
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
+from django.utils.translation import ugettext as _
 
 from updates.models import UpdateProgressLog
+from utils.django_utils.command import LocaleAwareCommand
 
-class UpdatesCommand(BaseCommand):
+
+class UpdatesCommand(LocaleAwareCommand):
     """
     Abstract class for sharing code across Dynamic and Static versions
     """
@@ -12,7 +15,7 @@ class UpdatesCommand(BaseCommand):
         self.process_name = process_name or self.__class__.__module__.split(".")[-1]
         self.progress_log = UpdateProgressLog.get_active_log(process_name=self.process_name)
         if self.progress_log.current_stage:
-            self.progress_log.cancel_progress(notes="Starting fresh.")
+            self.progress_log.cancel_progress(notes=_("Starting fresh."))
             self.progress_log = UpdateProgressLog.get_active_log(process_name=self.process_name)
 
         super(UpdatesCommand, self).__init__(*args, **kwargs)

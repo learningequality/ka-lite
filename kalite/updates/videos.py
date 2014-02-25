@@ -51,7 +51,7 @@ def is_video_on_disk(youtube_id, format="mp4", videos_path=settings.CONTENT_ROOT
 
 _vid_last_updated = 0
 _vid_last_count = 0
-def video_counts_need_update(videos_path=settings.CONTENT_ROOT, format="mp4"):
+def do_video_counts_need_update_question_mark(videos_path=settings.CONTENT_ROOT, format="mp4"):
     """
     Compare current state to global state variables to check whether video counts need updating.
     """
@@ -148,7 +148,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     return video
 
 
-def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=True, stamp_urls=True):
+def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=True, stamp_urls=True, update_counts_question_mark= None):
     """ Uses the (json) topic tree to query the django database for which video files exist
 
     Returns the original topic dictionary, with two properties added to each NON-LEAF node:
@@ -160,6 +160,9 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     Input Parameters:
     * videos_path: the path to video files
     """
+    if update_counts_question_mark is None:
+        update_counts_question_mark = do_video_counts_need_update_question_mark()
+
 
     if not force and "nvideos_local" in topic:
         return (topic, topic["nvideos_local"], topic["nvideos_known"], False)
@@ -180,7 +183,7 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
         if "children" in child:
             if not force and "nvideos_local" in child:
                 continue
-            stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls)
+            stamp_availability_on_topic(topic=child, videos_path=videos_path, force=force, stamp_urls=stamp_urls, update_counts_question_mark=update_counts_question_mark)
             nvideos_local += child["nvideos_local"]
             nvideos_known += child["nvideos_known"]
 
@@ -188,8 +191,8 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
     videos = get_videos(topic)
     for video in videos:
-        if force or "availability" not in video:
-            stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls)
+        if force or update_counts_question_mark or "availability" not in video:
+            stamp_availability_on_video(video, force=force, stamp_urls=stamp_urls, videos_path=videos_path)
         nvideos_local += int(video["on_disk"])
     nvideos_known += len(videos)
     nvideos_available = nvideos_local if not settings.BACKUP_VIDEO_SOURCE else nvideos_known

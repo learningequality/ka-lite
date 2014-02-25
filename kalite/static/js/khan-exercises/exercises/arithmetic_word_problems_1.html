@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- saved from url=(0083)https://es.khanacademy.org/khan-exercises/exercises/arithmetic_word_problems_1.html -->
-<html data-require="math word-problems"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-<title>Problemas verbales con sumas y restas</title>
-<script src="./arithmetic_word_problems_1_files/khan-exercise.js"></script><link rel="stylesheet" href="https://es.khanacademy.org/khan-exercises/css/khan-site.css"><link rel="stylesheet" href="https://es.khanacademy.org/khan-exercises/css/khan-exercise.css"><link rel="stylesheet" href="https://es.khanacademy.org/khan-exercises/local-only/katex/katex.css"><link rel="stylesheet" href="https://es.khanacademy.org/khan-exercises/local-only/katex/fonts/fonts.css"><script async="" src="./arithmetic_word_problems_1_files/jquery.js"></script>
+<html data-require="math word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Addition and subtraction word problems</title>
+    <script src="../khan-exercise.js"></script>
 </head>
 <body>
     <div class="exercise">
@@ -17,142 +17,234 @@
 
             <div id="take-away-result">
                 <p class="problem">
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0">Antes de la parada anterior había <var>TOTAL</var> persona a bordo del tren.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1">Antes de la parada anterior habían <var>TOTAL</var> personas a bordo del tren.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>NUM2</var> persona terminó bajando en la parada.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>NUM2</var> personas terminaron bajando en la parada.</span>
+                    <span data-if="isSingular(TOTAL)">Before the previous stop there was <var>TOTAL</var> person riding on a train.</span><span data-else="">Before the previous stop there were <var>TOTAL</var> people riding on a train.</span>
+                    <span data-if="isSingular(NUM2)"><var>NUM2</var> person ended up getting off at the stop.</span><span data-else=""><var>NUM2</var> people ended up getting off at the stop.</span>
                 </p>
-                <p class="question">¿Cuántas personas están en el tren?</p>
+                <p class="question">
+                    How many people are riding the train now?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> personas</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> people
+                </div>
                 <div class="hints">
-                    <p>El número de personas en el tren ahora es la diferencia entre el número de personas que había en el tren y el número de personas que bajaron en la parada anterior.</p>
-                    <p>La diferencia es <code><var>TOTAL</var> - <var>NUM2</var></code> personas en el tren.</p>
-                    <p data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> persona en el tren.</p>
-<p data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> personas en el tren.</p>
+                    <p>
+                    The number riding the train now is the difference between the number who were riding and the number who got off at the previous stop.
+                    </p>
+                    <p>
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> people on the train.
+                    </p>
+                    <p data-if="isSingular(NUM1)">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> person is on the train.
+                    </p><p data-else="">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> people are on the train.
+                    </p>
                 </div>
             </div>
 
             <div id="take-away-start">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0">Hay <var>NUM1</var> persona a bordo del tren.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1">Hay <var>NUM1</var> personas a bordo del tren.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0">En la parada anterior, <var>NUM2</var> persona bajó del tren.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1">En la parada anterior, <var>NUM2</var> personas bajaron del tren.</span>
+                    <span data-if="isSingular(NUM1)">There is <var>NUM1</var> person riding on a train.</span><span data-else="">There are <var>NUM1</var> people riding on a train.</span>
+                    <span data-if="isSingular(NUM2)">At the previous stop, <var>NUM2</var> person got off.</span><span data-else="">At the previous stop, <var>NUM2</var> people got off.</span>
                 </p>
-                <p class="question">¿Cuántas personas había en el tren antes de la estación?</p>
+                <p class="question">
+                    How many people were riding the train before the stop?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> personas</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> people
+                </div>
                 <div class="hints">
-                    <p>El número de personas en el tren antes de la parada es la suma del número de personas ahora y el número de personas que bajaron en la parada anterior.</p>
-                    <p>La suma es <code><var>NUM1</var> + <var>NUM2</var></code> personas en el tren.</p>
-                    <p data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0"><code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> persona iba en el tren.</p>
-<p data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1"><code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> personas iban en el tren.</p>
+                    <p>
+                    The number riding the train before the stop is the sum of the number who are riding now and the number who got off at the previous stop.
+                    </p>
+                    <p>
+                    The sum is <code><var>NUM1</var> + <var>NUM2</var></code> people on the train.
+                    </p>
+                    <p data-if="isSingular(TOTAL)">
+                    <code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> people was on the train.
+                    </p><p data-else="">
+                    <code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> people were on the train.
+                    </p>
                 </div>
             </div>
 
             <div id="take-away-change">
                 <p class="problem">
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0">Había <var>TOTAL</var> persona a bordo del tren antes de la parada.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1">Había <var>TOTAL</var> personas a bordo del tren antes de la parada y algunas personas se bajaron.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0">Ahora hay <var>NUM2</var> persona a bordo del tren.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1">Ahora hay <var>NUM2</var> personas a bordo del tren.</span>
+                    <span data-if="isSingular(TOTAL)">There was <var>TOTAL</var> person riding on a train before it stopped and some number of people got off.</span><span data-else="">There were <var>TOTAL</var> people riding on a train before it stopped and some number of people got off.</span>
+                    <span data-if="isSingular(NUM2)">Now there is <var>NUM2</var> person riding on the train.</span><span data-else="">Now there are <var>NUM2</var> people riding on the train.</span>
                 </p>
-                <p class="question">¿Cuántas personas se bajaron del tren en la estación?</p>
+                <p class="question">
+                    How many people got off the train at the stop?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> personas</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> people
+                </div>
                 <div class="hints">
-                    <p>El número de personas que bajaron es la deferencia entre el número de personas que había en el tren antes y el número de personas que hay ahora.</p>
-                    <p>La diferencia es <code><var>TOTAL</var> - <var>NUM2</var></code> personas.</p>
-                    <p data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> persona se bajó.</p>
-<p data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> personas se bajaron.</p>
+                    <p>
+                    The number of people who got off is the difference between the number who were riding before and the number who are riding now.
+                    </p>
+                    <p>
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> people.
+                    </p>
+                    <p data-if="isSingular(NUM1)">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> person got off.
+                    </p><p data-else="">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> people got off.
+                    </p>
                 </div>
             </div>
 
             <div id="put-together">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0">Hay <var>NUM1</var> árbol en la orilla derecha del río.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1">Hay <var>NUM1</var> árboles en la orilla derecha del río.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0">Hay <var>NUM2</var> árbol en la orilla izquierda del río.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1">Hay <var>NUM2</var> árboles en la orilla izquierda del río.</span>
+                    <span data-if="isSingular(NUM1)">There is <var>NUM1</var> tree on the right bank of a river.</span><span data-else="">There are <var>NUM1</var> trees on the right bank of a river.</span>
+                    <span data-if="isSingular(NUM2)">There is <var>NUM2</var> tree on the left bank.</span><span data-else="">There are <var>NUM2</var> trees on the left bank.</span>
                 </p>
-                <p class="question">¿Cuántos árboles hay en las orillas del río?</p>
+                <p class="question">
+                    How many trees are on the banks of the river?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> árboles</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> trees
+                </div>
                 <div class="hints">
-                    <p>El número de árboles en las dos orillas del río es la suma del número de árboles en la orilla izquierda y el número de árboles en la orilla derecha.</p>
-                    <p>La suma es <code><var>NUM1</var> + <var>NUM2</var></code> árboles.</p>
-                    <p><code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> árboles.</p>
+                    <p>
+                    The total number of trees on the two banks of the river is the sum of the number of trees on the left bank and the number of trees on the right bank.
+                    </p>
+                    <p>
+                    The sum is <code><var>NUM1</var> + <var>NUM2</var></code> trees.
+                    </p>
+                    <p>
+                    <code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> trees.
+                    </p>
                 </div>
             </div>
 
             <div id="take-apart">
-                <p class="problem"><span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0" data-unwrap="">Hay <var>TOTAL</var> árbol en las orillas del río. La orilla <var>side(1)</var> tiene <var>NUM2</var> de ellos.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1" data-unwrap="">Hay <var>TOTAL</var> árboles en las orillas del río. La orilla <var>side(1)</var> tiene <var>NUM2</var> de ellos.</span></p>
-                <p class="question">¿Cuántos árboles hay en la orilla <var>side(2)</var> del rio?</p>
+                <p class="problem"><span data-if="isSingular(TOTAL)" data-unwrap="">
+                    There is <var>TOTAL</var> tree on the banks of the river. The <var>side(1)</var> bank has <var>NUM2</var> of them.
+                </span><span data-else="" data-unwrap="">
+                    There are <var>TOTAL</var> trees on the banks of the river. The <var>side(1)</var> bank has <var>NUM2</var> of them.
+                </span></p>
+                <p class="question">
+                    How many trees are on the <var>side(2)</var> bank of the river?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> árboles</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> trees
+                </div>
                 <div class="hints">
-                    <p>El número de árboles en la orilla <var>side(2)</var> del río es la diferencia entre el número de árboles en ambas orillas del río y el número de árboles en la orilla <var>side(1)</var>.</p>
-                    <p>La diferencia es <code><var>TOTAL</var> - <var>NUM2</var></code> árboles.</p>
-                    <p data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> árbol.</p>
-<p data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> árboles.</p>
+                    <p>
+                    The number of trees on the <var>side(2)</var> bank of the river is the difference between the number of trees on both banks of the river and the number of trees on the <var>side(1)</var> bank.
+                    </p>
+                    <p>
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> trees.
+                    </p>
+                    <p data-if="isSingular(NUM1)">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> tree.
+                    </p><p data-else="">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> trees.
+                    </p>
                 </div>
             </div>
 
             <div id="add-start">
                 <p class="problem">
-                    <span>Algunos autos estaban estacionados en el estacionamiento de la tienda de <var>store(1)</var>.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>NUM2</var> auto más se estaciona en la tienda de <var>store(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>NUM2</var> autos más se estacionan en la tienda de <var>store(1)</var>.</span>
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0">Ahora hay <var>TOTAL</var> auto en el estacionamiento.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1">Ahora hay <var>TOTAL</var> autos en el estacionamiento.</span>
+                    <span>Some cars were parked in the <var>store(1)</var> store parking lot.</span>
+                    <span data-if="isSingular(NUM2)"><var>NUM2</var> more car parks at the <var>store(1)</var> store.</span><span data-else=""><var>NUM2</var> more cars park at the <var>store(1)</var> store.</span>
+                    <span data-if="isSingular(TOTAL)">Now there is <var>TOTAL</var> car in the parking lot.</span><span data-else="">Now there are <var>TOTAL</var> cars in the parking lot.</span>
                 </p>
-                <p class="question">¿Cuántos autos estaban estacionados en la tienda de <var>store(1)</var> al principio?</p>
+                <p class="question">
+                    How many cars were parked at the <var>store(1)</var> store at the beginning?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> coches</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> cars
+                </div>
                 <div class="hints">
-                    <p>El número de autos estacionados en la tienda al principio es la diferencia del número de autos estacionados ahora y el número de autos que vinieron y se estacionaron antes.</p>
-                    <p>La diferencia es <code><var>TOTAL</var> - <var>NUM2</var></code> autos.</p>
-                    <p data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> coche.</p>
-<p data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> coches.</p>
+                    <p>
+                    The number of cars parked at the store at the beginning is the difference of the number parked now and the number that came and parked earlier.
+                    </p>
+                    <p>
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> cars.
+                    </p>
+                    <p data-if="isSingular(NUM1)">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> car.
+                    </p><p data-else="">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> cars.
+                    </p>
                 </div>
             </div>
 
             <div id="add-change">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0">Inicialmente había <var>NUM2</var> auto estacionado en el estacionamiento de la tienda de <var>store(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1">Inicialmente había <var>NUM2</var> autos estacionados en el estacionamiento de la tienda de <var>store(1)</var>.</span>
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0">Durante las siguientes <var>randRange( 2, 3 )</var> horas algunos autos más se estacionaron en la tienda de <var>store(1)</var>, y ahora hay <var>TOTAL</var> auto estacionado. Ningún auto dejo el estacionamiento durante este tiempo.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1">Durante las siguientes <var>randRange( 2, 3 )</var> horas algunos autos más se estacionaron en la tienda de <var>store(1)</var>, y ahora hay <var>TOTAL</var> autos estacionados. Ningún auto dejo el estacionamiento durante este tiempo.</span>
+                    <span data-if="isSingular(NUM2)">Initially there was <var>NUM2</var> car parked in the <var>store(1)</var> store parking lot.</span><span data-else="">Initially there were <var>NUM2</var> cars parked in the <var>store(1)</var> store parking lot.</span>
+                    <span data-if="isSingular(TOTAL)">During the following <var>randRange( 2, 3 )</var> hours some more cars parked at the <var>store(1)</var> store, and now there is <var>TOTAL</var> car in the parking lot. No cars left the parking lot during this time.</span><span data-else="">During the following <var>randRange( 2, 3 )</var> hours some more cars parked at the <var>store(1)</var> store, and now there are <var>TOTAL</var> cars in the parking lot. No cars left the parking lot during this time.</span>
                 </p>
-                <p class="question"><span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0" data-unwrap="">¿Cuántos autos se estacionaron en la tienda de <var>store( 1 )</var>  después del <var>NUM2</var> auto inicial?</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1" data-unwrap="">¿Cuántos autos se estacionaron en la tienda de <var>store( 1 )</var>  después de los <var>NUM2</var> autos iniciales?</span></p>
+                <p class="question"><span data-if="isSingular(NUM2)" data-unwrap="">
+                How many cars parked in the <var>store( 1 )</var> store parking lot after the initial <var>NUM2</var> car?
+                </span><span data-else="" data-unwrap="">
+                How many cars parked in the <var>store( 1 )</var> store parking lot after the initial <var>NUM2</var> cars?
+                </span></p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> coches</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> cars
+                </div>
                 <div class="hints">
-                    <p>El número de autos que vinieron y se estacionaron el la tienda es la diferencia entre el número de autos que estaban estacionado antes y el número de autos estacionados ahora.</p>
-                    <p>La diferencia es <code><var>TOTAL</var> - <var>NUM2</var></code> autos.</p>
-                    <p data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> coche.</p>
-<p data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> coches.</p>
+                    <p>The number of cars that came and parked at the store is the difference between the number that were parked earlier and the number that are parked now.</p>
+                    <p>
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> cars.
+                    </p>
+                    <p data-if="isSingular(NUM1)">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> car.
+                    </p><p data-else="">
+                    <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code> cars.
+                    </p>
                 </div>
             </div>
 
             <div id="add-result">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><var>NUM1</var> auto estaba en el estacionamiento de la tienda de  <var>store(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><var>NUM1</var> autos estaban en el estacionamiento de la tienda de  <var>store(1)</var>.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>NUM2</var> auto más se estaciona en la tienda de <var>store(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>NUM2</var> autos más se estacionan en la tienda de <var>store(1)</var>.</span>
+                    <span data-if="isSingular(NUM1)"><var>NUM1</var> car was in the <var>store(1)</var> store parking lot.</span><span data-else=""><var>NUM1</var> cars were in the <var>store(1)</var> store parking lot.</span>
+                    <span data-if="isSingular(NUM2)"><var>NUM2</var> more car parks at the <var>store(1)</var> store.</span><span data-else=""><var>NUM2</var> more cars park at the <var>store(1)</var> store.</span>
                 </p>
-                <p class="question">¿Cuántos autos hay en el estacionamiento ahora?</p>
+                <p class="question">
+                    How many cars are in the parking lot now?
+                </p>
                 <div class="solution" data-type="multiple">
-<span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> coches</div>
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> cars
+                </div>
                 <div class="hints">
-                    <p>El número de autos estacionados ahora es la suma del número de autos que estaban ya estacionados antes y el número de autos que llegaron al estacionamiento.</p>
-                    <p>La suma es <code><var>NUM1</var> + <var>NUM2</var></code> autos.</p>
-                    <p><code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> coches.</p>
+                    <p>
+                    The number of cars that are parked now is the sum of the number that were parked earlier and the number that came to park.
+                    </p>
+                    <p>
+                    The sum is <code><var>NUM1</var> + <var>NUM2</var></code> cars.
+                    </p>
+                    <p>
+                    <code><var>NUM1</var> + <var>NUM2</var> = <var>TOTAL</var></code> cars.
+                    </p>
                 </div>
             </div>
 
             <div id="compare-diff-more">
                 <p class="problem">
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0"><var>person(1)</var> hizo <var>TOTAL</var> <var>exercise(1)</var> <var>timeofday(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1"><var>person(1)</var> hizo <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var> <var>timeofday(1)</var>.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>person(2)</var> hizo <var>NUM2</var> <var>exercise(1)</var> <var>timeofday(2)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>person(2)</var> hizo <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>  <var>timeofday(2)</var>.</span>
+                    <span data-if="isSingular(TOTAL)"><var>person(1)</var> did <var>TOTAL</var> <var>exercise(1)</var> <var>timeofday(1)</var>.</span><span data-else=""><var>person(1)</var> did <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var> <var>timeofday(1)</var>.</span>
+                    <span data-if="isSingular(NUM2)"><var>person(2)</var> did <var>NUM2</var> <var>exercise(1)</var> <var>timeofday(2)</var>.</span><span data-else=""><var>person(2)</var> did <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var> <var>timeofday(2)</var>.</span>
                 </p>
-                <p class="question"><span data-if="$.ngetpos(2, &#39;es-ES&#39;) === 0" data-unwrap="">¿Cuántas <var>exercise(1)</var> más hizó <var>person(1)</var> que <var>person(2)</var>?</span><span data-else-if="$.ngetpos(2, &#39;es-ES&#39;) === 1" data-unwrap="">¿Cuanta <var>plural_form(exercise(1), 2)</var> más hizó <var>person(1)</var> que <var>person(2)</var>?</span></p>
+                <p class="question"><span data-if="isSingular(2)" data-unwrap="">
+                    How many more <var>exercise(1)</var> did <var>person(1)</var> do than <var>person(2)</var>?
+                </span><span data-else="" data-unwrap="">
+                    How many more <var>plural_form(exercise(1), 2)</var> did <var>person(1)</var> do than <var>person(2)</var>?
+                </span></p>
                 <div class="solution" data-type="multiple">
                     <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> <var>plural(exercise(1), 2)</var>
                 </div>
                 <div class="hints">
-                    <p data-if="$.ngetpos(2, &#39;es-ES&#39;) === 0">Encuentra la diferencia entre la <var>exercise(1)</var> de <var>person(1)</var> y la <var>exercise(1)</var> de <var>person(2)</var>.</p>
-<p data-else-if="$.ngetpos(2, &#39;es-ES&#39;) === 1">Encuentra la diferencia entre las  <var>plural_form(exercise(1), 2)</var> de <var>person(1)</var> y las  <var>plural_form(exercise(1), 2)</var> de <var>person(2)</var>.</p>
-                    <p data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0">La diferencia es <code><var>TOTAL</var> - <var>NUM2</var></code> <var>exercise(1)</var>.</p>
-<p data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1">La diferencia son <code><var>TOTAL</var> - <var>NUM2</var></code> <var>plural_form(exercise(1), NUM2)</var>.</p>
+                    <p data-if="isSingular(2)">
+                    Find the difference between <var>person(1)</var>'s <var>exercise(1)</var> and <var>person(2)</var>'s <var>exercise(1)</var>.
+                    </p><p data-else="">
+                    Find the difference between <var>person(1)</var>'s <var>plural_form(exercise(1), 2)</var> and <var>person(2)</var>'s <var>plural_form(exercise(1), 2)</var>.
+                    </p>
+                    <p data-if="isSingular(NUM2)">
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> <var>exercise(1)</var>.
+                    </p><p data-else="">
+                    The difference is <code><var>TOTAL</var> - <var>NUM2</var></code> <var>plural_form(exercise(1), NUM2)</var>.
+                    </p>
                     <p>
                     <code><var>TOTAL</var> - <var>NUM2</var> = <var>NUM1</var></code>.
                     </p>
@@ -160,65 +252,98 @@
             </div>
 
             <div id="compare-diff-less" data-type="compare-diff-more">
-                <p class="question"><span data-if="$.ngetpos(2, &#39;es-ES&#39;) === 0" data-unwrap="">¿Cuántas <var>exercise(1)</var> menos hizo <var>person(2)</var> que <var>person(1)</var>?</span><span data-else-if="$.ngetpos(2, &#39;es-ES&#39;) === 1" data-unwrap="">¿Cuántas <var>plural_form(exercise(1), 2)</var> menos hizo <var>person(2)</var> que <var>person(1)</var>?</span></p>
+                <p class="question"><span data-if="isSingular(2)" data-unwrap="">
+                    How many fewer <var>exercise(1)</var> did <var>person(2)</var> do than <var>person(1)</var>?
+                </span><span data-else="" data-unwrap="">
+                    How many fewer <var>plural_form(exercise(1), 2)</var> did <var>person(2)</var> do than <var>person(1)</var>?
+                </span></p>
             </div>
 
             <div id="compare-bigger-more">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><var>person(1)</var> hizo <var>NUM1</var> más <var>exercise(1)</var> que <var>person(2)</var> <var>timeofday(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><var>person(1)</var> hizo <var>NUM1</var> más <var>plural_form(exercise(1), NUM1)</var> que <var>person(2)</var> <var>timeofday(1)</var>.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>person(2)</var> hizo <var>NUM2</var> <var>exercise(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>person(2)</var> hizo <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>.</span>
+                    <span data-if="isSingular(NUM1)"><var>person(1)</var> did <var>NUM1</var> more <var>exercise(1)</var> than <var>person(2)</var> <var>timeofday(1)</var>.</span><span data-else=""><var>person(1)</var> did <var>NUM1</var> more <var>plural_form(exercise(1), NUM1)</var> than <var>person(2)</var> <var>timeofday(1)</var>.</span>
+                    <span data-if="isSingular(NUM2)"><var>person(2)</var> did <var>NUM2</var> <var>exercise(1)</var>.</span><span data-else=""><var>person(2)</var> did <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>.</span>
                 </p>
-                <p class="question"><span data-if="$.ngetpos(2, &#39;es-ES&#39;) === 0" data-unwrap="">¿Cuántos <var>exercise(1)</var> hizo <var>person(1)</var>?</span><span data-else-if="$.ngetpos(2, &#39;es-ES&#39;) === 1" data-unwrap="">¿Cuántos <var>plural_form(exercise(1), 2)</var> hizo <var>person(1)</var>?</span></p>
+                <p class="question"><span data-if="isSingular(2)" data-unwrap="">
+                    How many <var>exercise(1)</var> did <var>person(1)</var> do?
+                </span><span data-else="" data-unwrap="">
+                    How many <var>plural_form(exercise(1), 2)</var> did <var>person(1)</var> do?
+                </span></p>
                 <div class="solution" data-type="multiple">
                     <span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> <var>plural(exercise(1), TOTAL)</var>
                 </div>
                 <div class="hints">
-                    <p data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>person(2)</var> hizo <var>NUM2</var> <var>exercise(1)</var>, y <var>person(1)</var> hizo <var>NUM1</var> más que eso, así que encuentra la suma.</p>
-<p data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>person(2)</var> hizo <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>, y <var>person(1)</var> hizo <var>NUM1</var> más que eso, así que encuentra la suma.</p>
-                    <p data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0">La suma es <code><var>NUM2</var> + <var>NUM1</var></code> <var>exercise(1)</var>.</p>
-<p data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1">La suma es <code><var>NUM2</var> + <var>NUM1</var></code> <var>plural_form(exercise(1), TOTAL)</var>.</p>
-                    <p data-if="isMale(1)">Él hizo <code><var>NUM2</var> + <var>NUM1</var> = <var>TOTAL</var></code> <var>plural_form(exercise(1), TOTAL)</var>.</p>
-<p data-else="">Ella hizo <code><var>NUM2</var> + <var>NUM1</var> = <var>TOTAL</var></code> <var>plural_form(exercise(1), TOTAL)</var>.</p>
+                    <p data-if="isSingular(NUM2)">
+                    <var>person(2)</var> did <var>NUM2</var> <var>exercise(1)</var>, and <var>person(1)</var> did <var>NUM1</var> more than that, so find the sum.
+                    </p><p data-else="">
+                    <var>person(2)</var> did <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>, and <var>person(1)</var> did <var>NUM1</var> more than that, so find the sum.
+                    </p>
+                    <p data-if="isSingular(TOTAL)">
+                    The sum is <code><var>NUM2</var> + <var>NUM1</var></code> <var>exercise(1)</var>.
+                    </p><p data-else="">
+                    The sum is <code><var>NUM2</var> + <var>NUM1</var></code> <var>plural_form(exercise(1), TOTAL)</var>.
+                    </p>
+                    <p data-if="isMale(1)">
+                    He did <code><var>NUM2</var> + <var>NUM1</var> = <var>TOTAL</var></code> <var>plural_form(exercise(1), TOTAL)</var>.
+                    </p><p data-else="">
+                    She did <code><var>NUM2</var> + <var>NUM1</var> = <var>TOTAL</var></code> <var>plural_form(exercise(1), TOTAL)</var>.
+                    </p>
                 
                 </div>
             </div>
 
             <div id="compare-bigger-less" data-type="compare-bigger-more">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><var>person(2)</var> hizo <var>NUM1</var> menos <var>exercise(1)</var> que <var>person(1)</var> <var>timeofday(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><var>person(2)</var> hizo <var>NUM1</var> menos <var>plural_form(exercise(1), NUM1)</var>. que <var>person(1)</var> <var>timeofday(1)</var>.</span>
-                    <span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0"><var>person(2)</var> hizo <var>NUM2</var> <var>exercise(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1"><var>person(2)</var> hizo <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>.</span>
+                    <span data-if="isSingular(NUM1)"><var>person(2)</var> did <var>NUM1</var> fewer <var>exercise(1)</var> than <var>person(1)</var> <var>timeofday(1)</var>.</span><span data-else=""><var>person(2)</var> did <var>NUM1</var> fewer <var>plural_form(exercise(1), NUM1)</var> than <var>person(1)</var> <var>timeofday(1)</var>.</span>
+                    <span data-if="isSingular(NUM2)"><var>person(2)</var> did <var>NUM2</var> <var>exercise(1)</var>.</span><span data-else=""><var>person(2)</var> did <var>NUM2</var> <var>plural_form(exercise(1), NUM2)</var>.</span>
                 </p>
             </div>
 
             <div id="compare-smaller-more">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><var>person(1)</var> hizo <var>NUM1</var> más <var>exercise(1)</var> que <var>person(2)</var> <var>timeofday(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><var>person(1)</var> hizo <var>NUM1</var> más <var>plural_form(exercise(1), NUM1)</var> que <var>person(2)</var> <var>timeofday(1)</var>.</span>
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0"><var>person(1)</var> hizo <var>TOTAL</var> <var>exercise(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1"><var>person(1)</var> hizo <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var>.</span>
+                    <span data-if="isSingular(NUM1)"><var>person(1)</var> did <var>NUM1</var> more <var>exercise(1)</var> than <var>person(2)</var> <var>timeofday(1)</var>.</span><span data-else=""><var>person(1)</var> did <var>NUM1</var> more <var>plural_form(exercise(1), NUM1)</var> than <var>person(2)</var> <var>timeofday(1)</var>.</span>
+                    <span data-if="isSingular(TOTAL)"><var>person(1)</var> did <var>TOTAL</var> <var>exercise(1)</var>.</span><span data-else=""><var>person(1)</var> did <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var>.</span>
                 </p>
-                <p class="question"><span data-if="$.ngetpos(2, &#39;es-ES&#39;) === 0" data-unwrap="">¿Cuánto <var>exercise(1)</var> hizo <var>person(2)</var>?</span><span data-else-if="$.ngetpos(2, &#39;es-ES&#39;) === 1" data-unwrap="">¿Cuántos <var>plural_form(exercise(1))</var> hizo <var>person(2)</var>?</span></p>
+                <p class="question"><span data-if="isSingular(2)" data-unwrap="">
+                    How many <var>exercise(1)</var> did <var>person(2)</var> do?
+                </span><span data-else="" data-unwrap="">
+                    How many <var>plural_form(exercise(1))</var> did <var>person(2)</var> do?
+                </span></p>
                 <div class="solution" data-type="multiple">
                     <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM2</var></span> <var>plural(exercise(1))</var>
                 </div>
                 <div class="hints">
-                    <p data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0"><var>person(1)</var> hizo <var>TOTAL</var> <var>exercise(1)</var>, y <var>person(2)</var> hizo <var>NUM1</var> menos que eso, así que encuentra la diferencia.</p>
-<p data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1"><var>person(1)</var> hizo <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var>, y <var>person(2)</var> hizo <var>NUM1</var> menos que eso, así que encuentra la diferencia.</p>
-                    <p data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0">La diferencia es <code><var>TOTAL</var> - <var>NUM1</var></code> <var>exercise(1)</var>.</p>
-<p data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1">La diferencia es <code><var>TOTAL</var> - <var>NUM1</var></code> <var>plural_form(exercise(1), NUM1)</var>.</p>
-                    <p data-if="isMale(1)"><span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0" data-unwrap="">Él hizo <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>exercise(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1" data-unwrap="">Él hizo <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>plural_form(exercise(1), NUM2)</var>.</span></p>
-<p data-else=""><span data-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 0" data-unwrap="">Ella hizo <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>exercise(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, &#39;es-ES&#39;) === 1" data-unwrap="">Ella hizo <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>plural_form(exercise(1), NUM2)</var>.</span></p>
+                    <p data-if="isSingular(TOTAL)">
+                    <var>person(1)</var> did <var>TOTAL</var> <var>exercise(1)</var>, and <var>person(2)</var> did <var>NUM1</var> fewer than that, so find the difference.
+                    </p><p data-else="">
+                    <var>person(1)</var> did <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var>, and <var>person(2)</var> did <var>NUM1</var> fewer than that, so find the difference.
+                    </p>
+                    <p data-if="isSingular(NUM1)">
+                    The difference is <code><var>TOTAL</var> - <var>NUM1</var></code> <var>exercise(1)</var>.
+                    </p><p data-else="">
+                    The difference is <code><var>TOTAL</var> - <var>NUM1</var></code> <var>plural_form(exercise(1), NUM1)</var>.
+                    </p>
+                    <p data-if="isMale(1)"><span data-if="isSingular(NUM2)" data-unwrap="">
+                    He did <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>exercise(1)</var>.
+                    </span><span data-else="" data-unwrap="">
+                    He did <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>plural_form(exercise(1), NUM2)</var>.
+                    </span></p><p data-else=""><span data-if="isSingular(NUM2)" data-unwrap="">
+                    She did <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>exercise(1)</var>.
+                    </span><span data-else="" data-unwrap="">
+                    She did <code><var>TOTAL</var> - <var>NUM1</var> = <var>NUM2</var></code> <var>plural_form(exercise(1), NUM2)</var>.
+                    </span></p>
                 
                 </div>
             </div>
 
             <div id="compare-smaller-fewer" data-type="compare-smaller-more">
                 <p class="problem">
-                    <span data-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 0"><var>person(2)</var> hizo <var>NUM1</var> menos <var>exercise(1)</var> que <var>person(1)</var> <var>timeofday(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, &#39;es-ES&#39;) === 1"><var>person(2)</var> hizo <var>NUM1</var> menos <var>plural_form(exercise(1), NUM1)</var>. que <var>person(1)</var> <var>timeofday(1)</var>.</span>
-                    <span data-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 0"><var>person(1)</var> hizo <var>TOTAL</var> <var>exercise(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, &#39;es-ES&#39;) === 1"><var>person(1)</var> hizo <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var>.</span>
+                    <span data-if="isSingular(NUM1)"><var>person(2)</var> did <var>NUM1</var> fewer <var>exercise(1)</var> than <var>person(1)</var> <var>timeofday(1)</var>.</span><span data-else=""><var>person(2)</var> did <var>NUM1</var> fewer <var>plural_form(exercise(1), NUM1)</var> than <var>person(1)</var> <var>timeofday(1)</var>.</span>
+                    <span data-if="isSingular(TOTAL)"><var>person(1)</var> did <var>TOTAL</var> <var>exercise(1)</var>.</span><span data-else=""><var>person(1)</var> did <var>TOTAL</var> <var>plural_form(exercise(1), TOTAL)</var>.</span>
                 </p>
             </div>
 
         </div>
     </div>
-
-
-</body></html>
+</body>
+</html>
