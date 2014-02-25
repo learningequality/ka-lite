@@ -35,7 +35,7 @@ def set_default_language(request, lang_code, global_set=False):
     """
 
     # Get lang packs directly, to force reloading, as they may have changed.
-    lang_packs = get_installed_language_packs(force=True)
+    lang_packs = get_installed_language_packs(force=True).keys()
     lang_code = select_best_available_language(lang_code, available_codes=lang_packs)  # Make sure to reload available languages; output is in django_lang format
 
     if lang_code != request.session.get("default_language"):
