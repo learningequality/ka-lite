@@ -22,7 +22,9 @@ admin.autodiscover()
 def redirect_to(self, base_url, path=""):
     return HttpResponseRedirect(base_url + path)
 
-# This must be prioritized, to make sure stats are recorded for all necessary urls
+# This must be prioritized, to make sure stats are recorded for all necessary urls.
+#   If removed, all apps should still function, as appropriate URL confs for each
+#   app still exist
 urlpatterns = patterns('stats.api_views',
     url(r'^', include(stats.api_urls)),  # add at root
 )
@@ -84,7 +86,11 @@ urlpatterns += patterns('central.views',
     # Downloads: private
     #url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
     #url(r'^download/kalite/(?P<version>[^\/]+)/(?P<platform>[^\/]+)/(?P<locale>[^\/]+)/(?P<zone_id>[^\/]+)/(?P<include_data>[^\/]+)/$', 'download_kalite_private', {}, 'download_kalite_private'),
-    # redirects for downloads
+
+    # The following has been superceded by the stats app, but we
+    #   keep it here so that things will function even if that app is removed.
+    url(r'^download/videos/(.*)$', lambda request, vpath: HttpResponseRedirect(OUTSIDE_DOWNLOAD_BASE_URL + vpath)),
+
     url(r'^wiki/installation/$', 'content_page', {"page": "wiki_page", "wiki_site": settings.CENTRAL_WIKI_URL, "path": "/installation/"}, 'install'),
 
     url(r'^contact/', include(contact.urls)),

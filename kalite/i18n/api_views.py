@@ -25,7 +25,7 @@ def get_subtitle_counts(request):
     # Get the subtitles file
     if not os.path.exists(SUBTITLE_COUNTS_FILEPATH):
         # could call-command, but return 404 for now.
-        raise Http404
+        raise Http404("Subtitles count file %s not found." % SUBTITLE_COUNTS_FILEPATH)
 
     with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
         subtitle_counts = json.load(fp)
