@@ -170,9 +170,9 @@ window.VideoPlayerModel = Backbone.Model.extend({
     updateAndSaveIfNeeded: function() {
 
         this._updateSecondsWatchedSinceSave();
-        //this.set({
-        //    current_position: this.getVideoPosition()
-        //});
+        this.set({
+            current_position: this.getVideoPosition()
+        });
 
         // Save after we hit certain intervals of video watching
         if (this._isAutoSaveIntervalExceeded()) {
@@ -346,7 +346,7 @@ window.VideoView = Backbone.View.extend({
     _beginIntervalUpdate: function() {
         // Every 10 seconds, update the point estimate, and save if needed
         if (this.intervalId) clearInterval(this.intervalId);
-        this.intervalId = setInterval(this.model.updateAndSaveIfNeeded, 10000);
+        this.intervalId = setInterval(this.model.updateAndSaveIfNeeded, VIDEOLOG_SAVE_FREQUENCY * 1000);
     },
 
     /**
