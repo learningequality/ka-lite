@@ -26,5 +26,21 @@ if settings.ZERO_CONFIG:
     elif "runcherrypyserver" in sys.argv:
         sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
 
+########################
+# clean_pyc
+########################
+
+if len(sys.argv) == 2 and sys.argv[1] == "clean_pyc":
+    sys.argv += ["--path", ".."]
+
+########################
+# Static files
+########################
+
+if "runserver" in sys.argv and "--nostatic" not in sys.argv:
+    sys.argv += ["--nostatic"]
+
+
+
 if __name__ == "__main__":
     execute_manager(settings)
