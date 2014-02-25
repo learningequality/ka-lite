@@ -65,3 +65,10 @@ def download_subtitle(request, lang_code, youtube_id):
     response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(srt_filepath)
 
     return response
+
+
+def download_windows_installer(request, version):
+    installer_name = "KALiteSetup-%s.exe" % version
+    installer_url = settings.INSTALLER_BASE_URL + installer_name
+    stats_logger("installer").info("wi;%s;%s" % (get_request_ip(request), installer_name))
+    return HttpResponseRedirect(installer_url)
