@@ -207,6 +207,7 @@ def show_logs(request, ndays=None):
 
     (video_raw_data, video_summary_data) = parse_data("videos", ["task_id", "ip_address", "youtube_id"], ndays=ndays)
     (lp_raw_data, lp_summary_data)       = parse_data("language_packs", ["task_id", "ip_address", "lang_code", "version"], ndays=ndays)
+    (srt_raw_data, srt_summary_data)     = parse_data("subtitles", ["task_id", "ip_address", "lang_code", "youtube_id"], ndays=ndays)
 
     return {
         "ndays": ndays,
@@ -221,7 +222,13 @@ def show_logs(request, ndays=None):
             "raw": lp_raw_data,
             "dates": lp_summary_data["date"],
             "ips": lp_summary_data["ip_address"],
-            "versions": lp_summary_data["version"],
             "lang_codes": lp_summary_data["lang_code"],
-        }
+            "versions": lp_summary_data["version"],
+        },
+        "subtitles": {
+            "raw": srt_raw_data,
+            "dates": srt_summary_data["date"],
+            "ips": srt_summary_data["ip_address"],
+            "lang_codes": srt_summary_data["lang_code"],
+        },
     }
