@@ -5,6 +5,7 @@ import glob
 import os
 from functools import partial
 
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
@@ -71,6 +72,17 @@ def get_slug2id_map(force=False):
     return SLUG2ID_MAP
 
 
+ID2SLUG_MAP = None
+CACHE_VARS.append("ID2SLUG_MAP")
+def get_id2slug_map(force=False):
+    global ID2SLUG_MAP
+    if ID2SLUG_MAP is None or force:
+        ID2SLUG_MAP = {}
+        for slug, id in get_slug2id_map(force=force).iteritems():
+            ID2SLUG_MAP[id] = slug
+    return ID2SLUG_MAP
+
+
 FLAT_TOPIC_TREE = None
 CACHE_VARS.append("FLAT_TOPIC_TREE")
 def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
@@ -123,6 +135,8 @@ def generate_slug_to_video_id_map(node_cache=None):
 
 
 def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
+    translation.activate(lang_code)
+
     categories = node_cache or get_node_cache()
     result = dict()
     # make sure that we only get the slug of child of a topic
@@ -138,6 +152,9 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
                 'available': node.get('available', True),
             }
             result[category_name][node_name] = relevant_data
+
+    translation.deactivate()
+
     return result
 
 

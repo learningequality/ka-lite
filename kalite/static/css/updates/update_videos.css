@@ -2,6 +2,10 @@
     margin-bottom: 0px;
 }
 
+ul.dynatree-container {
+    border: none;
+}
+
 ul.dynatree-container li, .ui-widget-content {
     background-image: none;
 }
@@ -10,7 +14,7 @@ ul.dynatree-container li, .ui-widget-content {
     float: left;
     margin-right: 10px;
     margin-top: 5px;
-    height: 60px;
+    height: 100px;
     padding: 10px;
     width: 45%;
 }

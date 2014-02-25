@@ -48,3 +48,14 @@ KA Lite lists Python 2.6 or 2.7 as a dependency, and thus any code written needs
 
 We want to be able to include all required Python packages as part of the main repository, which means they must be pure Python (no compiled C modules, etc) and cross-platform (i.e., work on both Linux and Windows).
 
+Tools
+===
+
+### JavaScript
+
+You can analyse your JavaScript code with [JSHint](http://jshint.com/) using [Grunt](http://gruntjs.com/).
+
+Make sure that you have installed [npm](https://www.npmjs.org/) (it is bundled with [Node.js](http://nodejs.org/)).
+
+After [installing the Grunt CLI](http://gruntjs.com/getting-started#installing-the-cli) with `npm install -g grunt-cli` and the dependencies with `npm install` in the project root directory, you can run the jshint task with `grunt jshint`.
+

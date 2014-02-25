@@ -511,8 +511,6 @@ $(window).unload(function() {
 });
 
 function request(method, data) {
-
-    /* KA Lite removal
     var apiBaseUrl = (Exercises.assessmentMode ?
             "/api/v1/user/assessment/exercises" : "/api/v1/user/exercises");
 
@@ -523,9 +521,9 @@ function request(method, data) {
         data: data,
         dataType: "json"
     };
-    */
+
     var deferred = $.Deferred();
-    /*
+
     attemptHintQueue.queue(function(next) {
         $.ajax(params).then(function(data, textStatus, jqXHR) {
             deferred.resolve(data, textStatus, jqXHR);
@@ -554,7 +552,7 @@ function request(method, data) {
     // because listeners should know an API request is waiting as soon as it
     // gets queued up.
     $(Exercises).trigger("apiRequestStarted");
-    */
+
     return deferred.promise();
 }
 

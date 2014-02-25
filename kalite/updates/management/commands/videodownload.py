@@ -33,6 +33,7 @@ class Command(UpdatesDynamicCommand):
 
 
     def download_progress_callback(self, videofile, percent):
+
         video_changed = (not self.video) or self.video.pk != videofile.pk
         video_done = self.video and percent == 100
         video_error = self.video and not video_changed and (percent - self.video.percent_complete > 50)
@@ -114,7 +115,7 @@ class Command(UpdatesDynamicCommand):
                 video.download_in_progress = True
                 video.percent_complete = 0
                 video.save()
-                self.stdout.write(_("Downloading video '%(youtube_id)s'...") + "\n" % {"youtube_id": video.youtube_id})
+                self.stdout.write((_("Downloading video '%(youtube_id)s'...") + "\n") % {"youtube_id": video.youtube_id})
 
                 # Update the progress logging
                 self.set_stages(num_stages=video_count + len(handled_youtube_ids) + len(failed_youtube_ids) + int(options["auto_cache"]))
