@@ -13,7 +13,6 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from facility.models import Facility
-from main.caching import invalidate_all_caches
 from securesync.models import Device
 from settings import LOG as logging
 from utils.django_utils import call_command_with_output
@@ -105,14 +104,18 @@ class Command(BaseCommand):
             #    raise CommandError("Failed to setup/recover.")
 
         if not settings.CENTRAL_SERVER:
-            invalidate_all_caches()
+            logging.info("Invalidating the web cache.")
+            from main.caching import invalidate_web_cache
+            invalidate_web_cache()
 
             # Next, call videoscan.
+            logging.info("Running videoscan.")
             call_command("videoscan")
 
         # Finally, pre-load global data
         def preload_global_data():
             if not settings.CENTRAL_SERVER:
+                logging.info("Preloading topic data.")
                 from main.topic_tools import get_topic_tree
                 from updates import stamp_availability_on_topic
                 stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
