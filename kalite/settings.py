@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django_extensions", # needed for clean_pyc (testing)
     "south",
+    "announcements",
     "chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
