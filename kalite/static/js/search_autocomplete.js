@@ -15,7 +15,7 @@ function ls_key(node_type, lang) {
 
 function fetchTopicTree(lang, force_reparse) {
     var abc = $.ajax({
-        url: "/api/flat_topic_tree/" + lang,
+        url: SEARCH_TOPICS_URL,  // already has language information embedded in it
         cache: true,
         dataType: "json",
         timeout: _timeout_length,
@@ -72,9 +72,8 @@ function flattenNodes() {
 }
 
 function fetchLocalOrRemote() {
-    lang = window.userModel.get("current_language");
     $("#search").focus(null);  // disable re-fetching
-    fetchTopicTree(lang, _nodes == null); // only parse the json if _nodes == null (or if something changed)
+    fetchTopicTree(CURRENT_LANGUAGE, _nodes == null); // only parse the json if _nodes == null (or if something changed)
 }
 
 
@@ -89,7 +88,7 @@ $(document).ready(function() {
             clear_message("id_search_error");
 
             // Executed when we're requested to give a list of results
-            var titles_filtered = $.ui.autocomplete.filter(_titles, request.term).slice(0, 15);
+            var titles_filtered = $.ui.autocomplete.filter(_titles, request.term);
 
             // sort the titles again, since ordering was lost when we did autocomplete.filter
             var node_type_ordering = ["video", "exercise", "topic"] // custom ordering, with the last in the array appearing first
@@ -118,7 +117,7 @@ $(document).ready(function() {
                     value: node.title
                 });
             }
-            response(results);
+            response(results.slice(0, 15)); // slice after filtering, see #1563
         },
         select: function( event, ui ) {
             // When they click a specific item, just go there (if we recognize it)
