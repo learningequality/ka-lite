@@ -95,15 +95,10 @@ function setGetParam(href, name, val) {
         vars[name] = val;
     }
 
-    console.log(base);
-    console.log(vars);
-
-    var url = base + (vars.length > 0 ? "?" : "");
+    var url = base;
     var idx = 0;
     for (key in vars) {
-        if (idx > 0) {
-            url += "&";
-        }
+        url += (idx == 0) ? "?" : "&";
         url += key + "=" + vars[key];//         + $.param(vars);
         idx++;
     }
