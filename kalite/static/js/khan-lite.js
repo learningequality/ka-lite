@@ -95,7 +95,10 @@ function setGetParam(href, name, val) {
         vars[name] = val;
     }
 
-    var url = base + (vars.length > 0) ? "?" : "";
+    console.log(base);
+    console.log(vars);
+
+    var url = base + (vars.length > 0 ? "?" : "");
     var idx = 0;
     for (key in vars) {
         if (idx > 0) {
