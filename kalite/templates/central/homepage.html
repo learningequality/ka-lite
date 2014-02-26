@@ -15,9 +15,10 @@
             <div id="announcements">
                 {% for announcement in announcements_list %}
                     <div class="alert alert-info">
-                        <div class="center-text max-width-container">
-                            <strong>{{ announcement.title }}</strong><br />
-                            {{ announcement.content }}
+                        <div class="max-width-container">
+                            <div id="announcement-text-container">
+                                <p>{{ announcement.content }}</p>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
