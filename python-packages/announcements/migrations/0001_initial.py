@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
             ('content', self.gf('django.db.models.fields.TextField')()),
             ('creator', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('creation_date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('site_wide', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('site_wide', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('members_only', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('dismissal_type', self.gf('django.db.models.fields.IntegerField')(default=2)),
             ('publish_start', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
@@ -52,7 +52,7 @@ class Migration(SchemaMigration):
             'members_only': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'publish_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'publish_start': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'site_wide': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'site_wide': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'announcements.dismissal': {

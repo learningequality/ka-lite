@@ -19,33 +19,33 @@ class Announcement(models.Model):
     DISMISSAL_NO = 1
     DISMISSAL_SESSION = 2
     DISMISSAL_PERMANENT = 3
-    
+
     DISMISSAL_CHOICES = [
         (DISMISSAL_NO, _("No Dismissals Allowed")),
         (DISMISSAL_SESSION, _("Session Only Dismissal")),
         (DISMISSAL_PERMANENT, _("Permanent Dismissal Allowed"))
     ]
-    
+
     title = models.CharField(_("title"), max_length=50)
     content = models.TextField(_("content"))
     creator = models.ForeignKey(User, verbose_name=_("creator"))
     creation_date = models.DateTimeField(_("creation_date"), default=timezone.now)
-    site_wide = models.BooleanField(_("site wide"), default=False)
+    site_wide = models.BooleanField(_("site wide"), default=True)
     members_only = models.BooleanField(_("members only"), default=False)
     dismissal_type = models.IntegerField(choices=DISMISSAL_CHOICES, default=DISMISSAL_SESSION)
     publish_start = models.DateTimeField(_("publish_start"), default=timezone.now)
     publish_end = models.DateTimeField(_("publish_end"), blank=True, null=True)
-    
+
     def get_absolute_url(self):
         return reverse("announcements_detail", args=[self.pk])
-    
+
     def dismiss_url(self):
         if self.dismissal_type != Announcement.DISMISSAL_NO:
             return reverse("announcements_dismiss", args=[self.pk])
-    
+
     def __unicode__(self):
         return self.title
-    
+
     class Meta:
         verbose_name = _("announcement")
         verbose_name_plural = _("announcements")
