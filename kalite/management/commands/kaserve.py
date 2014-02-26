@@ -13,6 +13,7 @@ from django.utils.translation import ugettext as _
 import settings
 from config.models import Settings
 from facility.models import Facility
+from main.caching import invalidate_all_caches
 from securesync.models import Device
 from settings import LOG as logging
 from utils.django_utils import call_command_with_output
@@ -103,8 +104,10 @@ class Command(BaseCommand):
             #    self.stderr.write(out[1])
             #    raise CommandError("Failed to setup/recover.")
 
-        # Next, call videoscan.
         if not settings.CENTRAL_SERVER:
+            invalidate_all_caches()
+
+            # Next, call videoscan.
             call_command("videoscan")
 
         # Finally, pre-load global data
