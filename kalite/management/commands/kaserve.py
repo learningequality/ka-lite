@@ -58,25 +58,7 @@ class Command(BaseCommand):
         ),
     )
 
-    def handle(self, *args, **options):
-
-        # Eliminate irrelevant settings
-        for opt in BaseCommand.option_list:
-            del options[opt.dest]
-
-        # Parse the crappy way that runcherrypy takes args,
-        #   or the host/port
-        for arg in args:
-            if "=" in arg:
-                (key,val) = arg.split("=")
-                options[key] = val
-            elif ":" in arg:
-                (options["host"], options["port"]) = arg.split(":")
-            elif isnumeric(arg):
-                options["port"] = arg
-            else:
-                raise CommandError("Unexpected argument format: %s" % arg)
-
+    def setup_server(self):
 
         # Now, validate the server.
         try:
@@ -103,6 +85,8 @@ class Command(BaseCommand):
             #    self.stderr.write(out[1])
             #    raise CommandError("Failed to setup/recover.")
 
+    def reinitialize_server(self):
+
         if not settings.CENTRAL_SERVER:
             logging.info("Invalidating the web cache.")
             from main.caching import invalidate_web_cache
@@ -120,6 +104,33 @@ class Command(BaseCommand):
                 from updates import stamp_availability_on_topic
                 stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
         preload_global_data()
+
+
+    def handle(self, *args, **options):
+        # Eliminate irrelevant settings
+        for opt in BaseCommand.option_list:
+            del options[opt.dest]
+
+        # Parse the crappy way that runcherrypy takes args,
+        #   or the host/port
+        for arg in args:
+            if "=" in arg:
+                (key,val) = arg.split("=")
+                options[key] = val
+            elif ":" in arg:
+                (options["host"], options["port"]) = arg.split(":")
+            elif isnumeric(arg):
+                options["port"] = arg
+            else:
+                raise CommandError("Unexpected argument format: %s" % arg)
+
+        # In order to avoid doing this twice when the autoreloader
+        #   loads this process again, only execute the initialization
+        #   code if autoreloader won't be run (daemonize), or if
+        #   RUN_MAIN is set (autoreloader has started)
+        if options["daemonize"] or os.environ.get("RUN_MAIN"):
+            self.setup_server()
+            self.reinitialize_server()
 
         # Now call the proper command
         if not options["daemonize"]:
