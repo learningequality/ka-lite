@@ -13,66 +13,48 @@ function ls_key(node_type, lang) {
     return prefixed_key("nodes_" + node_type + "_" + "_v" + _version);
 }
 
-function isLocalStorageAvailable(item_index) {
-    // Pass in no arg: test whether localStorage exists.
-    // Pass in an arg: test if that item is in localStorage
-    //    (returns false if item doesn't exist, or if localStorage is not available)
-    try {
-        return (item_index in localStorage || (!item_index && localStorage));
-    } catch(e) {
-        return false;
-    }
-}
-
-function fetchTopicTree(lang) {
-    $.ajax({
+function fetchTopicTree(lang, force_reparse) {
+    var abc = $.ajax({
         url: "/api/flat_topic_tree/" + lang,
         cache: true,
         dataType: "json",
         timeout: _timeout_length,
+        ifModified:true,
         error: function(resp) {
             handleFailedAPI(resp, gettext("Error getting search data"));
         },
-        success: function(categories) {
-            console.log("got the remote topic tree for  " + lang);
+        success: function(categories, textStatus, xhr) {
+            if (xhr.status == 304  && force_reparse !== true) {
+                console.log(sprintf("got the remote topic tree for %s and it is the same as before; not re-parsing.", lang));
+            } else {
+                console.log(sprintf("got the remote topic tree for %s and it changed; re-parsing.", lang));
 
-            _nodes = {};
-            for (var category_name in categories) { // category is either Video, Exercise or Topic
-                var category = categories[category_name];
-                for (var node_name in category) {
-                    node = category[node_name];
-                    title = node.title;
+                _nodes = {};
+                for (var category_name in categories) { // category is either Video, Exercise or Topic
+                    var category = categories[category_name];
+                    for (var node_name in category) {
+                        node = category[node_name];
+                        title = node.title;
 
-                    if (title in _nodes) {
-                        continue;  // avoid duplicates
+                        if (title in _nodes) {
+                            continue;  // avoid duplicates
+                        }
+                        if (!(category_name in _nodes)) {
+                            // Store nodes by category
+                            _nodes[category_name] = {};
+                        }
+                        _nodes[category_name][node.title] = {
+                            title: node.title,
+                            type: category_name.toLowerCase(),
+                            path: node.path,
+                            available: node.available,
+                        };
                     }
-                    if (!(category_name in _nodes)) {
-                        // Store nodes by category
-                        _nodes[category_name] = {};
-                    }
-                    _nodes[category_name][node.title] = {
-                        title: node.title,
-                        type: category_name.toLowerCase(),
-                        path: node.path,
-                        available: node.available,
-                    };
                 }
-            }
-            if (isLocalStorageAvailable()) {
-                //console.log("Caching to local store");
-                // we can only store strings in localStorage
-                localStorage.setItem(prefixed_key("language"), lang);
-                var node_types = [];
-                for (node_type in _nodes) {
-                    node_types = node_types.concat(node_type);
-                    //console.log("Saving " + ls_key(node_type, lang));
-                    localStorage.setItem(ls_key(node_type, lang), JSON.stringify(_nodes[node_type]));
-                }
-                localStorage.setItem(prefixed_key("node_types"), JSON.stringify(node_types));
-            }
 
-            // But for now, for search purposes, flatten
-            flattenNodes();
+                // But for now, for search purposes, flatten
+                flattenNodes();
+            }
         }
     });
 }
@@ -91,38 +73,8 @@ function flattenNodes() {
 
 function fetchLocalOrRemote() {
     lang = window.userModel.get("current_language");
-
-    if (_nodes !== null) {
-        // No need to reload
-        return;
-
-    } else if (isLocalStorageAvailable(prefixed_key("language")) && localStorage.getItem(prefixed_key("language")) == lang) {
-        //console.log("LocalStore cache hit.")
-        // Get from local storage, grouped by type
-        var node_types = JSON.parse(localStorage.getItem(prefixed_key("node_types"))) || [];
-        var num_nodes = 0;
-        _nodes = {};
-        for (idx in node_types) {
-            var node_type = node_types[idx];
-            var item_name = ls_key(node_type, lang);
-            _nodes[node_type] = JSON.parse(localStorage.getItem(item_name)) || []; // coerce string back to JSON
-            num_nodes += Object.keys(_nodes[node_type]).length;
-        }
-        if (!num_nodes) {
-            fetchTopicTree(lang);
-            return;
-        }
-
-        // After getting by type, flatten
-        flattenNodes();
-
-    } else {
-        //console.log(ls_key("Topic", lang));
-        //console.log("Need to fetch..." + lang);
-        $("#search").focus(null);  // disable re-fetching
-        // Get from distributed server
-        fetchTopicTree(lang);
-    }
+    $("#search").focus(null);  // disable re-fetching
+    fetchTopicTree(lang, _nodes == null); // only parse the json if _nodes == null (or if something changed)
 }
 
 
