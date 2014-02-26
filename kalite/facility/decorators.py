@@ -23,6 +23,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility
 from config.models import Settings
 from securesync.models import Device
+from settings import LOG as logging
 from testing.asserts import distributed_server_only
 from utils.internet import JsonResponse, JsonpResponse
 
@@ -41,14 +42,18 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
             # Facility passed in directly
             facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
             del kwargs["facility_id"]
+            if facility:
+                return
 
-        elif "facility" in request.GET:
+        if "facility" in request.GET:
             # Facility from querystring
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
                 Settings.set("default_facility", facility.id)
+            if request.GET["facility"] != "None":
+                return
 
-        elif settings.CENTRAL_SERVER:  # following options are distributed-only
+        if settings.CENTRAL_SERVER:  # following options are distributed-only
             facility = None
 
         elif "facility_user" in request.session:
