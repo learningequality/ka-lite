@@ -476,6 +476,26 @@ assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKI
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 
 
+
+########################
+# (Aron): Setting the LANGUAGES configuration.
+########################
+
+# This is a bit more involved, as we need to hand out to a function to calculate
+# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
+# languages. Anything not in here is not accepted by Django, and will simply show
+# english instead of the selected language.
+if getattr(local_settings, 'LANGUAGES', None):
+    LANGUAGES = local_settings.LANGUAGES
+else:
+    from settingshelper import allow_all_languages_alist
+    # copied from shared.i18n
+    try:
+        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+    except Exception:
+        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)
+
+
 ########################
 # IMPORTANT: Do not add new settings below this line
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
@@ -514,18 +534,12 @@ if package_selected("UserRestricted"):
     if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
         KEY_PREFIX += "|restricted"  # this option changes templates
 
+if package_selected("Demo"):
+    LOG.info("Demo package selected.")
 
-# (Aron): Setting the LANGUAGES configuration.
-# This is a bit more involved, as we need to hand out to a function to calculate
-# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
-# languages. Anything not in here is not accepted by Django, and will simply show
-# english instead of the selected language.
-if getattr(local_settings, 'LANGUAGES', None):
-    LANGUAGES = local_settings.LANGUAGES
-else:
-    from settingshelper import allow_all_languages_alist
-    # copied from shared.i18n
-    try:
-        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
-    except Exception:
-        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)
+    CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST",   "globe.learningequality.org:8008")
+    SECURESYNC_PROTOCOL = "http"
+    DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
+    DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
+
+    MIDDLEWARE_CLASSES += ('online_demo.middleware.StopAdminAccess','online_demo.middleware.LinkUserManual','online_demo.middleware.ShowAdminLogin',)
