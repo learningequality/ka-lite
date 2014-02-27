@@ -542,4 +542,4 @@ if package_selected("Demo"):
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('online_demo.middleware.StopAdminAccess','online_demo.middleware.LinkUserManual','online_demo.middleware.ShowAdminLogin',)
+    MIDDLEWARE_CLASSES += ('main.demo_middleware.StopAdminAccess','main.demo_middleware.LinkUserManual','main.demo_middleware.ShowAdminLogin',)
