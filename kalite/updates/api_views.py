@@ -230,7 +230,12 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
         unstarted = True
         complete = True
 
-        for child_node in node["children"]:
+        if level > 0:
+            looped_children = sorted(node["children"] or [], key=lambda n: _(n["title"]))
+        else:
+            looped_children = node["children"] or []
+
+        for child_node in looped_children:
             child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict, lang_code=lang_code)
             if not child:
                 continue
