@@ -38,9 +38,9 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
 from facility.models import FacilityUser
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_node_cache
-from settings import LOG as logging
 from shared.decorators import require_login
 from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import JsonResponse, JsonResponseMessageError

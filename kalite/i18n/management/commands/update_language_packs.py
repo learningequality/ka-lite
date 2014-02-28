@@ -43,7 +43,7 @@ from django.core.mail import mail_admins
 
 from .update_po import compile_po_files
 from i18n import *
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from updates import get_all_remote_video_sizes
 from utils.general import datediff, ensure_dir, softload_json, version_diff
 from version import VERSION

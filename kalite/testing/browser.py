@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.sessions.models import Session
 
 from .base import create_test_admin, KALiteTestCase
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 
 
 browser = None # persistent browser

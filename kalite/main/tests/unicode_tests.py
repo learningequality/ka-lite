@@ -6,7 +6,6 @@ from datetime import datetime  # main.models imports this way, so we have this h
 from django.conf import settings
 from django.utils import unittest
 
-import version
 from facility.models import Facility, FacilityGroup, FacilityUser
 from main.models import *
 from main.tests.base import MainTestCase

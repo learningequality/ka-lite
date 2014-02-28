@@ -12,12 +12,12 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-import kalite
+from kalite.settings import LOG as logging
 from securesync import crypto
 from securesync.engine.models import SyncedModel
-from settings import LOG as logging
 from utils.general import get_host_name
 from utils.django_utils import validate_via_booleans, ExtendedModel
+from version import VERSION
 
 
 class RegisteredDevicePublicKey(ExtendedModel):
@@ -222,8 +222,8 @@ class Device(SyncedModel):
         matches the hard-coded software version.
         """
         own_device = Device.get_own_device()
-        if self == own_device and self.version != kalite.VERSION:
-            self.version = kalite.VERSION
+        if self == own_device and self.version != VERSION:
+            self.version = VERSION
             self.save()
         return self.version
 
@@ -247,7 +247,7 @@ class Device(SyncedModel):
         """
         Create a device object for the installed device.  Part of installation.
         """
-        kwargs["version"] = kwargs.get("version", kalite.VERSION)
+        kwargs["version"] = kwargs.get("version", VERSION)
         kwargs["name"] = kwargs.get("name", get_host_name())
         own_device = cls(**kwargs)
         own_device.set_key(crypto.get_own_key())

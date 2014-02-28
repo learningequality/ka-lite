@@ -16,10 +16,10 @@ from django.test import TestCase
 from django.utils.translation import ugettext as _
 
 from facility.models import Facility, FacilityGroup, FacilityUser
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog
 from main.topic_tools import get_exercise_paths
 from main.topicdata import NODE_CACHE
-from settings import LOG as logging
 from testing.browser import BrowserTestCase
 from testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output

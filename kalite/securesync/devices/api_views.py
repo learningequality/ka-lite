@@ -17,7 +17,6 @@ from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
-import version
 from .models import *
 from securesync import engine
 from stats.models import UnregisteredDevicePing

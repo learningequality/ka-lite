@@ -22,7 +22,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 from i18n import lcode_to_django_dir, update_jsi18n_file
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 

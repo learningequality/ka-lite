@@ -13,8 +13,8 @@ from django.utils.translation import ugettext as _
 
 from config.models import Settings
 from facility.models import Facility
+from kalite.settings import LOG as logging
 from securesync.models import Device
-from settings import LOG as logging
 from utils.django_utils import call_command_with_output
 from utils.general import isnumeric
 

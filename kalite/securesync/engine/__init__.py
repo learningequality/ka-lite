@@ -10,8 +10,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
-import version
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from utils.django_utils import serializers
 
 
@@ -304,7 +303,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     return out_dict
 
 
-def serialize(models, sign=True, increment_counters=True, dest_version=version.VERSION, *args, **kwargs):
+def serialize(models, sign=True, increment_counters=True, dest_version=VERSION, *args, **kwargs):
     """
     This function encapsulates serialization, and ensures that any final steps needed before syncing
     (e.g. signing, incrementing counters, etc) are done.
@@ -333,7 +332,7 @@ def serialize(models, sign=True, increment_counters=True, dest_version=version.V
     return serializers.serialize("versioned-json", models, dest_version=dest_version, *args, **kwargs)
 
 
-def deserialize(data, src_version=version.VERSION, dest_version=version.VERSION, *args, **kwargs):
+def deserialize(data, src_version=VERSION, dest_version=VERSION, *args, **kwargs):
     """
     Similar to serialize, except for deserialization.
     """

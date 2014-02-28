@@ -17,8 +17,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import khanload
+from kalite.settings import LOG as logging
 from main import topic_tools
-from settings import LOG as logging
 from utils.general import datediff
 
 

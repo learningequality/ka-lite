@@ -24,7 +24,6 @@ from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
-import version
 from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .caching import backend_cache_page

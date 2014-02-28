@@ -1,4 +1,3 @@
-import logging
 import sys
 import warnings
 from datetime import datetime
@@ -17,7 +16,7 @@ from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
 from chronograph.models import Job
-from settings import LOG as logger
+from kalite.settings import LOG as logger
 
 
 class CronThread(Thread):

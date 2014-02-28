@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils import unittest
 
-import version
+from version import VERSION
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
 from testing import distributed_server_test, central_server_test, KALiteTestCase
 from utils.crypto import Key
@@ -24,7 +24,7 @@ class TestChainOfTrust(KALiteTestCase):
         super(KALiteTestCase, self).tearDown()
         Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
 
-    @unittest.skipIf(version_diff("0.12", version.VERSION) > 0, "generate_zone not available before v0.12.")
+    @unittest.skipIf(version_diff("0.12", VERSION) > 0, "generate_zone not available before v0.12.")
     @distributed_server_test
     def test_valid_own_device(self):
         """

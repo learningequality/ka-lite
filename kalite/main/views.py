@@ -29,9 +29,9 @@ from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from config.models import Settings
 from facility.models import Facility, FacilityUser,FacilityGroup
 from i18n import select_best_available_language
+from kalite.settings import LOG as logging
 from securesync.api_client import BaseClient
 from securesync.models import Device
-from settings import LOG as logging
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark

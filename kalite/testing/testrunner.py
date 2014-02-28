@@ -10,8 +10,7 @@ from django.conf import settings
 from django.core import management
 from django.test.simple import DjangoTestSuiteRunner
 
-from settings import LOG as logging
-from kalite from django.conf import settings
+from kalite.settings import LOG as logging
 
 
 def auto_pdb(*exceptions):

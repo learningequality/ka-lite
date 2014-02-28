@@ -16,7 +16,7 @@ from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from utils.general import ensure_dir, softload_json
 from version import VERSION
 

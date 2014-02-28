@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 import i18n
 import khanload
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from utils.general import softload_json
 
 CACHE_VARS = []

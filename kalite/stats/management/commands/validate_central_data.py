@@ -9,7 +9,7 @@ from django.db.models import Count, Max, Sum, Avg, Q, F
 
 from main.models import *
 from securesync.models import *
-from settings import LOG as logging
+
 
 class Command(BaseCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."

@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from config.models import Settings
 from facility.models import Facility
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from securesync.models import Device, DeviceZone, Zone, ZoneInvitation
 
 

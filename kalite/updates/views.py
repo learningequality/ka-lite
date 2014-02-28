@@ -1,4 +1,4 @@
-import copy
+fimport copy
 import datetime
 import json
 import os
@@ -20,7 +20,6 @@ from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
-import version
 from .models import VideoFile
 from chronograph import force_job
 from config.models import Settings

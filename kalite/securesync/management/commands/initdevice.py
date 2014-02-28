@@ -11,13 +11,12 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
 
-import version
 from config.models import Settings
 from facility.models import Facility
+from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
 from securesync.views import initialize_registration
-from settings import LOG as logging
 from utils.general import get_host_name
 
 
