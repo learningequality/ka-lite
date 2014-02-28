@@ -10,7 +10,7 @@ import rsa as PYRSA
 from django.conf import settings
 
 from config.models import Settings
-from utils.crypto import *
+from fle_utils.crypto import *
 
 
 _own_key = None

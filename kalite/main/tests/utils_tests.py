@@ -9,7 +9,7 @@ import tempfile
 
 from django.test import TestCase
 
-from utils.general import datediff, version_diff, ensure_dir
+from fle_utils.general import datediff, version_diff, ensure_dir
 
 
 class DateDiffTestCase(TestCase):
@@ -66,7 +66,7 @@ class VersionDiffTestCase(TestCase):
         """
         v1 = "0.1"
         v2 = "0.2"
-        
+
         self.assertTrue(version_diff(v1, v2) < 0, "First version earlier than the second returns negative.")
         self.assertTrue(version_diff(v2, v1) > 0, "Second version earlier than the first returns positive.")
         self.assertTrue(version_diff(v2, v2) == 0, "First version equals the second returns 0.")

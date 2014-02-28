@@ -34,11 +34,11 @@ from django.db import transaction
 
 import securesync
 from facility.models import Facility, FacilityUser, FacilityGroup
+from fle_utils.general import datediff
 from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog, UserLog
 from main.topic_tools import get_topic_videos, get_topic_exercises
 from securesync.models import Device, DeviceMetadata
-from utils.general import datediff
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",

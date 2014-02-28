@@ -13,10 +13,9 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-import kalite
 from . import add_syncing_models
 from config.models import Settings
-from utils.django_utils import validate_via_booleans, ExtendedModel
+from fle_utils.django_utils import validate_via_booleans, ExtendedModel
 
 
 ID_MAX_LENGTH=32

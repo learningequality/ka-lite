@@ -21,9 +21,9 @@ from django.views.decorators.http import condition
 
 import i18n
 import topic_tools
+from fle_utils.internet import generate_all_paths
 from kalite.settings import LOG as logging
 from updates.models import VideoFile
-from utils.internet import generate_all_paths
 
 
 # Signals

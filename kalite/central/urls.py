@@ -16,7 +16,7 @@ import registration.urls
 import securesync.urls
 import stats.api_urls, stats.urls
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
-from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
+from fle_utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
 
 admin.autodiscover()

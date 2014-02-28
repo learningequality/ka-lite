@@ -12,8 +12,8 @@ from django.utils.translation import ugettext as _
 from .forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
 from .models import *
 from central.models import Organization
-from utils.django_utils import get_request_ip
-from utils.mailchimp import mailchimp_subscribe
+from fle_utils.django_utils import get_request_ip
+from fle_utils.mailchimp import mailchimp_subscribe
 
 
 @render_to("contact/contact_thankyou.html")

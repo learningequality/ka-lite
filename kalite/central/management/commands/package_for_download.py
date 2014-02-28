@@ -26,14 +26,14 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import utils.platforms
+import fle_utils.platforms
+from fle_utils.general import get_module_source_file
+from fle_utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 from kalite.management.commands.zip_kalite import create_default_archive_filename, Command as ZipCommand
 from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.management.commands.initdevice import Command as InitCommand
 from securesync.models import Zone, DeviceZone, Device, ChainOfTrust, ZoneInvitation
-from utils.general import get_module_source_file
-from utils.platforms import is_windows, system_script_extension, system_specific_zipping, system_specific_unzipping
 from updates.management.commands.update import Command as UpdateCommand
 
 

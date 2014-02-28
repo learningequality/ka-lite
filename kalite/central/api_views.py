@@ -11,7 +11,7 @@ from django.http import HttpResponse, Http404
 
 import version
 from .views import get_central_server_host
-from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
+from fle_utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
 
 
 @allow_jsonp

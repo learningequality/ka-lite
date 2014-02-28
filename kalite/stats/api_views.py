@@ -5,9 +5,9 @@ import os
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 
+from fle_utils.django_utils import get_request_ip
+from fle_utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 from i18n import get_language_pack_filepath, get_srt_path
-from utils.django_utils import get_request_ip
-from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
 from . import stats_logger
 

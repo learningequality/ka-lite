@@ -17,11 +17,11 @@ from django.dispatch import receiver
 
 import i18n
 from facility.models import FacilityUser
+from fle_utils.django_utils import ExtendedModel
+from fle_utils.general import datediff, isnumeric
 from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
-from utils.django_utils import ExtendedModel
-from utils.general import datediff, isnumeric
 
 
 class VideoLog(DeferredCountSyncedModel):

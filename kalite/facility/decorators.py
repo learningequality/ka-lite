@@ -21,9 +21,9 @@ from django.utils.translation import ugettext as _
 from .middleware import refresh_session_facility_info
 from .models import Facility
 from config.models import Settings
+from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device
 from testing.asserts import distributed_server_only
-from utils.internet import JsonResponse, JsonpResponse
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):

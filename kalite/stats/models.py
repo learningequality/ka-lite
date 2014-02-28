@@ -1,11 +1,13 @@
+"""
+"""
 import datetime
 from annoying.functions import get_object_or_None
 
 from django.db import models
 
+from fle_utils.django_utils import ExtendedModel
 from kalite.settings import LOG as logging
 from securesync.models import ID_MAX_LENGTH, IP_MAX_LENGTH
-from utils.django_utils import ExtendedModel
 
 
 class UnregisteredDevice(ExtendedModel):

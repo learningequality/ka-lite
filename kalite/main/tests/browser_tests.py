@@ -16,14 +16,14 @@ from django.test import TestCase
 from django.utils.translation import ugettext as _
 
 from facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.settings import LOG as logging
+from fle_utils.django_utils import call_command_with_output
+from fle_utils.general import isnumeric
+from kalite.settings import package_selected, LOG as logging
 from main.models import ExerciseLog
 from main.topic_tools import get_exercise_paths
 from main.topicdata import NODE_CACHE
 from testing.browser import BrowserTestCase
 from testing.decorators import distributed_server_test
-from utils.django_utils import call_command_with_output
-from utils.general import isnumeric
 
 
 @distributed_server_test
@@ -246,7 +246,7 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
 
 
 @distributed_server_test
-@unittest.skipIf(settings.package_selected("UserRestricted"), "Registration not allowed when UserRestricted set.")
+@unittest.skipIf(package_selected("UserRestricted"), "Registration not allowed when UserRestricted set.")
 class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
     password   = "password"

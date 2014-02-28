@@ -13,8 +13,8 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
+from fle_utils.django_utils import ExtendedModel
 from securesync.models import Zone
-from utils.django_utils import ExtendedModel
 
 
 def get_or_create_user_profile(user):

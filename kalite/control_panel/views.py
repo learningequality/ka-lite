@@ -29,12 +29,12 @@ from facility.decorators import facility_required
 from facility.forms import FacilityForm
 from facility.models import Facility, FacilityUser, FacilityGroup
 from facility.views import user_management_context
+from fle_utils.internet import CsvResponse, render_to_csv
 from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from main.topic_tools import get_node_cache
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-from utils.internet import CsvResponse, render_to_csv
 
 
 @require_authorized_admin

@@ -4,12 +4,12 @@ import os
 
 from django.conf import settings
 
-import utils.videos  # keep access to all functions
+import fle_utils.videos  # keep access to all functions
+from fle_utils.general import softload_json
+from fle_utils.videos import *  # get all into the current namespace, override some.
 from i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_code
 from kalite.settings import LOG as logging
 from main.topic_tools import get_topic_tree, get_videos
-from utils.general import softload_json
-from utils.videos import *  # get all into the current namespace, override some.
 
 
 REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "content", "video_file_sizes.json")

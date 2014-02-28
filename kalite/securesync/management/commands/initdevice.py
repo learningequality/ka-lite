@@ -13,11 +13,11 @@ from django.db import IntegrityError, transaction
 
 from config.models import Settings
 from facility.models import Facility
+from fle_utils.general import get_host_name
 from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
 from securesync.views import initialize_registration
-from utils.general import get_host_name
 
 
 @transaction.commit_on_success  # because the objects may not be in order, do in a single transaction

@@ -17,9 +17,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import khanload
+from fle_utils.general import datediff
 from kalite.settings import LOG as logging
 from main import topic_tools
-from utils.general import datediff
 
 
 # get the path to an exercise file, so we can check, below, which ones exist

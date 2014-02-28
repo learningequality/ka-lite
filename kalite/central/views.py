@@ -23,10 +23,10 @@ from django.views.decorators.csrf import csrf_exempt
 import kalite
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
+from fle_utils.django_utils import get_request_ip
 from securesync.engine.api_client import SyncClient
 from securesync.models import Zone
 from shared.decorators import require_authorized_admin
-from utils.django_utils import get_request_ip
 
 
 def get_central_server_host(request):

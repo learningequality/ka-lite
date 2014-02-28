@@ -21,10 +21,11 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+from fle_utils.django_utils import call_command_with_output
+from fle_utils.general import ensure_dir
 from i18n import lcode_to_django_dir, update_jsi18n_file
 from kalite.settings import LOG as logging
-from utils.django_utils import call_command_with_output
-from utils.general import ensure_dir
+
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (

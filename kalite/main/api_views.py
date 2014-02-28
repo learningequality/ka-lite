@@ -31,13 +31,13 @@ from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 from config.models import Settings
 from facility.models import FacilityGroup, FacilityUser
+from fle_utils.general import break_into_chunks
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
+from fle_utils.mplayer_launcher import play_video_in_new_thread
+from fle_utils.orderedset import OrderedSet
 from i18n import lcode_to_ietf
 from shared.decorators import require_admin
 from testing.decorators import allow_api_profiling
-from utils.general import break_into_chunks
-from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
-from utils.mplayer_launcher import play_video_in_new_thread
-from utils.orderedset import OrderedSet
 
 
 class student_log_api(object):

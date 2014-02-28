@@ -16,9 +16,9 @@ from django.utils.translation import ugettext as _
 from config.models import Settings
 from facility.decorators import facility_from_request
 from facility.models import FacilityUser
+from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device, Zone
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import JsonResponse, JsonpResponse
 
 
 def get_user_from_request(handler=None, request=None, *args, **kwargs):

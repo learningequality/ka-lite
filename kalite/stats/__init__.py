@@ -5,7 +5,7 @@ import os
 
 from django.conf import settings
 
-from utils.general import ensure_dir
+from fle_utils.general import ensure_dir
 
 
 STATS_LOG_DIRPATH = os.path.join(settings.DATA_PATH_SECURE, 'logs')

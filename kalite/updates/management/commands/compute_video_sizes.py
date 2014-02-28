@@ -10,9 +10,9 @@ from optparse import make_option
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from fle_utils.general import ensure_dir, softload_json
 from kalite.settings import LOG as logging
 from updates import REMOTE_VIDEO_SIZE_FILEPATH
-from utils.general import ensure_dir, softload_json
 
 
 class Command(BaseCommand):

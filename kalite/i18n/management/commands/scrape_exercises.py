@@ -17,10 +17,11 @@ from optparse import make_option
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from fle_utils.general import ensure_dir
 from i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang, get_localized_exercise_dirpath
 from kalite.settings import LOG as logging
 from main.topic_tools import get_node_cache
-from utils.general import ensure_dir
+
 
 AVAILABLE_EXERCISE_LANGUAGE_CODES = ["da", "he", "pt-BR", "tr", "es", "fr"]
 

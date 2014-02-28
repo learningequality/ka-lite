@@ -17,6 +17,7 @@ from django.utils.translation import ugettext as _
 
 from chronograph import force_job
 from config.models import Settings
+from fle_utils.internet import JsonResponse, allow_jsonp, set_query_params
 from main.models import UserLog
 from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
@@ -25,7 +26,6 @@ from securesync.forms import RegisteredDevicePublicKeyForm
 from securesync.models import SyncSession, Device, Zone
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import JsonResponse, allow_jsonp, set_query_params
 
 
 def register_public_key(request):

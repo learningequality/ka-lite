@@ -42,10 +42,10 @@ from django.core.management import call_command
 from django.core.mail import mail_admins
 
 from .update_po import compile_po_files
+from fle_utils.general import datediff, ensure_dir, softload_json, version_diff
 from i18n import *
 from kalite.settings import LOG as logging
 from updates import get_all_remote_video_sizes
-from utils.general import datediff, ensure_dir, softload_json, version_diff
 from version import VERSION
 
 

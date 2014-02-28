@@ -1,3 +1,5 @@
+"""
+"""
 import datetime
 import re
 import json
@@ -20,11 +22,11 @@ from django.utils.translation import ugettext as _
 from .forms import DataForm
 from facility.decorators import facility_required
 from facility.models import Facility, FacilityUser, FacilityGroup
+from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from kalite.settings import LOG as logging
 from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from main.topic_tools import get_topic_by_path, get_node_cache
 from testing.decorators import allow_api_profiling
-from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 
 
 # Global variable of all the known stats, their internal and external names,

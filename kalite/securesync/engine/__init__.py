@@ -10,8 +10,9 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
+from fle_utils.django_utils import serializers
 from kalite.settings import LOG as logging
-from utils.django_utils import serializers
+from version import VERSION
 
 
 _syncing_models = []  # all models we want to sync

@@ -19,11 +19,11 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from i18n import lcode_to_django
+from fle_utils.general import ensure_dir, datediff
 from kalite.settings import LOG as logging
 from main.topic_tools import get_node_cache
 from update_language_packs import handle_po_compile_errors
 from update_po import compile_po_files
-from utils.general import ensure_dir, datediff
 
 
 class Command(BaseCommand):

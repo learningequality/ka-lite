@@ -9,8 +9,8 @@ from django.template.defaultfilters import floatformat
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
-from utils.django_utils.serializers import serialize
-from utils.internet.classes import _dthandler
+from fle_utils.django_utils.serializers import serialize
+from fle_utils.internet.classes import _dthandler
 
 
 register = Library()

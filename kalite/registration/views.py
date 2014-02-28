@@ -18,10 +18,10 @@ from django.utils.translation import ugettext as _
 from central.forms import OrganizationForm
 from central.models import Organization
 from contact.views import contact_subscribe
+from fle_utils.internet import set_query_params
 from registration.backends import get_backend
 from securesync.models import Zone
 from testing.asserts import central_server_only
-from utils.internet import set_query_params
 
 
 @central_server_only

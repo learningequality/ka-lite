@@ -9,8 +9,8 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from utils.django_utils import call_outside_command_with_output
-from utils.platforms import is_windows, system_script_extension, system_specific_unzipping
+from fle_utils.django_utils import call_outside_command_with_output
+from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping
 
 
 class Command(BaseCommand):

@@ -12,11 +12,11 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
+from fle_utils.general import get_host_name
+from fle_utils.django_utils import validate_via_booleans, ExtendedModel
 from kalite.settings import LOG as logging
 from securesync import crypto
 from securesync.engine.models import SyncedModel
-from utils.general import get_host_name
-from utils.django_utils import validate_via_booleans, ExtendedModel
 from version import VERSION
 
 

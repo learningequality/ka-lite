@@ -8,11 +8,11 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils import unittest
 
-from version import VERSION
+from fle_utils.crypto import Key
+from fle_utils.general import version_diff
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
 from testing import distributed_server_test, central_server_test, KALiteTestCase
-from utils.crypto import Key
-from utils.general import version_diff
+from version import VERSION
 
 
 class TestChainOfTrust(KALiteTestCase):
