@@ -36,11 +36,11 @@ from collections import Iterable, defaultdict
 from itertools import chain, ifilter
 from optparse import make_option
 
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
+from django.conf import settings
 from django.core.mail import mail_admins
+from django.core.management import call_command
+from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from .update_po import compile_po_files
 from i18n import *
 from settings import LOG as logging
@@ -424,7 +424,7 @@ def download_latest_translations(project_id=None,
     if not project_id:
         project_id = settings.CROWDIN_PROJECT_ID
     if not project_key:
-       project_key = settings.CROWDIN_PROJECT_KEY
+        project_key = settings.CROWDIN_PROJECT_KEY
 
     lang_code = lcode_to_ietf(lang_code)
 
@@ -438,7 +438,7 @@ def download_latest_translations(project_id=None,
     else:
         # Tell CrowdIn to Build latest package
         if rebuild:
-            build_translations()
+            build_translations(project_id, project_key)
 
         request_url = "http://api.crowdin.net/api/project/%s/download/%s.zip?key=%s" % (project_id, lang_code, project_key)
         try:
