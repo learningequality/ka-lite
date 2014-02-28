@@ -8,7 +8,8 @@ import version
 from facility.models import Facility, FacilityGroup, FacilityUser
 from i18n.models import *
 from settings import LOG as logging
-from testing import KALiteTestCase, UnicodeModelsTest
+from testing.base import KALiteTestCase
+from testing.unicode import UnicodeModelsTest
 
 class i18nUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
 

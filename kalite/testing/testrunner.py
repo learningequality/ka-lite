@@ -8,6 +8,7 @@ import sys
 
 from django.test.simple import DjangoTestSuiteRunner
 from django.core import management
+from django.core.management import call_command
 
 import settings
 from settings import LOG as logging
