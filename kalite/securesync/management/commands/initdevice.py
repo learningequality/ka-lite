@@ -1,14 +1,16 @@
+"""
+"""
 import os
 import sys
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
 
-import settings
 import version
 from config.models import Settings
 from facility.models import Facility

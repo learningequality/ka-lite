@@ -1,3 +1,5 @@
+"""
+"""
 import glob
 import json
 import os
@@ -9,10 +11,10 @@ from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
+from django.conf import settings
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
-import settings
 import version
 from .classes import UpdatesStaticCommand
 from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH

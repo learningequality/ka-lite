@@ -5,12 +5,12 @@ import os
 import sys
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _
 
-import settings
 from config.models import Settings
 from facility.models import Facility
 from securesync.models import Device

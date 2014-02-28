@@ -1,11 +1,13 @@
+"""
+"""
 import glob
 import os
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import i18n
-import settings
 from main import caching
 from updates.api_views import divide_videos_by_language
 from updates.models import VideoFile

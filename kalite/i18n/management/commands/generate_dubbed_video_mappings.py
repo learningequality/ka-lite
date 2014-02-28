@@ -9,9 +9,9 @@ import requests
 from optparse import make_option
 from StringIO import StringIO
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
 from main.topic_tools import get_node_cache
 from settings import LOG as logging

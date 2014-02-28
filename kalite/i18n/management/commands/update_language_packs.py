@@ -36,11 +36,11 @@ from collections import Iterable, defaultdict
 from itertools import chain, ifilter
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.core.mail import mail_admins
 
-import settings
 from .update_po import compile_po_files
 from i18n import *
 from settings import LOG as logging

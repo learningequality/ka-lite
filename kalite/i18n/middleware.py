@@ -14,12 +14,12 @@ Other values set here:
   request.session["django_language"] - (via settings.LANGUAGE_COOKIE_NAME) used by Django, it's what it uses as the request language.
   request.language - proxy for request.session["django_language"] / request.session[settings.LANGUAGE_COOKIE_NAME]
 """
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
-import settings
 from . import get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language
 from config.models import Settings
 from settings import LOG as logging

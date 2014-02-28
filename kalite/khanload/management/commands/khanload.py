@@ -13,10 +13,10 @@ import time
 from math import ceil, log  # needed for basepoints calculation
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import khanload
-import settings
 from main import topic_tools
 from settings import LOG as logging
 from utils.general import datediff

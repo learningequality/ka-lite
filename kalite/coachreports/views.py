@@ -2,11 +2,11 @@ import json
 import requests
 import datetime
 import re
-import settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q

@@ -5,12 +5,12 @@ import glob
 import os
 from functools import partial
 
+from django.conf import settings
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
 import khanload
-import settings
 from settings import LOG as logging
 from utils.general import softload_json
 

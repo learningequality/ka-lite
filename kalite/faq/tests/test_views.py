@@ -1,11 +1,16 @@
+"""
+"""
 from __future__ import absolute_import
 
 import datetime
-import django.test
 import mock
 import os
+
+import django.test
 from django.conf import settings
+
 from faq.models import Topic, Question
+
 
 class FAQViewTests(django.test.TestCase):
     urls = 'faq.urls'
@@ -18,7 +23,7 @@ class FAQViewTests(django.test.TestCase):
 
     def tearDown(self):
         settings.TEMPLATE_DIRS = self._oldtd
-    
+
     def test_submit_faq_get(self):
         response = self.client.get('/submit/')
         self.assertEqual(response.status_code, 200)
@@ -38,12 +43,12 @@ class FAQViewTests(django.test.TestCase):
             Question.objects.filter(text=data['text']).exists(),
             "Expected question object wasn't created."
         )
-        
+
     def test_submit_thanks(self):
         response = self.client.get('/submit/thanks/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "faq/submit_thanks.html")
-    
+
     def test_faq_index(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
@@ -56,7 +61,7 @@ class FAQViewTests(django.test.TestCase):
             response.context['last_updated'],
             Question.objects.order_by('-updated_on')[0].updated_on
         )
-        
+
     def test_topic_detail(self):
         response = self.client.get('/silly-questions/')
         self.assertEqual(response.status_code, 200)
@@ -71,10 +76,10 @@ class FAQViewTests(django.test.TestCase):
         )
         self.assertQuerysetEqual(
             response.context["questions"],
-            ["<Question: What is your favorite color?>", 
+            ["<Question: What is your favorite color?>",
              "<Question: What is your quest?>"]
         )
-    
+
     def test_question_detail(self):
         response = self.client.get('/silly-questions/your-quest/')
         self.assertEqual(response.status_code, 200)

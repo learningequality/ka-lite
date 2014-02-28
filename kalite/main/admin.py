@@ -1,6 +1,8 @@
+"""
+"""
+from django.conf import settings
 from django.contrib import admin
 
-import settings
 from models import *
 
 class VideoLogAdmin(admin.ModelAdmin):

@@ -1,12 +1,14 @@
-# based on: http://www.djangosnippets.org/snippets/1926/
+"""
+based on: http://www.djangosnippets.org/snippets/1926/
+"""
 from django import template
+from django.conf import settings
 from django.db.models.query import QuerySet
 from django.template import Library, Node, TemplateSyntaxError
 from django.template.defaultfilters import floatformat
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
-import settings
 from utils.django_utils.serializers import serialize
 from utils.internet.classes import _dthandler
 

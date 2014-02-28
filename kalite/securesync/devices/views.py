@@ -1,7 +1,10 @@
+"""
+"""
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -12,7 +15,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
-import settings
 from chronograph import force_job
 from config.models import Settings
 from main.models import UserLog

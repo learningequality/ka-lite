@@ -1,9 +1,12 @@
+"""
+"""
 import datetime
 import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -13,7 +16,6 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-import settings
 import version
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 try:

@@ -13,11 +13,11 @@ import glob
 import os
 import re
 import shutil
-
 from optparse import make_option
+
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from i18n import lcode_to_django
 from main.topic_tools import get_node_cache
 from settings import LOG as logging

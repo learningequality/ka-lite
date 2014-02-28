@@ -1,7 +1,6 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-
 import re
 import time
 import unittest
@@ -11,11 +10,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.webdriver.firefox.webdriver import WebDriver
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-import settings
 from facility.models import Facility, FacilityGroup, FacilityUser
 from main.models import ExerciseLog
 from main.topic_tools import get_exercise_paths

@@ -1,10 +1,12 @@
+"""
+"""
 import datetime
 
+from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
 
-import settings
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
 

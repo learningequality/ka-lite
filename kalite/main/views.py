@@ -1,3 +1,5 @@
+"""
+"""
 import copy
 import json
 import os
@@ -7,6 +9,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -18,7 +21,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
-import settings
 import topic_tools
 import topicdata
 from .caching import backend_cache_page

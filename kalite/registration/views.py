@@ -1,9 +1,9 @@
 """
 Views which allow users to create and activate accounts.
-
 """
 import copy
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout as auth_logout, views as auth_views, REDIRECT_FIELD_NAME
 from django.contrib.auth.models import User
@@ -15,7 +15,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-import settings
 from central.forms import OrganizationForm
 from central.models import Organization
 from contact.views import contact_subscribe

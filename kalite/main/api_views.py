@@ -1,3 +1,5 @@
+"""
+"""
 import cgi
 import copy
 import json
@@ -8,6 +10,7 @@ import datetime
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
@@ -21,7 +24,6 @@ from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
-import settings
 import version
 from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm

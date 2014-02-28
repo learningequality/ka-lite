@@ -9,19 +9,17 @@ regularly, to ensure we are at least putting in requests for the srts that exist
 
 NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us).
 """
-
 import datetime
 import json
 import os
 import requests
 import sys
 import tempfile
-
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
 from i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
 from main.topic_tools import get_slug2id_map

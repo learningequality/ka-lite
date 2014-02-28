@@ -4,14 +4,14 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-
 import os
 #from selenium
-from django.test import TestCase, Client
+
+from django.conf import settings
 from django.core.management import call_command
+from django.test import TestCase, Client
 from django.utils import unittest
 
-import settings
 from testing import distributed_server_test, KALiteTestCase
 
 

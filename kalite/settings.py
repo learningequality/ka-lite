@@ -535,6 +535,7 @@ if package_selected("UserRestricted"):
         KEY_PREFIX += "|restricted"  # this option changes templates
 
 if package_selected("Demo"):
+    import pdb; pdb.set_trace()
     LOG.info("Demo package selected.")
 
     CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST",   "globe.learningequality.org:8008")

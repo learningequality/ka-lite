@@ -1,9 +1,11 @@
+"""
+"""
 import sys
 from datetime import datetime  # main.models imports this way, so we have this hacky dependency.
 
+from django.conf import settings
 from django.utils import unittest
 
-import settings
 import version
 from facility.models import Facility, FacilityGroup, FacilityUser
 from i18n.models import *

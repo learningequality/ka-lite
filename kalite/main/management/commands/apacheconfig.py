@@ -1,8 +1,9 @@
+"""
+"""
 import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-
-import settings
 
 
 config_template = """
@@ -10,10 +11,10 @@ config_template = """
 Listen %(port)s
 
 <VirtualHost *:%(port)s>
-    
+
     Alias /static %(project_path)sstatic
     Alias /favicon.ico %(project_path)sstatic/images/favicon.ico
-    
+
     <Directory %(project_path)s>
         Order deny,allow
         Allow from all

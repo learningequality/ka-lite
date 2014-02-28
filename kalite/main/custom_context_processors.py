@@ -1,5 +1,9 @@
-import settings
+"""
+"""
+from django.conf import settings
+
 import version
+
 
 # TODO(jamalex): this should be calculated more intelligently, and incorporated into a template tag
 # (see https://github.com/learningequality/ka-lite/issues/1161)

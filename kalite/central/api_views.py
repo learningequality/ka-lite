@@ -1,12 +1,14 @@
+"""
+"""
 import datetime
 import json
 import os
 from collections import OrderedDict
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 
-import settings
 import version
 from .views import get_central_server_host
 from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse

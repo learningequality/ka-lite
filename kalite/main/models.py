@@ -1,3 +1,5 @@
+"""
+"""
 import random
 import uuid
 from annoying.functions import get_object_or_None
@@ -5,6 +7,7 @@ from math import ceil
 from datetime import datetime
 from dateutil import relativedelta
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -13,7 +16,6 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
 import i18n
-import settings
 from facility.models import FacilityUser
 from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device

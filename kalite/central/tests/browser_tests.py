@@ -9,10 +9,10 @@ import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-import settings
 from central.models import Organization
 from facility.models import Facility
 from registration.models import RegistrationProfile

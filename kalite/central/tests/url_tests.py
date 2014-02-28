@@ -4,13 +4,12 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-
 import os
 
+from django.conf import settings
 from django.test import LiveServerTestCase, TestCase, Client
 from django.core.management import call_command
 
-import settings
 from testing import central_server_test
 
 

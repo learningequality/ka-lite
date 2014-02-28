@@ -4,12 +4,12 @@ This is where the heavy lifting happens!
 """
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 #from django.db import models, transaction
 from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
-import settings
 import version
 from settings import LOG as logging
 from utils.django_utils import serializers

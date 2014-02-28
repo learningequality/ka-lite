@@ -1,9 +1,12 @@
+"""
+"""
 import re
 import json
 import tempfile
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -18,7 +21,6 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 import kalite
-import settings
 from central.forms import OrganizationForm, OrganizationInvitationForm
 from central.models import Organization, OrganizationInvitation, DeletionRecord, get_or_create_user_profile, FeedListing, Subscription
 from securesync.engine.api_client import SyncClient

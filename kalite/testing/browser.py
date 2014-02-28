@@ -1,10 +1,12 @@
+"""
+"""
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.conf import settings
 from django.contrib.sessions.models import Session
 
-import settings
 from .base import create_test_admin, KALiteTestCase
 from settings import LOG as logging
 

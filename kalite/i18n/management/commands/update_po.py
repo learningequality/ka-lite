@@ -17,10 +17,10 @@ import os
 import shutil
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from i18n import lcode_to_django_dir, update_jsi18n_file
 from settings import LOG as logging
 from utils.django_utils import call_command_with_output

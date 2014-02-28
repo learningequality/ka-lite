@@ -27,11 +27,11 @@ import json
 from math import exp, sqrt, ceil, floor
 from optparse import make_option
 
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-import settings
 import securesync
 from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import ExerciseLog, VideoLog, UserLog

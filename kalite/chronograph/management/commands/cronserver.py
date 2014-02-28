@@ -11,11 +11,11 @@ except Exception as e:
     pass
 import gc
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
-import settings
 from chronograph.models import Job
 from settings import LOG as logger
 

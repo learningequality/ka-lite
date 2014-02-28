@@ -1,9 +1,11 @@
+"""
+"""
 import re
 
+from django.conf import settings
 from django.test import TestCase
 from django.utils import unittest
 
-import settings
 from facility.models import Facility, FacilityUser, FacilityGroup
 from securesync import crypto
 from testing import KALiteTestCase

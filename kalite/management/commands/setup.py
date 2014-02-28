@@ -1,3 +1,5 @@
+"""
+"""
 import getpass
 import os
 import re
@@ -17,11 +19,11 @@ sys.path = [
 ] + sys.path
 os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 import version
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
 from securesync.models import Zone

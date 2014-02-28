@@ -29,6 +29,7 @@ import time
 from khanacademy.test_oauth_client import TestOAuthClient
 from oauth import OAuthToken
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -36,7 +37,6 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerEr
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
-import settings
 from facility.models import FacilityUser
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_node_cache

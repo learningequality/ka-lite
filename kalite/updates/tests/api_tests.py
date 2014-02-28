@@ -1,13 +1,13 @@
 import json
 import os
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-import settings
 from .command_tests import VideoScanTests
 from facility.models import Facility, FacilityUser
 from main.tests.base import MainTestCase

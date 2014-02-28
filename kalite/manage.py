@@ -10,15 +10,14 @@ PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(PROJECT_PATH, "../python-packages/")] + sys.path
 
 from django.core.management import execute_manager
-import settings
-
+import kalite.settings
 
 
 ########################
 # ZERO CONFIG
 ########################
 
-if settings.ZERO_CONFIG:
+if kalite.settings.ZERO_CONFIG:
     # Force all commands to run through our own serve command, which does auto-config if necessary
     # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
     if "runserver" in sys.argv:
@@ -43,4 +42,4 @@ if "runserver" in sys.argv and "--nostatic" not in sys.argv:
 
 
 if __name__ == "__main__":
-    execute_manager(settings)
+    execute_manager(kalite.settings)

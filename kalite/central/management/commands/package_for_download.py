@@ -6,8 +6,8 @@ This command packages all parts together necessary for install and update.
   * a JSON file, containing models relevant to install (including the central server Device model, and any models relevant to the install)
   * A set of install scripts--a main python one, and clickable scripts per OS-type
 
-This file also defines a function, "install_from_package", which extracts the 
-  contents of the package and uses them, ultimately running install and 
+This file also defines a function, "install_from_package", which extracts the
+  contents of the package and uses them, ultimately running install and
   starting the server.  That function is extracted (using inspection)
   and written into the package, so that it stays tightly tied to this
   packaging logic, and so that it can be called both inline during testing,
@@ -22,10 +22,10 @@ import tempfile
 from optparse import make_option
 from zipfile import ZipInfo, ZipFile, ZIP_DEFLATED, ZIP_STORED
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 import utils.platforms
 from kalite.management.commands.zip_kalite import create_default_archive_filename, Command as ZipCommand
 from securesync import engine
@@ -137,7 +137,7 @@ class Command(BaseCommand):
             metavar="AUTO-UNPACK"
         ),
     )
-    
+
     install_py_file = "install.py"
 
     def handle(self, *args, **options):
@@ -168,14 +168,14 @@ class Command(BaseCommand):
                 new_invitation = ZoneInvitation.generate(zone=zone, invited_by=Device.get_own_device())
                 new_invitation.save()  # keep a record of the invitation, for future revocation.  Also, signs the thing
 
-                # This ordering of objects is a bit be hokey, but OK--invitation usually must be 
+                # This ordering of objects is a bit be hokey, but OK--invitation usually must be
                 #   inserted before devicezones--but because it's not pointing to any devices,
                 #   it's OK to be at the end.
                 # Note that the central server will always be at the front of the chain of trust,
                 #   so no need to explicitly include.
                 models = chain.objects() + [new_invitation]
 
-                # 
+                #
                 if include_data:
                     logging.debug("Serializing entire dataset...")
                     devices = Device.objects.by_zone(zone)
@@ -258,7 +258,7 @@ class Command(BaseCommand):
                 #   be the readme.  Remove that, dump the rest raw!
                 fp.write(inspect.getdoc(install_from_package).split("\n", 2)[1])
 
-            # NOTE: do this last, so we can pass the set of install files in the 
+            # NOTE: do this last, so we can pass the set of install files in the
             #   function call, for effective cleanup.
 
             # Create the install python script,
@@ -287,7 +287,7 @@ class Command(BaseCommand):
         files_dict.update(install_files)
         system_specific_zipping(
             files_dict = files_dict,
-            zip_file=wrapper_filename, 
+            zip_file=wrapper_filename,
             compression=ZIP_STORED if settings.DEBUG else ZIP_DEFLATED,
 #            callback=None,
         )
@@ -298,8 +298,8 @@ class Command(BaseCommand):
             os.remove(fil)
 
         sys.stdout.write("Successfully packaged KA Lite to %s.\n" % wrapper_filename)
-        
-        
+
+
         # To test:
         #   Unpack to a temporary folder, then run install
         if options["auto_unpack"]:

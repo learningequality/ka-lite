@@ -1,10 +1,12 @@
+"""
+"""
 import json
 import requests
 import urllib
 import urllib2
 import uuid
 
-import settings
+from django.conf import settings
 
 
 class BaseClient(object):

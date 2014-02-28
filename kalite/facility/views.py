@@ -1,7 +1,10 @@
+"""
+"""
 import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -15,7 +18,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
-import settings
 from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
@@ -28,6 +30,7 @@ from settings import LOG as logging
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
 from utils.internet import set_query_params
+
 
 @require_admin
 @distributed_server_only

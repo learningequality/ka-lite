@@ -1,11 +1,14 @@
+"""
+"""
 import re
 import json
 import requests
 import urllib
 import urllib2
 
+from django.conf import settings
+
 import kalite
-import settings
 from .models import *
 from securesync import engine
 from securesync.api_client import BaseClient

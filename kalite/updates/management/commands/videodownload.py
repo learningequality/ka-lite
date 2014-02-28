@@ -1,12 +1,14 @@
+"""
+"""
 import sys
 import time
 from functools import partial
 from optparse import make_option
 
+from django.conf import settings
 from django.utils.translation import ugettext as _
 
 import i18n
-import settings
 from .classes import UpdatesDynamicCommand
 from i18n.management.commands.scrape_videos import scrape_video
 from settings import LOG as logging

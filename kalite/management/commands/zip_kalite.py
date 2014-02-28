@@ -1,4 +1,5 @@
-import logging
+"""
+"""
 import os
 import shutil
 import platform
@@ -6,13 +7,14 @@ import tempfile
 from optparse import make_option
 from zipfile import ZipInfo, ZipFile, ZIP_DEFLATED, ZIP_STORED
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
-import settings
 from i18n import CROWDIN_CACHE_DIR, get_dubbed_video_map
 from khanload import KHANLOAD_CACHE_DIR
 from securesync.models import Device
+from settings import LOG as logging
 from utils.general import ensure_dir
 from utils.platforms import is_windows, not_system_specific_scripts, system_specific_zipping, _default_callback_zip
 

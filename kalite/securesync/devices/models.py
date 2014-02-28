@@ -1,7 +1,10 @@
+"""
+"""
 import datetime
 import uuid
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
@@ -10,7 +13,6 @@ from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 import kalite
-import settings
 from securesync import crypto
 from securesync.engine.models import SyncedModel
 from settings import LOG as logging
