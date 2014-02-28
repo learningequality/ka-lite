@@ -1,27 +1,33 @@
 from datetime import datetime
 from chronograph.models import Job
 
-from updates.models import UpdateProgressLog
 from utils.django_utils import call_command_async
 
 
-def force_job(command, name="", frequency="YEARLY", stop=False):
+def force_job(command, name="", frequency="YEARLY", stop=False, **kwargs):
     """
     Mark a job as to run immediately (or to stop).
     By default, call cron directly, to resolve.
     """
     jobs = Job.objects.filter(command=command)
+
+    #
     if jobs.count() > 0:
         job = jobs[0]
     else:
         job = Job(command=command)
         job.frequency = frequency
-        job.name = name or command
 
+    job.name = job.name or name or command
+
+    #
     if stop:
         job.is_running = False
     else:
         job.next_run = datetime.now()
+        job.args = " ".join(["%s=%s" % (k, v) for k, v in kwargs.iteritems()])
+
+    #
     job.save()
 
     # Set as variable so that we could pass as param later, if we want to!

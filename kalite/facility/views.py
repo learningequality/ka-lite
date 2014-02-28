@@ -321,13 +321,15 @@ def user_management_context(request, facility_id, group_id, page=1, per_page=25)
     #   general-purpose than it's being used / tested now.
     def get_users_from_group(group_id, facility=None):
         if _(group_id) == _("Ungrouped"):
-            return FacilityUser.objects \
+            return list(FacilityUser.objects \
                 .filter(facility=facility, group__isnull=True) \
-                .order_by("first_name", "last_name")
+                .order_by("last_name", "first_name", "username"))
         elif not group_id:
             return []
         else:
-            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
+            return list(get_object_or_404(FacilityGroup, pk=group_id) \
+                .facilityuser_set \
+                .order_by("last_name", "first_name", "username"))
 
     user_list = get_users_from_group(group_id, facility=facility)
 

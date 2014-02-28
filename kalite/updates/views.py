@@ -8,7 +8,6 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
@@ -57,8 +56,7 @@ def update(request):
 @require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", _("Download Videos"))  # async request, to trigger any outstanding video downloads
+    force_job("videodownload", _("Download Videos"), locale=request.language)  # async request, to trigger any outstanding video downloads
 
     installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
     default_language_name = lang_best_name(installed_languages.pop(lcode_to_ietf(request.session["default_language"])))

@@ -75,10 +75,10 @@ class Command(BaseCommand):
                 video_files_needing_model_update = VideoFile.objects.filter(percent_complete=0, download_in_progress=False, youtube_id__in=chunk)
                 video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
 
-                caching.invalidate_all_caches()  # Do this within the loop, to update users ASAP
                 updated_video_ids += [i18n.get_video_id(video_file.youtube_id) for video_file in video_files_needing_model_update]
 
             if updated_video_ids:
+                caching.invalidate_all_caches()
                 self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % len(updated_video_ids))
             return updated_video_ids
         touched_video_ids += update_objects_to_be_complete(youtube_ids_in_filesystem)

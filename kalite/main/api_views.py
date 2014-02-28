@@ -27,8 +27,7 @@ from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
 from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
-from .topic_tools import get_flat_topic_tree
-from chronograph import force_job, job_status
+from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 from config.models import Settings
 from facility.models import FacilityGroup, FacilityUser
 from i18n import lcode_to_ietf
@@ -129,7 +128,15 @@ def save_exercise_log(request):
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
-        return JsonResponse({"success": _("You have mastered this exercise!")})
+        exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
+        junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
+        if next_exercise:
+            return JsonResponse({"success": _("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
+                "href": next_exercise["path"],
+                "title": _(next_exercise["title"]),
+            }})
+        else:
+            return JsonResponse({"success": _("You have mastered this exercise and this topic!")})
 
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})
@@ -334,12 +341,6 @@ def getpid(request):
 @api_handle_error_with_json
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
-
-    if lcode_to_ietf(lang_code) != request.language:
-        return JsonResponseMessageError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current='%(current_lang)s', requested='%(requested_lang)s').") % {
-            "current_lang": request.session.get(settings.LANGUAGE_COOKIE_NAME),
-            "requested_lang": lang_code,
-        })
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
 
 

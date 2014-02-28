@@ -24,7 +24,6 @@ import topicdata
 from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from chronograph import force_job
 from config.models import Settings
 from facility.models import Facility, FacilityUser,FacilityGroup
 from i18n import select_best_available_language
@@ -33,7 +32,7 @@ from securesync.models import Device
 from settings import LOG as logging
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
-from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from utils.django_utils import is_loopback_connection
 from utils.internet import JsonResponse, get_ip_addresses, set_query_params
 
@@ -94,8 +93,9 @@ def refresh_topic_cache(handler, force=False):
         do_it = do_it or "nvideos_local" not in node
         do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
         if do_it:
-            logging.debug("Adding video counts %sto topic (and all descendants) %s" % (
+            logging.debug("Adding video counts %s%sto topic (and all descendants) %s" % (
                 "(and urls) " if stamp_urls else "",
+                "(forced) " if force else "",
                 node["path"],
             ))
             (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
@@ -133,8 +133,8 @@ def refresh_topic_cache(handler, force=False):
 
             elif node["kind"] == "Topic":
                 bottom_layer_topic =  "Topic" not in node["contains"]
-                # always run video_counts_need_update(), to make sure the (internal) counts stay up to date.
-                force = video_counts_need_update() or force or bottom_layer_topic
+                # always run do_video_counts_need_update_question_mark(), to make sure the (internal) counts stay up to date.
+                force = do_video_counts_need_update_question_mark() or force or bottom_layer_topic
                 recount_videos_and_invalidate_parents(
                     node,
                     force=force,
