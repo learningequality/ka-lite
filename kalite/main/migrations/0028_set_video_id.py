@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
 import i18n
-from main.models import VideoLog
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
         # Setting the video ID
-        for vlog in VideoLog.objects.all():
+        for vlog in orm["main.VideoLog"].objects.all():
             vlog.video_id = i18n.get_video_id(vlog.youtube_id) or vlog.youtube_id
-
+            vlog.save()
 
     def backwards(self, orm):
         pass
@@ -140,6 +138,7 @@ class Migration(SchemaMigration):
         'securesync.facilityuser': {
             'Meta': {'unique_together': "(('facility', 'username'),)", 'object_name': 'FacilityUser'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'default_language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Facility']"}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -170,3 +169,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['main']
+    symmetrical = True
