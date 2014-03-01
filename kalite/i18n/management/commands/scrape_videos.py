@@ -103,17 +103,22 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
-def scrape_video(youtube_id, format="mp4", force=False, yt_dl_bin='youtube-dl', suppress_output=False):
+def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
     Assumes it's in the path; if not, we try to download & install.
+
+    Callback will be called back with a dictionary as the first arg with a bunch of
+    youtube-dl info in it, as specified in the youtube-dl docs.
     """
     video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
     video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
     if os.path.exists(video_file_download_path) and not force:
         return
 
-    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path})
+    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
     yt_dl.add_default_info_extractors()
+    if callback:
+        yt_dl.add_progress_hook(callback)
     yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
 
 """

@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 from functools import partial
@@ -70,7 +71,7 @@ class Command(UpdatesDynamicCommand):
                 video_title = _(video_node["title"]) if video_node else self.video.youtube_id
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": video_title})
+                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
 
                 if percent == 100:
                     self.video = None
@@ -126,23 +127,33 @@ class Command(UpdatesDynamicCommand):
                 try:
                     ensure_dir(settings.CONTENT_ROOT)
 
+                    progress_callback = partial(self.download_progress_callback, video)
                     try:
-                        download_video(video.youtube_id, callback=partial(self.download_progress_callback, video))
+                        # Download via urllib
+                        download_video(video.youtube_id, callback=progress_callback)
                     except URLNotFound:
                         # Video was not found on amazon cloud service,
                         #   either due to a KA mistake, or due to the fact
                         #   that it's a dubbed video.
                         #
                         # We can use youtube-dl to get that video!!
-                        logging.info(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.youtube_id})
-                        self.download_progress_callback(video, 0)
-                        scrape_video(video.youtube_id, suppress_output=not settings.DEBUG)
-                        self.download_progress_callback(video, 100)
+                        logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.youtube_id})
 
+                        def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
+                            if stats['status'] == "finished":
+                                percent = 100.
+                            elif stats['status'] == "downloading":
+                                percent = 100. * stats['downloaded_bytes'] / stats['total_bytes']
+                            else:
+                                percent = 0.
+                            progress_callback(percent=percent)
+                        scrape_video(video.youtube_id, quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
+
+                    # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
                 except DownloadCancelled:
-                    #Cancellation event
+                    # Cancellation event
                     video.percent_complete = 0
                     video.flagged_for_download = False
                     video.download_in_progress = False
