@@ -11,7 +11,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
-from config.models import Settings
 from facility.decorators import facility_from_request
 from facility.models import FacilityUser
 from securesync.models import Device, Zone

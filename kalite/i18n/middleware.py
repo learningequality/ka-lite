@@ -1,6 +1,8 @@
 """
 i18n/middleware:
 
+THIS IS FOR THE DISTRIBUTED SERVER ONLY
+
 Here, we have three major pieces of code:
 1. Set the language for the request (request.session["django_language"], copied to request.language),
   using some cached data (see code below) or the "lang" GET parameter
