@@ -10,7 +10,7 @@
 #### Primary ways to interact with the project include:
 * **Install KA Lite** on Linux, OSX, or Windows by visiting our [installation guide](http://kalitewiki.learningequality.org/installation).
 * **Report bugs** or request new features through the [GitHub issue tracker](https://github.com/learningequality/ka-lite/issues).
-* **Contribute to the software development** by visiting our [development wiki](http://kalitewiki.learningequality.org/development/coding/getting-started).
+* **Contribute to the software development** by visiting our [development wiki](https://github.com/learningequality/ka-lite/wiki).
 
 ---
 
