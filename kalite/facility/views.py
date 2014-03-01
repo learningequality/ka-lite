@@ -21,7 +21,6 @@ from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from chronograph import force_job
-from config.models import Settings
 from main.models import UserLog
 from securesync.devices.views import *
 from settings import LOG as logging
