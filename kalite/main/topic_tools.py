@@ -14,18 +14,17 @@ import settings
 from settings import LOG as logging
 from utils.general import softload_json
 
+TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
+
 CACHE_VARS = []
-
-topics_file = "topics.json"
-
 
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
-    global TOPICS, topics_file
+    global TOPICS, TOPICS_FILEPATH
     if TOPICS is None or force:
-        TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
+        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
 
         # Limit the memory footprint by unloading particular values
