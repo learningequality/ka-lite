@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 import i18n
 import settings
 from .classes import UpdatesDynamicCommand
-from i18n.management.commands.scrape_videos import scrape_video
+from i18n.management.commands.scrape_videos import scrape_video, DownloadError
 from settings import LOG as logging
 from main import caching
 from main.topic_tools import get_video_by_youtube_id
@@ -131,6 +131,7 @@ class Command(UpdatesDynamicCommand):
                     try:
                         # Download via urllib
                         download_video(video.youtube_id, callback=progress_callback)
+
                     except URLNotFound:
                         # Video was not found on amazon cloud service,
                         #   either due to a KA mistake, or due to the fact
@@ -152,6 +153,7 @@ class Command(UpdatesDynamicCommand):
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
+
                 except DownloadCancelled:
                     # Cancellation event
                     video.percent_complete = 0
@@ -159,14 +161,25 @@ class Command(UpdatesDynamicCommand):
                     video.download_in_progress = False
                     video.save()
                     failed_youtube_ids.append(video.youtube_id)
+
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
                     msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.youtube_id, "error_msg": unicode(e)}
                     self.stderr.write("%s\n" % msg)
+
+                    # If a connection error, we should retry.
+                    if isinstance(e, DownloadError):
+                        connection_error = "[Errno 8]" in e.message
+                    elif isinstance(e, IOError) and hasattr(e, "strerror"):
+                        connection_error = e.strerror[0] == 8
+                    else:
+                        connection_error = False
+
                     video.download_in_progress = False
-                    video.flagged_for_download = not isinstance(e, URLNotFound)  # URLNotFound means, we won't try again
+                    video.flagged_for_download = connection_error  # Any error other than a connection error is fatal.
                     video.save()
+
                     # Rather than getting stuck on one video, continue to the next video.
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
                     failed_youtube_ids.append(video.youtube_id)
@@ -184,5 +197,5 @@ class Command(UpdatesDynamicCommand):
             })
 
         except Exception as e:
-            self.cancel(stage_status="error", notes=_("Error: %(error_msg)") % {"error_msg": unicode(e)})
+            self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})
             raise

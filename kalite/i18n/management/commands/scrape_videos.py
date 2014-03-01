@@ -16,6 +16,7 @@ import subprocess
 import tempfile
 import youtube_dl
 from optparse import make_option
+from youtube_dl.utils import DownloadError, ExtractorError
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
