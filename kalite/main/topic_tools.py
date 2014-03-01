@@ -5,10 +5,11 @@ import glob
 import os
 from functools import partial
 
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
-import khanload
+import khanload  # should be removed ASAP, to make more generic and separate apps.
 import settings
 from settings import LOG as logging
 from utils.general import softload_json
@@ -134,6 +135,8 @@ def generate_slug_to_video_id_map(node_cache=None):
 
 
 def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
+    translation.activate(lang_code)
+
     categories = node_cache or get_node_cache()
     result = dict()
     # make sure that we only get the slug of child of a topic
@@ -149,10 +152,13 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
                 'available': node.get('available', True),
             }
             result[category_name][node_name] = relevant_data
+
+    translation.deactivate()
+
     return result
 
 
-def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
+def generate_node_cache(topictree=None):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Video nodes.
     """

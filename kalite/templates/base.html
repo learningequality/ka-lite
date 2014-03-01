@@ -55,12 +55,15 @@
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
         <script>
-         // the following variables are used by functions in distributed-server.js
+         // the following variables are used by functions in distributed-server.js,
+         //    khan-lite.js, and search_autocomplete.js.
          // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
+         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}";
+         var SEARCH_TOPICS_URL = "{% url flat_topic_tree lang_code=current_language%}";
+
          var SERVER_INFO_PATH    = "{% url get_server_info %}";
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
          var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
-         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}";
          var CURRENT_LANGUAGE = "{{ current_language }}";
         </script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
@@ -157,7 +160,7 @@
                         </article>
                     </div>
                     {% endblock outer_content %}
-                    <div id="end-of-page-spacer" style="height: 38px;">&nbsp;</div>
+                    <div id="end-of-page-spacer">&nbsp;</div>
                     <div id="badge-notification-container" class="badge-award-container" style="display:none;"></div>
                 </div>
             </div>
@@ -168,7 +171,7 @@
                 <div class="inner">
                     <div style="float:left;margin-top: 5px;" class="tiny">
                         {% block footerleft %}
-                        <div style="float:left"><img src="{% static 'images/FLE.png' %}" style="height:18px;margin-right: 5px;margin-top:5px;margin-left:10px;"></img></div>
+                        <div style="float:left"><img id="fle-logo" src="{% static 'images/FLE.png' %}"></img></div>
                         <div style="float:left; margin-top:4px;">creators of KA Lite &copy; 2014</div>
                         {% endblock footerleft %}
                     </div>

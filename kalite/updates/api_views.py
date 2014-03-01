@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import settings
@@ -148,7 +149,7 @@ def start_video_download(request):
         video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
-    force_job("videodownload", _("Download Videos"))
+    force_job("videodownload", _("Download Videos"), locale=request.language)
 
     return JsonResponse({})
 
@@ -160,7 +161,7 @@ def retry_video_download(request):
     Clear any video still accidentally marked as in-progress, and restart the download job.
     """
     VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
-    force_job("videodownload", _("Download Videos"))
+    force_job("videodownload", _("Download Videos"), locale=request.language)
     return JsonResponse({})
 
 
@@ -191,7 +192,7 @@ def cancel_video_download(request):
     # unflag all video downloads
     VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
 
-    force_job("videodownload", stop=True)
+    force_job("videodownload", stop=True, locale=request.language)
 
     return JsonResponse({})
 
@@ -204,14 +205,19 @@ def installed_language_packs(request):
 def start_languagepack_download(request):
     if request.POST:
         data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
-        call_command_async(
-            'languagepackdownload',
-            lang_code=data['lang'],
-        ) # TODO: migrate to force_job once it can accept command_args
+        force_job('languagepackdownload', _("Language pack download"), lang_code=data['lang'], locale=request.language)
+
         return JsonResponse({'success': True})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
+    # Not needed when on an api request (since translation.activate is already called),
+    #   but just to do things right / in an encapsulated way...
+    # Though to be honest, this isn't quite right; we should be DE-activating translation
+    #   at the end.  But with so many function exit-points... just a nightmare.
+    if level == 0:
+        translation.activate(lang_code)
+
     if not statusdict:
         statusdict = {}
 
@@ -288,6 +294,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 @require_admin
 @api_handle_error_with_json
 def get_annotated_topic_tree(request, lang_code=None):
+    call_command("videoscan")  # Could potentially be very slow, blocking request... but at least it's via an API request!
 
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))

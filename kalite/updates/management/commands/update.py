@@ -14,7 +14,7 @@ from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 
 import settings
 from i18n import get_dubbed_video_map
@@ -30,7 +30,7 @@ from utils.platforms import is_windows, system_script_extension, system_specific
 class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
-    option_list = BaseCommand.option_list + (
+    option_list = UpdatesStaticCommand.option_list + (
         make_option('-b', '--branch',
             action='store',
             dest='branch',
