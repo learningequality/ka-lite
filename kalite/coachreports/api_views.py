@@ -295,37 +295,47 @@ def compute_data(data_types, who, where):
     }
 
 
-def convert_topic_tree_for_dynatree(node):
-    """Converts topic tree from standard dictionary nodes
-    to dictionary nodes usable by the dynatree app"""
-
-    if node["kind"] == "Topic":
-        # Only show topics with exercises
-        if "Exercise" not in node["contains"]:
-            return None
-
-        children = []
-        for child_node in node["children"]:
-            child = convert_topic_tree_for_dynatree(child_node)
-            if child:
-                children.append(child)
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["path"],
-            "children": children,
-            "expand": False,  # top level
-        }
-    return None
-
-
 # view endpoints #######
 
 @api_handle_error_with_json
-def get_exercise_topic_tree(request, topic_path):
-    return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
+def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
+    """Given a root path, returns all topic nodes that contain the requested kind(s).
+    Topic nodes without those kinds are removed.
+    """
+
+    def convert_topic_tree_for_dynatree(node, kinds_to_query):
+        """Converts topic tree from standard dictionary nodes
+        to dictionary nodes usable by the dynatree app"""
+
+        if node["kind"] != "Topic":
+            # Should never happen, but only run this function for topic nodes.
+            return None
+
+        elif not set(kinds_to_query).intersection(set(node["contains"])):
+            # Eliminate topics that don't contain the requested kinds
+            return None
+
+        topic_children = []
+        for child_node in node["children"]:
+            child_dict = convert_topic_tree_for_dynatree(child_node, kinds_to_query)
+            if child_dict:
+                # Only keep children that themselves have the requsted kind
+                topic_children.append(child_dict)
+
+        return {
+            "title": _(node["title"]),
+            "tooltip": re.sub(r'<[^>]*?>', '', _(node["description"] or "")),
+            "isFolder": True,
+            "key": node["path"],
+            "children": topic_children,
+            "expand": False,  # top level
+        }
+
+    kinds_to_query = kinds_to_query or request.GET.get("kinds", "Exercise").split(",")
+    return JsonResponse(convert_topic_tree_for_dynatree(
+        get_topic_by_path(topic_path),
+        kinds_to_query,
+    ));
 
 
 @csrf_exempt
