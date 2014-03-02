@@ -184,7 +184,7 @@
                 });
 
                 // Get the topic tree (starting on window load)
-                doRequest("{% url get_exercise_topic_tree topic_path='/math/' %}")
+                doRequest("{% url get_exercise_topic_tree topic_path='/' %}")
                     .success(function(treeData) {
                         treeData["expand"] = true; // expand the top level
 
