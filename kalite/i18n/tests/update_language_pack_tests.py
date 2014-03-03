@@ -29,3 +29,10 @@ class DownloadLatestTranslationTests(unittest.TestCase):
         get_method.return_value.raise_for_status = Mock(side_effect=requests.exceptions.ConnectionError)
 
         self.assertRaisesRegexp(CommandError, '401 Unauthorized', lambda: ulp.download_latest_translations(**self.download_translation_args))
+
+    @patch.object(requests, 'get')
+    def test_catchall_error_if_cant_connect(self, get_method):
+        get_method.return_value = Mock(Response, status_code=500)
+        get_method.return_value.raise_for_status = Mock(side_effect=requests.exceptions.ConnectionError)
+
+        self.assertRaisesRegexp(CommandError, "couldn't connect to CrowdIn API", lambda: ulp.download_latest_translations(**self.download_translation_args))
