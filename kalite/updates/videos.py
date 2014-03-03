@@ -9,7 +9,7 @@ from utils.general import softload_json
 from utils.videos import *  # get all into the current namespace, override some.
 
 
-REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "content", "video_file_sizes.json")
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH, "content", "video_file_sizes.json")
 AVERAGE_VIDEO_SIZE = 14000000
 
 REMOTE_VIDEO_SIZES = None
