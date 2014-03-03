@@ -222,7 +222,7 @@ function xout(pt){
                 <var id="DUMBANS">MDTESTDAT[2][INDEX][0]</var>
                 <var id="DUMBANS2">INDEX</var>
                 <var id="NUMBER">MDTESTDAT[2][INDEX][1][0]</var>
-   	        <var id="NUMBER2">MDTESTDAT[2][INDEX][1][1]</var>		
+   	            <var id="NUMBER2">MDTESTDAT[2][INDEX][1][1]</var>		
 
 
 	</div>
@@ -262,22 +262,17 @@ function xout(pt){
 						};
                                                 dvals=[0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-						//$("#solutionarea input:first").val( x );
-                                                //jQuery("#solutionarea input:first").val( distTarPt(x,y,MDTESTDAT[4][0],MDTESTDAT[4][1]));
-						//$("#solutionarea input:last").val( y );
+						
                                                 var k=0;
                                                 for (k;k < 13;k++){
                                                 dvals[k] = distTarPt(x,y,MDTESTDAT[2][k][1][0],MDTESTDAT[2][k][1][1])};
                                                 $("#solutionarea input:first").val( threshhold(dvals[posofmin(dvals)],0.25));
                                                 $("#solutionarea input:last").val( MDTESTDAT[2][posofmin(dvals)][0]);
                                                 
-                                                 
-						//jQuery("#solutionarea input:last").val( inorout(PTS,[x,y])+ inorout(PTS2,[x,y]) + inorout(PTS3,[x,y])+ inorout(PTS4,[x,y]));
-						//jQuery("#solutionarea input:last").val( answertext(inorout(MDTESTDAT[2][0][1],[x,y]),MDTESTDAT[2][0][0])+answertext(inorout(MDTESTDAT[2][1][1],[x,y]),MDTESTDAT[2][1][0])+
-                                                //                                        answertext(inorout(MDTESTDAT[2][2][1],[x,y]),MDTESTDAT[2][2][0])+answertext(inorout(MDTESTDAT[2][3][1],[x,y]),MDTESTDAT[2][3][0])+
-                                                //                                        answertext(inorout(MDTESTDAT[2][4][1],[x,y]),MDTESTDAT[2][4][0]));
-                                        
+                                                                                        
 					};
+					alert("Hang on a bit for the page to catch up.");
+					playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][INDEX][3]);
                                         
 				</div>
 			</div>
@@ -291,20 +286,26 @@ function xout(pt){
 				
 				
 					<div class="graphie" data-update="number-line">
-                                                playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][INDEX][3]);
-						style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
+                                                
+						                        style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
                                                 var j = 0;
                                                 cnt=NUMSHAPES;
                                                 nopick=[INDEX];
                                                 for (j; j < 12 ; j++){
                                                   nopick.push(randRangeExclude( 0, NUMSHAPES, nopick ))};
+                                                  // the following line sends an alert telling you that you have not picked the right answer
                                                   alert($("#solutionarea input:last").val() + " is not the right answer.  Try again.");
                                                   $("#answer_area_wrap").append("<br>mark was here</br>");
+                                                  //the following line pops open a new window to cnn (could be problem specific)
                                                   window.open("http://www.cnn.com","mywindow","height=200, width=200");
                                                 j = 0;
                                                 //graph.pic2 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint01.png", [0, 12], 0, 640, 480 );
                                                 style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 3.0, arrows: null  });
-                                                
+                                                point1=MDTESTDAT[2][nopick[1]][1];
+                                                c=xout(point1);
+                                                b=line(c[0],c[1]);
+                                                a=line(c[2],c[3]);
+                                                playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[1]][3]);
                  
                                                 
 					</div>
@@ -312,39 +313,20 @@ function xout(pt){
 
 				
 					<div class="graphie" data-update="number-line">
-                                                playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[1]][3]);
-						style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
-                                                graph.pic3 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint02.png", [0, 12], 0, 640, 480 );
-                                                style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 3.0, arrows: null  });
-                                                point1=MDTESTDAT[2][nopick[1]][1];
-                                                c=xout(point1);
-                                                b=line(c[0],c[1]);
-                                                a=line(c[2],c[3]);
-                                                //line(  MDTESTDAT[2][nopick[1]][1],[0,0],{arrows: "-&gt;" });
-
-                     
-                     <div class="graphie">
-                     var temp={};
-                     temp.one="data"
-                     temp.sound="temp01.mp3";
-                     playSound(MDTESTDAT[0],MDTESTDAT[1],temp.sound);
-                     alert(temp.one); 
-                     </div>
-					</div>
-				
-
-				
-					<div class="graphie" data-update="number-line">
                                                 playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[2]][3]);
 						                        style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
-                                                //graph.pic3 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint03.png", [0, 12], 0, 640, 480 );
+                                                graph.pic3 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint02.png", [0, 12], 0, 640, 480 );
                                                 style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 3.0, arrows: null  });
                                                 point1=MDTESTDAT[2][nopick[2]][1];
                                                 c=xout(point1);
                                                 b=line(c[0],c[1]);
                                                 a=line(c[2],c[3]);
-                                                //line(  MDTESTDAT[2][nopick[2]][1],[0,0],{arrows: "-&gt;" });
-                                                
+                                                //line(  MDTESTDAT[2][nopick[1]][1],[0,0],{arrows: "-&gt;" });
+                                                // the following line sends an alert telling you that you have not picked the right answer
+                                                  alert($("#solutionarea input:last").val() + " is not the right answer.  Try again.");
+
+                     
+                     
 					</div>
 				
 
@@ -352,16 +334,19 @@ function xout(pt){
 					<div class="graphie" data-update="number-line">
                                                 playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[3]][3]);
 						                        style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
-                                                //graph.pic4 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint04.png", [0, 12], 0, 640, 480 );
+                                                //graph.pic3 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint03.png", [0, 12], 0, 640, 480 );
                                                 style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 3.0, arrows: null  });
                                                 point1=MDTESTDAT[2][nopick[3]][1];
                                                 c=xout(point1);
                                                 b=line(c[0],c[1]);
                                                 a=line(c[2],c[3]);
-                                               //line(  MDTESTDAT[2][nopick[3]][1],[0,0],{arrows: "-&gt;" });
+                                                //line(  MDTESTDAT[2][nopick[2]][1],[0,0],{arrows: "-&gt;" });
+                                                 alert($("#solutionarea input:last").val() + " is not the right answer.  Try again.");
                                                 
 					</div>
-					
+				
+
+				
 					<div class="graphie" data-update="number-line">
                                                 playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[4]][3]);
 						                        style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
@@ -371,7 +356,20 @@ function xout(pt){
                                                 c=xout(point1);
                                                 b=line(c[0],c[1]);
                                                 a=line(c[2],c[3]);
-                                               //line(  MDTESTDAT[2][nopick[3]][1],[0,0],{arrows: "-&gt;" });
+                                                alert($("#solutionarea input:last").val() + " is not the right answer.  Try again.");
+                                                
+					</div>
+					
+					<div class="graphie" data-update="number-line">
+                                                playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[5]][3]);
+						                        style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 1.0, arrows: null  });
+                                                //graph.pic4 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint04.png", [0, 12], 0, 640, 480 );
+                                                style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 3.0, arrows: null  });
+                                                point1=MDTESTDAT[2][nopick[5]][1];
+                                                c=xout(point1);
+                                                b=line(c[0],c[1]);
+                                                a=line(c[2],c[3]);
+                                                alert($("#solutionarea input:last").val() + " is not the right answer.  Try again.");
                                                 
 					</div>
 				
@@ -381,15 +379,15 @@ function xout(pt){
 						
 				
 					<div class="graphie" data-update="number-line">
-                                                  playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[5]][3]);
+                                                  playSound(MDTESTDAT[0],MDTESTDAT[1],MDTESTDAT[2][nopick[6]][3]);
 						                        style({ stroke: "#6495ED", fill: "#6495ED", strokeWidth: 3.5, arrows: null  });
                                                 //graph.pic4 = new ImportPicturec(MDTESTDAT[0],MDTESTDAT[1],"hint05.png", [0, 12], 0, 640, 480 );
-                                                point1=MDTESTDAT[2][nopick[5]][1];
+                                                point1=MDTESTDAT[2][nopick[6]][1];
                                                 c=xout(point1);
                                                 b=line(c[0],c[1]);
                                                 a=line(c[2],c[3]);
                                               //line(  MDTESTDAT[2][nopick[4]][1],[0,0],{arrows: "-&gt;" });
-						movablePoint.visibleShape.toFront();
+						                      movablePoint.visibleShape.toFront();
 					</div>
 				
 				
