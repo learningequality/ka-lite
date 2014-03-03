@@ -17,7 +17,7 @@ class DownloadLatestTranslationTests(unittest.TestCase):
     @patch.object(settings, 'CROWDIN_PROJECT_ID', None, create=True)
     @patch.object(settings, 'CROWDIN_PROJECT_KEY', None, create=True)
     @patch.object(requests, 'get')
-    def test_return_none_if_no_crowdin_credentials(self, get_method):
+    def test_return_none_if_404(self, get_method):
         get_method.return_value = Mock(Response, status_code=404)
         get_method.return_value.raise_for_status = Mock(side_effect=requests.exceptions.ConnectionError)
 
