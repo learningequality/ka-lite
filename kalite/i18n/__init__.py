@@ -15,6 +15,13 @@ from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
+################################################
+###                                          ###
+###   NOTE TO US:                            ###
+###   main migrations import this file, so   ###
+###   we CANNOT import main.models in here.  ###
+###                                          ###
+################################################
 import settings
 from settings import LANG_LOOKUP_FILEPATH
 from settings import LOG as logging
