@@ -495,7 +495,7 @@ def build_translations(project_id=None, project_key=None):
     if not project_id:
         project_id = settings.CROWDIN_PROJECT_ID
     if not project_key:
-       project_key = settings.CROWDIN_PROJECT_KEY
+        project_key = settings.CROWDIN_PROJECT_KEY
 
     logging.info("Requesting that CrowdIn build a fresh zip of our translations")
     request_url = "http://api.crowdin.net/api/project/%s/export?key=%s" % (project_id, project_key)
