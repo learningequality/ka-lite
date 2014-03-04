@@ -70,3 +70,20 @@ class DownloadLatestTranslationTests(unittest.TestCase):
 
         assert build_new_po_method.call_count == 1
         rmtree_method.assert_called_once_with(self.extract_path)
+
+
+class BuildTranslationTests(unittest.TestCase):
+    def setUp(self):
+        self.download_translation_args = {'project_id': 'doesntmatter',
+                                          'project_key': 'doesntmatter'}
+
+
+    @patch.object(settings.LOG, 'error')
+    @patch.object(requests, 'get')
+    def test_log_error_if_failed(self, get_method, log_method):
+        get_method.return_value = Mock(Response)
+        get_method.return_value.raise_for_status.side_effect = requests.exceptions.ConnectionError
+
+        ulp.build_translations(**self.download_translation_args)
+
+        assert log_method.call_count == 1
