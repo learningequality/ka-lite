@@ -58,7 +58,8 @@ class Command(BaseCommand):
         ),
     )
 
-    def setup_server(self):
+    def setup_server_if_needed(self):
+        """Run the setup command, if necessary."""
 
         # Now, validate the server.
         try:
@@ -86,7 +87,7 @@ class Command(BaseCommand):
             #    raise CommandError("Failed to setup/recover.")
 
     def reinitialize_server(self):
-
+        """Reset the server state."""
         if not settings.CENTRAL_SERVER:
             logging.info("Invalidating the web cache.")
             from main.caching import invalidate_web_cache
@@ -129,7 +130,10 @@ class Command(BaseCommand):
         #   code if autoreloader won't be run (daemonize), or if
         #   RUN_MAIN is set (autoreloader has started)
         if options["daemonize"] or os.environ.get("RUN_MAIN"):
-            self.setup_server()
+            self.setup_server_if_needed()
+
+            # we do this on every server request,
+            # as we don't know what happens when we're not looking.
             self.reinitialize_server()
 
         # Now call the proper command

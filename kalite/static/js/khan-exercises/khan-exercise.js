@@ -1875,9 +1875,9 @@ var Khan = (function() {
 
         $(Khan).bind("gotoNextProblem", function() {
             if (localMode) {
-                // Automatically advance to the next problem
-                nextProblem(1);
-                renderNextProblem();
+                // KA-LITE-MOD: this isn't needed for us, as we call readyForNextProblem directly
+                //nextProblem(1);
+                //renderNextProblem();
             } else {
                 // Just listen for the readyForNextProblem event, which will
                 // include an updated userExercise (and thus an updated problem
