@@ -219,13 +219,13 @@ function updateDisplay(process_name, progress_log) {
         select_update_elements(process_name, ".progressbar-current").progressbar({value: 100*progress_log.stage_percent});
         select_update_elements(process_name, ".progressbar-overall").progressbar({value: 100*progress_log.process_percent});
 
-        select_update_elements(process_name, "#stage-summary").text(sprintf(gettext("Overall progress: %(percent_complete)5.2f%% complete (%(cur_stage)d of %(num_stages)d)"), {
+        select_update_elements(process_name, "#stage-summary").text(sprintf(gettext("Overall progress: %(percent_complete)5.1f%% complete (%(cur_stage)d of %(num_stages)d)"), {
             cur_stage: progress_log.cur_stage_num,
             num_stages: progress_log.total_stages,
             percent_complete: 100*progress_log.process_percent
         }));
 
-        select_update_elements(process_name, ".stage-header").text(progress_log.notes || "Loading");
+        select_update_elements(process_name, ".stage-header").text(progress_log.notes || gettext("Loading"));
         select_update_elements(process_name, ".stage-name").text("");
 
         select_update_elements(process_name, ".progress-section").show();
