@@ -17,6 +17,10 @@ import i18n.management.commands.update_language_packs as ulp
 
 class DownloadLatestTranslationTests(unittest.TestCase):
     def setUp(self):
+        self.extract_path = os.path.join(os.path.dirname(__file__), 'tmp')
+        if os.path.exists(self.extract_path):
+            shutil.rmtree(self.extract_path) # clear the test extract path first
+
         self.download_translation_args = {'project_id': 'doesntmatter',
                                           'project_key': 'doesntmatter'}
 
@@ -46,27 +50,25 @@ class DownloadLatestTranslationTests(unittest.TestCase):
         self.assertRaisesRegexp(CommandError, "couldn't connect to CrowdIn API", lambda: ulp.download_latest_translations(**self.download_translation_args))
 
     # mock requests.get to return the zip, check that it's extracted to where mkdtemp tells it to (which we also mock)
+    @patch.object(shutil, 'rmtree')
+    @patch.object(ulp, 'build_new_po')
     @patch.object(tempfile, 'mkdtemp')
     @patch.object(requests, 'get')
-    def test_success_zip_extracted(self, get_method, mkdtemp_method):
+    def test_success_zip_extracted_built_and_deleted(self, get_method, mkdtemp_method, build_new_po_method, rmtree_method):
         test_zip_path = os.path.join(os.path.dirname(__file__), 'test.zip')
         test_zip_contents = ['working.txt']
-        extract_path = os.path.join(os.path.dirname(__file__), 'tmp')
-
-        if os.path.exists(extract_path):
-            shutil.rmtree(extract_path) # clear the test extract path first
 
         with open(test_zip_path) as f:
             fcontents = f.read()
-            mkdtemp_method.return_value = extract_path
+            mkdtemp_method.return_value = self.extract_path
             get_method.return_value = Mock(Response, status_code=200, content=fcontents)
 
-        # we dont want to build the po files in the zip, so stub it
-        with patch.object(ulp, 'build_new_po'):
-            # we dont want it to delete the extracted path too, so dont delete it
-            with patch.object(shutil, 'rmtree'):
-                ulp.download_latest_translations(**self.download_translation_args)
+        ulp.download_latest_translations(**self.download_translation_args)
 
         for test_content in test_zip_contents:
-            test_path = os.path.join(extract_path, test_content)
+            test_path = os.path.join(self.extract_path, test_content)
             self.assertTrue(os.path.exists(test_path))
+
+
+        assert build_new_po_method.call_count == 1
+        rmtree_method.assert_called_once_with(self.extract_path)
