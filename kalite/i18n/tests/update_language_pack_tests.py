@@ -33,8 +33,6 @@ class DownloadLatestTranslationTests(unittest.TestCase):
 
         self.assertIsNone(ulp.download_latest_translations())
 
-    @patch.object(settings, 'CROWDIN_PROJECT_ID', None, create=True)
-    @patch.object(settings, 'CROWDIN_PROJECT_KEY', None, create=True)
     @patch.object(requests, 'get')
     def test_error_if_401_unauthorized(self, get_method):
         get_method.return_value = Mock(Response, status_code=401)
