@@ -9,6 +9,7 @@ from django.utils.translation import ugettext as _
 import i18n
 import settings
 from .classes import UpdatesDynamicCommand
+from chronograph.management.croncommand import CronCommand
 from i18n.management.commands.scrape_videos import scrape_video, DownloadError
 from settings import LOG as logging
 from main import caching
@@ -20,10 +21,10 @@ from utils.general import ensure_dir
 from utils.internet import URLNotFound
 
 
-class Command(UpdatesDynamicCommand):
+class Command(UpdatesDynamicCommand, CronCommand):
     help = _("Download all videos marked to be downloaded")
 
-    option_list = UpdatesDynamicCommand.option_list + (
+    unique_option_list = (
         make_option('-c', '--cache',
             action='store_true',
             dest='auto_cache',
@@ -31,6 +32,8 @@ class Command(UpdatesDynamicCommand):
             help=_('Create cached files'),
             metavar="AUTO_CACHE"),
     )
+
+    option_list = UpdatesDynamicCommand.option_list + CronCommand.unique_option_list + unique_option_list
 
 
     def download_progress_callback(self, videofile, percent):

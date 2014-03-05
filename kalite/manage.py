@@ -37,7 +37,7 @@ elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
 
 if settings.DEBUG:
     # In debug mode, add useful debugging flags
-    for flag in ["traceback", "auto-pdb"]:
+    for flag in ["traceback"]:
         dashed_flag = "--%s" % flag
         if dashed_flag not in sys.argv:
             sys.argv.append(dashed_flag)
