@@ -4,7 +4,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
 
-import settings
 from settings import LOG as logging
 from utils.django_utils import ExtendedModel
 
@@ -190,7 +189,6 @@ class VideoFile(ExtendedModel):
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
     cancel_download = models.BooleanField(default=False)
-    language=models.CharField(max_length=8, default=settings.LANGUAGE_CODE)
 
     class Meta:
         ordering = ["priority", "youtube_id"]

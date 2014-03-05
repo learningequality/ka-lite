@@ -55,6 +55,9 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 });
                 self.pointsSaved = data[0].points;
             })
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_student_logs");
+            });
     },
 
     save: function() {
@@ -91,6 +94,8 @@ window.VideoPlayerModel = Backbone.Model.extend({
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
                 self.saving = false;
+
+                communicate_api_failure(resp, "id_student_logs");
             });
 
         this.set({
@@ -257,7 +262,7 @@ window.VideoView = Backbone.View.extend({
 
         this._pointView = new PointView({model: this.model});
 
-        var player_id = this.$(".video-js").attr("id");
+        var player_id = this.$("video").attr("id");
 
         if (player_id) { // if it's using mplayer, there won't be a player here
             this.player = this.model.player = _V_(player_id);
@@ -267,7 +272,7 @@ window.VideoView = Backbone.View.extend({
     },
 
     _initializeEventListeners: function() {
-        
+
         var self = this;
 
         this.player
@@ -450,7 +455,9 @@ function initialize_video(video_id, youtube_id) {
     $("#launch_mplayer").click(_.throttle(function() {
         // launch mplayer in the background to play the video
         doRequest("/api/launch_mplayer?youtube_id=" + youtube_id)
-
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_mplayer");
+            });
         // after mplayer closes and focus returns to the website, refresh the points from the server
         $(window).focus(function() {
             $(window).unbind("focus");

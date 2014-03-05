@@ -5,10 +5,10 @@ from django.utils import unittest
 
 import settings
 import version
-from facility.models import Facility, FacilityGroup, FacilityUser
 from i18n.models import *
+from securesync.models import Device, Facility, FacilityGroup, FacilityUser
 from settings import LOG as logging
-from testing import KALiteTestCase, UnicodeModelsTest
+from shared.testing import KALiteTestCase, UnicodeModelsTest
 
 class i18nUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
 

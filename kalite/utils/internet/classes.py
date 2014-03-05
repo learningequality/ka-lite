@@ -31,31 +31,6 @@ class JsonResponse(HttpResponse):
             content = simplejson.dumps(content, ensure_ascii=False, default=_dthandler)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
 
-class JsonResponseMessage(JsonResponse):
-    def __init__(self, message, level="success", code=None, data={}, *args, **kwargs):
-
-        # Set the content dictionary
-        content = {level: message}
-        if code:
-            data["code"] = code
-        content.update(data)
-
-
-        # Set status code.  TODO(bcipolli): this should always be 200, but
-        #  so much script code counts on 500, hard to change
-        if not "status" in kwargs:
-            kwargs["status"] = 200 if level == "success" else 500
-
-        super(JsonResponseMessage, self).__init__(content, *args, **kwargs)
-
-class JsonResponseMessageError(JsonResponseMessage):
-    def __init__(self, *args, **kwargs):
-        super(JsonResponseMessageError, self).__init__(level="error", *args, **kwargs)
-
-class JsonResponseMessageWarning(JsonResponseMessage):
-    def __init__(self, *args, **kwargs):
-        super(JsonResponseMessageWarning, self).__init__(level="warning", *args, **kwargs)
-
 class JsonpResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSONP data"""
     def __init__(self, content, callback, *args, **kwargs):

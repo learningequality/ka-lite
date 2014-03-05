@@ -1,0 +1,493 @@
+[
+  {
+    "v_position": 37, 
+    "path": "/math/arithmetic/exponents-radicals/world-of-exponents/e/exponents_1/", 
+    "id": "exponents_1", 
+    "display_name": "Positive and zero exponents", 
+    "title": "Positive and zero exponents", 
+    "parent_id": "world-of-exponents", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "world-of-exponents"
+    ], 
+    "related_video_slugs": [
+      "introduction-to-exponents", 
+      "raising-a-number-to-the-0th-and-1st-power", 
+      "powers-of-1-and---1", 
+      "powers-of-fractions", 
+      "powers-of-zero", 
+      "understanding-exponents-2", 
+      "understanding-exponents"
+    ], 
+    "description": "Integers raised to positive integers. Non-zero integers raised to the zero power. 0, -1, and 1 raised to very large positive integers.", 
+    "basepoints": 13.0, 
+    "h_position": -21, 
+    "slug": "exponents_1", 
+    "kind": "Exercise", 
+    "name": "exponents_1", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "patterns-in-zeros"
+    ], 
+    "exercise_id": "exponents_1"
+  }, 
+  {
+    "v_position": 39, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/square_roots/", 
+    "id": "square_roots", 
+    "display_name": "Square roots of perfect squares", 
+    "title": "Square roots of perfect squares", 
+    "parent_id": "radical-radicals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "radical-radicals"
+    ], 
+    "related_video_slugs": [
+      "understanding-square-roots", 
+      "square-roots-and-real-numbers"
+    ], 
+    "description": "Find the square root of a perfect square positive integer.\n", 
+    "basepoints": 10.0, 
+    "h_position": -20, 
+    "slug": "square_roots", 
+    "kind": "Exercise", 
+    "name": "square_roots", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "prime_factorization"
+    ], 
+    "exercise_id": "square_roots"
+  }, 
+  {
+    "v_position": 41, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/square_roots_2/", 
+    "id": "square_roots_2", 
+    "display_name": "Estimating square roots", 
+    "title": "Estimating square roots", 
+    "parent_id": "radical-radicals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "radical-radicals"
+    ], 
+    "related_video_slugs": [
+      "approximating-square-roots"
+    ], 
+    "description": "Approximate the square roots of numbers which are not perfect squares.\n", 
+    "basepoints": 15.0, 
+    "h_position": -20, 
+    "slug": "square_roots_2", 
+    "kind": "Exercise", 
+    "name": "square_roots_2", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "square_roots"
+    ], 
+    "exercise_id": "square_roots_2"
+  }, 
+  {
+    "v_position": 45, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/simplifying_radicals/", 
+    "id": "simplifying_radicals", 
+    "display_name": "Simplifying radicals", 
+    "title": "Simplifying radicals", 
+    "parent_id": "radical-radicals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "radical-radicals"
+    ], 
+    "related_video_slugs": [
+      "simplifying-square-roots-1", 
+      "simplifying-radicals", 
+      "square-roots-and-real-numbers", 
+      "simplifying-square-roots"
+    ], 
+    "description": "Express radicals in simplest form.\n", 
+    "basepoints": 17.0, 
+    "h_position": -27, 
+    "slug": "simplifying_radicals", 
+    "kind": "Exercise", 
+    "name": "simplifying_radicals", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "exponent_rules", 
+      "square_roots"
+    ], 
+    "exercise_id": "simplifying_radicals"
+  }, 
+  {
+    "v_position": 47, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/multiplying_radicals/", 
+    "id": "multiplying_radicals", 
+    "display_name": "Simplifying radicals 2", 
+    "title": "Simplifying radicals 2", 
+    "parent_id": "radical-radicals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "radical-radicals"
+    ], 
+    "related_video_slugs": [
+      "simplifying-square-roots-1", 
+      "simplifying-radicals"
+    ], 
+    "description": "Multiply expressions containing radicals.\n", 
+    "basepoints": 18.0, 
+    "h_position": -26, 
+    "slug": "multiplying_radicals", 
+    "kind": "Exercise", 
+    "name": "multiplying_radicals", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "adding_and_subtracting_radicals"
+    ], 
+    "exercise_id": "multiplying_radicals"
+  }, 
+  {
+    "v_position": 46, 
+    "path": "/math/arithmetic/exponents-radicals/radical-radicals/e/adding_and_subtracting_radicals/", 
+    "id": "adding_and_subtracting_radicals", 
+    "display_name": "Adding and subtracting radicals", 
+    "title": "Adding and subtracting radicals", 
+    "parent_id": "radical-radicals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "radical-radicals"
+    ], 
+    "related_video_slugs": [
+      "more-simplifying-radical-expressions"
+    ], 
+    "description": "Add and subtract expressions containing radicals.\n", 
+    "basepoints": 21.0, 
+    "h_position": -26, 
+    "slug": "adding_and_subtracting_radicals", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_radicals", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "simplifying_radicals"
+    ], 
+    "exercise_id": "adding_and_subtracting_radicals"
+  }, 
+  {
+    "v_position": 39, 
+    "path": "/math/arithmetic/exponents-radicals/cube-root-tutorial/e/cube_roots/", 
+    "id": "cube_roots", 
+    "display_name": "Cube roots", 
+    "title": "Cube roots", 
+    "parent_id": "cube-root-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "cube-root-tutorial"
+    ], 
+    "related_video_slugs": [
+      "finding-cube-roots", 
+      "simplifying-cube-roots-1", 
+      "simplifying-radical-expressions1"
+    ], 
+    "description": "Find the cube root of a perfect cube positive integer.\n", 
+    "basepoints": 14.0, 
+    "h_position": -19, 
+    "slug": "cube_roots", 
+    "kind": "Exercise", 
+    "name": "cube_roots", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "prime_factorization"
+    ], 
+    "exercise_id": "cube_roots"
+  }, 
+  {
+    "v_position": 41, 
+    "path": "/math/arithmetic/exponents-radicals/cube-root-tutorial/e/cube_roots_2/", 
+    "id": "cube_roots_2", 
+    "display_name": "Cube roots 2", 
+    "title": "Cube roots 2", 
+    "parent_id": "cube-root-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "cube-root-tutorial"
+    ], 
+    "related_video_slugs": [
+      "simplifying-cube-roots-1", 
+      "finding-cube-roots"
+    ], 
+    "description": "", 
+    "basepoints": 23.0, 
+    "h_position": -19, 
+    "slug": "cube_roots_2", 
+    "kind": "Exercise", 
+    "name": "cube_roots_2", 
+    "seconds_per_fast_problem": 26.0, 
+    "prerequisites": [
+      "cube_roots"
+    ], 
+    "exercise_id": "cube_roots_2"
+  }, 
+  {
+    "v_position": 40, 
+    "path": "/math/arithmetic/exponents-radicals/exponent-properties/e/exponent_rules/", 
+    "id": "exponent_rules", 
+    "display_name": "Exponent rules", 
+    "title": "Exponent rules", 
+    "parent_id": "exponent-properties", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "exponent-properties"
+    ], 
+    "related_video_slugs": [
+      "exponent-properties-involving-quotients", 
+      "exponent-rules-part-1", 
+      "exponent-rules-part-2"
+    ], 
+    "description": "Solve exponent problems by adding, subtracting, or multiplying exponents.", 
+    "basepoints": 14.0, 
+    "h_position": -23, 
+    "slug": "exponent_rules", 
+    "kind": "Exercise", 
+    "name": "exponent_rules", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "exponents_2", 
+      "exponents_1"
+    ], 
+    "exercise_id": "exponent_rules"
+  }, 
+  {
+    "v_position": 38, 
+    "path": "/math/arithmetic/exponents-radicals/negative-exponents-tutorial/e/exponents_2/", 
+    "id": "exponents_2", 
+    "display_name": "Negative exponents", 
+    "title": "Negative exponents", 
+    "parent_id": "negative-exponents-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "negative-exponents-tutorial"
+    ], 
+    "related_video_slugs": [
+      "negative-exponents", 
+      "negative-exponent-intuition", 
+      "zero--negative--and-fractional-exponents"
+    ], 
+    "description": "Fractional and integer bases raised to negative integer exponents.\n", 
+    "basepoints": 15.0, 
+    "h_position": -23, 
+    "slug": "exponents_2", 
+    "kind": "Exercise", 
+    "name": "exponents_2", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "exponents_1"
+    ], 
+    "exercise_id": "exponents_2"
+  }, 
+  {
+    "v_position": 44, 
+    "path": "/math/arithmetic/exponents-radicals/negative-exponents-tutorial/e/exponents_3/", 
+    "id": "exponents_3", 
+    "display_name": "Fractional exponents", 
+    "title": "Fractional exponents", 
+    "parent_id": "negative-exponents-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "negative-exponents-tutorial"
+    ], 
+    "related_video_slugs": [
+      "basic-fractional-exponents", 
+      "negative-fractional-exponent-examples", 
+      "negative-fractional-exponent-examples-2", 
+      "zero--negative--and-fractional-exponents"
+    ], 
+    "description": "Fractional and integer bases raised to positive and negative fractional exponents.\n", 
+    "basepoints": 15.0, 
+    "h_position": -25, 
+    "slug": "exponents_3", 
+    "kind": "Exercise", 
+    "name": "exponents_3", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "exponents_2", 
+      "square_roots"
+    ], 
+    "exercise_id": "exponents_3"
+  }, 
+  {
+    "v_position": 45, 
+    "path": "/math/arithmetic/exponents-radicals/negative-exponents-tutorial/e/exponents_4/", 
+    "id": "exponents_4", 
+    "display_name": "Fractional exponents 2", 
+    "title": "Fractional exponents 2", 
+    "parent_id": "negative-exponents-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "negative-exponents-tutorial"
+    ], 
+    "related_video_slugs": [
+      "fractional-exponents-with-numerators-other-than-1", 
+      "negative-fractional-exponent-examples", 
+      "negative-fractional-exponent-examples-2", 
+      "basic-fractional-exponents", 
+      "zero--negative--and-fractional-exponents"
+    ], 
+    "description": "Fractional bases raised to primarily negative fractional exponents with non-1 numerators.\n", 
+    "basepoints": 21.0, 
+    "h_position": -25, 
+    "slug": "exponents_4", 
+    "kind": "Exercise", 
+    "name": "exponents_4", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "exponents_3"
+    ], 
+    "exercise_id": "exponents_4"
+  }, 
+  {
+    "v_position": 43, 
+    "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/scientific_notation_intuition/", 
+    "id": "scientific_notation_intuition", 
+    "display_name": "Scientific notation intuition", 
+    "title": "Scientific notation intuition", 
+    "parent_id": "scientific-notation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "scientific-notation"
+    ], 
+    "related_video_slugs": [
+      "scientific-notation--old", 
+      "scientific-notation", 
+      "scientific-notation-examples", 
+      "scientific-notation-i", 
+      "scientific-notation-example-2"
+    ], 
+    "description": "Move a decimal point to express a number in scientific notation.\n", 
+    "basepoints": 12.0, 
+    "h_position": -21, 
+    "slug": "scientific_notation_intuition", 
+    "kind": "Exercise", 
+    "name": "scientific_notation_intuition", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "scientific_notation"
+    ], 
+    "exercise_id": "scientific_notation_intuition"
+  }, 
+  {
+    "v_position": 40, 
+    "path": "/math/arithmetic/exponents-radicals/scientific-notation/e/scientific_notation/", 
+    "id": "scientific_notation", 
+    "display_name": "Scientific notation", 
+    "title": "Scientific notation", 
+    "parent_id": "scientific-notation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "scientific-notation"
+    ], 
+    "related_video_slugs": [
+      "scientific-notation--old", 
+      "scientific-notation", 
+      "scientific-notation-examples", 
+      "scientific-notation-i", 
+      "scientific-notation-example-2"
+    ], 
+    "description": "Express a number in scientific notation.\n", 
+    "basepoints": 19.0, 
+    "h_position": -22, 
+    "slug": "scientific_notation", 
+    "kind": "Exercise", 
+    "name": "scientific_notation", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "exponents_1", 
+      "exponents_2"
+    ], 
+    "exercise_id": "scientific_notation"
+  }, 
+  {
+    "v_position": 42, 
+    "path": "/math/arithmetic/exponents-radicals/computing-scientific-notation/e/multiplying_and_dividing_scientific_notation/", 
+    "id": "multiplying_and_dividing_scientific_notation", 
+    "display_name": "Multiplying and dividing scientific notation", 
+    "title": "Multiplying and dividing scientific notation", 
+    "parent_id": "computing-scientific-notation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "exponents-radicals", 
+      "computing-scientific-notation"
+    ], 
+    "related_video_slugs": [
+      "multiplying-and-dividing-in-scientific-notation", 
+      "scientific-notation-3--new", 
+      "multiplying-in-scientific-notation", 
+      "scientific-notation-3"
+    ], 
+    "description": "Express a product or quotient in scientific notation.", 
+    "basepoints": 23.0, 
+    "h_position": -24, 
+    "slug": "multiplying_and_dividing_scientific_notation", 
+    "kind": "Exercise", 
+    "name": "multiplying_and_dividing_scientific_notation", 
+    "seconds_per_fast_problem": 24.0, 
+    "prerequisites": [
+      "exponent_rules", 
+      "scientific_notation"
+    ], 
+    "exercise_id": "multiplying_and_dividing_scientific_notation"
+  }
+]

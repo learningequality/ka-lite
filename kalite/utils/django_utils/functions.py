@@ -7,15 +7,12 @@ def get_request_ip(request):
         or request.META.get("REMOTE_ADDR") \
         or request.META.get("HTTP_X_REAL_IP")  # set by some proxies
 
-
-def is_loopback_connection(request):
-    """Test whether the IP making the request is the same as the IP serving the request.
+def set_query_param(url, attr, val):
     """
-    # get the external IP address of the local host
-    host_ip = socket.gethostbyname(socket.gethostname())
-
-    # get the remote (browser) device's IP address (checking extra headers first in case we're behind a proxy)
-    remote_ip = get_request_ip(request)
-
-    # if the requester's IP is either localhost or the same as the server's IP, then it's a loopback
-    return remote_ip in ["127.0.0.1", "localhost", host_ip]
+    Taken from http://stackoverflow.com/questions/5755150/altering-one-query-parameter-in-a-url-django
+    """
+    (scheme, netloc, path, params, query, fragment) = urlparse(url)
+    query_dict = QueryDict(query).copy()
+    query_dict[attr] = val
+    query = query_dict.urlencode()
+    return urlunparse((scheme, netloc, path, params, query, fragment))

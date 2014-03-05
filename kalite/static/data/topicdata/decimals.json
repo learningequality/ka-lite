@@ -1,0 +1,955 @@
+[
+  {
+    "v_position": 21, 
+    "path": "/math/arithmetic/decimals/decimal_place_value/e/understanding_decimals_place_value/", 
+    "id": "understanding_decimals_place_value", 
+    "display_name": "Money and decimal place value intuition", 
+    "title": "Money and decimal place value intuition", 
+    "parent_id": "decimal_place_value", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimal_place_value"
+    ], 
+    "related_video_slugs": [
+      "understanding-decimal-place-value-exercise", 
+      "decimal-place-value", 
+      "decimal-place-value-2"
+    ], 
+    "description": "", 
+    "basepoints": 22.0, 
+    "h_position": -10, 
+    "slug": "understanding_decimals_place_value", 
+    "kind": "Exercise", 
+    "name": "understanding_decimals_place_value", 
+    "seconds_per_fast_problem": 22.0, 
+    "prerequisites": [
+      "comparing_decimals_1"
+    ], 
+    "exercise_id": "understanding_decimals_place_value"
+  }, 
+  {
+    "v_position": 19, 
+    "path": "/math/arithmetic/decimals/decimals-on-number-line/e/decimals_on_the_number_line_1/", 
+    "id": "decimals_on_the_number_line_1", 
+    "display_name": "Decimals on the number line 1", 
+    "title": "Decimals on the number line 1", 
+    "parent_id": "decimals-on-number-line", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimals-on-number-line"
+    ], 
+    "related_video_slugs": [
+      "decimals-on-a-number-line"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": -11, 
+    "slug": "decimals_on_the_number_line_1", 
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "converting_fractions_to_decimals_0.5"
+    ], 
+    "exercise_id": "decimals_on_the_number_line_1"
+  }, 
+  {
+    "v_position": 20, 
+    "path": "/math/arithmetic/decimals/decimals-on-number-line/e/decimals_on_the_number_line_2/", 
+    "id": "decimals_on_the_number_line_2", 
+    "display_name": "Decimals on the number line 2", 
+    "title": "Decimals on the number line 2", 
+    "parent_id": "decimals-on-number-line", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimals-on-number-line"
+    ], 
+    "related_video_slugs": [
+      "decimals-on-a-number-line", 
+      "points-on-a-number-line"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": -11, 
+    "slug": "decimals_on_the_number_line_2", 
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "decimals_on_the_number_line_1"
+    ], 
+    "exercise_id": "decimals_on_the_number_line_2"
+  }, 
+  {
+    "v_position": 28, 
+    "path": "/math/arithmetic/decimals/decimals-on-number-line/e/decimals_on_the_number_line_3/", 
+    "id": "decimals_on_the_number_line_3", 
+    "display_name": "Decimals on the number line 3", 
+    "title": "Decimals on the number line 3", 
+    "parent_id": "decimals-on-number-line", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimals-on-number-line"
+    ], 
+    "related_video_slugs": [
+      "positive-and-negative-decimals-on-a-number-line"
+    ], 
+    "description": "", 
+    "basepoints": 13.0, 
+    "h_position": -4, 
+    "slug": "decimals_on_the_number_line_3", 
+    "kind": "Exercise", 
+    "name": "decimals_on_the_number_line_3", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "number_line_2"
+    ], 
+    "exercise_id": "decimals_on_the_number_line_3"
+  }, 
+  {
+    "v_position": 19, 
+    "path": "/math/arithmetic/decimals/comparing-decimals/e/comparing_decimals_1/", 
+    "id": "comparing_decimals_1", 
+    "display_name": "Comparing decimals 1", 
+    "title": "Comparing decimals 1", 
+    "parent_id": "comparing-decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "comparing-decimals"
+    ], 
+    "related_video_slugs": [
+      "comparing-decimals-1-example", 
+      "comparing-decimals", 
+      "comparing-decimals-2-example", 
+      "comparing-decimals-4"
+    ], 
+    "description": "", 
+    "basepoints": 10.0, 
+    "h_position": -10, 
+    "slug": "comparing_decimals_1", 
+    "kind": "Exercise", 
+    "name": "comparing_decimals_1", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "converting_fractions_to_decimals_0.5"
+    ], 
+    "exercise_id": "comparing_decimals_1"
+  }, 
+  {
+    "v_position": 22, 
+    "path": "/math/arithmetic/decimals/comparing-decimals/e/comparing_decimals_2/", 
+    "id": "comparing_decimals_2", 
+    "display_name": "Comparing decimals 2", 
+    "title": "Comparing decimals 2", 
+    "parent_id": "comparing-decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "comparing-decimals"
+    ], 
+    "related_video_slugs": [
+      "comparing-decimals", 
+      "comparing-decimals-4", 
+      "comparing-decimals-2-example"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": -10, 
+    "slug": "comparing_decimals_2", 
+    "kind": "Exercise", 
+    "name": "comparing_decimals_2", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "writing-and-interpreting-decimals", 
+      "comparing-decimal-place-value"
+    ], 
+    "exercise_id": "comparing_decimals_2"
+  }, 
+  {
+    "v_position": 23, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_0.5/", 
+    "id": "adding_decimals_0.5", 
+    "display_name": "Adding decimals 0.5", 
+    "title": "Adding decimals 0.5", 
+    "parent_id": "adding_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "adding_decimals"
+    ], 
+    "related_video_slugs": [
+      "adding-decimals-example-1", 
+      "adding-decimals-example-2", 
+      "adding-decimals"
+    ], 
+    "description": "", 
+    "basepoints": 17.0, 
+    "h_position": -9, 
+    "slug": "adding_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "adding_decimals_0.5", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "regrouping-decimals", 
+      "patterns-in-zeros"
+    ], 
+    "exercise_id": "adding_decimals_0.5"
+  }, 
+  {
+    "v_position": 24, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals/", 
+    "id": "adding_decimals", 
+    "display_name": "Adding decimals 1", 
+    "title": "Adding decimals 1", 
+    "parent_id": "adding_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "adding_decimals"
+    ], 
+    "related_video_slugs": [
+      "adding-decimals-example-1", 
+      "adding-decimals-example-2", 
+      "adding-decimals"
+    ], 
+    "description": "", 
+    "basepoints": 19.0, 
+    "h_position": -9, 
+    "slug": "adding_decimals", 
+    "kind": "Exercise", 
+    "name": "adding_decimals", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "adding_decimals_0.5"
+    ], 
+    "exercise_id": "adding_decimals"
+  }, 
+  {
+    "v_position": 26, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_decimals_2/", 
+    "id": "adding_decimals_2", 
+    "display_name": "Adding decimals 2", 
+    "title": "Adding decimals 2", 
+    "parent_id": "adding_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "adding_decimals"
+    ], 
+    "related_video_slugs": [
+      "adding-decimals-example-1", 
+      "adding-decimals-example-2", 
+      "adding-decimals"
+    ], 
+    "description": "", 
+    "basepoints": 21.0, 
+    "h_position": -9, 
+    "slug": "adding_decimals_2", 
+    "kind": "Exercise", 
+    "name": "adding_decimals_2", 
+    "seconds_per_fast_problem": 18.0, 
+    "prerequisites": [
+      "adding_decimals"
+    ], 
+    "exercise_id": "adding_decimals_2"
+  }, 
+  {
+    "v_position": 23, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals_0.5/", 
+    "id": "subtracting_decimals_0.5", 
+    "display_name": "Subtracting decimals 0.5", 
+    "title": "Subtracting decimals 0.5", 
+    "parent_id": "adding_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "adding_decimals"
+    ], 
+    "related_video_slugs": [
+      "subtracting-decimals", 
+      "subtracting-decimals--old"
+    ], 
+    "description": "", 
+    "basepoints": 20.0, 
+    "h_position": -8, 
+    "slug": "subtracting_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "subtracting_decimals_0.5", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "regrouping-decimals", 
+      "patterns-in-zeros"
+    ], 
+    "exercise_id": "subtracting_decimals_0.5"
+  }, 
+  {
+    "v_position": 24, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/subtracting_decimals/", 
+    "id": "subtracting_decimals", 
+    "display_name": "Subtracting decimals", 
+    "title": "Subtracting decimals", 
+    "parent_id": "adding_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "adding_decimals"
+    ], 
+    "related_video_slugs": [
+      "subtracting-decimals", 
+      "subtracting-decimals--old"
+    ], 
+    "description": "", 
+    "basepoints": 19.0, 
+    "h_position": -8, 
+    "slug": "subtracting_decimals", 
+    "kind": "Exercise", 
+    "name": "subtracting_decimals", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "subtracting_decimals_0.5"
+    ], 
+    "exercise_id": "subtracting_decimals"
+  }, 
+  {
+    "v_position": 27, 
+    "path": "/math/arithmetic/decimals/adding_decimals/e/adding_and_subtracting_decimals_word_problems/", 
+    "id": "adding_and_subtracting_decimals_word_problems", 
+    "display_name": "Adding and subtracting decimals word problems", 
+    "title": "Adding and subtracting decimals word problems", 
+    "parent_id": "adding_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "adding_decimals"
+    ], 
+    "related_video_slugs": [
+      "subtracting-decimals-word-problem", 
+      "adding-decimals-word-problem"
+    ], 
+    "description": "", 
+    "basepoints": 24.0, 
+    "h_position": -8, 
+    "slug": "adding_and_subtracting_decimals_word_problems", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_decimals_word_problems", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "adding_decimals_2", 
+      "subtracting_decimals"
+    ], 
+    "exercise_id": "adding_and_subtracting_decimals_word_problems"
+  }, 
+  {
+    "v_position": 26, 
+    "path": "/math/arithmetic/decimals/multiplying_decimals/e/multiplying_decimals/", 
+    "id": "multiplying_decimals", 
+    "display_name": "Multiplying decimals", 
+    "title": "Multiplying decimals", 
+    "parent_id": "multiplying_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "multiplying_decimals"
+    ], 
+    "related_video_slugs": [
+      "multiplying-decimals", 
+      "mulitplyling-decimals-3", 
+      "mulitplication-8--multiplying-decimals--old-video"
+    ], 
+    "description": "", 
+    "basepoints": 23.0, 
+    "h_position": -6, 
+    "slug": "multiplying_decimals", 
+    "kind": "Exercise", 
+    "name": "multiplying_decimals", 
+    "seconds_per_fast_problem": 24.0, 
+    "prerequisites": [
+      "multiplication_4"
+    ], 
+    "exercise_id": "multiplying_decimals"
+  }, 
+  {
+    "v_position": 25, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_0.5/", 
+    "id": "dividing_decimals_0.5", 
+    "display_name": "Dividing completely", 
+    "title": "Dividing completely", 
+    "parent_id": "dividing_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "dividing_decimals"
+    ], 
+    "related_video_slugs": [
+      "dividing-completely-to-get-decimal-answer", 
+      "dividing-completely-to-get-decimal-answer-example-2"
+    ], 
+    "description": "", 
+    "basepoints": 17.0, 
+    "h_position": -7, 
+    "slug": "dividing_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_0.5", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "adding_decimals"
+    ], 
+    "exercise_id": "dividing_decimals_0.5"
+  }, 
+  {
+    "v_position": 26, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_1/", 
+    "id": "dividing_decimals_1", 
+    "display_name": "Dividing decimals 1", 
+    "title": "Dividing decimals 1", 
+    "parent_id": "dividing_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "dividing_decimals"
+    ], 
+    "related_video_slugs": [
+      "dividing-a-decimal-by-a-whole-number", 
+      "dividing-completely-to-get-decimal-answer", 
+      "dividing-completely-to-get-decimal-answer-example-2"
+    ], 
+    "description": "", 
+    "basepoints": 15.0, 
+    "h_position": -7, 
+    "slug": "dividing_decimals_1", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_1", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "dividing_decimals_0.5"
+    ], 
+    "exercise_id": "dividing_decimals_1"
+  }, 
+  {
+    "v_position": 27, 
+    "path": "/math/arithmetic/decimals/dividing_decimals/e/dividing_decimals_2/", 
+    "id": "dividing_decimals_2", 
+    "display_name": "Dividing decimals 2", 
+    "title": "Dividing decimals 2", 
+    "parent_id": "dividing_decimals", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "dividing_decimals"
+    ], 
+    "related_video_slugs": [
+      "dividing-a-whole-number-by-a-decimal", 
+      "dividing-decimals", 
+      "dividing-decimal"
+    ], 
+    "description": "", 
+    "basepoints": 17.0, 
+    "h_position": -7, 
+    "slug": "dividing_decimals_2", 
+    "kind": "Exercise", 
+    "name": "dividing_decimals_2", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "dividing_decimals_1", 
+      "division_3"
+    ], 
+    "exercise_id": "dividing_decimals_2"
+  }, 
+  {
+    "v_position": 29, 
+    "path": "/math/arithmetic/decimals/decimal_to_fraction/e/converting_fractions_to_decimals/", 
+    "id": "converting_fractions_to_decimals", 
+    "display_name": "Converting fractions to decimals", 
+    "title": "Converting fractions to decimals", 
+    "parent_id": "decimal_to_fraction", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimal_to_fraction"
+    ], 
+    "related_video_slugs": [
+      "converting-fractions-to-decimals-example", 
+      "converting-fractions-to-decimals--ex1", 
+      "converting-fractions-to-decimals--ex2", 
+      "converting-fractions-to-decimals"
+    ], 
+    "description": "Convert a fraction to decimal rounded to the nearest thousandth.\n", 
+    "basepoints": 20.0, 
+    "h_position": -1, 
+    "slug": "converting_fractions_to_decimals", 
+    "kind": "Exercise", 
+    "name": "converting_fractions_to_decimals", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "understanding-fractions-as-division", 
+      "dividing_decimals_0.5"
+    ], 
+    "exercise_id": "converting_fractions_to_decimals"
+  }, 
+  {
+    "v_position": 19, 
+    "path": "/math/arithmetic/decimals/decimal_to_fraction/e/converting_decimals_to_fractions_1/", 
+    "id": "converting_decimals_to_fractions_1", 
+    "display_name": "Converting decimals to fractions 1", 
+    "title": "Converting decimals to fractions 1", 
+    "parent_id": "decimal_to_fraction", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimal_to_fraction"
+    ], 
+    "related_video_slugs": [
+      "converting-decimals-to-fractions-1--ex-1", 
+      "converting-decimals-to-fractions-1--ex-2", 
+      "converting-decimals-to-fractions-1--ex-3"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": -7, 
+    "slug": "converting_decimals_to_fractions_1", 
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_fractions_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "converting_mixed_numbers_and_improper_fractions", 
+      "converting_fractions_to_decimals_0.5"
+    ], 
+    "exercise_id": "converting_decimals_to_fractions_1"
+  }, 
+  {
+    "v_position": 32, 
+    "path": "/math/arithmetic/decimals/decimal_to_fraction/e/converting_decimals_to_fractions_2/", 
+    "id": "converting_decimals_to_fractions_2", 
+    "display_name": "Converting decimals to fractions 2", 
+    "title": "Converting decimals to fractions 2", 
+    "parent_id": "decimal_to_fraction", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimal_to_fraction"
+    ], 
+    "related_video_slugs": [
+      "converting-decimals-to-fractions-2--ex-1", 
+      "converting-decimals-to-fractions-2--ex-2"
+    ], 
+    "description": "Convert a decimal to an equivalent fraction. Convert a decimal to an equivalent mixed number. Reduce to lowest terms.\n", 
+    "basepoints": 18.0, 
+    "h_position": -7, 
+    "slug": "converting_decimals_to_fractions_2", 
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_fractions_2", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "rational-number-word-problems"
+    ], 
+    "exercise_id": "converting_decimals_to_fractions_2"
+  }, 
+  {
+    "v_position": 26, 
+    "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_decimals_to_percents/", 
+    "id": "converting_decimals_to_percents", 
+    "display_name": "Converting decimals to percents", 
+    "title": "Converting decimals to percents", 
+    "parent_id": "percent_tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "percent_tutorial"
+    ], 
+    "related_video_slugs": [
+      "converting-decimals-to-percents--ex-1", 
+      "converting-decimals-to-percents--ex-2", 
+      "representing-a-number-as-a-decimal--percent--and-fraction"
+    ], 
+    "description": "", 
+    "basepoints": 14.0, 
+    "h_position": -4, 
+    "slug": "converting_decimals_to_percents", 
+    "kind": "Exercise", 
+    "name": "converting_decimals_to_percents", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "understanding_moving_the_decimal"
+    ], 
+    "exercise_id": "converting_decimals_to_percents"
+  }, 
+  {
+    "v_position": 26, 
+    "path": "/math/arithmetic/decimals/percent_tutorial/e/converting_percents_to_decimals/", 
+    "id": "converting_percents_to_decimals", 
+    "display_name": "Converting percents to decimals", 
+    "title": "Converting percents to decimals", 
+    "parent_id": "percent_tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "percent_tutorial"
+    ], 
+    "related_video_slugs": [
+      "converting-percents-to-decimals--ex-1", 
+      "converting-percents-to-decimals--ex-2", 
+      "representing-a-number-as-a-decimal--percent--and-fraction"
+    ], 
+    "description": "", 
+    "basepoints": 13.0, 
+    "h_position": -5, 
+    "slug": "converting_percents_to_decimals", 
+    "kind": "Exercise", 
+    "name": "converting_percents_to_decimals", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "understanding_moving_the_decimal"
+    ], 
+    "exercise_id": "converting_percents_to_decimals"
+  }, 
+  {
+    "v_position": 28, 
+    "path": "/math/arithmetic/decimals/percent_tutorial/e/finding_percents/", 
+    "id": "finding_percents", 
+    "display_name": "Finding percents", 
+    "title": "Finding percents", 
+    "parent_id": "percent_tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "percent_tutorial"
+    ], 
+    "related_video_slugs": [
+      "finding-percentages-example", 
+      "taking-a-percentage-example", 
+      "percent-word-problems"
+    ], 
+    "description": "Find a percent of a quantity as a rate per 100; solve problems involving finding the whole, given a part and the percent.", 
+    "basepoints": 18.0, 
+    "h_position": -3, 
+    "slug": "finding_percents", 
+    "kind": "Exercise", 
+    "name": "finding_percents", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "ratio_word_problems", 
+      "rate_problems_0.5"
+    ], 
+    "exercise_id": "finding_percents"
+  }, 
+  {
+    "v_position": 30, 
+    "path": "/math/arithmetic/decimals/percent_word_probs/e/discount_tax_and_tip_word_problems/", 
+    "id": "discount_tax_and_tip_word_problems", 
+    "display_name": "Discount, tax, and tip word problems", 
+    "title": "Discount, tax, and tip word problems", 
+    "parent_id": "percent_word_probs", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "percent_word_probs"
+    ], 
+    "related_video_slugs": [
+      "solving-percent-problems", 
+      "solving-percent-problems-2", 
+      "solving-percent-problems-3"
+    ], 
+    "description": "", 
+    "basepoints": 21.0, 
+    "h_position": -2, 
+    "slug": "discount_tax_and_tip_word_problems", 
+    "kind": "Exercise", 
+    "name": "discount_tax_and_tip_word_problems", 
+    "seconds_per_fast_problem": 19.0, 
+    "prerequisites": [
+      "percentage_word_problems_1"
+    ], 
+    "exercise_id": "discount_tax_and_tip_word_problems"
+  }, 
+  {
+    "v_position": 30, 
+    "path": "/math/arithmetic/decimals/percent_word_probs/e/markup_and_commission_word_problems/", 
+    "id": "markup_and_commission_word_problems", 
+    "display_name": "Markup and commission word problems", 
+    "title": "Markup and commission word problems", 
+    "parent_id": "percent_word_probs", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "percent_word_probs"
+    ], 
+    "related_video_slugs": [
+      "solving-percent-problems", 
+      "solving-percent-problems-2", 
+      "solving-percent-problems-3"
+    ], 
+    "description": "", 
+    "basepoints": 22.0, 
+    "h_position": -3, 
+    "slug": "markup_and_commission_word_problems", 
+    "kind": "Exercise", 
+    "name": "markup_and_commission_word_problems", 
+    "seconds_per_fast_problem": 21.0, 
+    "prerequisites": [
+      "percentage_word_problems_1"
+    ], 
+    "exercise_id": "markup_and_commission_word_problems"
+  }, 
+  {
+    "v_position": 21, 
+    "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/rounding_numbers/", 
+    "id": "rounding_numbers", 
+    "display_name": "Rounding numbers", 
+    "title": "Rounding numbers", 
+    "parent_id": "decimal_rounding_estimation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimal_rounding_estimation"
+    ], 
+    "related_video_slugs": [
+      "rounding-decimals"
+    ], 
+    "description": "", 
+    "basepoints": 15.0, 
+    "h_position": -12, 
+    "slug": "rounding_numbers", 
+    "kind": "Exercise", 
+    "name": "rounding_numbers", 
+    "seconds_per_fast_problem": 8.0, 
+    "prerequisites": [
+      "rounding_whole_numbers"
+    ], 
+    "exercise_id": "rounding_numbers"
+  }, 
+  {
+    "v_position": 24, 
+    "path": "/math/arithmetic/decimals/decimal_rounding_estimation/e/estimation_with_decimals/", 
+    "id": "estimation_with_decimals", 
+    "display_name": "Estimation with decimals", 
+    "title": "Estimation with decimals", 
+    "parent_id": "decimal_rounding_estimation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimal_rounding_estimation"
+    ], 
+    "related_video_slugs": [
+      "estimation-with-decimals"
+    ], 
+    "description": "", 
+    "basepoints": 21.0, 
+    "h_position": -12, 
+    "slug": "estimation_with_decimals", 
+    "kind": "Exercise", 
+    "name": "estimation_with_decimals", 
+    "seconds_per_fast_problem": 19.0, 
+    "prerequisites": [
+      "rounding_numbers", 
+      "adding_decimals_0.5"
+    ], 
+    "exercise_id": "estimation_with_decimals"
+  }, 
+  {
+    "v_position": 33, 
+    "path": "/math/arithmetic/decimals/significant_figures_tutorial/e/significant_figures_1/", 
+    "id": "significant_figures_1", 
+    "display_name": "Significant figures", 
+    "title": "Significant figures", 
+    "parent_id": "significant_figures_tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "significant_figures_tutorial"
+    ], 
+    "related_video_slugs": [
+      "significant-figures", 
+      "more-on-significant-figures"
+    ], 
+    "description": "Determine how many significant figures a given number has.\n", 
+    "basepoints": 12.0, 
+    "h_position": -10, 
+    "slug": "significant_figures_1", 
+    "kind": "Exercise", 
+    "name": "significant_figures_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "scientific_notation"
+    ], 
+    "exercise_id": "significant_figures_1"
+  }, 
+  {
+    "v_position": 21, 
+    "path": "/math/arithmetic/decimals/multiplying-dividing-by-10-decim/e/understanding_moving_the_decimal/", 
+    "id": "understanding_moving_the_decimal", 
+    "display_name": "Understanding moving the decimal", 
+    "title": "Understanding moving the decimal", 
+    "parent_id": "multiplying-dividing-by-10-decim", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "multiplying-dividing-by-10-decim"
+    ], 
+    "related_video_slugs": [
+      "multiplying-a-decimal-by-a-power-of-10", 
+      "dividing-a-decimal-by-a-power-of-10", 
+      "dividing-decimals-2-1"
+    ], 
+    "description": "", 
+    "basepoints": 13.0, 
+    "h_position": -8, 
+    "slug": "understanding_moving_the_decimal", 
+    "kind": "Exercise", 
+    "name": "understanding_moving_the_decimal", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "converting_fractions_to_decimals_0.5"
+    ], 
+    "exercise_id": "understanding_moving_the_decimal"
+  }, 
+  {
+    "v_position": 18, 
+    "path": "/math/arithmetic/decimals/multiplying-dividing-by-10-decim/e/converting_fractions_to_decimals_0.5/", 
+    "id": "converting_fractions_to_decimals_0.5", 
+    "display_name": "Fractions as division by a power of 10", 
+    "title": "Fractions as division by a power of 10", 
+    "parent_id": "multiplying-dividing-by-10-decim", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "multiplying-dividing-by-10-decim"
+    ], 
+    "related_video_slugs": [], 
+    "description": "", 
+    "basepoints": 10.0, 
+    "h_position": -9, 
+    "slug": "converting_fractions_to_decimals_0.5", 
+    "kind": "Exercise", 
+    "name": "converting_fractions_to_decimals_0.5", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "equivalent_fractions", 
+      "division_2"
+    ], 
+    "exercise_id": "converting_fractions_to_decimals_0.5"
+  }, 
+  {
+    "v_position": 31, 
+    "path": "/math/arithmetic/decimals/decimals-percentages-fractions/e/adding_and_subtracting_rational_numbers/", 
+    "id": "adding_and_subtracting_rational_numbers", 
+    "display_name": "Adding and subtracting rational numbers", 
+    "title": "Adding and subtracting rational numbers", 
+    "parent_id": "decimals-percentages-fractions", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "arithmetic", 
+      "decimals", 
+      "decimals-percentages-fractions"
+    ], 
+    "related_video_slugs": [
+      "adding-and-subtracting-a-decimal-percentage-and-fraction", 
+      "adding-fractions-decimals-and-percentages", 
+      "adding-and-subtracting-three-fractions"
+    ], 
+    "description": "", 
+    "basepoints": 10.0, 
+    "h_position": -5, 
+    "slug": "adding_and_subtracting_rational_numbers", 
+    "kind": "Exercise", 
+    "name": "adding_and_subtracting_rational_numbers", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [
+      "adding_and_subtracting_fractions"
+    ], 
+    "exercise_id": "adding_and_subtracting_rational_numbers"
+  }
+]

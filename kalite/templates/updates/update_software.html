@@ -157,7 +157,7 @@
                     //
                     // Best to assume offline, as online check returns much faster than offline check.
                     if(false && (!status || !status["online"])){
-                        show_message("error", "{% trans 'Your installation is offline, and therefore cannot access updates.' %}", " id_offline_message")
+                        show_message("error", "{% trans 'Distributed server is offline; cannot access video nor subtitle updates.' %}", " id_offline_message")
                     } else {
                         $("#software_available").removeAttr("disabled");
                         $("#download-update-kalite").removeAttr("disabled");
@@ -201,36 +201,35 @@
         <div class="">
             <div class= "row">
                 <div class="span6 vertical-shadow">
-                    <h2>{% trans "Current Installation" %}</h2>
+                    <h2>{% trans "Current KA Lite" %}</h2>
 
                     <dl class="dl-horizontal">
-                        <dt>{% trans "Current Version" %}:</dt>
+                        <dt>Current Version:</dt>
                         <dd>{{ software_version }}</dd>
-                        {# Translators: this specifies the software release date #}
-                        <dt>{% trans "Release Date" %}:</dt>
+                        <dt>Released Date:</dt>
                         <dd>{{ software_release_date }}</dd>
-                        <dt>{% trans "Database Size %}:</dt>
+                        <dt>Size:</dt>
                         <dd>{{ database_size|floatformat }} MB</dd>
-                        <dt>{% trans "Device ID" %}:</dt>
+                        <dt>Device ID:</dt>
                         <dd>{{ device_id }}</dd>
-                        <dt>{% trans "Last recorded usage" %}:</dt>
+                        <dt>Last changed at:</dt>
                         <dd>{{ database_last_updated }}</dd>
-                        <dt>{% trans "Installation Location" %}:</dt>
+                        <dt>File Directory:</dt>
                         <dd>{{ install_dir }}</dd>
                     </dl>
                 </div>
 
                 <div id="update_info" class="span6 offset6 vertical-shadow" style="display:none">
-                    <h2>{% trans "Available Update" %}</h2>
+                    <h2>{% trans "New Updates" %}</h2>
                     <dl class="dl-horizontal">
-                        <dt>{% trans "Latest Version" %}:</dt>
+                        <dt>Latest Version:</dt>
                         <dd><span id="remote_version"></span></dd>
-                        <dt>{% trans "Released Date" %}:</dt>
+                        <dt>Released Date:</dt>
                         <dd><span id="remote_release_date"></span></dd>
-                        <dt>{% trans "Description" %}:</dt>
-                        <dd>{% trans "New Features" %}:
+                        <dt>Description:</dt>
+                        <dd>New Features:
                             <ul id="new_features"></ul>
-                            {% trans "Bugs fixed" %}:
+                            Bugs fixed:
                             <ul id="bugs_fixed"></ul>
                         </dd>
                     </dl>
@@ -238,21 +237,20 @@
 
                 <div class="span4 offset2">
                     <div id="internet_update" style="display:none">
-                        {# Translators: this text specifies where admins can get an update from #}
-                        <h4>{% "From the internet" %}:</h4>
-                        <button type="button" class="btn" id="download-update-kalite" disabled>{% trans "Download and update" %}</button>
+                        <h4>From the Internet:</h4>
+                        <button type="button" class="btn" id="download-update-kalite" disabled>Download and update</button>
                         <select class="span1" id="software_available" style="display:none"></select>
                         <!---File Upload Button -->
                     </div>
                     <div id="file_update">
-                        <h4>{% trans "Use local file" %}:</h4>
+                        <h4>Use local file:</h4>
                         <div class="fileupload fileupload-new" data-provides="fileupload" id="upload-update-kalite">
-                            <span class="btn btn-file"><span class="fileupload-new">{% trans "Select file" %}</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+                            <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" /></span>
                             <span class="fileupload-preview"></span>
                             <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
                         </div>
                     </div>
-    <div class="text-right"><button type="button" class="btn btn-danger" id="cancel-update-kalite">{% trans "Cancel update" %}</button></div>
+    <div class="text-right"><button type="button" class="btn btn-danger" id="cancel-update-kalite">Cancel</button></div>
     <div style="clear: both;"></div>
                 </div>
 

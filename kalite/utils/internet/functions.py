@@ -14,7 +14,7 @@ from urllib import urlencode
 
 def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_redirects=True):
     """Test whether we are online or not.
-    returns True or False.
+    returns True or False.  
     Eats all exceptions!
     """
     assert not (search_string and expected_val is not None), "Search string and expected value cannot both be set"
@@ -30,26 +30,37 @@ def am_i_online(url, expected_val=None, search_string=None, timeout=5, allow_red
             return False
         elif not allow_redirects and response.url != url:
             return False
-
+        
         # Check the output, if expected values are specified
         if expected_val is not None:
             return expected_val == response.text
         elif search_string:
             return search_string in response.text
-
+        
         return True
-
+        
     except Exception as e:
         return False
+
+
+def is_loopback_connection(request):
+    """Test whether the IP making the request is the same as the IP serving the request.
+    """
+    # get the external IP address of the local host
+    host_ip = socket.gethostbyname(socket.gethostname())
+    # get the remote (browser) device's IP address (checking extra headers first in case we're behind a proxy)
+    remote_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get("HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")))
+    # if the requester's IP is either localhost or the same as the server's IP, then it's a loopback
+    return remote_ip in ["127.0.0.1", "localhost", host_ip]
 
 
 def generate_all_paths(path, base_path="/"):
     if not base_path.endswith("/"):   # Must have trailing slash to work.
         base_path += "/"
-
+        
     if path.endswith("/"):        # Must NOT have trailing slash to work.
         path = path[0:-1]
-
+        
     all_paths = []
     cur_path = base_path[0:-1]
     for dirname in path[len(base_path)-1:].split("/"): # start AFTER the base path
@@ -68,7 +79,7 @@ def set_query_params(url, param_dict):
     modified from http://stackoverflow.com/questions/4293460/how-to-add-custom-parameters-to-an-url-query-string-with-python
     """
     scheme, netloc, path, query_string, fragment = urlsplit(url)
-    query_params = parse_qs(query_string, keep_blank_values=True)
+    query_params = parse_qs(query_string)
 
     for param_name, param_value in param_dict.items():
         query_params[param_name] = [param_value]

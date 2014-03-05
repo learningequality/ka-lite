@@ -6,13 +6,13 @@ Replace this with more appropriate tests for your application.
 """
 
 import os
-#from selenium
+#from selenium 
 from django.test import TestCase, Client
 from django.core.management import call_command
 from django.utils import unittest
 
 import settings
-from testing import distributed_server_test, KALiteTestCase
+from shared.testing import distributed_server_test, KALiteTestCase
 
 
 @distributed_server_test

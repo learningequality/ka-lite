@@ -34,7 +34,7 @@
             $('.video-unavailable').removeAttr("href");
 
             // TODO(bcipolli): use javascript to translate here
-            $('a.video-unavailable').attr("title", "{% trans 'This video is not downloaded.' %}");
+            $('a.video-unavailable').attr('title', '{% trans "This video is not downloaded." %}');
         });
     </script>
 {% endblock headjs %}
@@ -52,9 +52,15 @@
         {% for subtopic in topics %}
         <li>
             <span>
-                <a href="{{ subtopic.path }}" class="topic-link topic-{% if subtopic.nvideos_available == 0 %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
-                    {% trans subtopic.title %}
-                </a>
+            {% comment %}Four scenarios:
+            1. Offline, local video
+            2. Offline, no local video
+            3. Online, local video
+            4. Online, no local video
+            {% endcomment %}
+            <a href="{{ subtopic.path }}" class="topic-link topic-{% if subtopic.nvideos_local == 0 %}un{% endif %}available" title="{{ subtopic.nvideos_local }}/{{subtopic.nvideos_known}} {% trans "video(s) are available locally." %}">
+                {% trans subtopic.title %}
+            </a>
             </span>
         </li>
         {% endfor %}
@@ -74,10 +80,10 @@
             3. Online, local video
             4. Online, no local video
             {% endcomment %}
-            <a href="{{ video.path }}" class="video-link client-online-only video-{% if not video.available %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link client-online-only video-{% if not video.available %}un{% endif %}available">
                 {% trans video.title %}
             </a>
-            <a href="{{ video.path }}" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
+            <a href="v/{{ video.slug }}/" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
                 {% trans video.title %}
             </a>
 
@@ -85,7 +91,7 @@
             {% for lang, avail in video.availability.iteritems %}
                 {% if avail.on_disk %}
                 <span class="dubbedvideo-indicator">
-                    <a href="{{ video.path }}?lang={{ lang }}">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}">
                         {{ lang }}
                     </a></span>
                 {% endif %}
@@ -94,7 +100,7 @@
             {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
             {% for lang in video.availability.en.subtitles.keys %}
                 <span class="subtitle-indicator">
-                    <a href="{{ video.path }}?lang={{ lang }}">
+                    <a href="v/{{ video.slug }}/?lang={{ lang }}">
                 {{ lang }}
 </a>
                 </span>
@@ -111,12 +117,12 @@
         {% for exercise in exercises %}
         <li>
             <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
-            <a class="exercise-link" href="{{ exercise.path }}">{% trans exercise.title %}</a>
+            <a class="exercise-link" href="e/{{ exercise.name }}/">{% trans exercise.display_name %}</a>
 
-            {# translated exercises #}
+            {# dubbed videos #}
             {% for lang in exercise_langs|get_item:exercise.id %}
                 <span class="dubbedvideo-indicator">
-                    <a href="{{ exercise.path }}?lang={{ lang }}">
+                    <a href="e/{{ exercise.slug }}/?lang={{ lang }}">
                         {{ lang }}
                     </a>
                 </span>

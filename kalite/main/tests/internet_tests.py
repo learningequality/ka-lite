@@ -4,16 +4,16 @@ Testing of the main-used internet utility functions
 
 from django.test import LiveServerTestCase
 
-from testing.decorators import distributed_server_test
+from shared.testing.decorators import distributed_server_test
 from utils.internet import am_i_online
 
-" Online test implementation method "
+
 @distributed_server_test
 class OnlineTests(LiveServerTestCase):
     def test_am_online(self):
         """The only thing I'm guaranteed to have online?  Myself."""
 
-        #
+        #         
         self.assertTrue(am_i_online(self.live_server_url), "Basic GET on myself")
         self.assertFalse(am_i_online("http://this.server.should.never.exist.or.else.we.are.screwed/"), "Basic failure to GET")
 
@@ -24,4 +24,4 @@ class OnlineTests(LiveServerTestCase):
         self.assertTrue(am_i_online(self.live_server_url, search_string="KA Lite"), "Test search_string should succeed")
         self.assertFalse(am_i_online(self.live_server_url, search_string="foofoofoo"), "Test search_string fails")
 
-
+        

@@ -6,6 +6,7 @@ from collections import OrderedDict, namedtuple
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -23,15 +24,12 @@ except:
     class Organization(models.Model):
         pass
 from coachreports.views import student_view_context
-from facility.decorators import facility_required
-from facility.forms import FacilityForm
-from facility.models import Facility, FacilityUser, FacilityGroup
-from facility.views import user_management_context
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from main.topic_tools import get_node_cache
-from securesync.models import DeviceZone, Device, Zone, SyncSession
+from securesync.forms import FacilityForm
+from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device, Zone, SyncSession
 from settings import LOG as logging
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from shared.topic_tools import get_node_cache
 from utils.internet import CsvResponse, render_to_csv
 
 
@@ -400,3 +398,60 @@ def local_device_context(request):
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
+
+
+def user_management_context(request, facility_id, group_id, page=1, per_page=25):
+    facility = Facility.objects.get(id=facility_id)
+    groups = FacilityGroup.objects \
+        .filter(facility=facility) \
+        .order_by("name")
+
+    # This could be moved into a function shared across files, if necessary.
+    #   For now, moving into function, as outside if function it looks more
+    #   general-purpose than it's being used / tested now.
+    def get_users_from_group(group_id, facility=None):
+        if group_id == _("Ungrouped"):
+            return FacilityUser.objects \
+                .filter(facility=facility, group__isnull=True) \
+                .order_by("first_name", "last_name")
+        elif not group_id:
+            return []
+        else:
+            return get_object_or_404(FacilityGroup, pk=group_id).facilityuser_set.order_by("first_name", "last_name", "username")
+    user_list = get_users_from_group(group_id, facility=facility)
+
+    # Get the user list from the group
+    if not user_list:
+        users = []
+    else:
+        paginator = Paginator(user_list, per_page)
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+
+    if users:
+        if users.has_previous():
+            prevGETParam = request.GET.copy()
+            prevGETParam["page"] = users.previous_page_number()
+            previous_page_url = "?" + prevGETParam.urlencode()
+        else:
+            previous_page_url = ""
+        if users.has_next():
+            nextGETParam = request.GET.copy()
+            nextGETParam["page"] = users.next_page_number()
+            next_page_url = "?" + nextGETParam.urlencode()
+        else:
+            next_page_url = ""
+    context = {
+        "facility": facility,
+        "users": users,
+        "groups": groups,
+        "group_id": group_id,
+        "facility_id": facility_id,
+    }
+    if users:
+        context["pageurls"] = {"next_page": next_page_url, "prev_page": previous_page_url}
+    return context

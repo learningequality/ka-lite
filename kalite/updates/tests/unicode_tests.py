@@ -5,8 +5,8 @@ from django.utils import unittest
 
 import settings
 import version
-from facility.models import Facility, FacilityGroup, FacilityUser
-from testing import KALiteTestCase, UnicodeModelsTest
+from securesync.models import Device, Facility, FacilityGroup, FacilityUser
+from shared.testing import KALiteTestCase, UnicodeModelsTest
 from updates.models import *
 
 class UpdatesUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):

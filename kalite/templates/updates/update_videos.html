@@ -6,7 +6,7 @@
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_videos.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/update_videos.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -19,7 +19,7 @@
         var URL_CANCEL_VIDEO_DOWNLOADS = "{% url cancel_video_download %}";
     </script>
 
-    <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/update_videos.js' %}"></script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
@@ -40,36 +40,29 @@
             </div>
         </div>
 
-        <button id="download-videos" type="button" class="enable-when-server-online">
-            <span id="download-videos-text" class="new-video-count"></span>
+        <button id="download-videos" type="button" class="enable-when-server-online" disabled>
+            {% trans "Download" %}
+            <span class="new-video-count">0</span>
+            {% trans "new selected videos" %}
         </button>
 
         <button id="delete-videos" type="button">
-            <span id="delete-videos-text" class="old-video-count"></span>
+            {% trans "Delete" %}
+            <span class="old-video-count">0</span>
+            {% trans "selected videos" %}
         </button>
     </div>
 
     <div class="download-actions vertical-shadow">
         <h2>{% trans "Installed Language Packs" %}
-            {# Translators: this text is a link; when clicked, admins will be able to manage locally installed resources. #}
           <a href="{% url update_languages %}">({% trans "Manage" %})</a>
         </h2>
         {% if not languages %}
             {% trans "No language packs installed." %}
         {% else %}
-            <b>{{ default_language }} ({% trans "default" %})</b>
             {{ languages|join:", " }} {% if other_languages_count %}and {{ other_languages_count }} more. {% endif %}
         {% endif %}
     </div>
-
-    {% if current_language != "en" %}
-    <div style="clear: both; padding-top: 15px;">
-        <h2>
-            {% blocktrans with lang_name=current_language_native_name %}Videos for language {{ lang_name }}{% endblocktrans %}
-        </h2>
-    </div>
-    {% endif %}
-
     <div style="clear: both;"></div>
 
     <div>

@@ -4,8 +4,8 @@
 {% load my_filters %}
 {% load staticfiles %}
 
-{% block title %}{{ title }}{{ block.super }}{% endblock title %}
-{% block report_title %}{{ title }}{% endblock report_title %}
+{% block title %}{% trans "Scatter plot" %} {{ block.super }}{% endblock title %}
+{% block report_title %}{% trans "Scatter plot" %}{% endblock report_title %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
@@ -29,7 +29,7 @@
             <option value="">----</option>
                 {% for stat in stats %}
                     {% if stat.type == "number" and not stat.noscatter %}
-                        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
+                        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
                     {% endif %}
                 {% endfor %}
         {% endblock %}

@@ -4,8 +4,8 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-import i18n
 from main.models import VideoLog
+from shared import i18n
 
 
 class Migration(SchemaMigration):

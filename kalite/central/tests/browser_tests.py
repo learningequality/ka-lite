@@ -14,10 +14,9 @@ from django.utils.translation import ugettext as _
 
 import settings
 from central.models import Organization
-from facility.models import Facility
 from registration.models import RegistrationProfile
-from securesync.models import Zone, Device, DeviceZone
-from testing import central_server_test, BrowserTestCase
+from securesync.models import Zone, Facility, Device, DeviceZone
+from shared.testing import central_server_test, BrowserTestCase
 
 
 @central_server_test
@@ -44,7 +43,7 @@ class KALiteCentralBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(password)  #password (again)
         self.browser_form_fill(Keys.SPACE)  # checkbox 1: EULA
         self.browser_form_fill(Keys.SPACE)  # checkbox 2: EULA2
-        self.browser_form_fill("")  #newsletter subscription
+        self.browser_form_fill(Keys.TAB)  #newsletter subscription
         self.browser_send_keys(Keys.RETURN)  # submit the form
 
         # Make sure that the page changed to the "thank you" confirmation page

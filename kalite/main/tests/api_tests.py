@@ -7,12 +7,12 @@ from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-import i18n
 import settings
 from .base import MainTestCase
-from facility.models import Facility, FacilityUser
 from main.models import VideoLog, ExerciseLog
-from testing import distributed_server_test, KALiteClient, KALiteTestCase
+from securesync.models import Facility, FacilityUser
+from shared import i18n
+from shared.testing import distributed_server_test, KALiteClient, KALiteTestCase
 
 
 @distributed_server_test

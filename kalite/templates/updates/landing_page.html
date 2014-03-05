@@ -8,43 +8,47 @@
 
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static "js/jquery-ui.custom.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/jquery-ui.custom.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
 {% endblock headjs %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
-    <style>
-        p{
-            min-height: 100px;
-            max-height: 130px;
-            margin-left: 10px;
-        }
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+<style>
 
-        h2{
-        text-align: center;
-        }
+p{
+    min-height: 100px;
+    max-height: 130px;
+    margin-left: 10px;
+}
 
-        a:link,a:visited{
-          text-decoration:none;
-        }
+h2{
+text-align: center;
+}
 
-        .thumbnail>a>img{
-          display: block;
-          max-width: 100%;
-          margin-right: auto;
-          margin-left: auto;
-        }
+a:link,a:visited{
+  text-decoration:none;
+}
 
-        a.btn:link,a.btn:visited{
-          color: #fff;
-        }
+.thumbnail>a>img{
+  display: block;
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
 
-        .download{
-          display: block;
-          text-align: center;
-        }
-    </style>
+a.btn:link,a.btn:visited{
+  color: #fff;
+}
+
+.download{
+  display: block;
+  text-align: center;
+}
+
+
+
+</style>
 {% endblock headcss %}
 
 {% block content %}
@@ -59,7 +63,7 @@
                   </a>
                     <div class="caption">
                       <h2>{% trans "System Updates" %}</h2>
-                      <p>{% trans "Update KA Lite to the latest version to access the latest features." %}</p>
+                      <p>{% trans "Update KA Lite to the latest version and see more features" %}.</p>
                       <span class="download"><a href="{% url update_software %}" class="btn btn-large btn-primary">{% trans "Update KA Lite" %}</a></span>
                     </div>
                 </div>
@@ -72,7 +76,7 @@
                   </a>
                     <div class="caption">
                       <h2>{% trans "Language Packs" %}</h2>
-                      <p>{% trans "Get KA Lite in the language of your choice! %} {% trans "Browse and install language packs to get UI translations, subtitles, and more." %}</p>
+                      <p>{% trans "Get KA Lite in the language of your choice! Browse and install different language packs to get UI translations and subtitles." %}</p>
                       <span class="download"><a href="{% url update_languages %}" class="btn btn-large btn-primary">{% trans "Get Language Packs" %}</a></span>
                     </div>
                 </div>
@@ -85,7 +89,7 @@
                   </a>
                     <div class="caption">
                       <h2>{% trans "Video Manage" %}</h2>
-                      <p>{% trans "Dowload and delete videos on this KA Lite installation." %}</p>
+                      <p>{% trans "Dowload and delete videos on this KA Lite server" %}.</p>
                       <span class="download"><a href="{% url update_videos %}" class="btn btn-large btn-primary">{% trans "Download Videos" %}</a></span>
                     </div>
                 </div>

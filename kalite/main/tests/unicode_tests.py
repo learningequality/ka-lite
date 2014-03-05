@@ -5,11 +5,10 @@ from django.utils import unittest
 
 import settings
 import version
-from facility.models import Facility, FacilityGroup, FacilityUser
 from main.models import *
 from main.tests.base import MainTestCase
-from securesync.models import Device
-from testing import UnicodeModelsTest
+from securesync.models import Device, Facility, FacilityGroup, FacilityUser
+from shared.testing import UnicodeModelsTest
 
 class MainUnicodeModelsTest(MainTestCase, UnicodeModelsTest):
 

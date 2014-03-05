@@ -62,7 +62,6 @@ a:hover {
 #top-header #logo {
     position: absolute;
     top: 0;
-    z-index: 50; /*TODO(dylan): stopgap solution;*/
 }
 
 #logo-image-small img {
@@ -214,24 +213,23 @@ div.exercises-card {
 
 .basic-form label {
     font-weight: bold;
+    width: 120px;
+    float: left;
+    text-align: right;
     padding-right: 12px;
-    display: block;
+    white-space: nowrap;
 }
 
 .basic-form p {
-    padding-top: 2px;
-}
-
-.basic-form input {
-    display: block;
+    margin-top: 0;
 }
 
 .basic-form .errorlist {
-    margin-left: 0px;
+    margin-left: 134px;
 }
 
 .basic-form .submit, .basic-form h2 {
-    margin-left: 0px;
+    margin-left: 134px;
 }
 
 .progress-circle {
@@ -403,6 +401,9 @@ li .progress-circle {
 .helptext {
     font-size: .85em;
     display: block;
+    position: relative;
+    left: 135px;
+    top: -3px;
 }
 
 .glossary-link {
@@ -484,7 +485,7 @@ a.green_button:hover,input.green_button:hover{
     line-height: 14px;
     float: right;
     margin-left: 1px;
-    min-width: 5px;
+    min-width: 50px;
 }
 
 input#search {

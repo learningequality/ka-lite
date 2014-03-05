@@ -37,13 +37,12 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
 import settings
-from facility.models import FacilityUser
 from main.models import ExerciseLog, VideoLog
-from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from shared.decorators import require_login
-from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import JsonResponse, JsonResponseMessageError
+from securesync.models import FacilityUser
+from shared.decorators import require_login, distributed_server_only, central_server_only
+from shared.topic_tools import get_node_cache
+from utils.internet import JsonResponse
 
 
 KHAN_SERVER_URL = "http://www.khanacademy.org"
@@ -289,7 +288,7 @@ def update_all_distributed_callback(request):
             logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = "Unexpected error importing videos: %s" % e
-            return JsonResponseMessageError(error_message)
+            return JsonResponse({"error": error_message}, status=500)
 
     # Save exercises
     n_exercises_uploaded = 0
@@ -310,6 +309,6 @@ def update_all_distributed_callback(request):
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
             error_message = "Unexpected error importing exercises: %s" % e
-            return JsonResponseMessageError(error_message)
+            return JsonResponse({"error": error_message}, status=500)
 
     return JsonResponse({"success": "Uploaded %d exercises and %d videos" % (n_exercises_uploaded, n_videos_uploaded)})

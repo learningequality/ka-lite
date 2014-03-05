@@ -17,12 +17,11 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
-from i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang, get_localized_exercise_dirpath
-from main.topic_tools import get_node_cache
 from settings import LOG as logging
+from shared.topic_tools import get_node_cache
+from shared.i18n import get_dubbed_video_map, lcode_to_ietf, lcode_to_django_lang
 from utils.general import ensure_dir
 
-AVAILABLE_EXERCISE_LANGUAGE_CODES = ["da", "he", "pt-BR", "tr", "es", "fr"]
 
 class Command(BaseCommand):
     help = "Update the mapping of subtitles available by language for each video. Location: static/data/subtitles/srts_download_status.json"
@@ -62,46 +61,36 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("This must only be run on the distributed server.")
+
         if not options["lang_code"]:
             raise CommandError("You must specify a language code.")
 
-
+        # Get list of exercises
         lang_code = lcode_to_ietf(options["lang_code"])
-        if lang_code not in AVAILABLE_EXERCISE_LANGUAGE_CODES:
-            logging.info("No exercises available for language %s" % lang_code)
+        exercise_ids = options["exercise_ids"].split(",") if options["exercise_ids"] else None
+        exercise_ids = exercise_ids or ([ex["id"] for ex in get_topic_exercises(topic_id=options["topic_id"])] if options["topic_id"] else None)
+        exercise_ids = exercise_ids or get_node_cache("Exercise").keys()
 
-        else:
-            # Get list of exercises
-            exercise_ids = options["exercise_ids"].split(",") if options["exercise_ids"] else None
-            exercise_ids = exercise_ids or ([ex["id"] for ex in get_topic_exercises(topic_id=options["topic_id"])] if options["topic_id"] else None)
-            exercise_ids = exercise_ids or get_node_cache("Exercise").keys()
-
-            # Download the exercises
-            for exercise_id in exercise_ids:
-                scrape_exercise(exercise_id=exercise_id, lang_code=lang_code, force=options["force"])
+        # Download the exercises
+        for exercise_id in exercise_ids:
+            scrape_exercise(exercise_id=exercise_id, lang_code=lang_code, force=options["force"])
 
         logging.info("Process complete.")
 
-def get_exercise_filepath(exercise_id, lang_code=None, is_central_server=settings.CENTRAL_SERVER):
-    if settings.CENTRAL_SERVER:
-        exercise_filename = "%s.%s" % (exercise_id, "html")
-        exercise_localized_root = get_localized_exercise_dirpath(lang_code)
-        exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
-    else:
-        raise NotImplementedError
-
-    return exercise_dest_filepath
-
 def scrape_exercise(exercise_id, lang_code, force=False):
-    ietf_lang_code = lcode_to_ietf(lang_code)
+    ka_lang_code = lang_code.lower()
 
-    exercise_dest_filepath = get_exercise_filepath(exercise_id, lang_code=lang_code)
-    exercise_localized_root = os.path.dirname(exercise_dest_filepath)
+    exercise_filename = "%s.%s" % (exercise_id, "html")
+    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_localized_root = os.path.join(exercise_root, ka_lang_code)
+    exercise_dest_filepath = os.path.join(exercise_localized_root, exercise_filename)
 
     if os.path.exists(exercise_dest_filepath) and not force:
         return
 
-    exercise_url = "https://es.khanacademy.org/khan-exercises/exercises/%s.html?lang=%s" % (exercise_id, ietf_lang_code)
+    exercise_url = "https://es.khanacademy.org/khan-exercises/exercises/%s.html?lang=%s" % (exercise_id, ka_lang_code)
     logging.info("Retrieving exercise %s from %s" % (exercise_id, exercise_url))
 
     try:

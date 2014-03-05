@@ -8,7 +8,7 @@ from django.utils import unittest
 import settings
 import version
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
-from testing import distributed_server_test, central_server_test, KALiteTestCase
+from shared.testing import distributed_server_test, central_server_test, KALiteTestCase
 from utils.crypto import Key
 from utils.general import version_diff
 

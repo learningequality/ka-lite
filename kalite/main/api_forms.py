@@ -1,6 +1,6 @@
 from django import forms
 
-from .topic_tools import get_node_cache
+from shared.topic_tools import get_node_cache
 
 
 class ExerciseLogForm(forms.Form):

@@ -1,0 +1,746 @@
+[
+  {
+    "v_position": 40, 
+    "path": "/math/probability/independent-dependent-probability/basic_probability/e/dice_probability/", 
+    "id": "dice_probability", 
+    "display_name": "Probability space", 
+    "title": "Probability space", 
+    "parent_id": "basic_probability", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "independent-dependent-probability", 
+      "basic_probability"
+    ], 
+    "related_video_slugs": [
+      "probability-space-exercise-example", 
+      "probability-space", 
+      "basic-probability"
+    ], 
+    "description": "review probability spaces\n", 
+    "basepoints": 20.0, 
+    "h_position": 6, 
+    "slug": "dice_probability", 
+    "kind": "Exercise", 
+    "name": "dice_probability", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "sample-spaces-for-compound-events"
+    ], 
+    "exercise_id": "dice_probability"
+  }, 
+  {
+    "v_position": 38, 
+    "path": "/math/probability/independent-dependent-probability/basic_probability/e/probability_1/", 
+    "id": "probability_1", 
+    "display_name": "Probability 1", 
+    "title": "Probability 1", 
+    "parent_id": "basic_probability", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "independent-dependent-probability", 
+      "basic_probability"
+    ], 
+    "related_video_slugs": [
+      "basic-probability", 
+      "probability-space", 
+      "simple-probability", 
+      "probability-1-module-examples", 
+      "events-and-outcomes-1"
+    ], 
+    "description": "", 
+    "basepoints": 18.0, 
+    "h_position": 6, 
+    "slug": "probability_1", 
+    "kind": "Exercise", 
+    "name": "probability_1", 
+    "seconds_per_fast_problem": 11.75, 
+    "prerequisites": [
+      "finding-probability"
+    ], 
+    "exercise_id": "probability_1"
+  }, 
+  {
+    "v_position": 42, 
+    "path": "/math/probability/independent-dependent-probability/independent_events/e/independent_probability/", 
+    "id": "independent_probability", 
+    "display_name": "Independent probability", 
+    "title": "Independent probability", 
+    "parent_id": "independent_events", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "independent-dependent-probability", 
+      "independent_events"
+    ], 
+    "related_video_slugs": [
+      "compound-probability-of-independent-events", 
+      "lebron-asks-about-the-chances-of-making-10-free-throws", 
+      "frequency-probability-and-unfair-coins", 
+      "independent-events-2", 
+      "independent-events-3", 
+      "lebron-asks-about-free-throws-versus-three-pointers"
+    ], 
+    "description": "", 
+    "basepoints": 19.0, 
+    "h_position": 9, 
+    "slug": "independent_probability", 
+    "kind": "Exercise", 
+    "name": "independent_probability", 
+    "seconds_per_fast_problem": 15.0, 
+    "prerequisites": [
+      "compound-events"
+    ], 
+    "exercise_id": "independent_probability"
+  }, 
+  {
+    "v_position": 39, 
+    "path": "/math/probability/independent-dependent-probability/dependent_probability/e/dependent_probability/", 
+    "id": "dependent_probability", 
+    "display_name": "Dependent probability", 
+    "title": "Dependent probability", 
+    "parent_id": "dependent_probability", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "independent-dependent-probability", 
+      "dependent_probability"
+    ], 
+    "related_video_slugs": [
+      "introduction-to-dependent-probability", 
+      "dependent-probability-example-1", 
+      "independent-events-1", 
+      "dependent-probability-example-2", 
+      "monty-hall-problem"
+    ], 
+    "description": "", 
+    "basepoints": 22.0, 
+    "h_position": 5, 
+    "slug": "dependent_probability", 
+    "kind": "Exercise", 
+    "name": "dependent_probability", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "probability_1"
+    ], 
+    "exercise_id": "dependent_probability"
+  }, 
+  {
+    "v_position": 46, 
+    "path": "/math/probability/independent-dependent-probability/basic_set_operations/e/basic_set_notation/", 
+    "id": "basic_set_notation", 
+    "display_name": "Basic set notation", 
+    "title": "Basic set notation", 
+    "parent_id": "basic_set_operations", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "independent-dependent-probability", 
+      "basic_set_operations"
+    ], 
+    "related_video_slugs": [
+      "intersection-and-union-of-sets", 
+      "relative-complement-or-difference-between-sets", 
+      "universal-set-and-absolute-complement", 
+      "subset--strict-subset--and-superset", 
+      "bringing-the-set-operations-together"
+    ], 
+    "description": "The union, complement, and intersection of sets.\n", 
+    "basepoints": 17.0, 
+    "h_position": 7, 
+    "slug": "basic_set_notation", 
+    "kind": "Exercise", 
+    "name": "basic_set_notation", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "dependent_probability"
+    ], 
+    "exercise_id": "basic_set_notation"
+  }, 
+  {
+    "v_position": 42, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/counting_2/", 
+    "id": "counting_2", 
+    "display_name": "Counting 2", 
+    "title": "Counting 2", 
+    "parent_id": "permutations_and_combinations", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "probability-and-combinatorics-topic", 
+      "permutations_and_combinations"
+    ], 
+    "related_video_slugs": [
+      "permutations", 
+      "combinations"
+    ], 
+    "description": "", 
+    "basepoints": 17.0, 
+    "h_position": 8, 
+    "slug": "counting_2", 
+    "kind": "Exercise", 
+    "name": "counting_2", 
+    "seconds_per_fast_problem": 10.0, 
+    "prerequisites": [
+      "dice_probability"
+    ], 
+    "exercise_id": "counting_2"
+  }, 
+  {
+    "v_position": 43, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_1/", 
+    "id": "permutations_1", 
+    "display_name": "Permutations", 
+    "title": "Permutations", 
+    "parent_id": "permutations_and_combinations", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "probability-and-combinatorics-topic", 
+      "permutations_and_combinations"
+    ], 
+    "related_video_slugs": [
+      "permutations", 
+      "permutations-and-combinations-1", 
+      "permutations-and-combinations-2"
+    ], 
+    "description": "Introductory permutation problems.\n", 
+    "basepoints": 14.0, 
+    "h_position": 8, 
+    "slug": "permutations_1", 
+    "kind": "Exercise", 
+    "name": "permutations_1", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "counting_2"
+    ], 
+    "exercise_id": "permutations_1"
+  }, 
+  {
+    "v_position": 44, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/combinations_1/", 
+    "id": "combinations_1", 
+    "display_name": "Combinations", 
+    "title": "Combinations", 
+    "parent_id": "permutations_and_combinations", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "probability-and-combinatorics-topic", 
+      "permutations_and_combinations"
+    ], 
+    "related_video_slugs": [
+      "combinations", 
+      "permutations-and-combinations-3"
+    ], 
+    "description": "Introductory combination problems\n", 
+    "basepoints": 19.0, 
+    "h_position": 8, 
+    "slug": "combinations_1", 
+    "kind": "Exercise", 
+    "name": "combinations_1", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "permutations_1"
+    ], 
+    "exercise_id": "combinations_1"
+  }, 
+  {
+    "v_position": 45, 
+    "path": "/math/probability/probability-and-combinatorics-topic/permutations_and_combinations/e/permutations_and_combinations_2/", 
+    "id": "permutations_and_combinations_2", 
+    "display_name": "Permutations and combinations", 
+    "title": "Permutations and combinations", 
+    "parent_id": "permutations_and_combinations", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "probability-and-combinatorics-topic", 
+      "permutations_and_combinations"
+    ], 
+    "related_video_slugs": [], 
+    "description": "Permutations and Combinations with overcounting", 
+    "basepoints": 20.0, 
+    "h_position": 8, 
+    "slug": "permutations_and_combinations_2", 
+    "kind": "Exercise", 
+    "name": "permutations_and_combinations_2", 
+    "seconds_per_fast_problem": 16.0, 
+    "prerequisites": [
+      "combinations_1"
+    ], 
+    "exercise_id": "permutations_and_combinations_2"
+  }, 
+  {
+    "v_position": 46, 
+    "path": "/math/probability/probability-and-combinatorics-topic/probability_combinatorics/e/probability_with_perm_comb/", 
+    "id": "probability_with_perm_comb", 
+    "display_name": "Probability with permutations and combinations", 
+    "title": "Probability with permutations and combinations", 
+    "parent_id": "probability_combinatorics", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "probability-and-combinatorics-topic", 
+      "probability_combinatorics"
+    ], 
+    "related_video_slugs": [
+      "probability-of-dependent-events", 
+      "probability-of-dependent-events-2", 
+      "events-and-outcomes-3", 
+      "coin-flipping-example", 
+      "exactly-three-heads-in-five-flips", 
+      "getting-exactly-two-heads--combinatorics", 
+      "probability-and-combinations--part-2", 
+      "probability-using-combinations", 
+      "permutations-and-combinations-4", 
+      "mega-millions-jackpot-probability"
+    ], 
+    "description": "Probability questions using permutations and combinations of objects\n", 
+    "basepoints": 26.0, 
+    "h_position": 8, 
+    "slug": "probability_with_perm_comb", 
+    "kind": "Exercise", 
+    "name": "probability_with_perm_comb", 
+    "seconds_per_fast_problem": 37.0, 
+    "prerequisites": [
+      "permutations_and_combinations_2"
+    ], 
+    "exercise_id": "probability_with_perm_comb"
+  }, 
+  {
+    "v_position": 43, 
+    "path": "/math/probability/random-variables-topic/random_variables_prob_dist/e/expected_value/", 
+    "id": "expected_value", 
+    "display_name": "Expected value", 
+    "title": "Expected value", 
+    "parent_id": "random_variables_prob_dist", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "random-variables-topic", 
+      "random_variables_prob_dist"
+    ], 
+    "related_video_slugs": [
+      "expected-value--e-x"
+    ], 
+    "description": "Compute the expected value given a set of outcomes, probabilities, and payoffs\n", 
+    "basepoints": 21.0, 
+    "h_position": 9, 
+    "slug": "expected_value", 
+    "kind": "Exercise", 
+    "name": "expected_value", 
+    "seconds_per_fast_problem": 20.0, 
+    "prerequisites": [
+      "independent_probability"
+    ], 
+    "exercise_id": "expected_value"
+  }, 
+  {
+    "v_position": 35, 
+    "path": "/math/probability/descriptive-statistics/central_tendency/e/mean_median_and_mode/", 
+    "id": "mean_median_and_mode", 
+    "display_name": "Mean, median, and mode", 
+    "title": "Mean, median, and mode", 
+    "parent_id": "central_tendency", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "central_tendency"
+    ], 
+    "related_video_slugs": [
+      "statistics-intro--mean--median-and-mode", 
+      "mean-median-and-mode"
+    ], 
+    "description": "", 
+    "basepoints": 16.0, 
+    "h_position": 5, 
+    "slug": "mean_median_and_mode", 
+    "kind": "Exercise", 
+    "name": "mean_median_and_mode", 
+    "seconds_per_fast_problem": 9.0, 
+    "prerequisites": [
+      "division_3"
+    ], 
+    "exercise_id": "mean_median_and_mode"
+  }, 
+  {
+    "v_position": 37, 
+    "path": "/math/probability/descriptive-statistics/central_tendency/e/exploring_mean_and_median/", 
+    "id": "exploring_mean_and_median", 
+    "display_name": "Exploring mean and median", 
+    "title": "Exploring mean and median", 
+    "parent_id": "central_tendency", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "central_tendency"
+    ], 
+    "related_video_slugs": [
+      "exploring-mean-and-median-module", 
+      "statistics-intro--mean--median-and-mode", 
+      "mean-median-and-mode"
+    ], 
+    "description": "", 
+    "basepoints": 27.0, 
+    "h_position": 6, 
+    "slug": "exploring_mean_and_median", 
+    "kind": "Exercise", 
+    "name": "exploring_mean_and_median", 
+    "seconds_per_fast_problem": 43.0, 
+    "prerequisites": [
+      "mean_median_and_mode"
+    ], 
+    "exercise_id": "exploring_mean_and_median"
+  }, 
+  {
+    "v_position": 39, 
+    "path": "/math/probability/descriptive-statistics/central_tendency/e/average_word_problems/", 
+    "id": "average_word_problems", 
+    "display_name": "Average word problems", 
+    "title": "Average word problems", 
+    "parent_id": "central_tendency", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "central_tendency"
+    ], 
+    "related_video_slugs": [
+      "statistics-intro--mean--median-and-mode", 
+      "mean-median-and-mode"
+    ], 
+    "description": "", 
+    "basepoints": 24.0, 
+    "h_position": 4, 
+    "slug": "average_word_problems", 
+    "kind": "Exercise", 
+    "name": "average_word_problems", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "mean_median_and_mode"
+    ], 
+    "exercise_id": "average_word_problems"
+  }, 
+  {
+    "v_position": 36, 
+    "path": "/math/probability/descriptive-statistics/Box-and-whisker plots/e/creating_box_and_whisker_plots/", 
+    "id": "creating_box_and_whisker_plots", 
+    "display_name": "Creating box and whisker plots", 
+    "title": "Creating box and whisker plots", 
+    "parent_id": "Box-and-whisker plots", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "Box-and-whisker plots"
+    ], 
+    "related_video_slugs": [
+      "reading-box-and-whisker-plots", 
+      "constructing-a-box-and-whisker-plot", 
+      "box-and-whisker-plots"
+    ], 
+    "description": "", 
+    "basepoints": 28.0, 
+    "h_position": 6, 
+    "slug": "creating_box_and_whisker_plots", 
+    "kind": "Exercise", 
+    "name": "creating_box_and_whisker_plots", 
+    "seconds_per_fast_problem": 54.0, 
+    "prerequisites": [
+      "mean_median_and_mode"
+    ], 
+    "exercise_id": "creating_box_and_whisker_plots"
+  }, 
+  {
+    "v_position": 42, 
+    "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/variance/", 
+    "id": "variance", 
+    "display_name": "Variance", 
+    "title": "Variance", 
+    "parent_id": "variance_std_deviation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "variance_std_deviation"
+    ], 
+    "related_video_slugs": [
+      "variance-of-a-population", 
+      "sample-variance", 
+      "review-and-intuition-why-we-divide-by-n-1-for-the-unbiased-sample-variance"
+    ], 
+    "description": "", 
+    "basepoints": 29.0, 
+    "h_position": 2, 
+    "slug": "variance", 
+    "kind": "Exercise", 
+    "name": "variance", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "mean_median_and_mode", 
+      "square_roots"
+    ], 
+    "exercise_id": "variance"
+  }, 
+  {
+    "v_position": 43, 
+    "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/exploring_standard_deviation_1/", 
+    "id": "exploring_standard_deviation_1", 
+    "display_name": "Exploring standard deviation 1", 
+    "title": "Exploring standard deviation 1", 
+    "parent_id": "variance_std_deviation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "variance_std_deviation"
+    ], 
+    "related_video_slugs": [
+      "exploring-standard-deviation-1-module", 
+      "population-standard-deviation", 
+      "sample-standard-deviation-and-bias", 
+      "range--variance-and-standard-deviation-as-measures-of-dispersion"
+    ], 
+    "description": "", 
+    "basepoints": 18.0, 
+    "h_position": 2, 
+    "slug": "exploring_standard_deviation_1", 
+    "kind": "Exercise", 
+    "name": "exploring_standard_deviation_1", 
+    "seconds_per_fast_problem": 13.0, 
+    "prerequisites": [
+      "variance"
+    ], 
+    "exercise_id": "exploring_standard_deviation_1"
+  }, 
+  {
+    "v_position": 43, 
+    "path": "/math/probability/descriptive-statistics/variance_std_deviation/e/standard_deviation/", 
+    "id": "standard_deviation", 
+    "display_name": "Standard deviation", 
+    "title": "Standard deviation", 
+    "parent_id": "variance_std_deviation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "descriptive-statistics", 
+      "variance_std_deviation"
+    ], 
+    "related_video_slugs": [
+      "population-standard-deviation", 
+      "sample-standard-deviation-and-bias", 
+      "range--variance-and-standard-deviation-as-measures-of-dispersion"
+    ], 
+    "description": "", 
+    "basepoints": 29.0, 
+    "h_position": 3, 
+    "slug": "standard_deviation", 
+    "kind": "Exercise", 
+    "name": "standard_deviation", 
+    "seconds_per_fast_problem": 58.0, 
+    "prerequisites": [
+      "variance"
+    ], 
+    "exercise_id": "standard_deviation"
+  }, 
+  {
+    "v_position": 41, 
+    "path": "/math/probability/regression/regression-correlation/e/plotting_the_line_of_best_fit/", 
+    "id": "plotting_the_line_of_best_fit", 
+    "display_name": "Estimating the line of best fit", 
+    "title": "Estimating the line of best fit", 
+    "parent_id": "regression-correlation", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "regression", 
+      "regression-correlation"
+    ], 
+    "related_video_slugs": [
+      "estimating-the-line-of-best-fit-exercise", 
+      "fitting-a-line-to-data"
+    ], 
+    "description": "Given a random assortment of points, find the best fit line for them.\n", 
+    "basepoints": 13.0, 
+    "h_position": 7, 
+    "slug": "plotting_the_line_of_best_fit", 
+    "kind": "Exercise", 
+    "name": "plotting_the_line_of_best_fit", 
+    "seconds_per_fast_problem": 6.0, 
+    "prerequisites": [
+      "linear-models-of-bivariate-data"
+    ], 
+    "exercise_id": "plotting_the_line_of_best_fit"
+  }, 
+  {
+    "v_position": 44, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
+    "id": "empirical_rule", 
+    "display_name": "Empirical rule", 
+    "title": "Empirical rule", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org-normal-distribution-problems--empirical-rule", 
+      "ck12-org-exercise--standard-normal-distribution-and-the-empirical-rule", 
+      "ck12-org--more-empirical-rule-and-z-score-practice", 
+      "ck12-org-normal-distribution-problems--z-score"
+    ], 
+    "description": "", 
+    "basepoints": 24.0, 
+    "h_position": 2, 
+    "slug": "empirical_rule", 
+    "kind": "Exercise", 
+    "name": "empirical_rule", 
+    "seconds_per_fast_problem": 28.0, 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ], 
+    "exercise_id": "empirical_rule"
+  }, 
+  {
+    "v_position": 44, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
+    "id": "z_scores_1", 
+    "display_name": "Z scores 1", 
+    "title": "Z scores 1", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org-normal-distribution-problems--z-score", 
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "description": "Find the z-score of a particular measurement given the mean and standard deviation.\n", 
+    "basepoints": 19.0, 
+    "h_position": 3, 
+    "slug": "z_scores_1", 
+    "kind": "Exercise", 
+    "name": "z_scores_1", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ], 
+    "exercise_id": "z_scores_1"
+  }, 
+  {
+    "v_position": 45, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
+    "id": "z_scores_2", 
+    "display_name": "Z scores 2", 
+    "title": "Z scores 2", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org--more-empirical-rule-and-z-score-practice", 
+      "ck12-org-normal-distribution-problems--z-score", 
+      "ck12-org-normal-distribution-problems--empirical-rule"
+    ], 
+    "description": "Use a z-table to find the probability of a particular measurement.\n", 
+    "basepoints": 22.0, 
+    "h_position": 3, 
+    "slug": "z_scores_2", 
+    "kind": "Exercise", 
+    "name": "z_scores_2", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "z_scores_1"
+    ], 
+    "exercise_id": "z_scores_2"
+  }, 
+  {
+    "v_position": 46, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
+    "id": "z_scores_3", 
+    "display_name": "Z scores 3", 
+    "title": "Z scores 3", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org-normal-distribution-problems--z-score", 
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "description": "Use a z-table to find the probability that a particular measurement is in a range.\n", 
+    "basepoints": 28.0, 
+    "h_position": 3, 
+    "slug": "z_scores_3", 
+    "kind": "Exercise", 
+    "name": "z_scores_3", 
+    "seconds_per_fast_problem": 50.0, 
+    "prerequisites": [
+      "z_scores_2"
+    ], 
+    "exercise_id": "z_scores_3"
+  }
+]

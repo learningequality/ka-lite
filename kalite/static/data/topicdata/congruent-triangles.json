@@ -1,0 +1,260 @@
+[
+  {
+    "v_position": 20, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruency_postulates/", 
+    "id": "congruency_postulates", 
+    "display_name": "Congruency postulates", 
+    "title": "Congruency postulates", 
+    "parent_id": "cong_triangle", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "cong_triangle"
+    ], 
+    "related_video_slugs": [
+      "congruent-triangles-and-sss", 
+      "other-triangle-congruence-postulates", 
+      "finding-congruent-triangles", 
+      "more-on-why-ssa-is-not-a-postulate"
+    ], 
+    "description": "", 
+    "basepoints": 18.0, 
+    "h_position": 1, 
+    "slug": "congruency_postulates", 
+    "kind": "Exercise", 
+    "name": "congruency_postulates", 
+    "seconds_per_fast_problem": 12.0, 
+    "prerequisites": [
+      "parallel_lines_2"
+    ], 
+    "exercise_id": "congruency_postulates"
+  }, 
+  {
+    "v_position": 20, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_1/", 
+    "id": "congruent_triangles_1", 
+    "display_name": "Congruent triangles 1", 
+    "title": "Congruent triangles 1", 
+    "parent_id": "cong_triangle", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "cong_triangle"
+    ], 
+    "related_video_slugs": [
+      "finding-congruent-triangles", 
+      "congruent-triangles-and-sss", 
+      "other-triangle-congruence-postulates"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": 0, 
+    "slug": "congruent_triangles_1", 
+    "kind": "Exercise", 
+    "name": "congruent_triangles_1", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "parallel_lines_2"
+    ], 
+    "exercise_id": "congruent_triangles_1"
+  }, 
+  {
+    "v_position": 21, 
+    "path": "/math/geometry/congruent-triangles/cong_triangle/e/congruent_triangles_2/", 
+    "id": "congruent_triangles_2", 
+    "display_name": "Congruent triangles 2", 
+    "title": "Congruent triangles 2", 
+    "parent_id": "cong_triangle", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "cong_triangle"
+    ], 
+    "related_video_slugs": [
+      "congruent-triangle-proof-example", 
+      "congruent-triangle-example-2", 
+      "proof---opposite-angles-of-parallelogram-congruent"
+    ], 
+    "description": "", 
+    "basepoints": 14.0, 
+    "h_position": 0, 
+    "slug": "congruent_triangles_2", 
+    "kind": "Exercise", 
+    "name": "congruent_triangles_2", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "congruent_triangles_1", 
+      "congruency_postulates"
+    ], 
+    "exercise_id": "congruent_triangles_2"
+  }, 
+  {
+    "v_position": 18, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_types/", 
+    "id": "triangle_types", 
+    "display_name": "Triangle types", 
+    "title": "Triangle types", 
+    "parent_id": "isoscleles_equil", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "isoscleles_equil"
+    ], 
+    "related_video_slugs": [
+      "congruent-legs-and-base-angles-of-isosceles-triangles", 
+      "equilateral-triangle-sides-and-angles-congruent", 
+      "equilateral-and-isosceles-example-problems"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": 2, 
+    "slug": "triangle_types", 
+    "kind": "Exercise", 
+    "name": "triangle_types", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "classifying-shapes-by-line-and-angle-types"
+    ], 
+    "exercise_id": "triangle_types"
+  }, 
+  {
+    "v_position": 19, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/triangle_angles_1/", 
+    "id": "triangle_angles_1", 
+    "display_name": "Triangle angles 1", 
+    "title": "Triangle angles 1", 
+    "parent_id": "isoscleles_equil", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "isoscleles_equil"
+    ], 
+    "related_video_slugs": [
+      "congruent-legs-and-base-angles-of-isosceles-triangles", 
+      "equilateral-triangle-sides-and-angles-congruent", 
+      "equilateral-and-isosceles-example-problems", 
+      "another-isosceles-example-problem"
+    ], 
+    "description": "", 
+    "basepoints": 17.0, 
+    "h_position": -1, 
+    "slug": "triangle_angles_1", 
+    "kind": "Exercise", 
+    "name": "triangle_angles_1", 
+    "seconds_per_fast_problem": 11.0, 
+    "prerequisites": [
+      "triangle_types", 
+      "linear_equations_2"
+    ], 
+    "exercise_id": "triangle_angles_1"
+  }, 
+  {
+    "v_position": 22, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_intro/", 
+    "id": "geometry_proofs_intro", 
+    "display_name": "Basic triangle proofs", 
+    "title": "Basic triangle proofs", 
+    "parent_id": "isoscleles_equil", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "isoscleles_equil"
+    ], 
+    "related_video_slugs": [
+      "basic-triangle-proofs-module-example", 
+      "basic-triangle-proofs-module-example-2"
+    ], 
+    "description": "1 and 2-step triangle congruency proofs.\n", 
+    "basepoints": 28.0, 
+    "h_position": 1, 
+    "slug": "geometry_proofs_intro", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_intro", 
+    "seconds_per_fast_problem": 53.0, 
+    "prerequisites": [
+      "congruent_triangles_2", 
+      "logical_arguments_deductive_reasoning", 
+      "conditional_statements_and_truth_value"
+    ], 
+    "exercise_id": "geometry_proofs_intro"
+  }, 
+  {
+    "v_position": 23, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_1/", 
+    "id": "geometry_proofs_1", 
+    "display_name": "Fill-in-the-blank triangle proofs", 
+    "title": "Fill-in-the-blank triangle proofs", 
+    "parent_id": "isoscleles_equil", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "isoscleles_equil"
+    ], 
+    "related_video_slugs": [
+      "fill-in-the-blank-triangle-proofs-example-1", 
+      "fill-in-the-blank-triangle-proofs-example-2"
+    ], 
+    "description": "Fill in the blanks in a triangle congruency proof.\n", 
+    "basepoints": 29.0, 
+    "h_position": 1, 
+    "slug": "geometry_proofs_1", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_1", 
+    "seconds_per_fast_problem": 60.0, 
+    "prerequisites": [
+      "geometry_proofs_intro"
+    ], 
+    "exercise_id": "geometry_proofs_1"
+  }, 
+  {
+    "v_position": 24, 
+    "path": "/math/geometry/congruent-triangles/isoscleles_equil/e/geometry_proofs_2/", 
+    "id": "geometry_proofs_2", 
+    "display_name": "Wrong statements in triangle proofs", 
+    "title": "Wrong statements in triangle proofs", 
+    "parent_id": "isoscleles_equil", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "congruent-triangles", 
+      "isoscleles_equil"
+    ], 
+    "related_video_slugs": [
+      "wrong-statements-in-proofs-example-1"
+    ], 
+    "description": "Identify the wrong statement in a proof about triangle congruency.\n", 
+    "basepoints": 24.0, 
+    "h_position": 1, 
+    "slug": "geometry_proofs_2", 
+    "kind": "Exercise", 
+    "name": "geometry_proofs_2", 
+    "seconds_per_fast_problem": 27.0, 
+    "prerequisites": [
+      "geometry_proofs_1"
+    ], 
+    "exercise_id": "geometry_proofs_2"
+  }
+]

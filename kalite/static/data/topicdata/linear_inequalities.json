@@ -1,0 +1,102 @@
+[
+  {
+    "v_position": 48, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/one_step_inequalities/", 
+    "id": "one_step_inequalities", 
+    "display_name": "One step inequalities", 
+    "title": "One step inequalities", 
+    "parent_id": "inequalities", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "inequalities"
+    ], 
+    "related_video_slugs": [
+      "one-step-inequalities-2", 
+      "inequalities-using-multiplication-and-division", 
+      "inequalities"
+    ], 
+    "description": "Solve inequalities in one step.\n", 
+    "basepoints": 19.0, 
+    "h_position": -14, 
+    "slug": "one_step_inequalities", 
+    "kind": "Exercise", 
+    "name": "one_step_inequalities", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "one_step_equations", 
+      "inequalities-in-one-variable-1"
+    ], 
+    "exercise_id": "one_step_inequalities"
+  }, 
+  {
+    "v_position": 49, 
+    "path": "/math/algebra/linear_inequalities/inequalities/e/linear_inequalities/", 
+    "id": "linear_inequalities", 
+    "display_name": "Multi-step linear inequalities", 
+    "title": "Multi-step linear inequalities", 
+    "parent_id": "inequalities", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "inequalities"
+    ], 
+    "related_video_slugs": [
+      "solving-inequalities", 
+      "multi-step-inequalities-3", 
+      "multi-step-inequalities-2", 
+      "multi-step-inequalities"
+    ], 
+    "description": "Solve linear inequalities in multiple steps.", 
+    "basepoints": 24.0, 
+    "h_position": -15, 
+    "slug": "linear_inequalities", 
+    "kind": "Exercise", 
+    "name": "linear_inequalities", 
+    "seconds_per_fast_problem": 29.0, 
+    "prerequisites": [
+      "interpretting-solving-linear-inequalities", 
+      "multistep_equations_with_distribution"
+    ], 
+    "exercise_id": "linear_inequalities"
+  }, 
+  {
+    "v_position": 50, 
+    "path": "/math/algebra/linear_inequalities/compound_absolute_value_inequali/e/compound_inequalities/", 
+    "id": "compound_inequalities", 
+    "display_name": "Compound inequalities", 
+    "title": "Compound inequalities", 
+    "parent_id": "compound_absolute_value_inequali", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "algebra", 
+      "linear_inequalities", 
+      "compound_absolute_value_inequali"
+    ], 
+    "related_video_slugs": [
+      "compund-inequalities", 
+      "compund-inequalities", 
+      "compund-inequalities-2", 
+      "compound-inequalities-4"
+    ], 
+    "description": "Solve compound inequalities.\n", 
+    "basepoints": 23.0, 
+    "h_position": -15, 
+    "slug": "compound_inequalities", 
+    "kind": "Exercise", 
+    "name": "compound_inequalities", 
+    "seconds_per_fast_problem": 24.0, 
+    "prerequisites": [
+      "linear_inequalities"
+    ], 
+    "exercise_id": "compound_inequalities"
+  }
+]

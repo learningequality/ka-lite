@@ -1,24 +1,6 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-VERSION = "0.11.1"
+VERSION = "0.10.3"
 VERSION_INFO = {
-
-    "0.11.1": {
-        "release_date": "2013/11/28",
-        "git_commit": "cd55e92ebbd3ad5ac0283ddf3de302d1cd26b608",
-        "new_features": {
-            "all": ["over 5x faster performance"],
-            "students": [],
-            "coaches": [],
-            "admins": [],
-        },
-        "bugs_fixed": {
-            "all": [],
-            "students": [],
-            "coaches": [],
-            "admins": [],
-        },
-    },
-
     "0.11.0": {
         "release_date": "2013/09/03",
         "git_commit": "29eb96e136d702b5d128b6bbb1b5c347457d080f",
@@ -41,9 +23,14 @@ VERSION_INFO = {
         "git_commit": "6e56d05e6f53661aea433d72ce7bddacacddc4b8",
         "new_features": {
             "all": [],
-            "students": [],
+            "students": [
+                "Better performance (faster save times and login times)",
+                "Integration with latest exercises",
+            ],
             "coaches": [],
-            "admins": ["Better performance (faster save times and login times)"],
+            "admins": [
+                "Easier updates for subtitles",
+            ],
         },
         "bugs_fixed": {
             "all": [],
@@ -58,9 +45,9 @@ VERSION_INFO = {
         "git_commit": "5831abb8d2ee0815416a17885790679c4672bf97",
         "new_features": {
             "all": [],
-            "students": ["import your KA progress into KA Lite"],
+            "students": ["Import your KA progress into KA Lite"],
             "coaches": [],
-            "admins": ["now start KA Lite by double-clicking the start script"],
+            "admins": ["Now start KA Lite by double-clicking the start script"],
         },
         "bugs_fixed": {
             "all": [],

@@ -33,11 +33,10 @@ from django.db import transaction
 
 import settings
 import securesync
-from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import ExerciseLog, VideoLog, UserLog
-from main.topic_tools import get_topic_videos, get_topic_exercises
-from securesync.models import Device, DeviceMetadata
+from securesync.models import Facility, FacilityUser, FacilityGroup, Device, DeviceMetadata
 from settings import LOG as logging
+from shared.topic_tools import get_topic_videos, get_topic_exercises
 from utils.general import datediff
 
 
@@ -157,7 +156,7 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
 
                 try:
                     facility_user = FacilityUser.objects.get(facility=facility, username=user_data["username"])
-                    facility_user.group = facility_group
+                    facility_user.group = facility_group  # reset the group, if needed.
                     facility_user.save()
                     logging.info("Retrieved facility user '%s/%s'" % (facility.name, user_data["username"]))
                 except FacilityUser.DoesNotExist as e:

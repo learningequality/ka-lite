@@ -26,5 +26,12 @@ if settings.ZERO_CONFIG:
     elif "runcherrypyserver" in sys.argv:
         sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
 
+########################
+# PROXY SETUP
+########################
+
+if settings.HTTP_PROXY:
+    os.environ['http_proxy'] = settings.HTTP_PROXY
+
 if __name__ == "__main__":
     execute_manager(settings)

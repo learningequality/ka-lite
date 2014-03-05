@@ -5,6 +5,7 @@ import settings
 urlpatterns = patterns('securesync.views',
     url(r'^', include('securesync.devices.urls')),
     url(r'^', include('securesync.engine.urls')),
+    url(r'^', include('securesync.users.urls')),
 )
 
 # An endpoint for remote administration of the distributed server

@@ -1,0 +1,131 @@
+[
+  {
+    "v_position": 44, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/empirical_rule/", 
+    "id": "empirical_rule", 
+    "display_name": "Empirical rule", 
+    "title": "Empirical rule", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org-normal-distribution-problems--empirical-rule", 
+      "ck12-org-exercise--standard-normal-distribution-and-the-empirical-rule", 
+      "ck12-org--more-empirical-rule-and-z-score-practice", 
+      "ck12-org-normal-distribution-problems--z-score"
+    ], 
+    "description": "", 
+    "basepoints": 24.0, 
+    "h_position": 2, 
+    "slug": "empirical_rule", 
+    "kind": "Exercise", 
+    "name": "empirical_rule", 
+    "seconds_per_fast_problem": 28.0, 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ], 
+    "exercise_id": "empirical_rule"
+  }, 
+  {
+    "v_position": 44, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_1/", 
+    "id": "z_scores_1", 
+    "display_name": "Z scores 1", 
+    "title": "Z scores 1", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org-normal-distribution-problems--z-score", 
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "description": "Find the z-score of a particular measurement given the mean and standard deviation.\n", 
+    "basepoints": 19.0, 
+    "h_position": 3, 
+    "slug": "z_scores_1", 
+    "kind": "Exercise", 
+    "name": "z_scores_1", 
+    "seconds_per_fast_problem": 14.0, 
+    "prerequisites": [
+      "exploring_standard_deviation_1", 
+      "standard_deviation"
+    ], 
+    "exercise_id": "z_scores_1"
+  }, 
+  {
+    "v_position": 45, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_2/", 
+    "id": "z_scores_2", 
+    "display_name": "Z scores 2", 
+    "title": "Z scores 2", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org--more-empirical-rule-and-z-score-practice", 
+      "ck12-org-normal-distribution-problems--z-score", 
+      "ck12-org-normal-distribution-problems--empirical-rule"
+    ], 
+    "description": "Use a z-table to find the probability of a particular measurement.\n", 
+    "basepoints": 22.0, 
+    "h_position": 3, 
+    "slug": "z_scores_2", 
+    "kind": "Exercise", 
+    "name": "z_scores_2", 
+    "seconds_per_fast_problem": 23.0, 
+    "prerequisites": [
+      "z_scores_1"
+    ], 
+    "exercise_id": "z_scores_2"
+  }, 
+  {
+    "v_position": 46, 
+    "path": "/math/probability/statistics-inferential/normal_distribution/e/z_scores_3/", 
+    "id": "z_scores_3", 
+    "display_name": "Z scores 3", 
+    "title": "Z scores 3", 
+    "parent_id": "normal_distribution", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "probability", 
+      "statistics-inferential", 
+      "normal_distribution"
+    ], 
+    "related_video_slugs": [
+      "ck12-org-normal-distribution-problems--z-score", 
+      "ck12-org--more-empirical-rule-and-z-score-practice"
+    ], 
+    "description": "Use a z-table to find the probability that a particular measurement is in a range.\n", 
+    "basepoints": 28.0, 
+    "h_position": 3, 
+    "slug": "z_scores_3", 
+    "kind": "Exercise", 
+    "name": "z_scores_3", 
+    "seconds_per_fast_problem": 50.0, 
+    "prerequisites": [
+      "z_scores_2"
+    ], 
+    "exercise_id": "z_scores_3"
+  }
+]

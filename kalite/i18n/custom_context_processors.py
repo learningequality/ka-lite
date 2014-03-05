@@ -1,4 +1,4 @@
-from . import lcode_to_ietf, get_language_name, get_installed_language_packs
+from shared.i18n import lcode_to_ietf
 
 
 def languages(request):
@@ -7,8 +7,6 @@ def languages(request):
 
     return {
         "default_language": lcode_to_ietf(request.session["default_language"]),
-        "language_choices": get_installed_language_packs(),
-        "current_language": request.language,
-        "current_language_native_name": get_language_name(request.language, native=True),
-        "current_language_name": get_language_name(request.language),
+        "language_choices": request.session["language_choices"],
+        "current_language": lcode_to_ietf(request.session["django_language"]),
     }

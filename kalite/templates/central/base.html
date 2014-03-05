@@ -17,7 +17,6 @@
           <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/bootstrap.less' %}"></link>
           <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/responsive.less' %}"></link>
           <link rel="stylesheet/less" type="text/css" href="{% static 'less/style.less' %}"></link>
-          <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-timepicker.min.css" %}' />
           <script type="text/javascript">
               less = {
                   env: "development", // or "production"
@@ -37,11 +36,9 @@
           <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
           <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
-          <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
-          <script type="text/javascript" src='{% static "js/bootstrap-timepicker.min.js" %}'></script>
 
           <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
@@ -74,7 +71,7 @@
                             <ul class="header__horizontal-menu__right">
 
                                 <li><a href="{% url homepage %}" class="{% block home_active %}{% endblock home_active %}">{% trans "Home" %}</a></li>
-                                <li><a href="{% url download_wizard %}" class="{% block download_active %}{% endblock download_active %}">{% trans "Download" %}</a></li>
+                                <li><a href="{% url install %}" class="{% block download_active %}{% endblock download_active %}">{% trans "Install" %}</a></li>
                                 <li><a href="{% url faq_topic_list %}" class="{% block faq_active %}{% endblock faq_active%}">{% trans "FAQ" %}</a></li>
                                 <li><a href="{% url contact_wizard %}"class="{% block contact_active %}{% endblock contact_active%}">{% trans "Contact" %}</a></li>
                                 <li><a href="{% url content_page page='about' %}" class="{% block about_active %}{% endblock about_active%}">{% trans "About Us" %}</a></li>

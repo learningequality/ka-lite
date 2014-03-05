@@ -8,34 +8,35 @@ from annoying.functions import get_object_or_None
 from functools import partial
 
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
+from django.db.models import Sum, Count
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.views.i18n import javascript_catalog
 
 import settings
-import topic_tools
-import topicdata
-from .caching import backend_cache_page
-from .models import VideoLog, ExerciseLog
-from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from chronograph import force_job
 from config.models import Settings
-from facility.models import Facility, FacilityUser,FacilityGroup
-from i18n import select_best_available_language
+from control_panel.views import user_management_context
+from main import topicdata
+from main.models import VideoLog, ExerciseLog
 from securesync.api_client import BaseClient
-from securesync.models import Device
+from securesync.models import Facility, FacilityUser,FacilityGroup, Device
+from securesync.views import require_admin, facility_required
 from settings import LOG as logging
+from shared import topic_tools
+from shared.caching import backend_cache_page
 from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
-from updates import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
-from utils.django_utils import is_loopback_connection
-from utils.internet import JsonResponse, get_ip_addresses
+from shared.i18n import select_best_available_language
+from shared.jobs import force_job
+from shared.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from shared.videos import stamp_availability_on_topic, stamp_availability_on_video, video_counts_need_update
+from utils.internet import is_loopback_connection, JsonResponse, get_ip_addresses
+
 
 def check_setup_status(handler):
     """
@@ -97,7 +98,7 @@ def refresh_topic_cache(handler, force=False):
                 "(and urls) " if stamp_urls else "",
                 node["path"],
             ))
-            (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
+            (_a, _b, _c, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
             if changed:
                 strip_counts_from_ancestors(node)
         return node
@@ -112,9 +113,6 @@ def refresh_topic_cache(handler, force=False):
         if not cached_nodes:
             cached_nodes = {"topics": topicdata.TOPICS}
 
-        def has_computed_urls(node):
-            return "subtitles" in node.get("availability", {}).get("en", {})
-
         for node in cached_nodes.values():
             if not node:
                 continue
@@ -122,12 +120,13 @@ def refresh_topic_cache(handler, force=False):
 
             # Propertes not yet marked
             if node["kind"] == "Video":
-                if force or not has_computed_urls(node):
+                if force or "availability" not in node:
+                    #stamp_availability_on_topic(node, force=force)  # will be done by force below
                     recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
                 for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not has_computed_urls(node):
+                    if not "availability" in video:
                         stamp_availability_on_video(video, force=True)  # will be done by force below
 
             elif node["kind"] == "Topic":
@@ -150,8 +149,6 @@ def splat_handler(request, splat):
     current_node = topicdata.TOPICS
     while current_node:
         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
-        if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
-            match = [m for m in match if request.path == m["path"]]
         if not match:
             raise Http404
         current_node = match[0]
@@ -187,7 +184,7 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available')) for t in topics]
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known')) for t in topics]
 
     exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
@@ -212,6 +209,7 @@ def topic_context(topic):
         "exercises": exercises,
         "exercise_langs": exercise_langs,
         "topics": my_topics,
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     }
     return context
 
@@ -260,7 +258,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
     Display an exercise
     """
-    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
+    lang = request.session["django_language"]
     exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
@@ -293,6 +291,9 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
 @backend_cache_page
 @render_to("knowledgemap.html")
 def exercise_dashboard(request):
+    # Just grab the first path, whatever it is
+    paths = dict((key, val[0]["path"]) for key, val in topicdata.NODE_CACHE["Exercise"].iteritems())
+
     slug = request.GET.get("topic")
     if not slug:
         title = _("Your Knowledge Map")
@@ -303,6 +304,7 @@ def exercise_dashboard(request):
 
     context = {
         "title": title,
+        "exercise_paths": json.dumps(paths),
     }
     return context
 
@@ -317,6 +319,7 @@ def homepage(request, topics):
     context = topic_context(topics)
     context.update({
         "title": "Home",
+        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
     })
     return context
 
@@ -324,6 +327,7 @@ def homepage(request, topics):
 @check_setup_status
 @render_to("admin_distributed.html")
 def easy_admin(request):
+
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
@@ -332,6 +336,34 @@ def easy_admin(request):
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
     }
+    return context
+
+
+@require_admin
+@facility_required
+@render_to("current_users.html")
+def user_list(request, facility):
+
+    # Use default group
+    group_id = request.REQUEST.get("group")
+    if not group_id:
+        groups = FacilityGroup.objects \
+            .annotate(Count("facilityuser")) \
+            .filter(facilityuser__count__gt=0)
+        ngroups = groups.count()
+        ngroups += int(FacilityUser.objects.filter(group__isnull=True).count() > 0)
+        if ngroups == 1:
+            group_id = groups[0].id if groups.count() else "Ungrouped"
+
+    context = user_management_context(
+        request=request,
+        facility_id=facility.id,
+        group_id=group_id,
+        page=request.REQUEST.get("page","1"),
+    )
+    context.update({
+        "singlefacility": Facility.objects.count() == 1,
+    })
     return context
 
 
@@ -354,24 +386,10 @@ def device_redirect(request):
     """
     device = Device.get_own_device()
     zone = device.get_zone()
-
-    return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
-
-JS_CATALOG_CACHE = {}
-@distributed_server_only
-def javascript_catalog_cached(request):
-    global JS_CATALOG_CACHE
-    lang = request.session['default_language']
-    if lang in JS_CATALOG_CACHE:
-        logging.debug('Using js translation catalog cache for %s' % lang)
-        src = JS_CATALOG_CACHE[lang]
-        return HttpResponse(src, 'text/javascript')
+    if zone:
+        return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk, "device_id": device.pk}))
     else:
-        logging.debug('Generating js translation catalog for %s' % lang)
-        resp = javascript_catalog(request, 'djangojs', settings.INSTALLED_APPS)
-        src = resp.content
-        JS_CATALOG_CACHE[lang] = src
-        return resp
+        raise Http404(_("This device is not on any zone."))
 
 @render_to('search_page.html')
 @refresh_topic_cache
@@ -430,7 +448,7 @@ def handler_403(request, *args, **kwargs):
     #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
+        return JsonResponse({ "error": "You must be logged in with an account authorized to view this page." }, status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(reverse("login") + "?next=" + request.get_full_path())

@@ -11,11 +11,9 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 import settings
+from .misc import *
 from config.models import Settings
-from facility.decorators import facility_from_request
-from facility.models import FacilityUser
-from securesync.models import Device, Zone
-from testing.asserts import central_server_only, distributed_server_only
+from securesync.models import Device, DeviceZone, Zone, Facility, FacilityUser
 from utils.internet import JsonResponse, JsonpResponse
 
 
@@ -32,6 +30,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
         user = user or request.session.get("facility_user", None)
         return handler(request, *args, user=user, **kwargs)
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
+
 
 def require_login(handler):
     """
@@ -52,7 +51,7 @@ def require_admin(handler):
     Level 2: Require an admin:
     * Central server: any user with an account
     * Distributed server: any Django admin or teacher.
-
+    
     Note: different behavior for api_request or not
     """
 
@@ -72,9 +71,9 @@ def require_admin(handler):
 def require_authorized_access_to_student_data(handler):
     """
     WARNING: this is a crappy function with a crappy name.
-
+    
     This should only be used for limiting data access to single-student data.
-
+    
     Students requesting their own data (either implicitly, without querystring params)
     or explicitly (specifying their own user ID) get through.
     Admins and teachers also get through.
@@ -92,7 +91,7 @@ def require_authorized_access_to_student_data(handler):
             """
             if getattr(request, "is_admin", False):
                 return handler(request, *args, **kwargs)
-            else:
+            else: 
                 user = get_user_from_request(request=request)
                 if request.session.get("facility_user", None) == user:
                     return handler(request, *args, **kwargs)
@@ -105,7 +104,7 @@ def require_authorized_access_to_student_data(handler):
 def require_authorized_admin(handler):
     """
     Level 1.5 or 2.5 :) : require an admin user that has access to all requested objects.
-
+    
     Central server: this is by organization permissions.
     Distributed server: you have to be an admin (Django admin/teacher), or requesting only your own user data.
 
@@ -189,11 +188,11 @@ def require_authorized_admin(handler):
 def require_superuser(handler):
     """
     Level 4: require a Django admin (superuser)
-
+    
     ***
     *** Note: Not yet used, nor tested. ***
     ***
-
+    
     """
     def wrapper_fn(request, *args, **kwargs):
         if getattr(request.user, is_superuser, False):

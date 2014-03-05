@@ -1,0 +1,183 @@
+[
+  {
+    "v_position": 9, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/recognizing_rays_lines_and_line_segments/", 
+    "id": "recognizing_rays_lines_and_line_segments", 
+    "display_name": "Recognizing rays, lines, and line segments", 
+    "title": "Recognizing rays, lines, and line segments", 
+    "parent_id": "intro_euclid", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "segments-and-angles", 
+      "intro_euclid"
+    ], 
+    "related_video_slugs": [
+      "lines--line-segments--and-rays"
+    ], 
+    "description": "", 
+    "basepoints": 10.0, 
+    "h_position": -14, 
+    "slug": "recognizing_rays_lines_and_line_segments", 
+    "kind": "Exercise", 
+    "name": "recognizing_rays_lines_and_line_segments", 
+    "seconds_per_fast_problem": 4.0, 
+    "prerequisites": [], 
+    "exercise_id": "recognizing_rays_lines_and_line_segments"
+  }, 
+  {
+    "v_position": 13, 
+    "path": "/math/geometry/segments-and-angles/intro_euclid/e/points_lines_and_planes/", 
+    "id": "points_lines_and_planes", 
+    "display_name": "Points, lines, and planes", 
+    "title": "Points, lines, and planes", 
+    "parent_id": "intro_euclid", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "segments-and-angles", 
+      "intro_euclid"
+    ], 
+    "related_video_slugs": [
+      "lines--line-segments--and-rays", 
+      "specifying-planes-in-three-dimensions"
+    ], 
+    "description": "", 
+    "basepoints": 14.0, 
+    "h_position": -15, 
+    "slug": "points_lines_and_planes", 
+    "kind": "Exercise", 
+    "name": "points_lines_and_planes", 
+    "seconds_per_fast_problem": 7.0, 
+    "prerequisites": [
+      "recognizing_rays_lines_and_line_segments"
+    ], 
+    "exercise_id": "points_lines_and_planes"
+  }, 
+  {
+    "v_position": 11, 
+    "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/measuring_segments/", 
+    "id": "measuring_segments", 
+    "display_name": "Measuring segments", 
+    "title": "Measuring segments", 
+    "parent_id": "measuring-segments-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "segments-and-angles", 
+      "measuring-segments-tutorial"
+    ], 
+    "related_video_slugs": [
+      "measuring-segments", 
+      "language-and-notation-of-basic-geometry"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": -17, 
+    "slug": "measuring_segments", 
+    "kind": "Exercise", 
+    "name": "measuring_segments", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "adding_and_subtracting_rational_numbers"
+    ], 
+    "exercise_id": "measuring_segments"
+  }, 
+  {
+    "v_position": 11, 
+    "path": "/math/geometry/segments-and-angles/measuring-segments-tutorial/e/congruent_segments/", 
+    "id": "congruent_segments", 
+    "display_name": "Congruent segments", 
+    "title": "Congruent segments", 
+    "parent_id": "measuring-segments-tutorial", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "segments-and-angles", 
+      "measuring-segments-tutorial"
+    ], 
+    "related_video_slugs": [
+      "congruent-segments"
+    ], 
+    "description": "", 
+    "basepoints": 12.0, 
+    "h_position": -16, 
+    "slug": "congruent_segments", 
+    "kind": "Exercise", 
+    "name": "congruent_segments", 
+    "seconds_per_fast_problem": 5.0, 
+    "prerequisites": [
+      "adding_and_subtracting_rational_numbers"
+    ], 
+    "exercise_id": "congruent_segments"
+  }, 
+  {
+    "v_position": 10, 
+    "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/segment_addition/", 
+    "id": "segment_addition", 
+    "display_name": "Segment addition", 
+    "title": "Segment addition", 
+    "parent_id": "line-segment-algebra", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "segments-and-angles", 
+      "line-segment-algebra"
+    ], 
+    "related_video_slugs": [
+      "segment-addition"
+    ], 
+    "description": "", 
+    "basepoints": 25.0, 
+    "h_position": -18, 
+    "slug": "segment_addition", 
+    "kind": "Exercise", 
+    "name": "segment_addition", 
+    "seconds_per_fast_problem": 35.0, 
+    "prerequisites": [
+      "linear_equations_2", 
+      "combining_like_terms_1"
+    ], 
+    "exercise_id": "segment_addition"
+  }, 
+  {
+    "v_position": 12, 
+    "path": "/math/geometry/segments-and-angles/line-segment-algebra/e/midpoint_of_a_segment/", 
+    "id": "midpoint_of_a_segment", 
+    "display_name": "Midpoint of a segment", 
+    "title": "Midpoint of a segment", 
+    "parent_id": "line-segment-algebra", 
+    "live": true, 
+    "ancestor_ids": [
+      "root", 
+      "math", 
+      "geometry", 
+      "segments-and-angles", 
+      "line-segment-algebra"
+    ], 
+    "related_video_slugs": [
+      "midpoint-of-a-segment"
+    ], 
+    "description": "", 
+    "basepoints": 26.0, 
+    "h_position": -19, 
+    "slug": "midpoint_of_a_segment", 
+    "kind": "Exercise", 
+    "name": "midpoint_of_a_segment", 
+    "seconds_per_fast_problem": 38.0, 
+    "prerequisites": [
+      "linear_equations_3"
+    ], 
+    "exercise_id": "midpoint_of_a_segment"
+  }
+]

@@ -9,7 +9,11 @@
     <div class="progressbar progressbar-current"></div>
 
     <!-- process progress -->
-    <h2 id="stage-summary">
+    <h2 class="progress-text">
+        {% trans "Overall progress:" %}
+        <span class="stage-current">0</span>
+        {% trans "of" %}
+        <span class="stage-total">0</span>
     </h2>
     <div class="progressbar progressbar-overall"></div>
 </div>
