@@ -210,7 +210,7 @@ $(function() {
         $("#modal_dialog").dialog({
             title: "Are you sure you want to delete?",
             resizable: false,
-            height: 150,
+            height: 200,
             modal: true,
             buttons: {
                 "Yes": function() {
@@ -249,7 +249,7 @@ $(function() {
             },
         
         });
-        $("#modal_dialog").text("Deleting the downloaded video(s) will lead to permanet loss of data");
+        $("#modal_dialog").text("Deleting the downloaded video(s) will lead to permanent loss of data");
         
     });
 
