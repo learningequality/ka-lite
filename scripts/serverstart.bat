@@ -1,8 +1,8 @@
 @echo off
 
 rem have to change directory, in order to make sure we can import settings
-set SCRIPT_DIR=%~dp0
-set KALITE_DIR=%SCRIPT_DIR%\..\kalite
+set "SCRIPT_DIR=%~dp0"
+set "KALITE_DIR=%SCRIPT_DIR%\..\kalite"
 
 CALL "%SCRIPT_DIR%\get_port.bat" %*
 CALL "%SCRIPT_DIR%\get_setting.bat" CHERRYPY_THREAD_COUNT NTHREADS
