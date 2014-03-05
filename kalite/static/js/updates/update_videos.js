@@ -207,31 +207,50 @@ $(function() {
 
     // Delete existing videos
     $("#delete-videos").click(function() {
-        // This function can only get called when
-        //   no downloads are in progress.
+        $("#modal_dialog").dialog({
+            title: "Are you sure you want to delete?",
+            resizable: false,
+            height: 150,
+            modal: true,
+            buttons: {
+                "Yes": function() {
+                    // This function can only get called when
+                    //   no downloads are in progress.
+                    // Prep
+                    // Get all videos marked for download
+                
+                    var youtube_ids = getSelectedStartedMetadata("youtube_id");
+                    // Do the request
+                    doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
+                        .success(function() {
+                            handleSuccessAPI("id_video_download");
+                            $.each(youtube_ids, function(ind, id) {
+                                setNodeClass(id, "unstarted");
+                            });
+                        })
+                        .fail(function(resp) {
+                            handleFailedAPI(resp, gettext("Error deleting videos"), "id_video_download");
+                            $(".progress-waiting").hide();
+                        });
+                
 
-        // Prep
-        // Get all videos marked for download
-        var youtube_ids = getSelectedStartedMetadata("youtube_id");
-
-        // Do the request
-        doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
-            .success(function() {
-                handleSuccessAPI("id_video_download");
-                $.each(youtube_ids, function(ind, id) {
-                    setNodeClass(id, "unstarted");
-                });
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error deleting videos"), "id_video_download");
-                $(".progress-waiting").hide();
-            });
-
-        // Update the UI
-        unselectAllNodes();
-
-        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
+                    // Update the UI
+                    unselectAllNodes();
+                    // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
+                    ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
+                                    
+                    $(this).dialog("close");
+                },
+                "No": function() {
+                    unselectAllNodes();
+                                                   
+                    $(this).dialog("close");
+                }
+            },
+        
+        });
+        $("#modal_dialog").text("Deleting the downloaded video(s) will lead to permanet loss of data");
+        
     });
 
     // Cancel current downloads
