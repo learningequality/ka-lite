@@ -34,6 +34,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 import settings
@@ -43,7 +44,7 @@ from main.topic_tools import get_node_cache
 from settings import LOG as logging
 from shared.decorators import require_login
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import JsonResponse, JsonResponseMessageError
+from utils.internet import JsonResponse, JsonResponseMessageError, set_query_params
 
 
 KHAN_SERVER_URL = "http://www.khanacademy.org"
@@ -149,7 +150,7 @@ def update_all_central_callback(request):
     videos = get_api_resource(request, "/api/v1/user/videos")
     node_cache = get_node_cache()
 
-    # Save videos
+    # Collate videos
     video_logs = []
     for video in videos:
         # Assume that KA videos are all english-language, not dubbed (for now)
@@ -177,7 +178,7 @@ def update_all_central_callback(request):
         except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
 
-    # Save exercises
+    # Collate exercises
     exercise_logs = []
     for exercise in exercises:
         # Only save exercises that have any progress.
@@ -207,19 +208,35 @@ def update_all_central_callback(request):
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
 
     # POST the data back to the distributed server
-    dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
-    logging.debug("POST'ing to %s" % request.session["distributed_callback_url"])
-    response = requests.post(
-        request.session["distributed_callback_url"],
-        cookies={ "csrftoken": request.session["distributed_csrf_token"] },
-        data = {
-            "csrfmiddlewaretoken": request.session["distributed_csrf_token"],
-            "video_logs": json.dumps(video_logs, default=dthandler),
-            "exercise_logs": json.dumps(exercise_logs, default=dthandler),
-            "user_id": request.session["distributed_user_id"],
-        }
-    )
-    logging.debug("Response (%d): %s" % (response.status_code, response.content))
+    try:
+
+        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+        logging.debug("POST'ing to %s" % request.session["distributed_callback_url"])
+        response = requests.post(
+            request.session["distributed_callback_url"],
+            cookies={ "csrftoken": request.session["distributed_csrf_token"] },
+            data = {
+                "csrfmiddlewaretoken": request.session["distributed_csrf_token"],
+                "video_logs": json.dumps(video_logs, default=dthandler),
+                "exercise_logs": json.dumps(exercise_logs, default=dthandler),
+                "user_id": request.session["distributed_user_id"],
+            }
+        )
+        logging.debug("Response (%d): %s" % (response.status_code, response.content))
+    except requests.exceptions.ConnectionError as e:
+        return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
+            "message_type": "error",
+            "message": _("Could not connect to your KA Lite installation to share Khan Academy data."),
+            "message_id": "id_khanload",
+        }))
+    except Exception as e:
+        return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
+            "message_type": "error",
+            "message": _("Failure to send data to your KA Lite installation: %s") % e,
+            "message_id": "id_khanload",
+        }))
+
+
     try:
         message = json.loads(response.content)
     except ValueError as e:
@@ -234,7 +251,11 @@ def update_all_central_callback(request):
 #    if response.status_code != 200:
 #        return HttpResponseServerError(response.content)
 
-    return HttpResponseRedirect(request.session["distributed_redirect_url"] + "?message_type=%s&message=%s&message_id=id_khanload" % (message.keys()[0], message.values()[0]))
+    return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
+        "message_type": message.keys()[0],
+        "message": message.values()[0],
+        "message_id": "id_khanload",
+    }))
 
 
 @require_login
