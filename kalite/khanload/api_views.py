@@ -238,11 +238,18 @@ def update_all_central_callback(request):
 
 
     try:
-        message = json.loads(response.content)
+        json_response = json.loads(response.content)
+        if not isinstance(json_response, dict) or len(json_response) != 1:
+            # Could not validate the message is a single key-value pair
+            raise Exception(_("Unexpected response format from your KA Lite installation."))
+        message_type = json_response.keys()[0]
+        message = json_response.values()[0]
     except ValueError as e:
-        message = { "error": unicode(e) }
+        message_type = "error"
+        message = unicode(e)
     except Exception as e:
-        message = { "error": u"Loading json object: %s" % e }
+        message_type = "error"
+        message = _("Loading json object: %s") % e
 
     # If something broke on the distribute d server, we are SCREWED.
     #   For now, just show the error to users.
@@ -252,8 +259,8 @@ def update_all_central_callback(request):
 #        return HttpResponseServerError(response.content)
 
     return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
-        "message_type": message.keys()[0],
-        "message": message.values()[0],
+        "message_type": message_type,
+        "message": message,
         "message_id": "id_khanload",
     }))
 
