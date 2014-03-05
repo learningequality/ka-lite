@@ -1,7 +1,9 @@
+""" Docstring to topic_tools.py """
+
+
 """
-Important constants and helpful functions
+Important constants and helpful functions.
 """
-"""DOCSTRING to topic_tools.py"""
 import glob
 import os
 from functools import partial
@@ -85,7 +87,7 @@ def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
 
 def validate_ancestor_ids(topictree=None):
     """
-    Given the KA Lite topic tree, make sure all parent_id and ancestor_ids are stamped
+    Given the KA Lite topic tree,make sure all parent_id and ancestor_ids are stamped.
     """
 
     if not topictree:
@@ -108,7 +110,7 @@ def validate_ancestor_ids(topictree=None):
 
 def generate_slug_to_video_id_map(node_cache=None):
     """
-    Go through all videos, and make a map of slug to video_id, for fast look-up later
+    Go through all videos, and make a map of slug to video_id, for fast look-up later.
     """
 
     node_cache = node_cache or get_node_cache()
@@ -124,10 +126,11 @@ def generate_slug_to_video_id_map(node_cache=None):
 
 
 def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
+    """ Make sure that we only get the slug of child of a topic
+     to avoid redundancy. """
     categories = node_cache or get_node_cache()
     result = dict()
-    # make sure that we only get the slug of child of a topic
-    # to avoid redundancy
+    
     for category_name, category in categories.iteritems():
         result[category_name] = {}
         for node_name, node_list in category.iteritems():
@@ -144,7 +147,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
 
 def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
     """
-    Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Video nodes.
+    Given the KA Lite topic tree,A dictionary of all Topic, Exercise, and Video nodes is generated.
     """
 
     if not topictree:
@@ -153,7 +156,7 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
 
 
     def recurse_nodes(node):
-        # Add the node to the node cache
+        """ Adds the node to the node cache with recursion for other node. """
         kind = node["kind"]
         node_cache[kind] = node_cache.get(kind, {})
 
@@ -161,7 +164,7 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
             node_cache[kind][node["id"]] = []
         node_cache[kind][node["id"]] += [node]        # Append
 
-        # Do the recursion
+        
         for child in node.get("children", []):
             recurse_nodes(child)
     recurse_nodes(topictree)
@@ -170,6 +173,7 @@ def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
 
 
 def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
+    """ Returns the ancestor to the passed node. """
     potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
     if not potential_parents:
         return None
@@ -182,21 +186,22 @@ def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
         return None
 
 def get_parent(node, parent_type="Topic"):
+    """ Calls get_ancestor method which returns the ancestor. """
     return get_ancestor(node, ancestor_id=node["parent_id"], ancestor_type=parent_type)
 
 def get_videos(topic):
-    """Given a topic node, returns all video node children (non-recursively)"""
+    """ Given a topic node, returns all video node children. (non-recursively)"""
     return filter(lambda node: node["kind"] == "Video", topic["children"])
 
 
 def get_exercises(topic):
-    """Given a topic node, returns all exercise node children (non-recursively)"""
+    """ Given a topic node, returns all exercise node children. (non-recursively) """
     # Note: "live" is currently not stamped on any nodes, but could be in the future, so keeping here.
     return filter(lambda node: node["kind"] == "Exercise" and node.get("live", True), topic["children"])
 
 
 def get_live_topics(topic):
-    """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
+    """ Given a topic node, returns all children that are not hidden and contain at least one video. (non-recursively)"""
     # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
     return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
 
@@ -206,7 +211,7 @@ def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
 
 
 def get_topic_by_path(path, root_node=None):
-    """Given a topic path, return the corresponding topic node in the topic hierarchy"""
+    """ Given a topic path, return the corresponding topic node in the topic hierarchy. """
     # Make sure the root fits
     if not root_node:
         root_node = get_topic_tree()
@@ -251,8 +256,8 @@ def get_all_leaves(topic_node=None, leaf_type=None):
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
-    """Given a topic (identified by topic_id or path), return all descendent leaf nodes"""
-    assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
+    """ Given a topic (identified by topic_id or path), return all descendent leaf nodes. """
+    assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both. "
 
     if not path:
         topic_node = get_node_cache('Topic').get(topic_id, None)
@@ -268,19 +273,19 @@ def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
 
 
 def get_topic_exercises(*args, **kwargs):
-    """Get all exercises for a particular set of topics"""
+    """ Get all exercises for a particular set of topics. """
     kwargs["leaf_type"] = "Exercise"
     return get_topic_leaves(*args, **kwargs)
 
 
 def get_topic_videos(*args, **kwargs):
-    """Get all videos for a particular set of topics"""
+    """ Get all videos for a particular set of topics. """
     kwargs["leaf_type"] = "Video"
     return get_topic_leaves(*args, **kwargs)
 
 
 def get_related_exercises(videos):
-    """Given a set of videos, get all of their related exercises."""
+    """ Given a set of videos, get all of their related exercises. """
     related_exercises = []
     for video in videos:
         if video.get("related_exercise"):
@@ -296,7 +301,7 @@ def get_exercise_paths():
 
 
 def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
-    """Given a set of exercises, get all of the videos that say they're related.
+    """ Given a set of exercises, get all of the videos that say they're related.
 
     possible_videos: list of videos to consider.
     topics: if not possible_videos, then get the possible videos from a list of topics.
@@ -348,8 +353,9 @@ def get_related_videos(exercise, limit_to_available=True):
 
 
 def is_sibling(node1, node2):
-    """
-    """
+    
+    """ Returns boolean whether the passed node are sibling or not. """
+    
     parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
 
     parent_path1 = parse_path(node1)
@@ -359,6 +365,7 @@ def is_sibling(node1, node2):
 
 
 def get_neighbor_nodes(node, neighbor_kind=None):
+    """ Uses the parent to the node passed and return sibling to it. """
 
     parent = get_parent(node)
     prev = next = None
@@ -375,8 +382,10 @@ def get_neighbor_nodes(node, neighbor_kind=None):
         break
 
     return prev, next
+    
 
 def get_video_page_paths(video_id=None):
+    """ Returns the path to the passed video_id. """
     try:
         return [n["path"] for n in topic_tools.get_node_cache("Video")[video_id]]
     except:
@@ -384,6 +393,7 @@ def get_video_page_paths(video_id=None):
 
 
 def get_exercise_page_paths(video_id=None):
+    """ Returns the path to the exercises as exercise_paths. """
 
     try:
         exercise_paths = set()
