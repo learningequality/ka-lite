@@ -10,12 +10,12 @@ from django.utils.translation import ugettext as _
 
 import i18n
 from .classes import UpdatesDynamicCommand
+from distributed import caching
 from fle_utils import set_process_priority
 from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
 from i18n.management.commands.scrape_videos import scrape_video
 from kalite.settings import LOG as logging
-from main import caching
 from main.topic_tools import get_video_by_youtube_id
 from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile

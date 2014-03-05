@@ -178,7 +178,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "%s.custom_context_processors.custom" % ("central" if CENTRAL_SERVER else "main"),
+    "%s.custom_context_processors.custom" % ("central" if CENTRAL_SERVER else "distributed"),
 )
 
 
@@ -245,11 +245,11 @@ if CENTRAL_SERVER:
     AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
     AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
 
-    CONTENT_ROOT   = None  # needed for shared functions that are main-only
+    CONTENT_ROOT   = None  # needed for shared functions that are distributed-only
     CONTENT_URL    = None
 
 else:
-    ROOT_URLCONF = "main.urls"
+    ROOT_URLCONF = "distributed.urls"
     MIDDLEWARE_CLASSES += (
         "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
         "facility.middleware.FacilityCheck",
@@ -260,7 +260,7 @@ else:
     )
 
     TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
-    INSTALLED_APPS += ('i18n', 'testing')
+    INSTALLED_APPS += ('distributed', 'testing')
     LANGUAGE_COOKIE_NAME    = "django_language"
 
     CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
@@ -428,7 +428,7 @@ else:
     ENABLE_CLOCK_SET = False
 
 
-# This has to be defined for main and central
+# This has to be defined for distributed and central
 # Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
 BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
 BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
@@ -542,4 +542,4 @@ if package_selected("Demo"):
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('main.demo_middleware.StopAdminAccess','main.demo_middleware.LinkUserManual','main.demo_middleware.ShowAdminLogin',)
+    MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)

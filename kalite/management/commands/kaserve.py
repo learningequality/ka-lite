@@ -89,7 +89,7 @@ class Command(BaseCommand):
 
         if not settings.CENTRAL_SERVER:
             logging.info("Invalidating the web cache.")
-            from main.caching import invalidate_web_cache
+            from fle_utils.internet.webcache import invalidate_web_cache
             invalidate_web_cache()
 
             # Next, call videoscan.

@@ -21,17 +21,16 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
-import topic_tools
-import topicdata
 from .caching import backend_cache_page
-from .models import VideoLog, ExerciseLog
-from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from config.models import Settings
 from facility.models import Facility, FacilityUser,FacilityGroup
 from fle_utils.django_utils import is_loopback_connection
 from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params
 from i18n import select_best_available_language
 from kalite.settings import LOG as logging
+from main import topic_tools, topicdata
+from main.models import VideoLog, ExerciseLog
+from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device
 from shared.decorators import require_admin

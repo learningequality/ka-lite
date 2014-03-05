@@ -34,8 +34,3 @@ class VideoLogForm(forms.Form):
         """
         if self.cleaned_data["video_id"] not in get_node_cache("Video"):
             raise forms.ValidationError(_("Video ID not recognized."))
-
-class DateTimeForm(forms.Form):
-    """Form that validates DateTimes to be set on the server for the RPi"""
-
-    date_time = forms.DateTimeField()
