@@ -134,7 +134,7 @@ def create_cache(path=None, url_name=None, cache=None, force=False):
         Client().get(path)
 
     if not has_cache_key(path=path, cache=cache):
-        logging.warn("Did not create cache entry for %s" % path)
+        pass#logging.warn("Did not create cache entry for %s" % path)
 
 
 def expire_page(path=None, url_name=None, failure_ok=False):
@@ -147,8 +147,8 @@ def expire_page(path=None, url_name=None, failure_ok=False):
 
 
 def invalidate_web_cache():
-    logging.debug("Clearing the web cache.")
+    pass#logging.debug("Clearing the web cache.")
     cache = get_web_cache()
     if cache:
         cache.clear()
-    logging.debug("Great success emptying the web cache.")
+    pass#logging.debug("Great success emptying the web cache.")
