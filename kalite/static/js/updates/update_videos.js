@@ -208,12 +208,15 @@ $(function() {
     // Delete existing videos
     $("#delete-videos").click(function() {
         $("#modal_dialog").dialog({
-            title: "Are you sure you want to delete?",
-            resizable: false,
+            title: gettext("Are you sure you want to delete?"),
+            resizable: true,
+            draggable: true,
             height: 200,
             modal: true,
-            buttons: {
-                "Yes": function() {
+            buttons: [{
+                id: "input_yes",
+                text: gettext("Yes"),
+                click: function() {
                     // This function can only get called when
                     //   no downloads are in progress.
                     // Prep
@@ -232,25 +235,25 @@ $(function() {
                             handleFailedAPI(resp, gettext("Error deleting videos"), "id_video_download");
                             $(".progress-waiting").hide();
                         });
-                
-
-                    // Update the UI
-                    unselectAllNodes();
-                    // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-                    ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
-                                    
-                    $(this).dialog("close");
+                        // Update the UI
+                        unselectAllNodes();
+                        
+                        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
+                        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
+                        
+                        $(this).dialog("close");
+                    }
                 },
-                "No": function() {
-                    unselectAllNodes();
-                                                   
-                    $(this).dialog("close");
+                {
+                    id: "input_cancel",
+                    text: gettext("No"),
+                    click: function() {                                                   
+                        $(this).dialog("close");
                 }
-            },
-        
+            }]
+            
         });
-        $("#modal_dialog").text("Deleting the downloaded video(s) will lead to permanent loss of data");
-        
+        $("#modal_dialog").text(gettext("Deleting the downloaded video(s) will lead to permanent loss of data"));
     });
 
     // Cancel current downloads
