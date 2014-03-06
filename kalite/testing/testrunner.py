@@ -9,6 +9,7 @@ import sys
 from django.test.simple import DjangoTestSuiteRunner
 from django.core import management
 
+import settings
 from settings import LOG as logging
 from kalite import settings
 

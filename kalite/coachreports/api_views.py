@@ -19,7 +19,6 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
-from config.models import Settings
 from facility.decorators import facility_required
 from facility.models import Facility, FacilityUser, FacilityGroup
 from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary

@@ -221,7 +221,8 @@ def invalidate_inmemory_caches():
 def invalidate_web_cache():
     logging.debug("Clearing the web cache.")
     cache = get_web_cache()
-    cache.clear()
+    if cache:
+        cache.clear()
     logging.debug("Great success emptying the web cache.")
 
 

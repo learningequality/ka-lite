@@ -511,8 +511,8 @@ $(window).unload(function() {
 });
 
 function request(method, data) {
-
-    /* KA Lite removal
+    // KA-LITE-MOD - removing 'v1' requests that simply slow things down.
+    /*
     var apiBaseUrl = (Exercises.assessmentMode ?
             "/api/v1/user/assessment/exercises" : "/api/v1/user/exercises");
 
@@ -524,7 +524,10 @@ function request(method, data) {
         dataType: "json"
     };
     */
+
     var deferred = $.Deferred();
+
+    // KA-LITE-MOD - removing 'v1' requests that simply slow things down.
     /*
     attemptHintQueue.queue(function(next) {
         $.ajax(params).then(function(data, textStatus, jqXHR) {
@@ -555,6 +558,7 @@ function request(method, data) {
     // gets queued up.
     $(Exercises).trigger("apiRequestStarted");
     */
+
     return deferred.promise();
 }
 

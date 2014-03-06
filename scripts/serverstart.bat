@@ -12,5 +12,5 @@ IF EXIST "%KALITE_DIR%\runcherrypyserver.pid" (
 )
 
 echo.
-start /b python.exe "%KALITE_DIR%\manage.py" runcherrypyserver host=0.0.0.0 port=%PORT% daemonize=True threads=%NTHREADS% pidfile="%KALITE_DIR%\runcherrypyserver.pid"
+start /b python.exe "%KALITE_DIR%\manage.py" kaserve host=0.0.0.0 port=%PORT% daemonize=True threads=%NTHREADS% pidfile="%KALITE_DIR%\runcherrypyserver.pid"
 

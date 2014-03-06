@@ -9,12 +9,13 @@ from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
 import settings
 import version
 from .classes import UpdatesStaticCommand
+from chronograph.management.croncommand import CronCommand
 from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
 from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
@@ -24,10 +25,11 @@ from updates import REMOTE_VIDEO_SIZE_FILEPATH
 from utils.general import ensure_dir
 from utils.internet import callback_percent_proxy, download_file
 
-class Command(UpdatesStaticCommand):
+
+class Command(UpdatesStaticCommand, CronCommand):
     help = "Download language pack requested from central server"
 
-    option_list = BaseCommand.option_list + (
+    unique_option_list = (
         make_option('-l', '--language',
                     action='store',
                     dest='lang_code',
@@ -46,6 +48,8 @@ class Command(UpdatesStaticCommand):
                     default=None,
                     help='Use the given zip file instead of fetching from the central server.'),
     )
+
+    option_list = UpdatesStaticCommand.option_list + CronCommand.unique_option_list + unique_option_list
 
     stages = (
         "download_language_pack",
@@ -66,33 +70,33 @@ class Command(UpdatesStaticCommand):
         # Download the language pack
         try:
             if options['file']:
-                self.start("Using local language pack '%s'" % options['file'])
+                self.start(_("Using local language pack '%(filepath)s'") % {"filepath": options['file']})
                 zip_filepath = options['file']
             else:
-                self.start("Downloading language pack '%s'" % lang_code)
+                self.start(_("Downloading language pack '%(lang_code)s'") % {"lang_code": lang_code})
                 zip_filepath = get_language_pack(lang_code, software_version, callback=self.cb)
 
             # Unpack into locale directory
-            self.next_stage("Unpacking language pack '%s'" % lang_code)
+            self.next_stage(_("Unpacking language pack '%(lang_code)s'") % {"lang_code": lang_code})
             unpack_language(lang_code, zip_filepath=zip_filepath)
 
             #
-            self.next_stage("Creating static files for language pack '%s'" % lang_code)
+            self.next_stage(_("Creating static files for language pack '%(lang_code)s'") % {"lang_code": lang_code})
             update_jsi18n_file(lang_code)
 
 
-            self.next_stage("Moving files to their appropriate local disk locations.")
+            self.next_stage(_("Moving files to their appropriate local disk locations."))
             move_dubbed_video_map(lang_code)
             move_exercises(lang_code)
             move_srts(lang_code)
             move_video_sizes_file(lang_code)
 
-            self.next_stage("Invalidate caches")
+            self.next_stage(_("Invalidate caches"))
             caching.invalidate_all_caches()
 
-            self.complete("Finished processing language pack %s" % lang_code)
+            self.complete(_("Finished processing language pack %(lang_code)s") % {"lang_code": lang_code})
         except Exception as e:
-            self.cancel(stage_status="error", notes="Error: %s" % e)
+            self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": unicode(e)})
             raise
 
     def cb(self, percent):

@@ -3,7 +3,7 @@ import os
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 
 import settings
-from i18n import get_language_pack_filepath
+from i18n import get_language_pack_filepath, get_srt_path
 from utils.django_utils import get_request_ip
 from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
@@ -51,7 +51,7 @@ def download_subtitle(request, lang_code, youtube_id):
     to output, so we can collect stats."""
 
     # Log the info
-    stats_logger("subtitles").info("sd;%s;%s" % (get_request_ip(request), lang_code, youtube_id))
+    stats_logger("subtitles").info("sd;%s;%s;%s" % (get_request_ip(request), lang_code, youtube_id))
 
     # Find the file to return
     srt_filepath = get_srt_path(lang_code, youtube_id=youtube_id)
@@ -65,3 +65,10 @@ def download_subtitle(request, lang_code, youtube_id):
     response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(srt_filepath)
 
     return response
+
+
+def download_windows_installer(request, version):
+    installer_name = "KALiteSetup-%s.exe" % version
+    installer_url = settings.INSTALLER_BASE_URL + installer_name
+    stats_logger("installer").info("wi;%s;%s" % (get_request_ip(request), installer_name))
+    return HttpResponseRedirect(installer_url)
