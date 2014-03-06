@@ -24,7 +24,7 @@ from django.views.i18n import javascript_catalog
 from .caching import backend_cache_page
 from facility.models import Facility, FacilityUser,FacilityGroup
 from fle_utils.django_utils import is_loopback_connection
-from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params
+from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params, backend_cache_page
 from i18n import select_best_available_language
 from kalite.settings import LOG as logging
 from main import topic_tools, topicdata
