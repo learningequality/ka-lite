@@ -1,4 +1,15 @@
 """
+Caching is a critical part of the KA Lite app, in order to speed up server response times.
+However, if the server state changes, the cache may need to be invalidated.
+
+This file exposes functions for clearing, or even pre-generating the cache.
+It also implements listeners on some models to determine when the
+cache needs to be invalidated.
+
+For any app implementing cacheable data or writing to the web cache, the app should:
+* Implement a CACHE_VARS variable, put cacheable variable values in there.  The values will be cleared,
+    across all apps, by calling invalidate_inmemory_caches
+* Call invalidate_web_cache (from fle_utils.internet.webcache)
 """
 import datetime
 import os
@@ -71,7 +82,7 @@ def invalidate_all_pages_related_to_video(video_id=None):
 
 
 def regenerate_all_pages_related_to_videos(video_ids):
-    """Same as above, but on a list of videos"""
+    """Regenerate all webpages related to a specific list of videos.  This is good for increasing new server performance."""
     paths_to_regenerate = set() # unique set
     for video_id in video_ids:
 
@@ -88,6 +99,15 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
 
 def invalidate_inmemory_caches():
+    """
+    Any variables that are invalidated by things like content being added or deleted
+    should be stored in the module's CACHE_VARS variable and registered here.
+
+    This code clears all of those variables, so they are regenerated from scratch on
+    the fly, using the new data.
+    """
+    # TODO: loop through all modules and see if a module variable exists, using getattr,
+    #   rather than hard-coding.
     for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
@@ -95,7 +115,11 @@ def invalidate_inmemory_caches():
 
 
 def invalidate_all_caches():
-    if settings.CACHE_TIME:
+    """
+    Basic entry-point for clearing necessary caches.  Most functions can
+    call in here.
+    """
+    if caching_is_enabled():
         invalidate_inmemory_caches()
         invalidate_web_cache()
         logging.debug("Great success emptying all caches.")

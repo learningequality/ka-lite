@@ -1,4 +1,10 @@
 """
+URLS for constructing the KA Lite app. Mostly imported from other apps.
+Notable urls include:
+* serving media and static files.  This can be overriden by putting a (fast) front-end server
+    (like nginx) to speed things up.
+* The "splat" handler, which catches all uncaught requests, and tries to turn them into a
+    node in the topic tree.
 """
 from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url

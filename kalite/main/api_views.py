@@ -1,4 +1,9 @@
 """
+Views accessible as an API endpoint.  All should return JsonResponses.
+
+Here, these are focused on:
+* GET/save student progress (video, exercise)
+* topic tree views (search, knowledge map)
 """
 import cgi
 import copy
@@ -40,6 +45,11 @@ from testing.decorators import allow_api_profiling
 
 
 class student_log_api(object):
+    """
+    Decorator (wrapper) for telling the user what happens
+    in the case that they're not logged in (or other issues
+    with using the API endpoint)
+    """
 
     def __init__(self, logged_out_message):
         self.logged_out_message = logged_out_message

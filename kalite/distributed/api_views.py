@@ -1,4 +1,10 @@
 """
+Views accessible as an API endpoint.  All should return JsonResponses.
+
+Here, these are focused on API tools from the website, including:
+* Getting the overall user status to transform static pages to be user-specific
+* Setting the current clock time (RPi)
+* Showing the process ID (so that the server can be killed dynamically)
 """
 import cgi
 import copy
@@ -170,7 +176,9 @@ def status(request):
 
 
 def getpid(request):
-    #who am I?  return the PID; used to kill the webserver process if the PID file is missing
+    """
+    who am I?  return the PID; used to kill the webserver process if the PID file is missing.
+    """
     try:
         return HttpResponse(os.getpid())
     except:

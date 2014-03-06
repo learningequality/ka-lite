@@ -1,5 +1,23 @@
 """
-Important constants and helpful functions
+Important constants and helpful functions for the topic tree and a view on its data, the node cache.
+
+The topic tree is a hierarchical representation of real data (exercises, and videos).
+Leaf nodes of the tree are real learning resources, such as videos and exercises.
+Non-leaf nodes are topics, which describe a progressively higher-level grouping of the topic data.
+
+Each node in the topic tree comes with lots of metadata, including:
+* title
+* description
+* id (unique identifier; now equivalent to slug below)
+* slug (for computing a URL)
+* path (which is equivalent to a URL)
+* kind (Topic, Exercise, Video)
+and more.
+
+The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
+so
+* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
+* get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
 import os

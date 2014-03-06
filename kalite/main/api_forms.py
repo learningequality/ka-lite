@@ -1,10 +1,13 @@
+"""
+Data validation of different types of POST responses through our api_urls/views
+"""
 from django import forms
 
 from .topic_tools import get_node_cache
 
 
 class ExerciseLogForm(forms.Form):
-    """Form that represents the schema for data API requests"""
+    """Form that validates ExerciseLog data from a POST request"""
 
     exercise_id = forms.CharField(max_length=100)
     streak_progress = forms.IntegerField()
@@ -20,7 +23,7 @@ class ExerciseLogForm(forms.Form):
 
 
 class VideoLogForm(forms.Form):
-    """Form that represents the schema for data API requests"""
+    """Form that validates VideoLog data from a POST request"""
 
     video_id = forms.CharField(max_length=100)
     youtube_id = forms.CharField(max_length=20)

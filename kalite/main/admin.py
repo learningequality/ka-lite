@@ -1,4 +1,5 @@
 """
+Manipulating models to expose to admins through the Django admin interface
 """
 from django.conf import settings
 from django.contrib import admin

@@ -1,3 +1,6 @@
+"""
+Forces loading of the most relevant topic data.
+"""
 import topic_tools
 
 TOPICS          = topic_tools.get_topic_tree()

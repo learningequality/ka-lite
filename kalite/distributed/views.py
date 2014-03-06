@@ -1,4 +1,9 @@
 """
+Views for the KA Lite app are wide-ranging, and include:
+* Serving the homepage, videos, exercise pages.
+* Dealing with caching
+* Administrative pages
+and more!
 """
 import copy
 import json
