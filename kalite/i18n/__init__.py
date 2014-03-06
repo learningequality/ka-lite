@@ -16,8 +16,15 @@ from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
+################################################
+###                                          ###
+###   NOTE TO US:                            ###
+###   main migrations import this file, so   ###
+###   we CANNOT import main.models in here.  ###
+###                                          ###
+################################################
 from fle_utils.general import ensure_dir, softload_json
-from kalite.settings import LOG as logging
+from kalite.settings import LANG_LOOKUP_FILEPATH, LOG as logging
 from version import VERSION
 
 CACHE_VARS = []
@@ -29,16 +36,16 @@ if settings.CENTRAL_SERVER:
         "X-apikey": settings.AMARA_API_KEY,
     }
 
-SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH_SECURE, "subtitles")
+SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH, "subtitles")
 LANGUAGE_PACK_ROOT = os.path.join(settings.MEDIA_ROOT, "language_packs")
 
 LANGUAGE_SRT_SUFFIX = "_download_status.json"
 SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
-DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "dubbed_video_mappings.json")
+DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "dubbed_video_mappings.json")
 SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
-SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH_SECURE, "i18n", "supported_languages.json")
+SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "supported_languages.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
-LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH_SECURE, "i18n", "build")
+LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH, "i18n", "build")
 
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 

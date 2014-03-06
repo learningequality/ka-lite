@@ -11,11 +11,6 @@ function video_start_callback(progress_log, resp) {
     lastKey = null;
     nErrors = 0;
     videos_downloading = false;
-
-    // Assumption here (not quite valid) is that all, and only,
-    //   English videos are on amazon, and so we can download with
-    //   current stage progress (and not just overall)
-    $(".progressbar-current").toggle(CURRENT_LANGUAGE == "en");
 }
 
 function video_reset_callback() {

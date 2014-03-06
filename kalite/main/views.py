@@ -26,7 +26,6 @@ import topicdata
 from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from config.models import Settings
 from facility.models import Facility, FacilityUser,FacilityGroup
 from fle_utils.django_utils import is_loopback_connection
 from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params
