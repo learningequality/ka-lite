@@ -1,3 +1,6 @@
+"""
+"""
+from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
@@ -11,10 +14,9 @@ import control_panel.urls
 import faq.urls
 import registration.urls
 import securesync.urls
-import settings
 import stats.api_urls, stats.urls
 from feeds import RssSiteNewsFeed, AtomSiteNewsFeed
-from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
+from fle_utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
 
 admin.autodiscover()

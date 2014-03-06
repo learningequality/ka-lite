@@ -1,13 +1,15 @@
+"""
+"""
 import re
 
+from django.conf import settings
 from django.test import TestCase
 from django.utils import unittest
 
-import settings
 from facility.models import Facility, FacilityUser, FacilityGroup
+from fle_utils.django_utils import call_command_with_output
 from securesync import crypto
 from testing import KALiteTestCase
-from utils.django_utils import call_command_with_output
 
 
 @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto tests as it does not appear to be installed.")

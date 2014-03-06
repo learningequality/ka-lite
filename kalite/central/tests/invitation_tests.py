@@ -1,11 +1,11 @@
 """
 Tests of the organization invitation system
 """
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.test import LiveServerTestCase, TestCase, Client
 
-import settings
 from central.models import Organization, OrganizationInvitation
 from testing import central_server_test
 

@@ -1,7 +1,6 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-
 import re
 import time
 import unittest
@@ -11,20 +10,20 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.webdriver.firefox.webdriver import WebDriver
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-import settings
 from facility.models import Facility, FacilityGroup, FacilityUser
+from fle_utils.django_utils import call_command_with_output
+from fle_utils.general import isnumeric
+from kalite.settings import package_selected, LOG as logging
 from main.models import ExerciseLog
 from main.topic_tools import get_exercise_paths
 from main.topicdata import NODE_CACHE
-from settings import LOG as logging
 from testing.browser import BrowserTestCase
 from testing.decorators import distributed_server_test
-from utils.django_utils import call_command_with_output
-from utils.general import isnumeric
 
 
 @distributed_server_test
@@ -247,7 +246,7 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
 
 
 @distributed_server_test
-@unittest.skipIf(settings.package_selected("UserRestricted"), "Registration not allowed when UserRestricted set.")
+@unittest.skipIf(package_selected("UserRestricted"), "Registration not allowed when UserRestricted set.")
 class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
     password   = "password"

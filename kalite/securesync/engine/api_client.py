@@ -1,15 +1,18 @@
+"""
+"""
 import re
 import json
 import uuid
 
+from django.conf import settings
+
 import kalite
-import settings
 from . import get_serialized_models, save_serialized_models, get_device_counters, deserialize
 from .models import *
+from kalite.settings import LOG as logging
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
-from settings import LOG as logging
 
 
 class SyncClient(BaseClient):

@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
 from .models import Device
-from utils.internet import set_query_params
+from fle_utils.internet import set_query_params
 
 
 def require_registration(resource_name):

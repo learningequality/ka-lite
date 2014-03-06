@@ -196,7 +196,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "utils.django_utils.middleware.GetNextParam",
+    "fle_utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
@@ -339,7 +339,7 @@ LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + ('d_db' if DEBUG else ''))
 
-MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
+MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 CACHES = {
     "default": {

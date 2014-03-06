@@ -1,8 +1,10 @@
+"""
+"""
 import glob
 import os
 
-from utils.general import ensure_dir
-from utils.internet import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
+from .general import ensure_dir
+from .internet import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
 
 
 OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/"  # needed for redirects

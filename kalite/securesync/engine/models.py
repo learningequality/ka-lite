@@ -1,8 +1,11 @@
+"""
+"""
 import datetime
 import uuid
 import zlib
 from pbkdf2 import crypt
 
+from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
@@ -10,12 +13,9 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-import kalite
-import settings
 from . import add_syncing_models
 from config.models import Settings
-from settings import LOG as logging
-from utils.django_utils import validate_via_booleans, ExtendedModel
+from fle_utils.django_utils import validate_via_booleans, ExtendedModel
 
 
 ID_MAX_LENGTH=32

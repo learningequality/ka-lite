@@ -1,3 +1,5 @@
+"""
+"""
 import glob
 import json
 import os
@@ -9,21 +11,21 @@ from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
+from django.conf import settings
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
-import settings
-import version
+from version import VERSION
 from .classes import UpdatesStaticCommand
 from chronograph.management.croncommand import CronCommand
+from fle_utils.general import ensure_dir
+from fle_utils.internet import callback_percent_proxy, download_file
 from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
 from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
+from kalite.settings import LOG as logging
 from main import caching
-from settings import LOG as logging
 from updates import REMOTE_VIDEO_SIZE_FILEPATH
-from utils.general import ensure_dir
-from utils.internet import callback_percent_proxy, download_file
 
 
 class Command(UpdatesStaticCommand, CronCommand):
@@ -39,7 +41,7 @@ class Command(UpdatesStaticCommand, CronCommand):
         make_option('-s', '--software_version',
                     action='store',
                     dest='software_version',
-                    default=version.VERSION,
+                    default=VERSION,
                     metavar="SOFT_VERS",
                     help="Specify the software version to download a language pack for."),
         make_option('-f', '--from-file',

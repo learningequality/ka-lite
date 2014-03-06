@@ -4,7 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-import version
+from version import VERSION
 from i18n.models import LanguagePack
 
 
@@ -14,7 +14,7 @@ class Migration(SchemaMigration):
         LanguagePack.objects.get_or_create(
             code='en',
             defaults={
-                'software_version': version.VERSION,
+                'software_version': VERSION,
                 'language_pack_version': 0,
                 'percent_translated': 100,
                 'subtitle_count': 0,

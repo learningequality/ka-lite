@@ -13,16 +13,15 @@ from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
-import version
 from . import get_serialized_models, save_serialized_models, get_device_counters, serialize
 from .models import *
 from chronograph import force_job
+from fle_utils.django_utils import get_request_ip
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
+from kalite.settings import LOG as logging
 from securesync.devices.models import *  # inter-dependence
-from settings import LOG as logging
 from shared.decorators import require_admin
 from stats.models import UnregisteredDevicePing
-from utils.django_utils import get_request_ip
-from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 
 
 def require_sync_session(handler):

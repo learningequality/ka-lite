@@ -1,16 +1,14 @@
 """
 This is a command-line tool to execute functions helpful to testing.
 """
-
 from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from config.models import Settings
 from facility.models import Facility
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 from securesync.models import Device, DeviceZone, Zone, ZoneInvitation
 
 

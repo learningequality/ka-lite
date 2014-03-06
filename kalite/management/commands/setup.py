@@ -1,3 +1,5 @@
+"""
+"""
 import getpass
 import os
 import re
@@ -17,17 +19,17 @@ sys.path = [
 ] + sys.path
 os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
-import version
+from fle_utils.general import get_host_name
+from fle_utils.internet import get_ip_addresses
+from fle_utils.platforms import is_windows, system_script_extension
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
 from securesync.models import Zone
-from utils.general import get_host_name
-from utils.internet import get_ip_addresses
-from utils.platforms import is_windows, system_script_extension
+from version import VERSION
 
 
 def raw_input_yn(prompt):
@@ -139,7 +141,7 @@ class Command(BaseCommand):
         sys.stdout.write("                                  \n")
         sys.stdout.write("http://kalite.learningequality.org\n")
         sys.stdout.write("                                  \n")
-        sys.stdout.write("         version %s\n" % version.VERSION)
+        sys.stdout.write("         version %s\n" % VERSION)
         sys.stdout.write("                                  \n")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
@@ -188,11 +190,11 @@ class Command(BaseCommand):
             sys.stdout.write("WARNING: Database file already exists! \n")
             sys.stdout.write("-------------------------------------------------------------------\n")
             if not options["interactive"] \
-               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % version.VERSION) \
+               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
                or not raw_input_yn("Remove database file '%s' now? " % database_file) \
                or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                 install_clean = False
-                sys.stdout.write("Upgrading database to KA Lite version %s\n" % version.VERSION)
+                sys.stdout.write("Upgrading database to KA Lite version %s\n" % VERSION)
 
             if install_clean:
                 # After all, don't delete--just move.

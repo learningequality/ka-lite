@@ -5,14 +5,14 @@ import glob
 import os
 from functools import partial
 
+from django.conf import settings
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
 import khanload  # should be removed ASAP, to make more generic and separate apps.
-import settings
-from settings import LOG as logging
-from utils.general import softload_json
+from fle_utils.general import softload_json
+from kalite.settings import LOG as logging
 
 TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
 

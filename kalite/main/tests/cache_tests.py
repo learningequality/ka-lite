@@ -6,15 +6,15 @@ import random
 import requests
 import urllib
 
+from django.conf import settings
 from django.test.client import Client
 from django.utils import unittest
 
-import settings
+from fle_utils.django_utils import call_command_with_output
 from main import caching
 from main.topic_tools import get_node_cache
 from testing.base import KALiteTestCase
 from testing.decorators import distributed_server_test
-from utils.django_utils import call_command_with_output
 
 
 @distributed_server_test

@@ -1,3 +1,5 @@
+"""
+"""
 import datetime
 
 from django.conf import settings
@@ -22,13 +24,13 @@ class _MockRequestClient(Client):
     """
     A ``django.test.Client`` subclass which can return mock
     ``HttpRequest`` objects.
-    
+
     """
     def request(self, **request):
         """
         Rather than issuing a request and returning the response, this
         simply constructs an ``HttpRequest`` object and returns it.
-        
+
         """
         environ = {
             'HTTP_COOKIE':      self.cookies,
@@ -57,7 +59,7 @@ def _mock_request():
     Construct and return a mock ``HttpRequest`` object; this is used
     in testing backend methods which expect an ``HttpRequest`` but
     which are not being called from views.
-    
+
     """
     return _MockRequestClient().request()
 
@@ -90,7 +92,7 @@ class BackendRetrievalTests(TestCase):
         """
         Test that a backend module which exists but does not have a
         class of the specified name raises the correct exception.
-        
+
         """
         self.assertRaises(ImproperlyConfigured, get_backend,
                           'registration.backends.default.NonexistentBackend')
@@ -155,7 +157,7 @@ class DefaultRegistrationBackendTests(TestCase):
         Test that registration still functions properly when
         ``django.contrib.sites`` is not installed; the fallback will
         be a ``RequestSite`` instance.
-        
+
         """
         Site._meta.installed = False
 
@@ -172,7 +174,7 @@ class DefaultRegistrationBackendTests(TestCase):
 
         self.assertEqual(RegistrationProfile.objects.count(), 1)
         self.assertEqual(len(mail.outbox), 1)
-        
+
         Site._meta.installed = True
 
     def test_valid_activation(self):
@@ -252,7 +254,7 @@ class DefaultRegistrationBackendTests(TestCase):
         """
         Test that registering a user sends the ``user_registered``
         signal.
-        
+
         """
         def receiver(sender, **kwargs):
             self.failUnless('user' in kwargs)
@@ -276,7 +278,7 @@ class DefaultRegistrationBackendTests(TestCase):
         """
         Test that successfully activating a user sends the
         ``user_activated`` signal.
-        
+
         """
         def receiver(sender, **kwargs):
             self.failUnless('user' in kwargs)
@@ -302,7 +304,7 @@ class DefaultRegistrationBackendTests(TestCase):
         """
         Test that an unsuccessful activation attempt does not send the
         ``user_activated`` signal.
-        
+
         """
         receiver = lambda sender, **kwargs: received_signals.append(kwargs.get('signal'))
 
@@ -323,19 +325,19 @@ class DefaultRegistrationBackendTests(TestCase):
     def test_email_send_action(self):
         """
         Test re-sending of activation emails via admin action.
-        
+
         """
         admin_class = RegistrationAdmin(RegistrationProfile, admin.site)
-        
+
         alice = self.backend.register(_mock_request(),
                                       username='alice',
                                       email='alice@example.com',
                                       password1='swordfish')
-        
+
         admin_class.resend_activation_email(_mock_request(),
                                             RegistrationProfile.objects.all())
         self.assertEqual(len(mail.outbox), 2) # One on registering, one more on the resend.
-        
+
         RegistrationProfile.objects.filter(user=alice).update(activation_key=RegistrationProfile.ACTIVATED)
         admin_class.resend_activation_email(_mock_request(),
                                             RegistrationProfile.objects.all())
@@ -344,7 +346,7 @@ class DefaultRegistrationBackendTests(TestCase):
     def test_activation_action(self):
         """
         Test manual activation of users view admin action.
-        
+
         """
         admin_class = RegistrationAdmin(RegistrationProfile, admin.site)
 

@@ -1,16 +1,19 @@
+"""
+"""
 import re
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils import unittest
 
-import settings
-import version
+from fle_utils.crypto import Key
+from fle_utils.general import version_diff
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
 from testing import distributed_server_test, central_server_test, KALiteTestCase
-from utils.crypto import Key
-from utils.general import version_diff
+from version import VERSION
+
 
 class TestChainOfTrust(KALiteTestCase):
     def setUp(self):
@@ -21,7 +24,7 @@ class TestChainOfTrust(KALiteTestCase):
         super(KALiteTestCase, self).tearDown()
         Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
 
-    @unittest.skipIf(version_diff("0.12", version.VERSION) > 0, "generate_zone not available before v0.12.")
+    @unittest.skipIf(version_diff("0.12", VERSION) > 0, "generate_zone not available before v0.12.")
     @distributed_server_test
     def test_valid_own_device(self):
         """

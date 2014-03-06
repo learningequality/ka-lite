@@ -1,10 +1,10 @@
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-import settings
 
 def is_static_file(path):
     return path.startswith(settings.STATIC_URL) or path.startswith(settings.MEDIA_URL)

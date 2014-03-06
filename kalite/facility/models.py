@@ -1,3 +1,5 @@
+"""
+"""
 from __future__ import absolute_import
 
 import datetime
@@ -14,13 +16,11 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-import kalite
-import settings
 from config.models import Settings
+from fle_utils.django_utils import verify_raw_password
+from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.engine.models import DeferredCountSyncedModel
-from settings import LOG as logging
-from utils.django_utils import verify_raw_password
 
 
 class Facility(DeferredCountSyncedModel):

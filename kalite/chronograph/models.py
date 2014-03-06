@@ -7,14 +7,15 @@ from datetime import datetime
 from dateutil import rrule
 from StringIO import StringIO
 
+from django.conf import settings
 from django.db import models
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timesince import timeuntil
 from django.utils.translation import ungettext, ugettext, ugettext_lazy as _
 from django.template import loader, Context
-from django.conf import settings
 from django.utils.encoding import smart_str
+
 
 class JobManager(models.Manager):
     def due(self):

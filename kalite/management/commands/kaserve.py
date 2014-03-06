@@ -5,18 +5,18 @@ import os
 import sys
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _
 
-import settings
 from config.models import Settings
 from facility.models import Facility
+from fle_utils.django_utils import call_command_with_output
+from fle_utils.general import isnumeric
+from kalite.settings import LOG as logging
 from securesync.models import Device
-from settings import LOG as logging
-from utils.django_utils import call_command_with_output
-from utils.general import isnumeric
 
 
 class Command(BaseCommand):

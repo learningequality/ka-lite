@@ -1,15 +1,16 @@
+"""
+"""
 import os
 import sys
 import subprocess
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
-from settings import LOG as logging
-from utils.django_utils import call_outside_command_with_output
-from utils.platforms import is_windows, system_script_extension, system_specific_unzipping
+from fle_utils.django_utils import call_outside_command_with_output
+from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping
 
 
 class Command(BaseCommand):
@@ -26,7 +27,7 @@ class Command(BaseCommand):
         "apacheconfig", "cache", "videoscan", "videodownload",
         "changelocalpassword", "retrypurgatory", "syncmodels",
         "changepassword", "createsuperuser",
-        "dumpdata", "loaddata", "validate", 
+        "dumpdata", "loaddata", "validate",
         "migrate",
     ]
 

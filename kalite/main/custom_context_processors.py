@@ -1,5 +1,10 @@
-import settings
+"""
+"""
+from django.conf import settings
+
 import version
+from kalite.settings import package_selected
+
 
 # TODO(jamalex): this should be calculated more intelligently, and incorporated into a template tag
 # (see https://github.com/learningequality/ka-lite/issues/1161)
@@ -12,7 +17,7 @@ def custom(request):
         "base_template": "base.html",
         "is_central": False,
         "settings": settings,
-        "restricted": settings.package_selected("UserRestricted"),
+        "restricted": package_selected("UserRestricted"),
         "VERSION": version.VERSION,
         "BUILD_ID": BUILD_ID,
     }

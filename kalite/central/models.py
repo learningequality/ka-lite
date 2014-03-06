@@ -1,18 +1,20 @@
+"""
+"""
 import random
 import datetime
 from collections import OrderedDict
 
-from django.db import models, transaction
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
+from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
-import settings
+from fle_utils.django_utils import ExtendedModel
 from securesync.models import Zone
-from utils.django_utils import ExtendedModel
 
 
 def get_or_create_user_profile(user):

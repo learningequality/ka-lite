@@ -7,6 +7,7 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -19,18 +20,16 @@ from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
-import settings
-import version
 from .models import VideoFile
 from chronograph import force_job
 from control_panel.views import local_device_context
+from fle_utils.internet import am_i_online, JsonResponse
 from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name, get_language_name
 from main import topic_tools
 from securesync.models import Device
 from securesync.devices import require_registration
 from securesync.views import require_admin
 from shared.decorators import require_admin
-from utils.internet import am_i_online, JsonResponse
 
 
 def update_context(request):

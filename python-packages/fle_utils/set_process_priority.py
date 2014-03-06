@@ -16,7 +16,7 @@ Note: linux/Mac CPU priority cannot be raised again unless you are root
 
 usage:
 
-from utils import set_process_priority
+from fle_utils import set_process_priority
 ...
 set_process_priority.low()
 ...
@@ -40,7 +40,7 @@ elif sysPlatform == 'Darwin':
 else:
     SYS_PLATFORM = None
 
-    
+
 def _set_windows_priority(priority, logging=logging):
     logging.debug("Cannot set priority, not implemented for Windows")
     return False
@@ -53,13 +53,13 @@ def _set_linux_mac_priority(priority, logging=logging):
     except:
         logging.debug("Cannot set priority, psutil module not installed")
         return False
-        
+
     this_process = psutil.Process(os.getpid())
     this_process.cmdline
     if "runcherrypyserver" in this_process.cmdline:
         logging.debug("Will not set priority, this is the webserver process")
         return False
-            
+
     # Try here, because priority cannot be raised unless we are root.
     try:
         if priority == "Low":
@@ -72,9 +72,9 @@ def _set_linux_mac_priority(priority, logging=logging):
             this_process.nice = 0
             this_process.set_ionice(psutil.IOPRIO_CLASS_BE)
     except:
-        logging.debug("Cannot set priority; probably insufficient privilege")  
+        logging.debug("Cannot set priority; probably insufficient privilege")
         return False
-        
+
     return priority
 
 
@@ -95,9 +95,8 @@ def low(logging=logging):
 
 def lowest(logging=logging):
     """ Process will only execute when system is idle """
-    return _set_priority("Lowest", logging=logging)    
+    return _set_priority("Lowest", logging=logging)
 
 def normal(logging=logging):
     """ Process will try to reset to normal priority """
     return _set_priority("Normal", logging=logging)
-    

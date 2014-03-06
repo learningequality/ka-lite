@@ -29,6 +29,7 @@ import time
 from khanacademy.test_oauth_client import TestOAuthClient
 from oauth import OAuthToken
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -37,14 +38,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-import settings
 from facility.models import FacilityUser
+from fle_utils.internet import JsonResponse, JsonResponseMessageError, set_query_params
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_node_cache
-from settings import LOG as logging
 from shared.decorators import require_login
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import JsonResponse, JsonResponseMessageError, set_query_params
 
 
 KHAN_SERVER_URL = "http://www.khanacademy.org"

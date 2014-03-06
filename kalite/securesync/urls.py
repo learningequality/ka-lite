@@ -1,6 +1,8 @@
+"""
+"""
+from django.conf import settings
 from django.conf.urls.defaults import include, patterns, url
 
-import settings
 
 urlpatterns = patterns('securesync.views',
     url(r'^', include('securesync.devices.urls')),

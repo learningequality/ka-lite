@@ -1,7 +1,9 @@
+"""
+"""
+from django.conf import settings
 from django.conf.urls.defaults import include, patterns, url
 from django.http import HttpResponseServerError
 
-import settings
 import updates.api_urls
 
 

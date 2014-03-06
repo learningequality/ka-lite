@@ -8,10 +8,10 @@ from django.db.models import Sum, Max, Count, F, Q, Min
 
 from . import stats_logger
 from i18n import get_video_language, get_video_id
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_id2slug_map
 from securesync.models import SyncSession, Device
-from settings import LOG as logging
 from shared.decorators import require_authorized_admin
 
 

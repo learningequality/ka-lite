@@ -13,7 +13,7 @@ from django.utils.encoding import smart_unicode
 from django.utils.timezone import is_aware
 
 from .versioned_python import Deserializer as PythonDeserializer
-from utils.general import version_diff
+from fle_utils.general import version_diff
 
 
 class Serializer(json.Serializer):

@@ -1,6 +1,8 @@
+"""
+"""
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from securesync.models import Device, DeviceZone, Zone, ZoneInvitation
 
 

@@ -1,6 +1,9 @@
+"""
+"""
 import json
 import os
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -8,7 +11,6 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 import i18n
-import settings
 from .base import MainTestCase
 from facility.models import Facility, FacilityUser
 from main.models import VideoLog, ExerciseLog

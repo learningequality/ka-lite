@@ -10,6 +10,7 @@ import requests
 import shutil
 from collections import OrderedDict, defaultdict
 
+from django.conf import settings
 from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
@@ -22,10 +23,8 @@ from django.views.i18n import javascript_catalog
 ###   we CANNOT import main.models in here.  ###
 ###                                          ###
 ################################################
-import settings
-from settings import LANG_LOOKUP_FILEPATH
-from settings import LOG as logging
-from utils.general import ensure_dir, softload_json
+from fle_utils.general import ensure_dir, softload_json
+from kalite.settings import LANG_LOOKUP_FILEPATH, LOG as logging
 from version import VERSION
 
 CACHE_VARS = []
@@ -272,10 +271,10 @@ CACHE_VARS.append("CODE2LANG_MAP")
 def get_code2lang_map(lang_code=None, force=False):
     """
     """
-    global LANG_LOOKUP_FILEPATH, CODE2LANG_MAP
+    global CODE2LANG_MAP
 
     if force or not CODE2LANG_MAP:
-        lmap = softload_json(LANG_LOOKUP_FILEPATH, logger=logging.debug)
+        lmap = softload_json(settings.LANG_LOOKUP_FILEPATH, logger=logging.debug)
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
@@ -288,7 +287,7 @@ CACHE_VARS.append("LANG2CODE_MAP")
 def get_langcode_map(lang_name=None, force=False):
     """
     """
-    global LANG_LOOKUP_FILEPATH, LANG2CODE_MAP
+    global LANG2CODE_MAP
 
     if force or not LANG2CODE_MAP:
         LANG2CODE_MAP = {}
@@ -302,7 +301,6 @@ def get_langcode_map(lang_name=None, force=False):
 
 def get_language_name(lang_code, native=False, error_on_missing=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
-    global LANG_LOOKUP_FILEPATH
 
     # Convert code if neccessary
     lang_code = lcode_to_ietf(lang_code)
@@ -310,7 +308,7 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
     language_entry = get_code2lang_map(lang_code)
     if not language_entry:
         if error_on_missing:
-            raise LanguageNotFoundError("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, LANG_LOOKUP_FILEPATH))
+            raise LanguageNotFoundError("We don't have language code '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (lang_code, settings.LANG_LOOKUP_FILEPATH))
         else:
             # Fake it
             language_entry = {"name": lang_code, "native_name": lang_code}
@@ -329,11 +327,9 @@ def get_language_code(language, for_django=False):
     Return ISO 639-1 language code full English or native language name from ;
     raise exception if it isn't hardcoded yet
     """
-    global LANG_LOOKUP_FILEPATH
-
     lang_code = get_langcode_map().get(language.lower())
     if not lang_code:
-       raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, LANG_LOOKUP_FILEPATH))
+       raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, settings.LANG_LOOKUP_FILEPATH))
     elif for_django:
         return lcode_to_django_dir(lang_code)
     else:
@@ -381,7 +377,7 @@ def get_language_names(lang_code=None):
     global LANG_NAMES_MAP
     lang_code = lcode_to_ietf(lang_code)
     if not LANG_NAMES_MAP:
-        LANG_NAMES_MAP = softload_json(LANG_LOOKUP_FILEPATH)
+        LANG_NAMES_MAP = softload_json(settings.LANG_LOOKUP_FILEPATH)
     return LANG_NAMES_MAP.get(lang_code) if lang_code else LANG_NAMES_MAP
 
 INSTALLED_LANGUAGES_CACHE = None
