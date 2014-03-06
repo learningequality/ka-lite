@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
-import settings
 
 def validate_via_booleans(handler):
     """

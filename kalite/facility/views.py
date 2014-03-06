@@ -1,7 +1,10 @@
+"""
+"""
 import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -15,19 +18,18 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
-import settings
 from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from chronograph import force_job
-from config.models import Settings
+from fle_utils.internet import set_query_params
+from kalite.settings import package_selected, LOG as logging
 from main.models import UserLog
 from securesync.devices.views import *
-from settings import LOG as logging
 from shared.decorators import require_admin
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import set_query_params
+
 
 
 @require_admin
@@ -86,12 +88,12 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
     title = ""
     user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
-
+    import pdb; pdb.set_trace()
     # Check permissions
     if user and not request.is_admin and user != request.session.get("facility_user"):
         # Editing a user, user being edited is not self, and logged in user is not admin
         raise PermissionDenied()
-    elif settings.package_selected("UserRestricted") and not request.is_admin:
+    elif package_selected("UserRestricted") and not request.is_admin:
         # Users cannot create/edit their own data when UserRestricted
         raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
 
@@ -243,7 +245,7 @@ def login(request, facility):
             if not landing_page:
                 # Just going back to the homepage?  We can do better than that.
                 landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-                landing_page = landing_page or (reverse("account_management") if not settings.package_selected("RPi") else reverse("homepage"))
+                landing_page = landing_page or (reverse("account_management") if not package_selected("RPi") else reverse("homepage"))
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
 

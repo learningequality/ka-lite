@@ -1,9 +1,12 @@
+"""
+"""
+from django_snippets import multiselect
+
 from django.db import models
 from django.contrib.auth.models import User
-import django_snippets.multiselect as multiselect
-
-from utils.django_utils import ExtendedModel
 from django.utils.translation import ugettext as _
+
+from fle_utils.django_utils import ExtendedModel
 
 
 # Different contact types
@@ -105,7 +108,7 @@ class Contribute(ExtendedModel):
 class Info(ExtendedModel):
     contact  = models.ForeignKey(Contact)
     issue    = models.TextField(blank=False, verbose_name="What's on your mind?")
-    
+
     def __unicode__(self):
         return u"Inquiry from %s @ %s on %s (%s)" % (self.contact.name, self.contact.org_name, self.contact.contact_date, self.contact.email)
 

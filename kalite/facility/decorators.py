@@ -8,6 +8,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -18,14 +19,13 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-import settings
 from .middleware import refresh_session_facility_info
 from .models import Facility
 from config.models import Settings
+from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device
 from settings import LOG as logging
 from testing.asserts import distributed_server_only
-from utils.internet import JsonResponse, JsonpResponse
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):

@@ -1,7 +1,10 @@
+"""
+"""
 import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-import settings
+
 
 config_template = """
 
@@ -24,7 +27,7 @@ upstream kalite {
 }
 
 server {
-    
+
     listen %(proxy_port)s;
 
     location /static {
@@ -50,7 +53,7 @@ server {
         proxy_pass http://kalite;
         error_page 502 = @502;
     }
-    
+
     location @502 {
         types { }
         default_type "text/html";
@@ -73,5 +76,5 @@ class Command(BaseCommand):
         self.stdout.write(config_template % {"root_path": os.path.realpath(settings.PROJECT_PATH + "/../"),
                                              "production_port": settings.PRODUCTION_PORT,
                                              "proxy_port": settings.PROXY_PORT})
-        
-        
+
+

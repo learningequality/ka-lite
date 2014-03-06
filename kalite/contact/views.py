@@ -1,17 +1,19 @@
+"""
+"""
 from annoying.decorators import render_to
 
+from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.http import HttpResponse,HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
-import settings
+from .forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
+from .models import *
 from central.models import Organization
-from contact.forms  import ContactForm, DeploymentForm, SupportForm, InfoForm, ContributeForm
-from contact.models import *
-from utils.django_utils import get_request_ip
-from utils.mailchimp import mailchimp_subscribe
+from fle_utils.django_utils import get_request_ip
+from fle_utils.mailchimp import mailchimp_subscribe
 
 
 @render_to("contact/contact_thankyou.html")
@@ -26,7 +28,7 @@ def contact_subscribe(request, email=None):
     email = email or getattr(request,request.method).get('email')
     if not email:
         raise Exception(_("Email not specified"))
-        
+
     # Don't want to muck with mailchimp during testing (though I did validate this)
     if settings.DEBUG:
         return HttpResponse(_("We'll subscribe you via mailchimp when we're in RELEASE mode, %s, we swear!") % email)
@@ -103,7 +105,7 @@ def contact_wizard(request, type=""):
                     type=type,
                     ip=get_request_ip(request),
                 ))
-        
+
         else:
             # Use the user's information, if available
             if request.user.owned_organizations.count() > 0:
@@ -164,6 +166,6 @@ def handle_contact(request, contact_form, details_form, list_email, email_templa
             headers = {'Reply-To': contact_form.instance.email}  # when we reply, sent to the 'sender'
         )
         email.send()
-        
+
         return HttpResponseRedirect(reverse("contact_thankyou"))
 

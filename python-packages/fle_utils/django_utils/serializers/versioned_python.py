@@ -7,7 +7,7 @@ from django.core.serializers.python import Serializer, _get_model
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.encoding import smart_unicode, is_protected_type
 
-from utils.general import version_diff
+from fle_utils.general import version_diff
 
 
 def Deserializer(object_list, **options):

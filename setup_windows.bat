@@ -1,6 +1,6 @@
 @echo off
-set SCRIPT_DIR=%~dp0
-set KALITE_DIR=%SCRIPT_DIR%\kalite
+set "SCRIPT_DIR=%~dp0"
+set "KALITE_DIR=%SCRIPT_DIR%\kalite"
 setlocal enabledelayedexpansion
 
 copy %0 "%KALITE_DIR%\writetest.temp" > nul

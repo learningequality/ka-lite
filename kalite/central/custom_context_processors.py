@@ -1,4 +1,7 @@
-import settings
+"""
+"""
+from django.conf import settings
+
 
 def custom(request):
     return {

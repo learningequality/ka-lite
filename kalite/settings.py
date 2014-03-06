@@ -90,7 +90,7 @@ CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if n
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("kalite.%s" % CENTRAL_SERVER_DOMAIN) + (":7007" if DEBUG else ""))
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("globe.%s:8008" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
 CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s" % CENTRAL_SERVER_DOMAIN)
 CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
@@ -153,11 +153,10 @@ STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
 STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")) + "/"
 
 # Other defined paths
-DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
-DATA_PATH_SECURE = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
+DATA_PATH = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
 
 # JSON file of all languages and their names
-LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH_SECURE, "i18n", "languagelookup.json")
+LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH, "i18n", "languagelookup.json")
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -197,7 +196,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "utils.django_utils.middleware.GetNextParam",
+    "fle_utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
@@ -233,7 +232,7 @@ if CENTRAL_SERVER:
     ROOT_URLCONF = "central.urls"
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats", "i18n")
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats", "announcements",)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = "central.UserProfile"
     CSRF_COOKIE_NAME        = "csrftoken_central"
@@ -340,7 +339,7 @@ LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + ('d_db' if DEBUG else ''))
 
-MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
+MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 CACHES = {
     "default": {
@@ -415,6 +414,9 @@ if CENTRAL_SERVER:
     # Default to "test mode" if no API key, to print out the email to the console, rather than trying to send
     POSTMARK_TEST_MODE = getattr(local_settings, "POSTMARK_TEST_MODE", POSTMARK_API_KEY == "")
 
+    # Used for redirecting to the actual installer executables
+    INSTALLER_BASE_URL = getattr(local_settings, 'INSTALLER_BASE_URL', 'http://adhoc.learningequality.org/media/installer/')
+
 else:
     # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
     # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
@@ -473,6 +475,26 @@ assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKI
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
 
 
+
+########################
+# (Aron): Setting the LANGUAGES configuration.
+########################
+
+# This is a bit more involved, as we need to hand out to a function to calculate
+# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
+# languages. Anything not in here is not accepted by Django, and will simply show
+# english instead of the selected language.
+if getattr(local_settings, 'LANGUAGES', None):
+    LANGUAGES = local_settings.LANGUAGES
+else:
+    from settingshelper import allow_all_languages_alist
+    # copied from shared.i18n
+    try:
+        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
+    except Exception:
+        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)
+
+
 ########################
 # IMPORTANT: Do not add new settings below this line
 # everything that follows is overriding default settings, depending on CONFIG_PACKAGE
@@ -511,18 +533,12 @@ if package_selected("UserRestricted"):
     if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
         KEY_PREFIX += "|restricted"  # this option changes templates
 
+if package_selected("Demo"):
+    LOG.info("Demo package selected.")
 
-# (Aron): Setting the LANGUAGES configuration.
-# This is a bit more involved, as we need to hand out to a function to calculate
-# the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
-# languages. Anything not in here is not accepted by Django, and will simply show
-# english instead of the selected language.
-if getattr(local_settings, 'LANGUAGES', None):
-    LANGUAGES = local_settings.LANGUAGES
-else:
-    from settingshelper import allow_all_languages_alist
-    # copied from shared.i18n
-    try:
-        LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
-    except Exception:
-        LOG.error("%s not found. Django will use its own builtin LANGUAGES list." % LANG_LOOKUP_FILEPATH)
+    CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST",   "globe.learningequality.org:8008")
+    SECURESYNC_PROTOCOL = "http"
+    DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
+    DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
+
+    MIDDLEWARE_CLASSES += ('main.demo_middleware.StopAdminAccess','main.demo_middleware.LinkUserManual','main.demo_middleware.ShowAdminLogin',)

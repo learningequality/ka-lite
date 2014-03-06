@@ -5,18 +5,18 @@ import os
 import sys
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _
 
-import settings
 from config.models import Settings
 from facility.models import Facility
+from fle_utils.django_utils import call_command_with_output
+from fle_utils.general import isnumeric
+from kalite.settings import LOG as logging
 from securesync.models import Device
-from settings import LOG as logging
-from utils.django_utils import call_command_with_output
-from utils.general import isnumeric
 
 
 class Command(BaseCommand):
@@ -58,25 +58,8 @@ class Command(BaseCommand):
         ),
     )
 
-    def handle(self, *args, **options):
-
-        # Eliminate irrelevant settings
-        for opt in BaseCommand.option_list:
-            del options[opt.dest]
-
-        # Parse the crappy way that runcherrypy takes args,
-        #   or the host/port
-        for arg in args:
-            if "=" in arg:
-                (key,val) = arg.split("=")
-                options[key] = val
-            elif ":" in arg:
-                (options["host"], options["port"]) = arg.split(":")
-            elif isnumeric(arg):
-                options["port"] = arg
-            else:
-                raise CommandError("Unexpected argument format: %s" % arg)
-
+    def setup_server_if_needed(self):
+        """Run the setup command, if necessary."""
 
         # Now, validate the server.
         try:
@@ -103,16 +86,55 @@ class Command(BaseCommand):
             #    self.stderr.write(out[1])
             #    raise CommandError("Failed to setup/recover.")
 
-        # Next, call videoscan.
+    def reinitialize_server(self):
+        """Reset the server state."""
         if not settings.CENTRAL_SERVER:
+            logging.info("Invalidating the web cache.")
+            from main.caching import invalidate_web_cache
+            invalidate_web_cache()
+
+            # Next, call videoscan.
+            logging.info("Running videoscan.")
             call_command("videoscan")
 
         # Finally, pre-load global data
         def preload_global_data():
-            from main.topic_tools import get_topic_tree
-            from updates import stamp_availability_on_topic
-            stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
+            if not settings.CENTRAL_SERVER:
+                logging.info("Preloading topic data.")
+                from main.topic_tools import get_topic_tree
+                from updates import stamp_availability_on_topic
+                stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
         preload_global_data()
+
+
+    def handle(self, *args, **options):
+        # Eliminate irrelevant settings
+        for opt in BaseCommand.option_list:
+            del options[opt.dest]
+
+        # Parse the crappy way that runcherrypy takes args,
+        #   or the host/port
+        for arg in args:
+            if "=" in arg:
+                (key,val) = arg.split("=")
+                options[key] = val
+            elif ":" in arg:
+                (options["host"], options["port"]) = arg.split(":")
+            elif isnumeric(arg):
+                options["port"] = arg
+            else:
+                raise CommandError("Unexpected argument format: %s" % arg)
+
+        # In order to avoid doing this twice when the autoreloader
+        #   loads this process again, only execute the initialization
+        #   code if autoreloader won't be run (daemonize), or if
+        #   RUN_MAIN is set (autoreloader has started)
+        if options["daemonize"] or os.environ.get("RUN_MAIN"):
+            self.setup_server_if_needed()
+
+            # we do this on every server request,
+            # as we don't know what happens when we're not looking.
+            self.reinitialize_server()
 
         # Now call the proper command
         if not options["daemonize"]:

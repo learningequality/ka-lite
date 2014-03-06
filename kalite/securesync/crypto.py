@@ -1,10 +1,17 @@
-# see crypto_notes.txt in this directory for more info about key formats, etc
-
-import base64, hashlib, sys, re
-from kalite import settings
-from config.models import Settings
+"""
+See crypto_notes.txt in this directory for more info about key formats, etc
+"""
+import base64
+import hashlib
+import re
+import sys
 import rsa as PYRSA
-from utils.crypto import *
+
+from django.conf import settings
+
+from config.models import Settings
+from fle_utils.crypto import *
+
 
 _own_key = None
 

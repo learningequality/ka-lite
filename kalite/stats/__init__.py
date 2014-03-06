@@ -1,12 +1,14 @@
+"""
+"""
 import logging
 import os
 
 from django.conf import settings
 
-from utils.general import ensure_dir
+from fle_utils.general import ensure_dir
 
 
-STATS_LOG_DIRPATH = os.path.join(settings.DATA_PATH_SECURE, 'logs')
+STATS_LOG_DIRPATH = os.path.join(settings.DATA_PATH, 'logs')
 
 # Note: beta level logger. Move to config file/dictionary format
 def stats_logger(loggertype="stats", loggername=None):

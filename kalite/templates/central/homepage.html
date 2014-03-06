@@ -1,6 +1,7 @@
 {% extends base_template %}
 {% load i18n %}
 {% load staticfiles %}
+{% load announcements_tags %}
 
 {% block title %}{% trans "Home" %}{{ block.super }}{% endblock title %}
 {% block home_active %}active{% endblock home_active %}
@@ -9,6 +10,21 @@
 
 {% block super-content %}
     <div class="row-fluid quotes-container">
+        {% announcements as announcements_list %}
+        {% if announcements_list %}
+            <div id="announcements">
+                {% for announcement in announcements_list %}
+                    <div class="alert alert-info">
+                        <div class="max-width-container">
+                            <div id="announcement-text-container">
+                                <p>{{ announcement.content|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endif %}
 
         <div class="row-fluid">
             <div class="span12">

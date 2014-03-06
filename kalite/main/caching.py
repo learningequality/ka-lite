@@ -1,7 +1,10 @@
+"""
+"""
 import datetime
 import os
 from functools import partial
 
+from django.conf import settings
 from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
@@ -17,11 +20,10 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition
 
 import i18n
-import settings
 import topic_tools
-from settings import LOG as logging
+from fle_utils.internet import generate_all_paths
+from kalite.settings import LOG as logging
 from updates.models import VideoFile
-from utils.internet import generate_all_paths
 
 
 # Signals
@@ -221,7 +223,8 @@ def invalidate_inmemory_caches():
 def invalidate_web_cache():
     logging.debug("Clearing the web cache.")
     cache = get_web_cache()
-    cache.clear()
+    if cache:
+        cache.clear()
     logging.debug("Great success emptying the web cache.")
 
 

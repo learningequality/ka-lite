@@ -2,13 +2,13 @@ from django import forms
 from django.forms import ModelForm, ChoiceField, RadioSelect
 
 from contact.models import Contact, Deployment, Support, Info, Contribute
-from django_snippets import EmptyChoiceField
+from django_snippets.empty_choice_field import EmptyChoiceField
 
 
 class Html5EmailInput(forms.TextInput):
     """adding email attributes"""
     input_type = 'email'
-        
+
 
 class ContactForm(ModelForm):
     required_css_class = 'required'

@@ -1,6 +1,9 @@
-from django.http import HttpResponseRedirect
+"""
+"""
+from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 
 import coachreports.urls
 import control_panel.urls
@@ -8,7 +11,6 @@ import facility.urls
 import khanload.api_urls
 import main.api_urls
 import securesync.urls
-import settings
 import updates.urls
 
 

@@ -1,16 +1,18 @@
+"""
+"""
 import getpass
 import os
 import random
 import string
 from optparse import make_option
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DEFAULT_DB_ALIAS
 
-import settings
+from fle_utils.django_utils import verify_raw_password
 from securesync.models import FacilityUser
-from utils.django_utils import verify_raw_password
 
 
 def generate_random_password(length=10, charset=(string.ascii_letters + string.digits + '!@#$%^&*()')):

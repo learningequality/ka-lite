@@ -4,9 +4,9 @@ These use a web-browser, along selenium, to simulate user actions.
 import random
 import string
 
+from django.conf import settings
 from django.utils import unittest
 
-import settings
 from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
 from facility.models import FacilityUser
 from main.models import UserLog

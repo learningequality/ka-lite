@@ -1,3 +1,5 @@
+"""
+"""
 import datetime
 
 from django.conf import settings
@@ -147,7 +149,7 @@ class RegistrationViewTests(TestCase):
         """
         Passing ``success_url`` to the ``register`` view will result
         in a redirect to that URL when registration is successful.
-        
+
         """
         success_redirect = 'http://testserver%s' % reverse('registration_test_custom_success_url')
         response = self.client.post(reverse('registration_test_register_success_url'),
@@ -165,7 +167,7 @@ class RegistrationViewTests(TestCase):
 
         """
         success_redirect = 'http://testserver%s' % reverse('registration_activation_complete')
-        
+
         # First, register an account.
         self.client.post(reverse('registration_register'),
                          data={'username': 'alice',
@@ -209,7 +211,7 @@ class RegistrationViewTests(TestCase):
         Passing ``success_url`` to the ``activate`` view and
         successfully activating will result in that URL being used for
         the redirect.
-        
+
         """
         success_redirect = 'http://testserver%s' % reverse('registration_test_custom_success_url')
         self.client.post(reverse('registration_register'),
@@ -221,7 +223,7 @@ class RegistrationViewTests(TestCase):
         response = self.client.get(reverse('registration_test_activate_success_url',
                                            kwargs={'activation_key': profile.activation_key}))
         self.assertRedirects(response, success_redirect)
-        
+
     def test_activation_template_name(self):
         """
         Passing ``template_name`` to the ``activate`` view will result

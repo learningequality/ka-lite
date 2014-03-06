@@ -1,13 +1,15 @@
+"""
+"""
 import sys
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count, Max, Sum, Avg, Q, F
 
-import settings
 from main.models import *
 from securesync.models import *
-from settings import LOG as logging
+
 
 class Command(BaseCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."

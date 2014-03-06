@@ -4,8 +4,8 @@ Testing of the main-used internet utility functions
 
 from django.test import LiveServerTestCase
 
+from fle_utils.internet import am_i_online
 from testing.decorators import distributed_server_test
-from utils.internet import am_i_online
 
 
 @distributed_server_test

@@ -152,7 +152,7 @@ class LocaleAwareCommand(BaseCommand):
             action='store',
             dest='locale',
             default=settings.LANGUAGE_CODE,
-            help='Language code',  # when I localized this, I got an error...
+            help='Locale (translation) for command output',  # when I localized this, I got an error...
             metavar="LANG_CODE"),
     )
 

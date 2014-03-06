@@ -1,3 +1,5 @@
+"""
+"""
 import re
 
 from django import forms
@@ -7,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-from utils.django_utils import verify_raw_password
+from fle_utils.django_utils import verify_raw_password
 
 
 class FacilityUserForm(forms.ModelForm):

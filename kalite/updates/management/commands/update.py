@@ -1,3 +1,5 @@
+"""
+"""
 import git
 import os
 import glob
@@ -13,18 +15,18 @@ from functools import partial
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
-import settings
+from fle_utils import crypto
+from fle_utils.django_utils import call_outside_command_with_output
+from fle_utils.general import ensure_dir
+from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 from i18n import get_dubbed_video_map
+from kalite.settings import LOG as logging
 from securesync.models import Device
-from settings import LOG as logging
 from updates.management.commands.classes import UpdatesStaticCommand
-from utils import crypto
-from utils.django_utils import call_outside_command_with_output
-from utils.general import ensure_dir
-from utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 
 
 class Command(UpdatesStaticCommand):

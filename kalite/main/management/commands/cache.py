@@ -1,6 +1,8 @@
+"""
+"""
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
 from main import caching, topic_tools
 
 

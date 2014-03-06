@@ -1,4 +1,7 @@
-from settings import LOG as logging
+"""
+"""
+from kalite.settings import LOG as logging
+
 
 class GetNextParam:
     def process_request(self, request):

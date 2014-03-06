@@ -1,9 +1,12 @@
+"""
+"""
 import cgi
 import json
 import re
 import uuid
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.urlresolvers import reverse
@@ -14,13 +17,11 @@ from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
-import settings
-import version
 from .models import *
+from fle_utils.django_utils import get_request_ip
+from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
 from securesync import engine
 from stats.models import UnregisteredDevicePing
-from utils.django_utils import get_request_ip
-from utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
 
 
 @csrf_exempt

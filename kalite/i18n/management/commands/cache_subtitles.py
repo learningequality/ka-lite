@@ -21,14 +21,14 @@ import zipfile
 from functools import partial
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
+from fle_utils.general import convert_date_input, ensure_dir, softload_json
+from fle_utils.internet import make_request
 from i18n import AMARA_HEADERS, LANG_LOOKUP_FILEPATH, LOCALE_ROOT, SRTS_JSON_FILEPATH, SUBTITLES_DATA_ROOT, SUBTITLE_COUNTS_FILEPATH
 from i18n import lcode_to_django_dir, lcode_to_ietf, get_language_name, get_lang_map_filepath, get_srt_path, LanguageNotFoundError, get_supported_language_map, get_langs_with_subtitles
-from settings import LOG as logging
-from utils.general import convert_date_input, ensure_dir, softload_json
-from utils.internet import make_request
+from kalite.settings import LOG as logging
 
 
 class LanguageNameDoesNotExist(Exception):

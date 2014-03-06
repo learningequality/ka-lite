@@ -1,6 +1,8 @@
+"""
+"""
 import os
 
-import settings
+from django.conf import settings
 
 
 kind_slugs = {
