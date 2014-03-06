@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
-    """This is a dummy migration, left here as an empty shell as the original was broken (sometimes causing circular imports),
-    but had been released to master. A working version of this migration has been implemented in 0029_set_video_id_for_realz.py
-    """
+import i18n
+
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        pass
+        # Setting the video ID
+        for vlog in orm["main.VideoLog"].objects.all():
+            vlog.video_id = i18n.get_video_id(vlog.youtube_id) or vlog.youtube_id
+            vlog.save()
 
     def backwards(self, orm):
         pass
@@ -136,6 +138,7 @@ class Migration(SchemaMigration):
         'securesync.facilityuser': {
             'Meta': {'unique_together': "(('facility', 'username'),)", 'object_name': 'FacilityUser'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'default_language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Facility']"}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -166,3 +169,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['main']
+    symmetrical = True

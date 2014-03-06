@@ -15,6 +15,7 @@ from django.utils.translation import ugettext as _
 import settings
 import version
 from .classes import UpdatesStaticCommand
+from chronograph.management.croncommand import CronCommand
 from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from i18n import get_language_pack_metadata_filepath, get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
 from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
@@ -24,10 +25,11 @@ from updates import REMOTE_VIDEO_SIZE_FILEPATH
 from utils.general import ensure_dir
 from utils.internet import callback_percent_proxy, download_file
 
-class Command(UpdatesStaticCommand):
+
+class Command(UpdatesStaticCommand, CronCommand):
     help = "Download language pack requested from central server"
 
-    option_list = UpdatesStaticCommand.option_list + (
+    unique_option_list = (
         make_option('-l', '--language',
                     action='store',
                     dest='lang_code',
@@ -46,6 +48,8 @@ class Command(UpdatesStaticCommand):
                     default=None,
                     help='Use the given zip file instead of fetching from the central server.'),
     )
+
+    option_list = UpdatesStaticCommand.option_list + CronCommand.unique_option_list + unique_option_list
 
     stages = (
         "download_language_pack",

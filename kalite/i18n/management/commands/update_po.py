@@ -77,7 +77,7 @@ def delete_current_templates():
             shutil.rmtree(english_path)
 
     logging.info("Deleting English language pot files")
-    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    pot_path = os.path.join(settings.DATA_PATH, "i18n", "pot")
     if os.path.exists(pot_path):
         shutil.rmtree(pot_path)
 
@@ -99,7 +99,7 @@ def run_makemessages():
 
 def update_templates():
     """Update template po files"""
-    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    pot_path = os.path.join(settings.DATA_PATH, "i18n", "pot")
     logging.info("Copying english po files to %s" % pot_path)
 
     #  post them to exposed URL

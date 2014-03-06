@@ -6,16 +6,17 @@ from django.core.management.base import BaseCommand, CommandError
 
 import i18n
 import settings
+from chronograph.management.croncommand import CronCommand
 from main import caching
 from updates.api_views import divide_videos_by_language
 from updates.models import VideoFile
 from utils.general import break_into_chunks
 
 
-class Command(BaseCommand):
+class Command(CronCommand):
     help = "Sync up the database's version of what videos have been downloaded with the actual folder contents"
 
-    option_list = BaseCommand.option_list + (
+    unique_option_list = (
         make_option('-c', '--cache',
             action='store_true',
             dest='auto_cache',
@@ -23,6 +24,8 @@ class Command(BaseCommand):
             help='Create cached files',
             metavar="AUTO_CACHE"),
     )
+
+    option_list = CronCommand.option_list + unique_option_list
 
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:

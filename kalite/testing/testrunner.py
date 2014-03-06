@@ -60,10 +60,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   older branch has been checked out
         logging.info("Purging pyc files")
 
-        #management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
-
-        call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
-
+        management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
         if not test_labels:
             test_labels = set(['main', 'central', 'securesync'])
