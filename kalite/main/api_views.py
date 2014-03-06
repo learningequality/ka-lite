@@ -29,7 +29,7 @@ from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
-from . import topicdata
+from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
@@ -231,7 +231,7 @@ def knowledge_map_json(request, topic_id):
     """
 
     # Try and get the requested topic, and make sure it has knowledge map data available.
-    topic = topicdata.NODE_CACHE["Topic"].get(topic_id)
+    topic = topic_tools.get_node_cache("Topic").get(topic_id)
     if not topic:
         raise Http404("Topic '%s' not found" % topic_id)
     elif not "knowledge_map" in topic[0]:
@@ -242,7 +242,7 @@ def knowledge_map_json(request, topic_id):
     kmap = topic[0]["knowledge_map"]
     nodes_out = {}
     for id, kmap_data in kmap["nodes"].iteritems():
-        cur_node = topicdata.NODE_CACHE[kmap_data["kind"]][id][0]
+        cur_node = topic_tools.get_node_cache(kmap_data["kind"])[id][0]
         nodes_out[id] = {
             "id": cur_node["id"],
             "title": _(cur_node["title"]),
