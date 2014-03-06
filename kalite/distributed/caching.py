@@ -93,10 +93,9 @@ def invalidate_inmemory_caches():
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)
 
-    logging.info("Great success emptying the in-memory cache.")
-
 
 def invalidate_all_caches():
     if settings.CACHE_TIME:
         invalidate_inmemory_caches()
         invalidate_web_cache()
+        logging.debug("Great success emptying all caches.")
