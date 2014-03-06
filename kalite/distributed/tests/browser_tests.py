@@ -20,8 +20,7 @@ from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from kalite.settings import package_selected, LOG as logging
 from main.models import ExerciseLog
-from main.topic_tools import get_exercise_paths
-from main.topicdata import NODE_CACHE
+from main.topic_tools import get_exercise_paths, get_node_cache
 from testing.browser import BrowserTestCase
 from testing.decorators import distributed_server_test
 
@@ -335,7 +334,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     student_username = 'test_student'
     student_password =  'socrates'
     EXERCISE_SLUG = 'addition_1'
-    MIN_POINTS = NODE_CACHE["Exercise"][EXERCISE_SLUG][0]["basepoints"]
+    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG][0]["basepoints"]
     MAX_POINTS = 2 * MIN_POINTS
 
     def setUp(self):
@@ -346,7 +345,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.student = self.create_student(facility_name=self.facility_name)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + NODE_CACHE["Exercise"][self.EXERCISE_SLUG][0]["path"])
+        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG][0]["path"])
         self.browser_check_django_message(num_messages=0)  # make sure no messages
 
     def browser_get_current_points(self):

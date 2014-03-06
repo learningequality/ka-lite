@@ -86,7 +86,6 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
     title = ""
     user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
-    import pdb; pdb.set_trace()
     # Check permissions
     if user and not request.is_admin and user != request.session.get("facility_user"):
         # Editing a user, user being edited is not self, and logged in user is not admin

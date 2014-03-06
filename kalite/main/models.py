@@ -1,4 +1,7 @@
 """
+All models associated with user learning / usage, including:
+* Exercise/Video progress
+* Login stats
 """
 import random
 import uuid

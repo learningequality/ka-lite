@@ -1,4 +1,9 @@
 """
+Things we want to send to every template within the KA Lite app.
+
+These include:
+* Metadata about the central server (for syncing, getting content, language packs, etc)
+* App settings, including version / build ID
 """
 from django.conf import settings
 

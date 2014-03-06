@@ -3,7 +3,8 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from main import caching, topic_tools
+from distributed import caching
+from main import topic_tools
 
 
 class Command(BaseCommand):

@@ -1,15 +1,20 @@
 """
+URLS for constructing the KA Lite app. Mostly imported from other apps.
+Notable urls include:
+* serving media and static files.  This can be overriden by putting a (fast) front-end server
+    (like nginx) to speed things up.
+* The "splat" handler, which catches all uncaught requests, and tries to turn them into a
+    node in the topic tree.
 """
 from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
+import api_urls
 import coachreports.urls
 import control_panel.urls
 import facility.urls
-import khanload.api_urls
-import main.api_urls
 import securesync.urls
 import updates.urls
 
@@ -26,7 +31,7 @@ urlpatterns = patterns('',
 
 #i18n
 urlpatterns += patterns('',
-    url(r'^js/i18n/$', 'main.views.javascript_catalog_cached', {}, 'javascript_catalog_cached'),
+    url(r'^js/i18n/$', 'distributed.views.javascript_catalog_cached', {}, 'javascript_catalog_cached'),
 )
 
 urlpatterns += patterns('',
@@ -42,7 +47,7 @@ urlpatterns += patterns('',
 )
 
 # Teaching / admin patterns
-urlpatterns += patterns('main.views',
+urlpatterns += patterns('distributed.views',
     # For teachers
     url(r'^coachreports/', include(coachreports.urls)),
 
@@ -52,8 +57,7 @@ urlpatterns += patterns('main.views',
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
 
     # API
-    url(r'^api/', include(main.api_urls)),
-    url(r'^api/khanload/', include(khanload.api_urls)),
+    url(r'^api/', include(api_urls)),
 
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
@@ -63,12 +67,12 @@ urlpatterns += patterns('main.views',
 
 # Testing
 if "tests.loadtesting" in settings.INSTALLED_APPS:
-    urlpatterns += patterns('main.views',
+    urlpatterns += patterns('distributed.views',
         url(r'^loadtesting/', include('tests.loadtesting.urls')),
     )
 
 # Front-end
-urlpatterns += patterns('main.views',
+urlpatterns += patterns('distributed.views',
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
@@ -76,6 +80,6 @@ urlpatterns += patterns('main.views',
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
-handler403 = 'main.views.handler_403'
-handler404 = 'main.views.handler_404'
-handler500 = 'main.views.handler_500'
+handler403 = 'distributed.views.handler_403'
+handler404 = 'distributed.views.handler_404'
+handler500 = 'distributed.views.handler_500'

@@ -1,3 +1,10 @@
+"""
+This middle-ware should be included for any online demo of KA Lite.
+It does things like:
+* Informs the user about the admin login
+* Links to documentation on how to use KA Lite
+* Prevents certain sensitive resources from being accessed (like the admin interface)
+"""
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -10,6 +17,7 @@ def is_static_file(path):
     return path.startswith(settings.STATIC_URL) or path.startswith(settings.MEDIA_URL)
 
 class LinkUserManual:
+    """Shows a message with a link to the user's manual, from the homepage."""
     def process_request(self, request):
         if is_static_file(request.path):
             return
@@ -19,6 +27,7 @@ class LinkUserManual:
             )))
 
 class ShowAdminLogin:
+    """Shows a message with the admin username/password"""
     def process_request(self, request):
         if is_static_file(request.path):
             return
@@ -31,6 +40,7 @@ class ShowAdminLogin:
             })))
 
 class StopAdminAccess:
+    """Prevents access to the Django admin"""
     def process_request(self, request):
         if request.path.startswith(reverse("admin:index")):
             messages.error(request, _("The admin interface is disabled in the demo server."))

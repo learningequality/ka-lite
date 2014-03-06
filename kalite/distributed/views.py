@@ -1,4 +1,9 @@
 """
+Views for the KA Lite app are wide-ranging, and include:
+* Serving the homepage, videos, exercise pages.
+* Dealing with caching
+* Administrative pages
+and more!
 """
 import copy
 import json
@@ -21,16 +26,15 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
-import topic_tools
-import topicdata
 from .caching import backend_cache_page
-from .models import VideoLog, ExerciseLog
-from .topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from facility.models import Facility, FacilityUser,FacilityGroup
 from fle_utils.django_utils import is_loopback_connection
-from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params
+from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params, backend_cache_page
 from i18n import select_best_available_language
 from kalite.settings import LOG as logging
+from main import topic_tools
+from main.models import VideoLog, ExerciseLog
+from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device
 from shared.decorators import require_admin
@@ -112,7 +116,7 @@ def refresh_topic_cache(handler, force=False):
         balancing between correctness and efficiency.
         """
         if not cached_nodes:
-            cached_nodes = {"topics": topicdata.TOPICS}
+            cached_nodes = {"topics": topic_tools.get_topic_tree()}
 
         def has_computed_urls(node):
             return "subtitles" in node.get("availability", {}).get("en", {})
@@ -149,7 +153,7 @@ def refresh_topic_cache(handler, force=False):
 @backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
-    current_node = topicdata.TOPICS
+    current_node = topic_tools.get_topic_tree()
     while current_node:
         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
         if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
@@ -298,8 +302,8 @@ def exercise_dashboard(request):
     slug = request.GET.get("topic")
     if not slug:
         title = _("Your Knowledge Map")
-    elif slug in topicdata.NODE_CACHE["Topic"]:
-        title = _(topicdata.NODE_CACHE["Topic"][slug][0]["title"])
+    elif slug in topic_tools.get_node_cache("Topic"):
+        title = _(topic_tools.get_node_cache("Topic")[slug][0]["title"])
     else:
         raise Http404
 
@@ -398,7 +402,7 @@ def search(request, topics):  # we don't use the topics variable, but this setup
         query = query.lower()
         # search for topic, video or exercise with matching title
         nodes = []
-        for node_type, node_dict in topicdata.NODE_CACHE.iteritems():
+        for node_type, node_dict in topic_tools.get_node_cache().iteritems():
             if category and node_type != category:
                 # Skip categories that don't match (if specified)
                 continue
