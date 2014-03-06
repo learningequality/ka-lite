@@ -13,7 +13,6 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from config.models import Settings
 from facility.decorators import facility_from_request
 from facility.models import FacilityUser
 from fle_utils.internet import JsonResponse, JsonpResponse

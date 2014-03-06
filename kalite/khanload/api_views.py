@@ -35,10 +35,11 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 from facility.models import FacilityUser
-from fle_utils.internet import JsonResponse, JsonResponseMessageError
+from fle_utils.internet import JsonResponse, JsonResponseMessageError, set_query_params
 from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_node_cache
@@ -149,7 +150,7 @@ def update_all_central_callback(request):
     videos = get_api_resource(request, "/api/v1/user/videos")
     node_cache = get_node_cache()
 
-    # Save videos
+    # Collate videos
     video_logs = []
     for video in videos:
         # Assume that KA videos are all english-language, not dubbed (for now)
@@ -177,7 +178,7 @@ def update_all_central_callback(request):
         except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
 
-    # Save exercises
+    # Collate exercises
     exercise_logs = []
     for exercise in exercises:
         # Only save exercises that have any progress.
@@ -207,25 +208,48 @@ def update_all_central_callback(request):
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
 
     # POST the data back to the distributed server
-    dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
-    logging.debug("POST'ing to %s" % request.session["distributed_callback_url"])
-    response = requests.post(
-        request.session["distributed_callback_url"],
-        cookies={ "csrftoken": request.session["distributed_csrf_token"] },
-        data = {
-            "csrfmiddlewaretoken": request.session["distributed_csrf_token"],
-            "video_logs": json.dumps(video_logs, default=dthandler),
-            "exercise_logs": json.dumps(exercise_logs, default=dthandler),
-            "user_id": request.session["distributed_user_id"],
-        }
-    )
-    logging.debug("Response (%d): %s" % (response.status_code, response.content))
     try:
-        message = json.loads(response.content)
-    except ValueError as e:
-        message = { "error": unicode(e) }
+
+        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+        logging.debug("POST'ing to %s" % request.session["distributed_callback_url"])
+        response = requests.post(
+            request.session["distributed_callback_url"],
+            cookies={ "csrftoken": request.session["distributed_csrf_token"] },
+            data = {
+                "csrfmiddlewaretoken": request.session["distributed_csrf_token"],
+                "video_logs": json.dumps(video_logs, default=dthandler),
+                "exercise_logs": json.dumps(exercise_logs, default=dthandler),
+                "user_id": request.session["distributed_user_id"],
+            }
+        )
+        logging.debug("Response (%d): %s" % (response.status_code, response.content))
+    except requests.exceptions.ConnectionError as e:
+        return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
+            "message_type": "error",
+            "message": _("Could not connect to your KA Lite installation to share Khan Academy data."),
+            "message_id": "id_khanload",
+        }))
     except Exception as e:
-        message = { "error": u"Loading json object: %s" % e }
+        return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
+            "message_type": "error",
+            "message": _("Failure to send data to your KA Lite installation: %s") % e,
+            "message_id": "id_khanload",
+        }))
+
+
+    try:
+        json_response = json.loads(response.content)
+        if not isinstance(json_response, dict) or len(json_response) != 1:
+            # Could not validate the message is a single key-value pair
+            raise Exception(_("Unexpected response format from your KA Lite installation."))
+        message_type = json_response.keys()[0]
+        message = json_response.values()[0]
+    except ValueError as e:
+        message_type = "error"
+        message = unicode(e)
+    except Exception as e:
+        message_type = "error"
+        message = _("Loading json object: %s") % e
 
     # If something broke on the distribute d server, we are SCREWED.
     #   For now, just show the error to users.
@@ -234,7 +258,11 @@ def update_all_central_callback(request):
 #    if response.status_code != 200:
 #        return HttpResponseServerError(response.content)
 
-    return HttpResponseRedirect(request.session["distributed_redirect_url"] + "?message_type=%s&message=%s&message_id=id_khanload" % (message.keys()[0], message.values()[0]))
+    return HttpResponseRedirect(set_query_params(request.session["distributed_redirect_url"], {
+        "message_type": message_type,
+        "message": message,
+        "message_id": "id_khanload",
+    }))
 
 
 @require_login

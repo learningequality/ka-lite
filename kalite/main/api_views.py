@@ -28,7 +28,6 @@ from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
-from config.models import Settings
 from facility.models import FacilityGroup, FacilityUser
 from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
