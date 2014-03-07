@@ -187,7 +187,7 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available')) for t in topics]
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
 
     exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
