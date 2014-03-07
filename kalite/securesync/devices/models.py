@@ -17,8 +17,8 @@ from fle_utils.general import get_host_name
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
 from securesync import crypto
 from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH
+from securesync import VERSION
 from securesync.engine.models import SyncedModel
-from version import VERSION
 
 
 class RegisteredDevicePublicKey(ExtendedModel):

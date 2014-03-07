@@ -8,20 +8,21 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils import unittest
 
+from .base import SecuresyncTestCase
+from .decorators import distributed_server_test, central_server_test
 from fle_utils.crypto import Key
 from fle_utils.general import version_diff
+from securesync import VERSION
 from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
-from testing import distributed_server_test, central_server_test, KALiteTestCase
-from version import VERSION
 
 
-class TestChainOfTrust(KALiteTestCase):
+class TestChainOfTrust(SecuresyncTestCase):
     def setUp(self):
         Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
-        super(KALiteTestCase, self).setUp()
+        super(SecuresyncTestCase, self).setUp()
 
     def tearDown(self):
-        super(KALiteTestCase, self).tearDown()
+        super(SecuresyncTestCase, self).tearDown()
         Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
 
     @unittest.skipIf(version_diff("0.12", VERSION) > 0, "generate_zone not available before v0.12.")
@@ -84,6 +85,7 @@ class TestChainOfTrust(KALiteTestCase):
 
 
     @distributed_server_test
+    @unittest.skipIf(version_diff("0.12", VERSION) > 0, "generate_zone not available before v0.12.")
     def test_invalid_invitation(self):
         """
         Chain of trust:

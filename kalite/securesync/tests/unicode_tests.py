@@ -5,8 +5,8 @@ import sys
 from django.conf import settings
 from django.utils import unittest
 
+from fle_utils.testing.unicode import UnicodeModelsTest
 from securesync.models import *
-from testing.unicode import UnicodeModelsTest
 
 
 class SecuresyncUnicodeModelsTest(UnicodeModelsTest):

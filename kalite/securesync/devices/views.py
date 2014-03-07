@@ -23,7 +23,6 @@ from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import RegisteredDevicePublicKey
 from securesync.forms import RegisteredDevicePublicKeyForm
 from securesync.models import SyncSession, Device, Zone
-from testing.asserts import central_server_only, distributed_server_only
 
 
 def register_public_key(request):
@@ -90,7 +89,7 @@ def register_public_key_client(request):
     return HttpResponse(_("Registration status: ") + reg_status)
 
 
-@central_server_only
+#@central_server_only
 @login_required
 @render_to("securesync/register_public_key_server.html")
 def register_public_key_server(request):
@@ -145,7 +144,7 @@ def register_public_key_server(request):
 
 
 @allow_jsonp
-@central_server_only
+#@central_server_only
 def register_public_key_server_auto(request):
     """This function allows an anonymous client to request a device key
     to be associated with a new zone.
