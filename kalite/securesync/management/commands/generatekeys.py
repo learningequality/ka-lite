@@ -2,7 +2,7 @@
 """
 from django.core.management.base import BaseCommand, CommandError
 
-from config.models import Settings
+from fle_utils.config.models import Settings
 from securesync.crypto import reset_keys
 
 

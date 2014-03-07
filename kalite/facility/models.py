@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-from config.models import Settings
+from fle_utils.config.models import Settings
 from fle_utils.django_utils import verify_raw_password
 from kalite.settings import LOG as logging
 from securesync import engine

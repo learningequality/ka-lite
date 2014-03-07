@@ -32,8 +32,8 @@ from django.views.decorators.gzip import gzip_page
 
 from .api_forms import DateTimeForm
 from .caching import backend_cache_page
-from config.models import Settings
 from facility.models import FacilityGroup, FacilityUser
+from fle_utils.config.models import Settings
 from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.mplayer_launcher import play_video_in_new_thread

@@ -9,7 +9,7 @@ import rsa as PYRSA
 
 from django.conf import settings
 
-from config.models import Settings
+from fle_utils.config.models import Settings
 from fle_utils.crypto import *
 
 

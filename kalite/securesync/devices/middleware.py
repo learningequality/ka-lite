@@ -3,7 +3,7 @@ from django.db import DatabaseError
 from django.http import HttpResponse
 
 from .models import Device
-from config.models import Settings
+from fle_utils.config.models import Settings
 
 
 class DBCheck:

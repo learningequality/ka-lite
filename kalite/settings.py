@@ -211,11 +211,11 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django_extensions", # needed for clean_pyc (testing)
     "south",
+    "fle_utils.config",
     "chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
     "facility",
-    "config",
     "main", # in order for securesync to work, this needs to be here.
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
