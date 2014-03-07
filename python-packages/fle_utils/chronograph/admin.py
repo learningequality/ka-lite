@@ -14,7 +14,7 @@ from django.utils.text import capfirst
 from django.utils import dateformat, formats
 from django.template.defaultfilters import linebreaks
 
-from chronograph.models import Job, Log
+from .models import Job, Log
 
 class HTMLWidget(forms.Widget):
     def __init__(self,rel=None, attrs=None):

@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.decorators import user_passes_test
 
-from chronograph.admin import JobAdmin
-from chronograph.models import Job
+from .admin import JobAdmin
+from .models import Job
 
 def job_run(request, pk):
     return JobAdmin(Job, admin.site).run_job_view(request, pk)
