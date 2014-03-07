@@ -24,7 +24,6 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from config import Settings
 #from facility import Facility
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses

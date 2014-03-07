@@ -31,10 +31,7 @@ class Command(BaseCommand):
         self.stdout_writeln(("Checking purgatory for unsaved models")+"...")
         call_command("retrypurgatory")
 
-        try:
-            client = SyncClient(**kwargs)
-        except Exception as e:
-            raise CommandError(e)
+        client = SyncClient(**kwargs)
 
         connection_status = client.test_connection()
         if connection_status != "success":
@@ -42,13 +39,10 @@ class Command(BaseCommand):
             return
 
         self.stdout_writeln(("Initiating SyncSession")+"...")
-        try:
-            result = client.start_session()
-            if result != "success":
-                self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
-                return
-        except Exception as e:
-            raise CommandError(e)
+        result = client.start_session()
+        if result != "success":
+            self.stderr_writeln(("Unable to initiate session")+": %s" % result.content)
+            return
 
         self.stdout_writeln(("Syncing models")+"...")
 

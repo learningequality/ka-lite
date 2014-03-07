@@ -94,7 +94,7 @@ class SyncClient(BaseClient):
             "client_nonce": client_nonce,
             "client_device": client_device.pk,
             "client_version": client_device.get_version(),
-            "client_os":    platforms.get_os_name(),
+            "client_os": get_os_name(),
         })
         raw_data = r.content
         try:
