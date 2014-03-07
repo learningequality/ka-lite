@@ -18,14 +18,11 @@ from django.utils.translation import ugettext as _
 from fle_utils.chronograph import force_job
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, allow_jsonp, set_query_params
-from main.models import UserLog
 from securesync import crypto
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import RegisteredDevicePublicKey
 from securesync.forms import RegisteredDevicePublicKeyForm
 from securesync.models import SyncSession, Device, Zone
-from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
 
 
 def register_public_key(request):
@@ -41,7 +38,7 @@ def initialize_registration():
     force_job("syncmodels", "Secure Sync", "HOURLY")  # now launches asynchronously
 
 
-@require_admin
+@login_required
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
 
@@ -92,7 +89,7 @@ def register_public_key_client(request):
     return HttpResponse(_("Registration status: ") + reg_status)
 
 
-@central_server_only
+#@central_server_only
 @login_required
 @render_to("securesync/register_public_key_server.html")
 def register_public_key_server(request):
@@ -147,7 +144,7 @@ def register_public_key_server(request):
 
 
 @allow_jsonp
-@central_server_only
+#@central_server_only
 def register_public_key_server_auto(request):
     """This function allows an anonymous client to request a device key
     to be associated with a new zone.

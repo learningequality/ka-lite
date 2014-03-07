@@ -21,7 +21,6 @@ from .models import *
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
 from securesync import engine
-from stats.models import UnregisteredDevicePing
 
 
 @csrf_exempt

@@ -60,6 +60,18 @@ class Facility(DeferredCountSyncedModel):
 
         return facilities
 
+    @classmethod
+    def initialize_default_facility(cls, facility_name=None):
+        facility_name = facility_name or settings.INSTALL_FACILITY_NAME
+
+        # Finally, install a facility--would help users get off the ground
+        if facility_name:
+            facility = get_object_or_None(cls, name=facility_name)
+            if not facility:
+                facility = Facility(name=facility_name)
+                facility.save()
+            Settings.set("default_facility", facility.id)
+
 
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))

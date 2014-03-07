@@ -3,7 +3,7 @@ import sys
 from django.utils import unittest
 
 from contact.models import *
-from testing.unicode import UnicodeModelsTest
+from fle_utils.testing.unicode import UnicodeModelsTest
 
 class ContactUnicodeModelsTest(UnicodeModelsTest):
 

@@ -1,5 +1,6 @@
 """
 """
+import logging
 import os
 import sys
 from annoying.functions import get_object_or_None
@@ -11,10 +12,8 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
 
-from facility.models import Facility
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
-from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
 from securesync.views import initialize_registration
@@ -87,31 +86,10 @@ def confirm_or_generate_zone(invitation=None, device_zone=None):
     initialize_registration()  # would try to sync
 
 
-def initialize_facility(facility_name=None):
-    facility_name = facility_name or settings.INSTALL_FACILITY_NAME
-
-    # Finally, install a facility--would help users get off the ground
-    if facility_name:
-        facility = get_object_or_None(Facility, name=facility_name)
-        if not facility:
-            facility = Facility(name=facility_name)
-            facility.save()
-        Settings.set("default_facility", facility.id)
-
-
 class Command(BaseCommand):
     args = "\"<name of device>\" \"<description of device>\""
     help = "Initialize device with optional name and description"
 
-    option_list = BaseCommand.option_list + (
-        # Basic options
-        # Functional options
-        make_option('-f', '--facility',
-            action='store',
-            dest='facility_name',
-            default=None,
-            help='Default facility name'),
-        )
     data_json_filename = "network_data.json"
     data_json_file = os.path.join(settings.STATIC_ROOT, "data", data_json_filename)
 
@@ -150,5 +128,3 @@ class Command(BaseCommand):
                 raise CommandError("Error importing offline data from %s: %s\n" % (data_file, e))
 
         confirm_or_generate_zone(invitation)
-
-        initialize_facility(options["facility_name"])

@@ -1,15 +1,15 @@
 """
 """
+import logging
 import re
 import json
 import uuid
 
 from django.conf import settings
 
-import kalite
 from . import get_serialized_models, save_serialized_models, get_device_counters, deserialize
 from .models import *
-from kalite.settings import LOG as logging
+from fle_utils.platforms import get_os_name
 from securesync.api_client import BaseClient
 from securesync.devices.api_client import RegistrationClient
 from securesync.devices.models import *
@@ -94,7 +94,7 @@ class SyncClient(BaseClient):
             "client_nonce": client_nonce,
             "client_device": client_device.pk,
             "client_version": client_device.get_version(),
-            "client_os": kalite.OS,
+            "client_os": get_os_name(),
         })
         raw_data = r.content
         try:

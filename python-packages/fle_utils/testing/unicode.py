@@ -1,6 +1,6 @@
 from django.utils import unittest
 
-from general import all_classes_in_module
+from .general import all_classes_in_module
 
 
 class UnicodeModelsTest(unittest.TestCase):

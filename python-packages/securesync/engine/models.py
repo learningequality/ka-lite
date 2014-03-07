@@ -16,10 +16,8 @@ from django.utils.translation import ugettext_lazy as _
 from . import add_syncing_models
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
+from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH
 
-
-ID_MAX_LENGTH=32
-IP_MAX_LENGTH=50
 
 def _get_own_device():
     """

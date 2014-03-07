@@ -1,5 +1,6 @@
 from django.contrib import admin
-from models import *
+
+from .models import *
 
 
 class RegisteredDevicePublicKeyAdmin(admin.ModelAdmin):
@@ -26,12 +27,12 @@ admin.site.register(DeviceZone, DeviceZoneAdmin)
 
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ("device_id", "name", "description", "is_own_device", "is_trusted", "is_demo_device", "get_zone", "version")
-    
+
     def is_own_device(self, obj):
         return obj.devicemetadata.is_own_device
     is_own_device.boolean = True
     is_own_device.admin_order_field = "devicemetadata__is_own_device"
-    
+
     def is_trusted(self, obj):
         return obj.devicemetadata.is_trusted
     is_trusted.boolean = True

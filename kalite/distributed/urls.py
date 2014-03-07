@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
     url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images" + request.path)),
+)
+
+urlpatterns += patterns('',
     url(r'^securesync/', include(facility.urls)),  # for backwards compat
     url(r'^securesync/', include(securesync.urls)),
 )
@@ -78,7 +81,12 @@ urlpatterns += patterns('distributed.views',
     url(r'^search/$', 'search', {}, 'search'),
     # the following pattern is a catch-all, so keep it last:
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+
+    # Allows remote admin of the distributed server
+    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 )
+
+
 
 handler403 = 'distributed.views.handler_403'
 handler404 = 'distributed.views.handler_404'
