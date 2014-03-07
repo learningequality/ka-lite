@@ -253,7 +253,9 @@ $(function() {
             }]
             
         });
+        jQuery("button.ui-dialog-titlebar-close").hide();
         $("#modal_dialog").text(gettext("Deleting the downloaded video(s) will lead to permanent loss of data"));
+
     });
 
     // Cancel current downloads
