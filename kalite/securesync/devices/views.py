@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
-from chronograph import force_job
+from fle_utils.chronograph import force_job
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, allow_jsonp, set_query_params
 from main.models import UserLog

@@ -9,8 +9,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 import i18n
 from distributed import caching
+from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import break_into_chunks
-from chronograph.management.croncommand import CronCommand
 from updates.api_views import divide_videos_by_language
 from updates.models import VideoFile
 

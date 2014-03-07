@@ -212,7 +212,7 @@ INSTALLED_APPS = (
     "django_extensions", # needed for clean_pyc (testing)
     "south",
     "fle_utils.config",
-    "chronograph",
+    "fle_utils.chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
     "facility",

@@ -17,8 +17,8 @@ from django.utils.translation import ugettext as _
 
 from version import VERSION
 from .classes import UpdatesStaticCommand
-from chronograph.management.croncommand import CronCommand
 from distributed import caching
+from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import callback_percent_proxy, download_file
 from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH

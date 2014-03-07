@@ -8,9 +8,9 @@ from django.utils.translation import ugettext as _
 
 import i18n
 from .classes import UpdatesDynamicCommand
-from chronograph.management.croncommand import CronCommand
 from distributed import caching
 from fle_utils import set_process_priority
+from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
 from i18n.management.commands.scrape_videos import scrape_video, DownloadError

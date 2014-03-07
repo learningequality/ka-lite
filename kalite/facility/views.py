@@ -22,7 +22,7 @@ from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
-from chronograph import force_job
+from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
 from kalite.settings import package_selected, LOG as logging
 from main.models import UserLog
