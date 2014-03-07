@@ -20,13 +20,14 @@ $(function() {
     });
 });
 
+
 function display_languages(installables) {
 
     $.ajax({
         url: installed_languages_url,
         datatype: "json",
     }).success(function(installed) {
-
+	
         //
         // show list of installed languages
         //
@@ -34,7 +35,7 @@ function display_languages(installables) {
         installed.forEach(function(lang, index) {
             if (lang['name']) { // nonempty name
                 var link_text;
-                if (!(lang['code'] === defaultLanguage)) {
+                if (!(lang['code'] == defaultLanguage)) {
                     link_text = sprintf("<a href='?set_default_language=%(lang.code)s'>(%(link_text)s)</a>", {
                         lang: lang,
                         link_text: gettext("Set as default")
@@ -43,8 +44,11 @@ function display_languages(installables) {
                     link_text = "(Default)";
                 }
                 var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+		var lang_code = lang['code'];
                 var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles"), lang);
-                var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
+                 var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s </div>",link_text, lang_name, lang_data,lang_code);
+		lang_description += sprintf("<div class='%s'> <button class='delete-language-button' value='%s' type='button'>Delete %s </button></div>",lang_code,lang_code,lang_code);
+
 
                 // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
                 // NOTE: N^2 algorithm right here, but meh
@@ -69,9 +73,40 @@ function display_languages(installables) {
             }
         });
 
+
+		
+function delete_languagepack(lang_name) {
+        doRequest(delete_languagepack_url, {lang: lang_name})
+            .success(function() {
+                handleSuccessAPI("deleted");
+		$.ajax({url: "/api/languagepacks/refresh", async: false});
+		display_languages(installables);
+		
+            })
+            .fail(function(resp) {
+                handleFailedAPI(resp, gettext("Error deleting"), "lang_name");
+            });
+
+}
+
+$(function () {
+    $(".delete-language-button").click(function(event) {
+        language = $(this).val();
+        delete_languagepack(language);
+    });
+});
+
         //
         // show list of installable languages in the dropdown box
         //
+	
+
+$('#language-packs')
+    .empty()
+    .append()
+;
+
+
         installables.forEach(function(langdata, langindex) {
             var srtcount = langdata["subtitle_count"];
             var langcode = langdata["code"];
@@ -87,12 +122,16 @@ function display_languages(installables) {
     });
 }
 
+
+
 //
 // Messy UI stuff incoming
 //
 
 // when we make a selection on the language pack select box, enable the 'Get Language' Button
 // TODO: change so that if they already have a valid selection, activate button anyway
+
+
 $(function() {
     $("#language-packs").change(function(event) {
         $("#get-language-button").removeAttr("disabled");

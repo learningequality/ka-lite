@@ -40,6 +40,7 @@
         var installed_languages_url = "{% url installed_language_packs %}"
         var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
         var defaultLanguage = "{{ default_language }}";
+	var delete_languagepack_url = "{% url delete_languagepack %}";
     </script>
     <script type="text/javascript" src="{% static 'js/update_languages.js' %}"></script>
 {% endblock headjs %}

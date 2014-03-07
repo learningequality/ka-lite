@@ -5,6 +5,7 @@ import dateutil.parser
 import json
 import re
 import math
+import shutil
 from annoying.functions import get_object_or_None
 
 from django.core.management import call_command
@@ -17,7 +18,7 @@ from django.utils.translation import ugettext as _
 
 import settings
 from .models import UpdateProgressLog, VideoFile
-from .views import get_installed_language_packs
+from .views import get_installed_language_packs, update_languages
 from shared.decorators import require_admin
 from shared.jobs import force_job
 from shared.topic_tools import get_topic_tree
@@ -26,6 +27,7 @@ from utils.django_utils import call_command_async
 from utils.general import isnumeric, break_into_chunks
 from utils.internet import api_handle_error_with_json, JsonResponse
 from utils.orderedset import OrderedSet
+from i18n.models import LanguagePack
 
 
 def process_log_from_request(handler):
@@ -201,6 +203,27 @@ def start_languagepack_download(request):
             manage_py_dir=settings.PROJECT_PATH,
             language=data['lang']) # TODO: migrate to force_job once it can accept command_args
         return JsonResponse({'success': True})
+
+
+@require_admin
+@api_handle_error_with_json
+def delete_languagepack(request):
+    delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    path_tuple= str( settings.PROJECT_PATH + "../locale/" + delete_id )
+    delete_path=""
+    delete_path += delete_path.join(map(str,path_tuple))
+    try:
+    	shutil.rmtree(delete_path)
+    except:
+    	pass
+
+    try:
+    	Lang_object= LanguagePack.objects.filter(code=delete_id)    
+    	Lang_object[0].delete()
+    except:
+	pass
+
+    return JsonResponse({'success': True})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None):
