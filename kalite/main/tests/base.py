@@ -12,7 +12,7 @@ from django.core import cache
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 
-from config.models import Settings
+from fle_utils.config.models import Settings
 from main.topic_tools import get_node_cache
 from securesync.models import Device
 from testing.base import KALiteTestCase
