@@ -2,6 +2,7 @@
 Used for labeling models that use securesync.
 This is where the heavy lifting happens!
 """
+import logging
 from annoying.functions import get_object_or_None
 
 from django.conf import settings
@@ -11,7 +12,6 @@ from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
 from fle_utils.django_utils import serializers
-from kalite.settings import LOG as logging
 from version import VERSION
 
 

@@ -24,10 +24,12 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+from config import Settings
+#from facility import Facility
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
-from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, initialize_facility, Command as InitCommand
+from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, Command as InitCommand
 from securesync.models import Zone
 from version import VERSION
 
@@ -89,7 +91,6 @@ def get_hostname_and_description(hostname=None, description=None):
     description = description or raw_input("Please enter a one-line description for this server (or, press Enter to leave blank): ")
 
     return (hostname, description)
-
 
 
 class Command(BaseCommand):
@@ -256,7 +257,7 @@ class Command(BaseCommand):
             #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
         #    confirm_or_generate_zone()
-        #    initialize_facility()
+        #    Facility.initialize_default_facility()
 
         # Create the admin user
         if password:  # blank password (non-interactive) means don't create a superuser

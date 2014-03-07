@@ -1,10 +1,12 @@
 import cgi
 import json
+import logging
 import re
 import uuid
 
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.messages.api import get_messages
 from django.db import models as db_models
 from django.http import HttpResponse
@@ -18,10 +20,7 @@ from .models import *
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
-from kalite.settings import LOG as logging
 from securesync.devices.models import *  # inter-dependence
-from shared.decorators import require_admin
-from stats.models import UnregisteredDevicePing
 
 
 def require_sync_session(handler):
@@ -199,7 +198,7 @@ def model_download(data, session):
     return JsonResponse(result)
 
 
-@require_admin
+@login_required
 @api_handle_error_with_json
 def force_sync(request):
     """

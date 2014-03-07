@@ -1,14 +1,14 @@
 """
 """
-import re
+import logging
 import json
+import re
 import requests
 import urllib
 import urllib2
 
 from django.conf import settings
 
-import kalite
 from .models import *
 from securesync import engine
 from securesync.api_client import BaseClient
