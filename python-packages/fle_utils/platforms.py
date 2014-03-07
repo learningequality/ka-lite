@@ -13,6 +13,17 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, is_zipfile, BadZipfile
 
 ALL_SYSTEMS = ["windows", "darwin", "linux"]
 
+
+def get_os_name():
+    try:
+        return ", ".join(platform.uname() + ("Python %s" % platform.python_version(),))
+    except:
+        try:
+            return sys.platform
+        except:
+            return ""
+
+
 def is_windows(system=None):
     system = system or platform.system()
     return system.lower() == "windows"

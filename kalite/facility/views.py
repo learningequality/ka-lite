@@ -22,7 +22,7 @@ from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
-from chronograph import force_job
+from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
 from kalite.settings import package_selected, LOG as logging
 from main.models import UserLog
@@ -88,7 +88,6 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
     title = ""
     user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
-    import pdb; pdb.set_trace()
     # Check permissions
     if user and not request.is_admin and user != request.session.get("facility_user"):
         # Editing a user, user being edited is not self, and logged in user is not admin
