@@ -1,4 +1,0 @@
-"""
-"""
-from .devices.views import *
-
