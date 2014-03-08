@@ -1,8 +1,10 @@
+"""
+"""
 #import decorator
 import types
 import unittest
 
-from kalite import settings
+from django.conf import settings
 
 
 def x_server_test(f, cond, msg):

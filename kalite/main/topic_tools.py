@@ -1,31 +1,48 @@
 """
-Important constants and helpful functions
+Important constants and helpful functions for the topic tree and a view on its data, the node cache.
+
+The topic tree is a hierarchical representation of real data (exercises, and videos).
+Leaf nodes of the tree are real learning resources, such as videos and exercises.
+Non-leaf nodes are topics, which describe a progressively higher-level grouping of the topic data.
+
+Each node in the topic tree comes with lots of metadata, including:
+* title
+* description
+* id (unique identifier; now equivalent to slug below)
+* slug (for computing a URL)
+* path (which is equivalent to a URL)
+* kind (Topic, Exercise, Video)
+and more.
+
+The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
+so
+* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
+* get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
 import os
 from functools import partial
 
+from django.conf import settings
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
-import khanload
-import settings
-from settings import LOG as logging
-from utils.general import softload_json
+import khanload  # should be removed ASAP, to make more generic and separate apps.
+from fle_utils.general import softload_json
+from kalite.settings import LOG as logging
+
+TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
 
 CACHE_VARS = []
-
-topics_file = "topics.json"
-
 
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
-    global TOPICS, topics_file
+    global TOPICS, TOPICS_FILEPATH
     if TOPICS is None or force:
-        TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
+        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
 
         # Limit the memory footprint by unloading particular values
@@ -158,7 +175,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
     return result
 
 
-def generate_node_cache(topictree=None):#, output_dir=settings.DATA_PATH):
+def generate_node_cache(topictree=None):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Video nodes.
     """

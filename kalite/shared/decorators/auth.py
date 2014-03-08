@@ -1,6 +1,9 @@
+"""
+"""
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -10,13 +13,11 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-import settings
-from config.models import Settings
 from facility.decorators import facility_from_request
 from facility.models import FacilityUser
+from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device, Zone
 from testing.asserts import central_server_only, distributed_server_only
-from utils.internet import JsonResponse, JsonpResponse
 
 
 def get_user_from_request(handler=None, request=None, *args, **kwargs):

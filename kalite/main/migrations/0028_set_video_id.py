@@ -4,18 +4,13 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-import i18n
-#from main.models import VideoLog
-
-
 class Migration(SchemaMigration):
+    """This is a dummy migration, left here as an empty shell as the original was broken (sometimes causing circular imports),
+    but had been released to master. A working version of this migration has been implemented in 0029_set_video_id_for_realz.py
+    """
 
     def forwards(self, orm):
         pass
-        ## Setting the video ID
-        #for vlog in VideoLog.objects.all():
-        #    vlog.video_id = i18n.get_video_id(vlog.youtube_id) or vlog.youtube_id
-
 
     def backwards(self, orm):
         pass

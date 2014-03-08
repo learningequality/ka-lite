@@ -1,6 +1,7 @@
+"""
+"""
+from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
-
-import settings
 
 
 #if settings.CENTRAL_SERVER:

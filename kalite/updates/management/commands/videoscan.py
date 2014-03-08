@@ -1,21 +1,24 @@
+"""
+"""
 import glob
 import os
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import i18n
-import settings
-from main import caching
+from distributed import caching
+from fle_utils.chronograph.management.croncommand import CronCommand
+from fle_utils.general import break_into_chunks
 from updates.api_views import divide_videos_by_language
 from updates.models import VideoFile
-from utils.general import break_into_chunks
 
 
-class Command(BaseCommand):
+class Command(CronCommand):
     help = "Sync up the database's version of what videos have been downloaded with the actual folder contents"
 
-    option_list = BaseCommand.option_list + (
+    unique_option_list = (
         make_option('-c', '--cache',
             action='store_true',
             dest='auto_cache',
@@ -23,6 +26,8 @@ class Command(BaseCommand):
             help='Create cached files',
             metavar="AUTO_CACHE"),
     )
+
+    option_list = CronCommand.option_list + unique_option_list
 
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:
@@ -75,10 +80,10 @@ class Command(BaseCommand):
                 video_files_needing_model_update = VideoFile.objects.filter(percent_complete=0, download_in_progress=False, youtube_id__in=chunk)
                 video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
 
-                caching.invalidate_all_caches()  # Do this within the loop, to update users ASAP
                 updated_video_ids += [i18n.get_video_id(video_file.youtube_id) for video_file in video_files_needing_model_update]
 
             if updated_video_ids:
+                caching.invalidate_all_caches()
                 self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % len(updated_video_ids))
             return updated_video_ids
         touched_video_ids += update_objects_to_be_complete(youtube_ids_in_filesystem)

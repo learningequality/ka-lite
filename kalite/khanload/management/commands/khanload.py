@@ -13,13 +13,13 @@ import time
 from math import ceil, log  # needed for basepoints calculation
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import khanload
-import settings
+from fle_utils.general import datediff
+from kalite.settings import LOG as logging
 from main import topic_tools
-from settings import LOG as logging
-from utils.general import datediff
 
 
 # get the path to an exercise file, so we can check, below, which ones exist

@@ -3,7 +3,46 @@
 
 var catalog = new Array();
 
-function pluralidx(count) { return (count == 1) ? 0 : 1; }
+function pluralidx(n) {
+  var v=(n != 1);
+  if (typeof(v) == 'boolean') {
+    return v ? 1 : 0;
+  } else {
+    return v;
+  }
+}
+catalog['%(points)d points!'] = '%(points)d points!';
+catalog['%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated'] = '%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated';
+catalog['%(username)s (Logout)'] = '%(username)s (Logout)';
+catalog['An error occurred while contacting the server to start the download process'] = 'An error occurred while contacting the server to start the download process';
+catalog['Completed update successfully.'] = 'Completed update successfully.';
+catalog['Could not connect to the server.'] = 'Could not connect to the server.';
+catalog['Delete %(vid_count)d selected video(s)'] = 'Delete %(vid_count)d selected video(s)';
+catalog['Download %(vid_count)d new selected video(s)'] = 'Download %(vid_count)d new selected video(s)';
+catalog['Download for language %s started.'] = 'Download for language %s started.';
+catalog['Error canceling downloads'] = 'Error canceling downloads';
+catalog['Error downloading subtitles'] = 'Error downloading subtitles';
+catalog['Error downloading videos'] = 'Error downloading videos';
+catalog['Error during update: %(progress_log_notes)s'] = 'Error during update: %(progress_log_notes)s';
+catalog['Error getting search data'] = 'Error getting search data';
+catalog['Error restarting downloads'] = 'Error restarting downloads';
+catalog['Error starting updates process'] = 'Error starting updates process';
+catalog['Error starting video download'] = 'Error starting video download';
+catalog['Error while checking update status: %(message)s'] = 'Error while checking update status: %(message)s';
+catalog['None; Please select now'] = 'None; Please select now';
+catalog['Overall progress: %(percent_complete)5.2f%% complete (%(cur_stage)d of %(num_stages)d)'] = 'Overall progress: %(percent_complete)5.2f%% complete (%(cur_stage)d of %(num_stages)d)';
+catalog['Set as default'] = 'Set as default';
+catalog['Subtitles'] = 'Subtitles';
+catalog['Successfully launched data syncing job. After syncing completes, visit the <a href=\'/management/device/\'>device management page</a> to view results.'] = 'Successfully launched data syncing job. After syncing completes, visit the <a href=\'/management/device/\'>device management page</a> to view results.';
+catalog['The server does not have internet access; new content cannot be downloaded at this time.'] = 'The server does not have internet access; new content cannot be downloaded at this time.';
+catalog['Total Points : %(points)d '] = 'Total Points : %(points)d ';
+catalog['Translated'] = 'Translated';
+catalog['Unexpected error: no search data found for selected item. Please select another item.'] = 'Unexpected error: no search data found for selected item. Please select another item.';
+catalog['Uninterpretable message received.'] = 'Uninterpretable message received.';
+catalog['Update cancelled successfully.'] = 'Update cancelled successfully.';
+catalog['Upgrade'] = 'Upgrade';
+catalog['You are not authorized to complete the request.  Please <a href=\'/securesync/login/\' target=\'_blank\'>login</a> as an administrator, then retry.'] = 'You are not authorized to complete the request.  Please <a href=\'/securesync/login/\' target=\'_blank\'>login</a> as an administrator, then retry.';
+catalog['problem on server.'] = 'problem on server.';
 
 
 function gettext(msgid) {

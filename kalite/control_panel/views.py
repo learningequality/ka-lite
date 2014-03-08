@@ -1,9 +1,12 @@
+"""
+"""
 import datetime
 import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections import OrderedDict, namedtuple
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -13,7 +16,6 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-import settings
 import version
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 try:
@@ -27,12 +29,12 @@ from facility.decorators import facility_required
 from facility.forms import FacilityForm
 from facility.models import Facility, FacilityUser, FacilityGroup
 from facility.views import user_management_context
+from fle_utils.internet import CsvResponse, render_to_csv
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from main.topic_tools import get_node_cache
 from securesync.models import DeviceZone, Device, Zone, SyncSession
-from settings import LOG as logging
 from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-from utils.internet import CsvResponse, render_to_csv
 
 
 @require_authorized_admin

@@ -5,8 +5,8 @@ import datetime
 
 from django.utils import unittest
 
+from fle_utils.general import datediff
 from updates.models import UpdateProgressLog
-from utils.general import datediff
 
 
 class TestSingleStageUpdate(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestSingleStageUpdate(unittest.TestCase):
     """
 
     def test_create(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=1)
         progress_log.save()
@@ -24,7 +24,7 @@ class TestSingleStageUpdate(unittest.TestCase):
 
 
     def test_update_stage(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=1)
         progress_log.save()
@@ -37,7 +37,7 @@ class TestSingleStageUpdate(unittest.TestCase):
 
 
     def test_cancel_current_stage(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=1)
         progress_log.save()
@@ -54,7 +54,7 @@ class TestSingleStageUpdate(unittest.TestCase):
 
 
     def test_update_total_stages(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=1)
         progress_log.save()
@@ -71,7 +71,7 @@ class TestSingleStageUpdate(unittest.TestCase):
 
 
     def test_cancel_progress(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=1)
         progress_log.save()
@@ -83,7 +83,7 @@ class TestSingleStageUpdate(unittest.TestCase):
 
 
     def test_completion(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=1)
         progress_log.save()
@@ -101,7 +101,7 @@ class TestMultiStageUpdate(unittest.TestCase):
     """
 
     def test_create(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
@@ -111,7 +111,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_update_stage(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
@@ -124,7 +124,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_dual_update_stage(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
@@ -138,7 +138,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_cancel_current_stage(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=11)
         progress_log.save()
@@ -156,7 +156,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_update_total_stages(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
@@ -173,7 +173,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_update_total_stages_in_progress(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
@@ -191,7 +191,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_cancel_progress(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
@@ -203,7 +203,7 @@ class TestMultiStageUpdate(unittest.TestCase):
 
 
     def test_completion(self):
-    
+
         # Create the object
         progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()

@@ -28,6 +28,9 @@ function csrfSafeMethod(method) {
 }
 
 function doRequest(url, data) {
+    console.log(url);
+    url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+    console.log(url);
     return $.ajax({
         url: url,
         type: data ? "POST" : "GET",
@@ -95,12 +98,10 @@ function setGetParam(href, name, val) {
         vars[name] = val;
     }
 
-    var url = base + (vars.length > 0) ? "?" : "";
+    var url = base;
     var idx = 0;
     for (key in vars) {
-        if (idx > 0) {
-            url += "&";
-        }
+        url += (idx == 0) ? "?" : "&";
         url += key + "=" + vars[key];//         + $.param(vars);
         idx++;
     }
