@@ -27,6 +27,7 @@
     <script src="{% static "js/videoplayer.js" %}"></script>
 
     <script>
+    var VIDEOLOG_SAVE_FREQUENCY = 10;  // in seconds
     $(function() {
         // Keep this lean, in order to reduce caching filesize
         initialize_video("{{ video.id }}", "{{ video.youtube_id }}");

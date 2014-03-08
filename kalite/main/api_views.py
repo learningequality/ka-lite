@@ -85,6 +85,7 @@ def save_video_log(request):
             facility_user=user,
             video_id=data["video_id"],
             youtube_id=data["youtube_id"],
+            current_position=data["current_position"],
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
             language=data.get("language") or request.language,
@@ -165,7 +166,7 @@ def get_video_logs(request):
     user = request.session["facility_user"]
     logs = VideoLog.objects \
         .filter(user=user, video_id__in=data) \
-        .values("video_id", "complete", "total_seconds_watched", "points")
+        .values("video_id", "complete", "total_seconds_watched", "points", "current_position")
 
     return JsonResponse(list(logs))
 

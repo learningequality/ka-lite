@@ -15,6 +15,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         percent_last_saved: 0.0,
         seconds_watched_since_save: 0.0,
         total_seconds_watched: 0.0,
+        current_position: 0.0, // in seconds
         points: 0,
         possible_points: 750,
         starting_points: 0,
@@ -35,7 +36,6 @@ window.VideoPlayerModel = Backbone.Model.extend({
         });
 
         this.fetch();
-
     },
 
     fetch: function() {
@@ -44,16 +44,16 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         doRequest("/api/get_video_logs", [this.get("video_id")])
             .success(function(data) {
-                if (data.length === 0) {
-                    return;
+                if (data.length !== 0) {
+                    self.set({
+                        current_position: data[0].current_position,
+                        total_seconds_watched: data[0].total_seconds_watched,
+                        points: data[0].points,
+                        starting_points: data[0].points,
+                        complete: data[0].complete
+                    });
+                    self.pointsSaved = data[0].points;
                 }
-                self.set({
-                    total_seconds_watched: data[0].total_seconds_watched,
-                    points: data[0].points,
-                    starting_points: data[0].points,
-                    complete: data[0].complete
-                });
-                self.pointsSaved = data[0].points;
             })
     },
 
@@ -74,6 +74,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         data = {
             video_id: this.get("video_id"),
             youtube_id: this.get("youtube_id"),
+            current_position: this.get("current_position"),
             seconds_watched: this.get("seconds_watched_since_save"),
             total_seconds_watched: this.get("total_seconds_watched"),
             points: this.get("points")
@@ -169,6 +170,9 @@ window.VideoPlayerModel = Backbone.Model.extend({
     updateAndSaveIfNeeded: function() {
 
         this._updateSecondsWatchedSinceSave();
+        this.set({
+            current_position: this.getVideoPosition()
+        });
 
         // Save after we hit certain intervals of video watching
         if (this._isAutoSaveIntervalExceeded()) {
@@ -267,7 +271,7 @@ window.VideoView = Backbone.View.extend({
     },
 
     _initializeEventListeners: function() {
-        
+
         var self = this;
 
         this.player
@@ -342,7 +346,7 @@ window.VideoView = Backbone.View.extend({
     _beginIntervalUpdate: function() {
         // Every 10 seconds, update the point estimate, and save if needed
         if (this.intervalId) clearInterval(this.intervalId);
-        this.intervalId = setInterval(this.model.updateAndSaveIfNeeded, 10000);
+        this.intervalId = setInterval(this.model.updateAndSaveIfNeeded, VIDEOLOG_SAVE_FREQUENCY * 1000);
     },
 
     /**
@@ -415,6 +419,16 @@ function initialize_video(video_id, youtube_id) {
             youtube_id: youtube_id,
             width: width,
             height: height
+        })
+
+        window.videoView.whenReady(function(obj) {
+            var current_position = window.videoView.model.get("current_position");
+            if (current_position > 0) {
+                console.log(sprintf("Setting current position to %d.", current_position));
+                window.videoView.seek(current_position);
+                window.videoView.play();
+                window.videoView.pause();
+            }
         });
 
         var resize_video = _.throttle(function() {
@@ -458,5 +472,10 @@ function initialize_video(video_id, youtube_id) {
         });
         return false;
     }, 5000));
+
+
+    setInterval(function() {
+        window.videoView.playerReady();
+    }, 1000);
 
 }
