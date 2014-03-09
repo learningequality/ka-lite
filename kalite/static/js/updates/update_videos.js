@@ -5,9 +5,9 @@ var nErrors = 0
 var videos_downloading = false;
 
 function video_start_callback(progress_log, resp) {
-    if (!progress_log) {
+    //if (!progress_log) {
         //handleFailedAPI(resp, "Error starting updates process");
-    }
+    //}
     lastKey = null;
     nErrors = 0;
     videos_downloading = false;

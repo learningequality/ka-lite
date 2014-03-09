@@ -177,7 +177,6 @@ function updatesCheck(process_name, interval) {
                 } else if (progress_log.process_name) {
                     show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }), "id_" + process_name);
                     updatesReset(process_name);
-                } else {
                 }
             }
         }).fail(function(resp) {
