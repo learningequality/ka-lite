@@ -5,7 +5,7 @@ function server_restart() {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
-        show_message("success", "Initiated server restart.")
+        show_message("success", "Initiated server restart.");
     }).error(function(data, status, error) {
         handleFailedAPI(data, [status, error].join(" "));
     });
@@ -15,9 +15,9 @@ function server_restart() {
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information
-var process_intervals = {}
-var process_interval_handles = {}
-var process_callbacks = {}
+var process_intervals = {};
+var process_interval_handles = {};
+var process_callbacks = {};
 
 $(function() {
     setTimeout(function() {
@@ -28,9 +28,9 @@ $(function() {
                 show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."), "id_offline_message");
             } else {
                 $(".enable-when-server-online").removeAttr("disabled");
-                clear_message("id_offline_message")
+                clear_message("id_offline_message");
             }
-        })},
+        });},
         200);
 
     $(".progressbar-overall").progressbar({
@@ -55,7 +55,7 @@ function has_a_val(key, obj) {
 
 function updatesStart(process_name, interval, callbacks) {
     // Starts looking for updates
-    clear_message("id_" + process_name)
+    clear_message("id_" + process_name);
 
     // Store the info
     if (! process_name in process_names) {
@@ -89,7 +89,7 @@ function updatesStart_callback(process_name, start_time) {
 
     doRequest(request_url)
         .success(function(progress_log, textStatus, request) {
-            handleSuccessAPI()
+            handleSuccessAPI();
             // Store the info
             if (!progress_log.process_name) {
                 if (!start_time) {
@@ -110,7 +110,7 @@ function updatesStart_callback(process_name, start_time) {
                 return;
             }
             if (!has_a_val(process_name, process_ids)) {
-                process_ids[process_name] = progress_log.process_id
+                process_ids[process_name] = progress_log.process_id;
             }
 
             // Launch a looping timer to call into the update check function
@@ -153,7 +153,7 @@ function updatesCheck(process_name, interval) {
             }
 
             if (!has_a_val(process_name, process_ids)) {
-                process_ids[process_name] = progress_log.process_id
+                process_ids[process_name] = progress_log.process_id;
             }
 
             // Update the UI
@@ -258,7 +258,7 @@ function updatesReset(process_name) {
     select_update_elements(process_name, ".progress-section").hide();
 
     // Delete data
-    process_callbacks[process_name] = null
+    process_callbacks[process_name] = null;
     process_ids[process_name] = null;
     process_intervals[process_name] = null;
     process_interval_handles[process_name] = null;

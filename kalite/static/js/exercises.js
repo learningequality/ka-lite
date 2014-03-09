@@ -1,7 +1,7 @@
 function updateStreakBar() {
     // update the streak bar UI
     $("#streakbar .progress-bar").css("width", exerciseData.percentCompleted + "%");
-    $("#totalpoints").html(exerciseData.points > 0 ? (exerciseData.points) : "")
+    $("#totalpoints").html(exerciseData.points > 0 ? (exerciseData.points) : "");
     if (exerciseData.percentCompleted >= 100) {
         $("#streakbar .progress-bar").addClass("completed");
         $("#hint-remainder").hide();
@@ -19,7 +19,7 @@ function updatePercentCompleted(correct) {
     if (correct && !exerciseData.hintUsed) {
         exerciseData.percentCompleted += 10;
         if (exerciseData.percentCompleted < 101) {
-            bumpprob = Math.floor(Math.random()*100)
+            bumpprob = Math.floor(Math.random()*100);
             bump = (bumpprob < 90) ? 1 : (bumpprob < 99 ? 1.5 : 2);
             inc = Math.ceil(basepoints*bump);
             exerciseData.points += inc;
@@ -107,7 +107,7 @@ $(function() {
             updateStreakBar();
 
             // Show all messages in "messages" object
-            show_api_messages(data.messages, "id_student_logs")
+            show_api_messages(data.messages, "id_student_logs");
         })
         .fail(function (resp) {
             // Expects to receive messages ({ type: message } format) about failures
