@@ -261,7 +261,7 @@ function updatesReset(process_name) {
     process_callbacks[process_name] = null
     process_ids[process_name] = null;
     process_intervals[process_name] = null;
-    process_interval_handles[process_name];
+    process_interval_handles[process_name] = null;
 
     if (process_name in process_names) {
         delete process_names[process_name];
