@@ -56,7 +56,7 @@ function updatePercentCompleted(correct) {
             communicate_api_failure(resp, "id_student_logs");
         });
 
-};
+}
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
 
