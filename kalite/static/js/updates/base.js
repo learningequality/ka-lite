@@ -58,7 +58,7 @@ function updatesStart(process_name, interval, callbacks) {
     clear_message("id_" + process_name)
 
     // Store the info
-    if (! process_name in process_names) {
+    if (! (process_name in process_names)) {
         process_names[process_name] = true;
     }
     process_intervals[process_name] = interval ? interval : 5000;
