@@ -46,7 +46,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (!(lang['code'] === defaultLanguage)) {
+            if (lang['code'] !== defaultLanguage) {
                 link_text = sprintf("<a href='%(CHANGE_SERVER_LANGUAGE_URL)s'>(%(link_text)s)</a>", {
                     CHANGE_SERVER_LANGUAGE_URL: setGetParam(window.location.href, "set_server_language", lang.code),
                     link_text: gettext("Set as default")
