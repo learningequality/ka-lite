@@ -96,7 +96,7 @@ function user2tooltip(json, user, xaxis, yaxis) {
     var tooltip = "<div class='tooltip'>";
     tooltip += "<div id='legend'><div class='username'>" + json['users'][user] + "</div><div class='legend'><div class='struggling'></div>Struggling</div><div class='legend'><div class='notattempted'></div>Not Attempted</div><div class='legend'><div class='attempted'></div>Attempted</div></div>";
     for (var ai in axes) {
-        if(axes[ai] == 'pct_mastery' | axes[ai] == 'effort'){
+        if(axes[ai] == 'pct_mastery' || axes[ai] == 'effort'){
             axes[ai] = 'ex:attempts';
         }
         // Some data don't have details, they're derived.
