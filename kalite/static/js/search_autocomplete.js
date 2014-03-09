@@ -91,7 +91,7 @@ $(document).ready(function() {
             var titles_filtered = $.ui.autocomplete.filter(_titles, request.term);
 
             // sort the titles again, since ordering was lost when we did autocomplete.filter
-            var node_type_ordering = ["video", "exercise", "topic"] // custom ordering, with the last in the array appearing first
+            var node_type_ordering = ["video", "exercise", "topic"]; // custom ordering, with the last in the array appearing first
             titles_filtered.sort(function(title1, title2) {
                 var node1 = _nodes[title1];
                 var node2 = _nodes[title2];
