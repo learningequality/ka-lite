@@ -47,7 +47,7 @@ function fetchTopicTree(lang, force_reparse) {
                             title: node.title,
                             type: category_name.toLowerCase(),
                             path: node.path,
-                            available: node.available,
+                            available: node.available
                         };
                     }
                 }
