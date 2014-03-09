@@ -10,6 +10,7 @@ import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
+CENTRAL_SERVER = False
 
 ##############################
 # Functions for querying settings
