@@ -3,7 +3,7 @@ function server_restart() {
     $.ajax({
         url: URL_SERVER_RESTART,
         cache: false,
-        datatype: "json",
+        datatype: "json"
     }).success(function(installed) {
         show_message("success", "Initiated server restart.")
     }).error(function(data, status, error) {

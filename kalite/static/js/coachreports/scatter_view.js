@@ -156,7 +156,7 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
     var options = {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
       hAxis: {title: stat2name(xaxis), stat: xaxis},
-      vAxis: {title: stat2name(yaxis), stat: yaxis},
+      vAxis: {title: stat2name(yaxis), stat: yaxis}
     };
     var dataTable = json2dataTable(json, xaxis, yaxis);
     $("#summary").remove();

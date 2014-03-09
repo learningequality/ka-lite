@@ -6,7 +6,7 @@ function get_available_languages() {
     var request = $.ajax({
         url: url,
         cache: false,
-        dataType: "jsonp",
+        dataType: "jsonp"
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
@@ -21,7 +21,7 @@ function get_installed_languages() {
     $.ajax({
         url: INSTALLED_LANGUAGES_URL,
         cache: false,
-        datatype: "json",
+        datatype: "json"
     }).success(function(installed) {
         installed_languages = installed;
         display_languages();
