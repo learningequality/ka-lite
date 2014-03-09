@@ -58,9 +58,11 @@ urlpatterns += patterns('distributed.views',
     url(r'^update/', include(updates.urls)),
 
     url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
+    url(r'^userlist/$', 'user_list', {}, 'user_list'),
 
     # API
     url(r'^api/', include(api_urls)),
+    url(r'^api/khanload/', include(khanload.api_urls)),
 
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it

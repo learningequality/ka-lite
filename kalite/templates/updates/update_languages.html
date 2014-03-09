@@ -14,6 +14,9 @@
         }
         #language-packs {
             margin-top: 20px;
+        } 
+         .get-language {
+            width: 500px;
         }
         .lang-link, .lang-name, .lang-data, .upgrade-link {
             float: left;
@@ -49,6 +52,7 @@
         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}"
         var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
         var defaultLanguage = "{{ default_language }}";
+        var delete_languagepack_url = "{% url delete_languagepack %}";
     </script>
     <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
