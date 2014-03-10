@@ -40,7 +40,6 @@ from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession
 from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 
 
@@ -366,7 +365,6 @@ def device_redirect(request):
     return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
 
 JS_CATALOG_CACHE = {}
-@distributed_server_only
 def javascript_catalog_cached(request):
     global JS_CATALOG_CACHE
     lang = request.session['default_language']
