@@ -9,9 +9,9 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils import unittest
 
-from .base import MainTestCase
 from facility.models import Facility, FacilityUser
 from fle_utils.django_utils import call_command_with_output
+from main.tests.base import MainTestCase
 from testing.client import KALiteClient
 from testing.decorators import distributed_server_test
 

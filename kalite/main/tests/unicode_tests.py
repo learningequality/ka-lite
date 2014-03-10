@@ -7,10 +7,10 @@ from django.conf import settings
 from django.utils import unittest
 
 from facility.models import Facility, FacilityGroup, FacilityUser
+from fle_utils.testing import UnicodeModelsTest
 from main.models import *
 from main.tests.base import MainTestCase
 from securesync.models import Device
-from testing import UnicodeModelsTest
 
 
 class MainUnicodeModelsTest(MainTestCase, UnicodeModelsTest):
