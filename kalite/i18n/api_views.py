@@ -12,10 +12,8 @@ from django.http import HttpResponse, Http404
 from . import get_language_pack_availability_filepath, SUBTITLE_COUNTS_FILEPATH, SUBTITLES_DATA_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from fle_utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
 from kalite.settings import LOG as logging
-from testing.asserts import central_server_only
 
 
-@central_server_only
 @allow_jsonp
 @api_handle_error_with_json
 def get_subtitle_counts(request):
@@ -35,7 +33,6 @@ def get_subtitle_counts(request):
     return JsonResponse(subtitle_counts)
 
 
-@central_server_only
 @allow_jsonp
 @api_handle_error_with_json
 def get_available_language_packs(request, version):
@@ -50,7 +47,7 @@ def get_available_language_packs(request, version):
         language_packs_available = {}
     return JsonResponse(sorted(language_packs_available.values(), key=lambda lp: lp["name"].lower()))
 
-@central_server_only
+
 @api_handle_error_with_json
 def get_dubbed_video_mappings(request):
     """Return dict of available language packs"""

@@ -23,10 +23,10 @@ from .forms import DataForm
 from facility.decorators import facility_required
 from facility.models import Facility, FacilityUser, FacilityGroup
 from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
+from fle_utils.testing.decorators import allow_api_profiling
 from kalite.settings import LOG as logging
 from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from main.topic_tools import get_topic_by_path, get_node_cache
-from testing.decorators import allow_api_profiling
 
 
 # Global variable of all the known stats, their internal and external names,
