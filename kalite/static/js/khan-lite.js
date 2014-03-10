@@ -66,7 +66,7 @@ function show_message(msg_class, msg_text, msg_id) {
         clear_message(msg_id);
         msg_html += " id='" + msg_id + "'";
     }
-    msg_html += ">" + x_button + msg_text + "</div>"
+    msg_html += ">" + x_button + msg_text + "</div>";
     $("#message_container").append(msg_html);
     return $("#message_container");
 }
