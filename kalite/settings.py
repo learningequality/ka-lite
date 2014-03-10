@@ -10,6 +10,7 @@ import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
+CENTRAL_SERVER = False
 
 ##############################
 # Functions for querying settings
@@ -69,8 +70,6 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 # Basic App Settings
 ##############################
 
-CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
-
 # the default encoding for strings read from various IO sources
 DEFAULT_ENCODING = getattr(local_settings, "DEFAULT_ENCODING", 'utf-8')
 
@@ -81,7 +80,7 @@ DEFAULT_ENCODING = getattr(local_settings, "DEFAULT_ENCODING", 'utf-8')
 reload(sys)
 sys.setdefaultencoding(DEFAULT_ENCODING)
 
-PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008 if not CENTRAL_SERVER else 8001)
+PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 8008)
 #proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
 CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if not DEBUG else 5)  # 18 threads seems a sweet spot
@@ -90,17 +89,8 @@ CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18 if n
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("kalite.%s" % CENTRAL_SERVER_DOMAIN) + (":7007" if DEBUG else ""))
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("globe.%s:8008" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
-CENTRAL_FROM_EMAIL    = getattr(local_settings, "CENTRAL_FROM_EMAIL",    "kalite@%s" % CENTRAL_SERVER_DOMAIN)
-CENTRAL_DEPLOYMENT_EMAIL = getattr(local_settings, "CENTRAL_DEPLOYMENT_EMAIL", "deployments@learningequality.org")
-CENTRAL_SUPPORT_EMAIL = getattr(local_settings, "CENTRAL_SUPPORT_EMAIL",    "support@learningequality.org")
-CENTRAL_DEV_EMAIL     = getattr(local_settings, "CENTRAL_DEV_EMAIL",        "dev@learningequality.org")
-CENTRAL_INFO_EMAIL    = getattr(local_settings, "CENTRAL_INFO_EMAIL",       "info@learningequality.org")
-CENTRAL_CONTACT_EMAIL = getattr(local_settings, "CENTRAL_CONTACT_EMAIL", "info@%s" % CENTRAL_SERVER_DOMAIN)
-CENTRAL_ADMIN_EMAIL   = getattr(local_settings, "CENTRAL_ADMIN_EMAIL",   "errors@%s" % CENTRAL_SERVER_DOMAIN)
-
-CENTRAL_SUBSCRIBE_URL    = getattr(local_settings, "CENTRAL_SUBSCRIBE_URL",    "http://adhocsync.us6.list-manage.com/subscribe/post?u=023b9af05922dfc7f47a4fffb&amp;id=97a379de16")
 
 PROJECT_PATH   = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
 
@@ -126,10 +116,6 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 
-ADMINS         = getattr(local_settings, "ADMINS", ( ("KA Lite Team", CENTRAL_ADMIN_EMAIL), ) )
-
-MANAGERS       = getattr(local_settings, "MANAGERS", ADMINS)
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
@@ -153,11 +139,10 @@ STATIC_URL     = getattr(local_settings, "STATIC_URL", "/static/")
 STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT_PATH + "/static/")) + "/"
 
 # Other defined paths
-DATA_PATH      = os.path.realpath(getattr(local_settings, "DATA_PATH", PROJECT_PATH + "/static/data/")) + "/"
-DATA_PATH_SECURE = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
+DATA_PATH = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
 
 # JSON file of all languages and their names
-LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH_SECURE, "i18n", "languagelookup.json")
+LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH, "i18n", "languagelookup.json")
 
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
@@ -178,7 +163,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "%s.custom_context_processors.custom" % ("central" if CENTRAL_SERVER else "main"),
+    "distributed.custom_context_processors.custom",
 )
 
 
@@ -197,7 +182,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "utils.django_utils.middleware.GetNextParam",
+    "fle_utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
@@ -212,11 +197,11 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django_extensions", # needed for clean_pyc (testing)
     "south",
-    "chronograph",
+    "fle_utils.config",
+    "fle_utils.chronograph",
     "django_cherrypy_wsgiserver",
     "securesync",
     "facility",
-    "config",
     "main", # in order for securesync to work, this needs to be here.
     "control_panel",  # in both apps
     "coachreports",  # in both apps; reachable on central via control_panel
@@ -226,45 +211,25 @@ INSTALLED_APPS = (
     "kalite",  # contains commands
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
-if DEBUG or CENTRAL_SERVER:
+if DEBUG:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
 
-if CENTRAL_SERVER:
-    ROOT_URLCONF = "central.urls"
-    ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
-    DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats", "announcements",)
-    EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
-    AUTH_PROFILE_MODULE     = "central.UserProfile"
-    CSRF_COOKIE_NAME        = "csrftoken_central"
-    LANGUAGE_COOKIE_NAME    = "django_language_central"
-    SESSION_COOKIE_NAME     = "sessionid_central"
+ROOT_URLCONF = "distributed.urls"
+MIDDLEWARE_CLASSES += (
+    "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
+    "facility.middleware.FacilityCheck",
+    "securesync.middleware.RegisteredCheck",
+    "securesync.middleware.DBCheck",
+    "kalite.i18n.middleware.SessionLanguage",
+    "facility.middleware.LockdownCheck",
+)
 
-    CROWDIN_PROJECT_ID      = getattr(local_settings, "CROWDIN_PROJECT_ID", None)
-    CROWDIN_PROJECT_KEY     = getattr(local_settings, "CROWDIN_PROJECT_KEY", None)
-    AMARA_USERNAME          = getattr(local_settings, "AMARA_USERNAME", None)
-    AMARA_API_KEY           = getattr(local_settings, "AMARA_API_KEY", None)
+TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
+INSTALLED_APPS += ('distributed', 'testing')
+LANGUAGE_COOKIE_NAME    = "django_language"
 
-    CONTENT_ROOT   = None  # needed for shared functions that are main-only
-    CONTENT_URL    = None
-
-else:
-    ROOT_URLCONF = "main.urls"
-    MIDDLEWARE_CLASSES += (
-        "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
-        "facility.middleware.FacilityCheck",
-        "securesync.middleware.RegisteredCheck",
-        "securesync.middleware.DBCheck",
-        "kalite.i18n.middleware.SessionLanguage",
-        "facility.middleware.LockdownCheck",
-    )
-
-    TEMPLATE_CONTEXT_PROCESSORS += ("i18n.custom_context_processors.languages",)
-    INSTALLED_APPS += ('i18n', 'testing')
-    LANGUAGE_COOKIE_NAME    = "django_language"
-
-    CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
-    CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
+CONTENT_ROOT   = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", PROJECT_PATH + "/../content/")) + "/"
+CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 
 # Must define after i18n.middleware.SessionLanguage
 MIDDLEWARE_CLASSES += (
@@ -301,7 +266,7 @@ SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_P
 
 
 # Here, None === no limit
-SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", None if CENTRAL_SERVER else 10)
+SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", 10)
 
 # Used for user logs.  By default, completely off.
 #  Note: None means infinite (just like caching)
@@ -340,7 +305,7 @@ LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + ('d_db' if DEBUG else ''))
 
-MESSAGE_STORAGE = 'utils.django_utils.NoDuplicateMessagesSessionStorage'
+MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 CACHES = {
     "default": {
@@ -357,7 +322,7 @@ CACHES = {
 _5_years = 5 * 365 * 24 * 60 * 60
 _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time if not CENTRAL_SERVER else 0)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
 CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
 
 # Cache is activated in every case,
@@ -402,33 +367,16 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 ########################
 
 
-if CENTRAL_SERVER:
-    # Used for accessing the KA API.
-    #   By default, things won't work--local_settings needs to specify good values.
-    #   We do this so that we have control over our own key/secret (secretly, of course!)
-    KHAN_API_CONSUMER_KEY = getattr(local_settings, "KHAN_API_CONSUMER_KEY", "")
-    KHAN_API_CONSUMER_SECRET = getattr(local_settings, "KHAN_API_CONSUMER_SECRET", "")
+# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
+# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
+USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
 
-    # Postmark settings, to enable sending registration/invitation emails
-    POSTMARK_API_KEY = getattr(local_settings, "POSTMARK_API_KEY", "")
-    POSTMARK_SENDER = getattr(local_settings, "POSTMARK_SENDER", CENTRAL_FROM_EMAIL)
-    # Default to "test mode" if no API key, to print out the email to the console, rather than trying to send
-    POSTMARK_TEST_MODE = getattr(local_settings, "POSTMARK_TEST_MODE", POSTMARK_API_KEY == "")
-
-    # Used for redirecting to the actual installer executables
-    INSTALLER_BASE_URL = getattr(local_settings, 'INSTALLER_BASE_URL', 'http://adhoc.learningequality.org/media/installer/')
-
-else:
-    # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
-    # TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
-    USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
-
-    # Clock Setting disabled by default unless overriden.
-    # Note: This will only work on Linux systems where the server is running as root.
-    ENABLE_CLOCK_SET = False
+# Clock Setting disabled by default unless overriden.
+# Note: This will only work on Linux systems where the server is running as root.
+ENABLE_CLOCK_SET = False
 
 
-# This has to be defined for main and central
+# This has to be defined for distributed and central
 # Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
 BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
 BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
@@ -465,8 +413,8 @@ if DEBUG:
     # add ?prof to URL, to see performance stats
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
-if not CENTRAL_SERVER and os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
-        INSTALLED_APPS += ("testing.loadtesting",)
+if os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
+    INSTALLED_APPS += ("testing.loadtesting",)
 
 TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'
 
@@ -504,9 +452,7 @@ else:
 # autodetect if this is a Raspberry Pi-type device, and auto-set the config_package
 #  to override the auto-detection, set CONFIG_PACKAGE=None in the local_settings
 
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE",
-                   ("RPi" if platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l" and not CENTRAL_SERVER
-                   else []))
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", "RPi" if (platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l") else [])
 
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
@@ -542,4 +488,4 @@ if package_selected("Demo"):
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('main.demo_middleware.StopAdminAccess','main.demo_middleware.LinkUserManual','main.demo_middleware.ShowAdminLogin',)
+    MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)

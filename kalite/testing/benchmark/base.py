@@ -5,7 +5,7 @@
     b) to record the duration of the task
     d) to allow multiple iterations of the task so that
         an average time can be calculated
-        
+
     Benchmark results are returned in a python dict
 
     These benchmarks do not use unittest or testrunner frameworks
@@ -16,11 +16,11 @@ import subprocess
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions, ui 
+from selenium.webdriver.support import expected_conditions, ui
 
 from django.core import management
 
-from settings import LOG as logging
+from kalite.settings import LOG as logging
 
 
 class Common(object):
@@ -36,7 +36,7 @@ class Common(object):
             self.verbosity = int(kwargs.get("verbosity"))
         except:
             self.verbosity = 1
-                                
+
         try:
             branch = subprocess.Popen(["git", "describe", "--contains", "--all", "HEAD"], stdout=subprocess.PIPE).communicate()[0]
             self.return_dict['branch'] = branch[:-1]
@@ -44,7 +44,7 @@ class Common(object):
             self.return_dict['head'] = head[:-1]
         except:
             self.return_dict['branch'] = None
-            self.return_dict['head'] = None            
+            self.return_dict['head'] = None
 
         # if setup fails, what could we do?
         #   let the exception bubble up is the best.
@@ -65,7 +65,7 @@ class Common(object):
         if hasattr(self, 'max_iterations'):
             if iterations > self.max_iterations:
                 iterations = self.max_iterations
-        
+
         self.return_dict['iterations'] = iterations
         self.return_dict['individual_elapsed'] = {}
         self.return_dict['post_execute_info'] = {}
@@ -81,14 +81,14 @@ class Common(object):
                 self.return_dict['individual_elapsed'][i+1] = None
                 self.return_dict['exceptions'][i+1].append(e)
                 logging.error("Exception running execute: %s" % e)
-    
+
             try:
                 self.return_dict['post_execute_info'][i+1] = self._get_post_execute_info()
             except Exception as e:
                 self.return_dict['post_execute_info'][i+1] = None
                 self.return_dict['exceptions'][i+1].append(e)
                 logging.error("Exception getting execute info: %s" % e)
-    
+
 
 
         mean = lambda vals: sum(vals)/float(len(vals)) if len(vals) else None

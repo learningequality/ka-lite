@@ -6,12 +6,11 @@ import os
 import pdb
 import sys
 
-from django.test.simple import DjangoTestSuiteRunner
+from django.conf import settings
 from django.core import management
+from django.test.simple import DjangoTestSuiteRunner
 
-import settings
-from settings import LOG as logging
-from kalite import settings
+from kalite.settings import LOG as logging
 
 
 def auto_pdb(*exceptions):
@@ -59,7 +58,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
         logging.info("Purging pyc files")
-        call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
+        management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
         if not test_labels:
             test_labels = set(['main', 'central', 'securesync'])

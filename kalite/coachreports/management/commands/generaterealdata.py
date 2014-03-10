@@ -27,18 +27,18 @@ import json
 from math import exp, sqrt, ceil, floor
 from optparse import make_option
 
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-import settings
 import securesync
 from facility.models import Facility, FacilityUser, FacilityGroup
+from fle_utils.general import datediff
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog, UserLog
 from main.topic_tools import get_topic_videos, get_topic_exercises
 from securesync.models import Device, DeviceMetadata
-from settings import LOG as logging
-from utils.general import datediff
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",

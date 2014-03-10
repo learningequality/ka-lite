@@ -1,31 +1,48 @@
 """
-Important constants and helpful functions
+Important constants and helpful functions for the topic tree and a view on its data, the node cache.
+
+The topic tree is a hierarchical representation of real data (exercises, and videos).
+Leaf nodes of the tree are real learning resources, such as videos and exercises.
+Non-leaf nodes are topics, which describe a progressively higher-level grouping of the topic data.
+
+Each node in the topic tree comes with lots of metadata, including:
+* title
+* description
+* id (unique identifier; now equivalent to slug below)
+* slug (for computing a URL)
+* path (which is equivalent to a URL)
+* kind (Topic, Exercise, Video)
+and more.
+
+The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
+so
+* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
+* get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
 import os
 from functools import partial
 
+from django.conf import settings
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
 import khanload  # should be removed ASAP, to make more generic and separate apps.
-import settings
-from settings import LOG as logging
-from utils.general import softload_json
+from fle_utils.general import softload_json
+from kalite.settings import LOG as logging
+
+TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
 
 CACHE_VARS = []
-
-topics_file = "topics.json"
-
 
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
-    global TOPICS, topics_file
+    global TOPICS, TOPICS_FILEPATH
     if TOPICS is None or force:
-        TOPICS = softload_json(os.path.join(settings.DATA_PATH, topics_file), logger=logging.debug)
+        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
 
         # Limit the memory footprint by unloading particular values
@@ -215,10 +232,6 @@ def get_live_topics(topic):
     """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
     # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
     return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
-
-
-def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
-    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
 
 
 def get_topic_by_path(path, root_node=None):

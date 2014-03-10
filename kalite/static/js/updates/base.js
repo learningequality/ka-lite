@@ -3,9 +3,9 @@ function server_restart() {
     $.ajax({
         url: URL_SERVER_RESTART,
         cache: false,
-        datatype: "json",
+        datatype: "json"
     }).success(function(installed) {
-        show_message("success", "Initiated server restart.")
+        show_message("success", "Initiated server restart.");
     }).error(function(data, status, error) {
         handleFailedAPI(data, [status, error].join(" "));
     });
@@ -15,9 +15,9 @@ function server_restart() {
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information
-var process_intervals = {}
-var process_interval_handles = {}
-var process_callbacks = {}
+var process_intervals = {};
+var process_interval_handles = {};
+var process_callbacks = {};
 
 $(function() {
     setTimeout(function() {
@@ -28,9 +28,9 @@ $(function() {
                 show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."), "id_offline_message");
             } else {
                 $(".enable-when-server-online").removeAttr("disabled");
-                clear_message("id_offline_message")
+                clear_message("id_offline_message");
             }
-        })},
+        });},
         200);
 
     $(".progressbar-overall").progressbar({
@@ -55,10 +55,10 @@ function has_a_val(key, obj) {
 
 function updatesStart(process_name, interval, callbacks) {
     // Starts looking for updates
-    clear_message("id_" + process_name)
+    clear_message("id_" + process_name);
 
     // Store the info
-    if (! process_name in process_names) {
+    if (! (process_name in process_names)) {
         process_names[process_name] = true;
     }
     process_intervals[process_name] = interval ? interval : 5000;
@@ -89,7 +89,7 @@ function updatesStart_callback(process_name, start_time) {
 
     doRequest(request_url)
         .success(function(progress_log, textStatus, request) {
-            handleSuccessAPI()
+            handleSuccessAPI();
             // Store the info
             if (!progress_log.process_name) {
                 if (!start_time) {
@@ -110,7 +110,7 @@ function updatesStart_callback(process_name, start_time) {
                 return;
             }
             if (!has_a_val(process_name, process_ids)) {
-                process_ids[process_name] = progress_log.process_id
+                process_ids[process_name] = progress_log.process_id;
             }
 
             // Launch a looping timer to call into the update check function
@@ -153,7 +153,7 @@ function updatesCheck(process_name, interval) {
             }
 
             if (!has_a_val(process_name, process_ids)) {
-                process_ids[process_name] = progress_log.process_id
+                process_ids[process_name] = progress_log.process_id;
             }
 
             // Update the UI
@@ -177,7 +177,6 @@ function updatesCheck(process_name, interval) {
                 } else if (progress_log.process_name) {
                     show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }), "id_" + process_name);
                     updatesReset(process_name);
-                } else {
                 }
             }
         }).fail(function(resp) {
@@ -219,13 +218,13 @@ function updateDisplay(process_name, progress_log) {
         select_update_elements(process_name, ".progressbar-current").progressbar({value: 100*progress_log.stage_percent});
         select_update_elements(process_name, ".progressbar-overall").progressbar({value: 100*progress_log.process_percent});
 
-        select_update_elements(process_name, "#stage-summary").text(sprintf(gettext("Overall progress: %(percent_complete)5.2f%% complete (%(cur_stage)d of %(num_stages)d)"), {
+        select_update_elements(process_name, "#stage-summary").text(sprintf(gettext("Overall progress: %(percent_complete)5.1f%% complete (%(cur_stage)d of %(num_stages)d)"), {
             cur_stage: progress_log.cur_stage_num,
             num_stages: progress_log.total_stages,
             percent_complete: 100*progress_log.process_percent
         }));
 
-        select_update_elements(process_name, ".stage-header").text(progress_log.notes || "Loading");
+        select_update_elements(process_name, ".stage-header").text(progress_log.notes || gettext("Loading"));
         select_update_elements(process_name, ".stage-name").text("");
 
         select_update_elements(process_name, ".progress-section").show();
@@ -259,10 +258,10 @@ function updatesReset(process_name) {
     select_update_elements(process_name, ".progress-section").hide();
 
     // Delete data
-    process_callbacks[process_name] = null
+    process_callbacks[process_name] = null;
     process_ids[process_name] = null;
     process_intervals[process_name] = null;
-    process_interval_handles[process_name];
+    process_interval_handles[process_name] = null;
 
     if (process_name in process_names) {
         delete process_names[process_name];

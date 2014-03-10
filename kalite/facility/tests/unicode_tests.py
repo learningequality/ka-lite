@@ -1,14 +1,18 @@
+"""
+"""
 import sys
 
+from django.conf import settings
 from django.utils import unittest
 
-import settings
 from facility.models import *
+from fle_utils.testing.unicode import UnicodeModelsTest
 from securesync.models import *
-from testing.unicode import UnicodeModelsTest
+
 
 class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
-
+    """
+    """
     @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
     def test_unicode_class_coverage(self):
         # Make sure we're testing all classes

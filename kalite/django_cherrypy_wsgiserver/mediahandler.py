@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # fix these up
 import os, stat, mimetypes
+
 import django
-from django.utils.http import http_date
 from django.conf import settings
+from django.utils.http import http_date
+
 
 class BlockIterator(object):
     # Vlada Macek Says:
@@ -20,7 +22,7 @@ class BlockIterator(object):
 
     def __init__(self, fp):
         self.fp = fp
-        
+
     def __iter__(self):
            return self
 
@@ -47,13 +49,13 @@ class MediaHandler( object ):
             path_info = path_info[1:]
 
         file_path = os.path.normpath( os.path.join( self.media_root, path_info ) )
-        
+
         # prevent escaping out of paths below media root (e.g. via "..")
         if not file_path.startswith( self.media_root ):
             status = '401 UNAUTHORIZED'
             headers = {'Content-type': 'text/plain'}
             output = ['Permission denied: %s' % file_path]
-            return done( status, headers, output )            
+            return done( status, headers, output )
 
         if not os.path.exists( file_path ):
             status = '404 NOT FOUND'
@@ -88,6 +90,6 @@ class MediaHandler( object ):
             #output = [fp.read()]
             # fp.close()
             output = BlockIterator(fp)
-            
+
         return done( status, headers, output )
 

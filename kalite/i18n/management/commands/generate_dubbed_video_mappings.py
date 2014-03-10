@@ -9,13 +9,13 @@ import requests
 from optparse import make_option
 from StringIO import StringIO
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
+from fle_utils.general import ensure_dir, datediff
 from i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
+from kalite.settings import LOG as logging
 from main.topic_tools import get_node_cache
-from settings import LOG as logging
-from utils.general import ensure_dir, datediff
 
 
 SPREADSHEET_ID ="0AhvqOn88FUVedEJXM1ZhMG1XdGJuVTE4OEZ3WkNxYUE"

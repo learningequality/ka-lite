@@ -1,16 +1,18 @@
+"""
+"""
 import datetime
 import json
 import os
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 
-import settings
 from . import get_language_pack_availability_filepath, SUBTITLE_COUNTS_FILEPATH, SUBTITLES_DATA_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from settings import LOG as logging
+from fle_utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
+from kalite.settings import LOG as logging
 from testing.asserts import central_server_only
-from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
 
 
 @central_server_only

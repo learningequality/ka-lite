@@ -1,9 +1,10 @@
+"""
+"""
 from django.utils import simplejson
 
-
 from .models import FacilityGroup, FacilityUser
+from fle_utils.internet import api_handle_error_with_json, JsonResponse
 from shared.decorators import require_admin
-from utils.internet import api_handle_error_with_json, JsonResponse
 
 # Views below are for user management endpoints
 
