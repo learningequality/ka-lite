@@ -1,3 +1,6 @@
+
+
+
 function assert(val, msg) {
     if (!val) {
         show_message("error", msg, "id_assert");
@@ -39,7 +42,7 @@ function doRequest(url, data) {
         dataType: "json"
     })
     .fail(function(resp) {
-        handleFailedAPI(resp, gettext("Progress not loaded. You must be logged in as a student or teacher to view/save progress."), "id_progress_logs");
+        handleFailedAPI(resp, gettext("Progress not loaded. You must be logged in as a student or teacher to view/save progress."), "id_do_request");
     });
 }
 
@@ -63,7 +66,7 @@ function show_message(msg_class, msg_text, msg_id) {
         clear_message(msg_id);
         msg_html += " id='" + msg_id + "'";
     }
-    msg_html += ">" + x_button + msg_text + "</div>";
+    msg_html += ">" + x_button + msg_text + "</div>"
     $("#message_container").append(msg_html);
     return $("#message_container");
 }

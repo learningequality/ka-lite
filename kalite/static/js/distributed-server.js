@@ -69,16 +69,25 @@ function handleFailedAPI(resp, error_text, error_id) {
             //communicate_api_failure(resp)
             messages = $.parseJSON(resp.responseText);
             if (messages && !("error" in messages)) {
+
                 switch(error_id) {
-                    case "id_progress_logs":
+
+                    case "id_do_request":
                         show_message("warning", error_text, error_id);
                         break;
+
+                    case "id_student_logs":
+                        show_message("warning", error_text, error_id);
+                        break;
+
                     case "id_set_time":
                         show_message("error", error_text, error_id);
                         break;
+
                     case "id_coachreports":
                         show_message("error", error_text, error_id);
                         break;
+                        
                     default:
                         // this should be an assert--should never happen
                         show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
