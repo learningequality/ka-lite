@@ -234,10 +234,6 @@ def get_live_topics(topic):
     return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
 
 
-def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
-    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
-
-
 def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
     # Make sure the root fits

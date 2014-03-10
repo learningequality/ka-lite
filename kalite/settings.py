@@ -3,6 +3,7 @@ import os
 import platform
 import sys
 
+
 ##############################
 # Functions for querying settings
 ##############################
@@ -10,7 +11,6 @@ import sys
 def package_selected(package_name):
     global CONFIG_PACKAGE
     return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
-
 
 
 ##############################
@@ -27,7 +27,7 @@ except ImportError:
 # Used everywhere, so ... set it up top.
 DEBUG          = getattr(local_settings, "DEBUG", False)
 
-CENTRAL_SERVER = False
+CENTRAL_SERVER = False  # Hopefully will be removed soon.
 
 
 ##############################
