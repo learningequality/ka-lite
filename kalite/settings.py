@@ -125,11 +125,15 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # Import settings from INSTALLED_APPS
 ########################
 def import_installed_app_settings(installed_apps):
+    """
+    Loop over all installed_apps, and search for their
+      settings.py in the path.  Then load the settings.py
+      directly (to avoid running the package's __init__.py file)
 
+    Recurse into each installed_app's INSTALLED_APPS to collect all
+    necessary settings.py files.
+    """
     for app in installed_apps:
-        # Loop over all installed_apps, and search for their
-        #   settings.py in the path.  Then load the settings.py
-        #   directly (to avoid running the package's __init__.py file)
         app_settings = None
         try:
             for path in sys.path:
