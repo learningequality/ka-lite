@@ -39,7 +39,7 @@ function doRequest(url, data) {
         dataType: "json"
     })
     .fail(function(resp) {
-        communicate_api_failure(resp, "id_do_request");
+        handleFailedAPI(resp, gettext("Progress not loaded. You must be logged in as a student or teacher to view/save progress."), "id_progress_logs");
     });
 }
 

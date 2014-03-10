@@ -69,8 +69,20 @@ function handleFailedAPI(resp, error_text, error_id) {
             //communicate_api_failure(resp)
             messages = $.parseJSON(resp.responseText);
             if (messages && !("error" in messages)) {
-                // this should be an assert--should never happen
-                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
+                switch(error_id) {
+                    case "id_progress_logs":
+                        show_message("warning", error_text, error_id);
+                        break;
+                    case "id_set_time":
+                        show_message("error", error_text, error_id);
+                        break;
+                    case "id_coachreports":
+                        show_message("error", error_text, error_id);
+                        break;
+                    default:
+                        // this should be an assert--should never happen
+                        show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
+                }
             } else {
                 show_message("error", error_text + ": " + messages["error"], error_id);
             }

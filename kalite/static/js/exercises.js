@@ -53,7 +53,7 @@ function updatePercentCompleted(correct) {
             userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
         })
         .fail(function(resp) {
-            communicate_api_failure(resp, "id_student_logs");
+            handleFailedAPI(resp, gettext("Progress not loaded. You must be logged in as a student or teacher to view/save progress."), "id_progress_logs");
         });
 
 }

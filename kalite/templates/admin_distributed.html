@@ -40,7 +40,7 @@
                         show_api_messages(data, "id_set_time");
                     })
                     .fail(function(resp) {
-                        communicate_api_failure(resp, "id_set_time");
+                        handleFailedAPI(resp, gettext("There was an error while setting the time."), "id_set_time");
                     });
             });
     });
