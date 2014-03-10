@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -333,10 +333,11 @@ def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
         }
 
     kinds_to_query = kinds_to_query or request.GET.get("kinds", "Exercise").split(",")
-    return JsonResponse(convert_topic_tree_for_dynatree(
-        get_topic_by_path(topic_path),
-        kinds_to_query,
-    ));
+    topic_node = get_topic_by_path(topic_path)
+    if not topic_node:
+        raise Http404
+
+    return JsonResponse(convert_topic_tree_for_dynatree(topic_node, kinds_to_query));
 
 
 @csrf_exempt
