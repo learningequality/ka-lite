@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+import glob
 import logging
 import os
 import sys
-
+import warnings
 
 if __name__ == "__main__":
     import warnings
@@ -30,23 +31,27 @@ if __name__ == "__main__":
     if "runserver" in sys.argv:
         logging.info("You requested to run runserver; instead, we're funneling you through our 'kaserve' command.")
         sys.argv[sys.argv.index("runserver")] = "kaserve"
+
+        if "runserver" in sys.argv and "--nostatic" not in sys.argv:  # makes static file serving work in debug mode
+            sys.argv += ["--nostatic"]
+
     elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
         logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
         sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
 
-#    if settings.DEBUG:
-#        # In debug mode, add useful debugging flags
-#        for flag in ["traceback"]:
-#            dashed_flag = "--%s" % flag
-#            if dashed_flag not in sys.argv:
-#                sys.argv.append(dashed_flag)
 
     ########################
-    # clean_pyc
+    # manual clean_pyc
     ########################
 
-    if len(sys.argv) == 2 and sys.argv[1] == "clean_pyc":
-        sys.argv += ["--path", ".."]
+    # Manually clean all pyc files before entering any real codepath
+    for root, dirs, files in os.walk(os.path.join(PROJECT_PATH, "..")):
+        for pyc_file in glob.glob(os.path.join(root, "*.pyc")):
+            try:
+                os.remove(pyc_file)
+            except:
+                pass
+
 
     ########################
     # Run it.
