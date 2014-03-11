@@ -138,6 +138,6 @@ class Command(BaseCommand):
 
         # Now call the proper command
         if not options["daemonize"]:
-            call_command("runserver", "%s:%s" % (options["host"], options["port"]))
+            call_command("runserver", "%s:%s" % (options["host"], options["port"]), use_static_handler=False)
         else:
             call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()])
