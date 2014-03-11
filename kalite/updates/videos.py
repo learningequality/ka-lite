@@ -43,6 +43,10 @@ def download_video(youtube_id, format="mp4", callback=None):
     return videos.download_video(youtube_id, settings.CONTENT_ROOT, download_url, format, callback)
 
 
+def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
+    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
+
+
 def delete_downloaded_files(youtube_id):
     return videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
 

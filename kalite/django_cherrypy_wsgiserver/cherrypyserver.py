@@ -3,12 +3,6 @@ import imp
 import os, sys, time, signal, errno
 import urlparse
 
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../../kalite/"
-
-sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(PROJECT_PATH, "../python-packages/")] + sys.path
-
-os.environ['DJANGO_SETTINGS_MODULE'] = "settings"
-
 import cherrypy
 from cherrypy.process import plugins
 

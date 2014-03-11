@@ -44,14 +44,12 @@ from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog
 from main.topic_tools import get_node_cache
 from shared.decorators import require_login
-from testing.asserts import central_server_only, distributed_server_only
 
 
 KHAN_SERVER_URL = "http://www.khanacademy.org"
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 
 
-@central_server_only
 def start_auth(request):
     """
     Step 1 of oauth authentication: get the REQUEST_TOKEN
@@ -64,7 +62,6 @@ def start_auth(request):
     return HttpResponseRedirect(client.start_fetch_request_token(central_callback_url))
 
 
-@central_server_only
 def finish_auth(request):
     """
     Step 2 of the oauth authentication: use the REQUEST_TOKEN to get an ACCESS_TOKEN
@@ -87,7 +84,6 @@ def finish_auth(request):
     return request.session["ACCESS_TOKEN"]
 
 
-@central_server_only
 def get_api_resource(request, resource_url):
     """
     Step 3 of the api process:
@@ -106,7 +102,6 @@ def get_api_resource(request, resource_url):
     return data
 
 
-@central_server_only
 def update_all_central(request):
     """
     Update can't proceed without authentication.
@@ -135,7 +130,6 @@ def update_all_central(request):
 def convert_ka_date(date_str):
     return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
 
-@central_server_only
 def update_all_central_callback(request):
     """
     Callback after authentication.
@@ -283,7 +277,6 @@ def update_all_distributed(request):
 
 
 @csrf_exempt
-@distributed_server_only
 def update_all_distributed_callback(request):
     """
     """

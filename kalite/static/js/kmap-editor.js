@@ -149,7 +149,7 @@ var KMapEditor = {
                 $.each(polyline.path, function(n, coordinate) {
                     path += Raphael.format( "L{0},{1}",
                         (coordinate.x - KMapEditor.minX) * KMapEditor.X_SPACING + (KMapEditor.LABEL_WIDTH / 2),
-                        (coordinate.y - KMapEditor.minY) * KMapEditor.Y_SPACING + 20)
+                        (coordinate.y - KMapEditor.minY) * KMapEditor.Y_SPACING + 20);
                 });
                 path = "M" + path.substr(1);
                 KMapEditor.raphael.path(path).attr({"stroke-width": 1, "stroke": "#999"});
@@ -243,8 +243,8 @@ $(document).ready(function() {
         $.getJSON("/api/knowledge_map/" + vars["topic"])
             .success(function(exerciseLayout) {
 
-                var exercises = $.map(exerciseLayout.nodes, function(exercise) { return exercise });
-                var exercise_ids = $.map(exerciseLayout.nodes, function(exercise) { return exercise.id });
+                var exercises = $.map(exerciseLayout.nodes, function(exercise) { return exercise; });
+                var exercise_ids = $.map(exerciseLayout.nodes, function(exercise) { return exercise.id; });
                 doRequest("/api/get_exercise_logs", exercise_ids)
                     .success(function(data) {
                         var exercisesCompleted = {};

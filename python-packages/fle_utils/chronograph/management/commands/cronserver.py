@@ -15,7 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
-from chronograph.models import Job
+from ....chronograph.models import Job
 from kalite.settings import LOG as logger
 
 
@@ -64,9 +64,9 @@ class Command(BaseCommand):
     )
     def handle( self, *args, **options ):
 
-        logging.basicConfig(stream=sys.stdout,
-                            datefmt="%Y-%m-%d %H:%M:%S",
-                            format="[%(asctime)-15s] %(message)s")
+        #logging.basicConfig(stream=sys.stdout,
+        #                    datefmt="%Y-%m-%d %H:%M:%S",
+        #                    format="[%(asctime)-15s] %(message)s")
 
         try:
             time_wait = getattr(settings, "CRONSERVER_FREQUENCY", 60) if not args or not args[0].strip() else float(args[0])

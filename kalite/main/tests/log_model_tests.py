@@ -5,6 +5,7 @@ from facility.models import Facility, FacilityUser
 from main.models import VideoLog, ExerciseLog
 from testing import KALiteTestCase
 
+
 class TestExerciseLogs(KALiteTestCase):
 
     ORIGINAL_POINTS = 37

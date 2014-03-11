@@ -14,6 +14,8 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib import messages
 from django.core.management import call_command
@@ -36,9 +38,8 @@ from main import topic_tools
 from main.models import VideoLog, ExerciseLog
 from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from securesync.api_client import BaseClient
-from securesync.models import Device
+from securesync.models import Device, SyncSession
 from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 
 
@@ -364,7 +365,6 @@ def device_redirect(request):
     return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
 
 JS_CATALOG_CACHE = {}
-@distributed_server_only
 def javascript_catalog_cached(request):
     global JS_CATALOG_CACHE
     lang = request.session['default_language']
@@ -430,6 +430,31 @@ def search(request, topics):  # we don't use the topics variable, but this setup
         'max_results': max_results_per_category,
         'category': category,
     }
+
+
+def crypto_login(request):
+    """
+    Remote admin endpoint, for login to a distributed server (given its IP address; see central/views.py:crypto_login)
+
+    An admin login is negotiated using the nonce system inside SyncSession
+    """
+    if "client_nonce" in request.GET:
+        client_nonce = request.GET["client_nonce"]
+        try:
+            session = SyncSession.objects.get(client_nonce=client_nonce)
+        except SyncSession.DoesNotExist:
+            return HttpResponseServerError("Session not found.")
+        if session.server_device.is_trusted():
+            user = get_object_or_None(User, username="centraladmin")
+            if not user:
+                user = User(username="centraladmin", is_superuser=True, is_staff=True, is_active=True)
+                user.set_unusable_password()
+                user.save()
+            user.backend = "django.contrib.auth.backends.ModelBackend"
+            auth_login(request, user)
+        session.delete()
+    return HttpResponseRedirect(reverse("homepage"))
+
 
 def handler_403(request, *args, **kwargs):
     context = RequestContext(request)

@@ -28,7 +28,6 @@ from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name, ge
 from main import topic_tools
 from securesync.models import Device
 from securesync.devices import require_registration
-from securesync.views import require_admin
 from shared.decorators import require_admin
 
 
