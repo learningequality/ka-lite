@@ -42,7 +42,7 @@ function doRequest(url, data) {
         dataType: "json"
     })
     .fail(function(resp) {
-        handleFailedAPI(resp, gettext("Progress not loaded. You must be logged in as a student or teacher to view/save progress."), "id_do_request");
+        // If we need to handle this case then handleFailedApi must find if there are different id's with the same message.
     });
 }
 

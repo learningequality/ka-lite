@@ -111,8 +111,7 @@ $(function() {
         })
         .fail(function (resp) {
             // Expects to receive messages ({ type: message } format) about failures
-            // turned off because this duplicates the "Progress not loaded" message    
-            // communicate_api_failure(resp, "id_student_logs");
+            handleFailedAPI(resp, gettext("Progress not loaded. You must be logged in as a student or teacher to view/save progress."), "id_request_progress");
         });
 });
 

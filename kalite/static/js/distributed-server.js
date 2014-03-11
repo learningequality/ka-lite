@@ -41,14 +41,6 @@ function show_api_messages(messages, msg_id) {
     }
 }
 
-function communicate_api_failure(resp, msg_id) {
-    // When receiving an error response object,
-    //   show errors reported in that object
-    var messages = $.parseJSON(resp.responseText);
-    show_api_messages(messages, msg_id);
-}
-
-
 function handleSuccessAPI(error_id) {
     if (error_id === undefined) {
         error_id = "id_updates";  // ID of message element
@@ -66,36 +58,34 @@ function handleFailedAPI(resp, error_text, error_id) {
             show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id);
             break;
         default:
-            //communicate_api_failure(resp)
             messages = $.parseJSON(resp.responseText);
-            if (messages && !("error" in messages)) {
 
-                switch(error_id) {
-
-                    case "id_do_request":
-                        show_message("warning", error_text, error_id);
-                        break;
-
-                    case "id_student_logs":
-                        show_message("warning", error_text, error_id);
-                        break;
-
-                    case "id_set_time":
-                        show_message("error", error_text, error_id);
-                        break;
-
-                    case "id_coachreports":
-                        show_message("error", error_text, error_id);
-                        break;
-                        
-                    default:
-                        // this should be an assert--should never happen
-                        show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
-                }
-            } else {
-                show_message("error", error_text + ": " + messages["error"], error_id);
+            if(!messages){
+                messages = "info";
             }
-            break;
+
+            switch(typeof messages) {
+
+                case "object":
+
+                    for(key in messages) {
+                        if (key == "error"){
+                            show_message("error", error_text + ": " + messages["error"], error_id);    
+                        } else {
+                            show_message(key, messages[key], error_id);
+                        }
+                    }
+                    break;
+
+                case "string":
+                    show_message(messages, error_text, error_id);
+                    break;
+
+                default:
+                    // Programming error; this should not happen
+                    // NOTE: DO NOT WRAP THIS STRING.
+                    throw "do not call handleFailedAPI object of type " + (typeof messages);
+            }
     }
 }
 
