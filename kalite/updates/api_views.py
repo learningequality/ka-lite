@@ -6,6 +6,7 @@ import json
 import os
 import re
 import math
+import shutil
 from annoying.functions import get_object_or_None
 from collections import defaultdict
 
@@ -208,6 +209,16 @@ def start_languagepack_download(request):
 
         return JsonResponse({'success': True})
 
+@require_admin
+def delete_language_pack(request):
+"""
+Function to delete language pack design to delete pack from locale folder on clicking delete
+"""
+    delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    delete_path=settings.LOCALE_PATHS[0] + delete_id
+    shutil.rmtree(delete_path)
+    return JsonResponse({})
+
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
     # Not needed when on an api request (since translation.activate is already called),
@@ -335,3 +346,4 @@ def server_restart(request):
         return JsonResponse({})
     except Exception as e:
         return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})
+
