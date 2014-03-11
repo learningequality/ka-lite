@@ -417,8 +417,7 @@ def search(request, topics):  # we don't use the topics variable, but this setup
 
                 elif len(possible_matches[node_type]) < max_results_per_category and query in title:
                     # For efficiency, don't do substring matches when we've got lots of results
-                    if node not in possible_matches.values():
-                        possible_matches[node_type].append(node)
+                    possible_matches[node_type].append(node)
 
             hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
 
