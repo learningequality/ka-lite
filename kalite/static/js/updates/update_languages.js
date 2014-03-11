@@ -6,7 +6,7 @@ function get_available_languages() {
     var request = $.ajax({
         url: url,
         cache: false,
-        dataType: "jsonp",
+        dataType: "jsonp"
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
@@ -21,7 +21,7 @@ function get_installed_languages() {
     $.ajax({
         url: INSTALLED_LANGUAGES_URL,
         cache: false,
-        datatype: "json",
+        datatype: "json"
     }).success(function(installed) {
         installed_languages = installed;
         display_languages();
@@ -46,7 +46,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (!(lang['code'] === defaultLanguage)) {
+            if (lang['code'] !== defaultLanguage) {
                 link_text = sprintf("<a href='%(CHANGE_SERVER_LANGUAGE_URL)s'>(%(link_text)s)</a>", {
                     CHANGE_SERVER_LANGUAGE_URL: setGetParam(window.location.href, "set_server_language", lang.code),
                     link_text: gettext("Set as default")
@@ -55,9 +55,10 @@ function display_languages() {
                 link_text = "(Default)";
             }
             var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+	    var lang_code = lang['code'];
             var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
-            var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s </div>",link_text, lang_name, lang_data,lang_code);
-		lang_description += sprintf("<div class='%s'> <button class='delete-language-button' value='%s' type='button'>Delete %s </button></div>",lang_code,lang_code,lang_code);
+            var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
+	    lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf('Delete %(lang_code)s', {lang_code: lang_code}));
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -90,14 +91,13 @@ function display_languages() {
         }
     });
 
-
 function delete_languagepack(lang_name) {
-        doRequest(delete_languagepack_url, {lang: lang_name})
+        doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_name})
             .success(function() {
                 handleSuccessAPI("deleted");
-		$.ajax({url: "/api/languagepacks/refresh", async: false});
+		get_installed_languages();
 		display_languages(installables);
-		
+
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, gettext("Error deleting"), "lang_name");
@@ -106,8 +106,9 @@ function delete_languagepack(lang_name) {
 }
 
 $(function () {
-    $(".delete-language-button").click(function(event) {
+    $(".delete-language-button").children('button').click(function(event) {
         language = $(this).val();
+	console.log(language);
         delete_languagepack(language);
     });
 });
@@ -115,7 +116,7 @@ $(function () {
     //
     // show list of installable languages in the dropdown box
     //
-    $('#language-packs').find('option').remove()
+    $('#language-packs').find('option').remove();
     $('#language-packs').append("<option value='' selected=''>--</option>");
     installables.forEach(function(langdata, langindex) {
         var srtcount = langdata["subtitle_count"];

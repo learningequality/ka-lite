@@ -6,6 +6,7 @@ import json
 import os
 import re
 import math
+import shutil
 from annoying.functions import get_object_or_None
 from collections import defaultdict
 
@@ -21,7 +22,7 @@ from django.utils.translation import ugettext as _
 
 from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
-from .views import get_installed_language_packs, update_languages
+from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
@@ -29,7 +30,6 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonRes
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
 from i18n import get_youtube_id, get_video_language, get_supported_language_map
-from i18n.models import LanguagePack
 from main.topic_tools import get_topic_tree
 from shared.decorators import require_admin
 
@@ -200,14 +200,6 @@ def cancel_video_download(request):
 def installed_language_packs(request):
     return JsonResponse(get_installed_language_packs(force=True).values())
 
-@api_handle_error_with_json
-def refresh_installed_language_packs(request):
-    '''
-    Refresh the list of language packs we have cached in the session object.
-    '''
-    installed = request.session['language_choices'] = list(get_installed_language_packs())
-    return JsonResponse(installed)
-
 @require_admin
 @api_handle_error_with_json
 def start_languagepack_download(request):
@@ -218,25 +210,14 @@ def start_languagepack_download(request):
         return JsonResponse({'success': True})
 
 @require_admin
-@api_handle_error_with_json
-def delete_languagepack(request):
+def delete_language_pack(request):
+"""
+Function to delete language pack design to delete pack from locale folder on clicking delete
+"""
     delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
-    path_tuple= str( settings.PROJECT_PATH + "../locale/" + delete_id )
-    delete_path=""
-    delete_path += delete_path.join(map(str,path_tuple))
-    try:
-    	shutil.rmtree(delete_path)
-    except:
-    	pass
-
-    try:
-    	Lang_object= LanguagePack.objects.filter(code=delete_id)    
-    	Lang_object[0].delete()
-    except:
-	pass
-
-    return JsonResponse({'success': True})
-
+    delete_path=settings.LOCALE_PATHS[0] + delete_id
+    shutil.rmtree(delete_path)
+    return JsonResponse({})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
@@ -365,3 +346,4 @@ def server_restart(request):
         return JsonResponse({})
     except Exception as e:
         return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})
+
