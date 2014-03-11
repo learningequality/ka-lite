@@ -236,16 +236,21 @@ def get_live_topics(topic):
 
 def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
+
+    # Normalize the path
+    path_withslash = path + ("/" if not path.endswith("/") else "")
+    path_noslash = path_withslash[:-1]
+
     # Make sure the root fits
     if not root_node:
         root_node = get_topic_tree()
-    if path == root_node["path"]:
+    if path_withslash == root_node["path"] or path_noslash == root_node["path"]:
         return root_node
-    elif not path.startswith(root_node["path"]):
+    elif not path_withslash.startswith(root_node["path"]):
         return {}
 
     # split into parts (remove trailing slash first)
-    parts = path[len(root_node["path"]):-1].split("/")
+    parts = path_noslash[len(root_node["path"]):].split("/")
     cur_node = root_node
     for part in parts:
         cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
