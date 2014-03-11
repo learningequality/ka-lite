@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import glob
 import os
 import sys
 import warnings
@@ -35,19 +36,18 @@ elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
     logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
     sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
 
-if settings.DEBUG:
-    # In debug mode, add useful debugging flags
-    for flag in ["traceback"]:
-        dashed_flag = "--%s" % flag
-        if dashed_flag not in sys.argv:
-            sys.argv.append(dashed_flag)
 
 ########################
 # clean_pyc
 ########################
 
-if len(sys.argv) == 2 and sys.argv[1] == "clean_pyc":
-    sys.argv += ["--path", ".."]
+# Manually clean all pyc files before entering any real codepath
+for root, dirs, files in os.walk(os.path.join(PROJECT_PATH, "..")):
+    for pyc_file in glob.glob(os.path.join(root, "*.pyc")):
+        try:
+            os.remove(pyc_file)
+        except:
+            pass
 
 ########################
 # Static files
