@@ -10,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
 from fle_utils.django_utils import verify_raw_password
+from fle_utils.config.models import Settings
+from i18n.models import LanguagePack
 
 
 class FacilityUserForm(forms.ModelForm):
@@ -21,6 +23,8 @@ class FacilityUserForm(forms.ModelForm):
 
     password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
+     
+    default_language = forms.ModelChoiceField(queryset=LanguagePack.objects.all(), initial=LanguagePack.objects.filter(code=Settings.get("default_language")))
 
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
@@ -37,7 +41,7 @@ class FacilityUserForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         # Note: must preserve order
-        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "is_teacher")
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "is_teacher", "default_language")
         widgets = {
             "facility": forms.HiddenInput(),
             "is_teacher": forms.HiddenInput(),
