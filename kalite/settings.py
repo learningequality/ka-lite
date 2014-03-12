@@ -102,6 +102,7 @@ ROOT_URLCONF = "distributed.urls"
 INSTALLED_APPS = ("distributed",)
 MIDDLEWARE_CLASSES = tuple()
 
+DEFAULT_ENCODING = 'utf-8'
 
 ########################
 # Storage and caching
