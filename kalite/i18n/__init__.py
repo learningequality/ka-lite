@@ -32,8 +32,8 @@ CACHE_VARS = []
 
 if settings.CENTRAL_SERVER:
     AMARA_HEADERS = {
-        "X-api-username": settings.AMARA_USERNAME,
-        "X-apikey": settings.AMARA_API_KEY,
+        "X-api-username": getattr(settings, "AMARA_USERNAME", None),
+        "X-apikey": getattr(settings, "AMARA_API_KEY", None),
     }
 
 SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH, "subtitles")
