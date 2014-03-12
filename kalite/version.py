@@ -3,8 +3,8 @@ VERSION = "0.11.1"
 VERSION_INFO = {
 
     "0.11.1": {
-        "release_date": "2014/02/19",
-        "git_commit": "3534335e8a6a1c1e367f2922055ad0831f21a870",
+        "release_date": "2014/03/12",
+        "git_commit": "2af4b83493d4f1084dc3fe491a5076fdf0a8fbdb",
         "new_features": {
             "all": [],
             "students": ["translated interface", "dubbed video support"],
