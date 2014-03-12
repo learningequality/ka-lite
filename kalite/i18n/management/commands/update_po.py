@@ -17,12 +17,12 @@ import os
 import shutil
 from optparse import make_option
 
-from django.core import management
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import lcode_to_django_dir, update_jsi18n_file
 from settings import LOG as logging
-from shared.i18n import lcode_to_django_dir, update_jsi18n_file
 from utils.django_utils import call_command_with_output
 from utils.general import ensure_dir
 
@@ -77,7 +77,7 @@ def delete_current_templates():
             shutil.rmtree(english_path)
 
     logging.info("Deleting English language pot files")
-    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    pot_path = os.path.join(settings.DATA_PATH, "i18n", "pot")
     if os.path.exists(pot_path):
         shutil.rmtree(pot_path)
 
@@ -90,16 +90,16 @@ def run_makemessages():
     """Run makemessages command for english po files"""
     logging.info("Executing makemessages command")
     # Generate english po file
-    ignore_pattern = ['python-packages/*']
-    management.call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    ignore_pattern = ['python-packages/*'] + ['kalite/%s/*' % dirname for dirname in ['central', 'contact', 'faq', 'registration', 'tests', 'stats']]
+    call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
     # Generate english po file for javascript
-    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*']
-    management.call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*', 'kalite/static/js/khan-exercises/*']
+    call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
 
 
 def update_templates():
     """Update template po files"""
-    pot_path = os.path.join(settings.DATA_PATH_SECURE, "i18n", "pot")
+    pot_path = os.path.join(settings.DATA_PATH, "i18n", "pot")
     logging.info("Copying english po files to %s" % pot_path)
 
     #  post them to exposed URL

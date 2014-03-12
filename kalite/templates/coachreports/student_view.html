@@ -58,7 +58,7 @@
     {% block navbar %}{{ block.super }}{% endblock navbar %}
 
     {% block student_report %}
-    <!-- {% trans "Last login time" %}: {{ last_login_time }} -->
+    <!-- {% blocktrans %}Last login time: {{ last_login_time }}{% endblocktrans %}-->
 
     {% if no_data %}
         {% if request.is_admin or is_central %}
@@ -78,7 +78,7 @@
         <tr>
             <th colspan="2" class="" >{% trans "Topic" %}</th>
             {% for def in stat_defs %}
-            <th>{{ def.title }}</th>
+            <th>{% trans def.title %}</th>
             {% endfor %}
         </tr>
 
@@ -90,11 +90,11 @@
                 </div>
             </td>
             <td>
-                <span title="{{ topic.description }}">
+                <span title="{% trans topic.description %}">
                     {% if not is_central %}
-                        <a href="{{ topic.path }}">{{ topic.title }}</a>
+                        <a href="{{ topic.path }}">{% trans topic.title %}</a>
                     {% else %}
-                        {{ topic.title }}
+                        {% trans topic.title %}
                     {% endif %}
                 </span>
             </td>

@@ -36,9 +36,9 @@ var KMapEditor = {
         // Helper method to get exercise by name
         exerciseData.get = function(search) {
             var array = this;
-            var index = _.memoize(function(name) {
+            var index = _.memoize(function(id) {
                 var idx = $.map(array, function(ex, n) {
-                    if (ex.name === name) {
+                    if (ex.id === id) {
                         return n;
                     }
                 });
@@ -88,11 +88,11 @@ var KMapEditor = {
             this.maxX = Math.max.apply(Math, _.pluck(this.exercises, "h_position"));
             this.maxY = Math.max.apply(Math, _.pluck(this.exercises, "v_position"));
         } else if (this.zoomLevel === this.ZOOM_TOPICS) {
-            var topicList = _.values(this.maplayout.topics);
-            this.minY = Math.min.apply(Math, _.pluck(topicList, "y"));
-            this.minX = Math.min.apply(Math, _.pluck(topicList, "x"));
-            this.maxY = Math.max.apply(Math, _.pluck(topicList, "y"));
-            this.maxX = Math.max.apply(Math, _.pluck(topicList, "x"));
+            var topicList = _.values(this.maplayout.nodes);
+            this.minX = Math.min.apply(Math, _.pluck(topicList, "h_position"));
+            this.minY = Math.min.apply(Math, _.pluck(topicList, "v_position"));
+            this.maxX = Math.max.apply(Math, _.pluck(topicList, "h_position"));
+            this.maxY = Math.max.apply(Math, _.pluck(topicList, "v_position"));
         }
 
         this.raphael.setSize(
@@ -117,12 +117,12 @@ var KMapEditor = {
 
         // add topics
         if (this.zoomLevel === this.ZOOM_TOPICS) {
-            $.each(this.maplayout.topics, function(topicId, topic) {
+            $.each(this.maplayout.nodes, function(topicId, topic) {
                 var newDiv = $("<div>")
                     .addClass("exercise")
                     .css({
-                        "left": (topic.x - KMapEditor.minX) * KMapEditor.X_SPACING,
-                        "top": (topic.y - KMapEditor.minY) * KMapEditor.Y_SPACING,
+                        "left": (topic.h_position - KMapEditor.minX) * KMapEditor.X_SPACING,
+                        "top": (topic.v_position - KMapEditor.minY) * KMapEditor.Y_SPACING,
                         "width": KMapEditor.LABEL_WIDTH
                     })
                     .appendTo($("#map"));
@@ -140,7 +140,7 @@ var KMapEditor = {
                 $("<div>")
                     .addClass("exercise exercise-label")
                     .css({"font-size": "12px", "width": "80px"})
-                    .text(topic.standalone_title)
+                    .text(topic.title)
                     .appendTo(newTopic);
             });
 
@@ -169,13 +169,13 @@ var KMapEditor = {
                     .addClass("exercise");
 
                 var newEx = $("<a>")
-                    .attr("href", exercise_paths[ex.name])
+                    .attr("href", ex.path)
                     .appendTo(newDiv);
 
                 var image_src = KMapEditor.IMG_NOT_STARTED;
-                if (KMapEditor.exercisesCompleted[ex.name] === "partial") {
+                if (KMapEditor.exercisesCompleted[ex.id] === "partial") {
                     image_src = KMapEditor.IMG_PARTIAL;
-                } else if (KMapEditor.exercisesCompleted[ex.name] === "complete") {
+                } else if (KMapEditor.exercisesCompleted[ex.id] === "complete") {
                     image_src = KMapEditor.IMG_COMPLETE;
                 }
 
@@ -193,12 +193,12 @@ var KMapEditor = {
                 $("<div>")
                     .addClass("exercise exercise-label")
                     .css({"font-size": "12px", "width": "80px"})
-                    .text(ex.display_name)
+                    .text(ex.title)
                     .css({"width": KMapEditor.LABEL_WIDTH + "px"})
                     .appendTo(newEx);
 
                 $.each(ex.prerequisites, function(n, prereq) {
-                    KMapEditor.addPath(prereq, ex.name);
+                    KMapEditor.addPath(prereq, ex.id);
                 });
             });
         }
@@ -234,27 +234,29 @@ $(document).ready(function() {
     if (!vars["topic"]) {
         // Top level of the topic tree
         $(".topic-button").hide();
-        $.getJSON("/static/data/maplayout_data.json")
+        $.getJSON("/api/knowledge_map/root")
             .success(function(defaultMapLayout) {
                 KMapEditor.init([], defaultMapLayout, {}, 6);
             });
     } else {
         // Second level of the topic tree
-        $.getJSON("/static/data/topicdata/" + vars["topic"] + ".json")
+        $.getJSON("/api/knowledge_map/" + vars["topic"])
             .success(function(exerciseLayout) {
 
-                var exercise_ids = $.map(exerciseLayout, function(exercise) { return exercise.name });
+                var exercises = $.map(exerciseLayout.nodes, function(exercise) { return exercise });
+                var exercise_ids = $.map(exerciseLayout.nodes, function(exercise) { return exercise.id });
                 doRequest("/api/get_exercise_logs", exercise_ids)
                     .success(function(data) {
                         var exercisesCompleted = {};
                         $.each(data, function(ind, status) {
                             exercisesCompleted[status.exercise_id] = status.complete ? "complete" : "partial";
                         });
-                        KMapEditor.init(exerciseLayout, [], exercisesCompleted, 8);
+                        KMapEditor.init(exercises, [], exercisesCompleted, 8);
                     })
                     .fail(function (resp) {
-                        communicate_api_failure(resp, "id_student_logs");
-                        KMapEditor.init(exerciseLayout, [], [], 8);
+                        // Turned off because it duplicates "Progress not loaded" message
+                        // communicate_api_failure(resp, "id_student_logs");
+                        KMapEditor.init(exercises, [], [], 8);
                     });
             });
     }

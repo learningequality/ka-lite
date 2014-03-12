@@ -14,9 +14,10 @@ from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 
 import settings
+from i18n import get_dubbed_video_map
 from securesync.models import Device
 from settings import LOG as logging
 from updates.management.commands.classes import UpdatesStaticCommand
@@ -29,7 +30,7 @@ from utils.platforms import is_windows, system_script_extension, system_specific
 class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
-    option_list = BaseCommand.option_list + (
+    option_list = UpdatesStaticCommand.option_list + (
         make_option('-b', '--branch',
             action='store',
             dest='branch',
@@ -133,11 +134,12 @@ class Command(UpdatesStaticCommand):
         self.stages = [
             "clean_pyc",
             "git",
+            "download",
             "syncdb",
         ]
 
         # step 1: clean_pyc (has to be first)
-        call_command("clean_pyc")
+        call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
         self.start(notes="Clean up pyc files")
 
         # Step 2: update via git
@@ -162,9 +164,19 @@ class Command(UpdatesStaticCommand):
                 self.stderr.write("%s\n" % gce.stderr)
                 exit(1)
 
-        # step 3: syncdb
-        self.next_stage("Update the database")
-        call_command("setup", interactive=False)
+        # step 3: get other remote resources
+        self.next_stage("Download remote resources")
+        get_dubbed_video_map(force=True)  # force a remote download
+
+        # step 4: syncdb / migrate, via setup
+        #  NOTE: this MUST be done via an external process,
+        #  to guarantee all the new code is begin used.
+        self.next_stage("Update the database [please wait; no interactive output]")
+        # should be interactive=False, but this method is a total hack
+        (out, err, rc) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
+        sys.stderr.write(out)
+        if rc:
+            sys.stderr.write(err)
 
         # Done!
         self.complete()

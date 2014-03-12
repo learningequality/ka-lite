@@ -10,10 +10,10 @@ from django.test.client import Client
 from django.utils import unittest
 
 import settings
-from shared import caching
-from shared.testing.base import KALiteTestCase
-from shared.testing.decorators import distributed_server_test
-from shared.topic_tools import get_node_cache
+from main import caching
+from main.topic_tools import get_node_cache
+from testing.base import KALiteTestCase
+from testing.decorators import distributed_server_test
 from utils.django_utils import call_command_with_output
 
 
@@ -40,7 +40,7 @@ class CachingTest(KALiteTestCase):
         self.assertTrue(caching.has_cache_key(path=video_path), "expect: Cache key exists after Django Client get")
 
         # Invalidate the cache item, and check it
-        caching.invalidate_all_pages_related_to_video(video_id=video_id) # test the convenience function
+        caching.invalidate_all_caches() # test the convenience function
         self.assertTrue(not caching.has_cache_key(path=video_path), "expect: no cache key after expiring the page")
 
 

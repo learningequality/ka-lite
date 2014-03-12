@@ -1,3 +1,9 @@
+function assert(val, msg) {
+    if (!val) {
+        show_message("error", msg, "id_assert");
+    }
+}
+
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
@@ -22,12 +28,18 @@ function csrfSafeMethod(method) {
 }
 
 function doRequest(url, data) {
+    console.log(url);
+    url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+    console.log(url);
     return $.ajax({
         url: url,
         type: data ? "POST" : "GET",
         data: data ? JSON.stringify(data) : "",
         contentType: "application/json",
         dataType: "json"
+    })
+    .fail(function(resp) {
+        communicate_api_failure(resp, "id_do_request");
     });
 }
 
@@ -86,11 +98,14 @@ function setGetParam(href, name, val) {
         vars[name] = val;
     }
 
-    var url = base + "?";
+    var url = base;
+    var idx = 0;
     for (key in vars) {
-        url += "&" + key + "=" + vars[key];//         + $.param(vars);
+        url += (idx == 0) ? "?" : "&";
+        url += key + "=" + vars[key];//         + $.param(vars);
+        idx++;
     }
-    return url
+    return url;
 }
 
 function setGetParamDict(href, dict) {

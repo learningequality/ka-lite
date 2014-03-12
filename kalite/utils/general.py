@@ -4,8 +4,7 @@ Miscellaneous utility functions (no dependence on non-standard packages, such as
 General string, integer, date functions.
 """
 import datetime
-import logging
-import requests
+import json
 import os
 import errno
 
@@ -119,7 +118,7 @@ def version_diff(v1, v2):
 
     v1_parts = v1.split(".")
     v2_parts = v2.split(".")
-    
+
     v1_parts += ["0"] * (len(v2_parts) - len(v1_parts))
     v2_parts += ["0"] * (len(v1_parts) - len(v2_parts))
 
@@ -206,34 +205,15 @@ def max_none(data):
     return max(non_none_data) if non_none_data else None
 
 
-def make_request(headers, url, max_retries=5):
-    """Return response from url; retry up to 5 times for server errors.
-    When returning an error, return human-readable status code.
-
-    codes: server-error, client-error
-    """
-    response = None
-    for retries in range(1, 1 + max_retries):
-        try:
-            response = requests.get(url, headers=headers)
-            if response.status_code >= 500:
-                if retries == max_retries:
-                    logging.warn("Unexpected Error downloading %s: server-side error (%d)" % (
-                        url, response.status_code,
-                    ))
-                    response = "server-error"
-                    break;
-            elif response.status_code >= 400:
-                logging.debug("Error downloading %s: client-side error (%d)" % (
-                    url, response.status_code,
-                ))
-                response = "client-error"
-                break
-            # TODO(dylan): if internet connection goes down, we aren't catching
-            # that, and things just break
-            else:
-                break
-        except Exception as e:
-            logging.warn("Unexpected Error downloading %s: %s" % (url, e))
-
-    return response
+def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    if default == {}:
+        default = {}
+    try:
+        with open(json_filepath, "r") as fp:
+            return json.load(fp)
+    except Exception as e:
+        if logger:
+            logger("%s %s: %s" % (errmsg, json_filepath, e))
+        if raises:
+            raise
+        return default

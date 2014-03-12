@@ -17,13 +17,11 @@ urlpatterns = patterns('main.api_views',
     url(r'^get_video_logs$', 'get_video_logs', {}, 'get_video_logs'),
     url(r'^get_exercise_logs$', 'get_exercise_logs', {}, 'get_exercise_logs'),
 
-    # For user management
-    url(r'^remove_from_group$', 'remove_from_group', {}, 'remove_from_group'),
-    url(r'^move_to_group$', 'move_to_group', {}, 'move_to_group'),
-    url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
-
     # data used by the frontend search code
     url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
+
+    # For knowledge map
+    url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
 
     url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
 

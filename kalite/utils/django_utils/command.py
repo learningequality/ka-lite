@@ -2,9 +2,16 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from cStringIO import StringIO
+from optparse import make_option
 
+from django.conf import settings
 from django.core.management import call_command
+from django.core.management.base import BaseCommand
+from django.utils import translation
+from django.utils.translation import ugettext as _
+
 
 
 def call_command_with_output(cmd, *args, **kwargs):
@@ -43,16 +50,7 @@ def call_command_with_output(cmd, *args, **kwargs):
         sys.exit   = backups[2]
 
 
-def call_command_async(cmd, *args, **kwargs):
-    """
-    Runs a manage.py command asynchronously, by calling into
-    the subprocess module.
-
-    This may be finicky, as it requires stringifying kwargs, but
-    it works well for the current needs and should be safe for types
-    that stringify in a way that commands can parse
-    (which will work for str, bool, int, etc).
-    """
+def call_command_subprocess(cmd, *args, **kwargs):
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
     manage_py_dir = kwargs["manage_py_dir"]
     del kwargs["manage_py_dir"]
@@ -72,6 +70,48 @@ def call_command_async(cmd, *args, **kwargs):
     # Note that this is also OK because chronograph does all "stopping"
     #    using messaging through the database
     subprocess.Popen(call_args)
+
+
+
+
+JOB_THREADS = {}
+
+class CommandThread(threading.Thread):
+    def __init__(self, cmd, *args, **kwargs):
+        super(CommandThread, self).__init__()
+        self.cmd = cmd
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        #logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
+        call_command(self.cmd, *self.args, **self.kwargs)
+
+def call_command_threaded(cmd, *args, **kwargs):
+    global JOB_THREADS
+
+    #logging.debug("Threaded launch of command %s with parameters %s, %s)" % (cmd, args, kwargs))
+    if cmd in JOB_THREADS and JOB_THREADS[cmd].is_alive():
+        pass#raise Exception(_("Command %(cmd)s is already currently running.  Please stop the previous job before trying to start.") % {"cmd": cmd})
+    th = CommandThread(cmd=cmd, *args, **kwargs)
+    th.start()
+    JOB_THREADS[cmd] = th
+
+
+def call_command_async(cmd, in_proc=True, *args, **kwargs):
+    """
+    Runs a manage.py command asynchronously, by calling into
+    the subprocess module.
+
+    This may be finicky, as it requires stringifying kwargs, but
+    it works well for the current needs and should be safe for types
+    that stringify in a way that commands can parse
+    (which will work for str, bool, int, etc).
+    """
+    if in_proc:
+        call_command_threaded(cmd, *args, **kwargs)
+    else:
+        call_command_subprocess(cmd, *args, **kwargs)
 
 
 def call_outside_command_with_output(command, *args, **kwargs):
@@ -104,3 +144,29 @@ def call_outside_command_with_output(command, *args, **kwargs):
 
     # tuple output of stdout, stderr, and exit code
     return out + (1 if out[1] else 0,)
+
+
+class LocaleAwareCommand(BaseCommand):
+    option_list = BaseCommand.option_list + (
+        make_option('--locale',
+            action='store',
+            dest='locale',
+            default=settings.LANGUAGE_CODE,
+            help='Locale (translation) for command output',  # when I localized this, I got an error...
+            metavar="LANG_CODE"),
+    )
+
+    def execute(self, *args, **kwargs):
+        """Set the language up before execute calls into handle.
+        Better to do this way, so subclasses aren't forced to call
+        into a superclass handle function"""
+        saved_import_settings = self.can_import_settings
+        self.can_import_settings = False  # HACK to force Django (with their unusually unoverridable decision to hard-code setting en-us)
+
+        self.locale = kwargs["locale"]
+        translation.activate(self.locale)
+
+        super(LocaleAwareCommand, self).execute(*args, **kwargs)
+
+        # Aaaaand back to normal.
+        self.can_import_settings = saved_import_settings

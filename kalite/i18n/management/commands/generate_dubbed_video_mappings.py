@@ -6,28 +6,38 @@ import datetime
 import json
 import os
 import requests
+from optparse import make_option
 from StringIO import StringIO
 
 from django.core.management.base import BaseCommand, CommandError
 
 import settings
+from i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
+from main.topic_tools import get_node_cache
 from settings import LOG as logging
-from shared.i18n import DUBBED_VIDEOS_MAPPING_FILEPATH
-from shared.topic_tools import get_node_cache
 from utils.general import ensure_dir, datediff
 
 
-DUBBED_VIDEOS_SPREADSHEET_CSV_URL = "https://docs.google.com/a/learningequality.org/spreadsheet/ccc?key=0AhvqOn88FUVedEM5U3drY3E1MENfeWlLMVBnbnczT3c&output=csv&ndplr=1#gid=13"
+SPREADSHEET_ID ="0AhvqOn88FUVedEJXM1ZhMG1XdGJuVTE4OEZ3WkNxYUE"
+SPREADSHEET_EXPORT_FORMAT = "csv"
+SPREADSHEET_GID = 0
+SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheet/ccc"
 
-def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_URL, csv_data=None):
+def generate_dubbed_video_mappings(download_url=None, csv_data=None):
     """
     Function to do the heavy lifting in getting the dubbed videos map.
 
     Could be moved into utils
     """
+    if not download_url:
+        download_url = SPREADSHEET_BASE_URL
+        params = {'key': SPREADSHEET_ID, 'gid': SPREADSHEET_GID, 'output': SPREADSHEET_EXPORT_FORMAT}
+    else:
+        params = {}
+
     if not csv_data:
         logging.info("Downloading dubbed video data from %s" % download_url)
-        response = requests.get(download_url)
+        response = requests.get(download_url, params=params)
         if response.status_code != 200:
             raise CommandError("Failed to download dubbed video CSV data: status=%s" % response.status)
         csv_data = response.content
@@ -50,11 +60,11 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
             row = reader.next()
 
 
-            if row_num < 5:
+            if row_num < 4:
                 # Rows 1-4 are crap.
                 continue
 
-            elif row_num == 5:
+            elif row_num == 4:
                 # Row 5 is the header row.
                 header_row = [v.lower() for v in row]  # lcase all header row values (including language names)
                 slug_idx = header_row.index("titled id")
@@ -77,10 +87,24 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
                 # Loop through those columns and, if a video exists,
                 #   add it to the dictionary.
                 for idx in range(english_idx, len(row)):
-                    if row[idx]:  # make sure there's a dubbed video
-                        lang = header_row[idx]
-                        if lang not in video_map:  # add the first level if it doesn't exist
-                            video_map[lang] = {}
+                    if not row[idx]:  # make sure there's a dubbed video
+                        continue
+
+                    lang = header_row[idx]
+                    if lang not in video_map:  # add the first level if it doesn't exist
+                        video_map[lang] = {}
+                    dubbed_youtube_id = row[idx]
+                    if english_video_id == dubbed_youtube_id and lang != "english":
+                        logging.error("Removing entry for (%s, %s): dubbed and english youtube ID are the same." % (lang, english_video_id))
+                    #elif dubbed_youtube_id in video_map[lang].values():
+                        # Talked to Bilal, and this is actually supposed to be OK.  Would throw us for a loop!
+                        #    For now, just keep one.
+                        #for key in video_map[lang].keys():
+                        #    if video_map[lang][key] == dubbed_youtube_id:
+                        #        del video_map[lang][key]
+                        #        break
+                        #logging.error("Removing entry for (%s, %s): the same dubbed video ID is used in two places, and we can only keep one in our current system." % (lang, english_video_id))
+                    else:
                         video_map[lang][english_video_id] = row[idx]  # add the corresponding video id for the video, in this language.
 
     except StopIteration:
@@ -93,6 +117,9 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
     extra_videos = set(video_map["english"].keys()) - set(known_videos)
     if missing_videos:
         logging.warn("There are %d known videos not in the list of dubbed videos" % len(missing_videos))
+        logging.warn("Adding missing English videos to English dubbed video map")
+        for video in missing_videos:
+            video_map["english"][video] = video
     if extra_videos:
         logging.warn("There are %d videos in the list of dubbed videos that we have never heard of." % len(extra_videos))
 
@@ -102,13 +129,21 @@ def generate_dubbed_video_mappings(download_url=DUBBED_VIDEOS_SPREADSHEET_CSV_UR
 class Command(BaseCommand):
     help = "Make a dictionary of english video=>dubbed video mappings, from the online Google Docs spreadsheet."
 
+    option_list = BaseCommand.option_list + (
+        make_option('--force',
+                    action='store_true',
+                    dest='force',
+                    default=False,
+                    help='Force reload of spreadsheet'),
+    )
+
     def handle(self, *args, **options):
 
         # Get the CSV data, either from a recent cache_file
         #   or from the internet
         cache_dir = settings.MEDIA_ROOT
         cache_file = os.path.join(cache_dir, "dubbed_videos.csv")
-        if os.path.exists(cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(cache_file)), units="days") <= 14.0:
+        if not options["force"] and os.path.exists(cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(cache_file)), units="days") <= 14.0:
             # Use cached data to generate the video map
             csv_data = open(cache_file, "r").read()
             (video_map, _) = generate_dubbed_video_mappings(csv_data=csv_data)

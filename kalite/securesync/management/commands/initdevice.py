@@ -11,9 +11,10 @@ from django.db import IntegrityError, transaction
 import settings
 import version
 from config.models import Settings
+from facility.models import Facility
 from securesync import engine
-from securesync.models import Device, DeviceMetadata, Zone, ZoneInvitation, Facility
-from securesync.views import set_as_registered
+from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
+from securesync.views import initialize_registration
 from settings import LOG as logging
 from utils.general import get_host_name
 
@@ -67,12 +68,14 @@ def load_data_for_offline_install(in_file):
     return invitation
 
 
-def confirm_or_generate_zone(invitation=None):
+def confirm_or_generate_zone(invitation=None, device_zone=None):
 
     invitation = invitation or get_object_or_None(ZoneInvitation, used_by=Device.get_own_device())
-
+    device_zone = device_zone or get_object_or_None(DeviceZone, device=Device.get_own_device())
     if invitation:
-        sys.stdout.write("Successfully joined existing sharing network %s, using invitation %s.\n" % (invitation.zone, invitation))
+        sys.stdout.write("Confirmed existing sharing network %s, using invitation %s.\n" % (invitation.zone, invitation))
+    elif device_zone:
+        sys.stdout.write("Confirmed existing sharing network %s, using device_zone %s.\n" % (device_zone.zone, device_zone))
 
     else:
         # Sorry dude, you weren't invited to the party.  You'll have to have your own!
@@ -80,7 +83,7 @@ def confirm_or_generate_zone(invitation=None):
         call_command("generate_zone")
         sys.stdout.write("Successfully generated a sharing network, and joined!.\n")
 
-    set_as_registered()  # would try to sync
+    initialize_registration()  # would try to sync
 
 
 def initialize_facility(facility_name=None):

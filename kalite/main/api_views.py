@@ -12,27 +12,28 @@ from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 import settings
 import version
+from . import topicdata
 from .api_forms import ExerciseLogForm, VideoLogForm, DateTimeForm
+from .caching import backend_cache_page
 from .models import VideoLog, ExerciseLog
-from config.models import Settings
-from securesync.models import FacilityGroup, FacilityUser
-from shared.caching import backend_cache_page
-from shared.decorators import allow_api_profiling, require_admin
-from shared.jobs import force_job, job_status
-from shared.topic_tools import get_flat_topic_tree
-from shared.videos import delete_downloaded_files
+from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
+from facility.models import FacilityGroup, FacilityUser
+from i18n import lcode_to_ietf
+from shared.decorators import require_admin
+from testing.decorators import allow_api_profiling
 from utils.general import break_into_chunks
-from utils.internet import api_handle_error_with_json, JsonResponse
+from utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from utils.mplayer_launcher import play_video_in_new_thread
 from utils.orderedset import OrderedSet
 
@@ -49,13 +50,13 @@ class student_log_api(object):
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponse({"warning": self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress.")}, status=500)
+                return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
             else:
                 return handler(request)
         return wrapper_fn
 
 
-@student_log_api(logged_out_message=_("Video progress not saved."))
+@student_log_api(logged_out_message=ugettext_lazy("Video progress not saved."))
 def save_video_log(request):
     """
     Receives a video_id and relevant data,
@@ -79,7 +80,7 @@ def save_video_log(request):
         )
 
     except ValidationError as e:
-        return JsonResponse({"error": "Could not save VideoLog: %s" % e}, status=500)
+        return JsonResponseMessageError(_("Could not save VideoLog: %s") % e)
 
     if "points" in request.session:
         del request.session["points"]  # will be recomputed when needed
@@ -91,7 +92,7 @@ def save_video_log(request):
     })
 
 
-@student_log_api(logged_out_message=_("Exercise progress not saved."))
+@student_log_api(logged_out_message=ugettext_lazy("Exercise progress not saved."))
 def save_exercise_log(request):
     """
     Receives an exercise_id and relevant data,
@@ -118,7 +119,7 @@ def save_exercise_log(request):
         exerciselog.full_clean()
         exerciselog.save()
     except ValidationError as e:
-        return JsonResponse({"error": _("Could not save ExerciseLog") + u": %s" % e}, status=500)
+        return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
 
     if "points" in request.session:
         del request.session["points"]  # will be recomputed when needed
@@ -126,21 +127,29 @@ def save_exercise_log(request):
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
     if not previously_complete and exerciselog.complete:
-        return JsonResponse({"success": _("You have mastered this exercise!")})
+        exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
+        junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
+        if next_exercise:
+            return JsonResponse({"success": _("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
+                "href": next_exercise["path"],
+                "title": _(next_exercise["title"]),
+            }})
+        else:
+            return JsonResponse({"success": _("You have mastered this exercise and this topic!")})
 
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=_("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_video_logs(request):
     """
     Given a list of video_ids, retrieve a list of video logs for this user.
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
-        return JsonResponse({"error": "Could not load VideoLog objects: Unrecognized input data format." % e}, status=500)
+        return JsonResponseMessageError(_("Could not load VideoLog objects: Unrecognized input data format."))
 
     user = request.session["facility_user"]
     logs = VideoLog.objects \
@@ -151,14 +160,14 @@ def get_video_logs(request):
 
 
 @allow_api_profiling
-@student_log_api(logged_out_message=_("Progress not loaded."))
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
-        return JsonResponse({"error": "Could not load ExerciseLog objects: Unrecognized input data format." % e}, status=500)
+        return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
 
     user = request.session["facility_user"]
     logs = ExerciseLog.objects \
@@ -176,13 +185,13 @@ def time_set(request):
     """
 
     if not settings.ENABLE_CLOCK_SET:
-        return JsonResponse({"error": _("This can only be done on Raspberry Pi systems")}, status=403)
+        return JsonResponseMessageError(_("This can only be done on Raspberry Pi systems"), status=403)
 
     # Form does all the data validation - including ensuring that the data passed is a proper date time.
     # This is necessary to prevent arbitrary code being run on the system.
     form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
-        return JsonResponse({"error": _("Could not read date and time: Unrecognized input data format.")}, status=500)
+        return JsonResponseMessageError(_("Could not read date and time: Unrecognized input data format."))
 
     try:
 
@@ -190,46 +199,14 @@ def time_set(request):
             raise PermissionDenied
 
     except PermissionDenied as e:
-        return JsonResponse({"error": _("System permissions prevented time setting, please run with root permissions")}, status=500)
+        return JsonResponseMessageError(_("System permissions prevented time setting, please run with root permissions"))
 
     now = datetime.datetime.now().isoformat(" ").split(".")[0]
 
-    return JsonResponse({"success": _("System time was reset successfully; current system time: %s" % now)})
+    return JsonResponseMessage(_("System time was reset successfully; current system time: %s") % now)
 
 
 # Functions below here focused on users
-
-@require_admin
-@api_handle_error_with_json
-def remove_from_group(request):
-    """
-    API endpoint for removing users from group
-    (from user management page)
-    """
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
-    users_to_remove = FacilityUser.objects.filter(username__in=users)
-    users_to_remove.update(group=None)
-    return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def move_to_group(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
-    group_update = FacilityGroup.objects.get(pk=group)
-    users_to_move = FacilityUser.objects.filter(username__in=users)
-    users_to_move.update(group=group_update)
-    return JsonResponse({})
-
-
-@require_admin
-@api_handle_error_with_json
-def delete_users(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    users_to_delete = FacilityUser.objects.filter(username__in=users)
-    users_to_delete.delete()
-    return JsonResponse({})
 
 
 @api_handle_error_with_json
@@ -242,7 +219,7 @@ def launch_mplayer(request):
         raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
 
     if "youtube_id" not in request.REQUEST:
-        return JsonResponse({"error": "no youtube_id specified"}, status=500)
+        return JsonResponseMessageError(_("No youtube_id specified"))
 
     youtube_id = request.REQUEST["youtube_id"]
     video_id = request.REQUEST["video_id"]
@@ -333,7 +310,7 @@ def status(request):
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
-        "current_language": request.session["django_language"],
+        "current_language": request.session[settings.LANGUAGE_COOKIE_NAME],
         "messages": message_dicts,
     }
     # Override properties using facility data
@@ -363,10 +340,50 @@ def getpid(request):
 @api_handle_error_with_json
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
-
-    if lang_code != request.session.get("django_language"):
-        raise NotImplementedError(_("Currently, only retrieving the flat topic tree in the user's currently selected language is supported (current=%(current_lang)s, requested=%(requested_lang)s).") % {
-            "current_lang": request.session.get("django_language"),
-            "requested_lang": lang_code,
-        })
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
+
+
+@api_handle_error_with_json
+@backend_cache_page
+def knowledge_map_json(request, topic_id):
+    """
+    Topic nodes can now have a "knowledge_map" stamped on them.
+    This code currently exposes that data to the kmap-editor code,
+    mostly as it expects it now.
+
+    So this is kind of a hack-ish mix of code that avoids rewriting kmap-editor.js,
+    but allows a cleaner rewrite of the stored data, and bridges the gap between
+    that messiness and the cleaner back-end.
+    """
+
+    # Try and get the requested topic, and make sure it has knowledge map data available.
+    topic = topicdata.NODE_CACHE["Topic"].get(topic_id)
+    if not topic:
+        raise Http404("Topic '%s' not found" % topic_id)
+    elif not "knowledge_map" in topic[0]:
+        raise Http404("Topic '%s' has no knowledge map metadata." % topic_id)
+
+    # For each node (can be of any type now), pull out only
+    #   the relevant data.
+    kmap = topic[0]["knowledge_map"]
+    nodes_out = {}
+    for id, kmap_data in kmap["nodes"].iteritems():
+        cur_node = topicdata.NODE_CACHE[kmap_data["kind"]][id][0]
+        nodes_out[id] = {
+            "id": cur_node["id"],
+            "title": _(cur_node["title"]),
+            "h_position":  kmap_data["h_position"],
+            "v_position": kmap_data["v_position"],
+            "icon_url": cur_node.get("icon_url", cur_node.get("icon_src")),  # messy
+            "path": cur_node["path"],
+        }
+        if not "polylines" in kmap:  # messy
+            # Two ways to define lines:
+            # 1. have "polylines" defined explicitly
+            # 2. use prerequisites to compute lines on the fly.
+            nodes_out[id]["prerequisites"] = cur_node.get("prerequisites", [])
+
+    return JsonResponse({
+        "nodes": nodes_out,
+        "polylines": kmap.get("polylines"),  # messy
+    })

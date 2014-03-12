@@ -1,7 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ zone.name }}{% trans "- Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
+{% block title %}{{ zone.name }} - {% trans "Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
 <script>
@@ -45,16 +45,17 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
-            <ul id="zone-management-options">
-                {% if not facilities and not devices %}{# can only happen on the central server #}
-                    <li>
-                        <a class="zone-delete-link" href="{% url delete_zone org_id=org_id zone_id=zone_id %}" onclick="return confirm(gettext('Are you sure you want to delete') + ' {{zone.name}}?');">
-                            <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>
-                        </a>    
-                    </li>
-                {% endif %}
-            </ul>
-            
+            <li>
+                <ul id="zone-management-options">
+                    {% if not facilities and not devices %}{# can only happen on the central server #}
+                        <li>
+                            <a class="zone-delete-link" href="{% url delete_zone org_id=org_id zone_id=zone_id %}" onclick="return confirm(gettext('Are you sure you want to delete') + ' {{zone.name}}?');">
+                                <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </li>
 {% endblock buttons %}
 
 {% block control_panel_content %}
@@ -70,8 +71,8 @@
          <table class="simple-table">
             <tr>
                 <th width="250px">{% trans "Facility Name" %}</th>
-                <th width="120px">{% trans "# users" %}</th>
-                <th width="120px">{% trans "# groups" %}</th>
+                <th width="120px">{% trans "# Users" %}</th>
+                <th width="120px">{% trans "# Groups" %}</th>
                 <th width="200px">{% trans "Last Usage" %}</th>
             </tr>
 
@@ -104,7 +105,7 @@
         <h2>{% trans "Devices" %}</h2>
 
         {% if not devices %}
-            <p>{% trans "You currently have no devices that save synced data with the central server" %}</p>
+            <p>{% trans "You currently have no devices that sync data with the central server" %}</p>
 
         {% else %}
             <table class="simple-table">

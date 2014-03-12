@@ -1,6 +1,10 @@
 // Landing page - non resuable parts
 // --------------------------------------------------
 
+#navbar-container {
+  border-bottom: 3px solid @dark-green;
+}
+
 .button-container{
  .center;
  text-align: center;
@@ -8,8 +12,27 @@
  background-color: #1C2C38;
 }
 
+#announcements {
+  background-color:@quote-color;
+  text-align: center;
+  .alert {
+    margin-bottom: 0px;
+    padding: 10px;
+    font-size: 18px;
+    #announcement-text-container {
+      margin: 0px 30px;
+      p {
+        font-size: 18px;
+      }
+    }
+    a {
+      text-decoration: underline;
+      font-weight: bold;
+    }
+  } 
+}
+
 .ka-quote{
-  border-top: 3px solid @dark-green;
   background-color:@quote-color;
   color:gray;
   text-align: center;

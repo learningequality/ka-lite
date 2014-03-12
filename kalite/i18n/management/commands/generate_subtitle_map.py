@@ -13,20 +13,21 @@ NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us).
 import datetime
 import json
 import os
+import requests
 import sys
 import tempfile
 
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
 
 import settings
+from i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
+from i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
+from main.topic_tools import get_slug2id_map
 from settings import LOG as logging
-from shared.i18n import AMARA_HEADERS, SRTS_JSON_FILEPATH
-from shared.i18n import get_language_name, get_lang_map_filepath, lcode_to_ietf
-from shared.topic_tools import get_slug2id_map
-from utils.general import convert_date_input, ensure_dir, make_request
+from utils.general import convert_date_input, ensure_dir, softload_json
+from utils.internet import make_request
 
 
 class OutDatedSchema(Exception):
@@ -49,19 +50,27 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
     # Initialize the data
     if not os.path.exists(map_file):
         ensure_dir(os.path.dirname(map_file))
-        srts_dict = {}
+        if not settings.DEBUG:
+            raise CommandError("TRUE central server's srts dict should never be empty; where is your %s?" % map_file)
+        else:
+            # Pull it from the central server
+            try:
+                logging.debug("Fetching central server's srt availability file.")
+                resp = requests.get("http://kalite.learningequality.org:7007/media/testing/%s" % (os.path.basename(map_file)))
+                resp.raise_for_status()
+                with open(map_file, "w") as fp:
+                    fp.write(resp.content)
+                srts_dict = json.loads(resp.content)
+            except Exception as e:
+                logging.error("Failed to download TRUE central server's srts availability file: %s" % e)
+                srts_dict = {}
+
     else:
         # Open the file, read, and clean out old videos.
-        try:
-            with open(map_file, "r") as fp:
-                srts_dict = json.load(fp)
-        except Exception as e:
-            if not force:  # only handle the error if force=True.  Otherwise, these data are too valuable to lose, so just assume a temp problem.
-                raise
-            else:
-                logging.error("JSON file corrupted, using empty json and starting from scratch (%s)" % e)
-                srts_dict = {}
-        else:
+        #   only handle the error if force=True.
+        #   Otherwise, these data are too valuable to lose, so just assume a temp problem.
+        srts_dict = softload_json(map_file, raises=not force, logger=logging.error)
+        if srts_dict:
             logging.info("Loaded %d mappings." % (len(srts_dict)))
 
         # Set of videos no longer used by KA Lite
@@ -107,7 +116,7 @@ def create_all_mappings(force=False, frequency_to_save=100, response_to_check=No
         elif force and cached:
             logging.debug("Updating %s because force flag (-f) given. Video was previously cached." % youtube_id)
         else:
-            logging.debug("Updating %s because video not yet cached." % youtube_id)
+            logging.debug("Updating %s because video subtitles metadata not yet cached." % youtube_id)
 
         # If it makes it to here without hitting a continue, then update the entry
 
@@ -152,22 +161,21 @@ def update_video_entry(youtube_id, entry={}):
     """
     request_url = "https://www.amara.org/api2/partners/videos/?format=json&video_url=http://www.youtube.com/watch?v=%s" % (
         youtube_id)
-    r = make_request(AMARA_HEADERS, request_url)
+    resp = make_request(AMARA_HEADERS, request_url)
     # add api response first to prevent empty json on errors
     entry["last_attempt"] = unicode(datetime.datetime.now().date())
 
-    if isinstance(r, basestring):  # string responses mean some type of error
-        logging.info("%s at %s" % (r, request_url))
-        entry["api_response"] = r
+    if isinstance(resp, basestring):  # string responses mean some type of error
+        entry["api_response"] = resp
         return entry
 
     try:
-        content = json.loads(r.content)
+        content = json.loads(resp.content)
         assert "objects" in content  # just index in, to make sure the expected data is there.
         assert len(content["objects"]) == 1
         languages = content["objects"][0]["languages"]
     except Exception as e:
-        logging.warn("%s: Could not load json response: %s" % (youtube_id, e))
+        logging.warn("Error updating video entry %s: Could not load json response: %s" % (youtube_id, e))
         entry["api_response"] = "client-error"
         return entry
 
@@ -211,13 +219,7 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
     Note: srt map deals with amara, so uses ietf codes (e.g. en-us)
     """
     # Load the current download status
-    try:
-        with open(map_file) as fp:
-            api_info_map = json.load(fp)
-    except Exception as e:
-        # Must be corrupted; start from scratch!
-        logging.warn("Could not open %s for updates; starting from scratch.  Error=%s" % (map_file, e))
-        api_info_map = {}
+    api_info_map = softload_json(map_file, logger=logging.warn)
 
     # Next we want to iterate through those and create a big srt dictionary organized by language code
     remote_availability_map = {}
@@ -244,12 +246,7 @@ def update_language_srt_map(map_file=SRTS_JSON_FILEPATH):
         if not os.path.exists(lang_map_filepath):
             lang_map = {}
         else:
-            try:
-                with open(lang_map_filepath, "r") as fp:
-                    lang_map = json.load(fp)
-            except Exception as e:
-                logging.error("Language download status mapping for (%s) is corrupted (%s), rewriting it." % (lang_code, e))
-                lang_map = {}
+            lang_map = softload_json(lang_map_filepath, logger=logging.error)
 
         # First, check to see if it's empty (e.g. no subtitles available for any videos)
         if not new_data:

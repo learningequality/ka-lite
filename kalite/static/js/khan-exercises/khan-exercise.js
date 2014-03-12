@@ -1875,10 +1875,9 @@ var Khan = (function() {
 
         $(Khan).bind("gotoNextProblem", function() {
             if (localMode) {
-                // Automatically advance to the next problem
                 // KA-LITE-MOD: this isn't needed for us, as we call readyForNextProblem directly
-                // nextProblem(1);
-                // renderNextProblem();
+                //nextProblem(1);
+                //renderNextProblem();
             } else {
                 // Just listen for the readyForNextProblem event, which will
                 // include an updated userExercise (and thus an updated problem
@@ -2126,6 +2125,12 @@ var Khan = (function() {
         var src, deps = [];
 
         if (typeof modNameOrObject === "string") {
+            // KA-LITE-MOD
+            // Short-term HACK for overcoming broken
+            //   include for jquery.mobile.vmouse
+            if (modNameOrObject == "jquery.mobile.vmouse") {
+                modNameOrObject = "../third_party/" + modNameOrObject;
+            }
             src = urlBase + "utils/" + modNameOrObject + ".js";
             deps = Khan.moduleDependencies[modNameOrObject] || [];
         } else {

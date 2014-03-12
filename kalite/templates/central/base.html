@@ -17,6 +17,7 @@
           <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/bootstrap.less' %}"></link>
           <link rel="stylesheet/less" type="text/css" href="{% static 'less/bootstrap/responsive.less' %}"></link>
           <link rel="stylesheet/less" type="text/css" href="{% static 'less/style.less' %}"></link>
+          <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-timepicker.min.css" %}' />
           <script type="text/javascript">
               less = {
                   env: "development", // or "production"
@@ -36,9 +37,11 @@
           <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
           <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
+          <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+          <script type="text/javascript" src='{% static "js/bootstrap-timepicker.min.js" %}'></script>
 
           <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
           <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
@@ -62,7 +65,7 @@
       </head>
 
       <body>
-        <div class="container-fluid">
+        <div class="row-fluid" id="navbar-container">
             <div class="max-width-container">
                 <div class="row-fluid">
                     <div class="span12">
@@ -121,7 +124,10 @@
                 <div class="span12 float-right">
                 {% block attribution %}
                     <p>
-                        &copy; 2013 <a href="//learningequality.org/">Foundation for Learning Equality, Inc</a>
+                        &copy; 2013 <a href="//learningequality.org/">Foundation for Learning Equality, Inc.</a>
+                    </p>
+                    <p>
+                        Except where otherwise noted, content on this site is licensed under a <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International license.</a>
                     </p>
                 {% endblock attribution %}
                 </div>

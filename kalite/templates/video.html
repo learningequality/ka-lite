@@ -61,7 +61,7 @@
             <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
             {# Translators: Example usage=> Exercise: Name of Exercise #}
             {% trans "Exercise" as exercise %}
-            <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{{ exercise }}: '{{ video.related_exercise.title }}'">{% trans "Practice this concept" %}</a>
+            <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
         </span>
         {% endif %}
         <div class="clear"></div>
@@ -85,7 +85,7 @@
             <a href="" id="launch_mplayer">
                 <img class="video-thumb" src="{{ video_urls.thumbnail }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
                 <br/><br/>
-                {% trans "Launch video in mplayer!" %}
+                {% trans "Launch video player!" %}
             </a>
         </h2>
 

@@ -4,9 +4,10 @@ from collections import OrderedDict
 from cStringIO import StringIO
 
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from django.utils.translation import ugettext as _
 
-from .classes import CsvResponse, JsonResponse, JsonpResponse
+from .classes import CsvResponse, JsonResponse, JsonResponseMessageError, JsonpResponse
 
 
 def api_handle_error_with_json(handler):
@@ -17,10 +18,12 @@ def api_handle_error_with_json(handler):
     def wrapper_fn(*args, **kwargs):
         try:
             return handler(*args, **kwargs)
-        except PermissionDenied as pe:
-            raise pe  # handled upstream
+        except PermissionDenied:
+            raise  # handled upstream
+        except Http404:
+            raise
         except Exception as e:
-            return JsonResponse({"error": "Unexpected exception: %s" % e}, status=500)
+            return JsonResponseMessageError(_("Unexpected exception: %s") % e)
     return wrapper_fn
 
 
@@ -35,26 +38,26 @@ def allow_jsonp(handler):
 
     """
     def wrapper_fn(request, *args, **kwargs):
-        response = handler(request, *args, **kwargs)
+        if "callback" in request.REQUEST and request.method == "OPTIONS":
+            # return an empty body, for OPTIONS requests, with the headers defined below included
+            response = HttpResponse("", content_type="text/plain")
 
-        # in case another type of response was returned for some reason, just pass it through
-        if not isinstance(response, JsonResponse):
-            return response
+        else:
+            response = handler(request, *args, **kwargs)
 
-        if "callback" in request.REQUEST:
-            if request.method == "GET":
+            if not isinstance(response, JsonResponse):
+                # in case another type of response was returned for some reason, just pass it through
+                return response
+            elif "callback" in request.REQUEST:
                 # wrap the JSON data as a JSONP response
-                response = JsonpResponse(response.content, request.REQUEST["callback"], status=response.status_code)
-            elif request.method == "OPTIONS":
-                # return an empty body, for OPTIONS requests, with the headers defined below included
-                response = HttpResponse("", content_type="text/plain")
+                response = JsonpResponse(response.content, request.REQUEST["callback"])
 
-            # add CORS-related headers, if the Origin header was included in the request
-            if request.method in ["OPTIONS", "GET"] and "HTTP_ORIGIN" in request.META:
-                response["Access-Control-Allow-Origin"] = request.META["HTTP_ORIGIN"]
-                response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-                response["Access-Control-Max-Age"] = "1000"
-                response["Access-Control-Allow-Headers"] = "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since"
+        # add CORS-related headers, if the Origin header was included in the request
+        if "callback" in request.REQUEST and request.method in ["OPTIONS", "GET"] and "HTTP_ORIGIN" in request.META:
+            response["Access-Control-Allow-Origin"] = request.META["HTTP_ORIGIN"]
+            response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+            response["Access-Control-Max-Age"] = "1000"
+            response["Access-Control-Allow-Headers"] = "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since"
 
         return response
 

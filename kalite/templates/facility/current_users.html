@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block currentusers_active %}active{% endblock currentusers_active %}
+{% block easyadmin_active %}active{% endblock easyadmin_active %}
+
+{% block title %}{% trans "Current Users" %}{{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel='stylesheet' type='text/css' href='{% static "css/securesync/facility_user_management.css" %}'>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var GetParams = {
+            "facility": "{{ facility.id }}",
+            "group_id": "{{ group_id }}"
+        };
+    </script>
+    <script type="text/javascript" src="{% static 'js/securesync/facility_user_management.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+    <div id="content">
+        {% block navbar %}
+        <div class="facility">
+            <h2>
+                {% trans "User List" %}
+                {% if not singlefacility %}
+                    {% trans "for" %} {{ facility }}
+                    (<a href="?facility=select">{% trans "Change Facility" %}</a>)
+                {% endif %}
+            </h2>
+        </div>
+        {% endblock %}
+
+        {% block selectionbar %}
+        <div id="selection-bar">
+            <div class="selection">
+                <div class="subtitle">
+                    {% if groups %}
+                    {% trans "Select Group to Display" %}
+                    {% else %}
+                    <div class="subtitle">{% trans "No Groups at this Facility" %}
+                    {% endif %}
+                    <a style="margin-left: 10px" href="{% url add_group %}?next={% url user_list %}">({% trans "Add a group" %})</a>
+                </div>
+                <select id="group">
+                <option {% if not group_id %}selected{% endif %}>----</option>
+                {% for group in groups %}
+                <option value="{{ group.id }}" {% if group_id == group.id %}selected{% endif %}>{{ group }}</option>
+                {% endfor %}
+                <option value="{% trans "Ungrouped" %}" {% if group_id == ungrouped %}selected{% endif %}>{% trans "Ungrouped" %}</option>
+                </select>
+            </div>
+        </div>
+        {% endblock selectionbar %}
+        {% block users_table %}
+        {% if not users %}
+            <div style="clear: both;"></div>
+            {% if not groups %}
+            <p><div class="subtitle">{% trans "Please select a group above." %}</div></p>
+            {% else %}
+            <p><div class="subtitle">{% trans "No users.  Please select another group above." %}</div></p>
+            {% endif %}
+        {% else %}
+        <div class="selection">
+            <div class="subtitle">{% trans "Select Action" %}</div>
+            {% if groups %}
+            <button id="movegroup">{% trans "Move Users to Group" %}</button>
+            <select id="movegrouplist">
+                    <option selected>----</option>
+                    {% for group in groups %}
+                        {% if not group_id == group.id %}
+                            <option value="{{ group.id }}">{{ group }}</option>
+                        {% endif %}
+                    {% endfor %}
+            </select>
+            {% endif %}
+
+             {% if not group_id == "Ungrouped" %}
+                     <button id="removegroup">{% trans "Remove Users from Group" %}</button>
+             {% endif %}
+    <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
+            <button id="delete">{% trans "Delete Users" %}</button>
+        </div>
+        <div class="pagination">
+            <span class="step-links">
+                <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>
+                <span class="current">
+                    {% trans "Page" %} {{ users.number }} {% trans "of" %} {{ users.paginator.num_pages }}
+                </span>
+                <a {% if users.has_next %}href="{{ pageurls.next_page }}"{% endif %}>&gt&gt</a>
+            </span>
+        </div>
+            <div style="clear: both;"></div>
+                <div style="clear: both;"></div>
+                <div class="users">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th class="headrowuser selectcol">
+                                    {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "Last Name" %}
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "First Name" %}
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "Username" %}
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "Group" %}
+                                </th>
+                            </tr>
+                            {% for user in users %}
+                                <tr>
+                                    <td class="selectcol">
+                                        <input type="checkbox" value="{{ user.username }}">
+                                    </td>
+                                    <td>
+                                        <span title="{{ user.last_name }}">
+                                            <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                                {{ user.last_name }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="{{ user.first_name }}">
+                                            <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                                {{ user.first_name }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="{{ user.username }}">
+                                            <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                                {{ user.username }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span title="{{ user.group }}">
+                                            <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                                {{ user.group }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div style="clear: both;"></div>
+            </div>
+        {% endif %}
+        {% endblock users_table %}
+    </div>
+{% endblock content %}

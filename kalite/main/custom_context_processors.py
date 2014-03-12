@@ -11,7 +11,6 @@ def custom(request):
         "securesync_protocol": settings.SECURESYNC_PROTOCOL,
         "base_template": "base.html",
         "is_central": False,
-        "DATA_PATH": settings.DATA_PATH,
         "settings": settings,
         "restricted": settings.package_selected("UserRestricted"),
         "VERSION": version.VERSION,

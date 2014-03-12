@@ -1,20 +1,19 @@
 @echo off
 
 rem determine the script directory (could be in scripts, could be in root folder)
-set SCRIPT_DIR=%~dp0
-if exist "%SCRIPT_DIR%\python.bat" (
-    set KALITE_DIR=%SCRIPT_DIR%\..\kalite
-) else (
-    set SCRIPT_DIR=%SCRIPT_DIR%\scripts
-    set KALITE_DIR=%SCRIPT_DIR%\kalite
-)
+set "SCRIPT_DIR=%~dp0"
 
+if exist "%SCRIPT_DIR%\python.bat" (
+    set "KALITE_DIR=%SCRIPT_DIR%\..\kalite"
+) else (
+    set "SCRIPT_DIR=%SCRIPT_DIR%\scripts"
+    set "KALITE_DIR=%SCRIPT_DIR%\kalite"
+)
 
 call "%SCRIPT_DIR%\get_port.bat" %*
 
 if not exist "%KALITE_DIR%\database\data.sqlite" (
     echo Please run install.bat first!
-
 ) else (
     REM transfer any previously downloaded content from the old location to the new
     move "%KALITE_DIR%\static\videos\*" "%KALITE_DIR%\..\content" > nul 2> nul

@@ -62,6 +62,8 @@ th.headrow, th.headrow div {
     width: 80px;
     font-weight: bold;
     background-color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 th.headrowuser {

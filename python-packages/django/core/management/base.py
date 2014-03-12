@@ -132,6 +132,8 @@ class BaseCommand(object):
             help='A directory to add to the Python path, e.g. "/home/djangoprojects/myproject".'),
         make_option('--traceback', action='store_true',
             help='Print traceback on exception'),
+        make_option('--auto-pdb', action='store_true',
+            help='Enter PDB on exception'),
     )
     help = ''
     args = ''
@@ -204,7 +206,12 @@ class BaseCommand(object):
             else:
                 self.stderr.write(smart_str(self.style.ERROR('Error: %s\n' % e)))
 #            self.stderr.write('%s: %s' % (e.__class__.__name__, e))
-            sys.exit(1)
+
+            if options.auto_pdb and not isinstance(e, KeyboardInterrupt):
+                import pdb
+                pdb.post_mortem(sys.exc_info()[2])
+            else:
+                sys.exit(1)
 
 
     def execute(self, *args, **options):

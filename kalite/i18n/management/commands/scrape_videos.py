@@ -11,14 +11,21 @@ NOTE: srt map deals with amara, so uses ietf codes (e.g. en-us). However,
 import glob
 import os
 import shutil
+import stat
+import subprocess
+import tempfile
+import youtube_dl
 from optparse import make_option
+from youtube_dl.utils import DownloadError, ExtractorError
 
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.translation import ugettext as _
 
 import settings
+from i18n import get_dubbed_video_map, lcode_to_ietf
+from main.topic_tools import get_topic_videos, get_node_cache
 from settings import LOG as logging
-from shared.topic_tools import get_topic_videos, get_node_cache
-from shared.i18n import get_dubbed_video_map, lcode_to_ietf
+from utils.general import ensure_dir
 from utils.videos import get_outside_video_urls
 
 
@@ -66,6 +73,9 @@ class Command(BaseCommand):
         if not options["lang_code"]:
             raise CommandError("You must specify a language code.")
 
+        #
+        ensure_dir(settings.CONTENT_ROOT)
+
         # Get list of videos
         lang_code = lcode_to_ietf(options["lang_code"])
         video_map = get_dubbed_video_map(lang_code) or {}
@@ -94,25 +104,23 @@ class Command(BaseCommand):
 
         logging.info("Process complete.")
 
-def scrape_video(youtube_id, format="mp4", force=False):
+def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
+    """
+    Assumes it's in the path; if not, we try to download & install.
 
-    video_filename = "%s.%s" % (youtube_id, format)
-    video_filepath = os.path.join(settings.CONTENT_ROOT, video_filename)
-    if os.path.exists(video_filepath) and not force:
+    Callback will be called back with a dictionary as the first arg with a bunch of
+    youtube-dl info in it, as specified in the youtube-dl docs.
+    """
+    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
+    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
+    if os.path.exists(video_file_download_path) and not force:
         return
 
-    # Step 1: install youtube-dl
-    if os.system("which youtube-dl > /dev/null"):
-        logging.info("Downloading youtube-dl")
-        os.system("sudo curl https://yt-dl.org/downloads/2013.12.03/youtube-dl -o /usr/local/bin/youtube-dl")
-
-    logging.info("Retrieving youtube video %s" % youtube_id)
-    os.system("youtube-dl  --id -f %s www.youtube.com/watch?v=%s" % (format, youtube_id))
-    os.system("youtube-dl  --write-thumbnail -k --id -f %s www.youtube.com/watch?v=%s" % (format, youtube_id))
-
-    for fil in glob.glob(youtube_id + ".*"):
-        if not os.path.exists(os.path.join(settings.CONTENT_ROOT, fil)):
-            shutil.move(fil, settings.CONTENT_ROOT)
+    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
+    yt_dl.add_default_info_extractors()
+    if callback:
+        yt_dl.add_progress_hook(callback)
+    yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
 
 """
 def scrape_thumbnail(youtube_id, format="png", force=False):

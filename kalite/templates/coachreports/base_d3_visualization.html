@@ -112,12 +112,14 @@
             clear_message("id_coachreports")
             doRequest(url)
                 .success(function(json) {
-                    $("#loading").text("{% trans 'Drawing' %} '" + stat2name(props["xaxis"]) + "' vs '" + stat2name(props["yaxis"]) + "'...");
+                    $("#loading").text(sprintf(gettext("Drawing %(xaxis_name)s versus %(yaxis_name)s"), {
+                        xaxis_name: stat2name(props["xaxis"]),
+                        yaxis_name: stat2name(props["yaxis"])
+                    }));
                     if (Object.keys(json["data"]).length > 0) {
                         drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
                     } else {
                         show_message("error", "{% trans 'No student accounts in this group have been created.' %}", "id_coachreports");
-                        //$("#chart_div").html("<b class='error'>{% trans 'No student accounts in this group have been created.' %}</b>");
                     }
                     $("#loading").text("");
                 }).fail(function(resp) {
@@ -217,9 +219,6 @@
                             }
                         })
                     })
-                    .fail(function(resp) {
-                        communicate_api_failure(resp, "id_coachreports");
-                    })
             }, 200); //200= callback wait time.
         });
     </script>
@@ -227,7 +226,7 @@
 
 {% block navbar_topics %}
     <h3 id="topic_header">
-        {% trans "Topics selected" %}:
+        {% trans "Topics Selected" %}:
         <a id="topic_paths" href="javascript:toggle_tree()"></a>
         <span id="topic_paths_note"></span>
     </h3>
@@ -268,7 +267,7 @@
                 <option value="">----</option>
                 {% for stat in stats %}
                 {% if stat.type == "number" %}
-                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{{ stat.name }}</option>
+                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
                 {% endif %}
                 {% endfor %}
             {% endblock data_options %}

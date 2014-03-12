@@ -1,6 +1,24 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-VERSION = "0.10.3"
+VERSION = "0.11.1"
 VERSION_INFO = {
+
+    "0.11.1": {
+        "release_date": "2014/02/19",
+        "git_commit": "3534335e8a6a1c1e367f2922055ad0831f21a870",
+        "new_features": {
+            "all": [],
+            "students": ["translated interface", "dubbed video support"],
+            "coaches": [],
+            "admins": ["language pack downloads and updates", "dubbed video downloads"],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+    },
+
     "0.11.0": {
         "release_date": "2013/09/03",
         "git_commit": "29eb96e136d702b5d128b6bbb1b5c347457d080f",
