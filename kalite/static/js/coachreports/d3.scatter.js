@@ -16,12 +16,12 @@ function d3_scatter(data, options, appendtohtml) {
   var x = d3.scale.linear()
       .range([0, width]);
 
-  var xCoordinate = options['hAxis']['stat']
+  var xCoordinate = options['hAxis']['stat'];
 
   var y = d3.scale.linear()
       .range([height, 0]);
 
-  var yCoordinate = options['vAxis']['stat']
+  var yCoordinate = options['vAxis']['stat'];
 
   var color = d3.scale.category10();
 
@@ -44,7 +44,7 @@ function d3_scatter(data, options, appendtohtml) {
   // Create tooltip object for displaying user specific information
   var tooltip = d3.select("body").append("div")
         .style("visibility", "hidden")
-        .attr("id", "summary")
+        .attr("id", "summary");
   
   // Set x and y range
   x.domain(d3.extent(data, function(d) { return d[xCoordinate]; })).nice();
@@ -53,7 +53,7 @@ function d3_scatter(data, options, appendtohtml) {
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {
     tooltip.style("visibility", "hidden");
-  })
+  });
   
   // Create invisible background rectangle to catch any clicks that are not
   // on data points in the plot area. Allows for 'clicking off' the tooltip.
@@ -62,7 +62,7 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("y", 0)
       .attr("width", width)
       .attr("height", height)
-      .attr("opacity", 0)
+      .attr("opacity", 0);
   
   // Create and draw x and y axes
   svg.append("g")
@@ -87,7 +87,7 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text(options['vAxis']['title'])
+      .text(options['vAxis']['title']);
 
 
   // Plot all data points

@@ -8,7 +8,7 @@ function drawChart(chart_div, dataTable, options) {
 function obj2num(row, stat, json) {
     // This takes a stat--either a number or a dictionary of numbers--
     //    and turns it into a single number or an array of numbers.
-    var type = stat2type(stat)
+    var type = stat2type(stat);
     var xdata = (type=="number") ? 0 : new Date();
     if (typeof row == 'number') {
         xdata = 0+row;
@@ -45,7 +45,7 @@ function json2dataTable(json, xaxis, yaxis) {
     var dataTable = [];
 
     for (var user in json["data"]) {
-        var entry = json["data"][user]
+        var entry = json["data"][user];
         entry["user"] = json['users'][user];
         entry["userid"] = user;
         entry["tooltip"] = user2tooltip(json, user, xaxis, yaxis);
@@ -63,7 +63,7 @@ function bySortedValue(obj, callback, context) {
 
     for (var key in obj) tuples.push([key, obj[key]]);
 
-    tuples.sort(function(a, b) { return a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0 });
+    tuples.sort(function(a, b) { return a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0; });
 
     return tuples;
 }
@@ -96,7 +96,7 @@ function user2tooltip(json, user, xaxis, yaxis) {
     var tooltip = "<div class='tooltip'>";
     tooltip += "<div id='legend'><div class='username'>" + json['users'][user] + "</div><div class='legend'><div class='struggling'></div>Struggling</div><div class='legend'><div class='notattempted'></div>Not Attempted</div><div class='legend'><div class='attempted'></div>Attempted</div></div>";
     for (var ai in axes) {
-        if(axes[ai] == 'pct_mastery' | axes[ai] == 'effort'){
+        if(axes[ai] == 'pct_mastery' || axes[ai] == 'effort'){
             axes[ai] = 'ex:attempts';
         }
         // Some data don't have details, they're derived.
@@ -112,13 +112,13 @@ function user2tooltip(json, user, xaxis, yaxis) {
         var struggling = "<div class='struggling'>";
         var attempted = "<div class='attempted'>";
         var notattempted = "<div class='notattempted'>";
-        var struggles = {}
-        var attempts = {}
-        var notattempts = {}
+        var struggles = {};
+        var attempts = {};
+        var notattempts = {};
         if (stat_types[0] == "ex") {
             for (var i in exercises) {
                 if (exercises[i] in row) {
-                    d = exercises[i]
+                    d = exercises[i];
                     if (parseInt(row[d]) >= 30) { // TODO: Get mastery and struggling data from API to check this more rigorously
                         struggles[d] = parseInt(row[d]);
                     } else {
@@ -137,7 +137,7 @@ function user2tooltip(json, user, xaxis, yaxis) {
             for (var i in videos) {
                 var url = "/videos/?youtube_id=" + videos[i];
                 if (videos[i] in row) {
-                    d = videos[i]
+                    d = videos[i];
                     attempted += "<tr><td><a href='" + url + "'>" + d + "</a></td>" + "<td>" + row[d] + "</td></tr>";
                 } else {
                     notattempted += "<tr><td><a href='" + url + "'>" + videos[i] + "</a></td>";
@@ -146,9 +146,9 @@ function user2tooltip(json, user, xaxis, yaxis) {
         }
         tooltip += (stat_types[0] == "ex" ? struggling : "") + notattempted + attempted;
     }
-    tooltip += "</div>"
+    tooltip += "</div>";
 
-    return tooltip
+    return tooltip;
 }
 
 function drawJsonChart(chart_div, json, xaxis, yaxis) {
@@ -156,7 +156,7 @@ function drawJsonChart(chart_div, json, xaxis, yaxis) {
     var options = {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
       hAxis: {title: stat2name(xaxis), stat: xaxis},
-      vAxis: {title: stat2name(yaxis), stat: yaxis},
+      vAxis: {title: stat2name(yaxis), stat: yaxis}
     };
     var dataTable = json2dataTable(json, xaxis, yaxis);
     $("#summary").remove();
