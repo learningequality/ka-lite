@@ -75,15 +75,23 @@ def get_lp_build_dir(lang_code=None, version=None):
 
     return build_dir
 
+def get_locale_path(lang_code=None):
+    """returns the location of the given language code, or the default locale root
+    if none is provided."""
+    global LOCALE_ROOT
+
+    if not lang_code:
+        return LOCALE_ROOT
+    else:
+        return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
 
 def get_language_pack_metadata_filepath(lang_code, version=VERSION, is_central_server=settings.CENTRAL_SERVER):
-    lang_code = lcode_to_ietf(lang_code)
+    lang_code = lcode_to_django(lang_code)
     metadata_filename = "%s_metadata.json" % lang_code
     if is_central_server:
         return os.path.join(get_lp_build_dir(lang_code, version=version), metadata_filename)
     else:
-        lang_code = lcode_to_django_dir(lang_code)
-        return os.path.join(LOCALE_ROOT, lang_code, metadata_filename)
+        return os.path.join(get_locale_path(lang_code), metadata_filename)
 
 def get_language_pack_filepath(lang_code, version=VERSION):
     return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))
