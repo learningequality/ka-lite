@@ -8,6 +8,7 @@ from utils.django_utils import get_request_ip
 from utils.videos import OUTSIDE_DOWNLOAD_BASE_URL  # for video download redirects
 
 from . import stats_logger
+from version import VERSION
 
 
 # central server
@@ -67,7 +68,7 @@ def download_subtitle(request, lang_code, youtube_id):
     return response
 
 
-def download_windows_installer(request, version):
+def download_windows_installer(request, version=VERSION):
     installer_name = "KALiteSetup-%s.exe" % version
     installer_url = settings.INSTALLER_BASE_URL + installer_name
     stats_logger("installer").info("wi;%s;%s" % (get_request_ip(request), installer_name))
