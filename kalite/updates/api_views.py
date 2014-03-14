@@ -6,6 +6,7 @@ import json
 import os
 import re
 import math
+import shutil
 from annoying.functions import get_object_or_None
 from collections import defaultdict
 
@@ -207,6 +208,14 @@ def start_languagepack_download(request):
         force_job('languagepackdownload', _("Language pack download"), lang_code=data['lang'], locale=request.language)
 
         return JsonResponse({'success': True})
+
+@require_admin
+@api_handle_error_with_json
+def delete_language_pack(request):
+    delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    delete_path=settings.LOCALE_PATHS[0] + delete_id
+    shutil.rmtree(delete_path)
+    return JsonResponse({})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
