@@ -1,13 +1,13 @@
 // Callback functions
 
 var lastKey = null;
-var nErrors = 0
+var nErrors = 0;
 var videos_downloading = false;
 
 function video_start_callback(progress_log, resp) {
-    if (!progress_log) {
+    //if (!progress_log) {
         //handleFailedAPI(resp, "Error starting updates process");
-    }
+    //}
     lastKey = null;
     nErrors = 0;
     videos_downloading = false;
@@ -124,7 +124,7 @@ $(function() {
                 onSelect: function(select, node) {
 
                     var newVideoMetadata = getSelectedIncompleteMetadata();
-                    var oldVideoMetadata = getSelectedStartedMetadata()
+                    var oldVideoMetadata = getSelectedStartedMetadata();
                     var newVideoCount    = newVideoMetadata.length;
                     var oldVideoCount    = oldVideoMetadata.length;
                     var newVideoSize     = _(newVideoMetadata).reduce(function(memo, meta) {
@@ -266,7 +266,7 @@ $(function() {
             .success(function() {
                 handleSuccessAPI("id_video_download");
                 // Reset ALL of the progress tracking
-                updatesReset()
+                updatesReset();
 
                 // Update the UI
                 $("#download-videos").removeAttr("disabled");
@@ -316,7 +316,7 @@ $(function() {
 
 function show_language_selector() {
     $("#download_language_selector").show();
-    $("#toggle_language_dropdown").hide()
+    $("#toggle_language_dropdown").hide();
 }
 
 /* script functions for doing stuff with the topic tree*/

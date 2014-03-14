@@ -40,7 +40,6 @@ from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession
 from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 
 
@@ -195,7 +194,7 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available')) for t in topics]
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
 
     exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
@@ -341,7 +340,7 @@ def help_admin(request):
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "ips": get_ip_addresses(include_loopback=False),
-        "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
+        "port": request.META.get("SERVER_PORT") or settings.USER_FACING_PORT(),
     }
     return context
 
@@ -378,7 +377,6 @@ def device_redirect(request):
     return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
 
 JS_CATALOG_CACHE = {}
-@distributed_server_only
 def javascript_catalog_cached(request):
     global JS_CATALOG_CACHE
     lang = request.session['default_language']

@@ -24,8 +24,6 @@ from .models import Facility
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device
-from settings import LOG as logging
-from testing.asserts import distributed_server_only
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
@@ -105,7 +103,6 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
 
         else:
-            @distributed_server_only
             @render_to("facility/facility_selection.html")
             def facility_selection(request):
                 facilities = list(Facility.objects.all())

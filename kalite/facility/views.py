@@ -28,12 +28,10 @@ from kalite.settings import package_selected, LOG as logging
 from main.models import UserLog
 from securesync.devices.views import *
 from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
 
 
 
 @require_admin
-@distributed_server_only
 @render_to("facility/facility_admin.html")
 def facility_admin(request):
     facilities = Facility.objects.all()
@@ -42,7 +40,6 @@ def facility_admin(request):
 
 
 @require_admin
-@distributed_server_only
 @render_to("facility/facility_edit.html")
 def facility_edit(request, id=None):
     if id != "new":
@@ -64,18 +61,15 @@ def facility_edit(request, id=None):
     }
 
 
-@distributed_server_only
 @require_admin
 def add_facility_teacher(request):
     return edit_facility_user(request, id="new", is_teacher=True)
 
 
-@distributed_server_only
 def add_facility_student(request):
     return edit_facility_user(request, id="new", is_teacher=False)
 
 
-@distributed_server_only
 @facility_required
 @render_to("facility/facility_user.html")
 def edit_facility_user(request, facility, is_teacher=None, id=None):
@@ -202,7 +196,6 @@ def add_group(request, facility):
     }
 
 
-@distributed_server_only
 @facility_from_request
 @render_to("facility/login.html")
 def login(request, facility):
@@ -268,7 +261,6 @@ def login(request, facility):
     }
 
 
-@distributed_server_only
 def logout(request):
     if "facility_user" in request.session:
         # Logout, ignore any errors.

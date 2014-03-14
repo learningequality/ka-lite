@@ -38,11 +38,11 @@ from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.mplayer_launcher import play_video_in_new_thread
 from fle_utils.orderedset import OrderedSet
+from fle_utils.testing.decorators import allow_api_profiling
 from i18n import lcode_to_ietf
 from main.api_views import _update_video_log_with_points
 from main.models import ExerciseLog, VideoLog
 from shared.decorators import require_admin
-from testing.decorators import allow_api_profiling
 
 
 @require_admin

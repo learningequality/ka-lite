@@ -88,7 +88,7 @@
             <div class="top-header-links"><nav><span class="nav-subheader">
                 {% block sitewide_navigation %}
                 <span class="not-admin-only">
-                {% if multiple_language_choices %}
+                {% if num_language_choices > 1 %}
                 <form id="language-preferences">
                     <select id="language_selector">
                     {% for lang_code, lang_meta in language_choices.iteritems %}
