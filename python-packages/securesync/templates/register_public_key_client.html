@@ -1,0 +1,152 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block register_active %}active{% endblock register_active %}
+
+{% block title %}{% trans "Register a Device" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        .chunk-container {
+            margin: 15px;
+            padding: 10px 30px 25px 30px;
+        }
+        .well-wrapper {
+            border: 1px solid rgb(226, 226, 226);
+            background-color: rgb(247, 247, 247);
+            border-radius: 10px;
+        }
+        .blurb {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .normalized-list {
+            margin-left: 50px;
+            list-style-type: circle;
+        }
+        .normalized-list > li {
+            font-size: 15px;
+            line-height: 1.5em;
+        }
+        .normal-size {
+            font-size: 14px;
+        }
+        .normalized-table {
+            margin:25px 25px 0px 25px;
+        }
+        .normalized-table > tbody > tr > th {
+            font-size: 15px;
+        }
+        .nudge-right {
+            margin-left: 20px;
+        }
+        .table-header > td > h3 {
+            margin-bottom: 0px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+
+        function reload() {
+            window.location.reload();
+        }
+
+        $(function() {
+            $(".refresh-link").click(reload);
+        });
+
+        function auto_register() {
+            var auto_registration_url = "{{ auto_registration_url }}";
+            $.ajax({
+                url: auto_registration_url,
+                dataType: "jsonp"
+            }).success(function() {
+                show_message("success", "Auto-registered.");
+                window.location.reload();
+            });
+            $("a#1-click-register").css("background-color", "#C0C0C0");
+            $("a#1-click-register").toggleClass("disabled", true);
+            show_message("warning", gettext("Querying central server for 1-click registration"), "id_message");
+        }
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+    {% if not unregistered %}
+        <h2>{% trans "Device registration" %}</h2>
+    {% endif %}
+    {% if error_msg %}
+        {% comment %}Translators: Please do not edit the variable text: %(command)s {% endcomment %}
+        <p>{% blocktrans with command="<b>python manage.py update</b>" %}Sorry, there was an error during registration. Please make sure your device is fully up to date (run {{ command }} and then stop/start the server)." {% endblocktrans %}</p>
+        <p>{% trans "The error message was:" %} <b>{{ error_msg }}</b></p>
+    {% endif %}
+
+    {% if newly_registered %}
+    <p>{% trans "Congratulations, this device has now been registered." %}</p>
+    {% endif %}
+
+    {% if already_registered %}
+    <p>{% trans "This device has already been registered." %}</p>
+    {% endif %}
+
+    {% if no_internet %}
+    <p>{% trans "The device needs to have internet access when first being registered. Please ensure it is connected to the internet, and then" %} <a href="." class="refresh-link">{% trans "refresh this page" %}</a>.</p>
+    {% endif %}
+
+
+    {% if unregistered %}
+    <div class="chunk-container">
+        <h2>{% trans "What is device registration?" %}</h2>
+        <p class="normal-size" style="padding: 0px 40px 0px 40px;">
+            {% trans "Once you register your installation with us, your data can be synced to our online repository when KA Lite has access to the Internet. This is a good thing! Here's why:" %}
+        </p>
+        <ul class="normalized-list" style="padding: 0px 40px 0px 40px;">
+            <li>{% trans "Your data will be backed up online" %}</li>
+            <li>{% trans "You can login online and review your usage data" %}</li>
+            <li>{% trans "Our team can use this data to objectively assess the impact our work is having around the world!" %}</li>
+        </ul>
+    </div>
+
+    <div class="chunk-container">
+        <h2>{% trans "Ready to register? You have two options:" %}</h2>
+
+        <table class="normalized-table">
+            <tr class="table-header">
+                <td width="50%"><h3 class="blurb">{% trans "1-click registration (no online access to data)" %}</h3></td>
+                <td width="50%"><h3 class="blurb">{% trans "Register with online access to data!" %}</h3></td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="blurb">
+                        <strong>{% trans "The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data." %}</strong>
+                    </p>
+                    <p class="blurb">
+                        {% trans "This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use." %}
+                    </p>
+                </td>
+                <td>
+                    <p class="blurb">
+                        <strong>{% trans "The perfect option for adminstrators of larger projects!" %}</strong>
+                    </p>
+                    <p class="blurb">
+                        {% trans "This option will walk you through the process of creating a login to our website that will allow you access your uploaded data and connect multiple installations to the same account." %}
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a class="green_button nudge-right" id="1-click-register" href="javascript:auto_register()">{% trans "1-click registration now!" %}</a>
+                </td>
+                <td>
+                    <a class="green_button nudge-right" id="online-register" href="{{ classic_registration_url }}">{% trans "Register with an online account now!" %}</a>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+
+    {% endif %}
+{% endblock content %}

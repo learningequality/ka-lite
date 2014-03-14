@@ -39,7 +39,7 @@ def initialize_registration():
 
 
 @login_required
-@render_to("securesync/register_public_key_client.html")
+@render_to("register_public_key_client.html")
 def register_public_key_client(request):
 
     own_device = Device.get_own_device()
@@ -91,7 +91,7 @@ def register_public_key_client(request):
 
 #@central_server_only
 @login_required
-@render_to("securesync/register_public_key_server.html")
+@render_to("register_public_key_server.html")
 def register_public_key_server(request):
     if request.method == 'POST':
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
