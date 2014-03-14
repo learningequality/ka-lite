@@ -30,6 +30,12 @@ def USER_FACING_PORT():
 # Django settings
 ##############################
 
+# TODO(bcipolli): change these to "login" and "logout", respectively, if/when
+#  we migrate to a newer version of Django.  Older versions require these
+#  to be set if using the login_required decorator.
+LOGIN_URL = "/securesync/login/"
+LOGOUT_URL = "/securesync/logout/"
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
