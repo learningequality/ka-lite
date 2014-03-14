@@ -66,6 +66,9 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("height", height)
       .attr("opacity", 0);
 
+
+  // Create four different rectangles to highlight and label the different quadrants of the graph.
+  // Each rectangle is a group with a coloured (fill) rectangle, and a text label.
   var struggling = svg.append("g")
   struggling.append("rect")
     .attr("class", "quadrant-rectangle")
@@ -158,6 +161,7 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("cx", function(d) { return x(d[xCoordinate]); })
       .attr("cy", function(d) { return y(d[yCoordinate]); })
       .style("fill", "black")
+      // Add invisible stroke border to increase the effective area of the data point.
       .style("stroke-width", "10")
       .style("stroke", "black")
       .style("stroke-opacity", "0")
@@ -193,6 +197,7 @@ function d3_scatter(data, options, appendtohtml) {
           }
         }
       })
+      // Animate and grow data point on mouseover.
       .on("mouseover", function(d) {
         d3.select(this).transition()
         .attr("r", 13.5)
@@ -200,6 +205,7 @@ function d3_scatter(data, options, appendtohtml) {
         .duration(500)
         .ease("elastic",2,0.5);
       })
+      // Shrink back on mouseout.
       .on("mouseout", function(d) {
         d3.select(this).transition()
         .attr("r", 3.5)
