@@ -67,7 +67,9 @@ function flattenNodes() {
     }
     _nodes = flattened_nodes;
     for (title in _nodes) {
-        _titles.push(title);
+        if($.inArray(title, _titles) == -1){
+            _titles.push(title);
+        }
     }
 }
 

@@ -136,7 +136,6 @@ $(function() {
                     }, 0);
 
                     $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
-                    $("#help-info").toggle((newVideoCount + oldVideoCount) == 0);
 
                     if (newVideoCount == 0) {
                         $("#download-videos").hide();

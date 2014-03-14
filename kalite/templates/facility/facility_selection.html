@@ -1,5 +1,6 @@
 {% extends base_template %}
 {% load i18n %}
+{% load my_filters %}
 
 {% block title %}{% trans "Select facility" %} {{ block.super }}{% endblock title %}
 
@@ -8,41 +9,52 @@
         .default-setter {
             font-size: 14px;
         }
+        .title {
+            font-size: 20pt;
+        }
     </style>
 {% endblock headcss %}
 
 
 {% block content %}
+{{ path_template }}
     <div id="facility_list_container">
-        <h1>{% trans "Please select a facility" %}</h1>
-        <ul id="facility_list">
-            {% if facilities %}
-                {% for facility in facilities %}
-                <li class="facility_title">
-                    <h2>
-                        <a href="?facility={{ facility.pk }}">{{ facility }}</a>
-                        {% if request.is_admin and facilities.count > 1 %}
-                            {% if facility.is_default %}
-                            <span class=default-setter>{% trans "(this is the default)" %}</span>
-                            {% else %}
-                            <a class=default-setter href="?facility={{ facility.pk }}&set_default=True">
-                            {% trans "(set as the default facility)" %}
-                            </a>
+        <div style="margin-bottom: 20px">
+            <span class="title">{% trans "Please select a facility" %}</span><br/>
+            <span>
+                {% trans "A facility is a physical location where students learn." %}
+            </span>
+        </div>
+        <div>
+            <ul id="facility_list">
+                {% if facilities %}
+                    {% for facility in facilities %}
+                    <li class="facility_title">
+                        <h2>
+                            <a href="{{ selection_paths|get_item:facility.id }}">{{ facility }}</a>
+                            {% if request.is_admin and facilities.count > 1 %}
+                                {% if facility.is_default %}
+                                <span class=default-setter>{% trans "(this is the default)" %}</span>
+                                {% else %}
+                                <a class=default-setter href="{{ selection_paths|get_item:facility.id  }}&set_default=True">
+                                {% trans "(set as the default facility)" %}
+                                </a>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    </h2>
-                </li>
-                {% endfor %}
-            {% else %}
-                {% if request.is_admin %}
-                    <li>{% trans "You currently have no facilities. Would you like to create a facility?" %}</li>
+                        </h2>
+                    </li>
+                    {% endfor %}
                 {% else %}
-                    <li>{% trans "There are currently no facilities available, please ask an administrator or teacher to set one up." %}</li>
+                    {% if request.is_admin %}
+                        <li>{% trans "You currently have no facilities. Would you like to create a facility?" %}</li>
+                    {% else %}
+                        <li>{% trans "There are currently no facilities available, please ask an administrator or teacher to set one up." %}</li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-            {% if request.is_admin %}
-                <p><a href="{% url facility_admin %}">{% trans "Administer Facilities" %}</a></p>
-            {% endif %}
-        </ul>
+                {% if request.is_admin %}
+                    <p><a href="{% url zone_redirect %}">{% trans "Administer Facilities" %}</a></p>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 {% endblock content %}
