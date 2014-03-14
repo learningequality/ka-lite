@@ -71,3 +71,19 @@ table.detail td.data {
     height:21px;
     overflow: hidden;
 }
+
+.domain {
+    fill: none;
+    stroke: rgba(0,0,0,0.3);
+    stroke-width: 1px;
+}
+
+.quadrant-label {
+    fill: rgba(0,0,0,0.1);
+    font-size: 4em;
+    text-anchor: middle;
+}
+
+.quadrant-rectangle {
+    opacity: 0.2;
+}
