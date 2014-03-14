@@ -36,22 +36,23 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, facility, *args, **kwargs: facility
 
     def wrapper_fn(request, *args, **kwargs):
+        facility = None
+
         if kwargs.get("facility_id", None):  # avoid using blank
             # Facility passed in directly
             facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
             del kwargs["facility_id"]
-            if facility:
-                return
 
-        if "facility" in request.GET:
+        if not facility and "facility" in request.GET:
             # Facility from querystring
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
                 Settings.set("default_facility", facility.id)
-            if request.GET["facility"] != "None":
-                return
 
-        if settings.CENTRAL_SERVER:  # following options are distributed-only
+        if facility:
+            pass
+
+        elif settings.CENTRAL_SERVER:  # following options are distributed-only
             facility = None
 
         elif "facility_user" in request.session:
