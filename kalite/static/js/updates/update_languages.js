@@ -108,7 +108,6 @@ function delete_languagepack(lang_name) {
 $(function () {
     $(".delete-language-button").children('button').click(function(event) {
         language = $(this).val();
-	console.log(language);
         delete_languagepack(language);
     });
 });
