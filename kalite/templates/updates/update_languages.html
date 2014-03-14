@@ -15,7 +15,7 @@
         #language-packs {
             margin-top: 20px;
         }
-        .lang-link, .lang-name, .lang-data, .upgrade-link {
+        .lang-link, .lang-name, .lang-data, .upgrade-link, .delete-language-button {
             float: left;
             font-size: 12pt;
         }
@@ -27,6 +27,7 @@
         .lang-name { width: 250px; }
         .lang-data { width: 250px; }
         .upgrade-link { width: 300px; }
+	.delete-language-button { width: 120px; float: right;}
 
         #langpack-details {
             margin-top: 10px;
@@ -48,6 +49,7 @@
         var start_languagepackdownload_url = "{% url start_languagepack_download %}";
         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}"
         var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+	var DELETE_LANGUAGEPACK_URL = "{% url delete_language_pack %}";
         var defaultLanguage = "{{ default_language }}";
     </script>
     <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>

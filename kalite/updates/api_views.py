@@ -6,6 +6,7 @@ import json
 import os
 import re
 import math
+import shutil
 from annoying.functions import get_object_or_None
 from collections import defaultdict
 
@@ -29,6 +30,7 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonRes
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
 from i18n import get_youtube_id, get_video_language, get_supported_language_map
+from i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
 from main.topic_tools import get_topic_tree
 from shared.decorators import require_admin
 
@@ -207,6 +209,29 @@ def start_languagepack_download(request):
         force_job('languagepackdownload', _("Language pack download"), lang_code=data['lang'], locale=request.language)
 
         return JsonResponse({'success': True})
+
+@require_admin
+@api_handle_error_with_json
+def delete_language_pack(request):
+    """
+    API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
+    That particular language folders are deleted and that language gets removed.
+    """
+    exception_list=[]
+    delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    delete_path=[ get_localized_exercise_dirpath(delete_id), get_srt_path(delete_id), get_locale_path(delete_id) ]
+    for path in delete_path:
+    	try:	
+    	    shutil.rmtree(path)
+    	except Exception as e:
+	    exception_list.append(e)
+	    continue
+
+    if len(exception_list) > 0:
+	error= '<br>'.join(str(e) for e in exception_list)
+	return JsonResponseMessageError(_("%(error_info)s") % {"error_info": error})
+
+    return JsonResponse({})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
