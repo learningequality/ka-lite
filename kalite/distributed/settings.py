@@ -20,7 +20,7 @@ DEBUG = getattr(local_settings, "DEBUG", False)
 # Functions, for support
 ########################
 
-def user_facing_port():
+def USER_FACING_PORT():
     global PROXY_PORT
     global PRODUCTION_PORT
     return PROXY_PORT or PRODUCTION_PORT

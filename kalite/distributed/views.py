@@ -337,7 +337,7 @@ def easy_admin(request):
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
         "clock_set": settings.ENABLE_CLOCK_SET,
         "ips": get_ip_addresses(include_loopback=False),
-        "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
+        "port": request.META.get("SERVER_PORT") or settings.USER_FACING_PORT(),
     }
     return context
 
