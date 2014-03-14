@@ -72,9 +72,20 @@
 {% endblock buttons %}
 {% block control_panel_content %}
     <div id="facility_container">
-        <div>
-            <br>
-            <h2>{% trans "Groups" %}</h2>
+        <div class="groups">
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Groups" %}</span>
+                <a href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new group' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "A group is group of students, such as a classroom of students or all students in one grade." %}
+                </span>
+            </div>
 
             {% if not groups %}
                 <p>{% trans "You currently have no data available." %}</p>
@@ -98,10 +109,10 @@
                                 {% if id %}
                                 <span class="actions">[
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                    <a href="{% url coach_reports %}?facility={{ facility.id }}&group={{ id }}">{% trans "coach" %}</a>
+                                    <a href="{% url coach_reports %}?facility={{ facility_id }}&group={{ id }}">{% trans "coach" %}</a>
                                     /
                                     {# Translators: this is a verb; by clicking this link, the user will be able to manage student accounts. #}
-                                    <a href="{% url facility_user_management org_id=org_id zone_id=zone_id facility_id=facility.id group_id=id %}">{% trans "manage" %}</a>
+                                    <a href="{% url facility_user_management zone_id=zone_id facility_id=facility_id group_id=id %}">{% trans "manage" %}</a>
                                 ]</span>
                                 {% endif %}
                             </td>
@@ -119,7 +130,19 @@
         </div><!-- groups -->
 
         <div class="students">
-            <h2>{% trans "Student Usage Reports" %}</h2>
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Students" %}</span>
+                <a href="{% url add_facility_student %}?facility={{ facility_id }}&next={{ request.path }}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new student' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "This report contains information about recent student activity." %}
+                </span>
+            </div>
 
             {% if not students %}
                 <p>{% trans "You currently have no data available." %}</p>

@@ -2,45 +2,12 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block languages_active %}active{% endblock languages_active %}
+
 {% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
-    <style>
-        .download-actions {
-            width: 600px;
-            float: left;
-            margin: 5px 10px 20px 0px;
-            padding: 10px;
-        }
-        #language-packs {
-            margin-top: 20px;
-        }
-        .lang-link, .lang-name, .lang-data, .upgrade-link {
-            float: left;
-            font-size: 12pt;
-        }
-        .upgrade-link a {
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .lang-link { width: 120px; }
-        .lang-name { width: 250px; }
-        .lang-data { width: 250px; }
-        .upgrade-link { width: 300px; }
-
-        #langpack-details {
-            margin-top: 10px;
-            display: none;
-        }
-        #langpack-details span {
-            margin-left: 10px;
-            font-weight: bold;
-        }
-        #languagepackdownload-progressbar {
-            margin-bottom: 25px;
-        }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_languages.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
