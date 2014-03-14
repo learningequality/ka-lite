@@ -3,6 +3,7 @@ This sub-module defines models related to user logins and permissions.
 If any sub-module really could be separated from securesync, it would be this:
 these models use the machinery of engine and devices, they are simply data.
 """
+import re
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
@@ -23,7 +24,6 @@ from .models import Facility
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device
-from testing.asserts import distributed_server_only
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
@@ -36,16 +36,21 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, facility, *args, **kwargs: facility
 
     def wrapper_fn(request, *args, **kwargs):
+        facility = None
+
         if kwargs.get("facility_id", None):  # avoid using blank
             # Facility passed in directly
             facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
             del kwargs["facility_id"]
 
-        elif "facility" in request.GET:
+        if not facility and "facility" in request.GET:
             # Facility from querystring
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
             if "set_default" in request.GET and request.is_admin and facility:
                 Settings.set("default_facility", facility.id)
+
+        if facility:
+            pass
 
         elif settings.CENTRAL_SERVER:  # following options are distributed-only
             facility = None
@@ -99,13 +104,29 @@ def facility_required(handler):
             return HttpResponseRedirect(reverse("add_facility"))
 
         else:
-            @distributed_server_only
             @render_to("facility/facility_selection.html")
             def facility_selection(request):
                 facilities = list(Facility.objects.all())
                 refresh_session_facility_info(request, len(facilities))
-                context = {"facilities": facilities}
-                return context
+
+                # Choose the path template
+                cp_path_match = re.match(r"^(.*\/facility\/)[^/]+(\/.*)$", request.path)
+                if cp_path_match:
+                    path_template = "%s%%(facility_id)s%s" % cp_path_match.groups()
+                else:
+                    path_template="%(path)s?%(querystring)s&facility=%(facility_id)s"
+
+                selection_paths = {}
+                for facility in facilities:
+                    selection_paths[facility.id] = path_template % ({
+                        "path": request.path,
+                        "querystring": "",
+                        "facility_id": facility.id,
+                    })
+                return {
+                    "facilities": facilities,
+                    "selection_paths": selection_paths,
+                }
             return facility_selection(request)
 
     return inner_fn

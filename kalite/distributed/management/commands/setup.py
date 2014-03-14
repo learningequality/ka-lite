@@ -24,7 +24,6 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-#from facility import Facility
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
@@ -291,7 +290,7 @@ class Command(BaseCommand):
             sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
             sys.stdout.write("\tthen load one of the following addresses in your browser to complete the configuration:\n")
             for ip in get_ip_addresses():
-                sys.stdout.write("\t\thttp://%s:%d/\n" % (ip, settings.user_facing_port()))
+                sys.stdout.write("\t\thttp://%s:%d/\n" % (ip, settings.USER_FACING_PORT()))
 
         else:
             sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")

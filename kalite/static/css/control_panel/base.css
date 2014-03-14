@@ -1,4 +1,3 @@
-/* ====== */
 body {
     min-height: 500px;
 }
@@ -22,8 +21,9 @@ ul, li {
     width: 100%;
 }
 .titlebar__title {
-    padding: 10px 0px 28px 0px;
+    padding: 10px 0px 15px 0px;
     border-bottom: 1px #E7E7E7 solid;
+    margin-bottom: 5px;
 }
 .titlebar__title li{
     display: inline;
@@ -34,18 +34,6 @@ ul, li {
 .titlebar__buttons{
     float: right;
     margin: 0;
-}
-
-.devices{
-    padding-top: 40px;
-}
-.facilities{
-    padding-top: 20px;
-}
-
-.facilities__header li{
-    display: inline;
-    padding-right: 10px;
 }
 
 .simple-table{
@@ -110,7 +98,31 @@ a.edit-link {
 .hidden {
     display: none;
 }
-
+.title-div{
+    margin-top: 20px;
+}
+.title {
+    font-size: 16pt;
+}
+.icon-medium {
+    min-width: 13px;
+    min-height: 13px;
+}
+.icon-trash {
+    background-image:url(/static/images/icon-trash.png);
+}
+.icon-add {
+    background-image:url(/static/images/icon-plus-sign.png);
+    background-size: 15px 15px;
+    min-width: 20px; min-height: 20px;
+    margin-left: 2px;
+}
+.icon-pencil {
+    background-image:url(/static/images/icon-edit.png);
+    position: relative;
+    top: -2px;
+    left: -2px;
+}
 .export_csv_div {
     float: right;
     margin-top: 30px;

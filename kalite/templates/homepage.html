@@ -113,7 +113,7 @@
             <p class="topic-list">
                 {% for subtopic in topics %}
                 <span class="topic">
-                    <a href="{{ subtopic.path }}" class="topic-link topic-{% if subtopic.nvideos_available == 0 %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
+                    <a href="{{ subtopic.path }}" class="topic-link topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
                         {% trans subtopic.title %}
                     </a>
                 </span>
