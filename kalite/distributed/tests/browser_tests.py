@@ -480,45 +480,45 @@ class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
 @distributed_server_test
 class LanguagePackTest(KALiteDistributedBrowserTestCase):
-	
+
     def is_language_installed(lang_code):
-	flag = False	# flag to check language de is installed or not
-	installed_languages= get_installed_language_packs()
-	for lang in installed_languages:
-		if lang['code'] == lang_code
-			flag = True
-			break
-	return flag
+    flag = False	# flag to check language de is installed or not
+    installed_languages= get_installed_language_packs()
+    for lang in installed_languages:
+        if lang['code'] == lang_code
+            flag = True
+            break
+    return flag
 
     def test_add_language_pack(self):
-	''' Test to check whether a language pack is added successfully or not'''	
-	
-	#Login as admin
-  	self.browser_login_admin()
+    ''' Test to check whether a language pack is added successfully or not'''	
 
-	#Add the language pack	
-	if is_language_installed("de"):
-		print "Error already Installed "
-	else:
-		add_language_url= self.reverse("start_languagepack_download", kwargs={"lang": "de"})
-		self.browse_to(add_language_url)
+    #Login as admin
+    self.browser_login_admin()
 
-	if not is_language_installed("de"):
-		print "Error Language Still Not Installed" 
-	
+    #Add the language pack	
+    if is_language_installed("de"):
+        print "Error already Installed "
+    else:
+        add_language_url= self.reverse("start_languagepack_download", kwargs={"lang": "de"})
+        self.browse_to(add_language_url)
+
+    if not is_language_installed("de"):
+        print "Error Language Still Not Installed" 
+
 
     def test_delete_language_pack(self):
-	''' Test to check whether a language pack is deleted successfully or not'''
-	
-	#Login as admin
-  	self.browser_login_admin()
-	
-	#Delete the language pack
-	if not is_language_installed("de"):
-		print "Language Not Installed "
-	else:
-		delete_language_url = self.reverse("delete_language_pack", kwargs={"lang": "de"})
-		self.browse_to(delete_language_url)
-	
-	if is_language_installed("de"):
-		print "Language Still Not Deleted"
+    ''' Test to check whether a language pack is deleted successfully or not'''
+
+    #Login as admin
+    self.browser_login_admin()
+
+    #Delete the language pack
+    if not is_language_installed("de"):
+        print "Language Not Installed "
+    else:
+        delete_language_url = self.reverse("delete_language_pack", kwargs={"lang": "de"})
+        self.browse_to(delete_language_url)
+
+    if is_language_installed("de"):
+        print "Language Still Not Deleted"
