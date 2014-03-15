@@ -132,6 +132,8 @@ def import_installed_app_settings(installed_apps):
     Recurse into each installed_app's INSTALLED_APPS to collect all
     necessary settings.py files.
     """
+    this_filepath = globals().get("__file__")
+
     for app in installed_apps:
         app_settings = None
         try:
@@ -140,6 +142,7 @@ def import_installed_app_settings(installed_apps):
                 settings_filepath = os.path.join(app_path, "settings.py")
                 if os.path.exists(settings_filepath):
                     app_settings = {}
+                    globals().update({"__file__": settings_filepath})
                     execfile(settings_filepath, globals(), app_settings)
                     break
 
@@ -171,6 +174,8 @@ def import_installed_app_settings(installed_apps):
             if var == "INSTALLED_APPS":
                 # Combine the variable values, then import
                 import_installed_app_settings(var_val)
+
+    globals().update({"__file__": this_filepath})
 
 import_installed_app_settings(INSTALLED_APPS)
 
