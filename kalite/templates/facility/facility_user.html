@@ -4,7 +4,6 @@
 {% block addteacher_active %}{% if user_id == "new" and teacher %}active{% endif %}{% endblock addteacher_active %}
 {% block addstudent_active %}{% if user_id == "new" and not teacher %}active{% endif %}{% endblock addstudent_active %}
 {% block signup_active %}{% if user_id == "new" and not request.admin %}active{% endif %}{% endblock signup_active %}
-{% block easy_admin_active %}{% if user_id != "new" and request.admin %}active{% endif %}{% endblock easy_admin_active %}
 
 
 {% block headjs %}{{ block.super }}

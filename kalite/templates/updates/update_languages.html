@@ -2,9 +2,12 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block languages_active %}active{% endblock languages_active %}
+
 {% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
+<<<<<<< HEAD
     <style>
         .download-actions {
             width: 600px;
@@ -42,6 +45,9 @@
         }
 
     </style>
+=======
+    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_languages.css' %}" />
+>>>>>>> upstream/develop
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}

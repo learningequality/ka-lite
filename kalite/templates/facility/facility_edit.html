@@ -18,7 +18,7 @@
             padding: 5px;
             margin-bottom: 10px;
             border: 1px solid #999;
-        }       
+        }
         #target {
             width: 545px;
         }
@@ -29,7 +29,7 @@
 
         #id_address {
             width: 500px;
-        } 
+        }
 
         #id_latitude, #id_longitude {
             width: 150px;
@@ -68,7 +68,21 @@
                 marker.setVisible(true);
             }
         }
-   
+
+
+        function saveLatLng(lat, lon) {
+            $("#id_latitude").val(lat);
+            $("#id_longitude").val(lon);
+        }
+
+        function getAddress(ad) {
+            $("#id_address_normalized").val(ad);
+        }
+
+        function saveZoom(zm) {
+            $("#id_zoom").val(zm);
+        }
+
         function initialize()
         {
             var map = new google.maps.Map(document.getElementById('map_canvas'), {
@@ -84,7 +98,7 @@
 
             var input = document.getElementById('target');
             var searchBox = new google.maps.places.Autocomplete(input);
-    
+
             var myLatLng = new google.maps.LatLng(-33.8902, 151.1759);
 
             var marker = new google.maps.Marker({
@@ -115,9 +129,9 @@
                 getAddress(place.formatted_address);
                 // if a place has a geometry, display it on the map
                 if (place.geometry.viewport) {
-                    map.fitBounds(place.geometry.viewport);   
+                    map.fitBounds(place.geometry.viewport);
                     marker.setPosition(place.geometry.viewport);
-                } 
+                }
                 else {
                     map.setCenter(place.geometry.location);
                     map.setZoom(13);
@@ -136,19 +150,8 @@
             });
         }
 
-        google.maps.event.addDomListener(window, 'load', initialize);
-
-        function saveLatLng(lat, lon) {
-            $("#id_latitude").val(lat);
-            $("#id_longitude").val(lon);
-        }
-
-        function getAddress(ad) {
-            $("#id_address_normalized").val(ad);
-        }
-
-        function saveZoom(zm) {
-            $("#id_zoom").val(zm);
+        if (window.google) {
+            google.maps.event.addDomListener(window, 'load', initialize);
         }
     </script>
 {% endblock headjs %}
