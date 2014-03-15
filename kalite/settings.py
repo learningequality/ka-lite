@@ -93,14 +93,12 @@ STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
-TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
-TEMPLATE_DIRS   = tuple([os.path.realpath(lp) + "/" for lp in TEMPLATE_DIRS])
-
 LANGUAGE_COOKIE_NAME    = "django_language"
 
 ROOT_URLCONF = "distributed.urls"
 INSTALLED_APPS = ("distributed",)
-MIDDLEWARE_CLASSES = tuple()
+MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
+TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
 
 DEFAULT_ENCODING = 'utf-8'
 
