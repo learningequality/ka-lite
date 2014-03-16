@@ -1,4 +1,5 @@
 """
+i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
 import json
@@ -28,7 +29,6 @@ from version import VERSION
 CACHE_VARS = []
 
 SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH, "subtitles")
-LANGUAGE_PACK_ROOT = os.path.join(settings.MEDIA_ROOT, "language_packs")
 
 LANGUAGE_SRT_SUFFIX = "_download_status.json"
 SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
@@ -58,24 +58,6 @@ def get_locale_path(lang_code=None):
         return LOCALE_ROOT
     else:
         return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
-
-
-def get_language_pack_metadata_filepath(lang_code, version=VERSION):
-    lang_code = lcode_to_django(lang_code)
-    metadata_filename = "%s_metadata.json" % lang_code
-    return os.path.join(get_locale_path(lang_code), metadata_filename)
-
-
-def get_language_pack_filepath(lang_code, version=VERSION):
-    return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))
-
-
-def get_language_pack_url(lang_code, version=VERSION):
-    url = "http://%s/%s" % (
-        settings.CENTRAL_SERVER_HOST,
-        get_language_pack_filepath(lang_code, version=version)[len(settings.PROJECT_PATH):],
-    )
-    return url
 
 
 SUPPORTED_LANGUAGE_MAP = None
@@ -140,6 +122,24 @@ def get_dubbed_video_map(lang_code=None, force=False):
             DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
 
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
+
+
+LANG2CODE_MAP = None
+CACHE_VARS.append("LANG2CODE_MAP")
+def get_langcode_map(lang_name=None, force=False):
+    """
+    """
+    global LANG2CODE_MAP
+
+    if force or not LANG2CODE_MAP:
+        LANG2CODE_MAP = {}
+
+        for code, entries in get_code2lang_map(force=force).iteritems():
+            for lang in entries.values():
+                if lang:
+                    LANG2CODE_MAP[lang.lower()] = lcode_to_ietf(code)
+
+    return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 
 YT2ID_MAP = None
