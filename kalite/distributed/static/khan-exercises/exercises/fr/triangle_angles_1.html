@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers graphie-geometry math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Les angles d'un triangle 1</title>
+<script src="../khan-exercise.js"></script><script>
+        function scTriangle(){
+            while( ! a || Math.abs( a - b ) < 5 || Math.abs( a - c ) < 5 || Math.abs( b - c ) < 5 ){
+                var a = KhanUtil.randRange( 25, 150 );
+                var b = KhanUtil.randRange( 25, 180 - a );
+                if ( a + b > 170 ){
+                    a = Math.max( 30, a - 15  );
+                    b = Math.max( 30, b - 15  );
+                }
+                var c = 180 - a - b;
+            }
+
+            var sa = KhanUtil.randRange( 4, 8 );
+            var sb = sa * Math.sin( b * Math.PI / 180 )  / Math.sin( a * Math.PI / 180 );
+            var sc = sa * Math.sin( c * Math.PI / 180 )  / Math.sin( a * Math.PI / 180 );
+            return [ [ a, b, c ] , [ KhanUtil.localeToFixed(sc, 1),  KhanUtil.localeToFixed(sa, 1), KhanUtil.localeToFixed(sb, 1) ] ];
+        }
+
+        function eqTriangle(){
+            var a = KhanUtil.randRange( 4, 8 );
+            return [ [ 60, 60, 60 ], [ a, a, a ] ];
+        }
+
+        function isoTriangle(){
+            var a = KhanUtil.randRangeExclude( 25, 75, [ 60 ] );
+            var c = 180 - 2 * a;
+            var sa = KhanUtil.randRange( 4, 8 );
+            var sc = sa * Math.sin( c * Math.PI / 180 )  / Math.sin( a * Math.PI / 180 );
+            var ang =  [ a, a, c ];
+            var sides = [ KhanUtil.localeToFixed(sc, 1), sa,  sa ];
+            return [ ang , sides ];
+
+        }
+
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="scalene">
+                <div class="vars">
+                    <var id="TRIANGLE">scTriangle()</var>
+                </div>
+                <div class="problem">Quelle est la valeur de l'angle indiqué par un « X » ?</div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,10],[-8,1]]});var tr=new Triangle([3,-4],TRIANGLE[0],5,{sides:TRIANGLE[1],angles:[TRIANGLE[0][0]+"^{\\circ}",TRIANGLE[0][1]+"^{\\circ}","X"]});tr.rotate(randRange(0,90)),tr.boxOut([[[-10,1],[10,1]]],[0,-.5]),tr.draw(),tr.drawLabels()</div>
+                </div>
+
+                <div class="solution" data-type="multiple"><p><code>X =</code> <span class="sol" data-forms="integer"><var>TRIANGLE[ 0 ][ 2 ]</var></span> <code>\Large{^\circ}</code></p></div>
+                <div class="hints">
+                    <p>La somme des angles d'un triangle est égale à 180 degrés.</p>
+                    <p>On connait deux angles du triangle.</p>
+                    <p>Pour trouver le troisième angle, on soustrait leurs mesures de 180 degrés.</p>
+                    <p>It is <code>180 - <var>TRIANGLE[ 0 ][ 0 ]</var> - <var>TRIANGLE[ 0 ][ 1 ]</var> = <var>TRIANGLE[ 0 ][ 2 ]</var></code></p>
+                </div>
+            </div>
+            <div id="isosceles1" data-type="scalene">
+                <div class="vars">
+                    <var id="TRIANGLE">isoTriangle()</var>
+                </div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,10],[-8,1]]});var tr=new Triangle([3,-4],TRIANGLE[0],5,{sides:TRIANGLE[1],angles:[TRIANGLE[0][0]+"^{\\circ}","","X"]});tr.rotate(randRange(0,90),3,-3),tr.boxOut([[[-10,1],[10,1]]],[0,-.5]),tr.draw(),tr.drawLabels()</div>
+                </div>
+                <div class="solution" data-type="multiple"><p><code>X =</code> <span class="sol" data-forms="integer"><var>TRIANGLE[ 0 ][ 2 ]</var></span> <code>\Large{^\circ}</code></p></div>
+
+                <div class="hints">
+                    <p>La somme des angles d'un triangle est égale à 180 degrés.</p>
+                    <p>Ce triangle possède deux côtés égaux, donc il a aussi deux angles égaux (c'est un triangle isocèle).</p>
+                    <p>We can rewrite <code>A + B + C = 180</code> into <code>A + A + C = 180, 2A + C = 180 </code></p>
+                    <p>Les angles à la base sont égaux, et l'angle compris entre les côtés égaux est l'angle du sommet principal.</p>
+                    <p>On connait un angle à la base, et l'autre angle à la base lui est égal, donc on a deux angles égaux à  <var>TRIANGLE[ 0 ][ 0 ]</var></p>
+                    <p>Using our equation, we get <code>2 \cdot <var>TRIANGLE[ 0 ][ 0 ]</var> + X = 180,<var>2 * TRIANGLE[ 0 ][ 0 ]</var> + C = 180</code></p>
+                    <p><code>X = 180 - <var>2 * TRIANGLE[ 0 ][ 0 ]</var></code></p>
+                    <p><code>X = <var>180 - 2 * TRIANGLE[ 0 ][ 0 ]</var></code></p>
+                </div>
+            </div>
+            <div id="isosceles2" data-type="scalene">
+                <div class="vars">
+                    <var id="TRIANGLE">isoTriangle()</var>
+                </div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,10],[-8,1]]});var tr=new Triangle([3,-4],TRIANGLE[0],5,{sides:TRIANGLE[1],angles:["X","",TRIANGLE[0][2]+"^{\\circ}"]});tr.rotate(randRange(0,90),3,-3),tr.boxOut([[[-10,1],[10,1]]],[0,-.5]),tr.draw(),tr.drawLabels()</div>
+                </div>
+                <div class="solution" data-type="multiple"><p><code>X =</code> <span class="sol" data-forms="integer"><var>TRIANGLE[ 0 ][ 0 ]</var></span> <code>\Large{^\circ}</code></p></div>
+
+                <div class="hints">
+                    <p>La somme des angles d'un triangle est égale à 180 degrés.</p>
+                    <p>Ce triangle possède deux côtés égaux, donc il a aussi deux angles égaux (c'est un triangle isocèle).</p>
+                    <p>We can rewrite <code>A + B + C = 180</code> into <code>A + A + C = 180, 2A + C = 180 </code></p>
+                    <p>Les angles à la base sont égaux, et l'angle compris entre les côtés égaux est l'angle du sommet principal.</p>
+                    <p>On connaît l'angle du sommet principal, et on sait que les deux autres angles sont égaux.</p>
+                    <p>Donc l'angle que l'on cherche est <code>A</code></p>
+                    <p>En utilisant l'équation, on obtient <code>2X + <var>TRIANGLE[ 0 ][ 2 ]</var> = 180</code></p>
+                    <p><code>2X = 180 - <var>TRIANGLE[ 0 ][ 2 ]</var> </code></p>
+                    <p><code>2X = <var>180 - TRIANGLE[ 0 ][ 2 ]</var></code></p>
+                    <p><code>X = \dfrac{ <var>180 - TRIANGLE[ 0 ][ 2 ]</var> }{ 2 }</code></p>
+                    <p><code>X = <var>TRIANGLE[ 0 ][ 0 ]</var></code></p>
+                </div>
+            </div>
+            <div id="isosceles3" data-type="scalene">
+                <div class="vars">
+                    <var id="TRIANGLE">isoTriangle()</var>
+                </div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,10],[-8,1]]});var tr=new Triangle([3,-4],TRIANGLE[0],5,{sides:TRIANGLE[1],angles:[TRIANGLE[0][0]+"^{\\circ}","X",""]});tr.rotate(randRange(0,90),3,-3),tr.boxOut([[[-10,1],[10,1]]],[0,-.5]),tr.draw(),tr.drawLabels()</div>
+                </div>
+                <div class="solution" data-type="multiple"><p><code>X =</code> <span class="sol" data-forms="integer"><var>TRIANGLE[ 0 ][ 0 ]</var></span> <code>\Large{^\circ}</code></p></div>
+                <div class="hints">
+                    <p>La somme des angles d'un triangle est égale à 180 degrés.</p>
+                    <p>Ce triangle possède deux côtés égaux, donc il a aussi deux angles égaux (c'est un triangle isocèle).</p>
+                    <p>Les angles à la base sont égaux, et l'angle compris entre les côtés égaux est l'angle du sommet principal.</p>
+                    <p>On sait que l'un des angles à la base est égal à <var>TRIANGLE[ 0 ][ 0 ]</var> degrés, et l'angle que l'on cherche est aussi l'un des angles à la base.</p>
+                    <p>Donc l'angle que l'on cherche est aussi égal à <var>TRIANGLE[ 0 ][ 0 ]</var> degrés.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

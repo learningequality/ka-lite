@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Intuition parabole 1</title>
+<script src="../khan-exercise.js"></script><style>
+        .info-box .mini-button {
+            padding: 0px 5px;
+            width: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRangeNonZero( -3, 3 )</var>
+            <var id="X1">randRangeNonZero( -5, 5 )</var>
+            <var id="Y1">randRangeNonZero( -5, 5 )</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">Ajuster le coefficient et les coordonnées du sommet pour que la parabole bleue se superpose à la parabole orange.</p>
+                <p>Comment ces valeurs affectent-elles la forme et la position d'une parabole ?</p>
+
+                <div class="graphie" id="grid">graphInit({range:10,scale:20,tickStep:1,axisArrows:"&lt;-&gt;"}),style({stroke:"#FFA500",fill:"none",clipRect:[[-10,-10],[20,20]],arrows:null}),plot(new Parabola(A,X1,Y1).graphieFunction,[-10,10]),style({stroke:"#6495ED",strokeWidth:3,fill:"none",clipRect:[[-10,-10],[20,20]],arrows:null}),graph.currParabola=new Parabola(1,0,0),graph.currParabola.plot()</div>
+
+                <div class="solution" data-type="custom">
+                    <!--
+                        There didn't seem to be an easy way to bind handlers normally after everything had loaded.
+                        It would also be nice to press and hold.
+                    -->
+                    <div class="instruction">
+                        <div id="plus-buttons">
+                            <input class="simple-button mini-button" onclick="updateParabola(0, 0, -1)" style="margin-left: 20px;" type="button" value="+"><input class="simple-button mini-button" onclick="updateParabola(1, 0, 0)" style="margin-left: 8px;" type="button" value="+"><input class="simple-button mini-button" onclick="updateParabola(0, -1, 0)" style="margin-left: 20px;" type="button" value="+">
+</div>
+
+                        <p id="equation-label" style="margin: 8px 0px 2px 0px"><code>y - 0 = 1(x - 0)^{2}</code></p>
+
+                        <div id="minus-buttons" style="padding-bottom: 15px">
+                            <input class="simple-button mini-button" onclick="updateParabola(0, 0, 1)" style="margin-left: 20px;" type="button" value="-"><input class="simple-button mini-button" onclick="updateParabola(-1, 0, 0)" style="margin-left: 8px;" type="button" value="-"><input class="simple-button mini-button" onclick="updateParabola(0, 1, 0)" style="margin-left: 20px;" type="button" value="-">
+</div>
+                    </div>
+
+                    <div class="guess">[A, X1, Y1]</div>
+                    <div class="validator-function">var e=graph.currParabola;return e.getLeadingCoefficient()===A&amp;&amp;e.getVertexX()===X1&amp;&amp;e.getVertexY()===Y1</div>
+                    <div class="show-guess">guess=guess.length?guess:[1,0,0];var parab=graph.currParabola;parab.update.apply(parab,guess),redrawParabola(!1)</div>
+                    <div class="show-guess-solutionarea">guess=guess.length?guess:[1,0,0];var a=guess[0],x=guess[1],y=guess[2],equation="y - "+y+"="+a+"(x - "+x+")^{2}";equation=cleanMath(equation),$("#equation-label").html("&lt;code&gt;"+equation+"&lt;/code&gt;").tex()</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

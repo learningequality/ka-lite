@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie expressions word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Desplazando y reflejando funciones</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="X_ORIG">randRange(-4, 4)</var>
+            <var id="Y_ORIG">randRange(-3, 3)</var>
+            <var id="UP_ORIG">randRangeNonZero(-1, 1)</var>
+            <var id="FUNC">randFromArray([function(e){return.25*UP_ORIG*pow(e+X_ORIG,2)+Y_ORIG},function(e){return.02*UP_ORIG*(pow(e+X_ORIG,3)+10*pow(e+X_ORIG,2))+Y_ORIG}])</var>
+        </div>
+
+        <div class="problems">
+            <div id="shift-x">
+                <div class="vars">
+                    <var id="X_SHIFT">X_ORIG &gt; 0 ? randRange(-6, -1) : randRange(1, 6)</var>
+                    <var id="COEFFICIENT">1</var>
+                    <var id="Y_SHIFT">0</var>
+                    <var id="ANSWER">expr(["*", "f", ["+", "x", X_SHIFT]])</var>
+                </div>
+
+                <ul class="choices" data-none="true">
+<li><code><var>expr(["*", "f", ["+","x", -X_SHIFT]])</var></code></li>
+                    <li><code><var>expr(["+", "f(x)", X_SHIFT])</var></code></li>
+                    <li><code><var>expr(["+", "f(x)", -X_SHIFT])</var></code></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p data-if="X_SHIFT &gt; 0">
+                            <span data-if="$.ngetpos(abs(X_SHIFT), 'es-ES') === 0">La función <code>\red{g(x)}</code> está desplazada <code>1</code> unidad a la izquierda con respecto a <code>\blue{f(x)}</code>.</span><span data-else-if="$.ngetpos(abs(X_SHIFT), 'es-ES') === 1">La función <code>\red{g(x)}</code> está desplazada <code><var>abs(X_SHIFT)</var></code> unidades a la izquierda con relación a <code>\blue{f(x)}</code>.</span>
+                            
+                        </p>
+                        <p data-else="">
+                            <span data-if="$.ngetpos(abs(X_SHIFT), 'es-ES') === 0">La función <code>\red{g(x)}</code> está desplazada <code>1</code> unidad a la derecha con respecto a <code>\blue{f(x)}</code>.</span><span data-else-if="$.ngetpos(abs(X_SHIFT), 'es-ES') === 1">La función <code>\red{g(x)}</code> está desplazada <code><var>abs(X_SHIFT)</var></code> unidades a la derecha con respecto a <code>\blue{f(x)}</code>.</span>
+                            
+                        </p>
+
+                        <div class="graphie" data-update="G">style({stroke:BLACK,strokeWidth:2,arrows:"-&gt;"}),path([[-X_ORIG,COEFFICIENT*Y_ORIG+Y_SHIFT],[-X_ORIG-X_SHIFT,COEFFICIENT*Y_ORIG+Y_SHIFT]])</div>
+                    </div>
+
+                    <div>
+                        <p data-if="X_SHIFT &gt; 0">
+                            <span data-if="isSingular(abs(X_SHIFT))">
+                                This means the value of <code>\red{g}</code> at a number <code>x</code> is the same as the value
+                                of <code>\blue{f}</code> at a number <code>1</code> more than <code>x</code>.
+                            </span>
+                            
+                        </p>
+                        <p data-else="">
+                            <span data-if="isSingular(abs(X_SHIFT))">
+                                This means the value of <code>\red{g}</code> at a number <code>x</code> is the same as the value
+                                of <code>\blue{f}</code> at a number <code>1</code> less than <code>x</code>.
+                            </span>
+                            
+                        </p>
+                        <p>¿Cómo se vería esta oración en una ecuación?</p>
+                    </div>
+
+                    <p><code>g(x) = <var>ANSWER</var></code></p>
+                </div>
+            </div>
+
+            <div id="shift-y">
+                <div class="vars">
+                    <var id="X_SHIFT">0</var>
+                    <var id="COEFFICIENT">1</var>
+                    <var id="Y_SHIFT" data-ensure="abs(Y_ORIG * COEFFICIENT + Y_SHIFT) &lt; 8 &amp;&amp; (Y_ORIG * COEFFICIENT + Y_SHIFT) * UP_ORIG * COEFFICIENT &lt; 7">randRangeNonZero(-6, 6)</var>
+                    <var id="ANSWER">expr(["+", "f(x)", Y_SHIFT])</var>
+                </div>
+
+                <ul class="choices" data-none="true">
+<li><code><var>expr(["*", "f", ["+","x", Y_SHIFT]])</var></code></li>
+                    <li><code><var>expr(["*", "f", ["+","x", -Y_SHIFT]])</var></code></li>
+                    <li><code><var>expr(["+", "f(x)", -Y_SHIFT])</var></code></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p data-if="Y_SHIFT &gt; 0">
+                            <span data-if="$.ngetpos(abs(Y_SHIFT), 'es-ES') === 0">La función <code>\red{g(x)}</code> está desplazada <code>1</code> unidad hacia arriba con respecto de <code>\blue{f(x)}</code>.</span><span data-else-if="$.ngetpos(abs(Y_SHIFT), 'es-ES') === 1">La función <code>\red{g(x)}</code> está desplazada <code><var>abs(Y_SHIFT)</var></code> unidades hacia arriba con respecto de <code>\blue{f(x)}</code>.</span>
+                            
+                        </p>
+                        <p data-else="">
+                            <span data-if="$.ngetpos(abs(Y_SHIFT), 'es-ES') === 0">La función <code>\red{g(x)}</code> está desplazada <code>1</code> unidad hacia abajo con relación a <code>\blue{f(x)}</code>.</span><span data-else-if="$.ngetpos(abs(Y_SHIFT), 'es-ES') === 1">La función <code>\red{g(x)}</code> está desplazada <code><var>abs(Y_SHIFT)</var></code> unidades hacia abajo con relación a <code>\blue{f(x)}</code>.</span>
+                            
+                        </p>
+
+                        <div class="graphie" data-update="G">style({stroke:BLACK,strokeWidth:2,arrows:"-&gt;"}),path([[-X_ORIG,COEFFICIENT*Y_ORIG],[-X_ORIG,COEFFICIENT*Y_ORIG+Y_SHIFT]])</div>
+                    </div>
+
+                    <div>
+                        <p data-if="Y_SHIFT &gt; 0">Por lo tanto, para hallar <code>\red{g(x)}</code> puedes hallar <code>\blue{f(x)}</code> y sumar <code><var>abs(Y_SHIFT)</var></code>.</p>
+                        <p data-else="">Por lo tanto, para hallar <code>\red{g(x)}</code> puedes hallar <code>\blue{f(x)}</code> y restar <code><var>abs(Y_SHIFT)</var></code>.</p>
+                    </div>
+
+                    <p>Por lo tanto <code>g(x) = <var>ANSWER</var></code>.</p>
+                </div>
+            </div>
+
+            <div id="coefficient">
+                <div class="vars">
+                    <var id="X_SHIFT">0</var>
+                    <var id="COEFFICIENT">randFromArray([-1, 1]) * randFromArray([1/3, 0.5, 2, 3])</var>
+                    <var id="Y_SHIFT">0</var>
+                    <var id="ANSWER">toFractionTex(COEFFICIENT) + "f(x)"</var>
+                </div>
+
+                <ul class="choices" data-none="true">
+<li><code><var>toFractionTex(1/COEFFICIENT)</var>f(x)</code></li>
+                    <li><code><var>toFractionTex(-1/COEFFICIENT)</var>f(x)</code></li>
+                    <li><code><var>toFractionTex(-COEFFICIENT)</var>f(x)</code></li>
+                </ul>
+<div class="hints">
+                    <div data-if="COEFFICIENT &lt; 0">
+                        <p>
+                            Function <code>\red{g(x)}</code> is flipped vertically compared to <code>\blue{f(x)}</code>,
+                            so we should multiply by <code>-1</code> reflect it over the <code>y</code>-axis.
+                        </p>
+                        <p>Esta nueva función,, <code>\green{-f(x)}</code> está más cerca de <code>\red{g(x)}</code>, pero siguen sin ser iguales. ¿Qué más necesitamos hacer?</p>
+
+                        <div class="graphie" data-update="G">style({stroke:GREEN,strokeDasharray:"- "}),plot(function(e){return-FUNC(e)},[-10,10])</div>
+                    </div>
+
+                    <p data-else="">La función <code>\red{g(x)}</code> no está volteada verticalmente en comparación con <code>\blue{f(x)}</code>, por tanto no tiene un coeficiente negativo.</p>
+
+                    <p data-if="abs(COEFFICIENT) &lt; 1">
+                        Function <code>\red{g(x)}</code> is compressed vertically relative to
+                        <span data-if="COEFFICIENT &lt; 0"><code>\green{-f(x)}</code></span>
+                        <span data-else=""><code>\blue{f(x)}</code></span>,
+                        so must be multiplied by a number with a magnitude less than <code>1</code>.
+                    </p>
+
+                    <p data-else="">
+                        Function <code>\red{g(x)}</code> is stretched vertically compared to
+                        <span data-if="COEFFICIENT &lt; 0"><code>\green{-f(x)}</code></span>
+                        <span data-else=""><code>\blue{f(x)}</code></span>,
+                        so must be multiplied by a number with a magnitude greater than <code>1</code>.
+                    </p>
+
+                    <div>Por lo tanto <code>g(x) = <var>ANSWER</var></code>.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem">
+            <p>La siguiente gráfica muestra <code>\blue{f(x)}</code> como una línea azul y <code>\red{g(x)}</code> como una línea roja punteada.</p>
+            <p>¿Qué es <code>\red{g(x)}</code> en términos de <code>\blue{f(x)}</code>?</p>
+        </div>
+
+        <div class="graphie" id="G">graphInit({range:10,scale:20,labelStep:1,axisArrows:"&lt;-&gt;"}),style({stroke:BLUE,strokeWidth:2,arrows:null}),plot(function(e){return FUNC(e)},[-10,10]),style({stroke:RED,strokeDasharray:"- "}),plot(function(e){return COEFFICIENT*FUNC(e+X_SHIFT)+Y_SHIFT},[-10,10])</div>
+
+        <p class="solution"><code><var>ANSWER</var></code></p>
+    </div>
+</body>
+</html>

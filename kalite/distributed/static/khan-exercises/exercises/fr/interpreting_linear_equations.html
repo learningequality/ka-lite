@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Lire une représentation graphique</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars"></div>
+        <div class="problems">
+            <div id="increase" data-weight="3">
+                <div class="vars">
+                    <var id="INDEX">randRange( 0, 2 )</var>
+                    <var id="M">1 / randRange( 2, 5 )</var>
+                    <var id="B">randRange( 1, 3 )</var>
+                    <var id="UNIT">[ deskItem( 0 ), fruit( 0 ), "X" ][ INDEX ]</var>
+                    <var id="X_AXIS_LABEL">[$._("# of %(unit)s",{unit:plural_form(UNIT)}),$._("# of %(unit)s",{unit:plural_form(UNIT)}),"X"][INDEX]</var>
+                    <var id="Y_AXIS_LABEL">[$._("Price of %(unit)s",{unit:plural_form(UNIT)}),$._("Price of %(unit)s",{unit:plural_form(UNIT)}),"Y"][INDEX]</var>
+
+                    <var id="BLACK_ARROW">$._("fl\u00e8che noire")</var>
+                    <var id="GREEN_ARROW">$._("fl\u00e8che verte")</var>
+                </div>
+                <div class="question">
+                    <p data-if="INDEX === 2"><b>Comment varie <code>Y</code> lorsque <code>X</code> augmente ?</b></p>
+                    <p data-else><b>Comment varie le prix de <var>plural_form(UNIT)</var> lorsque la quantité de <var>plural_form(UNIT)</var> augmente ?</b></p>
+                    <div class="graphie" id="grid">init({range:[[-3,10],[-1,10]],scale:[30,30]}),grid([10,10],[10,10],{stroke:"#ccc"}),style({stroke:"#888",strokeWidth:2,arrows:"-&gt;"}),path([[-.5,0],[10,0]]),path([[0,-.5],[0,10]]),style({stroke:"#000000",strokeWidth:.9,arrows:"-&gt;"}),label([0,9.2],"\\text{"+Y_AXIS_LABEL+"}","right"),label([8.5,0],"\\text{"+X_AXIS_LABEL+"}","below"),style({stroke:"#6495ED",strokeWidth:2,arrows:"-&gt;"}),plot(function(e){return M*e+B},[0,10])</div>
+                </div>
+
+                <div class="solution">Augmente</div>
+                <ul class="choices" data-category="true">
+<li>Augmente</li>
+                    <li>Diminue</li>
+                    <li>Reste identique</li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <div class="graphie" data-update="grid">style({fill:"",stroke:"#000000"}),line([4,4*M+B],[7,4*M+B]),style({stroke:"#40a020"}),line([7,4*M+B],[7,7*M+B])</div>
+                        <p>En analysant la courbe, on voit que lorsque <code>x</code> augmente (<code>\color{#000000}{\text{<var>BLACK_ARROW</var>}}</code>), <code>y</code> augmente aussi (<code>\color{#40a020}{\text{<var>GREEN_ARROW</var>}}</code>).</p>
+                    </div>
+                    <p>On peut dire que la pente est positive ou que les variables vont dans le même sens.</p>
+                    <p data-if="INDEX === 2">De ce fait, lorsque <code>X</code> augmente, <code>Y</code> <b>augmente</b> aussi.</p>
+                    <p data-else>De ce fait,, lorsque le nombre de <var>plural_form(UNIT)</var> augmente, le prix de <var>plural_form(UNIT)</var> <b>augmente</b> aussi.</p>
+                </div>
+            </div>
+            <div id="decrease" data-type="increase" data-weight="3">
+                <div class="vars">
+                    <var id="M">1 / randRange( 2, 5 ) * -1</var>
+                    <var id="B">randRange( 6, 8 )</var>
+                    <var id="BLACK_ARROW">$._("fl\u00e8che noire")</var>
+                    <var id="RED_ARROW">$._("fl\u00e8che rouge")</var>
+                </div>
+                <div class="solution">Diminue</div>
+                <div class="hints">
+                    <div>
+                        <div class="graphie" data-update="grid">style({fill:"",stroke:"#000000"}),line([4,4*M+B],[7,4*M+B]),style({stroke:"#ff0000"}),line([7,4*M+B],[7,7*M+B])</div>
+                        <p>En analysant la courbe, on voit que lorsque <code>x</code> augmente (<code>\color{#000000}{\text{<var>BLACK_ARROW</var>}}</code>), <code>y</code> diminue (<code>\color{#ff0000}{\text{<var>RED_ARROW</var>}}</code>).</p>
+                    </div>
+                    <p>On peut dire que la pente de la courbe est négative ou que les variables ont des signes contraires.</p>
+                    <p data-if="INDEX === 2">De ce fait, lorsque <code>X</code> augmente, <code>Y</code> <b>diminue</b>.</p>
+                    <p data-else>De ce fait, lorsque le nombre de <var>plural_form(UNIT)</var> augmente, le prix de <var>plural_form(UNIT)</var> <b>diminue</b>.</p>
+                </div>
+            </div>
+            <div id="stays" data-type="increase" data-weight="1">
+                <div class="vars">
+                    <var id="M">0</var>
+                    <var id="B">randRange( 2, 8 )</var>
+                </div>
+                <div class="solution">Reste identique</div>
+                <div class="hints">
+                    <p>En analysant la courbe, on voit que lorsque<code>x</code> augmente,  <code>y</code> ne change pas.</p>
+                    <p>On peut dire que la pente de la courbe est nulle ou que les variables ne sont pas correlés.</p>
+                    <p data-if="INDEX === 2">Donc, lorsque <code>X</code> augmente, <code>Y</code> <b>ne change pas</b>.</p>
+                    <p data-else>Donc, lorsque la quantité de <var>plural_form(UNIT)</var> augmente, le prix de  <var>plural_form(UNIT)</var> <b>ne change pas</b>.</p>
+                </div>
+            </div>
+
+            <div id="identifypoint" data-weight="7">
+                <!-- Ensure the X and Y deltas of the beginning and end of the line are at least
+                     five. -->
+                <div class="vars" data-ensure="abs( LINESTART[ 0 ] - LINEEND[ 0 ] ) &gt;= 5 &amp;&amp; abs( LINESTART[ 1 ] - LINEEND[ 1 ] ) &gt;= 5">
+                    <!-- When X is the solution ensure that Y isn't 0 and vice versa so that the line
+                         added by the first hint doesn't cover up an axis. -->
+                    <div data-ensure="POINTX === SOLUTION ? POINTY !== 0 : POINTX !== 0">
+                        <var id="POINTX, POINTY">randRange( -9, 9, 2 )</var>
+                        <var id="SOLUTION">randFromArray([ POINTX, POINTY ])</var>
+                    </div>
+
+                    <var id="LINESTART">function(){var e,n;return randFromArray([!1,!0])?(e=randFromArray([-10,10]),n=randRange(-10,10)):(e=randRange(-10,10),n=randFromArray([-10,10])),[e,n]}()</var>
+                    <var id="LINEEND">function(){var e,n,r=POINTX,a=POINTY,s=-(LINESTART[0]-POINTX),t=-(LINESTART[1]-POINTY);for(Math.abs(s)&gt;Math.abs(t)?(e=s&gt;0?1:-1,n=t*e/s):(n=t&gt;0?1:-1,e=s*n/t),s=e,t=n;Math.abs(r)&lt;10&amp;&amp;Math.abs(a)&lt;10;)r+=s,a+=t;return[r,a]}()</var>
+                </div>
+
+                <div class="question">
+                    <p data-if="POINTX === SOLUTION">Quelle est la valeur de <code>x</code> lorsque <code>y</code> est égale à <code><var>POINTY</var></code> ?</p>
+                    <p data-else="">Quelle est la valeur de <code>y</code> lorsque <code>x</code> est égale à <code><var>POINTX</var></code> ?</p>
+
+                    <div class="graphie" id="graph">graphInit({range:10,scale:20,axisArrows:"&lt;-&gt;",tickStep:2,labelStep:1}),label([0,10],"y","below right"),label([10,0],"x","above left"),style({stroke:"#6495ed"}),line(LINESTART,LINEEND)</div>
+                </div>
+
+                <div class="hints">
+                    <div>
+                        <div class="graphie" data-update="graph">var lineStart,lineEnd;POINTX===SOLUTION?(lineStart=[-10,POINTY],lineEnd=[10,POINTY]):(lineStart=[POINTX,-10],lineEnd=[POINTX,10]),line(lineStart,lineEnd,{stroke:"#28ae7b",strokeDasharray:"- "})</div>
+
+                        <p data-if="POINTX === SOLUTION">La courbe <span style="color: #28ae7b;">verte</span> en pointillé indique les points où <code>y</code> est égale à <code><var>POINTY</var></code>.</p>
+                        <p data-else="">La courbe <span style="color: #28ae7b;">verte</span> en pointillé indique les points où <code>x</code> est égale à <code><var>POINTX</var></code>.</p>
+                    </div>
+
+                    <p>Les courbes <span style="color: #6495ed;">bleu</span> et <span style="color: #28ae7b;">vert</span> en pointillé se rencontre en <code>(<var>POINTX</var>, <var>POINTY</var>)</code>.</p>
+                    <p data-if="POINTX === SOLUTION">Donc <code>x</code> est égale à <code><var>SOLUTION</var></code>.</p>
+<p data-else="">Donc <code>y</code> est égale à <code><var>SOLUTION</var></code>.</p>
+                </div>
+
+                <div class="solution" data-forms="integer" data-type="multiple">
+                    <p><code><var>POINTX === SOLUTION ? 'x' : 'y'</var> =</code> <span class="sol" data-forms="integer"><var>SOLUTION</var></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

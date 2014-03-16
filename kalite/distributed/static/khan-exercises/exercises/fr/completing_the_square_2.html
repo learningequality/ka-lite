@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html data-require="math polynomials expressions math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Résolution d'équations du second degré en complétant le carré 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="original" data-weight="4">
+                <div class="vars">
+                    <var id="X1">randRange( 1, 4 ) / randRangeNonZero( -2, 2 )</var>
+                    <var id="X2" data-ensure="X1 !== X2">( randRange( -3, 3 ) * 2 + 1 ) / 2</var>
+                    <var id="B">( X1 + X2 ) * -1</var>
+                    <var id="B_SIGN">B &gt; 0 ? "+" : "-"</var>
+                    <var id="C">X1 * X2</var>
+                    <var id="MULT">getLCM( toFraction( B )[1], toFraction( C )[1] )</var>
+                    <var id="POLY">new Polynomial( 0, 2, [MULT*C, MULT*B, MULT], "x" )</var>
+                    <var id="POLY_TEXT">POLY.text()</var>
+                    <var id="OR">$._("ou")</var>
+                </div>
+                <p class="question">Complétez le carré afin de résoudre pour trouver <code>x</code>.</p>
+                <p><code><var>POLY_TEXT</var> = 0</code></p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>B / 2</var></span>
+                        <span class="sol"><var>C * -1 + pow( B / 2, 2 )</var></span>
+                        <span class="sol"><var>X1</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>B / 2</var></span>
+                        <span class="sol"><var>C * -1 + pow( B / 2, 2 )</var></span>
+                        <span class="sol"><var>X2</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <div class="entry" data-type="multiple">
+                            <b>Complétez le carré:</b> <br><code>(x + {}</code><span class="sol short32"></span> <code>)^2 = {}</code> <span class="sol short40"></span> <br><br><b>Solution:</b> <br><code>x = {}</code><span class="sol short32"></span><code>\quad\text{<var>OR</var>}\quad x = {}</code><span class="sol short32"></span>
+                        </div>
+                    </div>
+                    <p class="example">un entier tel que <code>6</code></p>
+                    <p class="example">une fraction <em>irréductible</em> telle que <code>3/5</code></p>
+                    <p class="example">une <em>fraction </em> irréductible, telle que <code>7/4</code></p>
+                    <p class="example">and/or <em>exact</em> decimals, like <code>0.75</code></p>
+                </div>
+            </div>
+            <div id="one-root" data-type="original" data-weight="1">
+                <div class="vars">
+                    <var id="X1">( randRange( -4, 4 ) * 2 + 1 ) / 2</var>
+                    <var id="X2">X1</var>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p>
+                        <b>Complétez le carré:</b> <br><code>(x + {}</code><span class="sol short32"><var>-X1</var></span> <code>)^2 = {}</code> <span class="sol short40">0</span> <br><br><b>Solution:</b> <br><code>x = \quad</code><span class="sol short32"><var>X1</var></span>
+                    </p>
+                    <p class="example">un entier tel que <code>6</code></p>
+                    <p class="example">une fraction <em>irréductible</em> telle que <code>3/5</code></p>
+                    <p class="example">une <em>fraction </em> irréductible, telle que <code>7/4</code></p>
+                    <p class="example">and/or <em>exact</em> decimals, like <code>0.75</code></p>
+                </div>
+            </div>
+            <div id="odds" data-type="original" data-weight="2">
+                <div class="vars">
+                    <var id="X1">randRangeNonZero( -8, 8 )</var>
+                    <var id="X2">randRange( -4, 4 ) * 2 + ( X1 % 2 - 1 )</var>
+                </div>
+            </div>
+        </div>
+        <div class="hints">
+            <div data-if="MULT !== 1">
+                <p>D'abord, divisons le polynôme par  <code><var>MULT</var></code>, qui est le coefficient du terme en <code>x^2</code>.</p>
+                <p><code>x^2 <span data-if="B !== 0"><span data-if="abs( B ) !== 1"> + <var>decimalFraction( B, 1, 1 )</var></span><span data-else=""><var>B_SIGN</var></span>x</span> + <var>decimalFraction( C, 1, 1 )</var> = 0</code></p>
+            </div>
+            <div data-if="X1 !== X2" data-unwrap="">
+                <div data-if="C !== 0">
+                    <p>Passons le terme constant du coté droit de l'équation.</p>
+                    <p><code>x^2 <span data-if="B !== 0"><span data-if="abs( B ) !== 1"> + <var>decimalFraction( B, 1, 1 )</var></span><span data-else=""><var>B_SIGN</var></span>x</span> = <var>decimalFraction( C * -1, 1, 1 )</var></code></p>
+                </div>
+                <div data-if="B !== 0">
+                    <p>Nous complétons le carré en prenant la moitié du coefficient de notre <code>x</code>ème terme, le mettant au carré, et en l'ajoutant aux deux cotés de l'équation. Ce coefficient de notre <code>x</code>ème terme est <code><var>decimalFraction( B, 1, 1 )</var></code>, donc la moitié vaut <code><var>decimalFraction( B / 2, 1, 1 )</var></code>, et en mettant au carré cela nous donne <code>\color{blue}{<var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>}</code>.</p>
+                    <p><code>x^2 <span data-if="abs( B ) !== 1"> + <var>decimalFraction( B, 1, 1 )</var></span><span data-else=""><var>B_SIGN</var></span>x \color{blue}{ + <var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>} = <var>decimalFraction( C * -1, 1, 1 )</var> \color{blue}{ + <var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>}</code></p>
+                </div>
+                <div data-if="B !== 0">
+                    <p>Nous pouvons maintenant réécrire le membre de gauche comme un nombre au carré.</p>
+                    <p><code>( x + <var>decimalFraction( B / 2, 1, 1 )</var> )^2 = <var>decimalFraction( C * -1 + pow( B / 2, 2 ), 1, 1 )</var></code></p>
+                </div>
+            </div>
+            <div data-else="" data-unwrap="">
+                <p>On voit que le membre de gauche est déjà une somme remarquable. Le coefficient du terme en <code>x</code> est <code><var>decimalFraction( B, 1, 1 )</var></code>, sa moitié est  <code><var>decimalFraction( B / 2, 1, 1 )</var></code>, et en le mettant au carré, on a <code>\color{blue}{<var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>}</code>, notre constante.</p>
+                <div>
+                    <p>Ainsi, nous pouvons réécrire le membre de gauche comme un nombre au carré.</p>
+                    <p><code>( x + <var>decimalFraction( B / 2, 1, 1 )</var> )^2 = <var>decimalFraction( C * -1 + pow( B / 2, 2 ), 1, 1 )</var></code></p>
+                </div>
+            </div>
+            <div>
+                <p>Prendre la racine carrée des deux côtés.</p>
+                <p><code>x <span data-if="B !== 0"> + <var>decimalFraction( B / 2, 1, 1 )</var></span> = <span data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0">\pm</span><var>decimalFraction( sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+            </div>
+            <div data-if="B !== 0">
+                <p>Isolez <code>x</code> pour trouver la(les) solution(s).</p>
+                <p data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0"><code>x = <var>decimalFraction( -B / 2, 1, 1 )</var>\pm<var>decimalFraction( sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+            </div>
+            <div>
+                <div data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0">
+                    <p>Les solutions sont : <code>x = <var>decimalFraction( -B / 2 + sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var> \text{ <var>OR</var> } x = <var>decimalFraction( -B / 2 - sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+                </div>
+                <div data-else="">
+                    <p>La solution est : <code>x = <var>decimalFraction( -B / 2 + sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+                </div>
+                <p>On a déjà trouvé la forme du trinôme : <code>( x + <var>decimalFraction( B / 2, 1, 1 )</var> )^2 = <var>decimalFraction( C * -1 + pow( B / 2, 2 ), 1, 1 )</var></code></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

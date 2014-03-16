@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>El teorema fundamental de la aritmética</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <var id="PRIMES">[2, 3, 5, 7, 11, 13]</var>
+                <var id="NUMBER">randFromArray([4,6,8,9,10,12,14,15,16,18,20,21,22,24,25,26,27,28,30,32,33,35,36,39,40,42,44,45,48,49,50,52,54,55,56,60,63,65,66,70,72,75,77,78,80,81,84,88,90,91,96,98,99])</var>
+                <var id="FACTORIZATION">getPrimeFactorization(NUMBER)</var>
+                <var id="EXPONENTS">_.reduce(FACTORIZATION,function(e,n){return e[n]=e[n]+1||1,e},{})</var>
+                <var id="HAS_EXPONENTS">_.reduce(_.values(EXPONENTS),function(e,n){return e||1!==n},!1)</var>
+                <var id="EXPONENT_HINT">_.map(EXPONENTS,function(e,n){return cardinalThrough20(e)+" &lt;code&gt;"+n+"&lt;/code&gt;"+(1===e?"":"s")})</var>
+                <var id="SOLUTION">_.reduce(PRIMES,function(e,n){return EXPONENTS[n]&gt;1?e.push(n+"^"+EXPONENTS[n]):1===EXPONENTS[n]&amp;&amp;e.push(n),e},[]).join("\\cdot")</var>
+                <var id="REMAINING">_.map(FACTORIZATION,function(e,n){var r=NUMBER;return _.each(FACTORIZATION.slice(0,n),function(e){r/=e}),r})</var>
+                <var id="GRAPHIE">null</var>
+            </div>
+
+            <p class="question">Encuentra la factorización en primos de <code><var>NUMBER</var></code>.</p>
+
+            <div class="problem">
+                <p>Usa las flechas para cambiar el exponente en cada número primo para ver si puedes encontrar su factorización en primos.</p>
+                <div class="graphie">GRAPHIE=graph,init({range:[[0,10],[-11,0]]}),addMouseLayer(),graph.primes=[],graph.computeTotal=function(){return _.reduce(PRIMES,function(e,n){return e*pow(n,graph.primes[n].exponent)},1)},graph.totalLabel=label([7,-10],1,"right",{fontSize:25}),graph.updateTotal=function(){this.totalLabel.remove(),this.totalLabel=label([7,-10],graph.computeTotal(),"right",{fontSize:25});var e=_.reduce(PRIMES,function(e,n){return graph.primes[n].exponent&gt;1?e.push(n+"^"+graph.primes[n].exponent):1===graph.primes[n].exponent&amp;&amp;e.push(n),e},[]).join("\\cdot");e+=" = "+graph.computeTotal(),KhanUtil.processMath($("#answer-preview code")[0],e,!0)},_.each(PRIMES,function(e,n){var r=1.5*-n-1;graph.primes[e]={exponent:0,baseLabel:label([2,r],e,"left",{fontSize:25,color:"#aaa"}),expLabel:label([2,r+.3],0,"center",{fontSize:20,color:"#aaa"}),expandLabel:label([3,r],1,"right",{fontSize:20,color:"#aaa"}),factorLabel:label([7,r],1,"right",{fontSize:25,color:"#aaa"}),upArrow:addArrowWidget({coord:[2,r+.7],direction:"up"}),downArrow:addArrowWidget({coord:[2,r-.1],direction:"down"}),update:function(){this.expLabel.remove(),this.expandLabel.remove(),this.factorLabel.remove(),this.expLabel=label([2,r+.3],this.exponent,"center",{fontSize:20}),this.factorLabel=label([7,r],pow(e,this.exponent),"right",{fontSize:25}),0===this.exponent?(this.baseLabel.css({color:"#aaa"}),this.expLabel.css({color:"#aaa"}),this.expandLabel=label([3,r],"1","right",{fontSize:20,color:"#aaa"}),this.factorLabel.css({color:"#aaa"})):(this.baseLabel.css({color:"black"}),this.expandLabel=label([3,r],getPrimeFactorization(pow(e,this.exponent)).join("\\cdot"),"right",{fontSize:20})),this.exponent&gt;=5||e&gt;=11&amp;&amp;this.exponent&gt;=3?this.upArrow.hide():this.upArrow.show(),this.exponent&lt;=0?this.downArrow.hide():this.downArrow.show()}},graph.primes[e].upArrow.onClick=function(){graph.primes[e].exponent+=1,graph.primes[e].update(),graph.updateTotal()},graph.primes[e].downArrow.onClick=function(){graph.primes[e].exponent-=1,graph.primes[e].update(),graph.updateTotal()},label([2.5,r],"=","right",{color:"#ccc"}),label([6.5,r],"=","right",{color:"#ccc"}),graph.primes[e].downArrow.hide()}),line([0,-9.25],[8,-9.25]),label([0,-9],"\\times","above right",{fontSize:25})</div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <p>Haz clic en las flechas naranjas para cambiar tu respuesta.</p>
+                    <p id="answer-preview"><code>=1</code></p>
+                </div>
+                <div class="guess">GRAPHIE.computeTotal()</div>
+                <div class="validator-function">return 1===guess?"":guess===NUMBER</div>
+                <div class="show-guess">_.each(PRIMES,function(e){GRAPHIE.primes[e].exponent=0}),_.each(getPrimeFactorization(guess),function(e){GRAPHIE.primes[e].exponent+=1}),_.each(PRIMES,function(e){GRAPHIE.primes[e].update()}),GRAPHIE.updateTotal()</div>
+                <div class="show-guess-solutionarea">_.each(PRIMES,function(e){GRAPHIE.primes[e].exponent=0}),_.each(getPrimeFactorization(guess),function(e){GRAPHIE.primes[e].exponent+=1}),GRAPHIE.updateTotal()</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div>
+            <div class="graphie" id="factor-tree" style="float: left;">graph.cx=0,graph.y=0,graph.curr=NUMBER,init({range:[[-1,FACTORIZATION.length+1],[-2*FACTORIZATION.length-.5,1]],scale:[30,30]}),label([graph.cx+1,graph.y],graph.curr)</div>
+            <p style="height: 60px">Podemos utilizar un árbol de factores para descomponer el <code><var>NUMBER</var></code> en sus factores primos. ¿Cuál de los números primos divide al <code><var>NUMBER</var></code>?</p>
+        </div>
+        <div data-each="FACTORIZATION.slice(0, -1) as I, FACTOR">
+            <div class="graphie" data-update="factor-tree">path([[graph.cx+1,graph.y-.5],[graph.cx,graph.y-1.5]]),path([[graph.cx+1,graph.y-.5],[graph.cx+2,graph.y-1.5]]),graph.y-=2,graph.cx+=1,graph.curr=graph.curr/FACTOR,label([graph.cx-1,graph.y],FACTOR,{color:BLUE}),circle([graph.cx-1,graph.y],.5),graph.lastLabel=label([graph.cx+1,graph.y],graph.curr)</div>
+            <p style="height: 38px"><code><var>REMAINING[I]</var></code> es divisible entre <code class="hint_blue"><var>FACTOR</var></code>, dejándonos con <code><var>REMAINING[I] / FACTOR</var></code>.</p>
+        </div>
+        <div>
+            <div class="graphie" data-update="factor-tree">circle([graph.cx+1,graph.y],.5),graph.lastLabel.remove(),label([graph.cx+1,graph.y],graph.curr,{color:BLUE})</div>
+            <p><code class="hint_blue"><var>FACTORIZATION[FACTORIZATION.length-1]</var></code> es primo, así que ya terminamos de factorizar.</p>
+        </div>
+        <div>
+            <p>La factorización en primos de <code><var>NUMBER</var></code> es:</p>
+            <p><code class="hint_blue">
+                \qquad<var>FACTORIZATION.join("\\space\\color{black}{\\cdot}\\space")</var>
+            </code></p>
+            <div data-if="HAS_EXPONENTS">
+                <p data-if="FACTORIZATION[0] === FACTORIZATION[1]">Como hay <var>toSentence(EXPONENT_HINT)</var>, podemos usar exponentes para escribir la factorización en primos como:</p>
+<p data-else="">Como hay <var>toSentence(EXPONENT_HINT)</var>, podemos usar exponentes para escribir su factorización en primos como:</p>
+                <p><code>\qquad\blue{<var>SOLUTION</var>} = <var>NUMBER</var></code></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

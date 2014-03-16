@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Enoncés avec des Fractions 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange( 1, 5 )</var>
+            <var id="B">randRange( 1, 5 )</var>
+            <var id="LEFT">randRange( 1, 5 )</var>
+            <var id="TOTAL">A + B + LEFT</var>
+            <var id="FRACTION_OF_PIZZAS_EATEN">$._("fraction de %(pizza__1__)s mang\u00e9e", {pizza__1__: pizza( 1 )})</var>
+            <var id="NUMBER_OF_SLICES_EATEN">$._("nombre de parts mang\u00e9es")</var>
+            <var id="NUMBER_OF_SLICES_TOTAL">$._("nombre de parts total")</var>
+            <var id="NUMBER_OF_SLICES_REMAINING">$._("nombre de parts restantes")</var>
+            <var id="FRACTION_OF_PIZZAS_REMAINING">$._("fraction de %(pizza__1__)s restante", {pizza__1__: pizza( 1 )})</var>
+        </div>
+
+        <div class="problems">
+            <div id="show-total-want-eaten">
+                <p class="problem">
+                    <span data-if="isSingular(A)"><var>person( 1 )</var> ate <var>A</var> slice of <var>pizza( 1 )</var>.</span>
+                    <span data-if="isSingular(B)"><var>person( 2 )</var> ate <var>B</var> slice.</span>
+                </p>
+                <p class="question">Si il y avait initialement <var>TOTAL</var> parts, quelle fraction de la <var>pizza( 1 )</var> a été mangée?</p>
+                <p class="solution" data-simplify="optional" data-type="rational"><var>(A + B) / TOTAL</var></p>
+                <div class="hints">
+                    <p><code>\text{<var>FRACTION_OF_PIZZAS_EATEN</var>} = \dfrac{\text{<var>NUMBER_OF_SLICES_EATEN</var>}}{\text{<var>NUMBER_OF_SLICES_TOTAL</var>}}</code></p>
+                    <div>
+                        <p>Ils ont mangé <code>\color{#6495ED}{<var>A + B</var>}</code> sur les <code><var>TOTAL</var></code> parts.</p>
+                        <div class="graphie">init({range:[[-2,2],[-2,2]],scale:25});var eaten=A+B;piechart([eaten,TOTAL-eaten],["#6495ED","#FFA500"],2)</div>
+                    </div>
+                    <p>Ils ont mangé <code>\dfrac{<var>A + B</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>.</p>
+                </div>
+            </div>
+
+            <div id="show-left-want-eaten">
+                <p class="problem">
+                    <span data-if="isSingular(A)"><var>person( 1 )</var> ate <var>A</var> slice of <var>pizza( 1 )</var>.</span>
+                    <span data-if="isSingular(B)"><var>person( 2 )</var> ate <var>B</var> slice.</span>
+                </p>
+                <p class="question"><span data-if="isSingular(LEFT)" data-unwrap="">If there were <var>LEFT</var> slice remaining, what fraction of the <var>pizza( 1 )</var> was eaten?</span></p>
+                <p class="solution" data-simplify="optional" data-type="rational"><var>(A + B) / TOTAL</var></p>
+                <div class="hints">
+                    <p><code>\text{<var>FRACTION_OF_PIZZAS_EATEN</var>} = \dfrac{\text{<var>NUMBER_OF_SLICES_EATEN</var>}}{\text{<var>NUMBER_OF_SLICES_TOTAL</var>}}</code></p>
+                    <p data-if="isSingular(LEFT)">
+                        Since they ate <var>A + B</var> slices of <var>pizza( 1 )</var> with <var>LEFT</var> slice remaining,
+                        they must have begun with <var>TOTAL</var> slices.
+                    </p>
+                    <div>
+                        <p>Ils ont mangé <code>\color{#6495ED}{<var>A + B</var>}</code> sur les <code><var>TOTAL</var></code> parts.</p>
+                        <div class="graphie">init({range:[[-2,2],[-2,2]],scale:25});var eaten=A+B;piechart([eaten,TOTAL-eaten],["#6495ED","#FFA500"],2)</div>
+                    </div>
+                    <p>Ils ont mangé <code>\dfrac{<var>A + B</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>.</p>
+                </div>
+            </div>
+
+            <div id="show-first-want-eaten">
+                <p class="problem">
+                    <span data-if="isSingular(A)"><var>person( 1 )</var> ate <var>A</var> slice of <var>pizza( 1 )</var>.</span>
+                    <span data-if="isSingular(B)"><var>person( 2 )</var> ate <var>B</var> slice.</span>
+                </p>
+                <p class="question">If <var>person( 1 )</var> a mangé <code>\dfrac{<var>A</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>, quelle fraction de la <var>pizza( 1 )</var> a été mangée?</p>
+                <p class="solution" data-simplify="optional" data-type="rational"><var>(A + B) / TOTAL</var></p>
+                <div class="hints">
+                    <p data-if="A &gt; 1"><span data-if="isSingular(A)" data-unwrap="">
+                        If <var>A</var> slice represent
+                        <code>\dfrac{<var>A</var>}{<var>TOTAL</var>}</code> of the <var>pizza( 1 )</var>, there must have been a total of
+                        <var>TOTAL</var> slices.
+                    </span></p>
+<p data-else=""><span data-if="isSingular(A)" data-unwrap="">
+                        If <var>A</var> slice represents
+                        <code>\dfrac{<var>A</var>}{<var>TOTAL</var>}</code> of the <var>pizza( 1 )</var>, there must have been a total of
+                        <var>TOTAL</var> slices.
+                    </span></p>
+                    <p><code>\text{<var>FRACTION_OF_PIZZAS_EATEN</var>} = \dfrac{\text{<var>NUMBER_OF_SLICES_EATEN</var>}}{\text{<var>NUMBER_OF_SLICES_TOTAL</var>}}</code></p>
+                    <div>
+                        <p>Ils ont mangé <code>\color{#6495ED}{<var>A + B</var>}</code> sur les <code><var>TOTAL</var></code> parts.</p>
+                        <div class="graphie">init({range:[[-2,2],[-2,2]],scale:25});var eaten=A+B;piechart([eaten,TOTAL-eaten],["#6495ED","#FFA500"],2)</div>
+                    </div>
+                    <p>Ils ont mangé <code>\dfrac{<var>A + B</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>.</p>
+                </div>
+            </div>
+
+            <div id="show-total-want-left">
+                <p class="problem">
+                    <span data-if="isSingular(A)"><var>person( 1 )</var> ate <var>A</var> slice of <var>pizza( 1 )</var>.</span>
+                    <span data-if="isSingular(B)"><var>person( 2 )</var> ate <var>B</var> slice.</span>
+                </p>
+                <p class="question">Si il y avait initialement <var>TOTAL</var> parts, quelle fraction de la <var>pizza( 1 )</var> reste-t-il?</p>
+                <p class="solution" data-simplify="optional" data-type="rational"><var>LEFT / TOTAL</var></p>
+                <div class="hints">
+                    <p><code>\text{<var>FRACTION_OF_PIZZAS_EATEN</var>} = \dfrac{\text{<var>NUMBER_OF_SLICES_REMAINING</var>}}{\text{<var>NUMBER_OF_SLICES_TOTAL</var>}}</code></p>
+                    <div>
+                        <p>A eux deux, ils ont mangé <var>A + B</var> parts, il reste donc <var>LEFT</var> parts sur les <var>TOTAL</var>.</p>
+                        <div class="graphie">init({range:[[-2,2],[-2,2]],scale:25});var remaining=TOTAL-A-B;piechart([remaining,TOTAL-remaining],["#FFA500","#6495ED"],2)</div>
+                    </div>
+                    <p>Il reste <code>\dfrac{<var>LEFT</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>.</p>
+                </div>
+            </div>
+
+            <div id="show-first-want-left">
+                <p class="problem">
+                    <span data-if="isSingular(A)"><var>person( 1 )</var> ate <var>A</var> slice of <var>pizza( 1 )</var>.</span>
+                    <span data-if="isSingular(B)"><var>person( 2 )</var> ate <var>B</var> slice.</span>
+                </p>
+                <p class="question">If <var>person( 1 )</var> a mangé <code>\dfrac{<var>A</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>, quelle fraction de la <var>pizza( 1 )</var> reste-t-il?</p>
+                <p class="solution" data-simplify="optional" data-type="rational"><var>LEFT / TOTAL</var></p>
+                <div class="hints">
+                    <p data-if="A &gt; 1"><span data-if="isSingular(A)" data-unwrap="">
+                        If <var>A</var> slice represent
+                        <code>\dfrac{<var>A</var>}{<var>TOTAL</var>}</code> of the <var>pizza( 1 )</var>,
+                        there must have been a total of <var>TOTAL</var> slices.
+                    </span></p>
+<p data-else=""><span data-if="isSingular(A)" data-unwrap="">
+                        If <var>A</var> slice represents
+                        <code>\dfrac{<var>A</var>}{<var>TOTAL</var>}</code> of the <var>pizza( 1 )</var>,
+                        there must have been a total of <var>TOTAL</var> slices.
+                    </span></p>
+                    <p><code>\text{<var>FRACTION_OF_PIZZAS_REMAINING</var>} = \dfrac{\text{<var>NUMBER_OF_SLICES_REMAINING</var>}}{\text{<var>NUMBER_OF_SLICES_TOTAL</var>}}</code></p>
+                    <div>
+                        <p>A eux deux, ils ont mangé <var>A + B</var> parts, il reste donc <var>LEFT</var> parts sur les <var>TOTAL</var>.</p>
+                        <div class="graphie">init({range:[[-2,2],[-2,2]],scale:25});var remaining=TOTAL-A-B;piechart([remaining,TOTAL-remaining],["#FFA500","#6495ED"],2)</div>
+                    </div>
+                    <p>Il reste <code>\dfrac{<var>LEFT</var>}{<var>TOTAL</var>}</code> de la <var>pizza( 1 )</var>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

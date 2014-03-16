@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Équations de droite de la forme y – b = m(x – a)</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="y-as-function-of-x" data-weight="2">
+                <div class="vars" data-ensure="X1 !== X2">
+                    <var id="X1">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y1">randRangeNonZero( -5, 5 )</var>
+                    <var id="X2">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y2">randRangeNonZero( -5, 5 )</var>
+                    <var id="SLOPE">(Y1 - Y2) / (X1 - X2)</var>
+                </div>
+                <p class="problem">Using the following values, create an equation in point slope form.  In other words, given the values below, for a formula that looks like <code>(y - y_{1}) = m(x - x_{1})</code>, what are the values of <code>x_{1}</code>, <code>y_{1}</code>, and <code>m</code>?</p>
+                <p><code>x_{1}=\color{#b22222}{<var>X1</var>},\quad f(x_{1})=\color{#b22222}{<var>Y1</var>}.</code><br><code>x_{2}=\color{#4169E1}{<var>X2</var>},\quad f(x_{2})=\color{#4169E1}{<var>Y2</var>}.</code> </p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y2</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y1</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <p class="entry" data-type="multiple" style="font-size: 11px;">
+                            <code>(y - {}</code><span class="sol short25"></span><code>) = {}</code><span class="sol short25"></span><code>(x - {}</code><span class="sol short25"></span><code>)</code>
+                        </p>
+                    </div>
+                    <p class="example">un entier tel que <code>6</code></p>
+                    <p class="example">une fraction <em>irréductible</em> telle que <code>3/5</code></p>
+                    <p class="example">une <em>fraction </em> irréductible, telle que <code>7/4</code></p>
+                    <p class="example">and/or <em>exact</em> decimals, like <code>0.75</code></p>
+                    <p class="example">faites attention au signe de chaque nombre que vous validez pour être sûr que l'équation entière soit exacte</p>
+                </div>
+                <div class="hints">
+                    <p><code>f(x)</code> est une notation un peu compliquée pour désigner <code>y</code>. Donc un point est <code>(\color{#b22222}{<var>X1</var>}, \color{#b22222}{<var>Y1</var>})</code>.</p>
+                    <p>La formule qui permet de calculer le coefficient directeur est : <code>m = (y_{1} - y_{2}) / (x_{1} - x_{2})</code>.</p>
+                    <p>En remplaçant par les coordonnées données, on obtient <code>\displaystyle {} \frac{\color{#b22222}{<var>Y1</var>} - <span data-if="Y2 &lt; 0">(</span>\color{#4169E1}{<var>Y2</var>}<span data-if="Y2 &lt; 0">)</span>}{\color{#b22222}{<var>X1</var>} - <span data-if="X2 &lt; 0">(</span>\color{#4169E1}{<var>X2</var>}<span data-if="X2 &lt; 0">)</span>} =</code> <span data-if="getGCD( Y1-Y2, X1-X2 ) !== 1 || X1-X2 === 1 || X1-X2 &lt; 0 || Y1-Y2 &lt; 0"> <code>\color{#68228B}{\dfrac{<var>Y1-Y2</var>}{<var> X1-X2</var>}} =</code> </span> <code>\color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}</code></p>
+                    <div>
+                        <p>Sélectionner un des points correspondant à <code>x_{1}</code> et <code>y_{1}</code> sur la courbe. La solution est alors :</p>
+                        <p><code>(y - \color{#b22222}{<var>Y1</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#b22222}{<var>X1</var>})</code></p>
+                        <p>OR (OU)</p>
+                        <p><code>(y - \color{#4169E1}{<var>Y2</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#4169E1}{<var>X2</var>})</code></p>
+                    </div>
+                </div>
+            </div>
+            <div id="two-points" data-weight="3">
+                <div class="vars" data-ensure="X1 !== X2">
+                    <var id="X1">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y1">randRangeNonZero( -5, 5 )</var>
+                    <var id="X2">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y2">randRangeNonZero( -5, 5 )</var>
+                    <var id="SLOPE">(Y1 - Y2) / (X1 - X2)</var>
+                </div>
+                <p class="problem">Une droite passe par <code>(\color{#b22222}{<var>X1</var>}, \color{#b22222}{<var>Y1</var>})</code> et par <code>(\color{#4169E1}{<var>X2</var>}, \color{#4169E1}{<var>Y2</var>})</code>. Établir une équation de cette droite et la mettre sous la forme y – b = m(x – a).</p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y2</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y1</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <p class="entry" data-type="multiple" style="font-size: 11px;">
+                            <code>(y - {}</code><span class="sol short25"></span><code>) = {}</code><span class="sol short25"></span><code>(x - {}</code><span class="sol short25"></span><code>)</code>
+                        </p>
+                    </div>
+                    <p class="example">un entier tel que <code>6</code></p>
+                    <p class="example">une fraction <em>irréductible</em> telle que <code>3/5</code></p>
+                    <p class="example">une <em>fraction </em> irréductible, telle que <code>7/4</code></p>
+                    <p class="example">and/or <em>exact</em> decimals, like <code>0.75</code></p>
+                    <p class="example">faites attention au signe de chaque nombre que vous validez pour être sûr que l'équation entière soit exacte</p>
+                </div>
+                <div class="hints">
+                    <p>La formule qui permet de calculer le coefficient directeur est : <code>m = (y_{1} - y_{2}) / (x_{1} - x_{2})</code>.</p>
+                    <p>En remplaçant par les coordonnées données, on obtient <code>\displaystyle {} \frac{\color{#b22222}{<var>Y1</var>} - <span data-if="Y2 &lt; 0">(</span>\color{#4169E1}{<var>Y2</var>}<span data-if="Y2 &lt; 0">)</span>}{\color{#b22222}{<var>X1</var>} - <span data-if="X2 &lt; 0">(</span>\color{#4169E1}{<var>X2</var>}<span data-if="X2 &lt; 0">)</span>} =</code> <span data-if="getGCD( Y1-Y2, X1-X2 ) !== 1 || X1-X2 === 1 || X1-X2 &lt; 0 || Y1-Y2 &lt; 0"> <code>\color{#68228B}{\dfrac{<var>Y1-Y2</var>}{<var> X1-X2</var>}} =</code> </span><code> \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}</code></p>
+                    <div>
+                        <p>Sélectionner un des points correspondant à <code>x_{1}</code> et <code>y_{1}</code> sur la courbe. La solution est alors :</p>
+                        <p><code>(y - \color{#b22222}{<var>Y1</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#b22222}{<var>X1</var>})</code></p>
+                        <p>OR (OU)</p>
+                        <p><code>(y - \color{#4169E1}{<var>Y2</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#4169E1}{<var>X2</var>})</code></p>
+                    </div>
+                </div>
+            </div>
+            <div id="slope-intercept" data-weight="1">
+                <div class="vars" data-ensure="X1 !== X2">
+                    <var id="X1">0</var>
+                    <var id="Y1">randRangeNonZero( -5, 5 )</var>
+                    <var id="X2">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y2">randRangeNonZero( -5, 5 )</var>
+                    <var id="SLOPE">(Y1 - Y2)/ (X1 - X2)</var>
+                </div>
+                <p class="problem">Le coefficient directeur d'une droite est <code>\color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}</code> et son ordonnée à l'origine est <code>\color{#4169E1}{<var>Y1</var>}</code>. Établir une équation de cette droite et la mettre sous la forme y - b = m(x - a).</p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y1</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <p class="entry" data-type="multiple" style="font-size: 11px;">
+                            <code>(y - {}</code><span class="sol short25"></span><code>) = {}</code><span class="sol short25"></span><code>(x - {}</code><span class="sol short25"></span><code>)</code>
+                        </p>
+                    </div>
+                    <p class="example">un entier tel que <code>6</code></p>
+                    <p class="example">une fraction <em>irréductible</em> telle que <code>3/5</code></p>
+                    <p class="example">une <em>fraction </em> irréductible, telle que <code>7/4</code></p>
+                    <p class="example">and/or <em>exact</em> decimals, like <code>0.75</code></p>
+                    <p class="example">faites attention au signe de chaque nombre que vous validez pour être sûr que l'équation entière soit exacte</p>
+                </div>
+                <div class="hints">
+                    <p>L'ordonnée à l'origine est la valeur de <code>y</code> lorsque <code>x = 0</code>, donc <code>\quad(\color{#b22222}{<var>X1</var>}, \color{#b22222}{<var>Y1</var>})</code> est un point de la droite :</p>
+                    <p>An equation in point slope form looks like: <code>(y - y_{1}) = m(x - x_{1})</code> </p>
+                    <div>
+                        <p>Donc, la solution sous la forme y – b = m(x – a) :<br><code>(y - \color{#b22222}{<var>Y1</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#b22222}{<var>X1</var>})</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

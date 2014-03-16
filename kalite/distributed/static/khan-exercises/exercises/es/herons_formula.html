@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers graphie-geometry math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Fórmula de Herón</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+        </div>
+
+        <div class="problems">
+            <div id="simple" data-calculator="">
+                <div class="vars">
+                    <var id="ANGLES">randomTriangleAngles.triangle()</var>
+                    <var id="SIDES">[]</var>
+                    <var id="S">[]</var>
+                    <var id="ANS">[]</var>
+                    <var id="AREA">randRange( 3, 7 ) + random()</var>
+                </div>
+                <div class="problem">¿Cuál es el área de este triángulo? (Redondea a dos decimales)</div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,12],[-7,2.5]]});var trA=new Triangle([3,-3],ANGLES,AREA,{});SIDES=trA.niceSideLengths,trA.boxOut([[[-10,2.3],[10,2.3]]],[0,-.7]),trA.boxOut([[[-1,-10],[-1,10]]],[.7,0]),trA.boxOut([[[11.5,-10],[11.5,10]]],[-.7,0]),trA.draw(),trA.labels={sides:[commafy(SIDES[0]),commafy(SIDES[1]),commafy(SIDES[2])]},trA.drawLabels(),S=roundTo(2,(SIDES[0]+SIDES[1]+SIDES[2])/2),ANS=roundTo(2,sqrt(S*(S-SIDES[0])*(S-SIDES[1])*(S-SIDES[2]))),$("#ans").html(ANS)</div>
+                </div>
+                <div class="solution"><div id="ans"></div></div>
+                <div class="hints">
+                    <p>Conocemos todos los lados de este triángulo, así que podemos usar la fórmula de Herón para calcular su área.</p>
+                    <p>La fórmula de Herón establece que el área de un triángulo <code>A=\sqrt{s(s-a)(s-b)(s-c)}</code></p>
+                    <p><code>s = \dfrac{ a + b + c }{ 2 }</code></p>
+                    <p><code>s = \dfrac{ <var>commafy(SIDES[0])</var> + <var>commafy(SIDES[1])</var> + <var>commafy(SIDES[2])</var> }{ 2 }</code></p>
+                    <p><code>s = \dfrac{ <var>localeToFixed( SIDES[ 0 ] + SIDES[ 1 ] + SIDES[ 2 ], 1)</var> }{ 2 }</code></p>
+                    <p><code>s =  <var>commafy(S)</var></code></p>
+                    <p><code>A = \sqrt{ <var>commafy(S)</var> \cdot ( <var>commafy(S)</var> - <var>commafy(SIDES[0])</var> )  \cdot ( <var>commafy(S)</var> - <var>commafy(SIDES[1])</var> ) \cdot ( <var>commafy(S)</var> - <var>commafy(SIDES[2])</var> ) }</code></p>
+                    <p><code>A = \sqrt{ <var>commafy(S)</var> \cdot  <var>commafy(roundTo(2, S - SIDES[ 0 ]))</var>   \cdot <var>commafy(roundTo(2, S - SIDES[ 1 ]))</var> \cdot <var>commafy(roundTo(2, S - SIDES[ 2 ]))</var>  }</code></p>
+                     <p><code>A = <var>commafy(ANS)</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

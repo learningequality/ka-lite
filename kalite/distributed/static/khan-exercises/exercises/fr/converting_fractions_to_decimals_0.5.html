@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers-arithmetic">
+<head>
+<title>Les fractions comme division par une puissance de 10</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars" data-ensure="getGCD( NUMERATOR, DENOMINATOR ) === 1">
+                <var id="NUMERATOR">randRange(1, 99)</var>
+                <var id="PLACES">randRange(1, 2)</var>
+                <var id="DENOMINATOR">pow(10, PLACES)</var>
+                <var id="SOLUTION">roundTo(3, NUMERATOR / DENOMINATOR)</var>
+            </div>
+            <p>Exprimer la fraction comme un nombre d&eacute;cimal.</p>
+            <p class="question"><code>\large{\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>}}</code></p>
+            <p class="solution" data-type="decimal"><var>SOLUTION</var></p>
+            <div class="hints">
+                <p>This fraction represents the result of dividing <code><var>NUMERATOR</var></code> by <code><var>DENOMINATOR</var></code>.</p>
+
+                <p data-if="DENOMINATOR === 10">Diviser par <code><var>DENOMINATOR</var></code> est la m&ecirc;me chose que de d&eacute;placer la virgule d'une position vers la gauche.</p>
+                <p data-else="">Diviser par <code><var>DENOMINATOR</var></code> est la m&ecirc;me chose que de d&eacute;placer la virgule de deux positions vers la gauche.</p>
+
+                <div class="graphie">init({range:[[-1,11],[-1,2.2]],scale:[20,40]});var digits=KhanUtil.digits(NUMERATOR);digits.unshift(0);var digits2=digits.slice();digits.length&lt;PLACES+2&amp;&amp;(digits.push(" "),digits2.push(0)),drawDigits(digits.reverse(),0,1),drawDigits(digits2.reverse(),0,0);for(var i=1;PLACES+1&gt;i;i++)i===PLACES&amp;&amp;style({arrows:"-&gt;"}),arc([digits.length-(i+1),1.5],.5,0,180,{stroke:"blue"});style({fill:"#444",stroke:"#444"}),ellipse([digits.length-1.5,.8],[.09,.06]),ellipse([digits2.length-PLACES-1.5,-.2],[.09,.06])</div>
+
+                <p><code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>} = <var>SOLUTION</var></code></p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Inéquation du 1er degré</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange( 2, 10 )</var>
+            <var id="B">randRangeNonZero( -10, 10 )</var>
+            <var id="C" data-ensure="abs( C - A ) &gt; 1">randRange( 2, 10 )</var>
+            <var id="D" data-ensure="D !== B">randRangeNonZero( 2, 10 )</var>
+            <var id="SOLUTION">fractionReduce( D - B, A - C )</var>
+
+            <var id="REL">randFromArray([ "&lt;", "&gt;", "≤", "≥" ])</var>
+            <var id="FREL">{ "&lt;": "&gt;", "&gt;": "&lt;", "≤": "≥", "≥": "≤" }[ REL ]</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">Calculer la valeur de <code>x</code> :</p>
+                <div><code><var>A</var>x + <var>B</var> <var>REL</var> <var>C</var>x + <var>D</var></code></div>
+
+                <p class="solution" data-type="multiple">
+                    <code>x</code>
+                    <span class="sol" data-choices="['', '&lt;', '&gt;', '≤', '≥']" data-type="list">
+                        <var>A - C &gt; 0 ? REL : FREL</var>
+                    </span>
+                    <span class="sol"><var>( D - B ) / ( A - C )</var></span></p>
+            </div>
+        </div>
+
+        <div class="hints">
+            <div>
+                <p>Soustraire <code><var>C</var>x</code> des deux côtés:</p>
+                <p><code>(<var>A</var>x + <var>B</var>) - <var>C</var>x <var>REL</var> (<var>C</var>x + <var>D</var>) - <var>C</var>x</code></p>
+                <p><code><var>A - C</var>x + <var>B</var> <var>REL</var> <var>D</var></code></p>
+            </div>
+            <div>
+                <p data-if="B &gt; 0">Soustraire <code><var>abs(B)</var></code> de chaque coté:</p>
+<p data-else="">Ajouter <code><var>abs(B)</var></code> de chaque cotés:</p>
+                <p><code>(<var>A - C</var>x + <var>B</var>) + <var>-B</var> <var>REL</var> <var>D</var> + <var>-B</var></code></p>
+                <p><code><var>A - C</var>x <var>REL</var> <var>D - B</var></code></p>
+            </div>
+            <div data-if="A - C &gt; 0">
+                <div>
+                    <p>On divise les deux membres par <code><var>A - C</var></code>. Comme <code><var>A - C</var></code> est positif, le sens <code><var>REL</var></code> de l'inégalité reste le même.</p>
+                    <p><code>\dfrac{<var>A - C</var>x}{<var>A - C</var>} <var>REL</var> \dfrac{<var>D - B</var>}{<var>A - C</var>}</code></p>
+                </div>
+                <div>
+                    <p>On simplifie.</p>
+                    <p><code>x <var>REL</var> <var>SOLUTION</var></code></p>
+                </div>
+            </div>
+            <div data-else="">
+                <div>
+                    <p>On divise les deux membres par <code><var>A - C</var></code>. Comme <code><var>A - C</var></code> est négatif, le sens de l'inégalité <code><var>REL</var></code> doit être changé en <code><var>FREL</var></code>.</p>
+                    <p><code>\dfrac{<var>A - C</var>x}{<var>A - C</var>} <var>FREL</var> \dfrac{<var>D - B</var>}{<var>A - C</var>}</code></p>
+                </div>
+                <div>
+                    <p>On simplifie.</p>
+                    <p><code>x <var>FREL</var> <var>SOLUTION</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

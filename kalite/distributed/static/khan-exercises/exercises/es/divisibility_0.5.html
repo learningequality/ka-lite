@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Divisibilidad 0.5</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="factor">
+                <div class="vars">
+                    <var id="B">randRange( 2, 14 )</var>
+                    <var id="FACTOR">floor( randRange( 50, 200 ) / B )</var>
+                    <var id="A">FACTOR * B</var>
+                    <var id="FACTORIZATION_A">getPrimeFactorization( A )</var>
+                    <var id="FACTORIZATION_B">getPrimeFactorization( B )</var>
+                    <var id="WRONGFACTORS">function(){for(var e=[],r=2;15&gt;r;)A%r!==0&amp;&amp;e.push(r),r++;var a=shuffle(e,4);return a.push(B),a}()</var>
+                    <var id="WRONGFACTORS_SORTED">sortNumbers( WRONGFACTORS )</var>
+                </div>
+                <p class="question">¿Cuál de los siguientes números es un factor de <var>A</var>?</p>
+                <p><code>\large{<var>WRONGFACTORS_SORTED.join( "," )</var>}</code></p>
+                <p class="solution"><code><var>B</var></code></p>
+                <ul class="choices" data-category="true">
+<li data-each="WRONGFACTORS_SORTED as index, wrong"><code><var>wrong</var></code></li>
+                </ul>
+<div class="hints">
+                    <p>Por definición el factor de un número divide enteramente a ese número. Podemos empezar por dividir <code><var>A</var></code> entre cada una de las opciones que aparecen como respuestas.</p>
+                    <div>
+                        <p data-each="WRONGFACTORS_SORTED as WRONG"><code><var>A</var> \div <var>WRONG</var> = <var>floor( A / WRONG )</var><span data-if="A % WRONG !== 0">\text{ R }<var>( A % WRONG )</var></span></code></p>
+                    </div>
+                    <p>La única opción de las respuestas que se divide entre <code class="hint_blue"> <var>A</var></code> con ningún residuo es <code class="hint_orange"><var>B</var></code>. <code>\quad<var>FACTOR</var></code> * <code class="hint_orange"><var>B</var></code> = <code class="hint_blue"><var>A</var></code>.</p>
+                    <div>
+                        <p>Podemos comprobar nuestra respuesta mirando la factorización en primos de ambos números. Ten en cuenta que los factores primos de  <code><var>B</var></code> están contenidos dentro de los factores primos de <code><var>A</var></code>.</p>
+                        <p><code><var>A</var> = <var>FACTORIZATION_A.join( "\\times" )</var>\qquad\qquad<var>B</var> = <var>FACTORIZATION_B.join( "\\times" )</var></code>
+                    </p>
+</div>
+                    <p>Por lo tanto, el único factor de <code class="hint_blue"><var>A</var></code> que aparece en nuestras opciones es <code class="hint_orange"><var>B</var></code>. Podemos decir que <code class="hint_blue"><var>A</var></code> es divisible por <code class="hint_orange"><var>B</var></code>.</p>
+                </div>
+            </div>
+            <div id="multiple">
+                <div class="vars">
+                    <var id="B">randRange( 2, 14 )</var>
+                    <var id="FACTOR">floor( randRange( 50, 120 ) / B )</var>
+                    <var id="A">FACTOR * B</var>
+                    <var id="FACTORIZATION_A">getPrimeFactorization( A )</var>
+                    <var id="FACTORIZATION_B">getPrimeFactorization( B )</var>
+                    <var id="WRONGMULTIPLES">function(){for(var e=[];e.length&lt;4;){var r=randRange(40,120);r%B!==0&amp;&amp;e.push(r)}var a=shuffle(e,4);return a.push(A),a}()</var>
+                    <var id="WRONGMULTIPLES_SORTED">sortNumbers( WRONGMULTIPLES )</var>
+                </div>
+                <p class="question">¿Cuál de los siguientes números es un múltiplo de <var>B</var>?</p>
+                <p><code>\large{<var>WRONGMULTIPLES_SORTED.join( "," )</var>}</code></p>
+                <p class="solution"><code><var>A</var></code></p>
+                <ul class="choices" data-category="true">
+<li data-each="WRONGMULTIPLES_SORTED as index, wrong"><code><var>wrong</var></code></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p>Los múltiplos de <code><var>B</var></code> son <code><var>B</var></code>, <code><var>B*2</var></code>, <code><var>B*3</var></code>, <code><var>B*4</var></code>.....</p>
+                        <p>En general cualquier número que no deja residuo al dividirse por <code><var>B</var></code> se considera un múltiplo de <code><var>B</var></code>.</p>
+                    </div>
+                    <div>
+                        <p>Podemos empezar dividiendo cada una delas opciones que aparecen como respuestas entre <code><var>B</var></code>.</p>
+                        <p data-each="WRONGMULTIPLES_SORTED as WRONG"><code><var>WRONG</var> \div <var>B</var> = <var>floor( WRONG / B )</var><span data-if="WRONG % B !== 0">\text{ R }<var>( WRONG % B )</var></span></code></p>
+                    </div>
+                    <p>La única opción de las respuestas que no deja residuo al ser dividida  es <code class="hint_blue"><var>A</var></code>. <code>\quad<var>FACTOR</var></code> * <code class="hint_orange"><var>B</var></code> = <code class="hint_blue"><var>A</var></code>.</p>
+                    <div>
+                        <p>Podemos comprobar nuestra respuesta mirando la factorización en primos de ambos números. Ten en cuenta que los factores primos de  <code><var>B</var></code> están contenidos dentro de los factores primos de <code><var>A</var></code>.</p>
+                        <p><code><var>A</var> = <var>FACTORIZATION_A.join( "\\times" )</var>\qquad\qquad<var>B</var> = <var>FACTORIZATION_B.join( "\\times" )</var></code>
+                    </p>
+</div>
+                        <p>Por lo tanto, el único factor de <code class="hint_orange"><var>B</var></code> que aparece en nuestras opciones es <code class="hint_blue"><var>A</var></code>. Podemos decir que <code class="hint_blue"><var>A</var></code> es divisible entre <code class="hint_orange"><var>B</var></code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
