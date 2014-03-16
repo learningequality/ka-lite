@@ -5,12 +5,12 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel='stylesheet' type='text/css' href='{% static "css/kmap_editor.css" %}' />
+    <link rel='stylesheet' type='text/css' href='{% static "css/distributed/kmap_editor.css" %}' />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type='text/javascript' src='{% static "khan-exercises/third_party/raphael.js" %}'></script>
-    <script type='text/javascript' src='{% static "js/kmap-editor.js" %}'></script>
+    <script type='text/javascript' src='{% static "js/distributed/kmap-editor.js" %}'></script>
 {% endblock headjs %}
 
 {% block content %}

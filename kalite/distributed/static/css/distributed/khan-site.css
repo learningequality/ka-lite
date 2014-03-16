@@ -83,7 +83,7 @@ body {
 
 
 #outer-wrapper {
-    background: url(/static/images/light-page-bg.png) repeat-x;
+    background: url(/static/images/distributed/light-page-bg.png) repeat-x;
     min-height: 100%;
     height: auto !important;
     height: 100%;
@@ -91,7 +91,7 @@ body {
 }
 
 #page-container, #page-container-inner {
-    background: transparent url(/static/images/content-border.1.png) no-repeat right 85px;
+    background: transparent url(/static/distributed/images/content-border.1.png) no-repeat right 85px;
 }
 
 #page-container {
@@ -215,7 +215,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 footer {
     height: 208px;
     clear: both;
-    background: url(/static/images/footer-bg.png) repeat-x 0 0; /*! data-uri(/images/footer-bg.png) */
+    background: url(/static/images/distributed/footer-bg.png) repeat-x 0 0; /*! data-uri(/images/footer-bg.png) */
     min-width: 970px;
     position: relative;
 }
@@ -223,12 +223,12 @@ footer {
         height: 38px;
         margin-top: 38px;
         color: #555;
-        background: url(/static/images/light-page-bg.png) repeat-x 0 -30px;
+        background: url(/static/images/distributed/light-page-bg.png) repeat-x 0 -30px;
         border-top: 1px solid #C6D1AD;
         z-index: 10;
     }
     footer #leaves {
-        background-image: url(/static/images/non-repeating-sprites.4.png);
+        background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
         background-position: 319px -908px;
         height: 188px;
     }
@@ -245,7 +245,7 @@ footer {
         padding: 8px 10px 0 0;
     }
     footer #creative-commons-link {
-        background-image: url(/static/images/non-repeating-sprites.4.png);
+        background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
         background-position: -143px -67px;
         display: inline-block;
         height: 15px;
@@ -332,7 +332,7 @@ article, section {
         .info-box .info-box-sub-description strong {
             color: #444;
             font-style: italic;
-        }    
+        }
     #answer_area .info-box .select-choice {
         margin: 5px 0 10px;
     }

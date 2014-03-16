@@ -70,13 +70,13 @@ var KMapEditor = {
             this.ICON_SIZE = 40;
             this.LABEL_WIDTH = 80;
         }
-        this.IMG_LIVE = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_DEV = "/static/images/node-not-started-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_SELECTED = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
-        this.IMG_SELECTED_DEV = "/static/images/node-complete-" + this.ICON_SIZE + "-faded.png";
-        this.IMG_NOT_STARTED = "/static/images/node-not-started-" + this.ICON_SIZE + ".png";
-        this.IMG_PARTIAL = "/static/images/node-partial-" + this.ICON_SIZE + ".png";
-        this.IMG_COMPLETE = "/static/images/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_LIVE = "/static/images/distributed/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_DEV = "/static/images/distributed/node-not-started-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_SELECTED = "/static/images/distributed/node-complete-" + this.ICON_SIZE + ".png";
+        this.IMG_SELECTED_DEV = "/static/images/distributed/node-complete-" + this.ICON_SIZE + "-faded.png";
+        this.IMG_NOT_STARTED = "/static/images/distributed/node-not-started-" + this.ICON_SIZE + ".png";
+        this.IMG_PARTIAL = "/static/images/distributed/node-partial-" + this.ICON_SIZE + ".png";
+        this.IMG_COMPLETE = "/static/images/distributed/node-complete-" + this.ICON_SIZE + ".png";
     },
 
     createCanvas: function() {
@@ -133,7 +133,7 @@ var KMapEditor = {
 
                 $("<img>")
                     .attr({
-                        src: "/static" + topic.icon_url
+                        src: "/static" + topic.icon_url.replace("/images/", "/images/distributed/")
                     })
                     .appendTo(newTopic);
 
