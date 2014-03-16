@@ -24,7 +24,7 @@ from .models import VideoFile
 from control_panel.views import local_device_context
 from fle_utils.chronograph import force_job
 from fle_utils.internet import am_i_online, JsonResponse
-from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name, get_language_name
+from i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
 from main import topic_tools
 from securesync.models import Device
 from securesync.devices import require_registration
