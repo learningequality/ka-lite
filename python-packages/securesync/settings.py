@@ -1,3 +1,5 @@
+import os
+
 try:
     import local_settings
 except ImportError:
@@ -18,3 +20,5 @@ SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_P
 
 # Here, None === no limit
 SYNC_SESSIONS_MAX_RECORDS = getattr(local_settings, "SYNC_SESSIONS_MAX_RECORDS", 10)
+
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
