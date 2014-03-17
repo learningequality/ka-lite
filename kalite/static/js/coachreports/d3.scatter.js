@@ -81,7 +81,7 @@ function d3_scatter(data, options, appendtohtml) {
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", height/4)
-    .text("Struggling");
+    .text(gettext("Struggling"));
 
   var bored = svg.append("g")
   bored.append("rect")
@@ -95,7 +95,7 @@ function d3_scatter(data, options, appendtohtml) {
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
     .attr("y", 3*height/4)
-    .text("Bored");
+    .text(gettext("Bored"));
 
   var disengaged = svg.append("g")
   disengaged.append("rect")
@@ -109,7 +109,7 @@ function d3_scatter(data, options, appendtohtml) {
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", 3*height/4)
-    .text("Disengaged");
+    .text(gettext("Disengaged"));
 
   var ontarget = svg.append("g")
   ontarget.append("rect")
@@ -123,7 +123,7 @@ function d3_scatter(data, options, appendtohtml) {
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
     .attr("y", height/4)
-    .text("On Target");
+    .text(gettext("On Target"));
 
   // Create and draw x and y axes
   svg.append("g")
