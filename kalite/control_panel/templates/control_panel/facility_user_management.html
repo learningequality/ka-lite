@@ -64,10 +64,10 @@
                                 {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
                             </th>
                             <th class="headrowuser">
-                                {% trans "First Name" %}
+                                {% trans "Last Name" %}
                             </th>
                             <th class="headrowuser">
-                                {% trans "Last Name" %}
+                                {% trans "First Name" %}
                             </th>
                             <th class="headrowuser">
                                 {% trans "Username" %}
@@ -82,16 +82,16 @@
                                 <input type="checkbox" value="{{ user.username }}">
                             </td>
                             <td>
-                                <span title="{{ user.first_name }}">
+                                <span title="{{ user.last_name }}">
                                     <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
-                                        {{ user.first_name }}
+                                        {{ user.last_name }}
                                     </a>
                                 </span>
                             </td>
                             <td>
-                                <span title="{{ user.last_name }}">
+                                <span title="{{ user.first_name }}">
                                     <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
-                                        {{ user.last_name }}
+                                        {{ user.first_name }}
                                     </a>
                                 </span>
                             </td>
@@ -167,10 +167,10 @@
                                     {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
                                 </th>
                                 <th class="headrowuser">
-                                    {% trans "First Name" %}
+                                    {% trans "Last Name" %}
                                 </th>
                                 <th class="headrowuser">
-                                    {% trans "Last Name" %}
+                                    {% trans "First Name" %}
                                 </th>
                                 <th class="headrowuser">
                                     {% trans "Username" %}
@@ -185,16 +185,16 @@
                                     <input type="checkbox" value="{{ user.username }}">
                                 </td>
                                 <td>
-                                    <span title="{{ user.first_name }}">
+                                    <span title="{{ user.last_name }}">
                                         <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
-                                            {{ user.first_name }}
+                                            {{ user.last_name }}
                                         </a>
                                     </span>
                                 </td>
                                 <td>
-                                    <span title="{{ user.last_name }}">
+                                    <span title="{{ user.first_name }}">
                                         <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
-                                            {{ user.last_name }}
+                                            {{ user.first_name }}
                                         </a>
                                     </span>
                                 </td>
