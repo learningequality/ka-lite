@@ -1,3 +1,5 @@
+import os
+
 try:
     import local_settings
 except ImportError:
@@ -34,8 +36,7 @@ if getattr(local_settings, "DEBUG", False):
     MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
 
 
-
-if os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
+if os.path.exists(os.path.join(__file__, "loadtesting")):
     INSTALLED_APPS += ("testing.loadtesting",)
 
 TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'
@@ -44,5 +45,3 @@ TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
 assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"
 
 AUTO_LOAD_TEST = getattr(local_settings, "AUTO_LOAD_TEST", False)
-
-

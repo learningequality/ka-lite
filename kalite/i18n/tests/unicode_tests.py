@@ -7,10 +7,10 @@ from django.conf import settings
 from django.utils import unittest
 
 from facility.models import Facility, FacilityGroup, FacilityUser
-from fle_utils.testing import KALiteTestCase, UnicodeModelsTest
+from fle_utils.testing.unicode import UnicodeModelsTest
+from testing import KALiteTestCase
 from i18n.models import *
 from version import VERSION
-
 
 class i18nUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
 
