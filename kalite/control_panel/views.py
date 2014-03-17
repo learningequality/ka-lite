@@ -9,6 +9,7 @@ from collections import OrderedDict, namedtuple
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -230,37 +231,103 @@ def group_report(request, facility, group_id=None, zone_id=None):
 @require_authorized_admin
 @render_to("control_panel/facility_user_management.html")
 def facility_user_management(request, facility, user_type=None, group_id=None, zone_id=None, per_page=25):
-    page=request.REQUEST.get("page","1")
+    coach_page=request.REQUEST.get("coaches_page","1")
+    student_page=request.REQUEST.get("students_page","1")
     groups = FacilityGroup.objects \
         .filter(facility=facility) \
         .order_by("name")
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id)
 
+
+    def pages_to_show(paginator, page):
+            page = int(page)
+            pages_wanted = set([1,2,
+                                page-2, page-1,
+                                page,
+                                page+1, page+2,
+                                paginator.num_pages-1, paginator.num_pages])
+
+            pages_to_show = set(paginator.page_range).intersection(pages_wanted)
+            pages_to_show = sorted(pages_to_show)
+
+            skip_pages = [ x[1] for x in zip(pages_to_show[:-1],
+                                             pages_to_show[1:])
+                           if (x[1] - x[0] != 1) ]
+
+            for i in skip_pages:
+                pages_to_show.insert(pages_to_show.index(i), -1)
+
+            return pages_to_show
     # This could be moved into a function shared across files, if necessary.
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
-    def get_users_from_group(user_type, group_id, facility=None):
-        if user_type == "teachers":
+    def get_users_from_group(user_type, group_id, page, facility=None):
+        if user_type == "coaches":
             user_list = FacilityUser.objects \
                 .filter(is_teacher=True) \
                 .filter(facility=facility)
-        elif group_id == _("Ungrouped"):
+        elif not group_id or group_id == "None":
             user_list = FacilityUser.objects \
                 .filter(is_teacher=False) \
                 .filter(facility=facility, group__isnull=True)
-        elif not group_id or group_id == "None":
-            return []
         else:
             user_list = get_object_or_404(FacilityGroup, pk=group_id) \
                 .facilityuser_set
-        return list(user_list \
-                    .order_by("first_name", "last_name", "username"))
-    teachers = get_users_from_group(user_type="teachers", group_id=group_id, facility=facility)
-    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
+        user_list = user_list.order_by("first_name", "last_name", "username")
+
+        if not user_list:
+            users = []
+            page_urls = {}
+        else:
+            paginator = Paginator(user_list, per_page)
+            try:
+                users = paginator.page(page)
+                listed_pages = pages_to_show(paginator, page)
+            except PageNotAnInteger:
+                users = paginator.page(1)
+                listed_pages = pages_to_show(paginator, 1)
+            except EmptyPage:
+                users = paginator.page(paginator.num_pages)
+                listed_pages = pages_to_show(paginator, paginator.num_pages)
+
+        if users:
+            if users.has_previous():
+                prevGETParam = request.GET.copy()
+                prevGETParam[user_type + "_page"] = users.previous_page_number()
+                previous_page_url = "?" + prevGETParam.urlencode()
+            else:
+                previous_page_url = ""
+            if users.has_next():
+                nextGETParam = request.GET.copy()
+                nextGETParam[user_type + "_page"] = users.next_page_number()
+                next_page_url = "?" + nextGETParam.urlencode()
+            else:
+                next_page_url = ""
+            page_urls = {"next_page": next_page_url, "prev_page": previous_page_url}
+
+            if listed_pages:
+                for listed_page in listed_pages:
+                    if listed_page != -1:
+                        GETParam = request.GET.copy()
+                        GETParam[user_type + "_page"] = listed_page
+                        page_urls.update({listed_page: "?" + GETParam.urlencode()})
+                users.listed_pages = listed_pages
+
+
+        return users, page_urls
+
+    coaches, coach_urls = get_users_from_group(user_type="coaches", group_id=group_id, page=coach_page, facility=facility)
+    students, student_urls = get_users_from_group(user_type="students", group_id=group_id, page=student_page, facility=facility)
+
+    page_urls = {
+        "coaches": coach_urls,
+        "students": student_urls,
+        }
 
     context.update({
+        "page_urls": page_urls,
         "students": students,
-        "coaches": teachers,
+        "coaches": coaches,
         "groups": groups,
     })
 
@@ -417,9 +484,12 @@ def control_panel_context(request, **kwargs):
         if key.endswith("_id") and val == "None":
             kwargs[key] = None
 
+    device = Device.get_own_device()
+    default_zone = device.get_zone()
+
     if "zone_id" in kwargs:
-        context["zone"] = get_object_or_None(Zone, pk=kwargs["zone_id"]) if kwargs["zone_id"] else None
-        context["zone_id"] = kwargs["zone_id"] or "None"
+        context["zone"] = get_object_or_None(Zone, pk=kwargs["zone_id"]) if kwargs["zone_id"] else default_zone
+        context["zone_id"] = kwargs["zone_id"] or default_zone.id
     if "facility_id" in kwargs:
         context["facility"] = get_object_or_404(Facility, pk=kwargs["facility_id"]) if kwargs["facility_id"] != "new" else None
         context["facility_id"] = kwargs["facility_id"] or "None"
@@ -429,7 +499,6 @@ def control_panel_context(request, **kwargs):
     if "device_id" in kwargs:
         context["device"] = get_object_or_404(Device, pk=kwargs["device_id"])
         context["device_id"] = kwargs["device_id"] or "None"
-
     return context
 
 

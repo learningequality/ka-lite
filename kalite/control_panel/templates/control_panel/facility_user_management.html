@@ -1,6 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block users_active %}active{% endblock users_active %}
 {% block control_panel_active %}{% endblock %}
@@ -8,16 +9,6 @@
 {% block title %}{% trans "Facility User Management" %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-    <link rel='stylesheet' type='text/css' href='{% static "css/control_panel/facility_user_management.css" %}'>
-    <style>
-        .selection {
-            margin-bottom: 20px;
-        }
-        .users {
-            margin-top: 20px;
-            margin-bottom: 40px;
-        }
-    </style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -50,7 +41,23 @@
 
             {% else %}
             {% block coaches_table %}
-                <table>
+                <div class="pagination">
+                        <a {% if coaches.has_previous %}href="{{ page_urls.coaches.prev_page }}"{% endif %}>&lt&lt</a>
+                        {% for listed_page in coaches.listed_pages %}
+                            {% if page == -1 %}
+                                <span class="disabled">&hellip;</span>
+                            {% elif listed_page == coaches.number %}
+                                <span class="current">
+                                   {{ coaches.number }}
+                                </span>
+                            {% else %}
+                                <a href="{{ page_urls.coaches|get_item:listed_page }}">{{ listed_page }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        <a {% if coaches.has_next %}href="{{ page_urls.coaches.next_page }}"{% endif %}>&gt&gt</a>
+                </div>
+            <div style="clear: both;"></div>
+                <table class="simple-table">
                     <tbody>
                         <tr>
                             <th class="headrowuser selectcol">
@@ -136,18 +143,24 @@
             {% else %}
             {% block students_table %}
                 <div class="pagination">
-                    <span class="step-links">
-                        <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>
-                        <span class="current">
-                            {% trans "Page" %} {{ users.number }} {% trans "of" %} {{ users.paginator.num_pages }}
-                        </span>
-                        <a {% if users.has_next %}href="{{ pageurls.next_page }}"{% endif %}>&gt&gt</a>
-                    </span>
+                        <a {% if students.has_previous %}href="{{ page_urls.students.prev_page }}"{% endif %}>&lt&lt</a>
+                        {% for listed_page in students.listed_pages %}
+                            {% if page == -1 %}
+                                <span class="disabled">&hellip;</span>
+                            {% elif listed_page == students.number %}
+                                <span class="current">
+                                    {{ students.number }}
+                                </span>
+                            {% else %}
+                                <a href="{{ page_urls.students|get_item:listed_page }}">{{ listed_page }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        <a {% if students.has_next %}href="{{ page_urls.students.next_page }}"{% endif %}>&gt&gt</a>
                 </div>
                 <div style="clear: both;"></div>
 
-                <div class="users">
-                    <table>
+                <div>
+                    <table class="simple-table">
                         <tbody>
                             <tr>
                                 <th class="headrowuser selectcol">
