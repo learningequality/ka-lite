@@ -1,9 +1,10 @@
 from django.utils import unittest
 
 import i18n
+from facility.models import Facility, FacilityUser
 from main.models import VideoLog, ExerciseLog
-from securesync.models import Facility, FacilityUser
 from testing import KALiteTestCase
+
 
 class TestExerciseLogs(KALiteTestCase):
 

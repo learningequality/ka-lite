@@ -6,7 +6,7 @@ function get_available_languages() {
     var request = $.ajax({
         url: url,
         cache: false,
-        dataType: "jsonp",
+        dataType: "jsonp"
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
@@ -21,7 +21,7 @@ function get_installed_languages() {
     $.ajax({
         url: INSTALLED_LANGUAGES_URL,
         cache: false,
-        datatype: "json",
+        datatype: "json"
     }).success(function(installed) {
         installed_languages = installed;
         display_languages();
@@ -46,7 +46,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (!(lang['code'] === defaultLanguage)) {
+            if (lang['code'] !== defaultLanguage) {
                 link_text = sprintf("<a href='%(CHANGE_SERVER_LANGUAGE_URL)s'>(%(link_text)s)</a>", {
                     CHANGE_SERVER_LANGUAGE_URL: setGetParam(window.location.href, "set_server_language", lang.code),
                     link_text: gettext("Set as default")
@@ -92,7 +92,7 @@ function display_languages() {
     //
     // show list of installable languages in the dropdown box
     //
-    $('#language-packs').find('option').remove()
+    $('#language-packs').find('option').remove();
     $('#language-packs').append("<option value='' selected=''>--</option>");
     installables.forEach(function(langdata, langindex) {
         var srtcount = langdata["subtitle_count"];

@@ -1,24 +1,23 @@
-import os
-import sys
-import time
+"""
+"""
 from functools import partial
 from optparse import make_option
 
+from django.conf import settings
 from django.utils.translation import ugettext as _
 
 import i18n
-import settings
 from .classes import UpdatesDynamicCommand
-from chronograph.management.croncommand import CronCommand
+from distributed import caching
+from fle_utils import set_process_priority
+from fle_utils.chronograph.management.croncommand import CronCommand
+from fle_utils.general import ensure_dir
+from fle_utils.internet import URLNotFound
 from i18n.management.commands.scrape_videos import scrape_video, DownloadError
-from settings import LOG as logging
-from main import caching
+from kalite.settings import LOG as logging
 from main.topic_tools import get_video_by_youtube_id
 from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
-from utils import set_process_priority
-from utils.general import ensure_dir
-from utils.internet import URLNotFound
 
 
 class Command(UpdatesDynamicCommand, CronCommand):

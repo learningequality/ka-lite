@@ -1,16 +1,18 @@
+"""
+"""
 import glob
 import os
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import i18n
-import settings
-from chronograph.management.croncommand import CronCommand
-from main import caching
+from distributed import caching
+from fle_utils.chronograph.management.croncommand import CronCommand
+from fle_utils.general import break_into_chunks
 from updates.api_views import divide_videos_by_language
 from updates.models import VideoFile
-from utils.general import break_into_chunks
 
 
 class Command(CronCommand):

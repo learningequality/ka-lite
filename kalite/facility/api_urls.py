@@ -8,5 +8,8 @@ urlpatterns = patterns('facility.api_views',
     url(r'^remove_from_group$', 'remove_from_group', {}, 'remove_from_group'),
     url(r'^move_to_group$', 'move_to_group', {}, 'move_to_group'),
     url(r'^delete_users$', 'delete_users', {}, 'delete_users'),
+
+    url(r'^facility_delete$', 'facility_delete', {}, 'facility_delete'),
+    url(r'^facility_delete/(?P<facility_id>\w+)$', 'facility_delete', {}, 'facility_delete'),
 )
 

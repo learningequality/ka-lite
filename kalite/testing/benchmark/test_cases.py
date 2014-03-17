@@ -53,9 +53,9 @@ from selenium.webdriver.common.by import By
 
 from . import base
 from facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.settings import LOG as logging
 from main.models import ExerciseLog, VideoLog, UserLog
 from main.topic_tools import get_node_cache
-from settings import LOG as logging
 from testing.browser import BrowserTestCase
 
 

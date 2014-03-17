@@ -8,10 +8,10 @@ import requests
 from mock import MagicMock as Mock, patch
 from requests.models import Response
 
+from django.conf import settings
 from django.core.management.base import CommandError
 from django.utils import unittest
 
-import settings
 import i18n.management.commands.update_language_packs as ulp
 
 

@@ -1,18 +1,36 @@
 """
-Important constants and helpful functions
+Important constants and helpful functions for the topic tree and a view on its data, the node cache.
+
+The topic tree is a hierarchical representation of real data (exercises, and videos).
+Leaf nodes of the tree are real learning resources, such as videos and exercises.
+Non-leaf nodes are topics, which describe a progressively higher-level grouping of the topic data.
+
+Each node in the topic tree comes with lots of metadata, including:
+* title
+* description
+* id (unique identifier; now equivalent to slug below)
+* slug (for computing a URL)
+* path (which is equivalent to a URL)
+* kind (Topic, Exercise, Video)
+and more.
+
+The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
+so
+* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
+* get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
 import os
 from functools import partial
 
+from django.conf import settings
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
 import i18n
 import khanload  # should be removed ASAP, to make more generic and separate apps.
-import settings
-from settings import LOG as logging
-from utils.general import softload_json
+from fle_utils.general import softload_json
+from kalite.settings import LOG as logging
 
 TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
 
@@ -216,22 +234,23 @@ def get_live_topics(topic):
     return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
 
 
-def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
-    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
-
-
 def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
+
+    # Normalize the path
+    path_withslash = path + ("/" if not path.endswith("/") else "")
+    path_noslash = path_withslash[:-1]
+
     # Make sure the root fits
     if not root_node:
         root_node = get_topic_tree()
-    if path == root_node["path"]:
+    if path_withslash == root_node["path"] or path_noslash == root_node["path"]:
         return root_node
-    elif not path.startswith(root_node["path"]):
+    elif not path_withslash.startswith(root_node["path"]):
         return {}
 
     # split into parts (remove trailing slash first)
-    parts = path[len(root_node["path"]):-1].split("/")
+    parts = path_noslash[len(root_node["path"]):].split("/")
     cur_node = root_node
     for part in parts:
         cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])

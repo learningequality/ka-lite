@@ -45,7 +45,7 @@ function communicate_api_failure(resp, msg_id) {
     // When receiving an error response object,
     //   show errors reported in that object
     var messages = $.parseJSON(resp.responseText);
-    show_api_messages(messages, msg_id)
+    show_api_messages(messages, msg_id);
 }
 
 
@@ -53,7 +53,7 @@ function handleSuccessAPI(error_id) {
     if (error_id === undefined) {
         error_id = "id_updates";  // ID of message element
     }
-    clear_message(error_id)
+    clear_message(error_id);
 }
 
 function handleFailedAPI(resp, error_text, error_id) {
@@ -63,7 +63,7 @@ function handleFailedAPI(resp, error_text, error_id) {
 
     switch (resp.status) {
         case 403:
-            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id)
+            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id);
             break;
         default:
             //communicate_api_failure(resp)
@@ -83,8 +83,8 @@ function force_sync() {
     //   then shows a message for success/failure
     doRequest("/securesync/api/force_sync")
         .success(function() {
-            show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."), "id_command")
-        })
+            show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."), "id_command");
+        });
 }
 
 /**
@@ -155,10 +155,11 @@ $(function(){
 
             toggle_state("logged-in", data.is_logged_in);
             toggle_state("registered", data.registered);
-            toggle_state("django-user", data.is_django_user);
-            toggle_state("admin", data.is_admin);
+            toggle_state("super-user", data.is_django_user);
+            toggle_state("teacher", data.is_admin && !data.is_django_user);
+            toggle_state("admin", data.is_admin); // combination of teachers & super-users
             if (data.is_logged_in){
-                if (data.is_admin) {
+                if (data.is_django_user) {
                     $('#nav_logout').text(sprintf(gettext("%(username)s (Logout)"), { username : data.username }));
                 }
                 else {
@@ -166,13 +167,13 @@ $(function(){
                 }
             }
             show_django_messages(data.messages);
-        })
+        });
 });
 
 // Related to student log progress
 $(function(){
     // load progress data for all videos linked on page, and render progress circles
-    var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id") });
+    var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id"); });
     if (video_ids.length > 0) {
         doRequest("/api/get_video_logs", video_ids)
             .success(function(data) {
@@ -180,11 +181,11 @@ $(function(){
                     var newClass = video.complete ? "complete" : "partial";
                     $("[data-video-id='" + video.video_id + "']").addClass(newClass);
                 });
-            })
+            });
     }
 
     // load progress data for all exercises linked on page, and render progress circles
-    var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id") });
+    var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id"); });
     if (exercise_ids.length > 0) {
         doRequest("/api/get_exercise_logs", exercise_ids)
             .success(function(data) {
@@ -192,7 +193,7 @@ $(function(){
                     var newClass = exercise.complete ? "complete" : "partial";
                     $("[data-exercise-id='" + exercise.exercise_id + "']").addClass(newClass);
                 });
-            })
+            });
     }
 
 });
