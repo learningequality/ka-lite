@@ -180,7 +180,7 @@ def splat_handler(request, splat):
 
 
 @backend_cache_page
-@render_to("topic.html")
+@render_to("distributed/topic.html")
 @refresh_topic_cache
 def topic_handler(request, topic):
     return topic_context(topic)
@@ -224,7 +224,7 @@ def topic_context(topic):
 
 
 @backend_cache_page
-@render_to("video.html")
+@render_to("distributed/video.html")
 @refresh_topic_cache
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
@@ -261,7 +261,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
 
 @backend_cache_page
-@render_to("exercise.html")
+@render_to("distributed/exercise.html")
 @refresh_topic_cache
 def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
@@ -298,7 +298,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
 
 
 @backend_cache_page
-@render_to("knowledgemap.html")
+@render_to("distributed/knowledgemap.html")
 def exercise_dashboard(request):
     slug = request.GET.get("topic")
     if not slug:
@@ -315,7 +315,7 @@ def exercise_dashboard(request):
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
-@render_to("homepage.html")
+@render_to("distributed/homepage.html")
 @refresh_topic_cache
 def homepage(request, topics):
     """
@@ -334,7 +334,7 @@ def help(request):
         return help_student(request)
 
 @require_admin
-@render_to("help_admin.html")
+@render_to("distributed/help_admin.html")
 def help_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
@@ -345,7 +345,7 @@ def help_admin(request):
     return context
 
 
-@render_to("help_student.html")
+@render_to("distributed/help_student.html")
 def help_student(request):
 
     context = {
@@ -391,7 +391,7 @@ def javascript_catalog_cached(request):
         JS_CATALOG_CACHE[lang] = src
         return resp
 
-@render_to('search_page.html')
+@render_to('distributed/search_page.html')
 @refresh_topic_cache
 def search(request, topics):  # we don't use the topics variable, but this setup will refresh the node cache
     # Inputs
@@ -480,7 +480,7 @@ def handler_403(request, *args, **kwargs):
 
 
 def handler_404(request):
-    return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
+    return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))
 
 
 def handler_500(request):
@@ -489,4 +489,4 @@ def handler_500(request):
         "errortype": errortype.__name__,
         "value": unicode(value),
     }
-    return HttpResponseServerError(render_to_string("500.html", context, context_instance=RequestContext(request)))
+    return HttpResponseServerError(render_to_string("distributed/500.html", context, context_instance=RequestContext(request)))
