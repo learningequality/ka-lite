@@ -24,6 +24,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
+from i18n import get_default_language
 from kalite.settings import package_selected, LOG as logging
 from main.models import UserLog
 from securesync.devices.views import *
@@ -131,6 +132,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
         form = FacilityUserForm(facility, initial={
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
+            "default_language": get_default_language()
         })
 
     if not title:

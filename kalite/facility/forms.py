@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
 from fle_utils.django_utils import verify_raw_password
+from i18n import get_installed_language_packs
 
 
 class FacilityUserForm(forms.ModelForm):
@@ -18,13 +19,14 @@ class FacilityUserForm(forms.ModelForm):
     The views contain manual logic for processing passwords (hashing them, etc), so we use
     custom fields here for the "password" and "confirm password" fields.
     """
-
     password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
+    default_language = forms.ChoiceField(label=_("Default Language"))
 
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
         self.fields["facility"].initial = facility.id
+        self.fields["default_language"].choices = [(key, val["native_name"]) for key, val in get_installed_language_packs().iteritems()]
 
         # Passwords only required on new, not on edit
         self.fields["password_first"].required = self.instance.pk == ""
