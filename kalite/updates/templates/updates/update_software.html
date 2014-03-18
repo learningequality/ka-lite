@@ -209,7 +209,7 @@
                         {# Translators: this specifies the software release date #}
                         <dt>{% trans "Release Date" %}:</dt>
                         <dd>{{ software_release_date }}</dd>
-                        <dt>{% trans "Database Size %}:</dt>
+                        <dt>{% trans "Database Size" %}:</dt>
                         <dd>{{ database_size|floatformat }} MB</dd>
                         <dt>{% trans "Device ID" %}:</dt>
                         <dd>{{ device_id }}</dd>
@@ -239,7 +239,7 @@
                 <div class="span4 offset2">
                     <div id="internet_update" style="display:none">
                         {# Translators: this text specifies where admins can get an update from #}
-                        <h4>{% "From the internet" %}:</h4>
+                        <h4>{% trans "From the internet" %}:</h4>
                         <button type="button" class="btn" id="download-update-kalite" disabled>{% trans "Download and update" %}</button>
                         <select class="span1" id="software_available" style="display:none"></select>
                         <!---File Upload Button -->
