@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Équations comportant des valeurs absolues</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="0">
+                <div class="vars">
+                    <var id="A">randRange(2, 8)</var>
+                    <var id="B">randRangeNonZero(-10, 10)</var>
+                    <var id="C" data-ensure="C !== A">randRangeNonZero(-6,6)</var>
+                    <var id="D" data-ensure="D !== B">randRange(2, 10)</var>
+                    <var id="E">randRangeNonZero(-10, 10)</var>
+                    <var id="NO_SOLUTION">(D - B) / (A - C) &lt;= 0</var>
+                    <var id="POS_SOLUTION">[abs(D-B)-E*abs(A-C),abs(A-C)]</var>
+                    <var id="NEG_SOLUTION">[-1*abs(D-B)-E*abs(A-C),abs(A-C)]</var>
+                    <var id="SOLUTIONS">NO_SOLUTION?[]:[POS_SOLUTION[0]/POS_SOLUTION[1],NEG_SOLUTION[0]/NEG_SOLUTION[1]]</var>
+                    <var id="SIMPLIFIED">fractionReduce(D - B, A - C)</var>
+                    <var id="SIMPLIFIED_DENOM">abs((A-C)/getGCD(D-B,A-C))</var>
+                </div>
+
+                <p class="question">
+                    Solve for <code>x</code>:
+                    <br><br><code>
+                        <var>A</var>|x + <var>E</var>| + <var>B</var> =
+                        <var>C</var>|x + <var>E</var>| + <var>D</var>
+                    </code>
+                </p>
+
+                <div class="solution" data-type="multiple">
+                    <div class="sol" data-type="set">
+                        <div class="set-sol" data-each="SOLUTIONS as SOLUTION">
+                            <var>SOLUTION</var>
+                        </div>
+                        <p class="input-format"><code>x = </code> <span class="entry short40"></span>   ou <code>x = </code> <span class="entry short40"></span></p>
+                    </div>
+                    <p></p>
+                    <div>
+                        <label><span class="sol" data-type="checkbox"> <var>NO_SOLUTION</var> </span> Pas de solution</label>
+                    </div>
+                    <span class="example">un ou deux entiers, comme <code>6</code></span>
+                    <span class="example">une ou deux fractions <em>propres et simplifiées</em> telle que <code>3/5</code></span>
+                    <span class="example">une ou deux fractions <em>impropres et simplifiées</em> telle que <code>7/4</code></span>
+                    <span class="example">
+                        one or two <em>exact</em> decimals, like
+                        <code>0.75</code>
+                    </span>
+                    <span class="example">
+                        if there is no solution for <code>x</code>, leave the
+                        boxes blank and check "<b>No solution</b>"
+                    </span>
+                </div>
+
+                <div class="hints">
+                    <div data-if="A &gt; C" data-unwrap="">
+                        <div>
+                            <p data-if="C &gt; 0">On soustrait <code> \red{<var>abs(C)</var>|x + <var>E</var>|} </code> aux deux membres :</p>
+<p data-else="">On ajoute <code> \red{<var>abs(C)</var>|x + <var>E</var>|} </code> dans les deux membres:</p>
+                            <p><code>\qquad\begin{eqnarray}
+                                <var>A</var>|x + <var>E</var>| + <var>B</var>
+                                &amp;=&amp;
+                                <var>C</var>|x + <var>E</var>| + <var>D</var>
+                                \\ \\
+                                \red{ - <var>C</var>|x + <var>E</var>|}
+                                &amp;&amp;
+                                \red{ - <var>C</var>|x + <var>E</var>|} \\ \\
+                                <var>A - C</var>|x + <var>E</var>| +
+                                <var>B</var>
+                                &amp;=&amp; <var>D</var>
+                                \end{eqnarray}
+                            </code></p>
+                        </div>
+                        <div>
+                            <p data-if="B &gt; 0">On soustrait <code>\red{<var>abs(B)</var>}</code> aux deux membres :</p>
+<p data-else="">Ajouter <code>\red{<var>abs(B)</var>}</code> dans les deux membres :</p>
+                            <p><code>\qquad\begin{eqnarray}
+                                <var>A - C</var>|x + <var>E</var>| +
+                                <var>B</var> &amp;=&amp; <var>D</var> \\ \\
+                                \red{ - <var>B</var>} &amp;=&amp;
+                                \red{ - <var>B</var>} \\ \\
+                                <var>A - C</var>|x + <var>E</var>| &amp;=&amp;
+                                <var>D - B</var>
+                                \end{eqnarray}
+                            </code></p>
+                        </div>
+                        <div data-if="abs(A - C) !== 1">
+                            <p>On divise les deux membres par <code>\red{<var>A - C</var>}</code>:</p>
+                            <p><code>\qquad
+                                \dfrac{<var>A - C</var>|x + <var>E</var>|}
+                                    {\red{<var>A - C</var>}} =
+                                \dfrac{<var>D - B</var>}
+                                    {\red{<var>A - C</var>}}
+                            </code></p>
+                        </div>
+                        <div>
+                            <p>On effectue :</p>
+                            <p>
+                                <code>\qquad |x + <var>E</var>| =
+                                <var>SIMPLIFIED</var></code>
+                            </p>
+                        </div>
+                        <div data-if="!NO_SOLUTION" data-unwrap="">
+                            <div>
+                                <p>Comme la valeur absolue d'une expression est sa distance à zéro, il y a deux solutions, l'une positive et l'autre négative :</p>
+                                <p><code>\qquad
+                                    x + <var>E</var> = -<var>SIMPLIFIED</var>
+                                </code></p>
+                                <p>ou</p>
+                                <p><code>\qquad
+                                    x + <var>E</var> = <var>SIMPLIFIED</var>
+                                </code></p>
+                            </div>
+                            <div>
+                                <p>On cherche la solution lorsque <code>x + <var>E</var></code> est négatif:</p>
+                                <p><code>\qquad
+                                    x + <var>E</var> = -<var>SIMPLIFIED</var>
+                                </code></p>
+                            </div>
+                            <div>
+                                <p data-if="E &gt; 0">On soustrait <code>\red{<var>abs(E)</var>}</code> aux deux membres :</p>
+<p data-else="">On ajoute <code>\red{<var>abs(E)</var>}</code> dans les deux membres:</p>
+                                <p><code>\qquad\begin{eqnarray}
+                                    x + <var>E</var> &amp;=&amp;
+                                    -<var>SIMPLIFIED</var> \\ \\
+                                    \red{- <var>E</var>} &amp;&amp;
+                                    \red{- <var>E</var>} \\ \\
+                                    x &amp;=&amp; -<var>SIMPLIFIED</var> -
+                                    <var>E</var>
+                                    \end{eqnarray}
+                                </code></p>
+                            </div>
+                            <div data-if="SIMPLIFIED_DENOM !== 1">
+                                <p>
+                                    Change the
+                                    <code>\red{{} - <var>E</var>}</code>
+                                    to an equivalent fraction with a
+                                    denominator of
+                                    <code><var>SIMPLIFIED_DENOM</var></code>:
+                                </p>
+                                <p><code>\qquad
+                                    x = - <var>SIMPLIFIED</var>
+                                    \red{<var>E &gt; 0 ? "-" : "+"</var>
+                                    <var>fraction(abs(E)*SIMPLIFIED_DENOM,SIMPLIFIED_DENOM)</var>}
+                                </code></p>
+                            </div>
+                            <p><code>\qquad
+                                x = <var>fractionReduce.apply(null,NEG_SOLUTION)</var>
+                            </code></p>
+                            <div>
+                                <p>Puis on cherche la solution lorsque <code>x + <var>E</var></code> est positif :</p>
+                                <p><code>\qquad
+                                    x + <var>E</var> = <var>SIMPLIFIED</var>
+                                </code></p>
+                            </div>
+                            <div>
+                                <p data-if="E &gt; 0">On soustrait <code>\red{<var>abs(E)</var>}</code> aux deux membres :</p>
+<p data-else="">On ajoute <code>\red{<var>abs(E)</var>}</code> dans les deux membres:</p>
+                                <p><code>\qquad\begin{eqnarray}
+                                    x + <var>E</var> &amp;=&amp;
+                                    <var>SIMPLIFIED</var> \\ \\
+                                    \red{- <var>E</var>} &amp;&amp;
+                                    \red{- <var>E</var>} \\ \\
+                                    x &amp;=&amp; <var>SIMPLIFIED</var> -
+                                    <var>E</var>
+                                    \end{eqnarray}
+                                </code></p>
+                            </div>
+                            <div data-if="SIMPLIFIED_DENOM !== 1">
+                                <p>
+                                    Change the
+                                    <code>\red{{} - <var>E</var>}</code>
+                                    to an equivalent fraction with a
+                                    denominator of
+                                    <code><var>SIMPLIFIED_DENOM</var></code>:
+                                </p>
+                                <p><code>\qquad
+                                    x = <var>SIMPLIFIED</var>
+                                    \red{<var>E &gt; 0 ? "-" : "+"</var>
+                                    <var>fraction(abs(E)*SIMPLIFIED_DENOM,SIMPLIFIED_DENOM)</var>}
+                                </code></p>
+                            </div>
+                            <p><code>\qquad
+                                x = <var>fractionReduce.apply(null,POS_SOLUTION)</var>
+                            </code></p>
+                        </div>
+                    </div>
+                    <div data-else="" data-unwrap="">
+                        <div>
+                            <p data-if="A &gt; 0">On soustrait <code> \red{<var>A</var>|x + <var>E</var>|} </code> aux deux membres:</p>
+<p data-else="">On ajoute <code> \red{<var>A</var>|x + <var>E</var>|} </code> dans les deux membres :</p>
+                            <p><code>\qquad\begin{eqnarray}
+                                <var>A</var>|x + <var>E</var>| + <var>B</var>
+                                &amp;=&amp;
+                                <var>C</var>|x + <var>E</var>| + <var>D</var>
+                                \\ \\ \red{- <var>A</var>|x + <var>E</var>|}
+                                &amp;&amp;
+                                \red{- <var>A</var>|x + <var>E</var>|} \\ \\
+                                <var>B</var> &amp;=&amp;
+                                <var>C - A</var>|x + <var>E</var>| +
+                                <var>D</var>
+                                \end{eqnarray}
+                            </code></p>
+                        </div>
+                        <div>
+                            <p data-if="D &gt; 0">Soustraire <code><var>abs(D)</var></code> des deux côtés:</p>
+<p data-else="">Ajouter <code><var>abs(D)</var></code> des deux côtés:</p>
+                            <p><code>\qquad\begin{eqnarray}
+                                <var>B</var> &amp;=&amp;
+                                <var>C - A</var>|x + <var>E</var>| +
+                                <var>D</var> \\ \\
+                                \red{- <var>D</var>} &amp;&amp;
+                                \red{- <var>D</var>} \\ \\
+                                <var>B - D</var> &amp;=&amp;
+                                <var>C - A</var>|x + <var>E</var>|
+                                \end{eqnarray}
+                            </code></p>
+                        </div>
+                        <div data-if="abs(A - C) !== 1">
+                            <p>On divise les deux membres par <code>\red{<var>C - A</var>}</code>.</p>
+                            <p><code>\qquad
+                                \dfrac{<var>B - D</var>}
+                                    {\red{<var>C - A</var>}} =
+                                \dfrac{<var>C - A</var>|x + <var>E</var>|}
+                                    {\red{<var>C - A</var>}}
+                            </code></p>
+                        </div>
+                        <div>
+                            <p>On effectue :</p>
+                            <p><code>\qquad
+                                <var>SIMPLIFIED</var> = |x + <var>E</var>|
+                            </code></p>
+                        </div>
+                        <div data-if="!NO_SOLUTION" data-unwrap="">
+                            <div>
+                                <p>Comme la valeur absolue d'une expression est sa distance à zéro, il y a deux solutions, l'une positive et l'autre négative :</p>
+                                <p><code>\qquad
+                                    -<var>SIMPLIFIED</var> = x + <var>E</var>
+                                </code></p>
+                                <p>ou</p>
+                                <p><code>\qquad
+                                    <var>SIMPLIFIED</var> = x + <var>E</var>
+                                </code></p>
+                            </div>
+                            <div>
+                                <p>On cherche la solution lorsque <code>x + <var>E</var></code> est négatif:</p>
+                                <p>
+                                    <code>\qquad - <var>SIMPLIFIED</var> = x +
+                                    <var>E</var></code>
+                                </p>
+                            </div>
+                            <div>
+                                <p data-if="E &gt; 0">On soustrait <code>\red{<var>abs(E)</var>}</code> aux deux membres :</p>
+<p data-else="">On ajoute <code>\red{<var>abs(E)</var>}</code> dans les deux membres:</p>
+                                <p><code>\qquad\begin{eqnarray}
+                                    - <var>SIMPLIFIED</var> &amp;=&amp;
+                                    x + <var>E</var> \\ \\
+                                    \red{- <var>E</var>} &amp;&amp;
+                                    \red{- <var>E</var>} \\ \\
+                                    -<var>SIMPLIFIED</var> - <var>E</var>
+                                    &amp;=&amp; x
+                                    \end{eqnarray}
+                                </code></p>
+                            </div>
+                            <div data-if="SIMPLIFIED_DENOM !== 1">
+                                <p>On transforme <code>\red{{} - <var>E</var>}</code> en une fraction égale ayant pour dénominateur : <code><var>SIMPLIFIED_DENOM</var></code>.</p>
+                                <p><code>\qquad
+                                    - <var>SIMPLIFIED</var>
+                                    \red{<var>E &gt; 0 ? "-" : "+"</var>
+                                    <var>fraction(abs(E)*SIMPLIFIED_DENOM,SIMPLIFIED_DENOM)</var>} = x
+                                </code></p>
+                            </div>
+                            <p><code>\qquad
+                                <var>fractionReduce.apply(null,NEG_SOLUTION)</var> = x
+                            </code></p>
+                            <div>
+                                <p>Puis on cherche la solution lorsque <code>x + <var>E</var></code> est positif :</p>
+                                <p><code>\qquad
+                                    <var>SIMPLIFIED</var> = x + <var>E</var>
+                                </code></p>
+                            </div>
+                            <div>
+                                <p data-if="E &gt; 0">On soustrait <code>\red{<var>abs(E)</var>}</code> aux deux membres :</p>
+<p data-else="">On ajoute <code>\red{<var>abs(E)</var>}</code> dans les deux membres:</p>
+                                <p><code>\qquad\begin{eqnarray}
+                                    <var>SIMPLIFIED</var> &amp;=&amp;
+                                    x + <var>E</var> \\ \\
+                                    \red{- <var>E</var>} &amp;&amp;
+                                    \red{- <var>E</var>} \\ \\
+                                    <var>SIMPLIFIED</var> - <var>E</var>
+                                    &amp;=&amp; x
+                                    \end{eqnarray}
+                                </code></p>
+                            </div>
+                            <div data-if="SIMPLIFIED_DENOM !== 1">
+                                <p>On transforme <code>\red{{} - <var>E</var>}</code> en une fraction égale ayant pour dénominateur : <code><var>SIMPLIFIED_DENOM</var></code>.</p>
+                                <p><code>\qquad
+                                    <var>SIMPLIFIED</var>
+                                    \red{<var>E &gt; 0 ? "-" : "+"</var>
+                                    <var>fraction(abs(E)*SIMPLIFIED_DENOM,SIMPLIFIED_DENOM)</var>} = x
+                                </code></p>
+                            </div>
+                            <p><code>\qquad
+                                <var>fractionReduce.apply(null,POS_SOLUTION)</var> = x
+                            </code></p>
+                        </div>
+                    </div>
+                    <p data-if="!NO_SOLUTION">Donc, la bonne réponse est <code>x = <var>fractionReduce.apply(null, NEG_SOLUTION)</var> </code> or <code>x = <var>fractionReduce.apply(null, POS_SOLUTION)</var> </code>.</p>
+                    <p data-else="">Une valeur absolue ne peut pas être négative. Donc, il n'y a pas de solution.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

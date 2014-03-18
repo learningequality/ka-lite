@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Vistas de una función</title>
+<script src="../khan-exercise.js"></script><script type="text/javascript">
+        chooseXValues = function(func, scale) {
+            var xs = [];
+            _.each(_.range(-9, 10), function(x) {
+                var y = func(x);
+                if (Math.abs(y) > 9) {
+                    return;
+                }
+                if (Math.abs(y - Math.round(y * scale) / scale) < 0.1) {
+                    xs.push(x);
+                }
+            });
+            return xs;
+        };
+    </script><style type="text/css">
+        .ttable {
+            text-align: left;
+            margin: 20px auto 0;
+        }
+
+        .ttable tr {
+            height: 23px;
+        }
+
+        .ttable td {
+            padding: 0px 5px;
+            text-align: right;
+        }
+
+        .ttable .labels td {
+            padding-left: 10px;
+            text-align: left;
+            border-bottom: 2px solid black;
+        }
+
+        .ttable .cross-bar td {
+            padding-top: 5px;
+        }
+
+        .ttable .second-col {
+            border-left: 2px solid black;
+        }
+
+        .ttable .data-col {
+            min-width: 40px;
+        }
+
+        #table-to-graph .ttable {
+            margin-bottom: 20px;
+        }
+
+        #answer_area .ttable input {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars" data-ensure="EXAMPLES.length === 5">
+        <var id="A">randRangeNonZero(-3, 3)</var>
+        <var id="B">randRangeNonZero(-3, 3)</var>
+        <var id="C">randRangeNonZero(-3, 3)</var>
+        <var id="SIGNIFY">function(e){return 1===e?"":-1===e?"-":e}</var>
+        <var id="ASHOW,BSHOW,CSHOW">[SIGNIFY(A), SIGNIFY(B), SIGNIFY(C)]</var>
+        <var id="FUNC,FUNCSHOW">randFromArray([[function(e){return B*e+C},BSHOW+" x + "+C],[function(e){return B/2*e*e+A*e+C},(2===B?"":-2===B?"-":B/2)+" x^2 + "+ASHOW+" x + "+C],[function(e){return B*sin(C*e/Math.PI)+A},BSHOW+" \\sin\\left("+CSHOW+" x / \\pi\\right) + "+A],[function(e){return B*pow(Math.E,C*e/3)+A},BSHOW+"e^{"+(3===abs(C)?SIGNIFY(C/3)+"x":CSHOW+" x / 3")+"} + "+A]])</var>
+        <var id="EXAMPLES">function(){var e=chooseXValues(FUNC,1);return e.length&gt;=5?sortNumbers(shuffle(e,5)):(e=chooseXValues(FUNC,2),sortNumbers(shuffle(e,5)))}()</var>
+    </div>
+    <div class="problems">
+        <div id="graph-to-table">
+            <div class="vars">
+                <var id="CORRECTOFFSET">0.5</var>
+            </div>
+            <p class="question">Crea una tabla de valores para la función de la gráfica siguiente. Usa al menos 5 puntos diferentes. Introduce los valores de la tabla en decimales.</p>
+            <div class="problem">
+                <div class="graphie" id="main">graphInit({range:10,scale:20,tickStep:1,labelStep:1,unityLabels:!1,labelFormat:function(e){return"\\small{"+e+"}"},axisArrows:"&lt;-&gt;"}),plot(FUNC,[-10,10],{stroke:BLUE})</div>
+            </div>
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <span>Introduce los datos en la tabla a continuación.</span>
+                    <table class="ttable"><tbody>
+<tr class="labels">
+<td><code>x</code></td>
+                            <td class="second-col"><code>y</code></td>
+                        </tr>
+<tr class="cross-bar">
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+<tr>
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+<tr>
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+<tr>
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+<tr>
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+<tr>
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+<tr>
+<td><input type="text"></td>
+                            <td class="second-col"><input type="text"></td>
+                        </tr>
+</tbody></table>
+</div>
+                <div class="guess">function(){var e=[];return $(".ttable tr").each(function(){var r=[];$(this).children().each(function(){r.push($(this).children().val())}),e.push(r)}),e}()</div>
+                <div class="validator-function">var e=0,r=0,t=[],a=0,n=Khan.answerTypes.predicate.createValidatorFunctional(function(e,n){var o=Khan.answerTypes.predicate.createValidatorFunctional(function(a,n){return abs(FUNC(e)-a)&lt;n?(r+=1,t.push(e),!0):void 0},{forms:"decimal",inexact:!0,maxError:n}),s=o(guess[a][1]);return s.correct},{forms:"decimal",inexact:!0,maxError:CORRECTOFFSET});for(a=0;8&gt;a;++a)""!==$.trim(guess[a][0])&amp;&amp;""!==$.trim(guess[a][1])&amp;&amp;(e+=1,n(guess[a][0]));if(5&gt;e)return $._("Debes introducir 5 o más puntos");t=KhanUtil.sortNumbers(t);for(var o=1,a=0;r-1&gt;a;++a)t[a+1]-t[a]&gt;=.5&amp;&amp;(o+=1);return o===e</div>
+            </div>
+
+            <div class="hints">
+                <p>Puedes ver una función de muchas maneras diferente, incluyendo una gráfica y una tabla. Aquí, tenemos una función modelada en una gráfica, y queremos guardar algo de información sobre algunos puntos modelándola en una tabla.</p>
+                <p>Para representarla como una tabla, toma 5 puntos cualesquiera sobre la gráfica y enumeralos en la tabla.</p>
+                <p>Por ejemplo, podemos ver el punto con valor en <code>x</code> de <code><var>EXAMPLES[0]</var></code>.</p>
+                <div>
+                    <p>El valor en <code>y</code> de este punto es <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code>, el cual encontramos a partir de la gráfica.</p>
+                    <div class="graphie" data-update="main">line([EXAMPLES[0],-11],[EXAMPLES[0],11],{strokeWidth:1,stroke:ORANGE}),circle([EXAMPLES[0],FUNC(EXAMPLES[0])],.2,{stroke:ORANGE,fill:ORANGE})</div>
+                </div>
+                <p>Para registrar esto en nuestra tabla, escribe <code><var>EXAMPLES[0]</var></code> en la columna <code>x</code>, y <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code> en la columna <code>y</code>.</p>
+                <p>Podemos hacer esto con otros 4 valores de <code>x</code>, como <code><var>EXAMPLES[1]</var></code>, <code><var>EXAMPLES[2]</var></code>, <code><var>EXAMPLES[3]</var></code>, y <code><var>EXAMPLES[4]</var></code>.</p>
+                <div>
+                    <p>Podemos encontrar los valores de <code>y</code> en estos puntos encontrándolos en la gráfica también.</p>
+                    <div class="graphie" data-update="main">for(var i=1;5&gt;i;++i)line([EXAMPLES[i],-11],[EXAMPLES[i],11],{strokeWidth:1,stroke:ORANGE}),circle([EXAMPLES[i],FUNC(EXAMPLES[i])],.2,{stroke:ORANGE,fill:ORANGE})</div>
+                </div>
+                <div>
+                    <p>A partir de esto, 5 puntos en la gráfica son:</p>
+                    <div data-each="EXAMPLES as x">
+                        <p><code>
+                            (<var>x</var>, <var>round(FUNC(x) * 2) / 2</var>)
+                        </code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="table-to-graph">
+            <p class="question">Crea una gráfica para la función que se modela a continuación mediante el trazado de puntos en el gráfico.</p>
+
+            <div class="problem">
+                <table class="ttable"><tbody>
+<tr class="labels">
+<td class="data-col">
+                            <code>x</code>
+                        </td>
+                        <td class="second-col data-col">
+                            <code>y</code>
+                        </td>
+                    </tr>
+<tr data-each="EXAMPLES as x">
+<td class="data-col">
+                            <code><var>x+"\\hphantom{.0}"</var></code>
+                        </td>
+                        <td class="second-col data-col">
+                            <code><var>function(){var e=FUNC(x),r=localeToFixed(roundToNearest(.5,e),1);return Math.abs(KhanUtil.roundToNearest(1,e)-e)&lt;.25&amp;&amp;(r=r.replace(/(.{2})$/,"\\hphantom{$1}")),r}()</var></code>
+                        </td>
+                    </tr>
+</tbody></table>
+<div class="graphie" id="main">graphInit({range:10,scale:20,tickStep:1,labelStep:1,unityLabels:!1,labelFormat:function(e){return"\\small{"+e+"}"},axisArrows:"&lt;-&gt;"}),addMouseLayer(),graph.points=[];var drawn=!1;graph.graphFunc=function(){if(!drawn){drawn=!0;var e=plot(FUNC,[-10,10],{stroke:ORANGE,opacity:0});e.animate({opacity:1},800)}_.invoke(graph.points,"toFront")},graph.checkAnswer=function(){var e=[!1,!1,!1,!1,!1];return _.each(EXAMPLES,function(r){var t=roundToNearest(.5,FUNC(r)),a=!1;_.each(graph.points,function(n,o){if(!a){var s=n.coord;s[0]===r&amp;&amp;s[1]===t&amp;&amp;(e[o]=!0,a=!0)}})}),_.all(e,_.identity)},graph.moved=!1,graph.checkPoints=function(){return graph.checkAnswer()&amp;&amp;graph.graphFunc(),graph.moved=!0,!0};for(var i=0;5&gt;i;++i)graph.points.push(addMovablePoint({coord:[2*i-4,0],snapX:.5,snapY:.5,onMoveEnd:graph.checkPoints}))</div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Traza los puntos indicados en la tabla de la gráfica, después verifica tu respuesta.</div>
+                <div class="guess">[graph.moved,graph.checkAnswer(),_.pluck(graph.points,"coord")]</div>
+                <div class="validator-function">return guess[0]?guess[1]:""</div>
+                <div class="show-guess">_.each(graph.points,function(e,r){e.setCoord(guess[2][r])})</div>
+            </div>
+            <div class="hints">
+                <p>Podemos ver a una función de diferentes formas, incluyendo una tabla y una gráfica. Aquí, tenemos información sobre una función en algunos puntos, y queremos obtener una visión más general de la función trazando esos puntos en una gráfica.</p>
+                <p>Para representarla como una gráfica, toma todos los puntos indicados en la tabla y trazalos en el gráfico.</p>
+                    <p>Por ejemplo, veamos el punto <code> (<var>EXAMPLES[0]</var>, <var>roundToNearest(0.5, FUNC(EXAMPLES[0]))</var>) </code>.</p>
+                <div>
+                    <p>necesitamos mover uno de los puntos a esta posición para representar el trazo en el gráfico.</p>
+                    <div class="graphie" data-update="main">var endpt=[EXAMPLES[0],roundToNearest(.5,FUNC(EXAMPLES[0]))];line([-4,0],endpt,{arrows:"-&gt;"}),graph.points[0].moveTo(endpt[0],endpt[1]),graph.points[0].toFront()</div>
+                </div>
+                <div>
+                    <p>Ahora, traca los cuatro puntos restantes colocando los punto restantes en las 'X's dadas.</p>
+                    <div class="graphie" data-update="main">for(var i=1;5&gt;i;++i){var x=EXAMPLES[i],y=roundToNearest(.5,FUNC(x));line([x-.5,y-.5],[x+.5,y+.5],{stroke:PINK}),line([x+.5,y-.5],[x-.5,y+.5],{stroke:PINK}),_.invoke(graph.points,"toFront")}</div>
+                </div>
+            </div>
+        </div>
+        <div id="equation-to-table" data-type="graph-to-table">
+            <div class="vars">
+                <var id="FUNC,FUNCSHOW">randFromArray([[function(e){return B*e+C},BSHOW+" x + "+C],[function(e){return B/2*e*e+A*e+C},(2===B?"":-2===B?"-":B/2)+" x^2 + "+ASHOW+" x + "+C]])</var>
+                <var id="EXAMPLES">function(){var e=chooseXValues(FUNC,1);return e.length&gt;=5?sortNumbers(shuffle(e,5)):(e=chooseXValues(FUNC,2),sortNumbers(shuffle(e,5)))}()</var>
+                <var id="CORRECTOFFSET">0.01</var>
+            </div>
+            <p class="question">Crea una tabla con al menos 5 puntos diferentes en ella a partir de una función. Introduce los valores de la tabla como decimales.</p>
+            <p class="problem"><code>y = <var>FUNCSHOW</var></code></p>
+            <div class="hints">
+                <p>Puedes ver una función de muchas formas diferentes, incluyendo una ecuación y una tabla. Nosotros tenemos una ecuación, y para poder ver más claramente como funciona la función en unos pocos puntos, vamos a registrar información sobre esta en una tabla.</p>
+                <p>Para representarla como una tabla, toma algunos valores de <code>x</code> para evaluarlos en la ecuación e introduce ese valor de <code>x</code> y el resultado de evaluarlo en la tabla.</p>
+                <p>Por ejemplo, intenta evaluar <code><var>EXAMPLES[0]</var></code> en la ecuación.</p>
+                <p>El resultado de <code>f(<var>EXAMPLES[0]</var>)</code> es <code><var>roundToNearest(0.1, FUNC(EXAMPLES[0]))</var></code>. Regista esto en la tabla escribiendo <code><var>EXAMPLES[0]</var></code> en la columna <code>x</code>, y <code><var>roundToNearest(0.1, FUNC(EXAMPLES[0]))</var></code> en la columna <code>y</code> correspondiente.</p>
+                <p>Ahora, elige cuatro valores más de <code>x</code>para evaluar en la ecuación. Probemos los números <code><var>EXAMPLES[1]</var></code>, <code><var>EXAMPLES[2]</var></code>, <code><var>EXAMPLES[3]</var></code>, y <code><var>EXAMPLES[4]</var></code>.</p>
+                <div>
+                    <p>Evaluando en la ecuación, obtenemos:</p>
+                    <p data-each="EXAMPLES.slice(1) as x">
+                        <code>f(<var>x</var>) =
+                            <var>roundToNearest(0.1, FUNC(x))</var></code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

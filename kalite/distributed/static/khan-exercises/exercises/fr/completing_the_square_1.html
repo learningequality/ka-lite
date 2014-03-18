@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html data-require="math polynomials expressions math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Résolution d'équations du second degré en faisant apparaître le carré 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="original" data-weight="5">
+                <div class="vars">
+                    <var id="X1">randRangeNonZero( -10, 10 )</var>
+                    <var id="X2" data-ensure="X1 !== X2">randRange( -5, 5 ) * 2 + ( X1 % 2 )</var>
+                    <var id="B">( X1 + X2 ) * -1</var>
+                    <var id="C">X1 * X2</var>
+                    <var id="POLY">new Polynomial( 0, 2, [C, B, 1], "x" )</var>
+                    <var id="POLY_TEXT">POLY.text()</var>
+                    <var id="OR">$._("ou")</var>
+                </div>
+                <p class="question">Complétez le carré afin de résoudre pour trouver <code>x</code>.</p>
+                <p><code><var>POLY_TEXT</var> = 0</code></p>
+
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>B/2</var></span>
+                        <span class="sol"><var>C * -1 + pow( B / 2, 2 )</var></span>
+                        <span class="sol"><var>X1</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>B/2</var></span>
+                        <span class="sol"><var>C * -1 + pow( B / 2, 2 )</var></span>
+                        <span class="sol"><var>X2</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <div class="entry" data-type="multiple">
+                            <b>Complétez le carré:</b> <br><code>(x + {}</code><span class="sol short32"></span> <code>)^2 = {}</code> <span class="sol short32"></span> <br><br><b>Solution:</b> <br><code>x = {}</code><span class="sol short32"></span><code>\quad\text{<var>OR</var>}\quad x = {}</code><span class="sol short32"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="one-root" data-type="original" data-weight="1">
+                <div class="vars">
+                    <var id="X2">X1</var>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p>
+                        <b>Complétez le carré:</b> <br><code>(x + {}</code><span class="sol short32"><var>-X1</var></span> <code>)^2 = {}</code> <span class="sol short32">0</span> <br><br><b>Solution:</b> <br><code>x = \quad</code><span class="sol short32"><var>X1</var></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="hints">
+            <div data-if="X1 !== X2" data-unwrap="">
+                <div data-if="C !== 0">
+                    <p>Commencez par déplacer le terme constant vers le membre droit de l'équation.</p>
+                    <p><code>x^2 <span data-if="B !== 0"> + <var>B</var>x</span> = <var>C * -1</var></code></p>
+                </div>
+                <div data-if="B !== 0">
+                    <p>Nous complétons le carré en prenant la moitié de notre coefficient du terme <code>x</code>, en le mettant au carré et en l'ajoutant des deux cotés de l'équation. Puisque le coefficient de notre terme <code>x</code> est <code><var>B</var></code>, sa moitié est <code><var>B / 2</var></code> et la mettre au carré donne <code>\color{blue}{<var>pow( B / 2, 2 )</var>}</code>.</p>
+                    <p><code>x^2 + <var>B</var>x \color{blue}{ + <var>pow( B / 2, 2 )</var>} = <var>C * -1</var> \color{blue}{ + <var>pow( B / 2, 2 )</var>}</code></p>
+                </div>
+                <div data-if="B !== 0">
+                    <p>Nous pouvons maintenant réécrire le membre de gauche comme un nombre au carré.</p>
+                    <p><code>( x + <var>B / 2</var> )^2 = <var>C * -1 + pow( B / 2, 2 )</var></code></p>
+                </div>
+            </div>
+            <div data-else="" data-unwrap="">
+                <p>Le membre de gauche de l'équation est déjà un carré parfait. Le coefficient de notre terme en <code>x</code> est <code><var>B</var></code>, la moitié duquel est <code><var>B / 2</var></code>, et le mettre au carré nous donne <code>\color{blue}{<var>pow( B / 2, 2 )</var>}</code>, soit notre terme constant.</p>
+                <div>
+                    <p>Ainsi, nous pouvons réécrire le membre de gauche comme un nombre au carré.</p>
+                    <p><code>( x + <var>B / 2</var> )^2 = <var>C * -1 + pow( B / 2, 2 )</var></code></p>
+                </div>
+            </div>
+            <div>
+                <p>Prendre la racine carrée des deux côtés.</p>
+                <p><code>x <span data-if="B !== 0"> + <var>B / 2</var></span> = <span data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0">\pm</span><var>sqrt( C * -1 + pow( B / 2, 2 ) )</var></code></p>
+            </div>
+            <div data-if="B !== 0">
+                <p>Isolez <code>x</code> pour trouver la(les) solution(s).</p>
+                <p data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0"><code>x = <var>-B / 2</var>\pm<var>sqrt( C * -1 + pow( B / 2, 2 ) )</var></code></p>
+            </div>
+            <div>
+                <div data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0">
+                    <p>Donc les solutions sont: <code>x = <var>-B / 2 + sqrt( C * -1 + pow( B / 2, 2 ) )</var> \text{ <var>OR</var> } x = <var>-B / 2 - sqrt( C * -1 + pow( B / 2, 2 ) )</var></code></p>
+                </div>
+                <div data-else="">
+                    <p>La solution est: <code>x = <var>-B / 2 + sqrt( C * -1 + pow( B / 2, 2 ) )</var></code></p>
+                </div>
+                <p>Nous avons déjà trouvé la carré complété: <code>( x + <var>B / 2</var> )^2 = <var>C * -1 + pow( B / 2, 2 )</var></code></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

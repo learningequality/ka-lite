@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Résoudre graphiquement un système d'équations du premier degré</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="standard" data-weight="4">
+            <div class="vars">
+                <div data-ensure="( YINT_1 + SLOPE_1_FRAC[0] &lt;= 10 ) &amp;&amp; ( YINT_2 + SLOPE_2_FRAC[0] &lt;= 10 ) &amp;&amp; ( YINT_1 + SLOPE_1_FRAC[0] &gt;= -10 ) &amp;&amp; ( YINT_2 + SLOPE_2_FRAC[0] &gt;= -10 )">
+                    <var id="X">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y">randRange( -5, 5 )</var>
+                    <div data-ensure="( abs(YINT_1 - YINT_2) &gt; 3 ) &amp;&amp; ( YINT_1 !== Y ) &amp;&amp; ( YINT_2 !== Y )">
+                        <var id="YINT_1">randRangeNonZero( -5, 5 )</var>
+                        <var id="YINT_2">randRangeNonZero( -5, 5 )</var>
+                    </div>
+                    <var id="SLOPE_1">(Y - YINT_1) / X</var>
+                    <var id="SLOPE_2">(Y - YINT_2) / X</var>
+                    <var id="SLOPE_1_FRAC">toFraction( SLOPE_1, 0.001 )</var>
+                    <var id="SLOPE_2_FRAC">toFraction( SLOPE_2, 0.001 )</var>
+                </div>
+                <var id="PRETTY_SLOPE_1">SLOPE_1 === 1 ? "" : ( SLOPE_1 === -1 ? "-" : decimalFraction( SLOPE_1, true, true ) )</var>
+                <var id="PRETTY_SLOPE_2">SLOPE_2 === 1 ? "" : ( SLOPE_2 === -1 ? "-" : decimalFraction( SLOPE_2, true, true ) )</var>
+                <var id="MULT_1">randRangeNonZero( -2, 2 )</var>
+                <var id="MULT_2">randRangeNonZero( -2, 2 )</var>
+                <var id="A1">( Y - YINT_1 ) * -MULT_1</var>
+                <var id="A2">( Y - YINT_2 ) * -MULT_2</var>
+                <var id="B1">X * MULT_1</var>
+                <var id="B2">X * MULT_2</var>
+                <var id="C1">X * YINT_1 * MULT_1</var>
+                <var id="C2">X * YINT_2 * MULT_2</var>
+                <var id="STD_FORM_1">true</var>
+                <var id="STD_FORM_2">true</var>
+            </div>
+
+            <p class="question">Représente graphiquement ce système d'équations et résolve le.</p>
+
+            <div class="problem">
+                <p class="hint_blue" data-if="STD_FORM_1">
+                    <code><var>expr([ "+", [ "*", A1, "x" ], [ "*", B1, "y" ] ])</var> = <var>C1</var></code>
+                </p>
+                <p class="hint_blue" data-else="">
+                    <code>y = <var>PRETTY_SLOPE_1</var> x + <var>YINT_1</var></code>
+                </p>
+
+                <p class="hint_green" data-if="STD_FORM_2">
+                    <code><var>expr([ "+", [ "*", A2, "x" ], [ "*", B2, "y" ] ])</var> = <var>C2</var></code>
+                </p>
+                <p class="hint_green" data-else="">
+                    <code>y = <var>PRETTY_SLOPE_2</var> x + <var>YINT_2</var></code>
+                </p>
+
+                <div class="graphie" id="grid">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1}),addMouseLayer(),graph.pointA=addMovablePoint({coord:[-5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointB=addMovablePoint({coord:[5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointC=addMovablePoint({coord:[-5,-5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.GREEN,fill:KhanUtil.GREEN}}),graph.pointD=addMovablePoint({coord:[5,-5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.GREEN,fill:KhanUtil.GREEN}}),graph.line1=addMovableLineSegment({pointA:graph.pointA,pointZ:graph.pointB,fixed:!0,extendLine:!0}),graph.line2=addMovableLineSegment({pointA:graph.pointC,pointZ:graph.pointD,fixed:!0,extendLine:!0,normalStyle:{stroke:KhanUtil.GREEN,"stroke-width":2}}),graph.pointA.onMove=function(e,r){return e!=graph.pointB.coord[0]||r!=graph.pointB.coord[1]},graph.pointB.onMove=function(e,r){return e!=graph.pointA.coord[0]||r!=graph.pointA.coord[1]},graph.pointC.onMove=function(e,r){return e!=graph.pointD.coord[0]||r!=graph.pointD.coord[1]},graph.pointD.onMove=function(e,r){return e!=graph.pointC.coord[0]||r!=graph.pointC.coord[1]},graph.pointC.toFront(),graph.pointD.toFront(),graph.pointA.toFront(),graph.pointB.toFront()</div>
+                <p>Cliquez sur les points et déplacez-les pour modifier les positions des droites.</p>
+            </div>
+            <div class="solution" data-type="multiple">
+                <p><code>x = </code> <span class="sol"><var>X</var></span></p>
+                <p><code>y = </code> <span class="sol"><var>Y</var></span></p>
+                <div class="sol" data-type="custom">
+                    <div class="instruction">Vous devez placer correctement les deux droites dans le repère.</div>
+                    <div class="guess">[graph.pointA.coord,graph.pointB.coord,graph.pointC.coord,graph.pointD.coord]</div>
+                    <div class="validator-function">var e=(guess[1][1]-guess[0][1])/(guess[1][0]-guess[0][0]),r=(guess[3][1]-guess[2][1])/(guess[3][0]-guess[2][0]),a=e*(0-guess[0][0])+guess[0][1],t=r*(0-guess[2][0])+guess[2][1],n=abs(SLOPE_1-e)&lt;.001&amp;&amp;abs(SLOPE_2-r)&lt;.001&amp;&amp;abs(YINT_1-a)&lt;.001&amp;&amp;abs(YINT_2-t)&lt;.001||abs(SLOPE_1-r)&lt;.001&amp;&amp;abs(SLOPE_2-e)&lt;.001&amp;&amp;abs(YINT_2-a)&lt;.001&amp;&amp;abs(YINT_1-t)&lt;.001,s=parseInt($("#solutionarea input").eq(0).val())===X&amp;&amp;parseInt($("#solutionarea input").eq(1).val())===Y;return s&amp;&amp;!n?"You found the right solution to the system of equations, but you haven't graphed them correctly.":n</div>
+                    <div class="show-guess">graph.pointA.setCoord(guess[0]),graph.pointB.setCoord(guess[1]),graph.pointC.setCoord(guess[2]),graph.pointD.setCoord(guess[3]),graph.line1.transform(!0),graph.line2.transform(!0)</div>
+                </div>
+                <div class="example">deux entiers comme <code>6</code>
+</div>
+            </div>
+        </div>
+        <div id="slope-intercept" data-type="standard" data-weight="5">
+            <div class="vars">
+                <var id="STD_FORM_1">false</var>
+                <var id="STD_FORM_2">false</var>
+            </div>
+        </div>
+        <div id="mixed" data-type="standard" data-weight="1">
+            <div class="vars">
+                <var id="STD_FORM_1">random() &lt; 0.5 ? true : false</var>
+                <var id="STD_FORM_2">!STD_FORM_1</var>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div data-if="STD_FORM_1" data-unwrap="">
+            <p class="hint_blue">On écrit la première équation, <code><var>expr([ "+", [ "*", A1, "x" ], [ "*", B1, "y" ] ])</var> = <var>C1</var></code>, sous la forme y = ax + b.</p>
+            <p class="hint_blue"><code>y = <var>PRETTY_SLOPE_1</var> x + <var>YINT_1</var></code></p>
+        </div>
+        <p class="hint_blue">L'ordonnée à l'origine pour la première équation est <code><var>YINT_1</var></code>, donc la première ligne doit passer par le point <code>(0, <var>YINT_1</var>)</code>.</p>
+        <p class="hint_blue">
+            <span data-if="abs( SLOPE_1_FRAC[0] ) !== 1">La pente de la première équation est <code><var>decimalFraction( SLOPE_1, true, true )</var></code>. Souvenez vous que la pente est le rapport entre décalage vertical et le décalage horizontal. Dans ce cas, pour chaque <code><var>abs( SLOPE_1_FRAC[0] )</var></code> unité de déplacement vers le <span data-if="SLOPE_1_FRAC[0] &lt; 0"><em>bas</em> (car elle est négative)</span> <span data-else="">up</span>.</span><span data-else="">La pente de la première équation est <code><var>decimalFraction( SLOPE_1, true, true )</var></code>. Souvenez vous que la pente est le rapport entre décalage vertical et le décalage horizontal. Dans ce cas, pour chaque <code><var>abs( SLOPE_1_FRAC[0] )</var></code> unité de déplacement vers le <span data-if="SLOPE_1_FRAC[0] &lt; 0"><em>bas</em> (car elle est négative)</span> <span data-else="">up</span>.</span>
+            <span data-if="abs( SLOPE_1_FRAC[1] ) !== 1">On doit aussi se déplacer de <code><var>SLOPE_1_FRAC[1]</var></code> unités vers la droite.</span><span data-else="">On doit aussi se déplacer de <code><var>SLOPE_1_FRAC[1]</var></code> unités vers la droite.</span>
+        </p>
+        <p class="hint_blue">
+            <span data-if="abs( SLOPE_1_FRAC[1] ) !== 1"><code><var>SLOPE_1_FRAC[1]</var></code> unités vers la droite.</span><span data-else=""><code><var>SLOPE_1_FRAC[1]</var></code>unités vers la droite.</span>
+            <span data-if="abs( SLOPE_1_FRAC[0] ) !== 1"><code><var>abs( SLOPE_1_FRAC[0] )</var></code> unités vers le <span data-if="SLOPE_1_FRAC[0] &lt; 0">bas</span><span data-else="">up</span> à partir de <code>(0, <var>YINT_1</var>)</code> nous conduit à <code>(<var>SLOPE_1_FRAC[1]</var>, <var>YINT_1 + SLOPE_1_FRAC[0]</var>)</code>.</span><span data-else=""><code><var>abs( SLOPE_1_FRAC[0] )</var></code> unités vers le <span data-if="SLOPE_1_FRAC[0] &lt; 0">bas</span><span data-else="">up</span> à partir de <code>(0, <var>YINT_1</var>)</code> nous conduit à <code>(<var>SLOPE_1_FRAC[1]</var>, <var>YINT_1 + SLOPE_1_FRAC[0]</var>)</code>.</span>
+        </p>
+        <p class="hint_blue">On trace la courbe bleue de manière à passer par <code>(0, <var>YINT_1</var>)</code> et <code>(<var>SLOPE_1_FRAC[1]</var>, <var>YINT_1 + SLOPE_1_FRAC[0]</var>)</code>. <br><input onclick="javascript: KhanUtil.currentGraph.graph.pointA.moveTo( 0, KhanUtil.tmpl.getVAR( 'YINT_1' ), true ); KhanUtil.currentGraph.graph.pointB.moveTo( KhanUtil.tmpl.getVAR( 'SLOPE_1_FRAC[1]' ), KhanUtil.tmpl.getVAR( 'YINT_1' ) + KhanUtil.tmpl.getVAR( 'SLOPE_1_FRAC[0]' ), true ); " type="button" value="Démonstration">Me montrer"&gt;
+        </p>
+        <div data-if="STD_FORM_2" data-unwrap="">
+            <p class="hint_green">On écrit la deuxième équation, <code><var>expr([ "+", [ "*", A2, "x" ], [ "*", B2, "y" ] ])</var> = <var>C2</var></code>, sous la forme y = ax + b.</p>
+            <p class="hint_green"><code>y = <var>PRETTY_SLOPE_2</var> x + <var>YINT_2</var></code></p>
+        </div>
+        <p class="hint_green">L'ordonnée à l'origine pour la deuxième équation est <code><var>YINT_2</var></code>, donc la seconde courbe doit passer par le point <code>(0, <var>YINT_2</var>)</code>.</p>
+        <p class="hint_green">
+            <span data-if="abs( SLOPE_2_FRAC[0] ) !== 1">La pente de la deuxième équation est <code><var>decimalFraction( SLOPE_2, true, true )</var></code>. Souvenez vous que la pente est le rapport entre décalage vertical et le décalage horizontal. Dans ce cas, pour chaque <code><var>abs( SLOPE_2_FRAC[0] )</var></code> unité de déplacement vers le <span data-if="SLOPE_2_FRAC[0] &lt; 0"><em>bas</em> (car elle est négative)</span> <span data-else="">up</span>.</span><span data-else="">La pente de la deuxième équation est <code><var>decimalFraction( SLOPE_2, true, true )</var></code>. Souvenez vous que la pente est le rapport entre décalage vertical et le décalage horizontal. Dans ce cas, pour chaque <code><var>abs( SLOPE_2_FRAC[0] )</var></code> unité de déplacement vers le <span data-if="SLOPE_2_FRAC[0] &lt; 0"><em>bas</em> (car elle est négative)</span> <span data-else="">up</span>.</span>
+            <span data-if="abs( SLOPE_1_FRAC[1] ) !== 1">on doit aussi se déplacer de <code><var>SLOPE_2_FRAC[1]</var></code> unités vers la droite.</span><span data-else="">on doit aussi se déplacer de <code><var>SLOPE_2_FRAC[1]</var></code> unités vers la droite.</span>
+        </p>
+        <p class="hint_green">
+            <span data-if="abs( SLOPE_2_FRAC[1] ) !== 1"><code><var>SLOPE_2_FRAC[1]</var></code> unités vers la droite.</span><span data-else=""><code><var>SLOPE_2_FRAC[1]</var></code> unités vers la droite.</span>
+            <span data-if="abs( SLOPE_2_FRAC[0] ) !== 1"><code><var>abs( SLOPE_2_FRAC[0] )</var></code> unités vers le <span data-if="SLOPE_2_FRAC[0] &lt; 0">bas</span><span data-else="">up</span> à partir de <code>(0, <var>YINT_2</var>)</code> nous conduit à <code>(<var>SLOPE_2_FRAC[1]</var>, <var>YINT_2 + SLOPE_2_FRAC[0]</var>)</code>.</span><span data-else=""><code><var>abs( SLOPE_2_FRAC[0] )</var></code> unités vers le <span data-if="SLOPE_2_FRAC[0] &lt; 0">bas</span><span data-else="">up</span> à partir de <code>(0, <var>YINT_2</var>)</code> nous conduit à <code>(<var>SLOPE_2_FRAC[1]</var>, <var>YINT_2 + SLOPE_2_FRAC[0]</var>)</code>.</span>
+        </p>
+        <p class="hint_green">Tracer la courbe verte de façon à ce qu'elle passe par <code>(0, <var>YINT_2</var>)</code> et <code>(<var>SLOPE_2_FRAC[1]</var>, <var>YINT_2 + SLOPE_2_FRAC[0]</var>)</code>. <br><input onclick="javascript: KhanUtil.currentGraph.graph.pointC.moveTo( 0, KhanUtil.tmpl.getVAR( 'YINT_2' ), true ); KhanUtil.currentGraph.graph.pointD.moveTo( KhanUtil.tmpl.getVAR( 'SLOPE_2_FRAC[1]' ), KhanUtil.tmpl.getVAR( 'YINT_2' ) + KhanUtil.tmpl.getVAR( 'SLOPE_2_FRAC[0]' ), true ); " type="button" value="Démonstration">Me montrer"&gt;
+        </p>
+        <p>La solution est le point d'intersection des deux droites.</p>
+        <div>
+            <p>Les courbes se rencontrent en <code class="hint_pink">(<var>X</var>, <var>Y</var>)</code>.</p>
+            <div class="graphie" data-update="grid">style({stroke:PINK}),circle([X,Y],.5)</div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

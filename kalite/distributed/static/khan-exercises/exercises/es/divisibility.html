@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Divisibilidad</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="A !== ANSWER &amp;&amp; B !== ANSWER">
+            <var id="A">randRange( 10, 25 )</var>
+            <var id="B" data-ensure="A !== B">randRange( 10, 25 )</var>
+            <var id="LCM">getLCM( A, B )</var>
+            <var id="LCM_FACTORIZATION">getPrimeFactorization( LCM )</var>
+            <var id="ANSWER">function(){for(var e=randRange(ceil(LCM_FACTORIZATION.length/2),LCM_FACTORIZATION.length-1),r=shuffle(LCM_FACTORIZATION),a=1,t=0;e&gt;t;t++)a*=r.shift();return a}()</var>
+            <var id="WRONGS">function(){for(var e=[];e.length&lt;4;){var r=randRange(10,LCM);LCM%r!==0&amp;&amp;e.push(r)}return e}()</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">Todo número divisible entre <code><var>A</var></code> y <code><var>B</var></code> también es divisible entre cuál de los siguientes</div>
+                <p class="solution"><code><var>ANSWER</var></code></p>
+                <ul class="choices">
+<li data-each="WRONGS as index, wrong"><code><var>wrong</var></code></li>
+                </ul>
+</div>
+        </div>
+
+        <div class="hints">
+            <p>Un número es divisible entre otro (un divisor) si su factorización en primos contiene la factorización en primos del divisor.</p>
+            <p>La factorización en primos de <code><var>A</var></code> es <code><var>getPrimeFactorization( A ).join( "\\times" )</var></code>.</p>
+            <p>La factorización en primos de <code><var>B</var></code> es <code><var>getPrimeFactorization( B ).join( "\\times" )</var></code>.</p>
+            <p>Así, todo número divisible entre ambos debe tener <code><var>LCM_FACTORIZATION.join( "\\times" )</var></code> como parte de su factorización en primos.</p>
+            <p>Todos los números que dividan tal número deberán tener una factorización que forme parte de <code><var>LCM_FACTORIZATION.join( "\\times" )</var></code>.</p>
+            <p>La factorización en primos de <code><var>ANSWER</var></code> es <code><var>getPrimeFactorization( ANSWER ).join( "\\times" )</var></code>.</p>
+            <p class="final_answer">Puesto que <code><var>getPrimeFactorization( ANSWER ).join( "\\times" )</var></code> es parte de <code><var>LCM_FACTORIZATION.join( "\\times" )</var></code>, todo número que sea divisible entre <code><var>A</var></code> y <code><var>B</var></code> también es divisible entre <code><var>ANSWER</var></code>.</p>
+        </div>
+    </div>
+</body>
+</html>

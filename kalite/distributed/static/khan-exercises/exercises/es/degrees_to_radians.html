@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html data-require="math angles">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grados a radianes</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="ANGLE">randFromArray(commonAngles)</var>
+        </div>
+
+        <div class="problems">
+            <div id="degrees-to-radians">
+                <p class="question">Convierte el ángulo <var>ANGLE.deg</var>° a radianes.</p>
+
+                <div class="solution" data-type="multiple">
+<span class="sol" data-forms="pi"> <var>ANGLE.deg / 180 * PI</var> </span> radianes</div>
+
+                <div class="hints">
+                    <p>Hay <code>360</code> grados en una circunferencia. También hay <code>2\pi</code> radianes en una circunferencia.</p>
+                    <p>En otras palabras, hay <code>\pi</code> radianes por cada <code>180</code> grados. Así que podemos convertir de grados a radianes multipicando  por <code>\pi</code>, y dividiendo entre <code>180^\circ</code>.</p>
+                    <p><code>
+                        <var>ANGLE.deg</var>^\circ
+                        \times \dfrac{\pi}{180^\circ}
+                    </code></p>
+                    <p><code>\displaystyle = <var>ANGLE.rad</var></code> radianes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

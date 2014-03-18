@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Résolution de trinômes du second degré en prenant la racine carré</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="solve">
+
+            <div class="vars">
+                <var id="H">randRangeNonZero( -10, 10 )</var>
+                <var id="CONSTANT">randRange( 1, 9 )</var>
+                <var id="K">-( CONSTANT * CONSTANT )</var>
+                <var id="OR_TEXT">$._("ou")</var>
+            </div>
+
+            <p class="problem">Calculer la valeur de <code>x</code> :</p>
+            <p class="question"><code>(x - <var>H</var>)^2 + <var>K</var> = 0</code></p>
+
+            <div class="solution" data-type="set">
+                <div class="set-sol"><var>H + CONSTANT</var></div>
+                <div class="set-sol"><var>H - CONSTANT</var></div>
+                <div class="input-format"><p style="font-size: 12px;">
+                    <code>x = {}</code><span class="entry short35"></span><code>\space \text{<var>OR_TEXT</var>} \space x = {}</code><span class="entry short35"></span>
+                </p></div>
+                <p class="example">un entier tel que <code>6</code></p>
+                <p class="example">une fraction <em>irréductible</em> telle que <code>3/5</code></p>
+                <p class="example">une <em>fraction </em> irréductible, telle que <code>7/4</code></p>
+                <p class="example">and/or <em>exact</em> decimals, like <code>0.75</code></p>
+            </div>
+            <div class="hints">
+
+                <div>
+                    <p>Ajoutez <code><var>abs( K )</var></code> des deux côtés pour commencer à isoler <code>x</code> à gauche :</p>
+                    <p><code>\qquad (x - <var>H</var>)^2 = <var>-K</var></code></p>
+                </div>
+
+                <div>
+                    <p>Prends la racine carrée des deux côtés pour faire disparaitre l'exposant.</p>
+                    <p><code>\qquad \sqrt{(x - <var>H</var>)^2} = \pm \sqrt{<var>-K</var>}</code></p>
+                </div>
+
+                <div>
+                    <p>Faites attention à bien tenir compte des deux valeurs positives et négatives de <code><var>CONSTANT</var></code>, car élever au carré l'un ou l'autre donnera <code><var>-K</var></code>.</p>
+                    <p><code>\qquad x - <var>H</var> = \pm <var>CONSTANT</var></code></p>
+                </div>
+
+                <div>
+                    <p>
+                        <span data-if="H &gt; 0">Ajoutez <code><var>abs( H )</var></code> des deux côtés pour isoler <code>x</code> à gauche :</span>
+                        <span data-else="">Soustrait <code><var>abs( H )</var></code> des deux côtés pour isoler <code>x</code> du côté gauche :</span>
+                    </p>
+                    <p><code>\qquad x = <var>H</var> \pm <var>CONSTANT</var></code></p>
+                </div>
+
+                <div>
+                    <p class="final_answer">Ajoutez et soustrayez <code><var>CONSTANT</var></code> pour trouver les deux solutions possibles :</p>
+                    <p><code>\qquad x = <var>H + CONSTANT</var> \quad \text{<var>OR_TEXT</var>} \quad x = <var>H - CONSTANT</var></code></p>
+                </div>
+            </div>
+
+        </div>
+        <div id="intersect" data-type="solve">
+            <p class="problem">Trouver où <code>f(x)</code> coupe l'axe des <code>x</code>.</p>
+            <p class="question"><code>f(x) = (x - <var>H</var>)^2 + <var>K</var></code></p>
+            <div class="hints" data-apply="prependContents">
+                <div>
+                    <p>La fonction intersecte l'axe des <code>x</code> quand <code>f(x) = 0</code>, donc résout cette équation :</p>
+                    <p><code>\qquad (x - <var>H</var>)^2 + <var>K</var> = 0</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

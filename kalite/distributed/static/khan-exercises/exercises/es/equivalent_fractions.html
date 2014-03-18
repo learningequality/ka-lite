@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers math-format word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Fracciones equivalentes</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars" data-ensure="A &lt; B">
+        <var id="M">randFromArray([2, 3, 10])</var>
+        <var id="A">randRange(1, 3)</var>
+        <var id="B">M === 10 ? 10 : randRange(2, 4)</var>
+        <var id="C">A * M</var>
+        <var id="D">B * M</var>
+        <var id="SYMBOL">randVar()</var>
+    </div>
+
+    <div class="problems">
+        <div id="numerator">
+            <p class="question">¿Qué número podría reemplazar el <code><var>SYMBOL</var></code> abajo?</p>
+            <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>SYMBOL</var>}{<var>D</var>}</code></p>
+            <div class="solution" data-forms="integer"><var>C</var></div>
+            <div class="hints">
+                <div>
+                    <p>La fracción del lado izquierdo representa <var>A</var> de <var>B</var> rebanadas de una <var>pizza( 1 )</var> rectangular.</p>
+                    <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([A,B-A],[RED,GRAY])</div>
+                </div>
+                <div>
+                    <p>¿Y si cortamos la <var>pizza( 1 )</var> en <var>D</var> rebanadas? ¿Cuántas rebanadas equivaldrían a la misma cantidad de <var>pizza( 1 )</var>?</p>
+                    <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([0,D],[RED,GRAY])</div>
+                </div>
+                <div>
+                    <p>Necesitaríamos <var>C</var> rebanadas.</p>
+                    <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([C,D-C],[RED,GRAY])</div>
+                </div>
+                <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>D</var>}</code> y así la respuesta es <code><var>C</var></code>.</p>
+
+                <div>
+                    <p>Otra forma de obtener la respuesta es multiplicar por <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                    <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> así que en realidad estamos multiplicando por 1.</p>
+                </div>
+                <p>La ecuación final es: <code>\dfrac{<var>A</var>}{<var>B</var>} \times \dfrac{<var>M</var>}{<var>M</var>} = \dfrac{<var>C</var>}{<var>D</var>} </code> así que nuestra respuesta es <code><var>C</var></code>.</p>
+
+            </div>
+        </div>
+
+        <div id="denominator">
+            <p class="question">¿Qué número podría reemplazar el <code><var>SYMBOL</var></code> abajo?</p>
+            <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>SYMBOL</var>}</code></p>
+            <div class="solution" data-forms="integer"><var>D</var></div>
+            <div class="hints">
+                <div>
+                    <p>La fracción del lado izquierdo representa <var>A</var> de <var>B</var> rebanadas de una <var>pizza( 1 )</var> rectangular.</p>
+                    <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([A,B-A],[RED,GRAY])</div>
+                </div>
+
+                <div>
+                    <p>¿Cuántas rebanadas necesitamos si queremos la misma cantidad de <var>pizza( 1 )</var> en <var>C</var> rebanadas?</p>
+                    <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([C,D-C],[RED,GRAY])</div>
+                </div>
+
+                <div>
+                    <p>Necesitaríamos cortar la <var>pizza( 1 )</var> en <var>D</var> rebanadas.</p>
+                    <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([C,D-C],[RED,GRAY])</div>
+                </div>
+                <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>D</var>}</code> y así la respuesta es <code><var>D</var></code>.</p>
+
+                <div>
+                    <p>Otra forma de obtener la respuesta es multiplicar por <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                    <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> así que en realidad estamos multiplicando por 1.</p>
+                </div>
+
+                <p>La ecuación final es: <code>\dfrac{<var>A</var>}{<var>B</var>} \times \dfrac{<var>M</var>}{<var>M</var>} = \dfrac{<var>C</var>}{<var>D</var>} </code> así que nuestra respuesta es <code><var>D</var></code>.</p>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

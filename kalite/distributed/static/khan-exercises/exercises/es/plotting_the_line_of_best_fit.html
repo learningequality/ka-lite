@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Estimando la línea que mejor se acomoda a los datos</title>
+<script src="../khan-exercise.js"></script><style type="text/css">
+        .graphie.float {
+            float: left;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="linear" data-weight="3">
+            <div class="vars" data-ensure="VALIDATOR(REALSLOPE, REALINTERCEPT)">
+                <var id="SLOPE">randFromArray([-1, 1]) * randRange(10, 80) / 20</var>
+                <var id="INTERCEPT">randRange(-5, 5)</var>
+                <var id="FUNC">function(x) { return SLOPE * x + INTERCEPT }</var>
+                <var id="TOP">((SLOPE &lt; 0 ? -1 : 1) * 11 - INTERCEPT) / SLOPE</var>
+                <var id="BOTTOM">((SLOPE &lt; 0 ? 1 : -1) * 11 - INTERCEPT) / SLOPE</var>
+                <var id="BOUND">function(e,n,r){return n&gt;e?n:e&gt;r?r:e}</var>
+                <var id="OFFSET">random() + 0.5</var>
+                <var id="LEFT">(BOTTOM &lt; -11) ? -11 : BOTTOM</var>
+                <var id="RIGHT">(TOP &gt; 11) ? 11 : TOP</var>
+                <var id="XS">sortNumbers(function(){var e=(RIGHT-LEFT)/20;return _.map(shuffle(_.range(-8,9),9),function(n){return n*e})}())</var>
+                <var id="UNIQARRAYS">function(e){for(var n=0;n&lt;e.length;++n)for(var r=n+1;r&lt;e.length;++r)_.isEqual(e[n],e[r])&amp;&amp;(e.splice(r,1),--r);return e}</var>
+                <var id="ANG">atan2(SLOPE, 1) + PI / 2</var>
+                <var id="TOTALOFFSET">[]</var>
+                <var id="POINTS">UNIQARRAYS(_.map(XS,function(e,n){var r,i=_.reduce(TOTALOFFSET,function(e,n){return e+n},0),s=function(e,n){return random()*(n-e)+e};return r=2&gt;n||n&gt;6?s(OFFSET/2,OFFSET):0&gt;i?s(-OFFSET-i,OFFSET):s(-OFFSET,OFFSET-i),TOTALOFFSET.push(r),[BOUND(round(e+cos(ANG)*r),-9,9),BOUND(round(FUNC(e)+sin(ANG)*r),-9,9)]}))</var>
+                <var id="REALSLOPE, REALINTERCEPT, R2">function(){var e=POINTS.length,n=_.reduce(POINTS,function(e,n){return e+n[0]},0)/e,r=pow(n,2),i=_.reduce(POINTS,function(e,n){return e+n[1]},0)/e,s=pow(i,2),t=_.reduce(POINTS,function(e,n){return e+pow(n[0],2)},0),o=_.reduce(POINTS,function(e,n){return e+pow(n[1],2)},0),c=_.reduce(POINTS,function(e,n){return e+n[0]*n[1]},0),a=c-e*n*i,l=(i*t-n*c)/(t-e*r),u=a/(t-e*r),p=e/(e-1),h=p*pow(t/e-r,.5),g=p*pow(o/e-s,.5),f=(_.map(POINTS,function(e){return e[0]}),a/((e-1)*h*g));return[u,l,f]}()</var>
+                <var id="GRAPH">{}</var>
+                <var id="VALIDATOR">function(e,n){var r=_.first(POINTS),i=_.last(POINTS),s=1/REALSLOPE+REALSLOPE;lowx=(1/REALSLOPE*r[0]+r[1]-REALINTERCEPT)/s,highx=(1/REALSLOPE*i[0]+i[1]-REALINTERCEPT)/s;var t=function(e){return-1/REALSLOPE*(e-r[0])+r[1]},o=function(e){return-1/REALSLOPE*(e-i[0])+i[1]};lowIntersectx=(1/REALSLOPE*r[0]+r[1]-n)/(e+1/REALSLOPE),highIntersectx=(1/REALSLOPE*i[0]+i[1]-n)/(e+1/REALSLOPE);var c=sqrt(pow(t(lowx)-t(lowIntersectx),2)+pow(lowx-lowIntersectx,2)),a=sqrt(pow(o(highx)-o(highIntersectx),2)+pow(highx-highIntersectx,2)),l=_.map(POINTS,function(r){var i=r[0],s=r[1],t=e*i+n;return s&gt;=t?1:-1}),u=sortNumbers(l),p=u.slice(0).reverse();return!_.isEqual(l,u)&amp;&amp;!_.isEqual(l,p)&amp;&amp;_.include(l,1)&amp;&amp;_.include(l,-1)&amp;&amp;1.3*OFFSET&gt;c&amp;&amp;1.3*OFFSET&gt;a}</var>
+            </div>
+
+            <p class="question">Ajusta una recta a los datos, o señala que ninguna recta se acomoda bien a los datos.</p>
+            <div class="problem">
+                <div class="graphie">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),addMouseLayer(),_.each(POINTS,function(e){circle(e,.2,{fill:"black"})}),graph.pointA=addMovablePoint({coord:[-5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointB=addMovablePoint({coord:[5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.bestFitLine=addMovableLineSegment({pointA:graph.pointA,pointZ:graph.pointB,fixed:!0,extendLine:!0}),graph.pointA.onMove=function(e,n){return e!=graph.pointB.coord[0]||n!=graph.pointB.coord[1]},graph.pointB.onMove=function(e,n){return e!=graph.pointA.coord[0]||n!=graph.pointA.coord[1]},graph.pointA.toFront(),graph.pointB.toFront();var shown=!1;graph.showLine=function(){graph.pointA.visibleShape.show(),graph.pointA.mouseTarget.show(),graph.pointB.visibleShape.show(),graph.pointB.mouseTarget.show(),graph.bestFitLine.show()},graph.hideLine=function(){graph.pointA.visibleShape.hide(),graph.pointA.mouseTarget.hide(),graph.pointB.visibleShape.hide(),graph.pointB.mouseTarget.hide(),graph.bestFitLine.hide()},graph.showSolution=function(){if(!shown){shown=!0;var e=function(e){return REALSLOPE*e+REALINTERCEPT};$("html, body").animate({scrollTop:$(".question").offset().top},{duration:500,easing:"swing",complete:function(){line([-11,e(-11)],[11,e(11)],{stroke:ORANGE,opacity:0}).animate({opacity:1},750)}})}},GRAPH=graph</div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Mueve la recta en la gráfica para ajustarla a los datos si es que es apropiada. <ul>
+<li> <label> <input id="exists" checked name="linear" onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()" type="radio"><span>Una recta se ajusta bien a los datos</span> </label> </li> <li> <label> <input id="notexists" name="linear" onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()" type="radio"><span>Ninguna recta se ajusta bien a los datos</span> </label> </li> </ul>
+</div>
+                <div class="guess">[GRAPH.pointA.coord,GRAPH.pointB.coord,$("input[name='linear']:checked").attr("id")]</div>
+                <div class="validator-function">if(_.isEqual(guess,[[-5,5],[5,5],"exists"]))return"";if("exists"!==guess[2])return!1;var e=(guess[1][1]-guess[0][1])/(guess[1][0]-guess[0][0]),n=e*-guess[0][0]+guess[0][1];return VALIDATOR(e,n)</div>
+                <div class="show-guess">GRAPH.pointA.setCoord(guess[0]),GRAPH.pointB.setCoord(guess[1]),GRAPH.bestFitLine.transform(!0)</div>
+                <div class="show-guess-solutionarea">$("#"+guess[2]).attr("checked","checked")</div>
+            </div>
+
+            <div class="hints">
+                <p>Una recta de mejor ajuste es una recta que se aproxima a los puntos en la gráfica.</p>
+                <div>
+                    <p>Hay tres criterios principales para aplicar cuando se quiere encontrar una recta de mejor ajuste.</p>
+                    <p>Primero, asegúrate de que tu línea pasa a través de los puntos y de que no se encuentra completamente por encima o por debajo de los puntos.</p>
+                    <div class="clearfix">
+                        <div class="graphie float">init({range:[[-5,5],[-5,5]],scale:[20,20]}),circle([-2,-3],.2,{fill:"black"}),circle([0,-1],.2,{fill:"black"}),circle([-1,1],.2,{fill:"black"}),circle([1,1],.2,{fill:"black"}),circle([0,2],.2,{fill:"black"}),line([-5,-4],[5,-3],{stroke:BLUE}),label([0,4],$._("Mal"),"center",!1).css("color","red").css("font-size","20px")</div>
+                        <div class="graphie float">init({range:[[-5,5],[-5,5]],scale:[20,20]}),circle([-2,-3],.2,{fill:"black"}),circle([0,-1],.2,{fill:"black"}),circle([-1,1],.2,{fill:"black"}),circle([1,1],.2,{fill:"black"}),circle([0,2],.2,{fill:"black"}),line([-5,-2.5],[5,-1.5],{stroke:BLUE}),label([0,4],$._("Bien"),"center",!1).css("color","orange").css("font-size","20px")</div>
+                    </div>
+                </div>
+                <div>
+                    <p>Luego, asegúrate de que tu línea pasa por encima de unos puntos y por debajo de otros pero de forma alternada, y no que simplemente pase por encima de algunos puntos y por debajo del resto.</p>
+                    <div class="clearfix">
+                        <div class="graphie float">init({range:[[-5,5],[-5,5]],scale:[20,20]}),circle([-2,-3],.2,{fill:"black"}),circle([0,-1],.2,{fill:"black"}),circle([-1,1],.2,{fill:"black"}),circle([1,1],.2,{fill:"black"}),circle([0,2],.2,{fill:"black"}),line([-5,-2.5],[5,-1.5],{stroke:BLUE}),label([0,4],$._("Bien"),"center",!1).css("color","orange").css("font-size","20px")</div>
+                        <div class="graphie float">init({range:[[-5,5],[-5,5]],scale:[20,20]}),circle([-2,-3],.2,{fill:"black"}),circle([0,-1],.2,{fill:"black"}),circle([-1,1],.2,{fill:"black"}),circle([1,1],.2,{fill:"black"}),circle([0,2],.2,{fill:"black"}),line([-5,-3.5],[3,5],{stroke:BLUE}),label([0,4],$._("Mejor"),"center",!1).css("color","#8EEB00").css("font-size","20px")</div>
+                    </div>
+                </div>
+                <div>
+                    <p>Finalmente, asegúrate de que la recta pase entre todos los puntos, de manera que esté cerca de todos los puntos.</p>
+                    <div class="clearfix">
+                        <div class="graphie float">init({range:[[-5,5],[-5,5]],scale:[20,20]}),circle([-2,-3],.2,{fill:"black"}),circle([0,-1],.2,{fill:"black"}),circle([-1,1],.2,{fill:"black"}),circle([1,1],.2,{fill:"black"}),circle([0,2],.2,{fill:"black"}),line([-5,-3.5],[3,5],{stroke:BLUE}),label([0,4],$._("Mejor"),"center",!1).css("color","#9FEE00").css("font-size","20px")</div>
+                        <div class="graphie float">init({range:[[-5,5],[-5,5]],scale:[20,20]}),circle([-2,-3],.2,{fill:"black"}),circle([0,-1],.2,{fill:"black"}),circle([-1,1],.2,{fill:"black"}),circle([1,1],.2,{fill:"black"}),circle([0,2],.2,{fill:"black"}),line([-4,-5],[3,5],{stroke:BLUE}),label([0,4],$._("Bien"),"center",!1).css("color","#00C322").css("font-size","20px")</div>
+                    </div>
+                </div>
+                <p>Hay varias rectas que satisfacen esto. <a class="simple-button" href="javascript:void(0)" onclick="javascript:KhanUtil.tmpl.getVAR('GRAPH').showSolution()"> Haz click aquí </a> para mostrar una de ellas.</p>
+            </div>
+        </div>
+
+        <div id="nonlinear" data-type="linear" data-weight="1">
+            <div class="vars" data-ensure="abs(R2) &lt; 0.36">
+                <var id="SLOPE">0</var>
+                <var id="INTERCEPT">0</var>
+                <var id="OFFSET">11</var>
+                <var id="GRAPH">{}</var>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Mueve la recta en la gráfica para ajustarla a los datos si es que es apropiada. <ul>
+<li> <label> <input id="exists" checked name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()" type="radio"><span>Una recta se ajusta bien a los datos</span> </label> </li> <li> <label> <input id="notexists" name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()" type="radio"><span>Ninguna recta se ajusta bien a los datos</span> </label> </li> </ul>
+</div>
+                <div class="guess">[GRAPH.pointA.coord,GRAPH.pointB.coord,$("input[name='nonlinear']:checked").attr("id")]</div>
+                <div class="validator-function">return _.isEqual(guess,[[-5,5],[5,5],"exists"])?"":"notexists"===guess[2]</div>
+                <div class="show-guess">GRAPH.pointA.setCoord(guess[0]),GRAPH.pointB.setCoord(guess[1]),GRAPH.bestFitLine.transform(!0)</div>
+                <div class="show-guess-solutionarea">$("#"+guess[2]).attr("checked","checked")</div>
+            </div>
+
+            <div class="hints">
+                <p>¿Los datos aparentan tener una relación lineal?</p>
+                <p>Estos datos son en su mayoría al azar, entonces no hay ninguna línea que se ajuste bien a los datos.</p>
+            </div>
+        </div>
+
+        <div id="two-slopes" data-type="linear" data-weight="1">
+            <div class="vars" data-ensure="abs(R2) &lt; 0.36">
+                <var id="BREAK">randRange(-3, 3)</var>
+                <var id="SLOPE1">randRange(-25, 25) / 10</var>
+                <var id="SLOPE2" data-ensure="abs(SLOPE1 - SLOPE2) &gt; 1.5">randRange(-30, 30) / 10</var>
+                <var id="GETPOINTS">function(e,n,r){for(var i=[],s=(e+n)/2,t=randRange(2*abs(r)-8,8-2*abs(r)),o=[];n&gt;e;)o.push(e++);o=shuffle(o);for(var c=randRange(4,5),a=0;a&lt;o.length;a++){var l=(o[a]-s)*r+t+2*random()-1;if(abs(l)&lt;10&amp;&amp;(i.push([o[a],round(l)]),i.length===c))break}return i}</var>
+                <var id="POINTS1">GETPOINTS(-10, BREAK - 1, SLOPE1)</var>
+                <var id="POINTS2">GETPOINTS(BREAK + 1, 10, SLOPE2)</var>
+                <var id="POINTS">[].concat(POINTS1).concat(POINTS2)</var>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Mueve la recta en la gráfica para ajustarla a los datos si es que es apropiada. <ul>
+<li> <label> <input id="exists" checked name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()" type="radio"><span>Una recta se ajusta bien a los datos</span> </label> </li> <li> <label> <input id="notexists" name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()" type="radio"><span>Ninguna recta se ajusta bien a los datos</span> </label> </li> </ul>
+</div>
+                <div class="guess">[GRAPH.pointA.coord,GRAPH.pointB.coord,$("input[name='nonlinear']:checked").attr("id")]</div>
+                <div class="validator-function">return _.isEqual(guess,[[-5,5],[5,5],"exists"])?"":"notexists"===guess[2]</div>
+                <div class="show-guess">GRAPH.pointA.setCoord(guess[0]),GRAPH.pointB.setCoord(guess[1]),GRAPH.bestFitLine.transform(!0)</div>
+                <div class="show-guess-solutionarea">$("#"+guess[2]).attr("checked","checked")</div>
+            </div>
+
+            <div class="hints">
+                <p>¿Los datos aparentan tener una relación lineal?</p>
+                <p>Estos datos corresponden a dos tendencias lineales que están separadas, de manera que ninguna recta se ajusta bien a los datos.</p>
+            </div>
+        </div>
+
+        <div id="parabola" data-type="linear" data-weight="1">
+            <div class="vars" data-ensure="abs(R2) &lt; 0.36">
+                <var id="GETPOINTS">function(){var e=shuffle([-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10]),n=randRange(9,12),r=randRange(4,10),i=randRange(-10,10)/10,s=randRange(-8,8);s&gt;2?r*=-1:s&gt;-2&amp;&amp;(r*=randFromArray([-1,1]));for(var t=[],o=0;o&lt;e.length;o++){var c=e[o],a=round(c*c/r+i*c+s+2*random()-1);if(abs(a)&lt;10&amp;&amp;(t.push([c,a]),t.length===n))break}return t}</var>
+                <var id="POINTS1">GETPOINTS()</var>
+                <var id="POINTS">[].concat(POINTS1)</var>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Mueve la recta en la gráfica para ajustarla a los datos si es que es apropiada. <ul>
+<li> <label> <input id="exists" checked name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').showLine()" type="radio"><span>Una recta se ajusta bien a los datos</span> </label> </li> <li> <label> <input id="notexists" name="nonlinear" onclick="KhanUtil.tmpl.getVAR('GRAPH').hideLine()" type="radio"><span>Ninguna recta se ajusta bien a los datos</span> </label> </li> </ul>
+</div>
+                <div class="guess">[GRAPH.pointA.coord,GRAPH.pointB.coord,$("input[name='nonlinear']:checked").attr("id")]</div>
+                <div class="validator-function">return _.isEqual(guess,[[-5,5],[5,5],"exists"])?"":"notexists"===guess[2]</div>
+                <div class="show-guess">GRAPH.pointA.setCoord(guess[0]),GRAPH.pointB.setCoord(guess[1]),GRAPH.bestFitLine.transform(!0)</div>
+                <div class="show-guess-solutionarea">$("#"+guess[2]).attr("checked","checked")</div>
+            </div>
+
+            <div class="hints">
+                <p>¿Los datos aparentan tener una relación lineal?</p>
+                <p>Estos datos no forman una tendencia lineal, de manera que no hay una sola recta que se ajuste bien a los datos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

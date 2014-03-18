@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Simplificando radicales 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars">
+            <var id="PRIMES">shuffle([2, 3, 5, 7, 11, 13])</var>
+    </div>
+    <div class="problems">
+        <div id="simplify" data-weight="3">
+            <div class="vars">
+                <var id="START_INT">randRange( 2, 12 )</var>
+                <var id="RADICAL_INT">randRange( 2, 5 )</var>
+                <var id="RADICAL_PRIME">PRIMES[0]</var>
+                <var id="RADICAL_TOTAL">pow( RADICAL_INT, 2 ) * RADICAL_PRIME</var>
+            </div>
+            <p class="question">Simplifica la siguiente expresión:</p>
+                <p><code><var>START_INT</var>\sqrt{<var>RADICAL_TOTAL</var>}</code>.</p>
+            <div class="solution" data-type="radical"><var>pow( START_INT, 2 ) * RADICAL_TOTAL</var></div>
+            <div class="hints">
+                <p>Primero trata de factorizar un cuadrado perfecto en los radicales.</p>
+                <div>
+                    <p><code>= <var>START_INT</var>\sqrt{<var>RADICAL_TOTAL</var>}</code></p>
+                    <p><code>= <var>START_INT</var>\sqrt{<var>pow( RADICAL_INT , 2 )</var> \cdot <var>RADICAL_PRIME</var>}</code></p>
+                </div>
+                <p>Separa los radicales y simplifica.</p>
+                <div>
+                    <p><code>= <var>START_INT</var>\sqrt{<var>pow( RADICAL_INT , 2 )</var>} \cdot \sqrt{<var>RADICAL_PRIME</var>}</code></p>
+                    <p><code>= <var>START_INT</var> \cdot <var>RADICAL_INT</var> \cdot \sqrt{<var>RADICAL_PRIME</var>}</code></p>
+                </div>
+                <p><code>= <var>START_INT * RADICAL_INT</var>\sqrt{<var>RADICAL_PRIME</var>}</code></p>
+            </div>
+        </div>
+        <div id="already-simplified" data-weight="1">
+            <div class="vars">
+                <var id="START_INT">randRange( 2, 12 )</var>
+                <var id="RADICAL_TOTAL">PRIMES[0] * PRIMES[1]</var>
+            </div>
+            <p class="question">Simplifica la siguiente expresión:</p>
+                <p><code><var>START_INT</var>\sqrt{<var>RADICAL_TOTAL</var>}</code>.</p>
+            <div class="solution" data-type="radical"><var>pow( START_INT, 2 ) * RADICAL_TOTAL</var></div>
+            <div class="hints">
+                <p>No existen factores de <var>RADICAL_TOTAL</var> que sean cuadrados perfectos.</p>
+                <div>
+                    <p>Así, la expresión está ya en su forma más simplificada.</p>
+                    <p><code>= <var>START_INT</var>\sqrt{<var>RADICAL_TOTAL</var>}</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

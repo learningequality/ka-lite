@@ -11,8 +11,8 @@
         <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
-        
-        <link rel="stylesheet" type="text/css" href="{% static "css/khan-site.css" %}">
+
+        <link rel="stylesheet" type="text/css" href="{% static "css/distributed/khan-site.css" %}">
         <style>
             html, body {
                 height: 100%;
@@ -40,27 +40,27 @@
                 width: 20%;
                 margin-left: 15px;
             }
-            
+
             #infobar .errorcount {
                 color: red;
                 float: left;
                 width: 20%;
                 margin-left: 15px;
             }
-            
+
         </style>
-        
+
         <script>
-        
+
             var fastInterval = 1000;
             var slowInterval = 10000;
-        
+
             var PuppetModel = Backbone.Model.extend({
-                
+
             });
-            
+
             var PuppetView = Backbone.View.extend({
-                
+
                 initialize: function() {
                     _.bindAll(this);
                     $(window).resize(this._resize);
@@ -68,33 +68,33 @@
                     this._loadEvents = [];
                     this.render();
                 },
-                
+
                 render: function() {
                     this._resize();
                 },
-                
+
                 _resize: function() {
                     this.$el.height($(window).height() - 40);
                 },
-                
+
                 whenLoaded: function(callback) {
                     if (_.isFunction(callback)) {
                         this._loadEvents.push(callback);
                     }
                 },
-                
+
                 goto: function(url, callback) {
                     this.startTimer();
                     this.whenLoaded(callback);
                     this.$el.attr("src", url);
                 },
-                
+
                 click: function(selector, callback) {
                     var matches = this.$(selector);
                     var index = Math.floor(Math.random() * matches.length);
                     this.detClick(selector, index, callback);
                 },
-                
+
                 detClick: function(selector, index, callback) {
                     selector = selector || "a[href!='']";
                     var matches = this.$(selector);
@@ -105,7 +105,7 @@
                         return;
                     };
                     var $match = matches.eq(index)
-                    
+
                     // it seems that using jQuery to "click" links does not follow them
                     if ($match.prop("tagName").toLowerCase() === "a" && $match.attr("href")) {
                         this.goto($match[0].href, callback);
@@ -116,20 +116,20 @@
                     // click it no matter what, in case it has any side effects
                     $match.click();
                 },
-                
+
                 fillForm: function(values) {
                     var self = this;
                     _.each(values, function(val, key) {
-                        self.$("form [name='" + key + "'], form #id_" + key).val(val);                        
+                        self.$("form [name='" + key + "'], form #id_" + key).val(val);
                     });
                 },
-                
+
                 submitForm: function(callback) {
                     this.startTimer();
                     this.whenLoaded(callback);
                     this.$("article form").submit();
                 },
-                
+
                 startTimer: function() {
                     this.model.set({
                         startTime: new Date(),
@@ -137,7 +137,7 @@
                         loadTime: null
                     });
                 },
-                
+
                 _pageLoaded: function() {
                     this.model.set("loadTime", (new Date()) - this.model.get("startTime"));
                     try {
@@ -161,7 +161,7 @@
                     this._triggerLoadEvents(null, this.model.get("url"));
                     this.model.set("clickDelay", fastInterval);
                 },
-                
+
                 _triggerLoadEvents: function(err, data) {
                     var self = this;
 
@@ -170,27 +170,27 @@
                             load_callback(err, data);
                         });
                     });
-                    
+
                     this._loadEvents = [];
-                    
+
                 },
-                
+
                 watchVideo: function(callback) {
                     this.runSequence(video_sequence, null, callback);
                 },
-                
+
                 watchExercise: function(callback) {
                     this.runSequence(exercise_sequence, null, callback);
                 },
-                
+
                 login: function(callback) {
                     this.runSequence(login_sequence, null, callback);
                 },
-                
+
                 logout: function(callback) {
                     this.runSequence(logout_sequence, null, callback);
                 },
-                
+
                 runSequence: function(tasks, input, callback) {
                     var self = this;
                     var index = 0;
@@ -210,18 +210,18 @@
                     }
                     runNext(null, input);
                 }
-                
+
             });
 
             var InfoBarView = Backbone.View.extend({
-                
+
                 initialize: function() {
                     _.bindAll(this);
                     this.model.bind("change:url", this._updateURL);
                     this.model.bind("change:status", this._updateStatus);
                     this.model.bind("change:errorCount", this._updateErrorCount);
                 },
-                
+
                 _updateURL: function() {
                     this.$(".url").text(this.model.get("url"));
                     window.location.hash = this.model.get("url");
@@ -234,7 +234,7 @@
                         this.$(".status").text(this.$(".status").text() + ": " + loadTime + "ms");
                     }
                 },
-                
+
                 _updateErrorCount: function() {
                     var errortext = "";
                     var errorCount = this.model.get("errorCount");
@@ -243,7 +243,7 @@
                     }
                     this.$(".errorcount").text(errortext)
                 }
-                
+
             });
 
             var video_sequence = [
@@ -275,7 +275,7 @@
                     }
                 }
             ]
-            
+
             var exercise_sequence = [
                 function(input, callback) {
                     this.goto("/math/arithmetic/fractions/understanding_fractions/e/recognizing_fractions_0.5/", callback);
@@ -331,14 +331,14 @@
                     callback()
                 }
             ]
-            
+
             var login_sequence = [
                 function(input, callback) {
                     this.goto("/securesync/login/", callback);
                 },
                 function(input, callback) {
                     var sidx = Math.ceil(Math.random() * {{ nusers }});
-                    
+
                     this.$("#id_facility option")[1].selected = true;
                     this.fillForm({
                         username: "s" + sidx,
@@ -347,13 +347,13 @@
                     this.submitForm(callback);
                 }
             ]
-            
+
             var logout_sequence = [
                 function(input, callback) {
                     this.goto("/securesync/logout/", callback);
                 }
             ]
-            
+
             $(function() {
                 window.model = new PuppetModel({
                     clickDelay: fastInterval
@@ -361,7 +361,7 @@
                 window.puppet = new PuppetView({model: model, el: $("#puppet")});
                 window.infobar = new InfoBarView({model: model, el: $("#infobar")});
                 puppet.goto(window.location.hash.slice(1) || "/");
-                
+
                 function watchVideos() {
                     if(Math.random() < {{ pct_videos }}){
                         puppet.watchVideo(watchVideos);
@@ -372,13 +372,13 @@
                         puppet.logout(function() { puppet.login(watchVideos); });
                     }
                 }
-                
+
                 puppet.login(watchVideos);
-                        
+
             });
-        
+
         </script>
-        
+
     </head>
     <body>
         <div id="infobar">

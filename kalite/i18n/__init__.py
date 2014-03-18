@@ -61,7 +61,7 @@ def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL
     if is_central_server:
         return os.path.join(get_lp_build_dir(ka_lang_code), "exercises")
     else:
-        return os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises", ka_lang_code)
+        return os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", ka_lang_code)
 
 def get_lp_build_dir(lang_code=None, version=None):
     global LANGUAGE_PACK_BUILD_DIR

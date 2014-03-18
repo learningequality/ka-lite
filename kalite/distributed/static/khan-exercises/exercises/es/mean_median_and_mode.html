@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html data-require="math math-format stat graphie graphie-helpers">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Media, Mediana y Moda</title>
+<script src="../khan-exercise.js"></script><style type="text/css">
+        .number-list {
+            text-align: center
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <script type="text/javascript">
+        function GenerateIntegers() {
+            var len, integers;
+            do {
+                // generate random list of numbers
+                len = KhanUtil.randRange( 5, 10 );
+
+                integers = [];
+
+                for (var i = 0; i < len; i++) {
+                    integers[i] = KhanUtil.randRange( 1, 10 );
+                }
+            } while ( !KhanUtil.mode(integers) );
+
+            return integers;
+        }
+
+        function DisplayMedian( sortedInts ) {
+            var si = sortedInts.slice(0),
+            center = Math.floor( si.length / 2 ),
+
+            prepend = "\\boldsymbol{",
+            append = "}";
+
+            if ( si.length % 2 == 0 ) {
+                si[center] = prepend + si[center] + append;
+                si[center - 1] = prepend + si[center - 1] + append;
+            } else {
+                si[center] = prepend + si[center] + append;
+            }
+
+            return si.join( ", " );
+        }
+        </script><div class="vars">
+            <var id="INTEGERS">GenerateIntegers()</var>
+            <var id="INTEGERS_COUNT">INTEGERS.length</var>
+            <var id="INTEGER_LIST">INTEGERS.join( ", " )</var>
+
+            <var id="SORTED_INTS">sortNumbers( INTEGERS )</var>
+            <var id="SORTED_LIST">SORTED_INTS.join( ", " )</var>
+            <var id="MEDIAN_LIST">DisplayMedian( SORTED_INTS )</var>
+
+            <var id="MEAN">mean( INTEGERS )</var>
+            <var id="MEDIAN">median( INTEGERS )</var>
+            <var id="MODE">mode( INTEGERS )</var>
+        </div>
+
+        <div class="problems">
+            <div id="mean">
+                <div class="question">
+                    <p>¿Cuál es la media aritmética de los siguientes números?</p>
+                    <div class="number-list"><code><var>INTEGER_LIST</var></code></div>
+                </div>
+
+                <p class="solution" data-inexact="" data-max-error="0.01"><var>MEAN</var></p>
+
+                <div class="hints">
+                    <p>Encuentra el promedio, suma todos los números y después divide entre la cantidad de números.</p>
+                    <div>
+                        <div class="number-list"><code><var>INTEGER_LIST</var></code></div>
+                        <p>Hay <code><var>INTEGERS_COUNT</var></code> números.</p>
+                    </div>
+                    <p>El promedio es <code>\displaystyle <var>fractionSimplification( sum(INTEGERS), INTEGERS_COUNT )</var></code>.</p>
+                </div>
+            </div>
+
+            <div id="median">
+                <div class="question">
+                    <p>¿Cuál es la mediana de los siguientes números?</p>
+                    <div class="number-list"><code><var>INTEGER_LIST</var></code></div>
+                </div>
+
+                <p class="solution"><var>MEDIAN</var></p>
+
+                <div class="hints">
+                    <div>
+                        <p>Primero ordena los números:</p>
+                        <div class="number-list"><code><var>SORTED_LIST</var></code></div>
+                    </div>
+                    <div>
+                        <p data-if="INTEGERS.length % 2 === 0">Como tenemos <code>2</code> números en medio, ¡la mediana es el promedio de <strong>those</strong> dos números!</p>
+                        <p data-else="">La mediana es el número de "en medio":</p>
+                        <div class="number-list"><code><var>MEDIAN_LIST</var></code></div>
+                        <p data-if="SORTED_INTS.length % 2 === 0">La mediana es <code>\dfrac{<var>SORTED_INTS[ SORTED_INTS.length / 2 - 1 ]</var> + <var>SORTED_INTS[ SORTED_INTS.length / 2 ]</var>}{2}</code>.</p>
+                    </div>
+                    <div>
+                        <p>Entonces la mediana es <code><var>fractionReduce(2 * MEDIAN, 2)</var></code>.</p>
+                        <p>Otra forma de encontrar el número de en medio, es dibujar los números en la recta numérica. Si un número aparece varias veces, cuenta su punto correspondiente varias veces.</p>
+                        <div class="graphie">init({range:[[-.5,10.5],[-1,1]]}),style({stroke:"#666"},function(){numberLine(0,10,1)});var freq={},labels={};$.each(INTEGERS,function(e,t){var n=freq[t]=(freq[t]||0)+1;labels[t]&amp;&amp;labels[t].remove(),n&gt;=2?labels[t]=label([t,.2],"\\scriptsize{"+n+"}","above",{labelDistance:0}):circle([t,0],.125,{stroke:"none",fill:"#6495ed"})})</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mode">
+                <div class="question">
+                    <p>¿Cuál es la moda de los siguientes números?</p>
+                    <div class="number-list"><code><var>INTEGER_LIST</var></code></div>
+                </div>
+
+                <p class="solution" data-forms="integer"><var>MODE</var></p>
+
+                <div class="hints">
+                    <p>La moda es el número más frecuente.</p>
+                    <div>
+                        <p>Podemos dibujar un histograma para ver cuantas veces aparece cada número.</p>
+
+                        <div class="graphie">var freq={},maxFreq=0;$.each(INTEGERS,function(e,n){var t=freq[n]=(freq[n]||0)+1;maxFreq=t&gt;maxFreq?t:maxFreq}),init({range:[[-.5,10.5],[-1,(maxFreq+1.5)/2]]}),style({stroke:"#666"},function(){numberLine(0,10,1)});for(var num in freq)for(var i=0,l=freq[num];l&gt;i;i++)circle([num,(i+1.5)/2],.125,{stroke:"none",fill:"#6495ed"})</div>
+                    </div>
+
+                    <p>Hay más <code><var>MODE</var></code>s que cualquier otro número, así es que <code><var>MODE</var></code> es la moda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

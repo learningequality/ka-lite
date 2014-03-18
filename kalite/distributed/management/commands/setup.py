@@ -282,6 +282,8 @@ class Command(BaseCommand):
             sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
             call_command("videoscan")
 
+        # Now deploy the static files
+        call_command("collectstatic", interactive=False)
 
         # done; notify the user.
         sys.stdout.write("\n")

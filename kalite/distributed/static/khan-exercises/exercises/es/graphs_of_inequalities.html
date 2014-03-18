@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gráficas de desigualdades</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="graphtoeq">
+            <div class="vars">
+                <var id="SLOPE_FRAC">reduce( randRangeNonZero( -5, 5 ), randRange( 1, 5 ) )</var>
+                <var id="YINT">randRangeNonZero( max( -10, -10 - SLOPE_FRAC[0] ), min( 10, 10 - SLOPE_FRAC[0] ) )</var>
+                <var id="SLOPE">SLOPE_FRAC[0] / SLOPE_FRAC[1]</var>
+                <var id="PRETTY_SLOPE">SLOPE === 1 ? "" : ( SLOPE === -1 ? "-" : fraction( SLOPE_FRAC[0], SLOPE_FRAC[1], true, true ) )</var>
+                <var id="MULT">randRangeNonZero( -3, 3 )</var>
+                <var id="A">SLOPE_FRAC[0] * -MULT</var>
+                <var id="B">SLOPE_FRAC[1] * MULT</var>
+                <var id="C">SLOPE_FRAC[1] * YINT * MULT</var>
+                <var id="STD_FORM">randFromArray([ true, false ])</var>
+                <var id="COMP">randFromArray([ "&lt;", "&gt;", "≤", "≥" ])</var>
+                <var id="STD_FORM_COMP">B &lt; 0 ? { "&lt;": "&gt;", "&gt;": "&lt;", "≤": "≥", "≥": "≤" }[ COMP ] : COMP</var>
+                <var id="LESS_THAN">COMP === "&lt;" || COMP === "≤"</var>
+                <var id="INCLUSIVE">COMP === "≥" || COMP === "≤"</var>
+                <var id="X1">SLOPE_FRAC[1]</var>
+                <var id="Y1">YINT + SLOPE_FRAC[0]</var>
+                <var id="X2">-SLOPE_FRAC[1]</var>
+                <var id="Y2">YINT - SLOPE_FRAC[0]</var>
+                <var id="ORI_IN">(YINT &lt; 0 &amp;&amp; !LESS_THAN) || (YINT &gt; 0 &amp;&amp; LESS_THAN)</var>
+            </div>
+
+            <p class="question">¿Qué desigualdad está representada por la gráfica?</p>
+
+            <div class="problem">
+                <div class="graphie" id="grid">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),label([0,-11],"y","below"),label([11,0],"x","right");var dash=INCLUSIVE?"":"- ";style({stroke:BLUE,strokeWidth:2,strokeDasharray:dash},function(){line([-11,-11*SLOPE+YINT],[11,11*SLOPE+YINT]).toBack()}),graph.shadeEdge=(LESS_THAN?YINT&gt;11:11&gt;YINT)?11:-11,style({fill:BLUE,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.shading=path([[11,graph.shadeEdge],[11,11*SLOPE+YINT],[-11,-11*SLOPE+YINT],[-11,graph.shadeEdge]])})</div>
+            </div>
+            <div class="solution" data-type="multiple">
+                <p class="short"><code>y</code><span class="sol" data-choices="['', '&lt;', '≤', '&gt;', '≥']" data-type="list"><var>COMP</var></span>
+                <span class="sol short30" data-fallback="1"><var>SLOPE</var></span><code>\space x + </code>
+                <span class="sol short30"><var>YINT</var></span></p>
+            </div>
+
+            <div class="hints">
+                <p>Para encontrar la ecuación de una desigualdad lineal primero debes encontrar la ecuación de la recta que forma el límite del conjunto solución. Esta recta se muestra en el gráfico anterior.</p>
+                <p>Una forma de encontrar la ecuación de esta recta es elegir dos puntos en la línea y encontrar la pendiente y la intersección con el eje y. Estos dos puntos en la recta son <code>(<var>X1</var>,<var>Y1</var>)</code> y 
+<code>(<var>X2</var>,<var>Y2</var>)</code>.</p>
+                <div>
+                    <p>Sustituye ambos puntos en la ecuación para la pendiente de la recta.</p>
+                    <p><code>m = \dfrac{<var>Y2</var> - <var>negParens(Y1)</var>}{<var>X2</var> - <var>negParens(X1)</var>} = <var>fractionReduce( Y2 - Y1, X2 - X1 )</var></code></p>
+                </div>
+                <p>Para encontrar <code>b</code>, podemos sustituir cualquiera de los dos puntos en la ecuación cuya pendiente conocemos.</p>
+                <div>
+                    <p>Using the first point <code>(<var>X1</var>, <var>Y1</var>)</code>, substitute <code>y = <var>Y1</var></code> and <code>x = <var>X1</var></code>:</p>
+                    <p><code><var>Y1</var> = (<var>fractionReduce( Y2 - Y1, X2 - X1 )</var>)(<var>X1</var>) + b</code></p>
+                    <p><code>b = <var>Y1</var> - <var>fractionReduce( X1 * ( Y2 - Y1 ), X2 - X1 )</var> = <var>fractionReduce( Y1 * (X2 - X1) - X1 * ( Y2 - Y1 ), X2 - X1 )</var></code></p>
+                </div>
+                <p>La ecuación de la recta es <code>y = <var>( SLOPE === -1 ? "-" : ( SLOPE === 1 ? "" : fractionReduce( Y2 - Y1, X2 - X1 )))</var> x + <var>fractionReduce( Y1 * (X2 - X1) - X1 * ( Y2 - Y1 ), X2 - X1 )</var></code><span data-if="abs( SLOPE ) === 1"> (el valor de <code>m</code> es <code><var>SLOPE</var></code>)</span>.</p>
+                <p>Ahora que tenemos la ecuación para la línea límite, necesitamos decidir qué signo de desigualdad usar.</p>
+                <p data-if="LESS_THAN">Si elegimos un punto sobre la recta, digamos <code>(<var>X1</var>,<var>Y1</var>)</code>, podemos ver que los puntos debajo de la recta están sombreados. Estos son los puntos donde <code>x = <var>X1</var> </code> pero <code>y</code> es menor que <var> Y1 </var>. 
+Por lo que debemos usar un &lt; o signo ≤.</p>
+<p data-else="">
+                    If we pick a point on the line, let's say <code>(<var>X1</var>,<var>Y1</var>)</code>, we can see that points above that point are all shaded in. These are the points where <code>x = <var>X1</var> </code> but <code>y</code> is
+                    greater than <var> Y1 </var>. So we should use a &gt; or ≥ sign.
+                </p>
+                <div>
+                    <p>Otra forma de ver esto es evaluar en un punto. El punto mas fácil a evaluar aquí es <code>(0,0)</code>:</p>
+                    <p><code>y \; ? \; <var>( SLOPE === -1 ? "-" : ( SLOPE === 1 ? "" : fractionReduce( Y2 - Y1, X2 - X1 )))</var> x + <var>fractionReduce( Y1 * (X2 - X1) - X1 * ( Y2 - Y1 ), X2 - X1 )</var></code></p>
+                    <p><code>0 \; ? \; <var>( SLOPE === -1 ? "-1*" : ( SLOPE === 1 ? "" : fractionReduce( Y2 - Y1, X2 - X1 ) + "*"))</var> 0 + <var>fractionReduce( Y1 * (X2 - X1) - X1 * ( Y2 - Y1 ), X2 - X1 )</var></code></p>
+                    <p>
+                        <span data-if="ORI_IN">Puesto que <code>(0,0)</code> está en el área sombreada, esta expresión debe ser cierta.</span><span data-else="">Puesto que <code>(0,0)</code> no está en el área sombreada, esta expresión debe ser falsa.</span>
+                        <span data-if="LESS_THAN">Así el signo ? debe ser  &lt; o ≤.</span><span data-else="">Así el signo ? debe ser  &gt; o ≥.</span>
+                    </p>
+                </div>
+                <p data-if="INCLUSIVE">La recta de la gráfica es continua, lo que significa que los puntos en la frontera pertenecen al conjunto de soluciones de la desigualdad.</p>
+<p data-else="">La ecuación de la gráfica esta punteada, lo que significa que la frontera no está en el conjunto de puntos solución a la desigualdad.</p>
+                <p>Por tanto, elegimos el signo <var>COMP</var>, y la desigualdad final es <code>y <var>COMP</var> <var>PRETTY_SLOPE</var> x + <var>YINT</var></code>.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

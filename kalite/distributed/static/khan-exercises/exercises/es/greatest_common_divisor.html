@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Máximo común divisor</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="A_START !== B_START">
+            <var id="A_START">randRange( 1, 10 )</var>
+            <var id="B_START">randRange( 1, 10 )</var>
+            <var id="FACTOR">randRange( 1, 5 )</var>
+
+            <var id="A">A_START * FACTOR</var>
+            <var id="B">B_START * FACTOR</var>
+            <var id="GCD">getGCD( A, B )</var>
+            <var id="A_FACTORS">toSentenceTex(getFactors( A ))</var>
+            <var id="B_FACTORS">toSentenceTex(getFactors( B ))</var>
+            <var id="GCF_TEXT">$._("MCD")</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p>¿Cuál es el máximo común divisor de <code><var>A</var></code> y <code><var>B</var></code>?</p>
+                    <p>Otra forma de ver esto es:</p>
+                    <p><code>\operatorname{<var>GCF_TEXT</var>}(<var>A</var>, <var>B</var>) = {?}</code></p>
+                </div>
+
+                <p class="solution" data-forms="integer"><var>GCD</var></p>
+            </div>
+        </div>
+
+        <div class="hints">
+            <p>El máximo común divisor es el número más grande que es factor de <code><var>A</var></code> y <code><var>B</var></code>.</p>
+            <div>
+                <p data-if="A === 1">El único factor de <code>1</code> es <code>1</code>.</p>
+                <p data-else="">Los factores de <code><var>A</var></code> son <var>A_FACTORS</var>.</p>
+            </div>
+            <div>
+                <p data-if="B === 1">El único factor de <code>1</code> es <code>1</code>.</p>
+                <p data-else="">Los factores de <code><var>B</var></code> son <var>B_FACTORS</var>.</p>
+            </div>
+            <div>
+                <p>Thus, the greatest common factor of <code><var>A</var></code> and <code><var>B</var></code> is <code><var>GCD</var></code>.</p>
+                <p><code>\operatorname{<var>GCF_TEXT</var>}(<var>A</var>, <var>B</var>) = <var>GCD</var></code></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

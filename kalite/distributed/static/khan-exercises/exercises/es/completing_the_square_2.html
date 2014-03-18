@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html data-require="math polynomials expressions math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Resolución de ecuaciones cuadráticas completando el cuadrado 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="original" data-weight="4">
+                <div class="vars">
+                    <var id="X1">randRange( 1, 4 ) / randRangeNonZero( -2, 2 )</var>
+                    <var id="X2" data-ensure="X1 !== X2">( randRange( -3, 3 ) * 2 + 1 ) / 2</var>
+                    <var id="B">( X1 + X2 ) * -1</var>
+                    <var id="B_SIGN">B &gt; 0 ? "+" : "-"</var>
+                    <var id="C">X1 * X2</var>
+                    <var id="MULT">getLCM( toFraction( B )[1], toFraction( C )[1] )</var>
+                    <var id="POLY">new Polynomial( 0, 2, [MULT*C, MULT*B, MULT], "x" )</var>
+                    <var id="POLY_TEXT">POLY.text()</var>
+                    <var id="OR">$._("o")</var>
+                </div>
+                <p class="question">Completa el cuadrado para resolver para <code>x</code>.</p>
+                <p><code><var>POLY_TEXT</var> = 0</code></p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>B / 2</var></span>
+                        <span class="sol"><var>C * -1 + pow( B / 2, 2 )</var></span>
+                        <span class="sol"><var>X1</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>B / 2</var></span>
+                        <span class="sol"><var>C * -1 + pow( B / 2, 2 )</var></span>
+                        <span class="sol"><var>X2</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <div class="entry" data-type="multiple">
+                            <b>Cuadrado completado:</b> <br><code>(x + {}</code><span class="sol short32"></span> <code>)^2 = {}</code> <span class="sol short40"></span> <br><br><b>Solución:</b> <br><code>x = {}</code><span class="sol short32"></span><code>\quad\text{<var>OR</var>}\quad x = {}</code><span class="sol short32"></span>
+                        </div>
+                    </div>
+                    <p class="example">enteros, como <code>6</code></p>
+                    <p class="example">fracciones <em>propias simplificadas</em>, como <code>3/5</code></p>
+                    <p class="example">fracciones <em>impropias simplificadas</em> , como <code>7/4</code></p>
+                    <p class="example">y/o decimales <em>exactos</em>, como <code>0.75</code></p>
+                </div>
+            </div>
+            <div id="one-root" data-type="original" data-weight="1">
+                <div class="vars">
+                    <var id="X1">( randRange( -4, 4 ) * 2 + 1 ) / 2</var>
+                    <var id="X2">X1</var>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p>
+                        <b>Cuadrado completado:</b> <br><code>(x + {}</code><span class="sol short32"><var>-X1</var></span> <code>)^2 = {}</code> <span class="sol short40">0</span> <br><br><b>Solución:</b> <br><code>x = \quad</code><span class="sol short32"><var>X1</var></span>
+                    </p>
+                    <p class="example">enteros, como <code>6</code></p>
+                    <p class="example">fracciones <em>propias simplificadas</em>, como <code>3/5</code></p>
+                    <p class="example">fracciones <em>impropias simplificadas</em> , como <code>7/4</code></p>
+                    <p class="example">y/o decimales <em>exactos</em>, como <code>0.75</code></p>
+                </div>
+            </div>
+            <div id="odds" data-type="original" data-weight="2">
+                <div class="vars">
+                    <var id="X1">randRangeNonZero( -8, 8 )</var>
+                    <var id="X2">randRange( -4, 4 ) * 2 + ( X1 % 2 - 1 )</var>
+                </div>
+            </div>
+        </div>
+        <div class="hints">
+            <div data-if="MULT !== 1">
+                <p>Primero divide el polinomio entre <code><var>MULT</var></code>, el coeficiente del término <code>x^2</code>.</p>
+                <p><code>x^2 <span data-if="B !== 0"><span data-if="abs( B ) !== 1"> + <var>decimalFraction( B, 1, 1 )</var></span><span data-else=""><var>B_SIGN</var></span>x</span> + <var>decimalFraction( C, 1, 1 )</var> = 0</code></p>
+            </div>
+            <div data-if="X1 !== X2" data-unwrap="">
+                <div data-if="C !== 0">
+                    <p>Mueve el término constante al lado derecho de la ecuación.</p>
+                    <p><code>x^2 <span data-if="B !== 0"><span data-if="abs( B ) !== 1"> + <var>decimalFraction( B, 1, 1 )</var></span><span data-else=""><var>B_SIGN</var></span>x</span> = <var>decimalFraction( C * -1, 1, 1 )</var></code></p>
+                </div>
+                <div data-if="B !== 0">
+                    <p>Completamos el cuadrado tomando la mitad del coeficiente de nuestro término <code>x</code>, elevándolo al cuadrado y sumandolo a ambos lados de la ecuación. El coeficiente de nuestro término <code>x</code>  es <code><var>decimalFraction( B, 1, 1 )</var></code>, así que la mitad de el sería <code><var>decimalFraction( B / 2, 1, 1 )</var></code>, y elevando al cuadrado ontenemos <code>\color{blue}{<var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>}</code>.</p>
+                    <p><code>x^2 <span data-if="abs( B ) !== 1"> + <var>decimalFraction( B, 1, 1 )</var></span><span data-else=""><var>B_SIGN</var></span>x \color{blue}{ + <var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>} = <var>decimalFraction( C * -1, 1, 1 )</var> \color{blue}{ + <var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>}</code></p>
+                </div>
+                <div data-if="B !== 0">
+                    <p>Ahora podemos reescribir el lado izquierdo de la ecuación como un término cuadrado.</p>
+                    <p><code>( x + <var>decimalFraction( B / 2, 1, 1 )</var> )^2 = <var>decimalFraction( C * -1 + pow( B / 2, 2 ), 1, 1 )</var></code></p>
+                </div>
+            </div>
+            <div data-else="" data-unwrap="">
+                <p>Observa que el lado derecho de nuestra ecuación es ya un trinomio cuadrado perfecto. El coeficiente de nuestro término <code>x</code> es <code><var>decimalFraction( B, 1, 1 )</var></code>, la mitad de él es <code><var>decimalFraction( B / 2, 1, 1 )</var></code>, y elevándolo al cuadrado nos da <code>\color{blue}{<var>decimalFraction( pow( B / 2, 2 ), 1, 1 )</var>}</code>, nuestro término constante.</p>
+                <div>
+                    <p>Por tanto, podemos reescribir el lado izquierdo de la ecuación como un término cuadrado.</p>
+                    <p><code>( x + <var>decimalFraction( B / 2, 1, 1 )</var> )^2 = <var>decimalFraction( C * -1 + pow( B / 2, 2 ), 1, 1 )</var></code></p>
+                </div>
+            </div>
+            <div>
+                <p>Obtén la raíz cuadrada a ambos lados.</p>
+                <p><code>x <span data-if="B !== 0"> + <var>decimalFraction( B / 2, 1, 1 )</var></span> = <span data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0">\pm</span><var>decimalFraction( sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+            </div>
+            <div data-if="B !== 0">
+                <p>Despeja <code>x</code> para encontrar la(s) solución(es).</p>
+                <p data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0"><code>x = <var>decimalFraction( -B / 2, 1, 1 )</var>\pm<var>decimalFraction( sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+            </div>
+            <div>
+                <div data-if="sqrt( C * -1 + pow( B / 2, 2 ) ) !== 0">
+                    <p>Las soluciones son: <code>x = <var>decimalFraction( -B / 2 + sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var> \text{ <var>OR</var> } x = <var>decimalFraction( -B / 2 - sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+                </div>
+                <div data-else="">
+                    <p>La solución es: <code>x = <var>decimalFraction( -B / 2 + sqrt( C * -1 + pow( B / 2, 2 ) ), 1, 1 )</var></code></p>
+                </div>
+                <p>Ya hemos encontrado el cuadrado completado: <code>( x + <var>decimalFraction( B / 2, 1, 1 )</var> )^2 = <var>decimalFraction( C * -1 + pow( B / 2, 2 ), 1, 1 )</var></code></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
