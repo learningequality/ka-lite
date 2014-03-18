@@ -27,11 +27,13 @@ function d3_scatter(data, options, appendtohtml) {
 
   var xAxis = d3.svg.axis()
       .scale(x)
-      .orient("bottom");
+      .orient("bottom")
+      .ticks(5);
 
   var yAxis = d3.svg.axis()
       .scale(y)
-      .orient("left");
+      .orient("left")
+      .ticks(5);
   
 
   // Create svg object for plot area
@@ -63,11 +65,70 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("width", width)
       .attr("height", height)
       .attr("opacity", 0);
-  
+
+
+  // Create four different rectangles to highlight and label the different quadrants of the graph.
+  // Each rectangle is a group with a coloured (fill) rectangle, and a text label.
+  var struggling = svg.append("g")
+  struggling.append("rect")
+    .attr("class", "quadrant-rectangle")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", width/2)
+    .attr("height", height/2)
+    .attr("fill", "#FF0000")
+  struggling.append("text")
+    .attr("class", "quadrant-label")
+    .attr("x", width/4)
+    .attr("y", height/4)
+    .text(gettext("Struggling"));
+
+  var bored = svg.append("g")
+  bored.append("rect")
+    .attr("class", "quadrant-rectangle")
+    .attr("x", width/2)
+    .attr("y", height/2)
+    .attr("width", width/2)
+    .attr("height", height/2)
+    .attr("fill", "#000000")
+  bored.append("text")
+    .attr("class", "quadrant-label")
+    .attr("x", 3*width/4)
+    .attr("y", 3*height/4)
+    .text(gettext("Bored"));
+
+  var disengaged = svg.append("g")
+  disengaged.append("rect")
+    .attr("class", "quadrant-rectangle")
+    .attr("x", 0)
+    .attr("y", height/2)
+    .attr("width", width/2)
+    .attr("height", height/2)
+    .attr("fill", "#FFFF00")
+  disengaged.append("text")
+    .attr("class", "quadrant-label")
+    .attr("x", width/4)
+    .attr("y", 3*height/4)
+    .text(gettext("Disengaged"));
+
+  var ontarget = svg.append("g")
+  ontarget.append("rect")
+    .attr("class", "quadrant-rectangle")
+    .attr("x", width/2)
+    .attr("y", 0)
+    .attr("width", width/2)
+    .attr("height", height/2)
+    .attr("fill", "#00FF00")
+  ontarget.append("text")
+    .attr("class", "quadrant-label")
+    .attr("x", 3*width/4)
+    .attr("y", height/4)
+    .text(gettext("On Target"));
+
   // Create and draw x and y axes
   svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + height/2 + ")")
       .call(xAxis)
     .append("text")
       .attr("class", "label")
@@ -79,6 +140,7 @@ function d3_scatter(data, options, appendtohtml) {
 
   svg.append("g")
       .attr("class", "y axis")
+      .attr("transform", "translate(" + width/2 + ",0)")
       .call(yAxis)
     .append("text")
       .attr("class", "label")
@@ -99,6 +161,11 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("cx", function(d) { return x(d[xCoordinate]); })
       .attr("cy", function(d) { return y(d[yCoordinate]); })
       .style("fill", "black")
+      // Add invisible stroke border to increase the effective area of the data point.
+      .style("stroke-width", "10")
+      .style("stroke", "black")
+      .style("stroke-opacity", "0")
+      .style("cursor", "pointer")
       // Define click behaviour
       .on("click", function(d) {
         // Prevent svg click behaviour of hiding tooltip from happening
@@ -129,6 +196,20 @@ function d3_scatter(data, options, appendtohtml) {
               .style("top", (d3.event.pageY - 28) + "px");
           }
         }
+      })
+      // Animate and grow data point on mouseover.
+      .on("mouseover", function(d) {
+        d3.select(this).transition()
+        .attr("r", 13.5)
+        .attr("stroke-width", 0)
+        .duration(500)
+        .ease("elastic",2,0.5);
+      })
+      // Shrink back on mouseout.
+      .on("mouseout", function(d) {
+        d3.select(this).transition()
+        .attr("r", 3.5)
+        .attr("stroke-width", 10);
       })
       // Add user name as hover text.
       .append("svg:title")
