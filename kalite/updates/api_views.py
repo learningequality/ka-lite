@@ -217,21 +217,16 @@ def delete_language_pack(request):
     API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
     That particular language folders are deleted and that language gets removed.
     """
-    exception_list=[]
     delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
     delete_path=[ get_localized_exercise_dirpath(delete_id), get_srt_path(delete_id), get_locale_path(delete_id) ]
     for path in delete_path:
         try:
             shutil.rmtree(path)
-        except Exception as e:
-            exception_list.append(e)
-            continue
+        except OSError as e:
+            if e.errno==2:    # No Such File or Directory Error
+                continue
 
     invalidate_web_cache()
-
-    if exception_list:
-        error= '<br>'.join(str(e) for e in exception_list)
-        return JsonResponseMessageError(_("%(error_info)s") % {"error_info": error})
 
     return JsonResponse({})
 
