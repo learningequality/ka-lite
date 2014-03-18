@@ -62,7 +62,7 @@ function version_callback(data) {
         show_message("error", "Remote version information unavailable.", "id_message_update");
     } else if (current_version != remote_version) {
         $("#update_info").show();  // show the related div
-        $("#internet_update").show();
+        $("#git_update").show();
 
         version_info = data["version_info"];
 
