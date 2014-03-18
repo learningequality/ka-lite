@@ -28,16 +28,9 @@ from version import VERSION
 
 CACHE_VARS = []
 
-SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH, "subtitles")
-
-LANGUAGE_SRT_SUFFIX = "_download_status.json"
-SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "dubbed_video_mappings.json")
-SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "supported_languages.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
-LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH, "i18n", "build")
-
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 class LanguageNotFoundError(Exception):
@@ -75,7 +68,6 @@ def get_supported_language_map(lang_code=None):
         lang_map = defaultdict(lambda: lang_code)
         lang_map.update(SUPPORTED_LANGUAGE_MAP.get(lang_code) or {})
         return lang_map
-
 
 def lang_best_name(l):
     return l.get('native_name') or l.get('ka_name') or l.get('name')
@@ -175,9 +167,10 @@ def get_id2oklang_map(video_id, force=False):
 
 
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
+    """Accepts lang_code in ietf format"""
     if not lang_code:  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lang_code).get(video_id)
+    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
 
 
 def get_video_id(youtube_id):
