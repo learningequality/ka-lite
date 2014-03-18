@@ -75,11 +75,18 @@ class Command(UpdatesStaticCommand):
             exit(0)
 
         try:
-            if options.get("branch", None):
-                # Specified a repo
+            if not args:
+                raise CommandError("Too few arguments. Please specify how you would like to update KA Lite. Choices: [git, download, localzip]")
+            elif args[0] == 'git':
                 self.update_via_git(**options)
+            elif args[0] == 'download':
+                raise NotImplementedError("Not implemented yet. Use the 'git' update method first.")
+            elif args[0] == 'localzip':
+                raise NotImplementedError("Not implemented yet. Use the 'git' update method first.")
 
-            elif options.get("zip_file", None):
+
+            # Updating through zip files (the code below) is actually done, just haven't reworked them to use the new way to call update management command
+            if options.get("zip_file", None):
                 # Specified a file
                 if not os.path.exists(options.get("zip_file")):
                     raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
@@ -139,6 +146,9 @@ class Command(UpdatesStaticCommand):
             "download",
             "syncdb",
         ]
+
+        if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
+            raise CommandError("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'download' or 'localzip'")
 
         # step 1: clean_pyc (has to be first)
         call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
