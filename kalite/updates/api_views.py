@@ -223,7 +223,7 @@ def delete_language_pack(request):
         try:
             shutil.rmtree(path)
         except OSError as e:
-            if e.errno!=2:    # No Such File or Directory Error
+            if e.errno!=2:    # Only ignore error: No Such File or Directory
                 raise
 
     invalidate_web_cache()
