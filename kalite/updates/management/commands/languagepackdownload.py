@@ -22,7 +22,7 @@ from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import callback_percent_proxy, download_file
 from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from i18n import get_language_pack_filepath, get_language_pack_url, get_localized_exercise_dirpath, get_srt_path
+from i18n import get_localized_exercise_dirpath, get_srt_path
 from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.settings import LOG as logging
 from updates import REMOTE_VIDEO_SIZE_FILEPATH
