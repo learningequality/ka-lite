@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Números primos</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="WRONG_1 !== WRONG_2 &amp;&amp; WRONG_2 !== WRONG_3">
+            <var id="PRIME">getPrime()</var>
+            <var id="WRONG_1">getOddComposite()</var>
+            <var id="WRONG_2">getOddComposite()</var>
+            <var id="WRONG_3">getOddComposite()</var>
+            <var id="WRONG_4">getEvenComposite()</var>
+
+            <var id="CHOICES">sortNumbers( [ PRIME, WRONG_1, WRONG_2, WRONG_3, WRONG_4 ] )</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">¿Cuál de estos números es un número primo?</p>
+                <p><code>\large{<var>CHOICES.join( ",\\ " )</var>}</code></p>
+                <p class="solution"><code><var>PRIME</var></code></p>
+                <ul class="choices" data-category="true">
+<li data-each="CHOICES as CHOICE"><code><var>CHOICE</var></code></li>
+                </ul>
+</div>
+        </div>
+
+        <div class="hints">
+            <p>Un número primo tiene exactamente dos factores: 1 y el mismo número.</p>
+            <p data-each="CHOICES as CHOICE">Los factores de  <var>CHOICE</var> son <var>toSentence( getFactors( CHOICE ) )</var>.</p>
+            <p>Por lo tanto, <var>PRIME</var> es un número primo.</p>
+        </div>
+    </div>
+</body>
+</html>

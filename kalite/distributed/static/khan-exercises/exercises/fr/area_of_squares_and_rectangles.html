@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html data-require="math graphie word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Problèmes d'aire</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="UNIT,UNIT_TEXT">randFromArray([["in",new Plural(function(e){return $.ngettext({lang:"fr",messages:["pouce","pouces"]},e)})],["ft",new Plural(function(e){return $.ngettext({lang:"fr",messages:["Pied","pieds"]},e)})],["m",new Plural(function(e){return $.ngettext({lang:"fr",messages:["mètre","mètres"]},e)})],["cm",new Plural(function(e){return $.ngettext({lang:"fr",messages:["centimètre","centimètres"]},e)})],["",new Plural(function(e){return $.ngettext({lang:"fr",messages:["unité","unités"]},e)})]])</var>
+    </div>
+    <div class="problems">
+        <div id="square-find-area">
+            <div class="vars">
+                <var id="S">randRange(2, 8)</var>
+                <var id="AREA">$._("aire")</var>
+            </div>
+
+            <p class="question"><span data-if="isSingular(S)" data-unwrap="">
+                One side of a square is <code><var>S</var></code>
+                <var>UNIT_TEXT</var> long. What is its area?
+            </span></p>
+
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer"><var>S * S</var></span> carré <var>plural_form(UNIT_TEXT)</var>
+</div>
+
+            <div class="hints">
+                <div class="graphie" id="area">init({range:[[-1,S+1],[-1,S+1]],scale:30}),path([[0,0],[S,0],[S,S],[0,S],!0],{stroke:BLUE,fill:"#eee"}),label([S/2,S],S+"\\text{ "+UNIT+"}","above"),label([0,S/2],S+"\\text{ "+UNIT+"}","left")</div>
+                <p>La surface est la longeur fois la largeur.</p>
+                <div>
+                    <div class="graphie" data-update="area">_(S-1).times(function(e){style({stroke:GRAY,strokeWidth:1,strokeDasharray:"-"},function(){path([[0,e+61/60],[S,e+61/60]]),path([[e+61/60,0],[e+61/60,S]])})})</div>
+                    <p data-if="isSingular(S)">
+                        The length is <var>S</var> <var>UNIT_TEXT</var> and
+                        the width is <var>S</var> <var>UNIT_TEXT</var>, so the
+                        area is <code><var>S</var>\times<var>S</var></code>
+                        square <var>plural_form(UNIT_TEXT, S * S)</var>.
+                    </p>
+                </div>
+                <div>
+                    <p><code>
+                        \qquad\text{<var>AREA</var>} = <var>S</var> \times <var>S</var>
+                        = <var>S * S</var>
+                    </code></p>
+                    <p>
+                        We can also count <var>S * S</var>
+                        square <var>plural_form(UNIT_TEXT, S * S)</var>.
+                    </p>
+                    <div class="graphie" data-update="area">_(S*S).times(function(e){label([e%S+.5,S-floor(e/S)-.5],e+1,"center",!1).css({color:GRAY})})</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="square-find-side">
+            <div class="vars">
+                <var id="S">randRange(2, 8)</var>
+            </div>
+
+            <p class="question">
+                The area of a square is <code><var>S * S</var></code>
+                square <var>plural_form(UNIT_TEXT, S * S)</var>. How long is each side?
+            </p>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>S</var></span>
+                <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <div class="graphie" id="square">init({range:[[-1,6],[-1,6]]}),path([[0,0],[5,0],[5,5],[0,5],!0],{stroke:BLUE,fill:"#eee"}),label([2.5,5],"\\text{"+$._("? %(UNIT)s",{UNIT:UNIT})+"}","above",{color:PINK}),label([0,2.5],"\\text{"+$._("? %(UNIT)s",{UNIT:UNIT})+"}","left",{color:PINK})</div>
+                </div>
+                <div>
+                    <div class="graphie" data-update="square">path([[0,0],[0,5]],{strokeWidth:4,stroke:PINK}),path([[0,5],[5,5]],{strokeWidth:4,stroke:PINK})</div>
+                    <p>La surface est la longeur fois la largeur.</p>
+                    <p><code>\qquad \pink{\text{?}} \times \pink{\text{?}} =
+                        <var>S * S</var>\text{ <var>UNIT</var>}
+                    </code></p>
+                </div>
+                <div>
+                    <p><code>\qquad \pink{<var>S</var>} \times
+                        \pink{<var>S</var>} =
+                        <var>S * S</var>\text{ <var>UNIT</var>}
+                    </code></p>
+                    <p data-if="$.ngetpos(S, 'fr') === 0">Les côtés d'un carré sont tous de même longueur, donc, chaque côté doit mesurer <code><var>S</var></code> <var>UNIT_TEXT</var> de long.</p>
+<p data-else-if="$.ngetpos(S, 'fr') === 1">Les côtés d'un carré sont tous de même longueur, donc, chaque côté doit mesurer <code><var>S</var></code> <var>plural_form(UNIT_TEXT, S)</var> de long.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="rectangle">
+            <div class="vars" data-ensure="L !== W">
+                <var id="L">randRange(2, 9)</var>
+                <var id="W">randRange(2, 9)</var>
+                <var id="AREA">$._("aire")</var>
+            </div>
+
+            <p class="question">
+                <span data-if="$.ngetpos(L, 'fr') === 0">Un rectangle est <code><var>L</var></code> <var>UNIT_TEXT</var> de long.</span><span data-else-if="$.ngetpos(L, 'fr') === 1">Un rectangle est <code><var>L</var></code> <var>plural_form(UNIT_TEXT, L)</var> de long.</span>
+                <span data-if="$.ngetpos(W, 'fr') === 0">Le rectangle est également large de <code><var>W</var></code> <var>UNIT_TEXT</var>. Quel est sa surface ?</span><span data-else-if="$.ngetpos(W, 'fr') === 1">Le rectangle est également large de <code><var>W</var></code> <var>plural_form(UNIT_TEXT, W)</var>. Quel est sa surface ?</span>
+            </p>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>L * W</var></span> square
+                <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <div class="graphie" id="area">init({range:[[-1,L+1],[-1,W+1]],scale:30}),path([[0,0],[L,0],[L,W],[0,W],!0],{stroke:BLUE,fill:"#eee"}),label([L/2,W],L+"\\text{ "+UNIT+"}","above"),label([L,W/2],W+"\\text{ "+UNIT+"}","right")</div>
+                <p>La surface est la longeur fois la largeur.</p>
+                <div>
+                    <div class="graphie" data-update="area">style({stroke:GRAY,strokeWidth:1,strokeDasharray:"-"},function(){_(L-1).times(function(e){path([[e+61/60,0],[e+61/60,W]])}),_(W-1).times(function(e){path([[0,e+61/60],[L,e+61/60]])})})</div>
+                    <p>
+                        <span data-if="isSingular(L)">
+                            The length is <var>L</var> <var>UNIT_TEXT</var>.
+                        </span>
+                        <span data-if="isSingular(W)">
+                            The width is <var>W</var> <var>UNIT_TEXT</var>.
+                        </span>
+                        <span>Donc l'aire vaut <code><var>L</var>\times<var>W</var></code> carré <var>plural_form(UNIT_TEXT, L * W)</var>.</span>
+                    </p>
+                </div>
+                <div>
+                    <p><code>
+                        \qquad\text{<var>AREA</var>} = <var>L</var> \times <var>W</var>
+                        = <var>L * W</var>
+                    </code></p>
+                    <p>
+                        We can also count <var>L * W</var>
+                        square <var>plural_form(UNIT_TEXT, L * W)</var>.
+                    </p>
+                    <div class="graphie" data-update="area">_(L*W).times(function(e){label([e%L+.5,W-floor(e/L)-.5],e+1,"center",!1).css({color:GRAY})})</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

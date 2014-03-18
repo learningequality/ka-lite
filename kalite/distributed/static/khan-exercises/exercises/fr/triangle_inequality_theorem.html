@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers math-format graphie-geometry">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>L'inégalité triangulaire</title>
+<script src="../khan-exercise.js"></script><script>
+        function randomTriangleWithSides(){
+            var a = KhanUtil.randRange( 25, 150 );
+            var b = KhanUtil.randRange( 25, 180 - a );
+            if ( a + b > 170 ){
+                a = Math.max( 30, a - 15  );
+                b = Math.max( 30, b - 15  );
+            }
+            var c = 180 - a - b;
+            var sa = KhanUtil.randRange( 4, 8 );
+            var sb = sa * Math.sin( b * Math.PI / 180 )  / Math.sin( a * Math.PI / 180 );
+            var sc = sa * Math.sin( c * Math.PI / 180 )  / Math.sin( a * Math.PI / 180 );
+                return [ [ a, b, c] , [ sa, sb, sc ] ];
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="MAIN">randomTriangleWithSides()</var>
+            <var id="HIDDEN">rand(3)</var>
+            <var id="KNOWN">function(){var e=MAIN[1].slice();return e.splice(HIDDEN,1),_.map(e,function(e){return roundTo(1,e)})}()</var>
+            <var id="KNOWN_DISPLAY">_.map(KNOWN, function(v) { return localeToFixed(v, 1); })</var>
+            <var id="MAX">roundTo(1, KNOWN[0] + KNOWN[1])</var>
+            <var id="MAX_DISPLAY">localeToFixed(MAX, 1)</var>
+            <var id="MIN">roundTo(1, abs(KNOWN[0] - KNOWN[1]))</var>
+            <var id="MIN_DISPLAY">localeToFixed(MIN, 1)</var>
+        </div>
+
+        <div class="problems">
+            <div id="range">
+                <div class="problem">Entre quels nombres x est-il compris ?</div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,10],[-7.5,1]]});var positionMap={0:2,1:0,2:1},sides=_.times(3,function(e){return positionMap[e]===HIDDEN?"x":localeToFixed(MAIN[1][positionMap[e]],1)}),tr=new Triangle([3,-6.5],MAIN[0],5,{sides:sides});tr.boxOut([[[-1,-10],[-1,10]]],[1,0]),tr.boxOut([[[10,-10],[10,10]]],[-1,0]),tr.draw(),tr.drawLabels()</div>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p><span class="sol short40" data-forms="integer, decimal"><var>MIN</var></span> <code>&lt; x &lt;</code> <span class="sol short40" data-forms="integer, decimal"><var>MAX</var></span></p>
+                    <span class="example">two <em>exact</em> decimals, like <code>0.75</code></span>
+                </div>
+                <div class="hints">
+                    <p>Le théorème de l'inégalité triangulaire stipule que tout côté d'un triangle est toujours plus petit que la somme des deux autres côtés.</p>
+                    <p>Donc le troisième côté doit être plus petit que <code><var>KNOWN_DISPLAY[ 0 ]</var> + <var>KNOWN_DISPLAY[ 1 ]</var> = <var>MAX_DISPLAY</var></code></p>
+                    <p>D'après le même théorème, le troisième côté doit aussi être plus grand que la différence des deux autres côtés.</p>
+                    <p>Donc le troisième côté doit être plus grand que <code><var>KNOWN[0] &lt; KNOWN[1] ? KNOWN_DISPLAY[1] : KNOWN_DISPLAY[0]</var> - <var>KNOWN[0] &lt; KNOWN[1] ? KNOWN_DISPLAY[0] : KNOWN_DISPLAY[1]</var> = <var>MIN_DISPLAY</var></code></p>
+                    <p>Donc <code><var>MIN_DISPLAY</var> &lt; x &lt; <var>MAX_DISPLAY</var></code></p>
+                </div>
+            </div>
+            <div id="possible">
+                <div class="vars">
+                    <var id="POSSIBLE">randRange( 0, 1 ) === 0</var>
+                    <var id="SIDE">randRange(0, 2)</var>
+                    <var id="FAKE_SIDE">MAIN[1][(SIDE + 1) % 3] + MAIN[1][(SIDE + 2) % 3] + randRange(1, 3)</var>
+                    <var id="FAKE_SIDES">_.map(function(){if(POSSIBLE)return MAIN[1];var e=MAIN[1].slice();return e.splice(SIDE,1,FAKE_SIDE),e}(),function(e){return roundTo(1,e)})</var>
+                    <var id="FAKE_SIDES_DISPLAY">_.map(FAKE_SIDES, function(v) { return localeToFixed(v, 1); })</var>
+                    <var id="ANSWERS">[$._("Oui"), $._("Non")]</var>
+                    <var id="SETS">[[FAKE_SIDES_DISPLAY[0],FAKE_SIDES_DISPLAY[1],FAKE_SIDES_DISPLAY[2],localeToFixed(FAKE_SIDES[1]+FAKE_SIDES[2],1),FAKE_SIDES[0]&lt;FAKE_SIDES[1]+FAKE_SIDES[2]],[FAKE_SIDES_DISPLAY[1],FAKE_SIDES_DISPLAY[0],FAKE_SIDES_DISPLAY[2],localeToFixed(FAKE_SIDES[0]+FAKE_SIDES[2],1),FAKE_SIDES[1]&lt;FAKE_SIDES[0]+FAKE_SIDES[2]],[FAKE_SIDES_DISPLAY[2],FAKE_SIDES_DISPLAY[0],FAKE_SIDES_DISPLAY[1],localeToFixed(FAKE_SIDES[0]+FAKE_SIDES[1],1),FAKE_SIDES[2]&lt;FAKE_SIDES[0]+FAKE_SIDES[1]]]</var>
+                </div>
+                <div class="problem">Ce triangle peut-il exister ?</div>
+                <div class="question">
+                    <div class="graphie">init({range:[[-1,10],[-7.5,1]]});var tr=new Triangle([3,-6.9],MAIN[0],5,{sides:[FAKE_SIDES_DISPLAY[2],FAKE_SIDES_DISPLAY[0],FAKE_SIDES_DISPLAY[1]]});tr.boxOut([[[-1,-10],[-1,10]]],[1,0]),tr.boxOut([[[10,-10],[10,10]]],[-1,0]),tr.draw(),tr.drawLabels()</div>
+                </div>
+                <div class="solution"><var>ANSWERS[POSSIBLE ? 0 : 1]</var></div>
+                <ul class="choices" data-category="true">
+<li data-each="ANSWERS as ANS">
+                        <var>ANS</var>
+                    </li>
+                </ul>
+<div class="hints">
+                    <p>Le théorème de l'inégalité triangulaire stipule qu'un côté doit être plus petit que la somme des deux autres côtés.</p>
+                    <p>Vérifions pour les trois côtés :</p>
+                    <div data-each="SETS as SET">
+                        <p><code><var>SET[1]</var> + <var>SET[2]</var> = <var>SET[3]</var></code></p>
+                        <p data-if="SET[4]"><code><var>SET[0]</var></code> est plus petit que <code><var>SET[3]</var></code> donc le théorème est respecté.</p>
+<p data-else><code><var>SET[0]</var></code> n'est pas plus petit que <code><var>SET[3]</var></code> donc le théorème n'est pas respecté.</p>
+                    </div>
+                <p data-if="POSSIBLE">Les trois côtés respectent le théorème de l'inégalité triangulaire, donc le triangle peut avoir ces mesures.</p>
+                <p data-else="">Les trois côtés ne vérifient pas l'inégalité triangulaire, donc ce triangle ne peut pas exister.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

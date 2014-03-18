@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Combinaciones</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="packing">
+                <div class="vars" data-ensure="NUM_THINGS &gt; NUM_TAKEN">
+                    <var id="THING">randFromArray([new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["playeras","Pantalones"]},e)}),new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["tigre","tigres"]},e)}),new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["libro","libros"]},e)}),new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["Huevo Fabergé","Huevos de Fabergé"]},e)}),new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["calcetín","calcetines"]},e)}),new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["figura de acción","figuras de acción"]},e)})])</var>
+                    <var id="NUM_THINGS">randRange(5,9)</var>
+                    <var id="NUM_TAKEN">randRange(3,5)</var>
+                    <var id="ANSWER">factorial(NUM_THINGS) / (factorial(NUM_THINGS-NUM_TAKEN) * factorial(NUM_TAKEN))</var>
+                </div>
+                <p class="problem" data-if="isMale(1)"><var>person(1)</var> está empacando maletas para sus vacaciones. Él tiene <code><var>NUM_THINGS</var></code> <var>plural_form(THING, NUM_THINGS)</var> únicos, pero sólo <code><var>NUM_TAKEN</var></code> caben en la maleta.</p>
+<p class="problem" data-else=""><var>person(1)</var> está empacando sus maletas para sus vacaciones. Ella tiene <code><var>NUM_THINGS</var></code> <var>plural_form(THING, NUM_THINGS)</var> únicos, pero sólo <code><var>NUM_TAKEN</var></code> caben en su maleta.</p>
+                <p class="question" data-if="isMale(1)">¿Cuántos grupos diferentes de <code><var>NUM_TAKEN</var></code> <var>plural_form(THING, NUM_TAKEN)</var> puede llevar?</p>
+<p class="question" data-else="">¿Cuántos grupos diferentes de <code><var>NUM_TAKEN</var></code> <var>plural_form(THING, NUM_TAKEN)</var> puede llevar?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+                <div class="hints">
+                    <p data-if="isMale(1)"><var>person(1)</var> tiene <code><var>NUM_TAKEN</var></code> espacios para su <var>plural_form(THING)</var>, así que llenémoslos uno por uno. Al inicio, <var>person(1)</var> tiene <code><var>NUM_THINGS</var></code> opciones para qué poner en el primer espacio.</p>
+<p data-else=""><var>person(1)</var> tiene <code><var>NUM_TAKEN</var></code> espacios para sus <var>plural_form(THING)</var>, así es que llenémoslos uno por uno. Al principio, <var>person(1)</var> tiene <code><var>NUM_THINGS</var></code> opciones para escoger qué poner en el primer espacio.</p>
+                    <p data-if="isMale(1)">Para el segundo espacio, sólo tiene <code><var>NUM_THINGS-1</var></code> <var>plural_form(THING, NUM_THINGS-1)</var>, por lo que sólo hay <code><var>NUM_THINGS-1</var></code> opciones de que poner en el segundo lugar. Hasta ahorita, parece que hay <code><var>NUM_THINGS</var> \cdot <var>NUM_THINGS-1</var> = <var>NUM_THINGS * (NUM_THINGS-1)</var></code> opciones diferentes que <var>person(1)</var> pudo haber escogido para llenar los primeros dos espacios de su mochila. Pero eso no es precisamente correcto.</p>
+<p data-else="">Para el segundo espacio, sólo tiene <code><var>NUM_THINGS-1</var></code> <var>plural_form(THING, NUM_THINGS-1)</var>, por lo que sólo hay <code><var>NUM_THINGS-1</var></code> opciones de que poner en el segundo lugar. Hasta ahorita, parece que hay <code><var>NUM_THINGS</var> \cdot <var>NUM_THINGS-1</var> = <var>NUM_THINGS * (NUM_THINGS-1)</var></code> opciones diferentes que <var>person(1)</var> pudo haber escogido para llenar los primeros dos espacios de su mochila. Pero eso no es precisamente correcto.</p>
+                    <p data-if="isMale(1)">¿Por qué? Porque si eligió la <var>THING</var> número 3, después la <var>THING</var> número 1, es la misma situación que elegir la número 1 y después la número 3. Ambas terminan en la misma maleta.</p>
+<p data-else="">¿Por qué? Porque si eligió la <var>THING</var> número 3, después la <var>THING</var> número 1, es la misma situación que elegir la número 1 y después la número 3. Ambas terminan en la misma maleta.</p>
+                    <p data-if="isMale(1)">Entonces, si <var>person(1)</var> siguen llenando los espacios de su mochila, tomando <code><var>_.map(_.range(NUM_TAKEN), function(l){ return (NUM_THINGS - l);}).join("\\cdot")</var> = \dfrac{<var>NUM_THINGS</var>!}{(<var>NUM_THINGS</var>-<var>NUM_TAKEN</var>)!} = <var> factorial(NUM_THINGS)/factorial(NUM_THINGS-NUM_TAKEN)</var></code> deciciones, hemos contado muchas veces a un montón de grupos.</p>
+<p data-else="">Entonces, si <var>person(1)</var> sigue llenando los espacios en su mochila, tomando <code><var>_.map(_.range(NUM_TAKEN), function(l){ return (NUM_THINGS - l);}).join("\\cdot")</var> = \dfrac{<var>NUM_THINGS</var>!}{(<var>NUM_THINGS</var>-<var>NUM_TAKEN</var>)!} = <var> factorial(NUM_THINGS)/factorial(NUM_THINGS-NUM_TAKEN)</var></code> decisiones en total, hemos contado de más a un bonche de grupos.</p>
+                    <p>¿Cuántos hemos contado de más? Bueno, a cada grupo de <code><var>NUM_TAKEN</var></code>, los hemos contado como si el orden con el que los escogimos importara, cuando en realidad no importa. Así es que la cantidad de veces que hemos contado de más a cada grupo es la cantidad de formas que hay de ordenar <code><var>NUM_TAKEN</var></code> cosas.</p>
+                    <p>Existen <code><var>NUM_TAKEN</var>! = <var>factorial(NUM_TAKEN)</var></code> maneras de ordenar <code><var>NUM_TAKEN</var></code> cosas, por lo que hemos contado cada grupo de <code><var>NUM_TAKEN</var></code> <var>plural_form(THING, NUM_TAKEN)</var> <code><var>factorial(NUM_TAKEN)</var></code> veces.</p>
+                    <p>Entonces, hemos dividido el número de formas que podemos llenar la maleta en orden, por el número de veces que hemos contado de más nuestros grupos.</p>
+                    <p><code> \dfrac{<var>NUM_THINGS</var>!}{(<var>NUM_THINGS</var> - <var>NUM_TAKEN</var>)!} \cdot \dfrac{1}{<var>NUM_TAKEN</var>!}</code> es el número de grupos que <var>plural_form(THING)</var> <var>person(1)</var> puede traer. <br> Otra manera de escribir ésto es <code> \binom{<var>NUM_THINGS</var>}{<var>NUM_TAKEN</var>} </code>, or <code><var>NUM_THINGS</var></code> choose <code><var>NUM_TAKEN</var></code>, which is <code><var>ANSWER</var></code>.</p>
+                </div>
+            </div>
+
+            <div id="boat">
+                <div class="vars">
+                    <var id="FRIENDS">randRange(5,6)</var>
+                    <var id="SLOTS">randRange(2,FRIENDS-2)</var>
+                    <var id="ANSWER">factorial(FRIENDS) / (factorial(FRIENDS-SLOTS) * factorial(SLOTS))</var>
+                </div>
+                <p class="problem">Acabas de obtener un boleto gratuito para un paseo en bote, ¡y puedes llevar contigo a <code><var>SLOTS</var></code> amigos! Desafortunadamente, tienes  <code><var>FRIENDS</var></code> amigos que quieren acompañarte.</p>
+                <p class="question">¿Cuántos grupos diferentes de amigos puedes llevar contigo?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+
+                <div class="hints">
+                    <p>Hay <code><var>SLOTS</var></code> lugares para tus amigos en el barco, así es que llenemos esos lugares uno por uno. Para el primer lugar, tenemos <code><var>FRIENDS</var></code> posibles opciones (porque <code><var>FRIENDS</var></code> distintos amigos se podrían sentar en ese lugar).</p>
+                    <p>Una vez que hemos llenado la primera vacante, hay <code><var>FRIENDS-1</var></code> amigos que pueden llenar la segunda. Hasta ahora, hemos llenado las primeras dos vacantes y parece ser que hay <code><var>FRIENDS</var> \cdot <var>FRIENDS-1</var> = <var>FRIENDS * ( FRIENDS-1)</var> </code> opciones diferentes que pudimos haber hecho. Pero eso no es del todo cierto.</p>
+                    <p>¿Por qué? porque si eligió a <var>person(1)</var>, después a <var>person(2)</var>, es lo mismo que elegir a <var>person(2)</var> y después a <var>person(1)</var>. Ambas terminan estando en el mismo bote.</p>
+                    <p>Entonces, si continuamos llenando los lugares en nuestro bote, haciendo <code><var>_.map(_.range(SLOTS), function(l){ return (FRIENDS - l);}).join("\\cdot")</var> = \dfrac{<var>FRIENDS</var>!}{<var>FRIENDS-SLOTS</var>!} = <var> factorial(FRIENDS)/factorial(FRIENDS-SLOTS)</var></code> decisiones simultáneas, habremos contado de más a muchos grupos.</p>
+                    <p>¿Qué tanto hemos contado de más? Bien, por cado grupo de <code><var>SLOTS</var></code>, los hemos contado como si el orden en que los elegimos importara, cuando en realidad no importa. Así que el número de veces que hemos contado de más cada grupo es el número de maneras de ordenar <code> <var>SLOTS</var></code> cosas.</p>
+                    <p>Hay <code><var>SLOTS</var>! = <var>factorial(SLOTS)</var></code> formas de ordenar <code><var>SLOTS</var></code> cosas, así es que hemos contado a cada grupo <code><var>SLOTS</var></code> friends <code><var>factorial(SLOTS)</var></code> veces.</p>
+                    <p>Entonces, tendremos que dividir el número de maneras que podemos llenar el bote, en orden del número de veces que hemos contado de más nuestros grupos: <br><code> \dfrac{<var>FRIENDS</var>!}{<var>FRIENDS-SLOTS</var>!} \cdot \dfrac{1}{<var>SLOTS</var>!}</code> es el número de grupos que podemos traer en el paseo en bote. <br> Otra manera de escribir esto es <code> \binom{<var>FRIENDS</var>}{<var>SLOTS</var>} </code>, ó <code><var>FRIENDS</var></code> elegir <code><var>SLOTS</var></code>, que es <code><var>ANSWER</var></code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems subhints">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Probabilités avec permutations et combinaisons</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="students">
+                <div class="vars" data-ensure="GROUP &lt; (ARE_B ? BOYS : GIRLS)">
+                    <var id="STUDENTS">randRange(7,10)</var>
+                    <var id="GROUP">randRange(3,6)</var>
+                    <var id="BOYS">randRange(2,STUDENTS-2)</var>
+                    <var id="GIRLS">STUDENTS-BOYS</var>
+                    <var id="ARE_B">random() &lt; 0.5</var>
+                    <var id="NUM_B">ARE_B ? BOYS : GIRLS</var>
+                    <var id="ANSWER">(factorial(NUM_B)*factorial(STUDENTS-GROUP))/(factorial(STUDENTS)*factorial(NUM_B-GROUP))</var>
+                    <var id="GCD">getGCD(factorial(NUM_B)*factorial(STUDENTS-GROUP),factorial(STUDENTS)*factorial(NUM_B-GROUP))</var>
+                    <var id="PRETTY_NUM">factorial(NUM_B)*factorial(STUDENTS-GROUP)/GCD</var>
+                    <var id="PRETTY_DEM">factorial(STUDENTS)*factorial(NUM_B-GROUP)/GCD</var>
+                </div>
+                <p>Il y a <code><var>STUDENTS</var></code> élèves dans la classe : <code><var>BOYS</var></code> garçons et <code><var>GIRLS</var></code> filles.</p>
+                <p class="question"><span data-if="ARE_B" data-unwrap="">Si le professeur choisit un groupe de <code><var>GROUP</var></code> au hasard, quelle est la probabilité pour que le groupe soit composé uniquement de garçons ?</span><span data-else="" data-unwrap="">Si le professeur choisit un groupe de <code><var>GROUP</var></code> au hasard, quelle est la probabilité pour que le groupe soit composé uniquement de filles ?</span></p>
+                <div class="solution" data-forms="proper"><var>ANSWER</var></div>
+                <div class="hints">
+                    <p data-if="ARE_B">Une façon de résoudre ce problème est de déterminer le nombre de groupes différents composés uniquement de garçons. Puis de diviser par le nombre total de groupes que l'on peut choisir. Étant donné que chaque groupe peut être choisi avec la même  probabilité, ce sera la probabilité qu'un groupe de garçons soit choisi.</p>
+<p data-else="">Une façon de résoudre ce problème est déterminer le nombre de groupes différents composés uniquement de filles. Puis de diviser par le nombre total de groupes que l'on peut choisir. Étant donné que chaque groupe peut être choisi avec la même  probabilité, ce sera la probabilité qu'un groupe de filles soit choisi.</p>
+                    <p>On connait deux manière de dénombrer le nombre de groupes que l'on peut choisir : il est possible d'utiliser les permutations si l'ordre de choix est important, ou les combinaisons si non. Est ce que l'ordre dans lequel les élèves sont choisis est important dans ce cas ?</p>
+                    <div>
+                        <p data-if="ARE_B">Peu importe si nous choisissons  John puis Ben ou Ben puis John, donc l'ordre ne doit pas compter. Le nombre de façon de choisir un groupe de <code><var>GROUP</var></code> étudiants parmi <code><var>STUDENTS</var></code> est <code> \dfrac{<var>STUDENTS</var>!}{(<var>STUDENTS</var>-<var>GROUP</var>)!<var>GROUP</var>!} = \binom{<var>STUDENTS</var>}{<var>GROUP</var>}</code>. [<a href="#" class="show-subhint" data-subhint="binomial">Voir pourquoi</a>]</p>
+<p data-else="">Peu importe si nous choisissons  Julia puis Béatrice ou Béatrice puis Julia, donc l'ordre ne doit pas compter. Le nombre de façon de choisir un groupe de <code><var>GROUP</var></code> étudiants parmi <code><var>STUDENTS</var></code> est <code> \dfrac{<var>STUDENTS</var>!}{(<var>STUDENTS</var>-<var>GROUP</var>)!<var>GROUP</var>!} = \binom{<var>STUDENTS</var>}{<var>GROUP</var>}</code>. [<a href="#" class="show-subhint" data-subhint="binomial">Voir pourquoi</a>]</p>
+                        <div class="subhint" id="binomial">
+                            <p>Il faut se souvenir que les termes <code><var>STUDENTS</var>! \;</code> et <code>(<var>STUDENTS</var>-<var>GROUP</var>)! \;</code> viennent de la manière dont nous avons fait les groupes, en faisant le choix de la variable <code><var>STUDENTS</var></code> pour le premier ensemble, puis le choix de <code><var>STUDENTS-1</var></code> pour le second, et ainsi de suite. De cette manière, on finit par avoir <code><var>_.map(_.range(GROUP), function(l){ return (STUDENTS-l);}).join("\\cdot")</var> = \dfrac{<var>STUDENTS</var>!}{(<var>STUDENTS</var>-<var>GROUP</var>)!} \;</code>. Le terme <code><var>GROUP</var>! \;</code> provient du nombre de fois que nous avons dénombré un groupe différent parce que les étudiants ont été choisis dans un ordre différent. Il y a <code><var>GROUP</var>! \;</code> manières d'ordonner un groupe de <code><var>GROUP</var></code>, donc nous avons compté chaque groupe autant de fois en trop.</p>
+                        </div>
+                    </div>
+                    <p data-if="ARE_B">On peut utiliser la même logique pour compter le nombre de groupes contenant uniquement des garçons.  </p>
+<p data-else="">On peut utiliser la même logique pour compter le nombre de groupes contenant uniquement des filles.</p>
+                    <p>Précisément, le nombre de manières de choisir un groupe de <code><var>GROUP</var></code> élèves à partir de <code><var>NUM_B</var></code> est <code> \dfrac{<var>NUM_B</var>!}{(<var>NUM_B</var>-<var>GROUP</var>)!<var>GROUP</var>!} = \binom{<var>NUM_B</var>}{<var>GROUP</var>}</code>.</p>
+                    <p data-if="ARE_B">
+                        So, the probability that the teacher picks a group of all boys is the number of 
+                        groups with only boys divided by the number of total groups the teacher could pick.
+                    </p>
+<p data-else="">
+                        So, the probability that the teacher picks a group of all girls is the number of 
+                        groups with only girls divided by the number of total groups the teacher could pick.
+                    </p>
+                    <p>Ceci est <code> \displaystyle \frac{\frac{<var>NUM_B</var>!}{(<var>NUM_B</var>-<var>GROUP</var>)!\cancel{<var>GROUP</var>!}}} {\frac{<var>STUDENTS</var>!}{(<var>STUDENTS</var>-<var>GROUP</var>)!\cancel{<var>GROUP</var>!}}} = \frac{\frac{<var>NUM_B</var>!}{<var>NUM_B-GROUP</var>!}}{\frac{<var>STUDENTS</var>!}{<var>STUDENTS-GROUP</var>!}}</code></p>
+                    <p>On peut réarranger les termes pour simplifier <code>\left(\dfrac{<var>NUM_B</var>!}{<var>NUM_B-GROUP</var>!}\right) \left(\dfrac{<var>STUDENTS-GROUP</var>!}{<var>STUDENTS</var>!}\right) = \left(\dfrac{<var>NUM_B</var>!}{<var>STUDENTS</var>!}\right) \left(\dfrac{<var>STUDENTS-GROUP</var>!}{<var>NUM_B-GROUP</var>!}\right)</code></p>
+<p>En simplifiant, on obtient <code> \left(\dfrac{\cancel{<var>NUM_B</var>!}}{<var>_.map(_.range(STUDENTS-NUM_B), function(l){ return (STUDENTS-l); }).join("\\cdot") </var> \cdot \cancel{<var>NUM_B</var>!}}\right) \left(\dfrac{<var>_.map(_.range(STUDENTS-NUM_B), function(l){ return (STUDENTS-GROUP-l); }).join("\\cdot") </var> \cdot \cancel{<var>(NUM_B-GROUP)</var>!}}{\cancel{<var>NUM_B-GROUP</var>!}}\right) = \left(\dfrac{1}{<var>factorial(STUDENTS)/factorial(NUM_B)</var>}\right) \left(<var>factorial(STUDENTS-GROUP)/factorial(NUM_B-GROUP)</var>\right) = \dfrac{<var>PRETTY_NUM</var>}{<var>PRETTY_DEM</var>}</code></p>
+                </div>
+            </div>
+
+            <div id="coins">
+                <div class="vars">
+                    <var id="COINS">randRange(4,7)</var>
+                    <var id="NUM">randRange(2,COINS-2)</var>
+                    <var id="IS_H">random &lt; 0.5</var>
+                    <var id="NAME">IS_H ? $._("faces") : $._("piles")</var>
+                    <var id="NUM_RIGHT">factorial(COINS)/(factorial(NUM)*factorial(COINS-NUM))</var>
+                    <var id="NUM_ALL">Math.pow(2,COINS)</var>
+                    <var id="GCD">getGCD(NUM_RIGHT,NUM_ALL)</var>
+                    <var id="PRETTY_NUMER">NUM_RIGHT/GCD</var>
+                    <var id="PRETTY_DENOM">NUM_ALL/GCD</var>
+                </div>
+
+                <p class="question">Si vous lancez une pièce <code><var>COINS</var></code> fois, quelle est la probabilité que vous obteniez exactement <code><var>NUM</var></code> <var>NAME</var>?</p>
+                <p class="solution" data-forms="proper"><var>PRETTY_NUMER/PRETTY_DENOM</var></p>
+
+                <div class="hints">
+                    <p>Pour résoudre ce problème on peut déterminer le nombre de façons d'obtenir exactement <code><var>NUM</var></code> <var>NAME</var>, puis le diviser par le nombre total d'issues possibles. Comme chaque issue est équiprobable, on obtient la probabilité d'obtenir exactement  <code><var>NUM</var></code> <var>NAME</var>.</p>
+                    <p>
+                        How many outcomes are there where you get exactly <code><var>NUM</var></code> <var>NAME</var>? Try thinking of each outcome as 
+                        a <code><var>COINS</var></code>-letter word, where the first letter is "H" if the first coin toss was heads and "T" 
+                        if it was tails, and so on.
+                    </p>
+                    <p data-if="IS_H">
+                        So, the number of outcomes with exactly <code><var>NUM</var></code> <var>NAME</var> 
+                        is the same as the number of these words which have
+                        <code><var>NUM</var></code> H's and <code><var>COINS-NUM</var></code> T's.
+                    </p>
+<p data-else="">
+                        So, the number of outcomes with exactly <code><var>NUM</var></code> <var>NAME</var> 
+                        is the same as the number of these words which have
+                        <code><var>NUM</var></code> T's and <code><var>COINS-NUM</var></code> H's.
+                    </p>
+                    <div>
+                        <p data-if="IS_H">Combien y'en a t-il ? Si on considère que chaque lettre est unique, on trouve qu'il y a <code><var>COINS</var>!</code> arrangements différents, en comptant <code><var>NUM</var>!</code> de trop à chaque fois que l'on échange un H, et <code><var>COINS-NUM</var>!</code> de trop à chaque fois que l'on échange un T. [<a href="#" class="show-subhint" data-subhint="letters">Voir pourquoi</a>]</p>
+<p data-else="">Combien y'en a t-il ? Si on considère que chaque lettre est unique, on trouve qu'il y a <code><var>COINS</var>!</code> arrangements différents, en comptant <code><var>NUM</var>!</code> de trop à chaque fois que l'on échange un T, et <code><var>COINS-NUM</var>!</code> de trop à chaque fois que l'on échange un H. [<a href="#" class="show-subhint" data-subhint="letters">Voir pourquoi</a>]</p>
+                        <div class="subhint" id="letters">
+                            Let's say we toss a coin 5 times, and get tails three times. How many different re-arrangements are there of the
+                            letters "HHTTT"? Well, we have five choices for the first slot, four for the second slot, and so on, resulting in
+                            <code>5\cdot4\cdot3\cdot2\cdot1 = 5! = 120 \;</code> different re-arrangements. But, this treats all the letters
+                            as unique, when <br>
+                            H<span class="hint_blue">T</span>H<span class="hint_orange">T</span><span class="hint_green">T</span> 
+                            is the same as <br>
+                            H<span class="hint_orange">T</span>H<span class="hint_blue">T</span><span class="hint_green">T</span>,
+                            and <br>
+                            H<span class="hint_orange">T</span>H<span class="hint_green">T</span><span class="hint_blue">T</span>,
+                            <br>
+                            and so on. So really, we need to replace all these different re-arrangements
+                            where we only move the tails around with one re-arrangement, HTHTT. There are <code>3!</code> of these multi-
+                            colored arrangements for every normal one, so that means dividing
+                            our first guess of <code>5!</code> by <code>3!</code>. By the exact same logic, we need to divide by <code>2!</code> to
+                            avoid overcounting every permutation where we just move the heads around. So, the number of re-arrangements is 
+                            <code>\dfrac{5!}{3!2!} = \binom{5}{3}</code>.
+                        </div>
+                    </div>
+                    <div>
+                        <p>Donc, il y a <code>\dfrac{<var>COINS</var>!}{<var>NUM</var>!<var>COINS-NUM</var>!} = <var>NUM_RIGHT</var></code> différents résultats possibles où on obtient exactement <code><var>NUM</var></code> <var>NAME</var>. [<a href="#" class="show-subhint" data-subhint="total">Combien existe-t-il de résultats possibles ?</a>]</p>
+                        <div class="subhint" id="total">Et bien, si une seule pièce est tirée, il y a deux issues, si deux pièces sont tirées, il y a quatre issues, si trois pièces sont tirées il y en a huit. Chaque fois qu'une nouvelle pièce est tirée, le nombre d'issues possibles double. </div>
+                    </div>
+                    <p>Au total, il y a  <code>2^{<var>COINS</var>} = <var>NUM_ALL</var></code> possibilités.</p>
+                    <p data-if="NUM_RIGHT != PRETTY_NUMER">
+                        So, the probability that you will get exactly <var>NUM</var> <var>NAME</var> is
+                        <code>\dfrac{<var>NUM_RIGHT</var>}{<var>NUM_ALL</var>} = \dfrac{<var>PRETTY_NUMER</var>}{<var>PRETTY_DENOM</var>}</code>.
+                    </p>
+                    <p data-else="">
+                        So, the probability that you will get exactly <var>NUM</var> <var>NAME</var> is
+                        <code>\dfrac{<var>NUM_RIGHT</var>}{<var>NUM_ALL</var>}</code>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -99,6 +99,7 @@ ROOT_URLCONF = "distributed.urls"
 INSTALLED_APPS = ("distributed",)
 MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
+STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static'),)  # libraries common to all apps
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -118,7 +119,6 @@ SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessi
 
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
-
 
 ########################
 # Import settings from INSTALLED_APPS

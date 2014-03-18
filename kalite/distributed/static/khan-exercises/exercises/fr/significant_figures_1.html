@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chiffres significatifs</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="LEADING"> Array( randRange( 0, 2 ) ).join( '0' ) </var>
+        <var id="RIGHTLEADING"> Array( randRange( 0, 2) ).join( '0' ) </var>
+        <var id="TRAILING"> Array( randRange( 0, 4 ) ).join( '0' ) </var>
+        <var id="IS_ZERO"> random() &gt; 0.5 </var>
+        <var id="HAS_DOT"> IS_ZERO ? true : random() &gt; 0.5 </var>
+        <var id="RIGHTSIDE"> randRange( 1, 9, randRange( 1, 6 ) ).join('') </var>
+        <var id="LEFTSIDE"> IS_ZERO ? '0' : randRange( 1, 9, randRange( 1, 4 ) ).join('') </var>
+        <var id="TOTAL">HAS_DOT?LEADING+LEFTSIDE+"."+RIGHTLEADING+RIGHTSIDE+TRAILING:LEADING+LEFTSIDE+TRAILING</var>
+        <var id="SOLUTION">IS_ZERO?RIGHTSIDE.length+TRAILING.length:HAS_DOT?LEFTSIDE.length+RIGHTLEADING.length+RIGHTSIDE.length+TRAILING.length:LEFTSIDE.length</var>
+        <var id="PROPER_LEADING"> IS_ZERO ? LEADING + LEFTSIDE + '.' + RIGHTLEADING : LEADING </var>
+        <var id="INBETWEEN">IS_ZERO?RIGHTSIDE:HAS_DOT?LEFTSIDE+"."+RIGHTLEADING+RIGHTSIDE:LEFTSIDE</var>
+    </div>
+    <div class="problems">
+        <div>
+            <p class="question">Combien de chiffres significatifs compte-t-on dans  <code><var>TOTAL</var></code>?</p>
+            <p class="solution" data-forms="integer"><var>SOLUTION</var></p>
+        </div>
+    </div>
+    <div class="hints">
+        <div>
+            <p>identifier les chiffres non nuls et les zéros entre eux. Ils sont tous significatifs.</p>
+            <p><code><var>PROPER_LEADING</var>\color{blue}{<var>INBETWEEN</var>}<var>TRAILING</var></code></p>
+        </div>
+        <div data-if="PROPER_LEADING.length &gt; 0">
+            <p>Les zéros en tête de nombre ne sont pas significatifs.</p>
+            <p><code>\color{orange}{<var>PROPER_LEADING</var>}\color{blue}{<var>INBETWEEN</var>}<var>TRAILING</var></code></p>
+        </div>
+        <div data-if="TRAILING.length &gt; 0 &amp;&amp; HAS_DOT">
+            <p>Lorsqu'il y a une partie décimale, les zéros en fin de nombre sont significatifs.</p>
+            <p><code>\color{orange}{<var>PROPER_LEADING</var>}\color{blue}{<var>INBETWEEN</var><var>TRAILING</var>}</code></p>
+        </div>
+        <div data-if="TRAILING.length &gt; 0 &amp;&amp; !HAS_DOT">
+            <p>Lorsqu'il n'y a pas de partie décimale, les zéros de fin de nombre ne sont pas significatifs.</p>
+            <p><code>\color{orange}{<var>PROPER_LEADING</var>}\color{blue}{<var>INBETWEEN</var>}\color{orange}{<var>TRAILING</var>}</code></p>
+        </div>
+        <p>On obtient  <var>SOLUTION</var> lorsque l'on compte tous les chiffres significatifs.</p>
+    </div>
+</div>
+</body>
+</html>

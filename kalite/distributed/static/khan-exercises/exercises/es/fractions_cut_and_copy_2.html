@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers word-problems slice-clone">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Fracciones cortar y pegar 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <div data-ensure="SLICES &lt; 20 &amp;&amp; isInt(SLICES)">
+                <var id="D_PARENT">randRangeWeighted(3, 8, 1, 1 / 6)</var>
+                <var id="N_PARENT" data-ensure="getGCD(D_PARENT, N_PARENT) === 1">1===D_PARENT?randRange(1,2):randRange(D_PARENT+1,2*D_PARENT-1)</var>
+                <var id="PARENT">N_PARENT / D_PARENT</var>
+                <var id="D_OFFSPRING_1">randRange(3, 8)</var>
+                <var id="D_OFFSPRING_2" data-ensure="D_OFFSPRING_1 !== D_OFFSPRING_2">randRange(3, 8)</var>
+                <var id="N_OFFSPRING_1" data-ensure="getGCD(D_OFFSPRING_1, N_OFFSPRING_1) === 1 &amp;&amp; PARENT &gt; N_OFFSPRING_1 / D_OFFSPRING_1">randRangeExclude(2,2*D_OFFSPRING_1-1,[D_OFFSPRING_1])</var>
+                <var id="N_OFFSPRING_2" data-ensure="getGCD(D_OFFSPRING_2, N_OFFSPRING_2) === 1 &amp;&amp; PARENT &gt; N_OFFSPRING_2 / D_OFFSPRING_2">randRangeExclude(2,2*D_OFFSPRING_2-1,[D_OFFSPRING_2])</var>
+                <var id="SLICES">N_PARENT * getLCM(D_OFFSPRING_1, D_OFFSPRING_2) / D_PARENT</var>
+            </div>
+            <var id="CODE_PARENT">D_PARENT === 1 ? N_PARENT : mixedOrImproper(N_PARENT, D_PARENT)</var>
+            <var id="CODE_OFFSPRING_1">mixedOrImproper(N_OFFSPRING_1, D_OFFSPRING_1)</var>
+            <var id="CODE_OFFSPRING_2">mixedOrImproper(N_OFFSPRING_2, D_OFFSPRING_2)</var>
+            <var id="OFFSPRING_1">N_OFFSPRING_1 / D_OFFSPRING_1</var>
+            <var id="OFFSPRING_2">N_OFFSPRING_2 / D_OFFSPRING_2</var>
+            <var id="ANSWER_1">OFFSPRING_1 / PARENT</var>
+            <var id="ANSWER_2">OFFSPRING_2 / PARENT</var>
+            <var id="LCM">getLCM(D_OFFSPRING_1, D_OFFSPRING_2)</var>
+            <var id="PARENT_MULTI">LCM / D_PARENT</var>
+            <var id="OFFSPRING_1_MULTI">LCM / D_OFFSPRING_1</var>
+            <var id="OFFSPRING_2_MULTI">LCM / D_OFFSPRING_2</var>
+            <var id="UNIT">new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["unidad\n\nunidades","unidades"]},e)})</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">El bloque inicial que se muestra abajo tiene <code><var>CODE_PARENT</var></code> <var>D_PARENT === 1 ? plural_form(UNIT, N_PARENT) : plural_form(UNIT)</var> de longitud. Usa las herramientas a la derecha para convertir el bloque inicial en los dos bloques objetivo que tienen <code><var>CODE_OFFSPRING_1</var></code> unidades de longitud y <code><var>CODE_OFFSPRING_2</var></code> unidades de longitud. Tu progreso se verá reflejado en el cambio de longitud del bloque de prueba.</p>
+
+                <p>Bloque inicial:</p>
+
+                <div class="graphie" id="parent_block">initSliceClone(["current_block_1","current_block_2"]),init({range:[[0,1],[0,1]],scale:[500,25]}),rectchart([1,0],["#e00","#999"])</div>
+
+                <p>Bloque de prueba 1:</p>
+
+                <div class="graphie" id="current_block_1">init({range:[[0,1],[0,1]],scale:[500,25]}),rectchart([1,0],["#e00","#999"])</div>
+
+                <p>Bloque objetivo 1:</p>
+
+                <div class="graphie" id="goal_block_2">init({range:[[0,1],[0,1]],scale:[500*ANSWER_1,25]}),rectchart([1,0],[BLUE,"#999"])</div>
+
+                <p>Bloque de prueba 2:</p>
+
+                <div class="graphie" id="current_block_2">init({range:[[0,1],[0,1]],scale:[500,25]}),rectchart([1,0],["#e00","#999"])</div>
+
+                <p>Bloque objetivo 2:</p>
+
+                <div class="graphie" id="goal_block_2">init({range:[[0,1],[0,1]],scale:[500*ANSWER_2,25]}),rectchart([1,0],[ORANGE,"#999"])</div>
+
+                <div class="solution" data-type="custom">
+                    <div class="instruction">
+                        <div style="margin-bottom: 10px;">
+                            <span>Cortar el bloque inicial en</span><br><input class="simple-button" onclick="KhanUtil.changePieces(false)" type="button" value="-"><span id="pieces" style="display: inline-block; width: 60px; text-align: center;">1 pedazo</span>
+                            <input class="simple-button" onclick="KhanUtil.changePieces(true)" type="button" value="+">
+</div>
+
+                        <div style="margin-bottom: 10px;">
+                            <span>Copiar el bloque de prueba 1</span><br><input class="simple-button" disabled onclick="KhanUtil.changeTimes(false, 'current_block_1')" type="button" value="-"><span id="current_block_1_times" style="display: inline-block; width: 60px; text-align: center;">1 vez</span>
+                            <input class="simple-button" onclick="KhanUtil.changeTimes(true, 'current_block_1')" type="button" value="+">
+</div>
+
+                        <div style="margin-bottom: 10px;">
+                            <span>Copiar el bloque de prueba 2</span><br><input class="simple-button" disabled onclick="KhanUtil.changeTimes(false, 'current_block_2')" type="button" value="-"><span id="current_block_2_times" style="display: inline-block; width: 60px; text-align: center;">1 vez</span>
+                            <input class="simple-button" onclick="KhanUtil.changeTimes(true, 'current_block_2')" type="button" value="+">
+</div>
+                    </div>
+
+                    <div class="guess">[pieces,times.current_block_1,times.current_block_2]</div>
+                    <div class="validator-function">var e=roundTo(3,guess[1]/guess[0]),r=roundTo(3,guess[2]/guess[0]),s=roundTo(3,ANSWER_1);return answer2=roundTo(3,ANSWER_2),e===s&amp;&amp;r===answer2</div>
+                    <div class="show-guess">pieces=guess[0],times.current_block_1=guess[1],times.current_block_2=guess[2],updateGraphAndAnswer()</div>
+                    <div class="show-guess-solutionarea">guess=guess.length?guess:[1,1,1],$("#pieces").text(plural(guess[0],"piece")),$("#current_block_1_times").text(plural(guess[1],"time")),$("#current_block_2_times").text(plural(guess[2],"time"))</div>
+                </div>
+
+                <div class="hints">
+                    <p>Queremos cortar nuestro bloque inicial en una pedazo que se pueda copiar de tal forma que podamos construir tanto el bloque objetivo 1 como el bloque objetivo 2.</p>
+
+                    <p>El mínimo común denominador de <code><var>D_OFFSPRING_1</var></code> y <code><var>D_OFFSPRING_2</var></code> (el denominador de los bloques objetivo)  es <code><var>LCM</var></code>. Por lo tanto puedes copiar un bloque de <code>\dfrac{1}{<var>LCM</var>}</code> unidades para construir ambos bloques objetivo.</p>
+
+                    <div data-if="CODE_PARENT !== fraction(N_PARENT, D_PARENT) &amp;&amp; D_PARENT !== 1">
+                        <p>El bloque inicial tiene una longitud de <code><var>CODE_PARENT</var></code>, que puede reescribirse como:</p>
+                        <p><code>\qquad<var>fraction(D_PARENT, D_PARENT)</var> + <var>fraction(N_PARENT - D_PARENT, D_PARENT)</var> = 
+                            <var>fraction(N_PARENT, D_PARENT)</var></code>
+                        </p>
+                    </div>
+
+                    <div data-if="PARENT_MULTI !== 1">
+                        <p>We can rewrite the starting block length in terms of <code>\dfrac{1}{<var>LCM</var>}</code> units:</p>
+                        <p><code>\qquad <var>fraction(N_PARENT, D_PARENT)</var> \times <var>fraction(PARENT_MULTI, PARENT_MULTI)</var> = 
+                           <var>fraction(SLICES, LCM)</var></code></p>
+                    </div>
+
+                    <p>Si cortamos el bloque inical en <code><var>SLICES</var></code> pedazos iguales, cada pedazo tendrá una longitud de <code><var>fraction(1, LCM)</var></code> unidades.</p>
+
+                    <div data-if="CODE_OFFSPRING_1 !== fraction(N_OFFSPRING_1, D_OFFSPRING_1)">
+                        <p>El bloque objetivo 1 tiene una longitud de <code><var>CODE_OFFSPRING_1</var></code> unidades, que puede reescribirse como:</p>
+                        <p><code>\qquad<var>fraction(D_OFFSPRING_1, D_OFFSPRING_1)</var> + <var>fraction(N_OFFSPRING_1 - D_OFFSPRING_1, D_OFFSPRING_1)</var> = 
+                            <var>fraction(N_OFFSPRING_1, D_OFFSPRING_1)</var></code></p>
+                    </div>
+
+                    <div data-if="OFFSPRING_1_MULTI !== 1">
+                        <p>We can rewrite the goal block 1 length in terms of <code>\dfrac{1}{<var>LCM</var>}</code> units:</p>
+                        <p><code>\qquad <var>fraction(N_OFFSPRING_1, D_OFFSPRING_1)</var> \times <var>fraction(OFFSPRING_1_MULTI, OFFSPRING_1_MULTI)</var> = 
+                           <var>fraction(OFFSPRING_1_MULTI * N_OFFSPRING_1, LCM)</var></code></p>
+                    </div>
+
+                    <p>Si copiamos un pedazo con una longitud de <code>\dfrac{1}{<var>LCM</var>}</code> unidades <code><var>OFFSPRING_1_MULTI * N_OFFSPRING_1</var></code> veces, obtenemos <code><var>fraction(OFFSPRING_1_MULTI * N_OFFSPRING_1, LCM)</var></code> unidades, que es la longitud del bloque objetivo 1.</p>
+
+                    <div data-if="OFFSPRING_2_MULTI !== 1">
+                        <p>We can rewrite the goal block 2 length in terms of <code>\dfrac{1}{<var>LCM</var>}</code> units:</p>
+                        <p><code>\qquad <var>fraction(N_OFFSPRING_2, D_OFFSPRING_2)</var> \times <var>fraction(OFFSPRING_2_MULTI, OFFSPRING_2_MULTI)</var> = 
+                           <var>fraction(OFFSPRING_2_MULTI * N_OFFSPRING_2, LCM)</var></code></p>
+                    </div>
+
+                    <p>Si copiamos un pedazo de longitud <code>\dfrac{1}{<var>LCM</var>}</code> unidades <code><var>OFFSPRING_2_MULTI * N_OFFSPRING_2</var></code> veces, obtenemos <code><var>fraction(OFFSPRING_2_MULTI * N_OFFSPRING_2, LCM)</var></code> unidades, que es la longitud del bloque objetivo 2.</p>
+
+                    <p>Por lo tanto la solución es cortar el bloque inicial en <code><var>SLICES</var></code> pedazos, copiar el bloque de prueba 1 <code><var>OFFSPRING_1_MULTI * N_OFFSPRING_1</var></code> veces y el bloque de prueba 2 <code><var>OFFSPRING_2_MULTI * N_OFFSPRING_2</var></code> veces.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

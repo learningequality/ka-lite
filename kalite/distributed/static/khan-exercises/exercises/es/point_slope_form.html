@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Forma punto-pendiente</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="y-as-function-of-x" data-weight="2">
+                <div class="vars" data-ensure="X1 !== X2">
+                    <var id="X1">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y1">randRangeNonZero( -5, 5 )</var>
+                    <var id="X2">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y2">randRangeNonZero( -5, 5 )</var>
+                    <var id="SLOPE">(Y1 - Y2) / (X1 - X2)</var>
+                </div>
+                <p class="problem">Usando los siguientes valores, crea una ecuación en forma punto-pendiente. En otras palabras, dados los valores de abajo, para una fórmula como <code>(y - y_{1}) = m(x - x_{1})</code>, ¿cuáles son los valores de <code>x_{1}</code>, <code>y_{1}</code>, y <code>m</code>?</p>
+                <p><code>x_{1}=\color{#b22222}{<var>X1</var>},\quad f(x_{1})=\color{#b22222}{<var>Y1</var>}.</code><br><code>x_{2}=\color{#4169E1}{<var>X2</var>},\quad f(x_{2})=\color{#4169E1}{<var>Y2</var>}.</code> </p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y2</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y1</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <p class="entry" data-type="multiple" style="font-size: 11px;">
+                            <code>(y - {}</code><span class="sol short25"></span><code>) = {}</code><span class="sol short25"></span><code>(x - {}</code><span class="sol short25"></span><code>)</code>
+                        </p>
+                    </div>
+                    <p class="example">enteros, como <code>6</code></p>
+                    <p class="example">fracciones <em>propias simplificadas</em>, como <code>3/5</code></p>
+                    <p class="example">fracciones <em>impropias simplificadas</em> , como <code>7/4</code></p>
+                    <p class="example">y/o decimales <em>exactos</em>, como <code>0.75</code></p>
+                    <p class="example">pon atención al signo de cada número que introduces para asegurarte de que toda la ecuación es correcta</p>
+                </div>
+                <div class="hints">
+                    <p><code>f(x)</code> es simplemente un término elegante para <code>y</code>. Así que un punto es <code>(\color{#b22222}{<var>X1</var>}, \color{#b22222}{<var>Y1</var>})</code>.</p>
+                    <p>La fórmula para encontrar la pendiente es: <code>m = (y_{1} - y_{2}) / (x_{1} - x_{2})</code>.</p>
+                    <p>Entonces, al sustituir los números, obtenemos <code>\displaystyle {} \frac{\color{#b22222}{<var>Y1</var>} - <span data-if="Y2 &lt; 0">(</span>\color{#4169E1}{<var>Y2</var>}<span data-if="Y2 &lt; 0">)</span>}{\color{#b22222}{<var>X1</var>} - <span data-if="X2 &lt; 0">(</span>\color{#4169E1}{<var>X2</var>}<span data-if="X2 &lt; 0">)</span>} =</code> <span data-if="getGCD( Y1-Y2, X1-X2 ) !== 1 || X1-X2 === 1 || X1-X2 &lt; 0 || Y1-Y2 &lt; 0"> <code>\color{#68228B}{\dfrac{<var>Y1-Y2</var>}{<var> X1-X2</var>}} =</code> </span> <code>\color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}</code></p>
+                    <div>
+                        <p>Selecciona uno de los puntos para sustituir en <code>x_{1}</code> y <code>y_{1}</code> en la fórmula de punto-pendiente. La solución es entonces:</p>
+                        <p><code>(y - \color{#b22222}{<var>Y1</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#b22222}{<var>X1</var>})</code></p>
+                        <p>O</p>
+                        <p><code>(y - \color{#4169E1}{<var>Y2</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#4169E1}{<var>X2</var>})</code></p>
+                    </div>
+                </div>
+            </div>
+            <div id="two-points" data-weight="3">
+                <div class="vars" data-ensure="X1 !== X2">
+                    <var id="X1">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y1">randRangeNonZero( -5, 5 )</var>
+                    <var id="X2">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y2">randRangeNonZero( -5, 5 )</var>
+                    <var id="SLOPE">(Y1 - Y2) / (X1 - X2)</var>
+                </div>
+                <p class="problem">Una recta pasa por <code>(\color{#b22222}{<var>X1</var>}, \color{#b22222}{<var>Y1</var>})</code> y <code>(\color{#4169E1}{<var>X2</var>}, \color{#4169E1}{<var>Y2</var>})</code>. Expresa la ecuación de la recta en la forma punto-pendiente.</p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y2</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X2</var></span>
+                    </div>
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y1</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <p class="entry" data-type="multiple" style="font-size: 11px;">
+                            <code>(y - {}</code><span class="sol short25"></span><code>) = {}</code><span class="sol short25"></span><code>(x - {}</code><span class="sol short25"></span><code>)</code>
+                        </p>
+                    </div>
+                    <p class="example">enteros, como <code>6</code></p>
+                    <p class="example">fracciones <em>propias simplificadas</em>, como <code>3/5</code></p>
+                    <p class="example">fracciones <em>impropias simplificadas</em> , como <code>7/4</code></p>
+                    <p class="example">y/o decimales <em>exactos</em>, como <code>0.75</code></p>
+                    <p class="example">pon atención al signo de cada número que introduces para asegurarte de que toda la ecuación es correcta</p>
+                </div>
+                <div class="hints">
+                    <p>La fórmula para encontrar la pendiente es: <code>m = (y_{1} - y_{2}) / (x_{1} - x_{2})</code>.</p>
+                    <p>Entonces, al sustituir los números, obtenemos <code>\displaystyle {} \frac{\color{#b22222}{<var>Y1</var>} - <span data-if="Y2 &lt; 0">(</span>\color{#4169E1}{<var>Y2</var>}<span data-if="Y2 &lt; 0">)</span>}{\color{#b22222}{<var>X1</var>} - <span data-if="X2 &lt; 0">(</span>\color{#4169E1}{<var>X2</var>}<span data-if="X2 &lt; 0">)</span>} =</code> <span data-if="getGCD( Y1-Y2, X1-X2 ) !== 1 || X1-X2 === 1 || X1-X2 &lt; 0 || Y1-Y2 &lt; 0"> <code>\color{#68228B}{\dfrac{<var>Y1-Y2</var>}{<var> X1-X2</var>}} =</code> </span><code> \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}</code></p>
+                    <div>
+                        <p>Selecciona uno de los puntos para sustituir en <code>x_{1}</code> y <code>y_{1}</code> en la fórmula de punto-pendiente. La solución es entonces:</p>
+                        <p><code>(y - \color{#b22222}{<var>Y1</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#b22222}{<var>X1</var>})</code></p>
+                        <p>O</p>
+                        <p><code>(y - \color{#4169E1}{<var>Y2</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#4169E1}{<var>X2</var>})</code></p>
+                    </div>
+                </div>
+            </div>
+            <div id="slope-intercept" data-weight="1">
+                <div class="vars" data-ensure="X1 !== X2">
+                    <var id="X1">0</var>
+                    <var id="Y1">randRangeNonZero( -5, 5 )</var>
+                    <var id="X2">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y2">randRangeNonZero( -5, 5 )</var>
+                    <var id="SLOPE">(Y1 - Y2)/ (X1 - X2)</var>
+                </div>
+                <p class="problem">La pendiente de una recta es <code>\color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}</code> y la intersección con el eje y es <code>\color{#4169E1}{<var>Y1</var>}</code>. Expresa la ecuación de la recta en la forma punto pendiente.</p>
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="multiple">
+                        <span class="sol"><var>Y1</var></span>
+                        <span class="sol"><var>SLOPE</var></span>
+                        <span class="sol"><var>X1</var></span>
+                    </div>
+                    <div class="input-format">
+                        <p class="entry" data-type="multiple" style="font-size: 11px;">
+                            <code>(y - {}</code><span class="sol short25"></span><code>) = {}</code><span class="sol short25"></span><code>(x - {}</code><span class="sol short25"></span><code>)</code>
+                        </p>
+                    </div>
+                    <p class="example">enteros, como <code>6</code></p>
+                    <p class="example">fracciones <em>propias simplificadas</em>, como <code>3/5</code></p>
+                    <p class="example">fracciones <em>impropias simplificadas</em> , como <code>7/4</code></p>
+                    <p class="example">y/o decimales <em>exactos</em>, como <code>0.75</code></p>
+                    <p class="example">pon atención al signo de cada número que introduces para asegurarte de que toda la ecuación es correcta</p>
+                </div>
+                <div class="hints">
+                    <p>El punto de intersección es el valor de <code>y</code> cuando <code>x = 0</code>, por lo que define un punto que puedes utilizar:<code>\quad(\color{#b22222}{<var>X1</var>}, \color{#b22222}{<var>Y1</var>})</code>.</p>
+                    <p>Una ecuación en la forma punto-pendiente es: <code>(y - y_{1}) = m(x - x_{1})</code></p>
+                    <div>
+                        <p>Entonces, la solución en la forma punto-pendiente puede escribirse como:<br><code>(y - \color{#b22222}{<var>Y1</var>}) = \color{#68228B}{<var>fractionReduce(Y1 - Y2, X1 - X2)</var>}(x - \color{#b22222}{<var>X1</var>})</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-polygon interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Ángulos inscritos 1</title>
+<script src="../khan-exercise.js"></script><script>
+        /**
+         * Computes arc start and end angles that will guarantee an
+         * "inner arc" so that the arc is always less than 180 degrees.
+         */
+        function innerArc( start, end ) {
+            var delta = ( end - start + 360 ) % 360;
+            if ( delta >= 180 ) {
+                return {
+                    start: end,
+                    end: start
+                };
+            }
+            return {
+                start: start,
+                end: end
+            };
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="find-angle-1">
+            <div class="vars">
+                <var id="START">randRange( 0, 360 )</var>
+                <var id="CENTRAL">randRange( 10, 80 ) * 2</var>
+                <var id="SUBTENDED_POINT">( START + 180 ) % 360</var>
+                <var id="RADIUS">4</var>
+
+                <var id="GIVEN">CENTRAL</var>
+                <var id="GIVEN_LABEL">$._("azul")</var>
+                <var id="ASKED_LABEL">$._("Naranja")</var>
+                <var id="GREEN_ANGLE">$._("\u00e1ngulo verde")</var>
+                <var id="PINK_ANGLE">$._("\u00e1ngulo rosa")</var>
+                <var id="ORANGE_ANGLE">$._("\u00e1ngulo naranja")</var>
+            </div>
+            <p class="question">Si el ángulo <var>GIVEN_LABEL</var> mide <var>GIVEN</var> grados, ¿cuánto mide el ángulo <var>ASKED_LABEL</var>?</p>
+            <p>Este es un caso especial donde los ángulos azul y anaranjado comparten la misma línea. El ángulo azul es llamado ángulo central y el ángulo anaranjado es llamado ángulo inscrito.</p>
+            <div class="graphie" id="circle">init({range:[[-RADIUS-1,RADIUS+1],[-RADIUS-1,RADIUS+1]]}),addMouseLayer(),graph.circle=new Circle(RADIUS),style({stroke:BLUE,fill:BLUE}),graph.circle.drawCenter(),graph.circle.drawPoint(START),graph.circle.drawPoint(START+CENTRAL),graph.circle.drawCentralAngle(START,START+CENTRAL),style({stroke:ORANGE,fill:ORANGE}),graph.circle.drawInscribedAngle(SUBTENDED_POINT,START,START+CENTRAL),graph.circle.drawMovablePoint(SUBTENDED_POINT,START+CENTRAL,START)</div>
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer, decimal"><var>CENTRAL / 2</var></span> grados</div>
+            <div class="hints">
+                <div>
+                    <p>Los ángulos azul y verde son suplementarios. Puesto que el ángulo azul es de <var>CENTRAL</var> grados, el ángulo verde debe de ser de <var>180 - CENTRAL</var> grados.</p>
+                    <div class="graphie" data-update="circle">style({stroke:GREEN},function(){graph.circle.drawCentralArc(START+CENTRAL,SUBTENDED_POINT)})</div>
+                </div>
+                <div>
+                    <p>Sabemos que los ángulos en un triángulo suman 180 grados.</p>
+                    <div class="graphie" data-update="circle">style({stroke:PINK},function(){graph.circle.drawInscribedArc(START+CENTRAL,SUBTENDED_POINT,START+CENTRAL+180)})</div>
+                    <p><code>\color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}} + \color{<var>PINK</var>}{\text{<var>PINK_ANGLE</var>}} + \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = 180^{\circ}</code></p>
+                </div>
+                <div>
+                    <p>Los lados rosas del triángulo son radios, así que deben ser iguales.</p>
+                    <div class="graphie" data-update="circle">style({stroke:PINK},function(){graph.circle.drawRadius(START+CENTRAL),graph.circle.drawRadius(SUBTENDED_POINT)})</div>
+                </div>
+                <p>Esto significa que el triángulo es isósceles y que los ángulos de la base, o ángulos verde y rosa, son iguales.</p>
+                <p><code>\color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}} + 2 \cdot \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = 180^{\circ}</code></p>
+                <p><code>2 \cdot \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}}  = 180^{\circ} - \color{<var>GREEN</var>}{<var>180 - CENTRAL</var>^{\circ}}</code></p>
+                <p><code>2 \cdot \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}}  = \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}}</code></p>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}}</code></p>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \color{<var>ORANGE</var>}{<var>CENTRAL / 2</var>^{\circ}}</code></p>
+            </div>
+        </div>
+        <div id="find-central-on-1" data-type="find-angle-1">
+            <div class="vars">
+                <var id="GIVEN">CENTRAL / 2</var>
+                <var id="GIVEN_LABEL">$._("Naranja")</var>
+                <var id="ASKED_LABEL">$._("azul")</var>
+                <var id="GREEN_ANGLE">$._("\u00e1ngulo verde")</var>
+                <var id="PINK_ANGLE">$._("\u00e1ngulo rosa")</var>
+                <var id="ORANGE_ANGLE">$._("\u00e1ngulo naranja")</var>
+                <var id="BLUE_ANGLE">$._("\u00e1ngulo azul")</var>
+            </div>
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer, decimal"><var>CENTRAL</var></span> grados</div>
+
+            <div class="hints">
+                <div>
+                    <p>Los lados rosas del triángulo son radios, así que son iguales. Esto significa que el triángulo es isósceles y que los ángulos de la base, o los ángulos rosa y anaranjado son iguales.</p>
+                    <div class="graphie" data-update="circle">style({stroke:PINK},function(){graph.circle.drawRadius(START+CENTRAL),graph.circle.drawRadius(SUBTENDED_POINT)}),style({stroke:PINK},function(){graph.circle.drawInscribedArc(START+CENTRAL,SUBTENDED_POINT,START+CENTRAL+180)})</div>
+                </div>
+                <div>
+                    <p>Sabemos que los ángulos en un triángulo suman 180 grados.</p>
+                    <div class="graphie" data-update="circle">style({stroke:GREEN},function(){graph.circle.drawCentralArc(START+CENTRAL,SUBTENDED_POINT)})</div>
+                    <p><code>\color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}} + \color{<var>PINK</var>}{\text{<var>PINK_ANGLE</var>}} + \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = 180^{\circ}</code></p>
+                </div>
+                <p>Los ángulos verde y azul son suplementarios.</p>
+                <p><code>\color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}} + \color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 180^{\circ}</code></p>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 180^{\circ} - \color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}} </code></p>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 180^{\circ} - \color{<var>GREEN</var>}{\text{<var>180 - CENTRAL</var>}^{\circ}} </code></p>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}} </code></p>
+            </div>
+        </div>
+        <div id="find-angle-2">
+            <div class="vars">
+                <var id="START">randRange( 0, 360 )</var>
+                <var id="CENTRAL">randRange( 10, 80 ) * 2</var>
+                <var id="SUBTENDED_POINT">randRange( START + 180 + 5, START + CENTRAL + 180 - 5 ) % 360</var>
+                <var id="RADIUS">4</var>
+
+                <var id="GIVEN">CENTRAL</var>
+                <var id="GIVEN_LABEL">$._("azul")</var>
+                <var id="ASKED_LABEL">$._("Naranja")</var>
+                <var id="ORANGE_ANGLE">$._("\u00e1ngulo naranja")</var>
+                <var id="BLUE_ANGLE">$._("\u00e1ngulo azul")</var>
+            </div>
+            <p class="question">Si el ángulo <var>GIVEN_LABEL</var> mide <var>GIVEN</var> grados, ¿cuánto mide el ángulo <var>ASKED_LABEL</var>?</p>
+            <p>Este es un caso especial donde el centro del círculo está dentro del ángulo inscrito anaranjado. El ángulo azul es llamado ángulo central.</p>
+            <div class="graphie" id="circle">init({range:[[-RADIUS-1,RADIUS+1],[-RADIUS-1,RADIUS+1]]}),addMouseLayer(),graph.circle=new Circle(RADIUS),style({stroke:BLUE,fill:BLUE}),graph.circle.drawCenter(),graph.circle.drawPoint(START),graph.circle.drawPoint(START+CENTRAL),graph.central=graph.circle.drawCentralAngle(START,START+CENTRAL),style({stroke:ORANGE,fill:ORANGE}),graph.inscribed=graph.circle.drawInscribedAngle(SUBTENDED_POINT,START,START+CENTRAL),graph.circle.drawMovablePoint(SUBTENDED_POINT,START+CENTRAL,START)</div>
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer, decimal"><var>CENTRAL / 2</var></span> grados</div>
+            <div class="hints">
+                <div>
+                    <p>¿Qué sabemos acerca de los sub-ángulos formados por el diámetro punteado que se muestra arriba?</p>
+                    <div class="graphie" data-update="circle">style({stroke:BLUE,"stroke-dasharray":"-"},function(){graph.circle.drawChord(SUBTENDED_POINT,SUBTENDED_POINT+180)})</div>
+                </div>
+                <div>
+                    <p>Si sólo vemos los sub ángulos dibujados ahora, podemos ver que ¡éste es el caso especial del ejercicio anterior de ángulos inscritos!</p>
+                    <p>Sabemos que el sub-ángulo anaranjado mide la mitad del sub-ángulo azul.</p>
+                    <div class="graphie" data-update="circle">graph.inscribed.arc.animate({opacity:.4}),graph.central.arc.animate({opacity:.4}),style({stroke:BLUE}),graph.centralSub=graph.circle.drawCentralArc(SUBTENDED_POINT+180,START+CENTRAL,.7),style({stroke:ORANGE}),graph.inscribedSub=graph.circle.drawInscribedArc(SUBTENDED_POINT,SUBTENDED_POINT+180,START+CENTRAL,.7)</div>
+                </div>
+                <div>
+                    <p>De forma similar, el otro sub-ángulo anaranjado mide la mitad del otro sub-ángulo azul, como se muestra.</p>
+                    <div class="graphie" data-update="circle">graph.centralSub.remove(),graph.inscribedSub.remove(),style({stroke:BLUE}),graph.centralSub=graph.circle.drawCentralArc(START,SUBTENDED_POINT+180,.7),style({stroke:ORANGE}),graph.inscribedSub=graph.circle.drawInscribedArc(SUBTENDED_POINT,START,SUBTENDED_POINT+180,.7)</div>
+                </div>
+                <div>
+                    <p>Si ambos sub-ángulos anaranjados son la mitad de ambos sub-ángulos azules, entonces sabemos que el ángulo anaranjado original es la mitad del ángulo azul original.</p>
+                    <div class="graphie" data-update="circle">graph.centralSub.remove(),graph.inscribedSub.remove(),graph.inscribed.arc.animate({opacity:1}),graph.central.arc.animate({opacity:1})</div>
+                </div>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}}</code></p>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}}</code></p>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} =  \color{<var>ORANGE</var>}{<var>CENTRAL / 2</var>^{\circ}}</code></p>
+            </div>
+        </div>
+        <div id="find-central-on-2" data-type="find-angle-2">
+            <div class="vars">
+                <var id="GIVEN">CENTRAL / 2</var>
+                <var id="GIVEN_LABEL">$._("Naranja")</var>
+                <var id="ASKED_LABEL">$._("azul")</var>
+                <var id="BLUE_ANGLE">$._("\u00e1ngulo azul")</var>
+                <var id="ORANGE_ANGLE">$._("\u00e1ngulo naranja")</var>
+            </div>
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer, decimal"><var>CENTRAL</var></span> grados</div>
+
+            <div class="hints">
+                <div>
+                    <p>¿Qué sabemos acerca de los sub-ángulos formados por el diámetro punteado que se muestra arriba?</p>
+                    <div class="graphie" data-update="circle">style({stroke:BLUE,"stroke-dasharray":"-"},function(){graph.circle.drawChord(SUBTENDED_POINT,SUBTENDED_POINT+180)})</div>
+                </div>
+                <div>
+                    <p>Si sólo vemos los sub ángulos dibujados ahora, podemos ver que ¡éste es el caso especial del ejercicio anterior de ángulos inscritos!</p>
+                    <p>Sabemos que el sub-ángulo anaranjado mide la mitad del sub-ángulo azul.</p>
+                    <div class="graphie" data-update="circle">graph.inscribed.arc.animate({opacity:.4}),graph.central.arc.animate({opacity:.4}),style({stroke:BLUE}),graph.centralSub=graph.circle.drawCentralArc(SUBTENDED_POINT+180,START+CENTRAL,.7),style({stroke:ORANGE}),graph.inscribedSub=graph.circle.drawInscribedArc(SUBTENDED_POINT,SUBTENDED_POINT+180,START+CENTRAL,.7)</div>
+                </div>
+                <div>
+                    <p>De forma similar, el otro sub-ángulo anaranjado mide la mitad del otro sub-ángulo azul, como se muestra.</p>
+                    <div class="graphie" data-update="circle">graph.centralSub.remove(),graph.inscribedSub.remove(),style({stroke:BLUE}),graph.centralSub=graph.circle.drawCentralArc(START,SUBTENDED_POINT+180,.7),style({stroke:ORANGE}),graph.inscribedSub=graph.circle.drawInscribedArc(SUBTENDED_POINT,START,SUBTENDED_POINT+180,.7)</div>
+                </div>
+                <div>
+                    <p>Si ambos sub-ángulos azules son el doble que ambos sub-ángulos anaranjados, entonces sabemos que el ángulo azul es el doble del ángulo anaranjado.</p>
+                    <div class="graphie" data-update="circle">graph.centralSub.remove(),graph.inscribedSub.remove(),graph.inscribed.arc.animate({opacity:1}),graph.central.arc.animate({opacity:1})</div>
+                </div>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 2 \cdot \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}}</code></p>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 2 \cdot \color{<var>ORANGE</var>}{<var>CENTRAL / 2</var>^{\circ}}</code></p>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}}</code></p>
+            </div>
+        </div>
+        <div id="find-inscribed-outside-3">
+            <div class="vars">
+                <var id="START">randRange( 0, 360 )</var>
+                <var id="CENTRAL">randRange( 10, 80 ) * 2</var>
+                <var id="SUBTENDED_POINT">randFromArray([randRange(START+CENTRAL+5,START+180-5),randRange(START+CENTRAL+180+5,START+360-5)])%360</var>
+                <var id="RADIUS">4</var>
+
+                <var id="GIVEN">CENTRAL</var>
+                <var id="GIVEN_LABEL">$._("azul")</var>
+                <var id="ASKED_LABEL">$._("Naranja")</var>
+                <var id="GREEN_ANGLE">$._("\u00e1ngulo verde")</var>
+                <var id="BLUE_ANGLE">$._("\u00e1ngulo azul")</var>
+                <var id="PINK_ANGLE">$._("\u00e1ngulo rosa")</var>
+                <var id="SMALL_GREEN_ANGLE">$._("\u00e1ngulo verde peque\u00f1o")</var>
+                <var id="ORANGE_ANGLE">$._("\u00e1ngulo naranja")</var>
+                <var id="BIG_GREEN_ANGLE">$._("\u00e1ngulo verde grande")</var>
+                <var id="SMALL_PINK_ANGLE">$._("\u00e1ngulo rosa peque\u00f1o")</var>
+                <var id="BIG_PINK_ANGLE">$._("\u00e1ngulo rosa grande")</var>
+            </div>
+            <p class="question">Si el ángulo <var>GIVEN_LABEL</var> mide <var>GIVEN</var> grados, ¿cuánto mide el ángulo <var>ASKED_LABEL</var>?</p>
+            <p>Este es un caso especial donde el centro del círculo está fuera del ángulo inscrito anaranjado. El ángulo azul es llamado ángulo central.</p>
+            <div class="graphie" id="circle">init({range:[[-RADIUS-1,RADIUS+1],[-RADIUS-1,RADIUS+1]]}),addMouseLayer(),graph.circle=new Circle(RADIUS),style({stroke:BLUE,fill:BLUE}),graph.circle.drawCenter(),graph.circle.drawPoint(START),graph.circle.drawPoint(START+CENTRAL),graph.circle.drawCentralAngle(START,START+CENTRAL),style({stroke:ORANGE,fill:ORANGE}),graph.circle.drawInscribedAngle(SUBTENDED_POINT,START,START+CENTRAL),graph.circle.drawMovablePoint(SUBTENDED_POINT,START+CENTRAL,START)</div>
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer, decimal"><var>CENTRAL / 2</var></span> grados</div>
+            <div class="hints">
+                <div>
+                    <p>¿Qué sabemos acerca de los ángulos formados por el diámetro punteado que se muestran arriba?</p>
+                    <div class="graphie" data-update="circle">style({stroke:BLUE,"stroke-dasharray":"-"},function(){graph.circle.drawChord(SUBTENDED_POINT,SUBTENDED_POINT+180)})</div>
+                </div>
+                <div>
+                    <p>De los ejercicios anteriores sobre ángulos sabemos lo siguiente acerca de los ángulos verde y rosa.</p>
+                    <p><code>\color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>PINK</var>}{\text{<var>PINK_ANGLE</var>}}</code></p>
+                    <div class="graphie" data-update="circle">style({stroke:BLUE,fill:BLUE},function(){graph.circle.drawPoint(SUBTENDED_POINT+180)}),style({stroke:PINK});var arc=innerArc(START,(SUBTENDED_POINT+180)%360);graph.central=graph.circle.drawCentralAngle(arc.start,arc.end,.7),style({stroke:GREEN}),graph.inscribed=graph.circle.drawInscribedAngle(SUBTENDED_POINT,arc.start,arc.end,.7)</div>
+                </div>
+                <div>
+                    <p>Podemos ver otro par de ángulos inscritos y centrales de este caso especial con la misma relación entre los ángulos verde y rosa.</p>
+                    <div class="graphie" data-update="circle">graph.central.arc.animate({opacity:.4}),graph.central.radii[0].remove(),graph.central.radii[1].remove(),graph.inscribed.arc.animate({opacity:.4}),graph.inscribed.chords[0].remove(),graph.inscribed.chords[1].remove();var arc=innerArc(START+CENTRAL,(SUBTENDED_POINT+180)%360);style({stroke:PINK}),graph.central=graph.circle.drawCentralAngle(arc.start,arc.end,.9),style({stroke:GREEN}),graph.inscribed=graph.circle.drawInscribedAngle(SUBTENDED_POINT,arc.start,arc.end,.9)</div>
+                </div>
+                <div>
+                    <p>Observando la figura podemos ver que lo siguiente es cierto:</p>
+                    <p><code>\color{<var>GREEN</var>}{\text{<var>SMALL_GREEN_ANGLE</var>}} + \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \color{<var>GREEN</var>}{\text{<var>BIG_GREEN_ANGLE</var>}}</code></p>
+                    <div class="graphie" data-update="circle">graph.central.arc.animate({opacity:.4}),graph.central.radii[0].remove(),graph.central.radii[1].remove(),graph.inscribed.arc.animate({opacity:.4}),graph.inscribed.chords[0].remove(),graph.inscribed.chords[1].remove()</div>
+                </div>
+                <div>
+                    <p>Sustituyendo lo que sabemos sobre los ángulos verde y rosa, obtenemos lo siguiente:</p>
+                    <p><code>\dfrac{1}{2} \cdot \color{<var>PINK</var>}{\text{<var>SMALL_PINK_ANGLE</var>}} + \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>PINK</var>}{\text{<var>BIG_PINK_ANGLE</var>}}</code></p>
+                </div>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2}( \color{<var>PINK</var>}{\text{<var>BIG_PINK_ANGLE</var>}} - \color{<var>PINK</var>}{\text{<var>SMALL_PINK_ANGLE</var>}})</code></p>
+                <div>
+                    <p>Podemos apreciar de la figura que lo siguiente también es cierto:</p>
+                    <p><code>\color{<var>PINK</var>}{\text{<var>SMALL_PINK_ANGLE</var>}} + \color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = \color{<var>PINK</var>}{\text{<var>BIG_PINK_ANGLE</var>}}</code></p>
+                    <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = \color{<var>PINK</var>}{\text{<var>BIG_PINK_ANGLE</var>}} - \color{<var>PINK</var>}{\text{<var>SMALL_PINK_ANGLE</var>}}</code></p>
+                </div>
+                <div>
+                    <p>Combinando lo que sabemos sobre los ángulos azul y anaranjado:</p>
+                    <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}}</code></p>
+                </div>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \dfrac{1}{2} \cdot \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}}</code></p>
+                <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \color{<var>ORANGE</var>}{<var>CENTRAL / 2</var>^{\circ}}</code></p>
+            </div>
+        </div>
+        <div id="find-central-3" data-type="find-inscribed-outside-3">
+            <div class="vars">
+                <var id="GIVEN">CENTRAL / 2</var>
+                <var id="GIVEN_LABEL">$._("Naranja")</var>
+                <var id="ASKED_LABEL">$._("azul")</var>
+            </div>
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer, decimal"><var>CENTRAL</var></span> grados</div>
+            <div class="hints">
+                <div>
+                    <p>¿Qué sabemos acerca de los ángulos formados por el diámetro punteado que se muestran arriba?</p>
+                    <div class="graphie" data-update="circle">style({stroke:BLUE,"stroke-dasharray":"-"},function(){graph.circle.drawChord(SUBTENDED_POINT,SUBTENDED_POINT+180)})</div>
+                </div>
+                <div>
+                    <p>De los ejercicios anteriores sobre ángulos sabemos lo siguiente acerca de los ángulos verde y rosa.</p>
+                    <p><code>\color{<var>PINK</var>}{\text{<var>PINK_ANGLE</var>}} = 2 \cdot \color{<var>GREEN</var>}{\text{<var>GREEN_ANGLE</var>}}</code></p>
+                    <div class="graphie" data-update="circle">style({stroke:BLUE,fill:BLUE},function(){graph.circle.drawPoint(SUBTENDED_POINT+180)}),style({stroke:PINK});var arc=innerArc(START,(SUBTENDED_POINT+180)%360);graph.central=graph.circle.drawCentralAngle(arc.start,arc.end,.7),style({stroke:GREEN}),graph.inscribed=graph.circle.drawInscribedAngle(SUBTENDED_POINT,arc.start,arc.end,.7)</div>
+                </div>
+                <div>
+                    <p>Podemos ver otro par de ángulos inscritos y centrales de este caso especial con la misma relación entre los ángulos verde y rosa.</p>
+                    <div class="graphie" data-update="circle">graph.central.arc.animate({opacity:.4}),graph.central.radii[0].remove(),graph.central.radii[1].remove(),graph.inscribed.arc.animate({opacity:.4}),graph.inscribed.chords[0].remove(),graph.inscribed.chords[1].remove();var arc=innerArc(START+CENTRAL,(SUBTENDED_POINT+180)%360);style({stroke:PINK}),graph.central=graph.circle.drawCentralAngle(arc.start,arc.end,.9),style({stroke:GREEN}),graph.inscribed=graph.circle.drawInscribedAngle(SUBTENDED_POINT,arc.start,arc.end,.9)</div>
+                </div>
+                <div>
+                    <p>Observando la figura podemos ver que lo siguiente es cierto:</p>
+                    <p><code>\color{<var>PINK</var>}{\text{<var>SMALL_PINK_ANGLE</var>}} + \color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = \color{<var>PINK</var>}{\text{<var>BIG_PINK_ANGLE</var>}}</code></p>
+                    <div class="graphie" data-update="circle">graph.central.arc.animate({opacity:.4}),graph.central.radii[0].remove(),graph.central.radii[1].remove(),graph.inscribed.arc.animate({opacity:.4}),graph.inscribed.chords[0].remove(),graph.inscribed.chords[1].remove()</div>
+                </div>
+                <div>
+                    <p>Sustituyendo lo que sabemos sobre los ángulos verde y rosa, obtenemos lo siguiente:</p>
+                    <p><code>2 \cdot \color{<var>GREEN</var>}{\text{<var>SMALL_GREEN_ANGLE</var>}} + \color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 2 \cdot \color{<var>GREEN</var>}{\text{<var>BIG_GREEN_ANGLE</var>}}</code></p>
+                </div>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 2( \color{<var>GREEN</var>}{\text{<var>BIG_GREEN_ANGLE</var>}} - \color{<var>GREEN</var>}{\text{<var>SMALL_GREEN_ANGLE</var>}})</code></p>
+                <div>
+                    <p>Podemos apreciar de la figura que lo siguiente también es cierto:</p>
+                    <p><code>\color{<var>GREEN</var>}{\text{<var>SMALL_GREEN_ANGLE</var>}} + \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \color{<var>GREEN</var>}{\text{<var>BIG_GREEN_ANGLE</var>}}</code></p>
+                    <p><code>\color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}} = \color{<var>GREEN</var>}{\text{<var>BIG_GREEN_ANGLE</var>}} - \color{<var>GREEN</var>}{\text{<var>SMALL_GREEN_ANGLE</var>}}</code></p>
+                </div>
+                <div>
+                    <p>Combinando lo que sabemos sobre los ángulos azul y anaranjado:</p>
+                    <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 2 \cdot \color{<var>ORANGE</var>}{\text{<var>ORANGE_ANGLE</var>}}</code></p>
+                </div>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = 2 \cdot \color{<var>ORANGE</var>}{<var>CENTRAL / 2</var>^{\circ}}</code></p>
+                <p><code>\color{<var>BLUE</var>}{\text{<var>BLUE_ANGLE</var>}} = \color{<var>BLUE</var>}{<var>CENTRAL</var>^{\circ}}</code></p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

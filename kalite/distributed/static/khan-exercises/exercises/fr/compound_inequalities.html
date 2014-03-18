@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers functional">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Inéquations simultanées</title>
+<script src="../khan-exercise.js"></script><script type="text/javascript">
+        function getComp( coef, comp ) {
+            if ( coef >= 0 ) {
+                return comp;
+            }
+
+            return {
+                "≤": "≥",
+                "≥": "≤",
+                "<": ">",
+                ">": "<"
+            }[comp];
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="abs( SOLUTION[0] - SOLUTION[1] ) &lt;= 5 &amp;&amp; FAKE_ANSWER[0] !== SOLUTION[0] &amp;&amp; FAKE_ANSWER[1] !== SOLUTION[1]">
+            <var id="COEF">tabulate(function(){return randRange(2,9)*(rand(3)&gt;0?1:-1)},2)</var>
+            <var id="ONE_OVER_COEF">tabulate(function(e){return fraction(1,COEF[e])},2)</var>
+            <var id="SIGN">randFromArray( [ "-", "+" ], 2)</var>
+            <var id="LEFT_INT">tabulate(function(){return rand(3)&gt;0?randRange(2,9):0},2)</var>
+            <var id="ADD_TO_SIMPLIFY">tabulate(function(e){return LEFT_INT[e]*("+"===SIGN[e]?-1:1)},2)</var>
+            <var id="COMP">randFromArray( [ "&lt;", "&gt;", "≤", "≥" ], 2 )</var>
+            <var id="RIGHT_INT">tabulate(function(e){return randRange(1,6)*abs(COEF[e])+("+"===SIGN[e]?1:-1)*LEFT_INT[e]},2)</var>
+            <var id="VARIABLE_NAME">randFromArray([ "a", "b", "c", "x", "y", "z" ])</var>
+            <var id="COMP_SOLUTION">tabulate(function(e){return getComp(COEF[e],COMP[e])},2)</var>
+            <var id="SOLUTION_NOT_REDUCED">tabulate(function(e){return fraction(RIGHT_INT[e]+ADD_TO_SIMPLIFY[e],COEF[e])},2)</var>
+            <var id="SOLUTION">tabulate(function(e){return(RIGHT_INT[e]+ADD_TO_SIMPLIFY[e])/COEF[e]},2)</var>
+            <var id="COLOR">[ "#1F78B4", "#B30000" ]</var>
+            <var id="INCLUSIVE">tabulate(function(e){return"≤"===COMP_SOLUTION[e]||"≥"===COMP_SOLUTION[e]},2)</var>
+            <var id="LESS_THAN">tabulate(function(e){return"≤"===COMP_SOLUTION[e]||"&lt;"===COMP_SOLUTION[e]},2)</var>
+            <var id="ALL_NUMBERS">( LESS_THAN[0] &amp;&amp; !LESS_THAN[1] &amp;&amp; SOLUTION[0] &gt;= SOLUTION [1] ) || ( !LESS_THAN[0] &amp;&amp; LESS_THAN[1] &amp;&amp; SOLUTION[0] &lt;= SOLUTION [1] )</var>
+            <var id="NO_SOLUTION">( LESS_THAN[0] &amp;&amp; !LESS_THAN[1] &amp;&amp; SOLUTION[1] &gt; SOLUTION[0] ) || ( !LESS_THAN[0] &amp;&amp; LESS_THAN[1] &amp;&amp; SOLUTION[0] &gt; SOLUTION[1] ) || ( LESS_THAN[0] !== LESS_THAN[1] &amp;&amp; SOLUTION[0] === SOLUTION[1] &amp;&amp; ( !INCLUSIVE[0] || !INCLUSIVE[1] ) )</var>
+            <var id="IS_OR">randRange(0, 1) === 0</var>
+            <var id="OR">[ $._("ou"), $._("et") ][IS_OR ? 0 : 1]</var>
+            <var id="FAKE_ANSWER">tabulate(function(){return randRange(2,9)*(rand(3)&gt;0?1:-1)},2)</var>
+            <var id="CONTAINS">function(){return LESS_THAN[0]&amp;&amp;LESS_THAN[1]?SOLUTION[0]===SOLUTION[1]?INCLUSIVE[0]?1:2:SOLUTION[0]&gt;SOLUTION[1]?1:2:LESS_THAN[0]||LESS_THAN[1]?0:SOLUTION[0]===SOLUTION[1]?INCLUSIVE[0]?1:2:SOLUTION[0]&lt;SOLUTION[1]?1:2}()</var>
+            <var id="IS_CONTAINED">CONTAINS === 1 ? 2 : 1</var>
+            <var id="SINGLE_SOLUTION">SOLUTION[0] === SOLUTION[1] &amp;&amp; INCLUSIVE[0] &amp;&amp; INCLUSIVE[1] &amp;&amp; ( LESS_THAN[0] ? !LESS_THAN[1] : LESS_THAN[0] )</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">Solve for <code><var>VARIABLE_NAME</var></code>:</p>
+                <div>
+                    <code>\color{<var>COLOR[0]</var>}{<var>COEF[0] + VARIABLE_NAME</var><var data-if="LEFT_INT[0] !== 0">SIGN[0] + LEFT_INT[0]</var><var>COMP[0] + RIGHT_INT[0]</var>}</code> <var>OR</var>
+                    <code>\color{<var>COLOR[1]</var>}{<var>COEF[1] + VARIABLE_NAME</var><var data-if="LEFT_INT[1] !== 0">SIGN[1] + LEFT_INT[1]</var><var>COMP[1] + RIGHT_INT[1]</var>}</code>
+                </div>
+
+                <p class="solution">
+                    <span data-if="!IS_OR &amp;&amp; SINGLE_SOLUTION"><code><var>VARIABLE_NAME</var> = <var>SOLUTION[0]</var></code></span>
+                    <span data-else-if="IS_OR &amp;&amp; ALL_NUMBERS">Tous les nombres réels.</span>
+                    <span data-else-if="IS_OR &amp;&amp; CONTAINS"><code><var>VARIABLE_NAME + COMP_SOLUTION[CONTAINS - 1] + SOLUTION[CONTAINS - 1]</var></code></span>
+                    <span data-else-if="!IS_OR &amp;&amp; CONTAINS"><code><var>VARIABLE_NAME + COMP_SOLUTION[IS_CONTAINED - 1] + SOLUTION[IS_CONTAINED - 1]</var></code></span>
+                    <span data-else-if="!IS_OR &amp;&amp; NO_SOLUTION">Pas de solution.</span>
+                    <span data-else=""><code><var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var></code></span>
+                </p>
+
+                <ul class="choices" data-show="4">
+<li>
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + FAKE_ANSWER[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + FAKE_ANSWER[1]</var></code>
+</li>
+                    <li>
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + randRangeNonZero( -9, 9 )</var></code>
+</li>
+                    <li>
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + randRangeNonZero( -9, 9 )</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var></code>
+</li>
+                    <li><code><var>VARIABLE_NAME + COMP_SOLUTION[0] + FAKE_ANSWER[0]</var></code></li>
+                    <li data-if="CONTAINS">
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var></code>
+</li>
+                    <div data-if="COMP[0] !== COMP_SOLUTION[0]" data-unwrap="">
+                        <li>
+<code><var>VARIABLE_NAME + COMP[0] + SOLUTION[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var></code>
+</li>
+                        <li>
+<code><var>VARIABLE_NAME + COMP[0] + FAKE_ANSWER[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP_SOLUTION[1] + FAKE_ANSWER[1]</var></code>
+</li>
+                    </div>
+                    <div data-if="COMP[1] !== COMP_SOLUTION[1]" data-unwrap="">
+                        <li>
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP[1] + SOLUTION[1]</var></code>
+</li>
+                        <li>
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + FAKE_ANSWER[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP[1] + FAKE_ANSWER[1]</var></code>
+</li>
+                    </div>
+                    <div data-if="COMP[0] !== COMP_SOLUTION[0] &amp;&amp; COMP[1] !== COMP_SOLUTION[1]" data-unwrap="">
+                        <li>
+<code><var>VARIABLE_NAME + COMP[0] + SOLUTION[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP[1] + SOLUTION[1]</var></code>
+</li>
+                        <li>
+<code><var>VARIABLE_NAME + COMP[0] + FAKE_ANSWER[0]</var></code> <var>OR</var> <code><var>VARIABLE_NAME + COMP[1] + FAKE_ANSWER[1]</var></code>
+</li>
+                    </div>
+                    <li data-if="LEFT_INT[0] !== 0 || LEFT_INT[1] !== 0">
+<code><var>VARIABLE_NAME + COMP_SOLUTION[0] + round( ( RIGHT_INT[0] - ADD_TO_SIMPLIFY[0] ) / COEF[0] )</var></code> <var>OR</var> <code><var>VARIABLE_NAME+COMP_SOLUTION[1]+round((RIGHT_INT[1]-ADD_TO_SIMPLIFY[1])/COEF[1])</var></code>
+</li>
+                    <li data-if="IS_OR &amp;&amp; !ALL_NUMBERS">Tous les nombres réels.</li>
+                    <li data-if="!IS_OR &amp;&amp; !NO_SOLUTION">Pas de solution.</li>
+                    <li data-if="!IS_OR &amp;&amp; SINGLE_SOLUTION"><code><var>VARIABLE_NAME</var> = <var>SOLUTION[0]</var></code></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p>La première inéquation peut s'écrire :</p>
+                        <p><code>\color{<var>COLOR[0]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var>}</code></p>
+                    </div>
+                    <div>
+                        <p>La deuxième inéquation peut s'écrire :</p>
+                        <p><code>\color{<var>COLOR[1]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var>}</code></p>
+                    </div>
+                    <div class="graphie">var start=min(SOLUTION[0],SOLUTION[1])-randRange(2,5),end=max(SOLUTION[0],SOLUTION[1])+randRange(2,5);init({range:[[start-1,end+1],[-1,1]],scale:28}),numberLine(start,end,null,start);for(var y_placement=[.05,-.05],i=0;2&gt;i;i++)style({stroke:COLOR[i],fill:COLOR[i],strokeWidth:3.5,arrows:"-&gt;"}),path([[SOLUTION[i]+.15*(LESS_THAN[i]?-1:1),y_placement[i]],[LESS_THAN[i]?start:end,y_placement[i]]]),style({stroke:COLOR[i],fill:INCLUSIVE[i]?COLOR[i]:null}),circle([SOLUTION[i],y_placement[i]],.2)</div>
+                    <div data-if="IS_OR">
+                        <p>Le connecteur logique est "OU", donc les solutions sont les réels solutions de la première inéquation <strong>ou</strong> de la deuxième inéquation.</p>
+                        <p data-if="ALL_NUMBERS">On obtient la droite numérique toute entière donc la réponse est "Tous les nombres réels".</p>
+                        <div data-else-if="CONTAINS">
+                            <p data-if="IS_CONTAINED === 1">On remarque que les solutions de la première inéquation sont aussi solutions de la deuxième. Donc la réponse est :</p>
+                            <p data-else>On remarque que les solutions de la deuxième inéquation sont aussi solutions de la première. Donc la réponse est :</p>
+                            <p><code>\color{<var>COLOR[CONTAINS - 1]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[CONTAINS - 1] + SOLUTION[CONTAINS - 1]</var>}</code></p>
+                        </div>
+                        <div data-else="">
+                            <p>Les deux ensembles de solutions sont disjoints, donc la solution est :</p>
+                            <p><code>\color{<var>COLOR[0]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var>}</code> ou <code>\color{<var>COLOR[1]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var>}</code></p>
+                        </div>
+                    </div>
+                    <div data-else="">
+                        <p>Le connecteur logique est "ET", donc l'ensemble des solutions est l'intersection des ensembles de solutions de chacune des inéquations.</p>
+                        <div data-if="SINGLE_SOLUTION">
+                            <p>Donc, la solution est :</p>
+                            <code>\color{magenta}{<var>VARIABLE_NAME</var> = <var>SOLUTION[0]</var>}</code>
+                        </div>
+                        <p data-else-if="NO_SOLUTION">Les ensembles de solutions sont disjoints, donc il n'y a pas de solution.</p>
+                        <div data-else-if="CONTAINS">
+                            <p data-if="CONTAINS === 1">Puisque l'ensemble des solutions de la deuxième inéquation est inclus dans celui des solutions de la première, c'est l'intersection des deux ensembles de solutions. Donc la réponse est :</p>
+                            <p data-else>Puisque l'ensemble des solutions de la première inéquation est inclus dans celui des solutions de la deuxième, c'est l'intersection des deux ensembles de solutions. Donc la réponse est :</p>
+                            <p><code>\color{<var>COLOR[IS_CONTAINED - 1]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[IS_CONTAINED - 1] + SOLUTION[IS_CONTAINED - 1]</var>}</code></p>
+                        </div>
+                        <div data-else="">
+                            <p>Donc, la solution est :</p>
+                            <p><code>\color{<var>COLOR[0]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[0] + SOLUTION[0]</var>}</code> et <code>\color{<var>COLOR[1]</var>}{<var>VARIABLE_NAME + COMP_SOLUTION[1] + SOLUTION[1]</var>}</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Contando 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="every-n">
+                <div class="vars">
+                    <var id="INCR">randRange( 3, 5 )</var>
+                    <var id="START">randRange( 20, 50 )</var>
+                    <var id="NTH">randRange( 7, 15 )</var>
+                    <var id="ANSWER">START + ( NTH - 1 ) * INCR</var>
+                </div>
+                <p data-if="isMale(1)"><var>person( 1 )</var> comienza a contar en <var>START</var> y después cuenta en <var>cardinalThrough20( INCR )</var>s.</p>
+<p data-else=""><var>person( 1 )</var> comienza a contar en <var>START</var> y después cuenta en <var>cardinalThrough20( INCR )</var>s.</p>
+                <p class="question" data-if="isMale(1)">Si <var>START</var> es el primer número que <var>person( 1 )</var> cuenta, ¿cuál es el <var>NTH</var> número que cuenta?</p>
+<p class="question" data-else="">Si <var>START</var> es el primer número que <var>person( 1 )</var> cuenta, ¿cuál es el <var>NTH</var> número que cuenta?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+                <div class="hints">
+                    <p data-if="isMale(1)">¿Cuál es el primer número que cuenta?</p>
+<p data-else="">¿Cuál es el primer número que cuenta?</p>
+                    <p><code><var>START</var></code></p>
+                    <p data-if="isMale(1)">¿Cuál es el segundo número que cuenta?</p>
+<p data-else="">¿Cuáñ es el segundo número que cuenta?</p>
+                    <p><code>\begin{align*}&amp;<var>START</var> + <var>INCR</var> \\
+                        &amp;= <var>START + INCR</var>\end{align*}</code></p>
+                    <p data-if="isMale(1)">¿Cuál es el tercer número que cuenta?</p>
+<p data-else="">¿Cuál es el tercer número que cuenta?</p>
+                    <p><code>\begin{align*}&amp;<var>START</var> + <var>INCR</var> + <var>INCR</var> \\
+                        &amp;= <var>START</var> + (2 \times <var>INCR</var>) \\
+                        &amp;= <var>START + 2 * INCR</var>\end{align*}</code></p>
+                    <p data-if="isMale(1)">¿Cuál es el <var>NTH</var>° número que cuenta?</p>
+<p data-else="">¿Cuál es el <var>NTH</var>° número que cuenta?</p>
+                    <p><code>\begin{align*}&amp;<var>START</var> + (<var>NTH - 1</var>\times<var>INCR</var>) \\
+                        &amp;= <var>START</var> + <var>( NTH - 1 ) * INCR</var> \\
+                        &amp;= <var>ANSWER</var>\end{align*}</code></p>
+                </div>
+            </div>
+
+            <div id="handshakes">
+                <div class="vars">
+                    <var id="NUM">randRange( 5, 10 )</var>
+                    <var id="ANSWER">( NUM * ( NUM - 1 ) ) / 2</var>
+                </div>
+                <p>Hay <var>NUM</var> personas en una habitación.</p>
+                <p class="question">Si todos estrechan la mano de todos los demás exactamente una vez, ¿cuántos apretones de manos ocurren?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+
+                <div class="hints">
+                    <p>Dadas <var>NUM</var> persona, cada persona estrecha la mano de otras <var>NUM - 1</var> personas.</p>
+                    <div>
+                        <p>La siguiente es casi la respuesta.</p>
+                        <p><code><var>NUM</var> \times <var>NUM - 1</var> = <var>NUM * ( NUM - 1 )</var></code></p>
+                    </div>
+                    <p>Sin embargo hemos contado dos veces los apretones de mano, puesto que <var>person( 1 )</var> estrechando la mano de <var>person( 2 )</var> es el mismo apretón de manos que <var>person( 2 )</var> estrechando la mano de <var>person( 1 )</var>.</p>
+                    <div>
+                        <p>Por lo tanto, la siguiente es la respuesta correcta.</p>
+                        <p><code>\dfrac{<var>NUM</var> \times <var>NUM - 1</var>}{2} = <var>ANSWER</var></code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="potted-plants">
+                <div class="vars">
+                    <var id="NUM_COLORS, NUM_POTS">randRangeUnique( 2, 6, 2 )</var>
+                    <var id="ANSWER">NUM_COLORS * NUM_POTS</var>
+                </div>
+                <p data-if="isMale(1)"><var>person( 1 )</var> quiere darle a su amiga una planta en maceta. Con el florista local, las flores vienen en <var>NUM_COLORS</var> colores y hay <var>NUM_POTS</var> tipos de macetas para flores.</p>
+<p data-else=""><var>person( 1 )</var> quiere darle a su amiga una planta en maceta. Con el florista local, las flores vienen en <var>NUM_COLORS</var> colores y hay <var>NUM_POTS</var> tipos de macetas para flores.</p>
+                <p class="question" data-if="isMale(1)">If he can choose any flower and any pot, how many different potted plants can <var>person( 1 )</var> buy?</p>
+<p class="question" data-else="">If she can choose any flower and any pot, how many different potted plants can <var>person( 1 )</var> buy?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+                <div class="hints">
+                    <p>Si <var>person( 1 )</var> se decidió por un color de flor, ¿cuántas combinaciones diferentes de plantas en maceta existen?</p>
+                    <p data-if="isMale(1)">Puede elegir una de <var>NUM_POTS</var> macetas para flores, y así hay <var>NUM_POTS</var> diferentes plantas en maceta posible (dado que ya eligió el color de la flor).</p>
+<p data-else="">Puede elegir una de <var>NUM_POTS</var> macetas para flores, y así hay <var>NUM_POTS</var> diferentes plantas en maceta posible (dado que ya eligió el color de la flor).</p>
+                    <p>Puesto que hay <var>NUM_COLORS</var> colores de flores, hay <code><var>NUM_COLORS</var> \times <var>NUM_POTS</var> = <var>ANSWER</var></code> plantas en maceta posibles.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

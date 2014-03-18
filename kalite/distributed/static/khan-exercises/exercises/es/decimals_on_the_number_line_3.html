@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Decimales en la recta numérica 3</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars">
+        <var id="LOWER_BOUND">-2</var>
+        <var id="UPPER_BOUND">2</var>
+
+        <var id="LOWER_VALUE">LOWER_BOUND</var>
+        <var id="UPPER_VALUE">UPPER_BOUND</var>
+
+        <var id="SOLUTION">roundTo(1, randRangeNonZero(-19, 19) / 10)</var>
+        <var id="SOLUTION_DECIMAL">roundTo(1, SOLUTION % 1)</var>
+        <var id="SOLUTION_WHOLE">parseInt( ( SOLUTION ).toString(), 10 )</var>
+
+        <var id="ORANGE_DOT">$._("punto anaranjado")</var>
+    </div>
+    <div class="problems">
+        <div>
+            <div class="question">
+                <p>Mueve el punto anaranjado a <code><var>SOLUTION</var></code> en la recta numérica.</p>
+                <div class="graphie" id="number-line">init({range:[[LOWER_BOUND-.3,UPPER_BOUND+.3],[-1,1]],scale:[108,40]}),style({arrows:"&gt;"}),line([0,0],[UPPER_BOUND+.25,0]),style({arrows:"-&gt;"}),line([0,0],[LOWER_BOUND-.25,0]),style({arrows:""});for(var x=LOWER_BOUND;UPPER_BOUND&gt;=x;x+=.5){var markLength=x%1===0?.2:.1;line([x,-markLength],[x,markLength])}style({stroke:BLUE,strokeWidth:3.5}),line([LOWER_BOUND,-.2],[LOWER_BOUND,.2]),label([LOWER_BOUND,-.53],LOWER_BOUND,"center",{color:BLUE}),line([UPPER_BOUND,-.2],[UPPER_BOUND,.2]),label([UPPER_BOUND,-.53],UPPER_BOUND,"center",{color:BLUE}),line([0,-.2],[0,.2]),label([0,-.53],"0","center",{color:BLUE}),addMouseLayer(),graph.movablePoint=addMovablePoint({constraints:{constrainY:!0},snapX:.1}),graph.movablePoint.onMove=function(e,r){return[min(max(LOWER_BOUND,e),UPPER_BOUND),r]}</div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <span class="instruction">Mueve el punto anaranjado para seleccionar tu respuesta.</span>
+                <div class="guess"> graph.movablePoint.coord[0] </div>
+                <div class="validator-function">return 0===guess?"":abs(SOLUTION-guess)&lt;.001</div>
+                <div class="show-guess">graph.movablePoint.setCoord([guess,0])</div>
+            </div>
+
+            <div class="hints">
+                <p data-if="SOLUTION &gt; 0">Como <code><var>SOLUTION</var></code> es positivo, el punto anaranjado estará a la derecha de <code>0</code>.</p>
+<p data-else="">Como <code><var>SOLUTION</var></code> es negativo, el punto anaranjado estará a la izquierda de <code>0</code>.</p>
+
+                <div data-if="abs(SOLUTION) &gt; 1">
+                    <p>Separa el decimal del número entero:</p>
+                    <p><code><var>SOLUTION</var> = \purple{<var>SOLUTION_WHOLE</var>} + \purple{<var>SOLUTION_DECIMAL</var>}</code></p>
+                </div>
+
+                <div>
+                    <p>Therefore, we know <code><var>SOLUTION</var></code> lies between
+                    <code>\green{<var>SOLUTION_WHOLE</var>}</code> and
+                    <code>\green{<var>SOLUTION_WHOLE + (SOLUTION &gt; 0 ? 1 : -1)</var>}</code> on the number line.</p>
+                    <div class="graphie" data-update="number-line">var x=SOLUTION&gt;0?SOLUTION_WHOLE:SOLUTION_WHOLE-1;rect(x,-.3,1,.6,{fill:GREEN,fillOpacity:.5,stroke:"none"})</div>
+                </div>
+
+                <div>
+                    <div class="graphie" data-update="number-line">style({stroke:BLUE,fill:"#6495ED",strokeWidth:3.5,arrows:"-&gt;"}),line([0,0],[SOLUTION,0]),graph.movablePoint.visibleShape.toFront()</div>
+                    <p>El punto anaranjado debe cambiarse a la posición <code><var>SOLUTION</var></code> a la derecha de <code>0</code>.</p>
+                </div>
+
+                <div>
+                    <div class="graphie" data-update="number-line">label([SOLUTION,.53],SOLUTION,"center",{color:PINK}),graph.movablePoint.moveTo(SOLUTION,0)</div>
+                    <p>El número resaltado muestra donde está <code>\pink{<var>SOLUTION</var>}</code> la recta numérica.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

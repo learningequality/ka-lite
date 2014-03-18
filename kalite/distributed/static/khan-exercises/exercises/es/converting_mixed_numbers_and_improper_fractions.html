@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers">
+<head>
+<title>Convirtiendo entre fracciones mixtas y fracciones impropias</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+        <div class="exercise">
+            <div class="vars" data-ensure="M_NUM &lt; M_DENOM">
+                <var id="WHOLE">randRange( 1, 10 )</var>
+
+                <var id="M_NUM">randRange( 1, 30 )</var>
+                <var id="M_DENOM">randRange( 1, 30 )</var>
+
+                <var id="M_REDUCED_NUM">M_NUM / getGCD( M_NUM, M_DENOM )</var>
+                <var id="M_REDUCED_DENOM">M_DENOM / getGCD( M_NUM, M_DENOM )</var>
+
+                <var id="I_NUM">WHOLE * M_REDUCED_DENOM + M_REDUCED_NUM</var>
+                <var id="I_DENOM">M_REDUCED_DENOM</var>
+            </div>
+
+            <div class="problems">
+                <div id="improper-to-mixed">
+                    <p class="question">Convierte <code><var>fraction( I_NUM, I_DENOM, false, true )</var></code> a un n&uacute;mero mixto.</p>
+
+                    <p class="solution" data-type="mixed"><var>I_NUM / I_DENOM</var></p>
+
+                    <div class="hints">
+                        <div>
+                            <p>En primer lugar divide el numerador por el denominador.</p>
+                            <p><code><var>I_NUM</var> \div <var>I_DENOM</var> = \color{#28AE7B}{<var>WHOLE</var>}\ \text{ R } \color{purple}{<var>M_REDUCED_NUM</var>}</code></p>
+                        </div>
+                        <div>
+                            <p>As&iacute; la fracci&oacute;n impropia tiene <code class="hint_green"><var>WHOLE</var></code> enteros en ella, lo que es igual a <code>\color{#28AE7B}{<var>WHOLE</var>} \times \dfrac{<var>I_DENOM</var>}{<var>I_DENOM</var>} = \color{#28AE7B}{<var>fraction( I_DENOM * WHOLE, I_DENOM, false, false )</var>}</code>.</p>
+                            <div class="graphie">init({range:[[0,1],[0,WHOLE]],scale:[250,25]});for(var y=0;WHOLE&gt;y;y++)rectchart([M_REDUCED_DENOM,0],["#28AE7B","#999"],y)</div>
+                            <p>El cociente <code class="hint_green"><var>WHOLE</var></code> es la parte entera de de la fracci&oacute;n mixta.</p>
+                        </div>
+                        <div>
+                            <p>Sin embargo tambi&eacute;n tenemos un recordatorio de <code class="hint_purple"><var>M_REDUCED_NUM</var></code>. Que representa la <code>\dfrac{\color{purple}{<var>M_REDUCED_NUM</var>}}{<var>I_DENOM</var>}</code> restante de la fracci&oacute;n impropia; y no es suficiente para ser otro n&uacute;mero entero.</p>
+                            <div class="graphie">init({range:[[0,1],[0,1]],scale:[250,25]}),rectchart([M_REDUCED_NUM,M_REDUCED_DENOM-M_REDUCED_NUM],["purple","#999"])</div>
+                        </div>
+                        <div>
+                            <p>La fracci&oacute;n mista es <code>\color{#28AE7B}{<var>WHOLE</var>}\ \color{purple}{<var>fraction( M_NUM, M_DENOM, false, true )</var>}.</code></p>
+                            <div class="graphie">init({range:[[0,1],[0,WHOLE+1]],scale:[250,25]});for(var y=1;WHOLE&gt;=y;y++)rectchart([M_REDUCED_DENOM,0],["#28AE7B","#999"],y);rectchart([M_REDUCED_NUM,M_REDUCED_DENOM-M_REDUCED_NUM],["purple","#999"])</div>
+                        </div>
+                        <p>Observa sue si sumamos las dos partes de nuestra fracci&oacute;n mixta, <code>\color{#28AE7B}{<var>fraction( I_DENOM * WHOLE, I_DENOM, false, false )</var>} + \color{purple}{<var>fraction( M_NUM, M_DENOM, false, true )</var>}</code>, obtenemos la funci&oacute;n impropia original <code><var>fraction( I_NUM, I_DENOM, false, true )</var></code>.</p>
+                    </div>
+                </div>
+
+                <div id="mixed-to-improper">
+                    <p class="question">Convierte <code><var>WHOLE</var>\ <var>fraction( M_NUM, M_DENOM, false, true )</var></code> a una fracci&oacute;n impropia.</p>
+
+                    <p class="solution" data-type="improper"><var>I_NUM / I_DENOM</var></p>
+
+                    <div class="hints">
+                        <p><code>\color{#FFA500}{<var>WHOLE</var>}\ \color{#6495ED}{<var>fraction( M_NUM, M_DENOM, false, true )</var>}</code></p>
+                        <p>Este n&uacute;mero mixto es equivalente a <code>\color{#FFA500}{<var>WHOLE</var>} + \color{#6495ED}{<var>fraction( M_NUM, M_DENOM, false, true )</var>}</code>.</p>
+                        <div>
+                            <p>En primer lugar convierte la <span class="hint_orange">parte entera</span> del n&uacute;mero mixto a una fracci&oacute;n con el mismo denominador <code><var>M_REDUCED_DENOM</var></code> que la <span class="hint_blue">parte fraccionaria</span>.</p>
+                            <p><code>\color{#FFA500}{<var>WHOLE</var>} \times \dfrac{<var>M_REDUCED_DENOM</var>}{<var>M_REDUCED_DENOM</var>} = \color{#FFA500}{\dfrac{<var>WHOLE * M_REDUCED_DENOM</var>}{<var>M_REDUCED_DENOM</var>}}</code></p>
+                            <div class="graphie">init({range:[[0,1],[0,WHOLE]],scale:[250,25]});for(var y=0;WHOLE&gt;y;y++)rectchart([M_REDUCED_DENOM,0],["#FFA500","#999"],y)</div>
+                        </div>
+                        <div>
+                            <p>Ahora tenemos nuestro n&uacute;mero en la forma <code>\color{#FFA500}{\dfrac{<var>WHOLE * M_REDUCED_DENOM</var>}{<var>M_REDUCED_DENOM</var>}} + \color{#6495ED}{<var>fraction( M_NUM, M_DENOM, false, true )</var>}</code>.</p>
+                            <div class="graphie">init({range:[[0,1],[0,WHOLE+1]],scale:[250,25]});for(var y=1;WHOLE&gt;=y;y++)rectchart([M_REDUCED_DENOM,0],["#FFA500","#999"],y);rectchart([M_REDUCED_NUM,M_REDUCED_DENOM-M_REDUCED_NUM],["#6495ED","#999"])</div>
+                            <p>Ahora, s&oacute;lo suma las dos fracciones y &iexcl;simplifica!</p>
+                        </div>
+                        <p><code>\color{#FFA500}{\dfrac{<var>WHOLE * M_REDUCED_DENOM</var>}{<var>M_REDUCED_DENOM</var>}} + \color{#6495ED}{<var>fraction( M_NUM, M_DENOM, false, true )</var>} = <var>fraction( I_NUM, I_DENOM, true, true )</var></code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>

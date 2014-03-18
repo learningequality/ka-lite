@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Résolution graphique d'une inéquation du 1er degré à 2 inconnues</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <var id="SLOPE_FRAC">reduce( randRangeNonZero( -5, 5 ), randRange( 1, 5 ) )</var>
+                <var id="YINT">randRangeNonZero( max( -10, -10 - SLOPE_FRAC[0] ), min( 10, 10 - SLOPE_FRAC[0] ) )</var>
+                <var id="SLOPE">SLOPE_FRAC[0] / SLOPE_FRAC[1]</var>
+                <var id="PRETTY_SLOPE">SLOPE === 1 ? "" : ( SLOPE === -1 ? "-" : fraction( SLOPE_FRAC[0], SLOPE_FRAC[1], true, true ) )</var>
+                <var id="MULT">randRangeNonZero( -3, 3 )</var>
+                <var id="A">SLOPE_FRAC[0] * -MULT</var>
+                <var id="B">SLOPE_FRAC[1] * MULT</var>
+                <var id="C">SLOPE_FRAC[1] * YINT * MULT</var>
+                <var id="STD_FORM">randFromArray([ true, false ])</var>
+                <var id="COMP">randFromArray([ "&lt;", "&gt;", "≤", "≥" ])</var>
+                <var id="STD_FORM_COMP">B &lt; 0 ? { "&lt;": "&gt;", "&gt;": "&lt;", "≤": "≥", "≥": "≤" }[ COMP ] : COMP</var>
+                <var id="LESS_THAN">COMP === "&lt;" || COMP === "≤"</var>
+                <var id="INCLUSIVE">COMP === "≥" || COMP === "≤"</var>
+                <div data-ensure="sqrt( pow( POINT_1[0] - POINT_2[0], 2 ) + pow( POINT_1[1] - POINT_2[1], 2 ) ) &gt; 4">
+                    <var id="POINT_1">[ randRangeExclude( -9, 9, [ -3, -2, -1, 0 ] ), randRangeExclude( -9, 9, [ -1, -2 ] ) ]</var>
+                    <var id="POINT_2">[ randRangeExclude( -9, 9, [ -3, -2, -1, 0 ] ), randRangeExclude( -9, 9, [ -1, -2 ] ) ]</var>
+                    <var id="POINT_1_SOLUTION">"&lt;"===COMP&amp;&amp;POINT_1[1]&lt;SLOPE*POINT_1[0]+YINT||"≤"===COMP&amp;&amp;POINT_1[1]&lt;=SLOPE*POINT_1[0]+YINT||"&gt;"===COMP&amp;&amp;POINT_1[1]&gt;SLOPE*POINT_1[0]+YINT||"≥"===COMP&amp;&amp;POINT_1[1]&gt;=SLOPE*POINT_1[0]+YINT</var>
+                    <var id="POINT_2_SOLUTION">"&lt;"===COMP&amp;&amp;POINT_2[1]&lt;SLOPE*POINT_2[0]+YINT||"≤"===COMP&amp;&amp;POINT_2[1]&lt;=SLOPE*POINT_2[0]+YINT||"&gt;"===COMP&amp;&amp;POINT_2[1]&gt;SLOPE*POINT_2[0]+YINT||"≥"===COMP&amp;&amp;POINT_2[1]&gt;=SLOPE*POINT_2[0]+YINT</var>
+                </div>
+            </div>
+
+            <p class="question">Résoudre graphiquement l'inéquation ci-dessous et déterminer si les couples <code>(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> et <code>(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> sont solutions :</p>
+
+            <div class="problem">
+                <p class="hint_blue" data-if="STD_FORM">
+                    <code><var>expr([ "+", [ "*", A, "x" ], [ "*", B, "y" ] ])</var> <var>STD_FORM_COMP</var> <var>C</var></code>
+                </p>
+                <p class="hint_blue" data-else="">
+                    <code>y <var>COMP</var> <var>PRETTY_SLOPE</var> x + <var>YINT</var></code>
+                </p>
+
+                <form>
+                    <input onclick="javascript:
+                        KhanUtil.currentGraph.graph.shadetop = !KhanUtil.currentGraph.graph.shadetop;
+                        KhanUtil.currentGraph.graph.update();
+                    " type="button" value="On grise l'autre partie"><label>
+                        <input checked name="dashradio" onclick="javascript:
+                            KhanUtil.currentGraph.graph.dasharray = '';
+                            KhanUtil.currentGraph.graph.update();
+                        " type="radio" value="solid">
+                        Solid line
+                    </label>
+                    <label>
+                        <input name="dashradio" onclick="javascript:
+                            KhanUtil.currentGraph.graph.dasharray = '- ';
+                            KhanUtil.currentGraph.graph.update();
+                        " type="radio" value="dashed">
+                        Dashed line
+                    </label>
+                </form>
+                <div class="graphie" id="grid">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),label([0,-11],"y","below"),label([11,0],"x","right"),addMouseLayer(),graph.pointA=addMovablePoint({coord:[-5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointB=addMovablePoint({coord:[5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.line1=bogusShape,graph.shading=bogusShape,graph.update=function(){if(graph.line1.remove(),graph.shading.remove(),abs(graph.pointB.coord[0]-graph.pointA.coord[0])&gt;.001){var o=(graph.pointB.coord[1]-graph.pointA.coord[1])/(graph.pointB.coord[0]-graph.pointA.coord[0]),a=o*(0-graph.pointA.coord[0])+graph.pointA.coord[1],r=(graph.pointA.coord[0]&lt;graph.pointB.coord[0]?graph.shadetop:!graph.shadetop)?11:-11;style({stroke:BLUE,strokeWidth:2,strokeDasharray:graph.dasharray},function(){graph.line1=line([-11,-11*o+a],[11,11*o+a]).toBack()}),style({fill:BLUE,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.shading=path([[11,r],[11,11*o+a],[-11,-11*o+a],[-11,r]])})}else{var p=graph.pointA.coord[0],r=(graph.pointB.coord[1]&lt;graph.pointA.coord[1]?graph.shadetop:!graph.shadetop)?11:-11;style({stroke:BLUE,strokeWidth:2,strokeDasharray:graph.dasharray},function(){graph.line1=line([p,-11],[p,11]).toBack()}),style({fill:BLUE,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.shading=path([[p,-11],[p,11],[r,11],[r,-11]])})}},graph.pointA.onMove=function(o,a){return o!=graph.pointB.coord[0]||a!=graph.pointB.coord[1]?(graph.pointA.setCoord([o,a]),graph.update(),!0):!1},graph.pointB.onMove=function(o,a){return o!=graph.pointA.coord[0]||a!=graph.pointA.coord[1]?(graph.pointB.setCoord([o,a]),graph.update(),!0):!1},graph.dasharray="",graph.shadetop=!0,graph.update(),graph.pointA.toFront(),graph.pointB.toFront()</div>
+
+            </div>
+            <div class="solution" data-type="multiple">
+                <div class="sol" data-type="custom">
+                    <div class="instruction">Déplacer les deux points avec votre souris pour placer la droite dans la position correcte.</div>
+                    <div class="guess">[graph.pointA.coord,graph.pointB.coord,graph.pointA.coord[0]&gt;graph.pointB.coord[0]?graph.shadetop:!graph.shadetop,"- "===graph.dasharray?!1:!0]</div>
+                    <div class="validator-function">if(_.isEqual(guess,[[-5,5],[5,5],!1,!0]))return"";var a=(guess[1][1]-guess[0][1])/(guess[1][0]-guess[0][0]),r=a*(0-guess[0][0])+guess[0][1];return abs(SLOPE-a)&lt;.001&amp;&amp;abs(YINT-r)&lt;.001&amp;&amp;guess[2]===LESS_THAN&amp;&amp;guess[3]===INCLUSIVE</div>
+                    <div class="show-guess">graph.pointA.setCoord(guess[0]),graph.pointB.setCoord(guess[1]),graph.shadetop=graph.pointA.coord[0]&gt;graph.pointB.coord[0]?guess[2]:!guess[2],guess[3]?(graph.dasharray="",$("input[name=dashradio][value=solid]").attr("checked",!0)):(graph.dasharray="- ",$("input[name=dashradio][value=dashed]").attr("checked",!0)),graph.update()</div>
+                </div>
+                <div><label><span class="sol" data-type="checkbox"><var>POINT_1_SOLUTION</var></span><code>(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> est solution</label></div>
+                <div><label><span class="sol" data-type="checkbox"><var>POINT_2_SOLUTION</var></span><code>(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> est solution</label></div>
+                <div class="example">Résoudre graphiquement l'inéquation</div>
+                <div class="example">Assurez-vous que le bon côté est grisé</div>
+                <div class="example">Assurez-vous que la droite est bien pleine ou en pointillés</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div data-if="STD_FORM" data-unwrap="">
+            <p>
+                Convert <code><var>expr([ "+", [ "*", A, "x" ], [ "*", B, "y" ] ])</var> <var>STD_FORM_COMP</var> <var>C</var></code>
+                to slope-intercept form by solving for <code>y</code>.
+            </p>
+            <div>
+                <p data-if="A &lt; 0">On additionne <code><var>abs( A )</var>x</code> dans les deux membres :</p>
+<p data-else="">On soustrait <code><var>abs( A )</var>x</code> dans les deux membres :</p>
+<p>
+                    <code>\qquad <var>expr( [ "*", B, "y" ] )</var> <var>STD_FORM_COMP</var> <var>expr([ "+", [ "*", -A, "x" ], C ])</var></code>
+                </p>
+            </div>
+            <div data-if="B !== 1">
+                <p>On divise les deux membres par <code><var>B</var></code><span data-if="B &lt; 0">. Puisque vous divisez par un nombre négatif, <strong>n'oubliez pas</strong> de changer le sens de l'inégalité</span>:</p>
+<p>
+                    <code>\qquad y <var>COMP</var> <var>expr([ "+", "\\dfrac{" + expr([ "*", -A, "x" ]) + "}{" + B + "}", "\\dfrac{" + C + "}{" + B + "}" ])</var></code>
+                </p>
+            </div>
+        </div>
+        <div>
+            <p>
+                <code>\qquad y <var>COMP</var> \color{purple}{<var>PRETTY_SLOPE</var>} x \color{<var>GREEN</var>}{+ <var>YINT</var>}</code>
+            </p>
+<p>L'ordonnée à l'origine est <code class="hint_green"><var>YINT</var></code> et le coeffcient directeur est égal à <code class="hint_purple"><var>decimalFraction( SLOPE, true, true )</var></code>. Comme l'ordonnée à l'origine est <code class="hint_green"><var>YINT</var></code>, la droite passe par le point <code class="hint_green">(0, <var>YINT</var>)</code>.</p>
+            <div class="graphie" data-update="grid">style({stroke:GREEN,fill:GREEN},function(){graph.yint=circle([0,YINT],.2).toBack()})</div>
+        </div>
+        <div>
+            <p>
+                <span>Le coefficient directeur est <code class="hint_purple"><var>decimalFraction( SLOPE, true, true )</var></code>. Souvenez vous que le coefficient  directeur vous donne le décalage vertical sur le décalage horizontal.</span>
+                <span data-if="abs( SLOPE_FRAC[0] ) !== 1">À chaque fois, il faut se déplacer de <code><var>abs( SLOPE_FRAC[0] )</var></code> <span data-if="SLOPE_FRAC[0] &lt; 0"><em> unités vers le bas</em> (puisque le coefficient directeur est négatif)</span><span data-else=""> unités vers le haut</span>.</span><span data-else="">A chaque fois, il faut se déplacer de <code><var>abs( SLOPE_FRAC[0] )</var></code> <span data-if="SLOPE_FRAC[0] &lt; 0"><em> unités vers le bas</em> (puisque le coefficient directeur est négatif)</span><span data-else=""> unités vers le haut</span>.</span>
+                <span data-if="abs( SLOPE_FRAC[1] ) !== 1">A chaque fois, on doit aussi se déplacer de <code><var>SLOPE_FRAC[1]</var></code> unités vers la droite.</span><span data-else="">A chaque fois, on doit aussi se déplacer de <code><var>SLOPE_FRAC[1]</var></code> unités vers la droite.</span>
+                <span>Donc la droite doit aussi passer par <code class="hint_purple">(<var>SLOPE_FRAC[1]</var>, <var>YINT + SLOPE_FRAC[0]</var>)</code>.</span>
+            </p>
+            <div class="graphie" data-update="grid">style({stroke:"purple",strokeWidth:2,arrows:"-&gt;"},function(){path([[0,YINT],[0,YINT+SLOPE_FRAC[0]]]).toBack(),path([[0,YINT+SLOPE_FRAC[0]],[SLOPE_FRAC[1],YINT+SLOPE_FRAC[0]]]).toBack()}),label([0,YINT+SLOPE_FRAC[0]/2],abs(SLOPE_FRAC[0])+" \\text{ "+(SLOPE_FRAC[0]&lt;0?$._("vers le bas"):$._("vers le haut"))+"} \\quad","left",{color:"purple"}),label([0,YINT+SLOPE_FRAC[0]],SLOPE_FRAC[1]+" \\text{ "+$._("droite")+"}",SLOPE_FRAC[0]&lt;0?"below right":"above right",{color:"purple"}),graph.yint.toBack()</div>
+        </div>
+        <p data-if="LESS_THAN">
+            Since our inequality has a less-than<span data-if="INCLUSIVE"> or equal to</span> sign, that means that any point
+            <strong>below</strong> the line is a solution to the inequality, so the area below
+            the line should be shaded.
+        </p>
+<p data-else="">
+            Since our inequality has a greater-than<span data-if="INCLUSIVE"> or equal to</span> sign, that means that any point
+            <strong>above</strong> the line is a solution to the inequality, so the area above
+            the line should be shaded.
+        </p>
+        <div>
+            <p data-if="INCLUSIVE"><span data-if="LESS_THAN" data-unwrap="">Le symbole est "inférieur ou <strong>égal à</strong>", donc les points de la droite sont solutions. La droite doit être pleine.</span><span data-else="" data-unwrap="">Le symbole est "supérieur ou <strong>égal à</strong>", donc les points de la droite sont également solutions. La droite doit être pleine.</span></p>
+            <p data-else=""><span data-if="LESS_THAN" data-unwrap="">Le symbole est "strictement inférieur à" (et non inférieur ou égal à), donc les points de la droite ne sont <strong>pas</strong> solutions. La droite doit donc être en pointillés.</span><span data-else="" data-unwrap="">Le symbole est "strictement supérieur à" (et non supérieur ou égal à), donc les points de la droite ne sont <strong>pas</strong> solutions. La droite doit donc être en pointillés.</span></p>
+        </div>
+        <div>
+            <p>Placer les points de coordonnées : <code class="hint_pink">(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> and <code class="hint_pink">(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> pour déterminer lesquels sont solutions.</p>
+            <div class="graphie" data-update="grid">style({stroke:PINK,fill:PINK},function(){circle([POINT_1[0],POINT_1[1]],.2).toBack(),circle([POINT_2[0],POINT_2[1]],.2).toBack()})</div>
+        </div>
+        <div>
+            <p data-if="POINT_1_SOLUTION &amp;&amp; !POINT_2_SOLUTION">Le couple <code class="hint_pink">(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> est solution car le point est dans la partie grisée mais le couple <code class="hint_pink">(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> n'est pas solution.</p>
+            <p data-else-if="POINT_2_SOLUTION &amp;&amp; !POINT_1_SOLUTION">Le point <code class="hint_pink">(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> n'est pas dans la partie grisée donc ce couple n'est pas solution mais le couple <code class="hint_pink">(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> est solution.</p>
+            <p data-else-if="POINT_1_SOLUTION &amp;&amp; POINT_2_SOLUTION"><code class="hint_pink">(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> et <code class="hint_pink">(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> sont tous deux solutions car les deux points sont dans la partie grisée.</p>
+            <p data-else="">Ni <code class="hint_pink">(<var>POINT_1[0]</var>, <var>POINT_1[1]</var>)</code> ni <code class="hint_pink">(<var>POINT_2[0]</var>, <var>POINT_2[1]</var>)</code> ne sont solutions car les points ne sont pas dans la partie grisée.</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
