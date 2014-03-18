@@ -157,7 +157,7 @@ def move_video_sizes_file(lang_code):
 def move_exercises(lang_code):
     lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
     src_exercise_dir = os.path.join(lang_pack_location, "exercises")
-    dest_exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=False)
+    dest_exercise_dir = get_localized_exercise_dirpath(lang_code)
 
     if not os.path.exists(src_exercise_dir):
         logging.warn("Could not find downloaded exercises; skipping: %s" % src_exercise_dir)
