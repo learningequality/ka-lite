@@ -1,7 +1,9 @@
 """
 """
+import youtube_dl
 from functools import partial
 from optparse import make_option
+from youtube_dl.utils import DownloadError
 
 from django.conf import settings
 from django.utils.translation import ugettext as _
@@ -13,11 +15,39 @@ from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
-from i18n.management.commands.scrape_videos import scrape_video, DownloadError
 from kalite.settings import LOG as logging
 from main.topic_tools import get_video_by_youtube_id
 from updates import download_video, DownloadCancelled, URLNotFound
 from updates.models import VideoFile
+
+
+def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
+    """
+    Assumes it's in the path; if not, we try to download & install.
+
+    Callback will be called back with a dictionary as the first arg with a bunch of
+    youtube-dl info in it, as specified in the youtube-dl docs.
+    """
+    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
+    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
+    if os.path.exists(video_file_download_path) and not force:
+        return
+
+    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
+    yt_dl.add_default_info_extractors()
+    if callback:
+        yt_dl.add_progress_hook(callback)
+    yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
+
+"""
+def scrape_thumbnail(youtube_id, format="png", force=False):
+    _, thumbnail_url = get_outside_video_urls(youtube_id)
+    try:
+        resp = requests.get(thumbnail_url)
+        with open(
+    except Exception as e:
+        logging.error("Failed to download %s: %s" % (thumbnail_url, e))
+"""
 
 
 class Command(UpdatesDynamicCommand, CronCommand):

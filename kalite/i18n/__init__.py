@@ -1,8 +1,7 @@
 """
+i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
-import bisect
-import glob
 import json
 import os
 import re
@@ -29,51 +28,19 @@ from version import VERSION
 
 CACHE_VARS = []
 
-
-if settings.CENTRAL_SERVER:
-    AMARA_HEADERS = {
-        "X-api-username": settings.AMARA_USERNAME,
-        "X-apikey": settings.AMARA_API_KEY,
-    }
-
-SUBTITLES_DATA_ROOT = os.path.join(settings.DATA_PATH, "subtitles")
-LANGUAGE_PACK_ROOT = os.path.join(settings.MEDIA_ROOT, "language_packs")
-
-LANGUAGE_SRT_SUFFIX = "_download_status.json"
-SRTS_JSON_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "srts_remote_availability.json")
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "dubbed_video_mappings.json")
-SUBTITLE_COUNTS_FILEPATH = os.path.join(SUBTITLES_DATA_ROOT, "subtitle_counts.json")
 SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "supported_languages.json")
 CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
-LANGUAGE_PACK_BUILD_DIR = os.path.join(settings.DATA_PATH, "i18n", "build")
-
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
-def get_lang_map_filepath(lang_code):
-    return os.path.join(SUBTITLES_DATA_ROOT, "languages", lang_code + LANGUAGE_SRT_SUFFIX)
+class LanguageNotFoundError(Exception):
+    pass
 
-def get_language_pack_availability_filepath(version=VERSION):
-    return os.path.join(LANGUAGE_PACK_ROOT, version, "language_pack_availability.json")
 
-def get_localized_exercise_dirpath(lang_code, is_central_server=settings.CENTRAL_SERVER):
+def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
+    return os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", ka_lang_code)
 
-    if is_central_server:
-        return os.path.join(get_lp_build_dir(ka_lang_code), "exercises")
-    else:
-        return os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", ka_lang_code)
-
-def get_lp_build_dir(lang_code=None, version=None):
-    global LANGUAGE_PACK_BUILD_DIR
-    build_dir = LANGUAGE_PACK_BUILD_DIR
-    if lang_code:
-        build_dir = os.path.join(build_dir, lang_code)
-    if version:
-        if not lang_code:
-            raise Exception("Must specify lang_code with version")
-        build_dir = os.path.join(build_dir, version)
-
-    return build_dir
 
 def get_locale_path(lang_code=None):
     """returns the location of the given language code, or the default locale root
@@ -84,30 +51,6 @@ def get_locale_path(lang_code=None):
         return LOCALE_ROOT
     else:
         return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
-
-def get_language_pack_metadata_filepath(lang_code, version=VERSION, is_central_server=settings.CENTRAL_SERVER):
-    lang_code = lcode_to_django(lang_code)
-    metadata_filename = "%s_metadata.json" % lang_code
-    if is_central_server:
-        return os.path.join(get_lp_build_dir(lang_code, version=version), metadata_filename)
-    else:
-        return os.path.join(get_locale_path(lang_code), metadata_filename)
-
-def get_language_pack_filepath(lang_code, version=VERSION):
-    return os.path.join(LANGUAGE_PACK_ROOT, version, "%s.zip" % lcode_to_ietf(lang_code))
-
-def get_language_pack_url(lang_code, version=VERSION):
-    url = "http://%s/%s" % (
-        settings.CENTRAL_SERVER_HOST,
-        get_language_pack_filepath(lang_code, version=version)[len(settings.PROJECT_PATH):],
-    )
-    return url
-
-def get_django_lc_message_file(lang_code, file_name="django.mo", locale_root=LOCALE_ROOT):
-    return os.path.join(locale_root, lcode_to_django_dir(lang_code), "LC_MESSAGES", file_name)
-
-class LanguageNotFoundError(Exception):
-    pass
 
 
 SUPPORTED_LANGUAGE_MAP = None
@@ -129,8 +72,6 @@ def get_supported_language_map(lang_code=None):
 def lang_best_name(l):
     return l.get('native_name') or l.get('ka_name') or l.get('name')
 
-def get_supported_languages():
-    return get_supported_language_map().keys()
 
 DUBBED_VIDEO_MAP_RAW = None
 CACHE_VARS.append("DUBBED_VIDEO_MAP_RAW")
@@ -146,17 +87,11 @@ def get_dubbed_video_map(lang_code=None, force=False):
         try:
             if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
                 try:
-                    if settings.CENTRAL_SERVER:
-                        # Never call commands that could fail from the distributed server.
-                        #   Always create a central server API to abstract things (see below)
-                        logging.debug("Generating dubbed video mappings.")
-                        call_command("generate_dubbed_video_mappings", force=force)
-                    else:
-                        # Generate from the spreadsheet
-                        response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
-                        response.raise_for_status()
-                        with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
-                            fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
+                    # Generate from the spreadsheet
+                    response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
+                    response.raise_for_status()
+                    with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
+                        fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
                 except Exception as e:
                     if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
                         # Unrecoverable error, so raise
@@ -180,6 +115,25 @@ def get_dubbed_video_map(lang_code=None, force=False):
 
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
+
+LANG2CODE_MAP = None
+CACHE_VARS.append("LANG2CODE_MAP")
+def get_langcode_map(lang_name=None, force=False):
+    """
+    """
+    global LANG2CODE_MAP
+
+    if force or not LANG2CODE_MAP:
+        LANG2CODE_MAP = {}
+
+        for code, entries in get_code2lang_map(force=force).iteritems():
+            for lang in entries.values():
+                if lang:
+                    LANG2CODE_MAP[lang.lower()] = lcode_to_ietf(code)
+
+    return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
+
+
 YT2ID_MAP = None
 CACHE_VARS.append("YT2ID_MAP")
 def get_file2id_map(force=False):
@@ -192,6 +146,7 @@ def get_file2id_map(force=False):
                     logging.debug("conflicting entry of dubbed_youtube_id %s in %s dubbed video map" % (dubbed_youtube_id, lang_code))
                 YT2ID_MAP[dubbed_youtube_id] = english_youtube_id  # assumes video id is the english youtube_id
     return YT2ID_MAP
+
 
 ID2OKLANG_MAP = None
 CACHE_VARS.append("ID2OKLANG_MAP")
@@ -210,16 +165,20 @@ def get_id2oklang_map(video_id, force=False):
     else:
         return ID2OKLANG_MAP
 
+
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
+    """Accepts lang_code in ietf format"""
     if not lang_code:  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lang_code).get(video_id)
+    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
+
 
 def get_video_id(youtube_id):
     """
     Youtube ID is assumed to be the non-english
     """
     return get_file2id_map().get(youtube_id, youtube_id)
+
 
 YT2LANG_MAP = None
 CACHE_VARS.append("YT2LANG_MAP")
@@ -239,18 +198,15 @@ def get_file2lang_map(force=False):
                 YT2LANG_MAP[dubbed_youtube_id] = lang_code
     return YT2LANG_MAP
 
+
 def get_video_language(youtube_id, force=False):
     lang_code = get_file2lang_map(force=force).get(youtube_id)
     logging.debug("%s mapped to language %s" % (youtube_id, lang_code))
     return lang_code or "en"  # default to "en"
 
+
 def get_srt_url(youtube_id, code):
     return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
-
-def get_localized_exercise_count(lang_code, is_central_server=settings.CENTRAL_SERVER):
-    exercise_dir = get_localized_exercise_dirpath(lang_code, is_central_server=is_central_server)
-    all_exercises = glob.glob(os.path.join(exercise_dir, "*.html"))
-    return len(all_exercises)
 
 
 def get_srt_path(lang_code=None, youtube_id=None):
@@ -270,15 +226,11 @@ def get_srt_path(lang_code=None, youtube_id=None):
 
     return srt_path
 
-def get_subtitle_count(lang_code):
-    all_srts = glob.glob(os.path.join(get_srt_path(lang_code=lang_code), "*.srt"))
-    return len(all_srts)
 
 CODE2LANG_MAP = None
 CACHE_VARS.append("CODE2LANG_MAP")
 def get_code2lang_map(lang_code=None, force=False):
-    """
-    """
+    """Given a language code, returns metadata about that language."""
     global CODE2LANG_MAP
 
     if force or not CODE2LANG_MAP:
@@ -290,22 +242,6 @@ def get_code2lang_map(lang_code=None, force=False):
 
     return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
 
-LANG2CODE_MAP = None
-CACHE_VARS.append("LANG2CODE_MAP")
-def get_langcode_map(lang_name=None, force=False):
-    """
-    """
-    global LANG2CODE_MAP
-
-    if force or not LANG2CODE_MAP:
-        LANG2CODE_MAP = {}
-
-        for code, entries in get_code2lang_map(force=force).iteritems():
-            for lang in entries.values():
-                if lang:
-                    LANG2CODE_MAP[lang.lower()] = lcode_to_ietf(code)
-
-    return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 def get_language_name(lang_code, native=False, error_on_missing=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
@@ -328,20 +264,6 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
             return language_entry["name"]
         else:
             return language_entry["native_name"]
-
-
-def get_language_code(language, for_django=False):
-    """
-    Return ISO 639-1 language code full English or native language name from ;
-    raise exception if it isn't hardcoded yet
-    """
-    lang_code = get_langcode_map().get(language.lower())
-    if not lang_code:
-       raise LanguageNotFoundError("We don't have language '%s' saved in our lookup dictionary (location: %s). Please manually add it before re-running this command." % (language, settings.LANG_LOOKUP_FILEPATH))
-    elif for_django:
-        return lcode_to_django_dir(lang_code)
-    else:
-        return lang_code
 
 
 def lcode_to_django_lang(lang_code):
@@ -375,18 +297,6 @@ def convert_language_code_format(lang_code, for_django=True):
 
     return lang_code
 
-LANG_NAMES_MAP = None
-CACHE_VARS.append("LANG_NAMES_MAP")
-def get_language_names(lang_code=None):
-    """
-    Returns dictionary of names (English name, "Native" name)
-    for a given language code.
-    """
-    global LANG_NAMES_MAP
-    lang_code = lcode_to_ietf(lang_code)
-    if not LANG_NAMES_MAP:
-        LANG_NAMES_MAP = softload_json(settings.LANG_LOOKUP_FILEPATH)
-    return LANG_NAMES_MAP.get(lang_code) if lang_code else LANG_NAMES_MAP
 
 INSTALLED_LANGUAGES_CACHE = None
 CACHE_VARS.append("INSTALLED_LANGUAGES_CACHE")
@@ -439,12 +349,6 @@ def _get_installed_language_packs():
     sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
 
-def get_langs_with_subtitles():
-    subtitles_path = get_srt_path()
-    if os.path.exists(subtitles_path):
-        return os.listdir(subtitles_path)
-    else:
-        return []
 
 def get_langs_with_subtitle(youtube_id):
     """
@@ -514,38 +418,3 @@ def select_best_available_language(target_code, available_codes=None):
     if actual_code != target_code:
         logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
     return actual_code
-
-def scrub_locale_paths():
-    for locale_root in settings.LOCALE_PATHS:
-        if not os.path.exists(locale_root):
-            continue
-        for lang in os.listdir(locale_root):
-            # Skips if not a directory
-            if not os.path.isdir(os.path.join(locale_root, lang)):
-                continue
-            # If it isn't crowdin/django format, keeeeeeellllllll
-            if lang != lcode_to_django_dir(lang):
-                logging.info("Deleting %s directory because it does not fit our language code format standards" % lang)
-                shutil.rmtree(os.path.join(locale_root, lang))
-
-def move_old_subtitles():
-    locale_root = settings.LOCALE_PATHS[0]
-    srt_root = os.path.join(settings.STATIC_ROOT, "srt")
-    if os.path.exists(srt_root):
-        logging.info("Outdated schema detected for storing srt files. Hang tight, the moving crew is on it.")
-        for lang in os.listdir(srt_root):
-            # Skips if not a directory
-            if not os.path.isdir(os.path.join(srt_root, lang)):
-                continue
-            lang_srt_path = os.path.join(srt_root, lang, "subtitles/")
-            lang_locale_path = os.path.join(locale_root, lang)
-            ensure_dir(lang_locale_path)
-            dst = os.path.join(lang_locale_path, "subtitles")
-
-            for srt_file_path in glob.glob(os.path.join(lang_srt_path, "*.srt")):
-                base_path, srt_filename = os.path.split(srt_file_path)
-                if not os.path.exists(os.path.join(dst, srt_filename)):
-                    ensure_dir(dst)
-                    shutil.move(srt_file_path, os.path.join(dst, srt_filename))
-        shutil.rmtree(srt_root)
-        logging.info("Move completed.")

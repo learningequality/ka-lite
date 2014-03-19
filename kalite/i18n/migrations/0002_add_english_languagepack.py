@@ -5,13 +5,12 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 from version import VERSION
-from i18n.models import LanguagePack
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        LanguagePack.objects.get_or_create(
+        orm["i18n.LanguagePack"].objects.get_or_create(
             code='en',
             defaults={
                 'software_version': VERSION,
@@ -39,3 +38,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['i18n']
+    symmetrical = True
