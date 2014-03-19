@@ -7,10 +7,9 @@ from django.core.management import call_command
 from django.db import DatabaseError
 from django.utils import unittest
 
-from testing import distributed_server_test, KALiteTestCase
+from testing import KALiteTestCase
 
 
-@distributed_server_test
 class FixtureTestCases(KALiteTestCase):
     """ """
 
