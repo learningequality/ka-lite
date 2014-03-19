@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html data-require="math graphie expressions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Couples solutions d'équations du premier degré à deux variables</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="M">randRangeNonZero( -3, 3 )</var>
+            <var id="B">randRangeNonZero( -2, 2)</var>
+            <var id="CORRECT">randRange( 0, 4 )</var>
+            <var id="POINTS">function(){for(var e=[],r=-2,a=0;2&gt;=r;r++,a++){var t=r*M+B,i=randRangeNonZero(-2,2);a===CORRECT&amp;&amp;(i=0),e.push([r,t+i])}return e}()</var>
+
+            <var id="PAIR">function(e){return"("+e.join(", ")+")"}</var>
+        </div>
+
+        <div class="problems">
+            <div id="equation">
+                <p class="question">Lequel parmi ces couples représente une solution de l'équation suivante ?</p>
+                <p><code><var>$.map( POINTS, PAIR ).join( "\\qquad" )</var></code></p>
+                <p><code>y = <var>expr(["+", ["*", M, "x"], B])</var></code></p>
+                <p class="solution"><code><var>PAIR( POINTS[CORRECT] )</var></code></p>
+                <ul class="choices" data-category="true">
+<li data-each="POINTS as i, point"><code><var>PAIR( point )</var></code></li>
+                </ul>
+<div class="hints">
+                    <p>On peut essayer de remplacer x dans l'équation par sa valeur donnée par les couples.</p>
+                    <p>Si on reporte l'abcisse du couple dans l'équation et qu'on retrouve son ordonnée, alors ce couple est une solution!</p>
+                    <div data-each="POINTS as i, point" data-unwrap="">
+                        <div>
+                            <p>On considère <code><var>PAIR( point )</var></code>.</p>
+                            <p>Si on remplace <code>x</code> par <code><var>point[ 0 ]</var></code>, obtient-on <code><var>point[ 1 ]</var></code> ?</p>
+                        </div>
+                        <p><code>y = <span data-if="M !== 1">(<var>M</var>)</span>(<var>point[ 0 ]</var>) + <var>B</var> = <span data-if="M !== 1"><var>M * point[ 0 ]</var> + <var>B</var> = </span><var>M * point[ 0 ] + B</var></code></p>
+                    </div>
+                    <p>Donc le seul couple qui est solution de l'équation c'est <code><var>PAIR( POINTS[ CORRECT ] )</var></code>.</p>
+                    <div>
+                        <p>On retrouve la même réponse en traçant les points et l'équation.</p>
+                        <div class="graphie" id="grid">graphInit({range:10,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:2}),style({stroke:BLUE,fill:BLUE}),plot(function(e){return e*M+B},[-10,10]),$.each(POINTS,function(e,r){e===CORRECT?style({stroke:ORANGE,fill:ORANGE},function(){circle(r,.3)}):circle(r,.2)})</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="graphed">
+                <p class="question">Lequel parmi ces couples représente une solution de l'équation représentée ci-dessous ?</p>
+                <p><code><var>$.map( POINTS, PAIR ).join( "\\qquad" )</var></code></p>
+
+                <div class="graphie" id="grid">graphInit({range:10,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:2}),style({stroke:BLUE,fill:BLUE}),plot(function(e){return e*M+B},[-10,10])</div>
+                <p class="solution"><code><var>PAIR( POINTS[CORRECT] )</var></code></p>
+                <ul class="choices" data-category="true">
+<li data-each="POINTS as i, point"><code><var>PAIR( point )</var></code></li>
+                </ul>
+<div class="hints">
+                    <p>On essaie de représenter chacun des points.</p>
+                    <div class="graphie" data-each="POINTS as i, point" data-update="grid">circle(point,.2)</div>
+                    <div>
+                        <p>Le seul point qui appartient à la courbe est <code><var>PAIR( POINTS[ CORRECT ] )</var></code>.</p>
+                        <div class="graphie" data-update="grid">style({stroke:ORANGE,fill:ORANGE}),circle(POINTS[CORRECT],.3)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Ordonner des nombres négatifs</title>
+<script src="../khan-exercise.js"></script><style type="text/css">
+        .number-list {
+            font-size: 1.7em;
+            text-align: center
+        }
+        .sort-key {
+            visibility: hidden;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <div data-ensure="NUMS_SORT[0] &lt; 0 &amp;&amp; !_.isEqual(NUMS, NUMS_SORT)">
+                <var id="NUMS">randRangeUnique(-100, 100, randRange(4, 6))</var>
+                <var id="NUMS_SORT">(NUMS.slice()).sort(function(a, b) { return a - b; })</var>
+            </div>
+            <var id="COLORS">KhanUtil.shuffle(["blue", "green", "red", "purple", "orange", "brown", "gray", "teal", "olive"])</var>
+            <var id="NUM_COLORS">function(){for(var e={},r=0;r&lt;NUMS.length;r++)e[NUMS[r]]=COLORS[r];return e}()</var>
+            <var id="NUMS_COLOR">$.map(NUMS,function(e){return"\\color{"+NUM_COLORS[e]+"}{"+e+"}"}).join(",")</var>
+            <var id="NUMS_SORT_COLOR">$.map(NUMS_SORT,function(e){return"\\color{"+NUM_COLORS[e]+"}{"+e+"}"}).join(",")</var>
+            <var id="SORTER">createSorter()</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p>Classer les entiers suivants dans l'ordre croissant:</p>
+                    <ul id="sortable">
+<li data-each="NUMS as NUM">
+                            <span class="sort-key"><var>NUM</var></span>
+                            <code><var>NUM</var></code>
+                        </li>
+                    </ul>
+<p><var>SORTER.init("sortable")</var></p>
+                </div>
+
+                <div class="solution" data-type="custom">
+                    <div class="instruction">Déplacer les nombres vers la gauche ou vers la droite afin de les trier du plus petit au plus grand</div>
+                    <div class="guess">SORTER.getContent()</div>
+                    <div class="validator-function">return SORTER.hasAttempted?guess.join(",")===NUMS_SORT.join(","):""</div>
+                    <div class="show-guess">SORTER.setContent(guess)</div>
+                </div>
+
+                <div class="hints">
+                    <div>
+                        <p>Utilisons des couleurs différentes pour chaque nombre.</p>
+                        <p class="number-list"><code><var>NUMS_COLOR</var></code></p>
+                    </div>
+                    <p>Placer ces nombres sur une droite graduée. Nous pourrons alors voir quels sont les plus petits et quels sont les plus grands.</p>
+                    <div class="graphie" id="number-line">init({range:[[-1,201],[-1,1]],scale:[2.2,40]}),style({stroke:"#666"},function(){graph.nl=numberLine(-100,100,25)})</div>
+                    <div class="graphie" data-update="number-line">_.each(graph.nl.labels.slice(1,-1),function(e){e.remove()});var position="above";$.each(NUMS_SORT,function(e,r){ellipse([100+r,0],[1.88,.1],{"stroke-width":0,fill:NUM_COLORS[r]}),label([100+r,0],"\\color{"+NUM_COLORS[r]+"}{"+r+"}",position,{labelDistance:5}),position="above"===position?"below":"above"})</div>
+                    <div>
+                        <p>Maintenant, lisez simplement les nombres de gauche a droite sur la droite graduée.</p>
+                        <p>Les nombres les plus à gauche sont les plus petits, et les nombres les plus à droite sont les plus grands.</p>
+                    </div>
+                    <p class="number-list"><code><var>NUMS_SORT_COLOR</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Multiplication et division en notation scientifique</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="DENOMINATOR">randRange( 1,  9 ) * Math.pow( 10, randRange( -5, 5 ) )</var>
+            <var id="QUOTIENT">randRange( 1, 99 ) * Math.pow( 10, randRange( -5, 5 ) )</var>
+            <var id="NUMERATOR">DENOMINATOR * QUOTIENT</var>
+        </div>
+
+        <div class="problems">
+            <div id="divide">
+                <p class="question">Exprimer ce quotient en notation scientifique : <code>\Large{\frac{<var>scientific( 3, NUMERATOR )</var>} {<var>scientific( 1, DENOMINATOR )</var>}}</code></p>
+
+                <div class="solution" data-type="multiple">
+                    <span class="sol short30 base" data-forms="integer, decimal"><var>scientificMantissa( 2, QUOTIENT )</var></span>
+                    <code> \times 10 </code>
+                    <sup class="sol short30 exp" data-forms="integer, decimal" style="width: 20px;"><var>scientificExponent( QUOTIENT )</var></sup>
+</div>
+
+                <div class="hints">
+                    <p>Commencer par regrouper les termes semblables.</p>
+                    <p>
+                        <code>= \Large{\frac{<var>localeToFixed(scientificMantissa(3, NUMERATOR), 3)</var>}
+                        {<var>localeToFixed(scientificMantissa(1, DENOMINATOR), 1)</var>}}
+                        \times\Large{\frac{10^{<var>scientificExponent(NUMERATOR)</var>}}
+                        {10^{<var>scientificExponent(DENOMINATOR)</var>}}}</code>
+                    </p>
+                    <p>Ensuite, diviser chaque membre séparément. Pour diviser les termes qui correspondent à la puissance d'une même base, soustraire leurs exposants.</p>
+                    <p>
+                        <code>= <var>localeToFixed(roundTo( 2, scientificMantissa( 3, NUMERATOR ) / scientificMantissa( 1, DENOMINATOR ) ), 2)</var>
+                        \times 10^{<var>scientificExponent( NUMERATOR )</var>\,-\,<var>scientificExponent( DENOMINATOR )</var>}</code>
+                    </p>
+                    <p>
+                        <code>= <var>localeToFixed(roundTo( 2, scientificMantissa( 3, NUMERATOR ) / scientificMantissa( 1, DENOMINATOR ) ), 2 )</var>
+                        \times 10^{<var>scientificExponent( NUMERATOR ) - scientificExponent( DENOMINATOR )</var>}</code>
+                    </p>
+                    <div data-if="scientificExponent( QUOTIENT ) != scientificExponent( NUMERATOR ) - scientificExponent( DENOMINATOR )" data-unwrap="">
+                        <p>Pour écrire la réponse correctement en notation scientifique, le premier chiffre doit être compris entre <code>1</code> et <code>10</code>. Dans ce cas, il faut déplacer le premier chiffre après la virgule vers la droite sans changer la valeur globale du nombre.</p>
+                        <p><code>\qquad</code>On peut utiliser le fait que <code><var>localeToFixed(roundTo( 2, scientificMantissa( 3, NUMERATOR ) / scientificMantissa( 1, DENOMINATOR ) ), 2 )</var></code> est égal à <code><var>localeToFixed(scientificMantissa(2, QUOTIENT), 2)</var> \div 10</code>, or <code class="hint_blue"><var>localeToFixed(scientificMantissa(2, QUOTIENT), 2)</var> \times 10^{-1}</code>.</p>
+                        <p><code>
+                            = \color{<var>BLUE</var>}{<var>localeToFixed(scientificMantissa( 2, QUOTIENT ), 2)</var> \times 10^{-1}}
+                            \times 10^{<var>scientificExponent( NUMERATOR ) - scientificExponent( DENOMINATOR )</var>}
+                        </code></p>
+                        <p><code>= <var>scientific( 2, QUOTIENT )</var></code></p>
+</div>
+                </div>
+            </div>
+
+            <div id="multiply">
+                <p class="question">Exprimer ce produit en notation scientifique : <code>(<var>scientific( 2, QUOTIENT )</var>)\times (<var>scientific( 2, DENOMINATOR )</var>)</code></p>
+
+                <div class="solution" data-type="multiple">
+                    <span class="sol short30 base" data-forms="integer, decimal"><var>scientificMantissa( 3, NUMERATOR )</var></span>
+                    <code> \times 10 </code>
+                    <sup class="sol short30 exp" data-forms="integer, decimal" style="width: 20px;"><var>scientificExponent( NUMERATOR )</var></sup>
+</div>
+
+                <div class="hints">
+                    <p>Commencer par regrouper les termes semblables.</p>
+                    <p>
+                        <code>= (<var>localeToFixed(scientificMantissa(2, QUOTIENT), 2)</var>\times <var>localeToFixed(scientificMantissa(2, DENOMINATOR), 2)</var>)
+                        \times (10^{<var>scientificExponent( QUOTIENT )</var>}\times 10^{<var>scientificExponent( DENOMINATOR )</var>})</code>
+                    </p>
+                    <p>Pour multiplier deux puissances d'un même nombre, additionner leurs exposants.</p>
+                    <p>
+                        <code>= <var>localeToFixed(roundTo( 1, scientificMantissa( 2, QUOTIENT ) * scientificMantissa( 1, DENOMINATOR ) ), 1 )</var>
+                        \times 10^{<var>scientificExponent( QUOTIENT )</var>\,+\,<var>scientificExponent( DENOMINATOR )</var>}</code>
+                    </p>
+                    <p>
+                        <code>= <var>localeToFixed(roundTo( 1, scientificMantissa( 2, QUOTIENT ) * scientificMantissa( 1, DENOMINATOR ) ), 1 )</var>
+                        \times 10^{<var>scientificExponent( QUOTIENT ) + scientificExponent( DENOMINATOR )</var>}</code>
+                    </p>
+                    <div data-if="scientificExponent( NUMERATOR ) != scientificExponent( QUOTIENT ) + scientificExponent( DENOMINATOR )" data-unwrap="">
+                        <p>Pour écrire la réponse correctement en notation scientifique, la partie du nombre qui se trouve à gauche de la virgule doit être comprise entre <code>1</code> et <code>10</code>. Ici, il faut déplacer la virgule vers la gauche, sans changer la valeur du nombre.</p>
+                        <p><code>\qquad</code>On peut utiliser le fait que <code><var>localeToFixed(roundTo( 1, scientificMantissa( 2, QUOTIENT ) * scientificMantissa( 1, DENOMINATOR ) ), 1 )</var></code> est égal à <code class="hint_blue"><var>localeToFixed(scientificMantissa( 3, NUMERATOR ), 3)</var> \times 10</code>.</p>
+                        <p><code>
+                            = \color{<var>BLUE</var>}{<var>localeToFixed(scientificMantissa( 3, NUMERATOR ), 3)</var> \times 10}
+                            \times 10^{<var>scientificExponent( QUOTIENT ) + scientificExponent( DENOMINATOR )</var>}
+                        </code></p>
+                        <p><code>= <var>scientific( 3, NUMERATOR )</var></code></p>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

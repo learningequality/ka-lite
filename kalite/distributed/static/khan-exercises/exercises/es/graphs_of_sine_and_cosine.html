@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!-- TODO: replace randFromArray with <ul> when <ul> works --><!-- TODO: make advanced version of this exercise, with negative vertical scaling, vertical and horizontal offsets --><!-- TODO: might want to change the things already rendered in graphie to highlight the current thing being hinted; ie, make the thing just displayed at 2 stroke, reduce all previously renedred things to 1 storke --><html data-require="math graphie math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gráficas del seno y el coseno</title>
+<script src="../khan-exercise.js"></script><script type="text/javascript">
+        function decFrac( num ) {
+            return KhanUtil.decimalFraction( num, true, true, true );
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="FN">randFromArray( [ "cos", "sin" ] )</var>
+            <var id="FNS">{ "cos": $._("coseno"), "sin": $._("seno")}[FN]</var>
+            <var id="VSCALE">randRange( 1, 5 ) / 2</var>
+            <var id="HSCALE">random() &lt; 0.5 ? randRange( 1, 4 ) : 1 / randRange( 1, 4 )</var>
+            <var id="PERIOD">2 * PI * HSCALE</var>
+
+            <var id="VRANGE">3.5</var>
+            <var id="HRANGE">3.5 * PI * HSCALE</var>
+
+            <var id="PIXVSCALE">150 / VRANGE</var>
+            <var id="PIXHSCALE">250 / HRANGE</var>
+
+            <var id="FUNCS">VSCALE + "*" + FN + "(x/" + HSCALE + ")"</var>
+
+            <!-- this is the distance between grid lines -->
+            <var id="HSTEP">HSCALE * PI / 4</var>
+            <var id="VSTEP">0.5</var>
+
+            <!-- this is how many grid lines are between each tick mark -->
+            <var id="HTICKSTEP">2</var>
+            <var id="VTICKSTEP">1</var>
+
+            <!-- this is how many grid lines there are between each grid label -->
+            <var id="HLABELSTEP">4</var>
+            <var id="VLABELSTEP">2</var>
+
+        </div>
+
+        <div class="problems">
+            <div>
+
+                <div class="problem">
+                    <p><code>f(x)</code> está graficada a continuación.</p>
+                    <div class="graphie" id="graph">graphInit({range:[HRANGE,VRANGE],scale:[PIXHSCALE,PIXVSCALE],axisArrows:"&lt;-&gt;",gridStep:[HSCALE*PI/4,.5],tickStep:[2,1],labelStep:[2,2],unityLabels:!0,xLabelFormat:piFraction}),style({stroke:"#a3a3ff",strokeWidth:2},function(){plot(function(x){return eval(FUNCS)},[-HRANGE,HRANGE])})</div>
+                </div>
+
+                <p class="question">¿Qué es <code>f(x)</code>?</p>
+
+                <div class="solution" data-type="multiple"><div style="font-size: 11px;">
+                    <code>f(x)=</code>
+                    <span class="sol short25" data-fallback="1"><var>VSCALE</var></span>
+                    <!-- we make the default fn type blank so users don't think the default value of sin or cos is important, not sure if this is necessary, though -->
+                    <span class="sol" data-choices="['', 'cos', 'sin']" data-type="list"><var>FN</var></span>
+                    <code>(</code><span class="sol short25" data-fallback="1"><var>1 / HSCALE</var></span><code>x)</code>
+                </div></div>
+            </div>
+        </div>
+
+        <div class="hints">
+            <div data-if="FN === 'cos'" data-unwrap="">
+
+                <p>La función comienza en su valor máximo (es decir, <code>f(0)=<var>VSCALE</var></code>), así que, ¿qué tipo de función es?</p>
+
+                <p>La función coseno, <code>\cos(x)</code>, comienza en 1 (ie, <code>\cos(0)=1</code>), así que <code>f(x)</code> debe ser una versión escalada de la función coseno.</p>
+
+            </div>
+
+            <div data-else="" data-unwrap="">
+
+                <p>La función comienza en cero (es decir, <code>f(0)=0</code>), así que, ¿qué tipo de función es?</p>
+
+                <p>La función seno, <code>\sin(x)</code>, comienza en 0 (ie, <code>\sin(0)=0</code>), así que <code>f(x)</code> debe ser una versión escalada de la función seno.</p>
+
+            </div>
+
+            <div>
+                <div class="graphie" data-update="graph">style({stroke:"#00d505",strokeWidth:2},function(){plot(function(x){return eval(FUNCS)},[0,PERIOD]),line([0,VSCALE],[PERIOD,VSCALE],{arrows:"&lt;-&gt;"})})</div>
+                <p data-if="FN === 'cos'">La distancia de cresta a cresta es <code><var>piFraction( PERIOD )</var></code>, así que el periodo de <code>f(x)</code> es <code><var>piFraction( PERIOD )</var></code>.</p>
+                <p data-else="">La distancia entre cada otro cero es <code><var>piFraction( PERIOD )</var></code>, así que el periodo de <code>f(x)</code> es <code><var>piFraction( PERIOD )</var></code>.</p>
+            </div>
+
+            <div data-if="abs( PERIOD - 2 * PI ) &lt; 0.01" data-unwrap="">
+                <p>El periodo de una función normal <var>FNS</var> es <code>2\pi</code> y el periodo que queremos es <code><var>piFraction( PERIOD )</var></code>, así que no necesitamos preocuparnos por escalar la función horizontalmente.</p>
+            </div>
+
+            <div data-else="" data-unwrap="">
+
+                <p>El periodo de una función normal <var>FNS</var> es <code>2\pi</code> y el periodo que queremos es <code><var>piFraction( PERIOD )</var></code>, así que necesitamos escalar la función <var>FNS</var> horizontalmente por <code><var>decFrac( PERIOD / 2 / PI )</var></code>.</p>
+
+                <p>Para escalar horizontalmente <code>\<var>FN</var>(x)</code> por <code><var>decFrac( PERIOD / 2 / PI )</var></code>, necesitamos sustituir <code><var>decFrac( 2 * PI / PERIOD )</var>x</code> en lugar de <code>x</code> para obtener <code>\<var>FN</var>(<var>decFrac( 2 * PI / PERIOD )</var>x)</code>.</p>
+
+            </div>
+
+            <div>
+                <div class="graphie" data-update="graph">style({stroke:"#00d505",strokeWidth:2},function(){var e="sin"===FN?PERIOD/4:PERIOD;line([e,0],[e,VSCALE],{arrows:"&lt;-&gt;"})})</div>
+                <p>La altura de <code>f(x)</code> es <code><var>decFrac( VSCALE )</var></code>, así que la amplitud de <code>f(x)</code> es <code><var>decFrac( VSCALE )</var></code>.</p>
+            </div>
+
+            <p data-if="VSCALE === 1">La amplitud de <code>f(x)</code> es 1, así que no necesitamos preocuparnos por cambiarle la escala verticalmente.</p>
+            <div data-else="" data-unwrap="">
+                <p>La amplitud de <code>f(x)</code> es <code><var>decFrac( VSCALE )</var></code>, así que necesitamos escalar la función <var>FNS</var> verticalmente por <code><var>decFrac( VSCALE )</var></code>.</p>
+                <p>Para escalar la función verticalmente, multiplica todo por <code><var>decFrac( VSCALE )</var></code>.</p>
+            </div>
+
+            <!-- the calls to plus here are to reduce things like 1cos(1x) into cos(x). it works, but it is not the most semantic way. could be improved. -->
+            <p>Así que la función resultante (después de que hacemos todas estas manipulaciones) es <code><var>plus( toFractionTex( VSCALE ) + "\\" + FN + "(" + plus( toFractionTex( 1 / HSCALE ) + "x" ) + ")" )</var></code>.</p>
+        </div>
+    </div>
+</body>
+</html>

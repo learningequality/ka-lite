@@ -44,9 +44,6 @@ urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),
-    url(r'^%s(?P<path>.*)$' % settings.STATIC_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.STATIC_ROOT,
-    }),
 )
 
 # Teaching / admin patterns

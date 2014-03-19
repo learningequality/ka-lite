@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie graphie-helpers interactive word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Intuición sobre la gráfica de la recta</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="graph-slope" data-weight="1">
+            <div class="vars">
+                <var id="SLOPE,SLOPE_NAME">randFromArray([[0,$._("una positiva")],[1,$._("una negativa")],[2,$._("una de cero")],[3,$._("una indefinida")]])</var>
+                <var id="POINTS">{}</var>
+            </div>
+
+            <p class="question">Grafica una recta que tenga  pendiente <var>SLOPE_NAME</var>:</p>
+
+            <div class="graphie" id="grid">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),label([0,11],"y","above"),label([11,0],"x","right"),addMouseLayer(),POINTS.pointA=addMovablePoint({coord:[-5,5],snapX:.5,snapY:.5}),POINTS.pointB=addMovablePoint({coord:[5,5],snapX:.5,snapY:.5}),graph.line1=addMovableLineSegment({pointA:POINTS.pointA,pointZ:POINTS.pointB,fixed:!0,extendLine:!0,normalStyle:{stroke:ORANGE,"stroke-width":2}}),POINTS.pointA.onMove=function(e,t){return e!==POINTS.pointB.coord[0]||t!==POINTS.pointB.coord[1]},POINTS.pointB.onMove=function(e,t){return e!==POINTS.pointA.coord[0]||t!==POINTS.pointA.coord[1]},POINTS.pointA.toFront(),POINTS.pointB.toFront()</div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Arrastra los dos puntos para mover la recta a la posición correcta.</div>
+                <div class="guess">[POINTS.pointA.coord,POINTS.pointB.coord]</div>
+                <div class="validator-function">if(2!==SLOPE&amp;&amp;-5===guess[0][0]&amp;&amp;5===guess[0][1]&amp;&amp;5===guess[1][0]&amp;&amp;5===guess[1][1])return"";var e=(guess[1][1]-guess[0][1])/(guess[1][0]-guess[0][0]);return 0===SLOPE?e&gt;0:1===SLOPE?0&gt;e:2===SLOPE?abs(e)&lt;.001:3===SLOPE?guess[1][0]===guess[0][0]:void 0</div>
+                <div class="show-guess">POINTS.pointA.setCoord(guess[0]),POINTS.pointB.setCoord(guess[1]),graph.line1.transform(!0)</div>
+            </div>
+
+            <div class="hints">
+                <p>La pendiente de una recta es la relación de cambio en <code>y</code> sobre el cambio en <code>x</code>. También conocida como avance sobre el plazo.</p>
+                <p data-if="SLOPE === 0">Para una pendiente positiva, si el cambio en <code>y</code> de un punto a otro es positivo entonces el cambio en <code>x</code> debe también ser positivo.</p>
+                <p data-else-if="SLOPE === 1">Para una pendiente negativa, si el cambio en <code>y</code> de un punto a otro es positivo entonces el cambio en <code>x</code> debe ser negativo.</p>
+                <p data-else-if="SLOPE === 2">Para una pendiente cero, el cambio en <code>y</code> debe ser cero de cualquier punto a cualquier otro punto.</p>
+                <p data-else="">Para una pendiente indefinida, el cambio en <code>x</code> debe ser cero de cualquier punto a cualquier otro punto.</p>
+                <div>
+                    <p>Una recta con pendiente <var>SLOPE_NAME</var> se ve como:</p>
+                    <div class="graphie" style="margin-left: 30px">graphInit({range:6,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:10,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),style({stroke:ORANGE},function(){var e=randRange(-3,3);if(0===SLOPE)plot(function(t){return t+e},[-6,6]);else if(1===SLOPE){{randRange(-3,3)}plot(function(t){return-t+e},[-6,6])}else if(2===SLOPE){{randRangeNonZero(-3,3)}path([[-6,e],[6,e]])}else if(3===SLOPE){{randRangeNonZero(-3,3)}path([[e,-6],[e,6]])}})</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="graph-compare" data-type="graph-slope" data-weight="1">
+            <div class="vars">
+                <var id="SLOPE_N">randRangeNonZero(-5, 5)</var>
+                <var id="SLOPE_D">randRange(1, 5)</var>
+                <var id="Y_INT">randRange(-5, 5)</var>
+                <var id="GOAL_NEGATIVE,GOAL">[SLOPE_N &lt; 0, SLOPE_N &lt; 0 ? $._("negativa") : $._("positiva")]</var>
+                <var id="CHANGE,CHANGE_NAME">randFromArray([[0, "greater"], [1, "less"]])</var>
+                <var id="NEW_SLOPE">function(){return GOAL_NEGATIVE?0===CHANGE?SLOPE_N/SLOPE_D/2:SLOPE_N/SLOPE_D*2:1===CHANGE?SLOPE_N/SLOPE_D/2:SLOPE_N/SLOPE_D*2}()</var>
+            </div>
+            <p class="question">Grafica una recta que tenga una pendiente que sea  <em><var>GOAL</var></em> y <em><var>CHANGE_NAME</var> que </em>la pendiente de la recta azul.</p>
+            <div class="graphie" data-update="grid">plot(function(e){return SLOPE_N/SLOPE_D*e+Y_INT},[-11,11],{stroke:BLUE}).toBack()</div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">Arrastra los dos puntos para mover la recta a la posición correcta.</div>
+                <div class="guess">[POINTS.pointA.coord,POINTS.pointB.coord]</div>
+                <div class="validator-function">if(-5===guess[0][0]&amp;&amp;5===guess[0][1]&amp;&amp;5===guess[1][0]&amp;&amp;5===guess[1][1])return"";var e=(guess[1][1]-guess[0][1])/(guess[1][0]-guess[0][0]);return GOAL_NEGATIVE||1!==CHANGE?GOAL_NEGATIVE||0!==CHANGE?GOAL_NEGATIVE&amp;&amp;1===CHANGE?0&gt;e&amp;&amp;SLOPE_N/SLOPE_D&gt;e:GOAL_NEGATIVE&amp;&amp;0===CHANGE?0&gt;e&amp;&amp;e&gt;SLOPE_N/SLOPE_D:void 0:e&gt;0&amp;&amp;e&gt;SLOPE_N/SLOPE_D:e&gt;0&amp;&amp;SLOPE_N/SLOPE_D&gt;e</div>
+                <div class="show-guess">POINTS.pointA.setCoord(guess[0]),POINTS.pointB.setCoord(guess[1]),graph.line1.transform(!0)</div>
+            </div>
+            <div class="hints">
+                <p>
+                    <span data-if="GOAL_NEGATIVE">La pendiente de la recta original es negativa.</span><span data-else="">La pendiente de la recta original es positiva.</span>
+                </p>
+                <div data-if="GOAL_NEGATIVE">
+                    <div data-if="CHANGE === 0">
+                        <p>Si la pendiente de una nueva recta es negativa y mayor que la pendiente de la recta original con pendiente negativa, entonces la nueva recta debe ser menos pronunciada.</p>
+                    </div>
+                    <div data-else="">
+                        <p>Si la pendiente de una nueva recta es negativa y menor que la pendiente de la recta original con pendiente negativa, entonces la nueva recta debe ser más pronunciada.</p>
+                    </div>
+                </div>
+                <div data-else="">
+                    <div data-if="CHANGE === 0">
+                        <p>Si la pendiente de una nueva recta es positiva y mayor que la pendiente de la recta original con pendiente positiva, entonces la nueva recta debe ser más pronunciada.</p>
+                    </div>
+                    <div data-else="">
+                        <p>Si la pendiente de una nueva recta es positiva y menor que la pendiente de la recta original con pendiente positiva, entonces la nueva recta debe ser menos pronunciada.</p>
+                    </div>
+                </div>
+                <div>
+                    <p>Puesto que la pendiente original es <code> <var>fractionReduce(SLOPE_N, SLOPE_D)</var></code>, la pendiente de la nueva recta podría ser <code> <var>decimalFraction(NEW_SLOPE, true, true)</var> </code> y podría verse así:</p>
+<p>
+                    </p>
+<div class="graphie" style="margin-left: 30px">graphInit({range:11,scale:10,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:20,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),style({stroke:BLUE},function(){plot(function(e){return e*(SLOPE_N/SLOPE_D)+Y_INT},[-11,11])}),style({stroke:ORANGE},function(){plot(function(e){return e*NEW_SLOPE+2},[-11,11])})</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="find-slope-and-yint" data-weight="1">
+            <div class="vars" data-ensure="!(1===M&amp;&amp;0===B)&amp;&amp;abs(M)&lt;10&amp;&amp;abs(B)&lt;10&amp;&amp;6&gt;INCR">
+                <var id="X1, X2">randRangeUnique(-8, 8, 2)</var>
+                <var id="Y1, Y2">randRangeUnique(-8, 8, 2)</var>
+                <var id="RISE">Y2 - Y1</var>
+                <var id="RUN">X2 - X1</var>
+                <var id="M">RISE / RUN</var>
+                <var id="B">Y1 - X1 * M</var>
+                <var id="INCR">abs(RUN) / getGCD(abs(RISE), abs(RUN))</var>
+                <var id="GRAPH">{}</var>
+            </div>
+
+            <p class="question">Ajusta la pendiente y la intersección con el eje y hasta que conecte los dos puntos. ¿Cómo afectan la pendiente y la intersección con el eje y a la recta ?</p>
+
+            <div class="graphie" id="grid">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),label([0,11],"y","above"),label([11,0],"x","right"),style({stroke:BLUE,fill:BLUE},function(){circle([X1,Y1],.2),circle([X2,Y2],.2)}),GRAPH.MN=1,GRAPH.MD=1,GRAPH.BN=1,GRAPH.BD=1;var plot=line([-11,-11*GRAPH.MN/GRAPH.MD+GRAPH.BN/GRAPH.BD],[11,11*GRAPH.MN/GRAPH.MD+GRAPH.BN/GRAPH.BD],{stroke:BLUE});GRAPH.redraw=function(){plot.remove(),plot=line([-11,-11*GRAPH.MN/GRAPH.MD+GRAPH.BN/GRAPH.BD],[11,11*GRAPH.MN/GRAPH.MD+GRAPH.BN/GRAPH.BD],{stroke:BLUE}),GRAPH.updateLabels()},GRAPH.changeSlope=function(e){var t=GRAPH.MD;GRAPH.MD=getLCM(t,INCR),GRAPH.MN=GRAPH.MD/t*GRAPH.MN+e*GRAPH.MD/INCR,GRAPH.redraw()},GRAPH.changeIntercept=function(e){var t=GRAPH.BD;GRAPH.BD=getLCM(t,INCR),GRAPH.BN=GRAPH.BD/t*GRAPH.BN+e*GRAPH.BD/INCR,GRAPH.redraw()}</div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <div style="clear: left;">Ajusta la ecuación haciendo clic en las flechas:</div>
+                    <div class="graphie">init({range:[[0,4],[.5,2.5]]}),label([0,1.5],"y = ","right");var slopeLabel=label([1.7,1.5],"1","left");label([1.45,1.5],"x","right"),signLabel=label([1.8,1.5],"+","right");var interceptLabel=label([2.2,1.5],"1","right");addMouseLayer(),addArrowWidget({coord:[1.4,2.1],direction:"up",onClick:function(){GRAPH.changeSlope(1)}}),addArrowWidget({coord:[1.4,.8],direction:"down",onClick:function(){GRAPH.changeSlope(-1)}}),addArrowWidget({coord:[2.5,2.1],direction:"up",onClick:function(){GRAPH.changeIntercept(1)}}),addArrowWidget({coord:[2.5,.8],direction:"down",onClick:function(){GRAPH.changeIntercept(-1)}}),GRAPH.updateLabels=function(){slopeLabel.remove(),signLabel.remove(),interceptLabel.remove(),slopeLabel=label([1.7,1.5],fractionReduce(GRAPH.MN,GRAPH.MD),"left"),signLabel=label([1.8,1.5],GRAPH.BN&lt;0?"-":"+","right"),interceptLabel=label([2.2,1.5],fractionReduce(abs(GRAPH.BN),GRAPH.BD),"right")}</div>
+                </div>
+                <div class="guess">[GRAPH.MN/GRAPH.MD,GRAPH.BN/GRAPH.BD]</div>
+                <div class="validator-function">return abs(guess[0]-M)&lt;.001&amp;&amp;abs(guess[1]-B)&lt;.001?!0:1===guess[0]&amp;&amp;1===guess[1]?"":!1</div>
+                <div class="show-guess">guess=guess.length?guess:[1,1,1,1],GRAPH.MN=guess[0],GRAPH.MD=1,GRAPH.BN=guess[1],GRAPH.BD=1,GRAPH.updateLabels(),GRAPH.redraw()</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

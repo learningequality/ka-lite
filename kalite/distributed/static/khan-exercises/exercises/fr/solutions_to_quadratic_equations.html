@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Solutions d'équations du second degré</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="one-rational">
+                <div class="vars">
+                    <var id="ANSWER">"One rational solution"</var>
+                    <var id="B">randRangeNonZero(-6, 6) * 2</var>
+                    <var id="A">randFromArray(getFactors(B * B / 4))</var>
+                    <var id="C">(B * B) / (4 * A)</var>
+                    <var id="DISCRIMINANT">B * B - 4 * A * C</var>
+                </div>
+
+                <p class="question">Décrire les solutions de l'équation du second degré suivante :</p>
+                <div class="problem">
+                    <code><var>expr(["+",["*",A,["^","x",2]],["*",B,"x"],C])</var> = 0</code>
+                </div>
+
+                <div class="solution"><var>ANSWER</var></div>
+                <ul class="choices" data-category="true">
+<li>Une solution rationnelle</li>
+                    <li>Deux solutions rationnelles</li>
+                    <li>Deux solutions irrationnelles</li>
+                    <li>Une solution complexe</li>
+                    <li>Deux solutions complexes</li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p>On pourrait utiliser un trinôme du second degré pour résoudre le problème et voir les solutions, mais il y a un raccourci...</p>
+                        <p><code id="quadratic">\qquad
+                            x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+                        </code>
+                    </p>
+</div>
+                    <div>
+                        <div class="graphie">KhanUtil.processMath($("#quadratic")[0],"\\qquad x = \\dfrac{-b \\pm \\sqrt{\\blue{b^2 - 4ac}}}{2a}",!0)</div>
+                        <div>Pense à quelle partie du trinôme du second degré <span class="hint_blue">under the radical</span> nous indique les solutions.</div>
+                    </div>
+                    <div>
+                        <p>Substitue <code>a</code>, <code>b</code>, et <code>c</code> coefficients du trinôme du second degré :</p>
+                        <p>
+                            <code>\qquad\begin{array}
+                                &amp;&amp; b^2-4ac \\ \\
+                                =&amp; <var>B</var>^2 - 4 (
+                                <var>A</var>)(<var>C</var>) \\ \\
+                                =&amp; <var>DISCRIMINANT</var>
+                                \end{array}
+                            </code>
+                        </p>
+                    </div>
+                    <p data-if="ANSWER === 'One rational solution'">Comme <code>\blue{b^2 - 4ac} = 0</code>, la formule qui donne les solutions se réduit à <code>\dfrac{-b}{2a}</code>, il y une seule solution, elle est rationnelle.</p>
+                    <p data-else-if="ANSWER === 'Two complex solutions'">Comme <code>\blue{b^2 - 4ac}</code> est négatif, ses racines carrées sont des nombres imaginaires purs. La formule devient <code>\dfrac{-b \pm \sqrt{<var>DISCRIMINANT</var>}}{2a} </code>, ainsi il y a deux solutions complexes.</p>
+                    <p data-else-if="ANSWER === 'Two rational solutions'">Comme <code>\blue{b^2 - 4ac}</code> est le carré d'un nombre entier, sa racine carré est rationnelle et la formule qui donne les solutions devient <code>\dfrac{-b \pm <var>sqrt(DISCRIMINANT)</var>}{2a} </code>, il y a ainsi deux solutions rationnelles.</p>
+                    <p data-else="">Comme <code>\blue{b^2 - 4ac}</code> n'est pas un carré parfait, ses racines carrées ne sont pas des nombres rationnels. La formule devient<code>\dfrac{-b \pm \sqrt{<var>DISCRIMINANT</var>}}{2a} </code>, ainsi il y a deux solutions irrationnelles.</p>
+                </div>
+            </div>
+
+            <div id="two-rational" data-type="one-rational">
+                <div class="vars" data-apply="replace">
+                    <var id="ANSWER">"Two rational solutions"</var>
+                    <div data-ensure="DISCRIMINANT&gt;0&amp;&amp;sqrt(DISCRIMINANT)-floor(sqrt(DISCRIMINANT))&lt;.001&amp;&amp;144&gt;=DISCRIMINANT">
+                        <var id="A">randRangeNonZero(-9, 9)</var>
+                        <var id="B">randRangeNonZero(-9, 9)</var>
+                        <var id="C">randRangeNonZero(-9, 9)</var>
+                        <var id="DISCRIMINANT">B * B - 4 * A * C</var>
+                    </div>
+                </div>
+            </div>
+
+            <div id="two-irrational" data-type="one-rational">
+                <div class="vars" data-apply="replace">
+                    <var id="ANSWER">"Two irrational solutions"</var>
+                    <div data-ensure="DISCRIMINANT&gt;0&amp;&amp;sqrt(DISCRIMINANT)-floor(sqrt(DISCRIMINANT))&gt;.001">
+                        <var id="A">randRangeNonZero(-9, 9)</var>
+                        <var id="B">randRangeNonZero(-9, 9)</var>
+                        <var id="C">randRangeNonZero(-9, 9)</var>
+                        <var id="DISCRIMINANT">B * B - 4 * A * C</var>
+                    </div>
+                </div>
+            </div>
+
+            <div id="two-complex" data-type="one-rational">
+                <div class="vars" data-apply="replace">
+                    <var id="ANSWER">"Two complex solutions"</var>
+                    <div data-ensure="DISCRIMINANT &lt; 0">
+                        <var id="A">randRangeNonZero(-9, 9)</var>
+                        <var id="B">randRangeNonZero(-9, 9)</var>
+                        <var id="C">randRangeNonZero(-9, 9)</var>
+                        <var id="DISCRIMINANT">B * B - 4 * A * C</var>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

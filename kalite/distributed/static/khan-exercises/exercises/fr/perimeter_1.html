@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-geometry word-problems interactive subhints">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Périmètre 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="UNIT,UNIT_TEXT">randFromArray([["in",new Plural(function(e){return $.ngettext({lang:"fr",messages:["pouce","pouces"]},e)})],["ft",new Plural(function(e){return $.ngettext({lang:"fr",messages:["Pied","pieds"]},e)})],["m",new Plural(function(e){return $.ngettext({lang:"fr",messages:["mètre","mètres"]},e)})],["cm",new Plural(function(e){return $.ngettext({lang:"fr",messages:["centimètre","centimètres"]},e)})],["",new Plural(function(e){return $.ngettext({lang:"fr",messages:["unité","unités"]},e)})]])</var>
+    </div>
+    <div class="problems">
+        <div id="square" data-weight="1">
+            <div class="vars">
+                <var id="S">randRange(2, 9)</var>
+                <var id="PERIMETER">$._("p\u00e9rim\u00e8tre")</var>
+            </div>
+
+            <p class="question">Quel est le périmètre du carré ?</p>
+            <div class="problem">
+                <div class="graphie" id="perimeter">init({range:[[-2,S+1],[-1,S+1]],scale:30}),path([[0,0],[0,S],[S,S],[S,0],!0],{stroke:BLUE,fill:"#eee"}),label([S/2,S],S+"\\text{ "+UNIT+"}","above"),label([0,S/2],S+"\\text{ "+UNIT+"}","left")</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>4 * S</var></span> <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <p>Le périmètre est la somme des longueurs de tous les côtés de la forme géométrique.</p>
+                <div>
+                    <div class="graphie" data-update="perimeter">path([[0,0],[0,S]],{strokeWidth:4,stroke:PINK}),path([[0,S],[S,S]],{strokeWidth:4,stroke:BLUE}),path([[S,S],[S,0]],{strokeWidth:4,stroke:"purple"}),path([[S,0],[0,0]],{strokeWidth:4,stroke:GREEN})</div>
+                    <p>Ajoutez les longueurs des côtés :</p>
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
+                        \pink{<var>S</var>} + \blue{<var>S</var>} + \purple{<var>S</var>} + \green{<var>S</var>}
+                    </code></p>
+                </div>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>S * 4</var>\text{ <var>UNIT</var>}</code></p>
+            </div>
+        </div>
+
+        <div id="rectangle" data-weight="1">
+            <div class="vars" data-ensure="L !== W">
+                <var id="L">randRange(2, 9)</var>
+                <var id="W">randRange(2, 9)</var>
+                <var id="PERIMETER">$._("p\u00e9rim\u00e8tre")</var>
+            </div>
+
+            <p class="question">Quel est le périmètre du rectangle ?</p>
+
+            <div class="problem">
+                <div class="graphie" id="perimeter">init({range:[[-2,L+1],[-1,W+1]],scale:30}),path([[0,0],[0,W],[L,W],[L,0],!0],{stroke:BLUE,fill:"#eee"}),label([L/2,W],L+"\\text{ "+UNIT+"}","above"),label([0,W/2],W+"\\text{ "+UNIT+"}","left")</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>L * 2 + W * 2</var></span> <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <p>Le périmètre est la somme des longueurs de tous les côtés de la forme géométrique.</p>
+                <div>
+                    <div class="graphie" data-update="perimeter">path([[0,0],[0,W]],{strokeWidth:4,stroke:PINK}),path([[0,W],[L,W]],{strokeWidth:4,stroke:BLUE}),path([[L,W],[L,0]],{strokeWidth:4,stroke:"purple"}),path([[L,0],[0,0]],{strokeWidth:4,stroke:GREEN})</div>
+                    <p>Ajoutez les longueurs des côtés :</p>
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
+                        \pink{<var>W</var>} + \blue{<var>L</var>} + \purple{<var>W</var>} + \green{<var>L</var>}
+                    </code></p>
+                </div>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>L * 2 + W * 2</var>\text{ <var>UNIT</var>}</code></p>
+            </div>
+        </div>
+
+        <div id="triangle" data-weight="2">
+            <div class="vars" data-ensure="A &lt; B + C &amp;&amp; B &lt; A + C &amp;&amp; C &lt; A + B">
+                <var id="A,B,C">randRange(2, 9, 3)</var>
+                <var id="X">((A * A + B * B - C * C) / (2 * A * B)) * B</var>
+                <var id="Y">sqrt(B * B - X * X)</var>
+                <var id="PERIMETER">$._("p\u00e9rim\u00e8tre")</var>
+            </div>
+
+            <p class="question">Quel est le périmètre du triangle ?</p>
+
+            <div class="problem">
+                <div class="graphie" id="perimeter">init({range:[[min(X,0)-2,max(X,A)+2],[-1,Y+1]],scale:30}),path([[0,0],[A,0],[X,Y],!0],{stroke:BLUE,fill:"#eee"}),label([A/2,0],A+"\\text{ "+UNIT+"}","below"),label([X/2-.5,Y/2],B+"\\text{ "+UNIT+"}","left"),label([(X+A)/2+.5,Y/2],C+"\\text{ "+UNIT+"}","right")</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>A + B + C</var></span> <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <p>Le périmètre est la somme des longueurs de tous les côtés de la forme géométrique.</p>
+                <div>
+                    <div class="graphie" data-update="perimeter">path([[X,Y],[0,0]],{strokeWidth:4,stroke:PINK}),path([[A,0],[X,Y]],{strokeWidth:4,stroke:BLUE}),path([[0,0],[A,0]],{strokeWidth:4,stroke:GREEN})</div>
+                    <p>Ajoutez les longueurs des côtés :</p>
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
+                        \pink{<var>B</var>} + \blue{<var>C</var>} + \green{<var>A</var>}
+                    </code></p>
+                </div>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>A + B + C</var>\text{ <var>UNIT</var>}</code></p>
+            </div>
+        </div>
+
+        <div id="polygon" data-weight="2">
+            <div class="vars">
+                <var id="S">randRange(2, 3)</var>
+                <var id="SIDES,POLYGON">randFromArray([[5,$._("pentagone")],[6,$._("hexagone")],[8,$._("octogone")]])</var>
+                <var id="ANGLE">(2 * PI) / SIDES</var>
+                <var id="RADIUS">S / (2 * sin(PI / SIDES))</var>
+                <var id="APOTHEM">S / (2 * tan(PI / SIDES))</var>
+                <var id="PERIMETER">$._("p\u00e9rim\u00e8tre")</var>
+            </div>
+
+            <p class="question">Quel est le périmètre du <var>POLYGON</var> régulier ?</p>
+
+            <div class="problem">
+                <div class="graphie" id="perimeter">init({range:[[-RADIUS-1,RADIUS+1],[-RADIUS-1,RADIUS+1]],scale:30}),graph.path=[],_(SIDES).times(function(e){graph.path.push([sin(ANGLE*(e+.5))*RADIUS,cos(ANGLE*(e+.5))*RADIUS])}),graph.path.push(!0),path(graph.path,{stroke:BLUE,fill:"#eee"}),graph.label=label([0,APOTHEM+.7],S+"\\text{ "+UNIT+"}")</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>S * SIDES</var></span> <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <p>Le périmètre est la somme des longueurs de tous les côtés de la forme géométrique.</p>
+                <div>
+                    <div class="graphie" data-update="perimeter">graph.label.remove(),_(SIDES).times(function(e){label([sin(ANGLE*e)*(APOTHEM+.7),cos(ANGLE*e)*(APOTHEM+.7)],S+"\\text{ "+UNIT+"}",{color:GREEN})})</div>
+                    <p>Tous les côtés du <a href="#" class="show-definition" data-definition="regular-polygon">regular</a> <var>POLYGON</var> ont la même longueur.</p>
+                    <div class="definition" id="regular-polygon">Dire qu'un polygone est <b>régulier</b> veut dire tout simplement que tous ses côtés ont la même longueur.</div>
+                </div>
+                <div>
+                    <p>Comme il y a <span class="hint_blue"><code><var>SIDES</var></code> côtés</span> qui mesurent tous <span class="hint_green"><code><var>S</var></code> <var>plural_form(UNIT_TEXT, S)</var></span>, on peut multiplier :</p>
+                    <p><code>\qquad\text{<var>PERIMETER</var>} =
+                        \blue{<var>SIDES</var>} \times \green{<var>S</var>}
+                    </code></p>
+                </div>
+                <p><code>\qquad\text{<var>PERIMETER</var>} = <var>S * SIDES</var>\text{ <var>UNIT</var>}</code></p>
+            </div>
+        </div>
+
+        <div id="odd-shape" data-weight="1">
+            <div class="vars">
+                <var id="WIDTH">randRange(5, 10)</var>
+                <var id="HEIGHT">randRange(5, 10)</var>
+                <var id="SHAPE" data-ensure="SHAPE.numSides &lt;= 10 &amp;&amp; SHAPE.numSides &gt; 4">createOddShape({width:WIDTH,height:HEIGHT})</var>
+                <var id="SIDES">SHAPE.sides</var>
+            </div>
+
+            <p class="question">Quel est le périmètre de la forme géométrique ? Chaque carré de la grille est un carré de côté <code>1 \times 1</code> <var>UNIT_TEXT</var>.</p>
+
+            <div class="problem">
+                <div class="graphie" id="perimeter">init({range:[[-1,WIDTH+1],[-1,HEIGHT+1]]});var shape=[];_(WIDTH+1).times(function(e){line([e,0],[e,HEIGHT],{"stroke-width":1,stroke:"#bbb"})}),_(HEIGHT+1).times(function(e){line([0,e],[WIDTH,e],{"stroke-width":1,stroke:"#bbb"})}),_.each(SHAPE.sides,function(e){path([e.start,e.end],{stroke:BLUE})})</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>SHAPE.perimeter</var></span>
+                <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <p>Le périmètre est la somme des longueurs de tous les côtés de la forme géométrique.</p>
+                <div>
+                    <div class="graphie" data-update="perimeter">SHAPE.labelSides()</div>
+                    <p>On additionne les longueurs des <var>SHAPE.numSides</var> côtés.</p>
+                    <p><code>\qquad
+                        <var>_.map(SHAPE.sides,function(e){return e.length}).join("+")</var>
+                        = \text{ ?}
+                    </code></p>
+                </div>
+                <p>Le périmètre mesure <code><var>SHAPE.perimeter</var></code> <var>plural_form(UNIT_TEXT, SHAPE.perimeter)</var>.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

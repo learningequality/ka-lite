@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html data-require="math graphie word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Reading bar charts 1</title>
+<script src="../khan-exercise.js"></script><style>
+        span.rotate {
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            -webkit-transform: rotate(-90deg);
+            -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+        }
+        body.ie span.rotate {
+            left: 60px !important;
+            top: 140px !important;
+        }
+    </style>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <!-- I18N: Harry Potter's Hogwarts house names -->
+        <var id="HOUSES">[$._("Gryffondor"),$._("Poufsouffle"),$._("Ravenclaw"),$._("Slytherin")]</var>
+        <var id="INDEX">randRange( 0, HOUSES.length - 1 )</var>
+        <var id="VALUES">_.map(randRangeUnique(0,9,HOUSES.length),function(e){return 10*e})</var>
+    </div>
+    <div class="problems">
+        <div>
+            <p class="problem">
+                At Hogwarts, there are four houses:
+                <var>toSentence(HOUSES)</var>. The bar chart below shows the
+                number of house points that each house received today.
+            </p>
+            <p class="question">
+                How many house points did <var>HOUSES[INDEX]</var> receive?
+            </p>
+            <div class="graphie" id="barchart">init({range:[[-2,14],[-3,11.5]],scale:[27,30]}),_.times(10,function(e){label([0,e],10*e,"left",!1),style({stroke:"#000",strokeWidth:1,opacity:.2},function(){line([0,e],[13,e])})}),_.each(VALUES,function(e,t){style({stroke:null,fill:"#9ab8ed",opacity:1}),path([[3*t+1.5,0],[3*t+1.5,e/10],[3*t+2.5,e/10],[3*t+2.5,0],!0]),style({opacity:1}),label([3*t+2,0],HOUSES[t],"below",!1)}),style({stroke:"#000",strokeWidth:2,opacity:1}),line([0,0],[13,0]),line([0,0],[0,10]),label([6.5,-.8],$._("Maison"),"below",!1).css("font-weight","bold"),label([-1.5,5],"House points","center",!1).addClass("rotate").css("font-weight","bold"),label([6.5,10.5],"House points earned today","above",!1).css("font-weight","bold")</div>
+
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer, decimal">
+                    <var>VALUES[INDEX]</var>
+                </span> house points
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>Find the bar for <var>HOUSES[INDEX]</var>.</p>
+                    <div class="graphie" data-update="barchart">style({stroke:PINK,fill:null,strokeWidth:2}),ellipse([3*INDEX+2,-.6],[1.5,.5])</div>
+                </div>
+                <div data-if="VALUES[INDEX] === 0">
+                    <p>
+                        There is no bar for <var>HOUSES[INDEX]</var>, which
+                        means <var>HOUSES[INDEX]</var> recieved <code>0</code>
+                        house points.
+                    </p>
+                </div>
+                <div data-else="" data-unwrap="">
+                    <div>
+                        <p>
+                            Compare the height of the bar for
+                            <var>HOUSES[INDEX]</var> to the scale on the left.
+                        </p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,strokeWidth:2,arrows:"-&gt;",strokeDasharray:"-"}),line([3*INDEX+1.5,VALUES[INDEX]/10],[0,VALUES[INDEX]/10])</div>
+                    </div>
+                    <p>
+                        <var>HOUSES[INDEX]</var> received
+                        <code><var>VALUES[INDEX]</var></code> house points.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html data-require="math graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Décomposer un nombre en un produit de facteurs premiers</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+        <div class="exercise">
+            <div class="vars">
+                <var id="cx">0</var>
+                <var id="y">0</var>
+            </div>
+
+            <div class="problems">
+                <div id="prime">
+                    <div class="vars">
+                        <var id="NUMBER">getPrime()</var>
+                    </div>
+                    <p class="question">Quelle est la décomposition en produit de facteurs premiers de <code><var>NUMBER</var></code>?</p>
+                    <p class="solution" data-type="primeFactorization"><var>NUMBER</var></p>
+                    <div class="hints">
+                        <p>Dessinons l'arbre de la factorisation.</p>
+
+                        <div class="graphie" id="factor-tree">init({range:[[-1,2],[-1,1]],scale:[30,30]}),label([cx,y],NUMBER)</div>
+
+                        <div class="graphie" data-update="factor-tree">circle([cx,y],.5)</div>
+
+                        <p>Comme <code><var>NUMBER</var></code> est premier, sa décomposition en produit de facteurs premiers est simplement <code><var>NUMBER</var></code>.</p>
+                    </div>
+                </div>
+
+                <div id="composite" data-weight="3">
+                    <div class="vars">
+                        <var id="NUMBER">getComposite()</var>
+                        <var id="SOLUTION">getPrimeFactorization( NUMBER )</var>
+                        <var id="FACTORIZATION">SOLUTION.slice( 0, SOLUTION.length - 1 )</var>
+                        <var id="curr">NUMBER</var>
+                    </div>
+
+                    <p class="question">Quelle est la décomposition en produit de facteurs premiers de <code><var>NUMBER</var></code>?</p>
+                    <p class="solution" data-type="primeFactorization"><var>SOLUTION.join("x")</var></p>
+
+                    <div class="hints">
+                        <div>
+                            <p>Dessinons l'arbre de la factorisation.</p>
+                            <div class="graphie" id="factor-tree">init({range:[[-1,FACTORIZATION.length+2],[-2*FACTORIZATION.length-1,1]],scale:[30,30]}),label([cx+1,y],curr)</div>
+                        </div>
+
+                        <div class="graphie" data-each="FACTORIZATION as factor" data-update="factor-tree">path([[cx+1,y-.5],[cx,y-1.5]]),path([[cx+1,y-.5],[cx+2,y-1.5]]),y-=2,cx+=1,curr/=factor,label([cx-1,y],factor),circle([cx-1,y],.5),label([cx+1,y],curr)</div>
+
+                        <div class="graphie" data-update="factor-tree">circle([cx+1,y],.5)</div>
+
+                        <p>La décomposition en produit de facteurs premiers de <code><var>NUMBER</var></code> est <code><var>SOLUTION.join(" × ")</var></code>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hints">
+
+            </div>
+        </div>
+</body>
+</html>

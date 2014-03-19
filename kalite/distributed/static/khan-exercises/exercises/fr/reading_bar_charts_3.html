@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html data-require="math math-format stat graphie word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Lire des diagrammes à barres 3</title>
+<script src="../khan-exercise.js"></script><style>
+        span.rotate  {
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            -webkit-transform: rotate(-90deg);
+            -ms-filter: 'progid:DXImageTransform.Microsoft.Matrix( M11=0, M21=-1, M12=1, M22=0, SizingMethod="auto expand" )';
+        }
+        body.ie span.rotate {
+            left: 50px !important;
+            top: 140px !important;
+        }
+        body.debug .graphie {
+            outline: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="NUM_STUDENTS">randFromArray([ 5, 6 ])</var>
+            <div data-ensure="( NUM_IMPROVED &gt;= 3 &amp;&amp; !IMPROVE_TIE ) || UNBIASED">
+                <var id="MIDTERM">$.map( new Array( NUM_STUDENTS ), function() { return randRange( 12, 20 ) * 5; } )</var>
+                <var id="FINAL">$.map( new Array( NUM_STUDENTS ), function() { return randRange( 12, 20 ) * 5; } )</var>
+                <var id="IMPROVEMENT">$.map( new Array( NUM_STUDENTS ), function( e, n ) { return FINAL[ n ] - MIDTERM[ n ]; } )</var>
+                <var id="NUM_IMPROVED">$.map( IMPROVEMENT, function( x ) { return x &gt; 0 ? 1 : null; }).length</var>
+                <var id="IMPROVE_TIE">IMPROVEMENT.slice().sort(function(a,b){return a - b;})[4] === IMPROVEMENT.slice().sort(function(a,b){return a - b;})[3]</var>
+                <var id="UNBIASED">false</var>
+            </div>
+        </div>
+        <div class="problem">
+            <p>Use the graph to answer the question:</p>
+            <p id="qn"></p>
+            <div class="graphie" id="barchart">init({range:[[-2,3*NUM_STUDENTS+2],[-3,12]],scale:[24,24]});for(var y=1;10&gt;=y;++y)label([0,y],10*y,"left",!1),style({stroke:"#000",strokeWidth:1,opacity:.2},function(){line([0,y],[3*NUM_STUDENTS+1,y])});for(var index=0;NUM_STUDENTS&gt;index;++index)style({stroke:"none",fill:"#9ab8ed",opacity:1}),path([[3*index+1,0],[3*index+1,MIDTERM[index]/10],[3*index+2,MIDTERM[index]/10],[3*index+2,0],[3*index+1,0]]),style({stroke:"none",fill:"#ffc966",opacity:1}),path([[3*index+2,0],[3*index+2,FINAL[index]/10],[3*index+3,FINAL[index]/10],[3*index+3,0],[3*index+2,0]]),style({opacity:1}),label([3*index+2,0],person(index+1),"below",!1);style({stroke:"#000",strokeWidth:2,opacity:1}),line([0,0],[3*NUM_STUDENTS+1,0]),line([0,0],[0,10]),label([(3*NUM_STUDENTS+1)/2,-.8],$._("élève"),"below",!1).css("font-weight","bold"),label([-1.5,5],"Score (points)","center",!1).addClass("rotate").css("font-weight","bold"),label([(3*NUM_STUDENTS+1)/2,10.5],$._("Scores on Midterm and Final Exams"),"above",!1).css("font-weight","bold"),style({stroke:"none",fill:"#9ab8ed",opacity:1}),path([[0,-2],[.5,-2],[.5,-2.5],[0,-2.5],[0,-2]]),style({stroke:"#000",strokeWidth:2,opacity:1}),label([.5,-2.25],$._("Examen partiel"),"right",!1),style({stroke:"none",fill:"#ffc966",opacity:1}),path([[3,-2],[3.5,-2],[3.5,-2.5],[3,-2.5],[3,-2]]),style({stroke:"#000",strokeWidth:2,opacity:1}),label([3.5,-2.25],$._("Final"),"right",!1)</div>
+        </div>
+
+        <div class="problems">
+
+            <div id="average">
+                <div class="vars" data-ensure="NUM_STUDENTS === 5">
+                    <var id="COLUMN">randRange( 0, 1 )</var>
+                    <var id="TEST">[ $._("midterm"), $._("examen final") ][ COLUMN ]</var>
+                    <var id="AVERAGE">COLUMN === 0 ? mean( MIDTERM ) : mean( FINAL )</var>
+                </div>
+                <p id="qn" class="question">What was the average student score for the <var>TEST</var>?</p>
+
+                <div class="solution" data-forms="integer"><var>AVERAGE</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>Use the key to figure out which of the two bars shows the scores for the <var>TEST</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*COLUMN+1.2,-2.25],[1.5,.5])</div>
+                    </div>
+                    <div>
+                        <p>Trouver chacun des résultats du <var>TEST</var> représentés par les barres <span data-if="COLUMN === 0">bleues</span><span data-else="">oranges</span>.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">0===COLUMN?label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"}):label([3*INDEX+2.5,FINAL[INDEX]/10+.2],FINAL[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <p>Pour trouver la moyenne des étudiants, on additionne toutes les notes individuelles, puis on divise par le nombre d'étudiants.</p>
+                    <p>
+                        <code>
+                            \dfrac{<var>plus.apply( null, COLUMN === 0 ? MIDTERM : FINAL )</var>}{<var>NUM_STUDENTS</var>} =
+                            \dfrac{<var>sum( COLUMN === 0 ? MIDTERM :  FINAL )</var>}{<var>NUM_STUDENTS</var>} =
+                            <var>AVERAGE</var>
+                        </code>
+                    </p>
+                    <p class="final_answer">The average student score on the <var>TEST</var> was <code><var>AVERAGE</var></code>.</p>
+                </div>
+            </div>
+
+            <div id="comp-average">
+                <div class="vars" data-ensure="NUM_STUDENTS === 5">
+                    <var id="UNBIASED">true</var>
+                    <var id="MIDTERM_AVG">mean( MIDTERM )</var>
+                    <var id="FINAL_AVG">mean( FINAL )</var>
+                    <var id="ANSWERS">[$._("Examen partiel"), $._("Examen final"), $._("Identique pour les deux")]</var>
+                    <var id="ANSWER">MIDTERM_AVG &gt; FINAL_AVG ? 0 : ( MIDTERM_AVG &lt; FINAL_AVG ? 1 : 2 )</var>
+                </div>
+                <p id="qn" class="question">En moyenne, les étudiants ont-ils mieux reussis sur l'examen partiel ou bien l'examen final ?</p>
+
+                <div class="solution"><var>ANSWERS[ANSWER]</var></div>
+                <ul class="choices" data-category="true">
+<li data-each="ANSWERS as ANS">
+                        <var>ANS</var>
+                    </li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p>Trouver chacun des <span class="hint_blue">résultats mi-trimestre</span> représentés par <span class="hint_blue">les barres bleues</span>.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <p>Pour calculer la note moyenne des étudiants sur leur examen partiel, on additionne les notes individuelles et l'on divise le résultat par le nombre d'étudiants.</p>
+                    <div>
+                        <p><code>
+                            \dfrac{<var>plus.apply( null, MIDTERM )</var>}{<var>NUM_STUDENTS</var>} =
+                            \dfrac{<var>sum( MIDTERM )</var>}{<var>NUM_STUDENTS</var>} =
+                            <var>MIDTERM_AVG</var>
+                        </code></p>
+                        <p>Le score moyen des étudiants sur l'examen partiel était de <code class="hint_blue"> <var>MIDTERM_AVG</var></code>.</p>
+                    </div>
+                    <div>
+                        <p>Trouver chacun des <span class="hint_orange">résultats d'éxamens finaux</span> représentés par les <span class="hint_orange">barres oranges</span>.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">label([3*INDEX+2.5,FINAL[INDEX]/10+.2],FINAL[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <p>Pour calculer la note moyenne des étudiants sur leur examen final, on additionne les notes individuelles et l'on divise le résultat par le nombre d'étudiants.</p>
+                    <div>
+                        <p><code>
+                            \dfrac{<var>plus.apply( null, FINAL )</var>}{<var>NUM_STUDENTS</var>} =
+                            \dfrac{<var>sum( FINAL )</var>}{<var>NUM_STUDENTS</var>} =
+                            <var>FINAL_AVG</var>
+                        </code></p>
+                        <p>Le score moyen des étudiants à l'examen final a été <code class="hint_orange"> <var>FINAL_AVG</var></code>.</p>
+                    </div>
+                    <p class="final_answer" data-if="MIDTERM_AVG &gt; FINAL_AVG">Le score de l'étudiant moyen était plus élevé sur l'examen <span class="hint_blue"> partiel</span> que sur l' <span class="hint_orange">l'examen final</span>.</p>
+                    <p class="final_answer" data-else-if="MIDTERM_AVG &lt; FINAL_AVG">Le score moyen des étudiants était supérieur à l' <span class="hint_orange"> l'examen final</span> qu'a <span class="hint_blue"> l'examen partiel</span>.</p>
+                    <p class="final_answer" data-else="">Le score moyen des étudiants était le même sur <span class="hint_blue"> l'examen partiel</span> et l' <span class="hint_orange"> l'examen final</span>.</p>
+                </div>
+            </div>
+
+            <div id="median">
+                <div class="vars">
+                    <var id="COLUMN">randRange( 0, 1 )</var>
+                    <var id="TEST">[ $._("midterm"), $._("examen final") ][ COLUMN ]</var>
+                    <var id="MEDIAN">COLUMN === 0 ? median( MIDTERM ) : median( FINAL )</var>
+                </div>
+                <p id="qn" class="question">What was the median score for the <var>TEST</var>?</p>
+
+                <div class="solution"><var>MEDIAN</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>Use the key to figure out which of the two bars shows the scores for the <var>TEST</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*COLUMN+1.2,-2.25],[1.5,.5])</div>
+                    </div>
+                    <div>
+                        <p>Trouver chacun des résultats du <var>TEST</var> représentés par les barres <span data-if="COLUMN === 0">bleues</span><span data-else="">oranges</span>.</p>
+                        <p><code>\qquad\large{<var>( COLUMN === 0 ? MIDTERM : FINAL ).join(", ")</var>}</code></p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">0===COLUMN?label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"}):label([3*INDEX+2.5,FINAL[INDEX]/10+.2],FINAL[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Put the <var>TEST</var> scores in order from least to greatest.</p>
+                        <p><code>\qquad\large{<var>sortNumbers( COLUMN === 0 ? MIDTERM : FINAL ).join(", ")</var>}</code></p>
+                    </div>
+                    <p data-if="NUM_STUDENTS % 2">Puisqu'il y a un nombre impair de résultats, la médiane est simplement le résultat du milieu.</p>
+                    <div data-else="" data-unwrap="">
+                        <p>Puisqu'il y a un nombre pair de résultats, la médiane est la moyenne des deux résultats du milieu.</p>
+                        <p>
+                            <code>
+                                \dfrac{
+                                <var>COLUMN === 0 ? sortNumbers( MIDTERM )[ NUM_STUDENTS / 2 - 1 ] : sortNumbers( FINAL )[ NUM_STUDENTS / 2 - 1 ]</var> +
+                                <var>COLUMN === 0 ? sortNumbers( MIDTERM )[ NUM_STUDENTS / 2 ] : sortNumbers( FINAL )[ NUM_STUDENTS / 2 ]</var>
+                                }{2} = <var>MEDIAN</var>
+                            </code>
+                        </p>
+                    </div>
+                    <p class="final_answer">La médiane des résultats du <var>TEST</var> était <code><var>MEDIAN</var></code>.</p>
+                </div>
+            </div>
+
+            <div id="mode">
+                <div class="vars" data-ensure="MODE">
+                    <var id="COLUMN">randRange( 0, 1 )</var>
+                    <var id="TEST">[ $._("midterm"), $._("examen final") ][ COLUMN ]</var>
+                    <var id="MODE">COLUMN === 0 ? mode( MIDTERM ) : mode( FINAL )</var>
+                </div>
+                <p id="qn" class="question">What was the mode for the <var>TEST</var> scores?</p>
+
+                <div class="solution" data-forms="integer"><var>MODE</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>Use the key to figure out which of the two bars shows the scores for the <var>TEST</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*COLUMN+1.2,-2.25],[1.5,.5])</div>
+                    </div>
+                    <div>
+                        <p>Trouver chacun des résultats du <var>TEST</var> représentés par les barres <span data-if="COLUMN === 0">bleues</span><span data-else="">oranges</span>.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">0===COLUMN?label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"}):label([3*INDEX+2.5,FINAL[INDEX]/10+.2],FINAL[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <p>La mode est le résultat qui aparait le plus souvent.</p>
+                    <div>
+                        <p class="final_answer"><code><var>MODE</var></code> est le résultat qui apparait le plus souvent.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">0===COLUMN?MIDTERM[INDEX]===MODE&amp;&amp;ellipse([3*INDEX+1.5,MIDTERM[INDEX]/10-.5],[.8,.6]):FINAL[INDEX]===MODE&amp;&amp;ellipse([3*INDEX+2.5,FINAL[INDEX]/10-.5],[.8,.6])</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="range">
+                <div class="vars">
+                    <var id="COLUMN">randRange( 0, 1 )</var>
+                    <var id="TEST">[ $._("midterm"), $._("examen final") ][ COLUMN ]</var>
+                    <var id="MIN">COLUMN === 0 ? Math.min.apply( null, MIDTERM ) : Math.min.apply( null, FINAL )</var>
+                    <var id="MAX">COLUMN === 0 ? Math.max.apply( null, MIDTERM ) : Math.max.apply( null, FINAL )</var>
+                    <var id="RANGE">MAX - MIN</var>
+                </div>
+                <p id="qn" class="question">What is the range of the <var>TEST</var> scores?</p>
+
+                <div class="solution" data-forms="integer"><var>RANGE</var></div>
+
+                <div class="hints">
+                    <p>La gamme est la différence entre la plus grande valeur est la plus petite.</p>
+                    <div>
+                        <p>Use the key to figure out which of the two bars shows the scores for the <var>TEST</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*COLUMN+1.2,-2.25],[1.5,.5])</div>
+                    </div>
+                    <div>
+                        <p>Trouver le plus grand et le plus petit résultat du <var>TEST</var> représentés par les barres <span data-if="COLUMN === 0">bleus</span><span data-else="">oranges</span>.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">0===COLUMN?(MIDTERM[INDEX]===MIN||MIDTERM[INDEX]===MAX)&amp;&amp;label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"}):(FINAL[INDEX]===MIN||FINAL[INDEX]===MAX)&amp;&amp;label([3*INDEX+2.5,FINAL[INDEX]/10+.2],FINAL[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <p>Le plus petit résultat du <var>TEST</var> est<code><var>MIN</var></code>. Le plus grand résultat du <var>TEST</var> est <code><var>MAX</var></code>.</p>
+                    <div>
+                        <p>Trouver la gamme en soustrayant le plus pétit résultat du plus grand.</p>
+                        <p><code>\qquad <var>MAX</var> - <var>MIN</var> = <var>RANGE</var></code></p>
+                    </div>
+                    <p class="final_answer">La gamme des résultats du <var>TEST</var> est <code><var>RANGE</var></code>.</p>
+                </div>
+            </div>
+
+            <div id="midrange">
+                <div class="vars">
+                    <var id="COLUMN">randRange( 0, 1 )</var>
+                    <var id="TEST">[ $._("midterm"), $._("examen final") ][ COLUMN ]</var>
+                    <var id="MIN">COLUMN === 0 ? Math.min.apply( null, MIDTERM ) : Math.min.apply( null, FINAL )</var>
+                    <var id="MAX">COLUMN === 0 ? Math.max.apply( null, MIDTERM ) : Math.max.apply( null, FINAL )</var>
+                    <var id="MIDRANGE">(MAX + MIN) / 2</var>
+                </div>
+                <p id="qn" class="question">What is the midrange of the <var>TEST</var> scores?</p>
+
+                <div class="solution"><var>MIDRANGE</var></div>
+
+                <div class="hints">
+                    <p>Le milieu de gamme et à mi-chemin entre la plus grande valeur et la plus petite.</p>
+                    <div>
+                        <p>Use the key to figure out which of the two bars shows the scores for the <var>TEST</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*COLUMN+1.2,-2.25],[1.5,.5])</div>
+                    </div>
+                    <div>
+                        <p>Trouver le plus grand et le plus petit résultat du <var>TEST</var> représentés par les barres <span data-if="COLUMN === 0">bleus</span><span data-else="">oranges</span>.</p>
+                        <div data-each="NUM_STUDENTS times as INDEX">
+                            <div class="graphie" data-update="barchart">0===COLUMN?(MIDTERM[INDEX]===MIN||MIDTERM[INDEX]===MAX)&amp;&amp;label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"}):(FINAL[INDEX]===MIN||FINAL[INDEX]===MAX)&amp;&amp;label([3*INDEX+2.5,FINAL[INDEX]/10+.2],FINAL[INDEX],"below",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                    </div>
+                    <p>Le plus petit résultat du <var>TEST</var> est<code><var>MIN</var></code>. Le plus grand résultat du <var>TEST</var> est <code><var>MAX</var></code>.</p>
+                    <div>
+                        <p>Trouver le milieu de gamme en trouvant la moyenne du plus petit et le plus grand résultat.</p>
+                        <p><code>\qquad \dfrac{<var>MIN</var> + <var>MAX</var>}{2} = <var>MIDRANGE</var></code></p>
+                    </div>
+                    <p class="final_answer">Le milieu de gamme des résultats du <var>TEST</var> est <code><var>MIDRANGE</var></code>.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

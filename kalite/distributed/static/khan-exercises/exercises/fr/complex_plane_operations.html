@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html data-require="math graphie interactive">
+<head>
+<title>Op&eacute;rations dans le plan complexe</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+        <div class="exercise">
+            <div class="vars">
+                <var id="REAL1">randRangeNonZero(-5, 5)</var>
+                <var id="REAL2">randRangeNonZero(-5, 5)</var>
+                <var id="COMPLEX1">randRangeNonZero(-5, 5)</var>
+                <var id="COMPLEX2">randRangeNonZero(-5, 5)</var>
+            </div>
+
+            <div class="problem">
+                <p>Soient <code>a</code> et <code>b</code> des nombres complexes :</p>
+                <p><code>\begin{align*}
+                    a &amp;= <var>REAL1</var> + <var>COMPLEX1</var>i \\
+                    b &amp;= <var>REAL2</var> + <var>COMPLEX2</var>i
+                \end{align*}</code></p>
+            </div>
+
+            <p class="question">Combien vaut <code>a+b</code>?</p>
+
+            <div class="graphie" id="graph">graphInit({range:11,scale:20,tickStep:1,labelStep:1}),label([11,1],"Re","left"),label([.5,10],"Im","right"),line([0,0],[REAL1,COMPLEX1],{stroke:"#6495ed",arrows:"-&gt;"}),line([0,0],[REAL2,COMPLEX2],{stroke:"#28ae7b",arrows:"-&gt;"});var AF=1+.8/sqrt(REAL1*REAL1+COMPLEX1*COMPLEX1);label([AF*REAL1,AF*COMPLEX1],"a",{color:"#6495ed"});var BF=1+.8/sqrt(REAL2*REAL2+COMPLEX2*COMPLEX2);label([BF*REAL2,BF*COMPLEX2],"b",{color:"#28ae7b"}),addMouseLayer(),graph.guessPoint=addMovablePoint({constraints:{},snapX:.5,snapY:.5})</div>
+            <div class="solution" data-type="custom">
+                <div class="instruction">Faites glisser le point orange pour placer votre r&eacute;ponse.</div>
+                <div class="guess">graph.guessPoint.coord</div>
+                <div class="validator-function">return guess[0]===ANSWER[0]&amp;&amp;guess[1]===ANSWER[1]?!0:!1</div>
+                <div class="show-guess">graph.guessPoint.setCoord(guess)</div>
+            </div>
+
+            <div class="problems">
+                <div id="complex-addition">
+                    <div class="vars">
+                        <var id="ANSWER">[REAL1 + REAL2, COMPLEX1 + COMPLEX2]</var>
+                    </div>
+
+                    <div class="hints">
+                        <div>
+                            <p>Additionne la partie r&eacute;elle et la partie imaginaire s&eacute;par&eacute;ment.</p>
+                        </div>
+                        <div>
+                            <p><code>a + b = (<var>REAL1</var> + <var>REAL2</var>) + (<var>COMPLEX1</var> + <var>COMPLEX2</var>)i</code></p>
+                            <div class="graphie" data-update="graph">line([REAL2,COMPLEX2],[REAL1+REAL2,COMPLEX1+COMPLEX2],{stroke:"#6495ed",arrows:"-&gt;"}),graph.guessPoint.toFront()</div>
+                        </div>
+                        <div>
+                            <p><code>\hphantom{a + b} = <var>REAL1 + REAL2</var> + <var>COMPLEX1 + COMPLEX2</var>i</code></p>
+                            <div class="graphie" data-update="graph">line([0,0],[REAL1+REAL2,COMPLEX1+COMPLEX2],{stroke:"#ffa500",arrows:"-&gt;"}),graph.guessPoint.toFront(),graph.guessPoint.moveTo(REAL1+REAL2,COMPLEX1+COMPLEX2)</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="complex-subtraction">
+                    <div class="vars">
+                        <var id="ANSWER">[REAL1 - REAL2, COMPLEX1 - COMPLEX2]</var>
+                    </div>
+                    <p class="question">Combien vaut <code>a-b</code>?</p>
+                    <div class="hints">
+                        <div>
+                            <p>Soustrait la partie r&eacute;elle et la partie imaginaire s&eacute;par&eacute;ment.</p>
+                        </div>
+                        <div>
+                            <p><code>a - b = (<var>REAL1</var> - <var>REAL2</var>) + (<var>COMPLEX1</var> - <var>COMPLEX2</var>)i</code></p>
+                            <div class="graphie" data-update="graph">line([REAL1,COMPLEX1],[REAL1-REAL2,COMPLEX1-COMPLEX2],{stroke:"#28ae7b",arrows:"-&gt;"}),graph.guessPoint.toFront()</div>
+                        </div>
+                        <div>
+                            <p><code>\hphantom{a - b} = <var>REAL1 - REAL2</var> + <var>COMPLEX1 - COMPLEX2</var>i</code></p>
+                            <div class="graphie" data-update="graph">line([0,0],[REAL1-REAL2,COMPLEX1-COMPLEX2],{stroke:"#ffa500",arrows:"-&gt;"}),graph.guessPoint.toFront(),graph.guessPoint.moveTo(REAL1-REAL2,COMPLEX1-COMPLEX2)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>

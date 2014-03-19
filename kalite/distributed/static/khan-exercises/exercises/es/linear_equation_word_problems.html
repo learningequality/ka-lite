@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems khanscript">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Problemas de ecuaciones lineales y desigualdades</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <script type="text/khanscript">
+        Khan.scratchpad.disable();
+    </script><div class="problems">
+        <div id="magazine_subscription_selling">
+            <div class="vars" data-ensure="Q &lt; R">
+                <var id="Q">randRange(20, 40)</var>
+                <var id="P">randRange(2, 10)</var>
+                <var id="R">randRange(30, 100)</var>
+                <var id="X">ceil((R - Q) / P)</var>
+            </div>
+
+            <p class="problem" data-if="isMale(1)"><var>person(1)</var> vende suscripciones a revistas y gana <code>$<var>P</var></code> por cada nuevo suscriptor que firma. <var>person(1)</var> gana además un bono semanal de <code>$<var>Q</var></code> sin importar cuántas suscripciones haya vendido en la semana.</p>
+<p class="problem" data-else=""><var>person(1)</var> vende suscripciones a revistas y gana <code>$<var>P</var></code> por cada nuevo suscriptor que firma. <var>person(1)</var> gana además un bono semanal de <code>$<var>Q</var></code> sin importar cuántas suscripciones haya vendido en la semana.</p>
+            <p class="question" data-if="isMale(1)">Si <var>person(1)</var> quiere ganar al menos <code>$<var>R</var></code> esta semana, ¿cuál es el mínimo número de suscripciones que necesita vender hoy?</p>
+<p class="question" data-else="">Si <var>person(1)</var> quiere ganar al menos <code>$<var>R</var></code> esta semana, ¿cuál es el mínimo número de suscripciones que debe vender?</p>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <input type="text" id="guessans"> subscriptions
+                </div>
+                <div class="guess">[$("#guessans").val(),$("#firsttext").val(),$("#secondtext").val()]</div>
+                <div class="validator-function">var e=X,t=$("&lt;div&gt;").text(e),n=Khan.answerTypes.number.createValidator(t);return n(guess[0])</div>
+                <div class="show-guess-solutionarea">null!=guess?$("#guessans").val(guess[0]):($("#guessans").val(""),$("#firsttext").length&gt;0&amp;&amp;($("#firsttext").text(""),$("#secondtext").text("")))</div>
+                <div class="show-guess">null!=guess&amp;&amp;$("#firsttext").length&gt;0&amp;&amp;(null===guess[1]?$("#firsttext").text(""):$("#firsttext").text(guess[1]),null===guess[2]?$("#secondtext").text(""):$("#secondtext").text(guess[2]))</div>
+                <div class="example">un entero, como <code>6</code>
+</div>
+            </div>
+
+            <div class="hints">
+                <p>Para resolver esto, establezcamos una expresión para indicar cuánto dinero ganará <var>person(1)</var>.</p>
+                <p>
+                    <span>Cantidad ganada esta semana <code>=</code></span><br><span><code>\qquad</code>Suscripciones vendidad <code>\times</code> Precio por suscripción <code>+</code> Bono semanal</span>
+                </p>
+                <p>Puesto que <var>person(1)</var> quiere hacer <strong>al menos</strong> <code>$<var>R</var></code> esta semana, podemos convertir esto en una desigualdad.</p>
+                <div>
+                    <p>Cantidad ganada esta semana <code>\geq $<var>R</var></code></p>
+                    <p>Suscripciones vendidas <code>\times</code> pago por suscripción <code>+</code> Bono semanal <code>\geq $<var>R</var></code></p>
+                </div>
+                <p>Estamos resolviendo para el número de suscripciones vendidas, así que hacemos <code>x</code> representar el número de suscripciones.</p>
+                <div>
+                    <p>Ahora podemos introducir:</p>
+                    <p><code>x \cdot $<var>P</var> + $<var>Q</var> \geq
+                        $<var>R</var></code></p>
+                </div>
+                <div>
+                    <p><code>
+                        x \cdot $<var>P</var> \geq
+                        $<var>R</var> - $<var>Q</var>
+                    </code></p>
+                    <p><code>
+                        x \cdot $<var>P</var> \geq $<var>R - Q</var>
+                    </code></p>
+                </div>
+                <div data-if="(R - Q) % P !== 0" data-unwrap="">
+                    <p><code>x \geq \dfrac{<var>R - Q</var>}{<var>P</var>}
+                        \approx <var>localeToFixed((R - Q) / P, 2)</var></code></p>
+                    <p data-if="(R - Q) % P !== 0">Como <var>person(1)</var> no puede vender partes de una suscripción, redondeamos <code><var>localeToFixed((R - Q) / P, 2)</var></code> hasta <code><var>X</var></code>.</p>
+                </div>
+                <div data-else="">
+                    <p><code>x \geq \dfrac{<var>R - Q</var>}{<var>P</var>} =
+                        <var>(R - Q) / P</var></code></p>
+                </div>
+                <p><var>person(1)</var> debe vender al menos <var>X</var> suscripciones esta semana.</p>
+            </div>
+        </div>
+
+        <div id="video_game_levels">
+            <div class="vars" data-ensure="Q &lt; R">
+                <var id="Q">10 * randRange(100 / 10, 500 / 10)</var>
+                <var id="P">10 * randRange(300 / 10, 1000 / 10)</var>
+                <var id="R">10 * randRange(2000 / 10, 4000 / 10)</var>
+                <var id="X">ceil((R - Q) / P)</var>
+            </div>
+
+            <p class="problem" data-if="isMale(1)">Por cada nivel que <var>person(1)</var> completa en su juego favorito, él gana <code><var>P</var></code> puntos. <var>person(1)</var> ya tiene <code><var>Q</var></code> puntos en el juego y quiere tener al menos <code><var>R</var></code> puntos antes de ir a la cama.</p>
+<p class="problem" data-else="">Para cada nivel que <var>person(1)</var> completa en su juego favorito, ella gana <code><var>P</var></code> puntos. <var>person(1)</var> ya tiene <code><var>Q</var></code> puntos en el juego y quiere tener al menos <code><var>R</var></code> antes de ir a la cama.</p>
+            <p class="question" data-if="isMale(1)">¿Cuál es el mínimo número de niveles completos que <var>person(1)</var> necesita para llegar a su meta?</p>
+<p class="question" data-else="">¿Cuál es el mínimo número de niveles completos que <var>person(1)</var> necesita completar para llegar a su meta?</p>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <input type="text" id="guessans"> levels
+                </div>
+                <div class="guess">[$("#guessans").val(),$("#firsttext").val(),$("#secondtext").val()]</div>
+                <div class="validator-function">var e=X,t=$("&lt;div&gt;").text(e),n=Khan.answerTypes.number.createValidator(t);return n(guess[0])</div>
+                <div class="show-guess-solutionarea">null!=guess?$("#guessans").val(guess[0]):($("#guessans").val(""),$("#firsttext").length&gt;0&amp;&amp;($("#firsttext").text(""),$("#secondtext").text("")))</div>
+                <div class="show-guess">null!=guess&amp;&amp;$("#firsttext").length&gt;0&amp;&amp;(null===guess[1]?$("#firsttext").text(""):$("#firsttext").text(guess[1]),null===guess[2]?$("#secondtext").text(""):$("#secondtext").text(guess[2]))</div>
+                <div class="example">un entero, como <code>6</code>
+</div>
+            </div>
+
+            <div class="hints">
+                <p>Para resolver esto, establezcamos una expresión que indique cuántos puntos tendrá  <var>person(1)</var> después de cada nivel.</p>
+                <p>
+                    <span>Número de puntos <code>=</code></span><br><span><code>\qquad</code>Niveles completados <code>\times</code> puntos por nivel <code>+</code> Puntos iniciales</span>
+                </p>
+                <p>Puesto que <var>person(1)</var> quiere tener <strong>al menos</strong> <code><var>R</var></code> puntos antes de ir a la cama, podemos establecer una desigualdad.</p>
+                <div>
+                    <p>Número de puntos <code>\geq <var>R</var></code></p>
+                    <p>Niveles completados <code>\times</code> puntos por nivel <code>+</code> Puntos iniciales <code>\geq <var>R</var></code></p>
+                </div>
+                <p>Estamos resolviendo para el número de niveles completados, así que hacemos  <code>x</code> representar el número de niveles.</p>
+                <div>
+                    <p>Ahora podemos introducir:</p>
+                    <p><code>x \cdot <var>P</var> + <var>Q</var> \geq
+                        <var>R</var></code></p>
+                </div>
+                <div>
+                    <p><code>
+                        x \cdot <var>P</var> \geq <var>R</var> - <var>Q</var>
+                    </code></p>
+                    <p><code>
+                        x \cdot <var>P</var> \geq <var>R - Q</var>
+                    </code></p>
+                </div>
+                <div data-if="(R - Q) % P !== 0" data-unwrap="">
+                    <p><code>x \geq \dfrac{<var>R - Q</var>}{<var>P</var>}
+                        \approx <var>localeToFixed((R - Q) / P, 2)</var></code></p>
+                    <p data-if="(R - Q) % P !== 0"><span data-if="isMale(1)" data-unwrap="">Puesto que <var>person(1)</var> no obtendrá puntos hasta terminar un nivel completo, redondeamos <code><var>localeToFixed((R - Q) / P, 2)</var></code> hasta <code><var>X</var></code>.</span><span data-else="" data-unwrap="">Puesto que <var>person(1)</var> no obtendrá puntos hasta terminar un nivel completo, redondeamos <code><var>localeToFixed((R - Q) / P, 2)</var></code> hasta <code><var>X</var></code>.</span></p>
+                </div>
+                <div data-else="">
+                    <p><code>x \geq \dfrac{<var>R - Q</var>}{<var>P</var>} =
+                        <var>(R - Q) / P</var></code></p>
+                </div>
+                <p><var>person(1)</var> debe completar al menos <var>X</var> niveles.</p>
+            </div>
+        </div>
+
+        <div id="piano_months">
+            <div class="vars" data-ensure="Q &lt; R">
+                <var id="Q">randRange(5, 50)</var>
+                <var id="R">randRange(50, 200)</var>
+                <var id="P">randRange(1, 10)</var>
+                <var id="X">ceil(( R - Q ) / P)</var>
+            </div>
+
+            <p class="problem" data-if="isMale(1)">Para subir al nivel maestro en su escuela de piano, <var>person(1)</var> debe dominar al menos <code><var>R</var></code> canciones. <var>person(1)</var> ya domina<code><var>Q</var></code> canciones.</p>
+<p class="problem" data-else="">Para subir al nivel maestro en su escuela de piano, <var>person(1)</var> debe dominal al menos <code><var>R</var></code> canciones. <var>person(1)</var> ya domina <code><var>Q</var></code> canciones.</p>
+            <p class="question">Si <var>person(1)</var> puede dominar <code><var>P</var></code> canciones al mes, ¿uál es el número mínimo de meses que le costará a <var>him(1)</var> pasar al nivel de maestro?</p>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <input type="text" id="guessans"> months
+                </div>
+                <div class="guess">[$("#guessans").val(),$("#firsttext").val(),$("#secondtext").val()]</div>
+                <div class="validator-function">var e=X,t=$("&lt;div&gt;").text(e),n=Khan.answerTypes.number.createValidator(t);return n(guess[0])</div>
+                <div class="show-guess-solutionarea">null!=guess?$("#guessans").val(guess[0]):($("#guessans").val(""),$("#firsttext").length&gt;0&amp;&amp;($("#firsttext").text(""),$("#secondtext").text("")))</div>
+                <div class="show-guess">null!=guess&amp;&amp;$("#firsttext").length&gt;0&amp;&amp;(null===guess[1]?$("#firsttext").text(""):$("#firsttext").text(guess[1]),null===guess[2]?$("#secondtext").text(""):$("#secondtext").text(guess[2]))</div>
+                <div class="example">un entero, como <code>6</code>
+</div>
+            </div>
+
+            <div class="hints">
+                <p>Para resolver esto, establezcamos una expresión que indique cuántas canciones dominará <var>person(1)</var> al final de cada mes.</p>
+                <p>
+                    <span>Número de canciones dominadas <code>=</code></span><br><span><code>\quad</code>Meses en la escuela <code>\times</code> Canciones dominadas por mes <code>+</code> Canciones ya dominadas</span>
+                </p>
+                <p>Dado que <var>person(1)</var> necesita <strong>al menos</strong> <code><var>R</var></code> canciones dominadas para pasar al nivel maestro, podemos establecer una desigualdad para encontrar el numero de meses requeridos.</p>
+                <div>
+                    <p>Número de canciones dominadas <code>\geq <var>R</var></code><br></p>
+<p>
+                    <span>Meses en la escuela <code>\times</code> Canciones dominadas por mes</span><br><span><code>\qquad+</code> Canciones ya dominadas <code>\geq <var>R</var></code></span>
+                    </p>
+                </div>
+                <p>Estamos resolviendo para los meses que pasó en la escuela, así que hacemos <code>x</code> representar el numero de meses.</p>
+                <div>
+                    <p>Ahora podemos introducir:</p>
+                    <p><code>x \cdot <var>P</var> + <var>Q</var> \geq
+                        <var>R</var></code></p>
+                </div>
+                <div>
+                    <p><code>
+                        x \cdot <var>P</var> \geq <var>R</var> - <var>Q</var>
+                    </code></p>
+                    <p><code>
+                        x \cdot <var>P</var> \geq <var>R - Q</var>
+                    </code></p>
+                </div>
+                <div data-if="(R - Q) % P !== 0" data-unwrap="">
+                    <p><code>x \geq \dfrac{<var>R - Q</var>}{<var>P</var>}
+                        \approx <var>localeToFixed((R - Q) / P, 2)</var></code></p>
+                    <p data-if="(R - Q) % P !== 0">Puesto que solo nos interesan los meses completos que <var>person(1)</var> ha estado trabajando, redondeamos <code><var>localeToFixed((R - Q) / P, 2)</var></code> hasta <code><var>X</var></code>.</p>
+                </div>
+                <div data-else="">
+                    <p><code>x \geq \dfrac{<var>R - Q</var>}{<var>P</var>} =
+                        <var>(R - Q) / P</var></code></p>
+                </div>
+                <p><var>person(1)</var> debe trabajar al menos <var>X</var> meses.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

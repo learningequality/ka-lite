@@ -196,7 +196,7 @@ def topic_context(topic):
     topics    = topic_tools.get_live_topics(topic)
     my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
 
-    exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercises_path = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
 
     for lang_code in (set(os.listdir(exercises_path)) - set(["test"])):  # hard-code out test
@@ -268,7 +268,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     Display an exercise
     """
     lang = request.session[settings.LANGUAGE_COOKIE_NAME]
-    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
     exercise_localized_template = os.path.join(lang, exercise_file)

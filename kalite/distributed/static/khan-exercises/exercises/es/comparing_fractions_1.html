@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Comparando fracciones 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <!--
+        Compares fractions that have the same numerator or have the same denominator.
+        TODO: would like to draw overlapping circles or rectangle slices for hints.
+    -->
+    <div class="exercise">
+        <div class="problems">
+            <div id="same-numerator">
+                <div class="vars" data-ensure="DEN_1 !== DEN_2">
+                    <var id="NUM_1">randRange( 1, 14 )</var>
+                    <var id="DEN_1">randRange( NUM_1 + 1, 15 )</var>
+
+                    <var id="NUM_2">NUM_1</var>
+                    <var id="DEN_2">randRange( NUM_2 + 1, 15 )</var>
+
+                    <var id="SOLUTION">function(){return DEN_2&gt;DEN_1?"&gt;":"&lt;"}()</var>
+                </div>
+
+                <div class="problem">
+                    <p>Rellena el espacio en blanco.</p>
+                    <p>
+                        <code>\dfrac{<var>NUM_1</var>}{<var>DEN_1</var>}</code>
+                        ____ <code>\dfrac{<var>NUM_2</var>}{<var>DEN_2</var>}</code>
+                    </p>
+                </div>
+                <p class="solution"><code><var>SOLUTION</var></code></p>
+                <ul class="choices" data-category="true">
+<li><code>&lt;</code></li>
+                    <li><code>&gt;</code></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p>Esto es como comparar dos pizzas del mismo tamaño, donde una se corta en <var>DEN_1</var> rebanadas iguales y la otra en <var>DEN_2</var> rebanadas iguales.</p>
+                        <div style="height: 150px;">
+                            <div class="graphie" style="float: left">init({range:[[-3,3],[-3,3]],scale:25}),piechart([NUM_1,DEN_1-NUM_1],["#e00","#999"],2)</div>
+                            <div class="graphie" style="float: left">init({range:[[-3,3],[-3,3]],scale:25}),piechart([NUM_2,DEN_2-NUM_2],["#e00","#999"],2)</div>
+                        </div>
+                    </div>
+                    <p>Ten en cuenta que al cortar la pizza en más rebanadas, estas serán más pequeñas.</p>
+                    <p data-if="DEN_1 &gt; DEN_2">La fracción de izquierda representa una pizza con más rebanadas, por lo tanto, cada rebana es mas pequeña.</p>
+<p data-else="">La fracción de la izquierda representa una pizza con menos rebanadas, por lo tanto, cada rebanada es mayor.</p>
+                    <p>
+                        <span data-if="DEN_1 &gt; DEN_2"><span data-if="$.ngetpos(NUM_1, 'es-ES') === 0" data-unwrap="">Hay <var>NUM_1</var> rebanada más pequeña.</span><span data-else-if="$.ngetpos(NUM_1, 'es-ES') === 1" data-unwrap="">Hay <var>NUM_1</var> rebanadas más pequeñas.</span></span><span data-else=""><span data-if="$.ngetpos(NUM_1, 'es-ES') === 0" data-unwrap="">Hay <var>NUM_1</var> rebanada más grande.</span><span data-else-if="$.ngetpos(NUM_1, 'es-ES') === 1" data-unwrap="">Hay <var>NUM_1</var> rebanadas más grandes.</span></span>
+                        <span data-if="DEN_1 &gt; DEN_2"><span data-if="$.ngetpos(NUM_2, 'es-ES') === 0" data-unwrap="">Esto es menos cantidad de pizza que <var>NUM_2</var> rebanada más grande.</span><span data-else-if="$.ngetpos(NUM_2, 'es-ES') === 1" data-unwrap="">Esto es menos cantidad de pizza que <var>NUM_2</var> rebanadas más grandes.</span></span><span data-else=""><span data-if="$.ngetpos(NUM_2, 'es-ES') === 0" data-unwrap="">Esto es más cantidad de pizza que <var>NUM_2</var> rebanada más pequeña.</span><span data-else-if="$.ngetpos(NUM_2, 'es-ES') === 1" data-unwrap="">Esto es más cantidad de pizza que <var>NUM_2</var> rebanadas más pequeñas.</span></span>
+                    </p>
+                    <p>Así que, <code>\dfrac{<var>NUM_1</var>}{<var>DEN_1</var>} <var>SOLUTION</var> \dfrac{<var>NUM_2</var>}{<var>DEN_2</var>}</code>.</p>
+                </div>
+            </div>
+
+            <div id="same-denominator">
+                <div class="vars" data-ensure="NUM_1 !== NUM_2">
+                    <var id="NUM_1">randRange( 1, 14 )</var>
+                    <var id="DEN_1">randRange( NUM_1 + 1, 15 )</var>
+
+                    <var id="DEN_2">DEN_1</var>
+                    <var id="NUM_2">randRange( 1, DEN_2 - 1 )</var>
+
+                    <var id="SOLUTION">function(){return NUM_2&gt;NUM_1?"&lt;":"&gt;"}()</var>
+                </div>
+
+                <div class="problem">
+                    <p>Rellena el espacio en blanco.</p>
+                    <p>
+                        <code>\dfrac{<var>NUM_1</var>}{<var>DEN_1</var>}</code>
+                        ____ <code>\dfrac{<var>NUM_2</var>}{<var>DEN_2</var>}</code>
+                    </p>
+                </div>
+                <p class="solution"><code><var>SOLUTION</var></code></p>
+                <ul class="choices" data-category="true">
+<li><code>&lt;</code></li>
+                    <li><code>&gt;</code></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p>Esto es como si tuviéramos dos pizzas del mismo tamaño que se han cortado en <var>DEN_1</var> rebanadas iguales.</p>
+                        <p>Ya que que las dos pizzas tienen el mismo número de rebanadas, todas las rebanadas son del mismo tamaño.</p>
+                        <div style="height: 150px;">
+                            <div class="graphie" style="float: left">init({range:[[-3,3],[-3,3]],scale:25}),piechart([NUM_1,DEN_1-NUM_1],["#e00","#999"],2)</div>
+                            <div class="graphie" style="float: left">init({range:[[-3,3],[-3,3]],scale:25}),piechart([NUM_2,DEN_2-NUM_2],["#e00","#999"],2)</div>
+                        </div>
+                    </div>
+                    <p>
+                        <span data-if="$.ngetpos(NUM_1, 'es-ES') === 0">Hay <var>NUM_1</var> rebanada.</span><span data-else-if="$.ngetpos(NUM_1, 'es-ES') === 1">Hay <var>NUM_1</var> rebanadas.</span>
+                        <span data-if="NUM_1 &lt; NUM_2"><span data-if="$.ngetpos(NUM_2, 'es-ES') === 0" data-unwrap="">Esto es menos cantidad de pizza que <var>NUM_2</var> rebanada.</span><span data-else-if="$.ngetpos(NUM_2, 'es-ES') === 1" data-unwrap="">Esto es menos cantidad de pizza que <var>NUM_2</var> rebanadas.</span></span><span data-else=""><span data-if="$.ngetpos(NUM_2, 'es-ES') === 0" data-unwrap="">Esto es más cantidad de pizza que <var>NUM_2</var> rebanada.</span><span data-else-if="$.ngetpos(NUM_2, 'es-ES') === 1" data-unwrap="">Esto es más cantidad de pizza que <var>NUM_2</var> rebanadas.</span></span>
+                    </p>
+                    <p>Así que, <code>\dfrac{<var>NUM_1</var>}{<var>DEN_1</var>} <var>SOLUTION</var> \dfrac{<var>NUM_2</var>}{<var>DEN_2</var>}</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

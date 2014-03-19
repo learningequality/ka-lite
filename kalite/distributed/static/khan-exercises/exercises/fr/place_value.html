@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html data-require="math word-problems math-format expressions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Valeur de position</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+
+        <div class="problems">
+            <div>
+                <div class="vars">
+                    <var id="DIGITS">shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice( 0, 4 )</var>
+                    <var id="NUMBER">digitsToInteger( DIGITS )</var>
+                    <var id="POWER">randRange( 0, 3 )</var>
+                    <var id="DIGIT">DIGITS[POWER]</var>
+
+                    <var id="HINT_IN_NUMBERS">function(){var e=DIGITS.length-1,t=$.map(DIGITS,function(t,r){return"("+t+"\\times"+pow(10,e-r)+")"});return t.join("+")}()</var>
+
+                    <var id="HINT_IN_WORDS">function(){var e=DIGITS.length-1,t=$.map(DIGITS,function(t,r){return pluralTex(t,powerToPlace(e-r))});return t.join(" &lt;code&gt;+&lt;/code&gt; ")}()</var>
+
+                    <var id="PLACES">function(){var e=placesLeftOfDecimal.slice(0,4);return $.map(e,function(e){return e+"s"})}()</var>
+                    <var id="SOLUTION">PLACES[ DIGITS.length - 1 - POWER ]</var>
+                </div>
+
+                <p class="question">What is the place value of <code><var>DIGIT</var></code> in <code><var>NUMBER</var></code>?</p>
+                <p class="solution"><var>capitalize(SOLUTION)</var></p>
+                <ul class="choices" data-category="true">
+<li data-each="PLACES as place"><var>capitalize(place)</var></li>
+                </ul>
+<div class="hints">
+                    <div>
+                        <p><code><var>NUMBER</var></code> can be represented as follows.</p>
+                        <p><code>= <var>HINT_IN_NUMBERS</var></code></p>
+                    </div>
+                    <p><code>= </code> <var>HINT_IN_WORDS</var></p>
+                    <p class="final_hint">Thus, <code><var>DIGIT</var></code> is in the <var>SOLUTION</var> place.</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="vars" data-ensure="NUMBER &gt; 99">
+                    <var id="DIGITS">randRange( 0, 9, 4 )</var>
+                    <var id="NUMBER">digitsToInteger( DIGITS )</var>
+                    <var id="ADDENDS">[ ]</var>
+                    <var id="HINT">function(){var e=DIGITS.length-1;return $.map(DIGITS,function(t,r){if(0===t)return null;var n;if(r!==DIGITS.length-1){if(r===DIGITS.length-2)return n=10*t+DIGITS[DIGITS.length-1],ADDENDS.push(n),Cardinal(n)+" is the same as &lt;code&gt;"+n+"&lt;/code&gt;";var a=Cardinal(t)+" "+powerToPlace(e-r),s=pow(10,e-r);return ADDENDS.push(t*s),a+" is the same as &lt;code&gt;"+t+"\\times"+s+" = "+t*s+"&lt;/code&gt;"}return 0===DIGITS[r-1]?(ADDENDS.push(t),Cardinal(t)+" is the same as &lt;code&gt;"+t+"&lt;/code&gt;"):void 0})}()</var>
+                </div>
+
+                <p class="question">Rewrite <var>cardinal( NUMBER )</var> in numerals.</p>
+                <p class="solution"><var>NUMBER</var></p>
+                <div class="hints">
+                    <p data-each="HINT as hint"><var>hint</var></p>
+                    <div>
+                        <p>Add all these parts up:</p>
+                        <p><code><var>ADDENDS.join( " + " )</var></code></p>
+                    </div>
+                    <p><code>= <var>NUMBER</var></code></p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
