@@ -97,12 +97,12 @@ function delete_languagepack(lang_name) {
         doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_name})
             .success(function() {
                 handleSuccessAPI("deleted");
+                get_installed_languages();
+                display_languages(installables);
             })
             .fail(function(resp) {
                 handleFailedAPI(resp, gettext("Error"), "deleted");
             });
-        get_installed_languages();
-        display_languages(installables);
 }
 
 $(function () {
