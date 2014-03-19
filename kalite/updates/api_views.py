@@ -26,7 +26,7 @@ from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, invalidate_web_cache
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
 from i18n import get_youtube_id, get_video_language, get_supported_language_map
@@ -217,19 +217,16 @@ def delete_language_pack(request):
     API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
     That particular language folders are deleted and that language gets removed.
     """
-    exception_list=[]
     delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
     delete_path=[ get_localized_exercise_dirpath(delete_id), get_srt_path(delete_id), get_locale_path(delete_id) ]
     for path in delete_path:
         try:
             shutil.rmtree(path)
-        except Exception as e:
-            exception_list.append(e)
-            continue
+        except OSError as e:
+            if e.errno!=2:    # Only ignore error: No Such File or Directory
+                raise
 
-    if len(exception_list) > 0:
-        error= '<br>'.join(str(e) for e in exception_list)
-        return JsonResponseMessageError(_("%(error_info)s") % {"error_info": error})
+    invalidate_web_cache()
 
     return JsonResponse({})
 
