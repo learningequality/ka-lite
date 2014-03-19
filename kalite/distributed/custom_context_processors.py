@@ -19,7 +19,7 @@ def custom(request):
     return {
         "central_server_host": settings.CENTRAL_SERVER_HOST,
         "securesync_protocol": settings.SECURESYNC_PROTOCOL,
-        "base_template": "base.html",
+        "base_template": "distributed/base.html",
         "is_central": False,
         "settings": settings,
         "restricted": package_selected("UserRestricted"),

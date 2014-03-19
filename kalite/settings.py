@@ -1,7 +1,7 @@
 import logging
 import os
 import platform
-import sys
+from fle_utils.settingshelper import import_installed_app_settings
 
 
 ##############################
@@ -93,14 +93,13 @@ STATIC_ROOT    = os.path.realpath(getattr(local_settings, "STATIC_ROOT", PROJECT
  # Make this unique, and don't share it with anybody.
 SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
 
-TEMPLATE_DIRS  = getattr(local_settings, "TEMPLATE_DIRS", (PROJECT_PATH + "/templates",))
-TEMPLATE_DIRS   = tuple([os.path.realpath(lp) + "/" for lp in TEMPLATE_DIRS])
-
 LANGUAGE_COOKIE_NAME    = "django_language"
 
 ROOT_URLCONF = "distributed.urls"
 INSTALLED_APPS = ("distributed",)
-MIDDLEWARE_CLASSES = tuple()
+MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
+TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
+STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static'),)  # libraries common to all apps
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -122,68 +121,28 @@ SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessi
 MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 
+
 ########################
-# Import settings from INSTALLED_APPS
+# After all settings, but before config packages,
+#   import settings from other apps.
+#
+# This allows app-specific settings to be localized and augment
+#   the settings here, while also allowing
+#   config packages to override settings.
 ########################
-def import_installed_app_settings(installed_apps):
-    """
-    Loop over all installed_apps, and search for their
-      settings.py in the path.  Then load the settings.py
-      directly (to avoid running the package's __init__.py file)
 
-    Recurse into each installed_app's INSTALLED_APPS to collect all
-    necessary settings.py files.
-    """
-    for app in installed_apps:
-        app_settings = None
-        try:
-            for path in sys.path:
-                app_path = os.path.join(path, app.replace(".", "/"))
-                settings_filepath = os.path.join(app_path, "settings.py")
-                if os.path.exists(settings_filepath):
-                    app_settings = {}
-                    execfile(settings_filepath, globals(), app_settings)
-                    break
-
-            if app_settings is None:
-                raise ImportError("File not found in path: %s settings.py" % app)
-        except ImportError as err:
-            #print "ImportError", err, app
-            continue
-
-        # We found the app's settings.py and loaded it into app_settings;
-        #   now set those variables in the global space here.
-        for var, var_val in app_settings.iteritems():
-            if var.startswith("_") or var == "local_settings":
-                # Don't combine / overwrite global variables or local_settings
-                continue
-            elif isinstance(var_val, tuple):
-                # combine the above tuple variables
-                globals().update({var: globals().get(var, tuple()) + var_val})
-            elif isinstance(var_val, dict):
-                # combine the above dict variables
-                globals().get(var, {}).update(var_val)
-            elif var not in globals():
-                # Unknown variables that don't exist get set
-                globals().update({var: var_val})
-            elif globals().get(var) != var_val:
-                # Unknown variables that do exist must have the same value--otherwise, conflict!
-                raise Exception("(%s) %s is already set; resetting can cause confusion." % (app, var))
-
-            if var == "INSTALLED_APPS":
-                # Combine the variable values, then import
-                import_installed_app_settings(var_val)
-
-import_installed_app_settings(INSTALLED_APPS)
+import_installed_app_settings(INSTALLED_APPS, globals())
 
 
 ########################
 # IMPORTANT: Do not add new settings below this line
-# everything that follows is overriding default settings, depending on CONFIG_PACKAGE
+#
+# Everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 
 # config_package (None|RPi) alters some defaults e.g. different defaults for Raspberry Pi(RPi)
 # autodetect if this is a Raspberry Pi-type device, and auto-set the config_package
 #  to override the auto-detection, set CONFIG_PACKAGE=None in the local_settings
+########################
 
 CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", "RPi" if (platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l") else [])
 

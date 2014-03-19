@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html data-require="math word-problems expressions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Calculer avec de nouveaux opérateurs 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars">
+        <var id="C">randRange(3, 8)</var>
+        <var id="D">randRange(2, 4)</var>
+        <var id="FUN">randFromArray([function(e,r){return["+",["*",C,e],r]},function(e,r){return["-",["*",C,e],r]},function(e,r){return["+",e,["*",C,r]]},function(e,r){return["-",e,["*",C,r]]},function(e,r){return["-",["*",C,e],["*",D,r]]},function(e,r){return["-",["*",D,e],["*",C,r]]},function(e,r){return["*",e,["-",r,C]]},function(e,r){return["*",["-",C,e],r]},function(e,r){return["+",["^",e,2],["*",D,["^",r,2]]]},function(e,r){return["+",["*",D,["^",e,2]],["^",r,2]]},function(e,r){return["-",["^",e,2],["*",D,["^",r,2]]]},function(e,r){return["-",["*",D,["^",e,2]],["^",r,2]]},function(e){return["-",["*",D,e],C]},function(e,r){return["+",["*",C,r],D]},function(e,r){return["+",["*",e,r],["*",D,e],["-",r]]}])</var>
+
+        <var id="X">randRange(-6, 6)</var>
+        <var id="Y">randRange(-6, 6)</var>
+
+        <var id="TEXT">expr(FUN("x", "y"))</var>
+        <var id="SUBS">expr(FUN(X, Y))</var>
+        <var id="VALU">expr(FUN(X, Y), true)</var>
+
+        <var id="XONLY">!isNaN(expr(FUN(0, NaN), true))</var>
+        <var id="YONLY">!isNaN(expr(FUN(NaN, 0), true))</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <div class="question">
+                <p>Si <code>x <var>binop(1)</var> y = <var>TEXT</var></code>, trouver <code><var>X</var> <var>binop(1)</var> <var>Y</var></code>.</p>
+            </div>
+            <div class="solution"><var>VALU</var></div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <p>Substituer <span data-if="XONLY"><code>x = <var>X</var></code></span> <span data-else="" data-if="YONLY"><code>y = <var>Y</var></code></span> <span data-else=""><code>x = <var>X</var></code> et <code>y = <var>Y</var></code></span> pour obtenir <code><var>SUBS</var></code>.</p>
+
+        <p>On simplifie et on obtient <code><var>VALU</var></code>.</p>
+    </div>
+    </div>
+</body>
+</html>

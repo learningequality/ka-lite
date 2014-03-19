@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html data-require="math graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Dominio y rango a partir de gráficas</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="ANIM_SPEED">1500</var>
+            <var id="DOMAIN">[ randRange( -9, -1 ), randRange( 1, 9 ) ]</var>
+            <var id="FUNCTION_PATH">function(){var e,r=[],a=function(a){e=a,r.push(e)};a([DOMAIN[0],randRange(-5,5)]);for(var t=DOMAIN[0]+1;t&lt;=DOMAIN[1];t++)abs(randRangeNonZero(-10,10)&lt;2)&amp;&amp;e[1]&lt;8?a([t,e[1]+1]):abs(randRangeNonZero(-10,10)&lt;2)&amp;&amp;e[1]&gt;-8?a([t,e[1]-1]):abs(randRangeNonZero(-10,10)&lt;2)&amp;&amp;e[1]&lt;7?a([t,e[1]+2]):abs(randRangeNonZero(-10,10)&lt;3)&amp;&amp;e[1]&gt;-7?a([t,e[1]-2]):a([t,e[1]]);return r}()</var>
+            <var id="RANGE">function(){var e=$.map(FUNCTION_PATH,function(e){return e[1]});return[min.apply(null,e),max.apply(null,e)]}()</var>
+        </div>
+
+        <div class="problems">
+            <div id="domain">
+                <p class="question">Se muestra la gráfica de la función <code>f(x)</code> ; ¿Cuál es su dominio?</p>
+
+                <div class="graphie" id="graph">graphInit({range:10,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,unityLabels:!1,labelFormat:function(e){return"\\small{"+e+"}"}}),graph.fn_path=path(FUNCTION_PATH,{stroke:BLUE}),circle(FUNCTION_PATH[0],.15,{stroke:"none",fill:BLUE}),circle(FUNCTION_PATH[FUNCTION_PATH.length-1],.15,{stroke:"none",fill:BLUE})</div>
+
+                <p class="solution" data-type="multiple"><span class="sol short40" data-forms="integer"><var>DOMAIN[0]</var></span><code>\;\le x\le\;</code><span class="sol short40" data-forms="integer"><var>DOMAIN[1]</var></span></p>
+
+                <div class="hints">
+                    <p>¿Para qué valores de <code>x</code> <code>f(x)</code> tiene un valor?</p>
+                    <div>
+                        <p>Mira el eje horizontal como si fuera una recta numérica.</p>
+                        <div class="graphie" data-update="graph">var domain_path=graph.fn_path.clone(),tmp_path=path($.map(FUNCTION_PATH,function(e){return[[e[0],0]]}),{stroke:"none"});domain_path.animate({path:tmp_path.attrs.path,"stroke-width":4,stroke:GREEN},ANIM_SPEED,"ease-in-out"),circle([FUNCTION_PATH[0][0],0],.3,{stroke:"none",fill:GREEN,"fill-opacity":0}).animate({"fill-opacity":1},ANIM_SPEED,"ease-in-out"),circle([FUNCTION_PATH[FUNCTION_PATH.length-1][0],0],.3,{stroke:"none",fill:GREEN,"fill-opacity":0}).animate({"fill-opacity":1},ANIM_SPEED,"ease-in-out"),tmp_path.remove()</div>
+                    </div>
+
+                    <p><code><var>DOMAIN[0]</var>\le x\le <var>DOMAIN[1]</var></code></p>
+                </div>
+            </div>
+            <div id="range" data-type="domain">
+                <p class="question">Se muestra la gráfica de la función <code>f(x)</code> ; ¿Cuál es su rango?</p>
+
+                <p class="solution" data-type="multiple"><span class="sol short40"><var>RANGE[0]</var></span><code>\;\le f(x)\le\;</code><span class="sol short40"><var>RANGE[1]</var></span></p>
+
+                <div class="hints">
+                    <p>¿Qué valores puede tener <code>f(x)</code>?</p>
+                    <div>
+                        <p>Mire al eje vertical como si fuera una recta numérica.</p>
+                        <div class="graphie" data-update="graph">var range_path=graph.fn_path.clone(),tmp_path=path($.map(FUNCTION_PATH,function(e){return[[0,e[1]]]}),{stroke:"none"});range_path.animate({path:tmp_path.attrs.path,"stroke-width":4,stroke:GREEN},ANIM_SPEED,"ease-in-out"),circle([0,RANGE[0]],.3,{stroke:"none",fill:GREEN,"fill-opacity":0}).animate({"fill-opacity":1},ANIM_SPEED,"ease-in-out"),circle([0,RANGE[1]],.3,{stroke:"none",fill:GREEN,"fill-opacity":0}).animate({"fill-opacity":1},ANIM_SPEED,"ease-in-out"),tmp_path.remove()</div>
+                    </div>
+
+                    <p><code><var>RANGE[0]</var>\le f(x)\le <var>RANGE[1]</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

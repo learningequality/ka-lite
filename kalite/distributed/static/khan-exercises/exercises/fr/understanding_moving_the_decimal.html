@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers-arithmetic">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Comprendre le déplacement de la virgule</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="PM">randRangeNonZero( -1, 1 )</var>
+            <var id="OPERATOR">( PM === 1 ? $._("multiplier") : $._("diviser") )</var>
+            <var id="A">randRange( 0, 99999 )</var>
+
+            <div data-ensure="( PM === 1 ? A_DECIMAL &gt; B_DECIMAL : A_DECIMAL &lt; B_DECIMAL )">
+                <var id="A_DECIMAL">randRange( 1, 5 )</var>
+                <var id="B_DECIMAL">randRange( 1, 5 )</var>
+            </div>
+
+            <var id="A_FLOAT">A / pow( 10, A_DECIMAL )</var>
+            <var id="B_FLOAT">A / pow( 10, B_DECIMAL )</var>
+            <var id="POW_DIFF">( PM === 1 ? ( A_DECIMAL - B_DECIMAL ) : ( B_DECIMAL - A_DECIMAL ) )</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p data-if="PM === 1">
+                        <b>Combien de fois faut-il multiplier <code><var>localeToFixed(A_FLOAT, A_DECIMAL)</var></code> par dix pour obtenir <code><var>localeToFixed(B_FLOAT, B_DECIMAL)</var></code>?</b>
+                    </p>
+<p data-else>
+                        <b>Combien de fois faut-il diviser <code><var>localeToFixed(A_FLOAT, A_DECIMAL)</var></code> par dix pour obtenir <code><var>localeToFixed(B_FLOAT, B_DECIMAL)</var></code> ?</b>
+                    </p>
+                </div>
+
+                <p class="solution" data-forms="integer"><var>POW_DIFF</var></p>
+
+            </div>
+        </div>
+
+        <div class="hints">
+            <div class="graphie">init({range:[[-1,11],[-1,3]],scale:[20,40]});for(var digitsA=KhanUtil.digits(A);digitsA.length&lt;A_DECIMAL+1;)digitsA.push(0);var digitsB=digitsA.slice();digitsA.length&lt;B_DECIMAL+1&amp;&amp;(digitsA.push(" "),digitsB.push(0)),drawDigits(digitsA.reverse(),0,1),drawDigits(digitsB.reverse(),0,0);for(var i=0;POW_DIFF&gt;i;i++)1===PM?(arc([digitsA.length-A_DECIMAL+i,1.5],.5,0,180,{stroke:"blue"}),label([digitsA.length-A_DECIMAL+i,2],i+1,"above"),i===POW_DIFF-1&amp;&amp;line([digitsA.length-A_DECIMAL+i+.5,1.5],[digitsA.length-A_DECIMAL+i+.5,1.46],{stroke:"blue",arrows:"-&gt;"})):(i===POW_DIFF-1&amp;&amp;style({arrows:"-&gt;"}),arc([digitsA.length-A_DECIMAL-(i+1),1.5],.5,0,180,{stroke:"blue"}),label([digitsA.length-A_DECIMAL-(i+1),2],i+1,"above"));style({fill:"#000"}),ellipse([digitsA.length-A_DECIMAL-.5,.8],[.09,.06]),ellipse([digitsB.length-B_DECIMAL-.5,-.2],[.09,.06]);var labelstr="The decimal point needs to be moved "+POW_DIFF+" time"+(1!==POW_DIFF?"s.":".");label([digitsA.length+.5,.5],labelstr,"right",!1)</div>
+
+            <p data-if="PM === 1">Déplacer la virgule d'un rang vers la droite, est la même chose que de multiplier par dix, une fois.</p>
+<p data-else="">Déplacer la virgule d'une position vers la gauche, est la même chose que de diviser par dix, une fois.</p>
+
+            <div data-if="PM === 1 &amp;&amp; POW_DIFF !== 1">
+                <p data-if="POW_DIFF !== 1">Ainsi, déplacer la virgule vers la droite <code><var>POW_DIFF</var></code> fois revient à multiplier par dix <code><var>POW_DIFF</var></code> fois, ou à multiplier par <code><var>pow( 10, POW_DIFF )</var></code>:</p>
+                <p><code>{<var>localeToFixed(A_FLOAT, A_DECIMAL)</var>} * {<var>pow( 10, POW_DIFF )</var>} = {<var>localeToFixed(B_FLOAT, B_DECIMAL)</var>}</code></p>
+            </div>
+            <div data-if="PM !== 1 &amp;&amp; POW_DIFF !== 1">
+                <p data-if="POW_DIFF !== 1">Ainsi, déplacer la virgule vers la gauche <code><var>POW_DIFF</var></code> fois revient à diviser par dix <code><var>POW_DIFF</var></code> fois, ou à diviser par <code><var>pow( 10, POW_DIFF )</var></code>:</p>
+                <p><code>{<var>localeToFixed(A_FLOAT, A_DECIMAL)</var>} \div {<var>pow( 10, POW_DIFF )</var>} = {<var>localeToFixed(B_FLOAT, B_DECIMAL)</var>}</code></p>
+            </div>
+
+            <div>
+                <p data-if="PM === 1">
+                    <span data-if="POW_DIFF === 1">
+                        <b>Vous devez multiplier par dix <code><var>POW_DIFF</var></code> fois.</b>
+                    </span><span data-else>
+                        <b>Vous devez multiplier par dix <code><var>POW_DIFF</var></code> fois.</b>
+                    </span>
+                </p>
+<p data-else>
+                    <span data-if="POW_DIFF === 1">
+                        <b>Vous devez diviser par dix <code><var>POW_DIFF</var></code> fois.</b>
+                    </span><span data-else>
+                        <b>Vous devez diviser par dix <code><var>POW_DIFF</var></code> fois.</b>
+                    </span>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

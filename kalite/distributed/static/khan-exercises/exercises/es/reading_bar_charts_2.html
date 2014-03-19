@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Interpretando gráficos de barras 2</title>
+<script src="../khan-exercise.js"></script><style>
+        span.rotate  {
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            -webkit-transform: rotate(-90deg);
+            -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+        }
+        body.ie span.rotate {
+            left: 60px !important;
+            top: 140px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <div data-ensure="( NUM_IMPROVED &gt;= 3 &amp;&amp; !IMPROVE_TIE ) || UNBIASED">
+                <var id="MIDTERM">$.map( new Array( 5 ), function() { return randRange( 12, 20 ) * 5; } )</var>
+                <var id="FINAL">$.map( new Array( 5 ), function() { return randRange( 12, 20 ) * 5; } )</var>
+                <var id="IMPROVEMENT">$.map( new Array( 5 ), function( e, n ) { return FINAL[ n ] - MIDTERM[ n ]; } )</var>
+                <var id="NUM_IMPROVED">$.map( IMPROVEMENT, function( x ) { return x &gt; 0 ? 1 : null; }).length</var>
+                <var id="IMPROVE_TIE">IMPROVEMENT.slice().sort(function(a,b){return a - b;})[4] === IMPROVEMENT.slice().sort(function(a,b){return a - b;})[3]</var>
+                <var id="UNBIASED">false</var>
+            </div>
+        </div>
+        <div class="problem">
+            <p>Utiliza la gráfica para contestar la pregunta:</p>
+            <p id="qn"></p>
+            <div class="graphie" id="barchart">init({range:[[-2,17],[-3,11.5]],scale:[27,30]});for(var y=1;10&gt;=y;++y)label([0,y],10*y,"left",!1),style({stroke:"#000",strokeWidth:1,opacity:.2},function(){line([0,y],[16,y])});for(var index=0;5&gt;index;++index)style({stroke:"none",fill:"#9ab8ed",opacity:1}),path([[3*index+1,0],[3*index+1,MIDTERM[index]/10],[3*index+2,MIDTERM[index]/10],[3*index+2,0],[3*index+1,0]]),style({stroke:"none",fill:"#ffc966",opacity:1}),path([[3*index+2,0],[3*index+2,FINAL[index]/10],[3*index+3,FINAL[index]/10],[3*index+3,0],[3*index+2,0]]),style({opacity:1}),label([3*index+2,0],person(index+1),"below",!1);style({stroke:"#000",strokeWidth:2,opacity:1}),line([0,0],[16,0]),line([0,0],[0,10]),label([8,-.8],$._("Estudiante"),"below",!1).css("font-weight","bold"),label([-1.5,5],"Score (points)","center",!1).addClass("rotate").css("font-weight","bold"),label([8,10.5],"Scores on Midterm and Final Exams","above",!1).css("font-weight","bold"),style({stroke:"none",fill:"#9ab8ed",opacity:1}),path([[0,-2],[.5,-2],[.5,-2.5],[0,-2.5],[0,-2]]),style({stroke:"#000",strokeWidth:2,opacity:1}),label([.5,-2.25],$._("Parcial"),"right",!1),style({stroke:"none",fill:"#ffc966",opacity:1}),path([[3,-2],[3.5,-2],[3.5,-2.5],[3,-2.5],[3,-2]]),style({stroke:"#000",strokeWidth:2,opacity:1}),label([3.5,-2.25],$._("Final"),"right",!1)</div>
+        </div>
+
+        <div class="problems">
+            <div id="most-improved">
+                <div class="vars">
+                    <var id="BEST_IMPROVEMENT">Math.max.apply( Math, IMPROVEMENT )</var>
+                    <var id="MOST_IMPROVED_IDX">_.indexOf( IMPROVEMENT, BEST_IMPROVEMENT )</var>
+                    <var id="MOST_IMPROVED">person( MOST_IMPROVED_IDX + 1 )</var>
+                </div>
+                <p id="qn" class="question">¿Cuál estudiante mejoró por más puntos su calificación entre el examen de mitad de curso y el examen final?</p>
+
+                <div class="solution"><var>MOST_IMPROVED</var></div>
+                <ul class="choices" data-category="true">
+<li><var>person( 1 )</var></li>
+                    <li><var>person( 2 )</var></li>
+                    <li><var>person( 3 )</var></li>
+                    <li><var>person( 4 )</var></li>
+                    <li><var>person( 5 )</var></li>
+                </ul>
+<div class="hints">
+                    <div data-each="5 times as INDEX">
+                        <div data-if="IMPROVEMENT[ INDEX ] &gt; 0">
+                            <p data-if="isMale(INDEX + 1)">La barra del examen final de <var>person( INDEX + 1 )</var> es más alta que la barra de su examen de mitad de curso, así que <var>person( INDEX + 1 )</var> mejoró su calificación. En  el examen de mitad de curso obtuvo <code><var>MIDTERM[ INDEX ]</var></code> puntos y en el examen final <code><var>FINAL[ INDEX ]</var></code>, así que mejoró por <code><var>IMPROVEMENT[ INDEX ]</var></code> puntos.</p>
+<p data-else="">La barra del examen final de <var>person( INDEX + 1 )</var> es más alta que la barra de su examen de mitad de curso, así que <var>person( INDEX + 1 )</var> mejoró su calificación. En  el examen de mitad de curso obtuvo <code><var>MIDTERM[ INDEX ]</var></code> puntos y en el examen final <code><var>FINAL[ INDEX ]</var></code>, así que mejoró por <code><var>IMPROVEMENT[ INDEX ]</var></code> puntos.</p>
+                            <div class="graphie" data-update="barchart">style({stroke:GREEN,strokeWidth:2,arrows:"-&gt;"}),line([3*INDEX+1.5,MIDTERM[INDEX]/10],[3*INDEX+2.5,FINAL[INDEX]/10]),label([3*INDEX+1.5,MIDTERM[INDEX]/10+.2],MIDTERM[INDEX],"below",!1).css({fontWeight:"bold"}),label([3*INDEX+2.5,FINAL[INDEX]/10-.2],FINAL[INDEX],"above",!1).css({fontWeight:"bold"})</div>
+                        </div>
+                        <div data-else-if="IMPROVEMENT[ INDEX ] &lt; 0">
+                            <p data-if="isMale(INDEX + 1)">La barra del examen final de <var>person( INDEX + 1 )</var> es más corta que la de su parcial, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+<p data-else="">La barra del examen final de <var>person( INDEX + 1 )</var> es más corta que la de su parcial, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+                            <div class="graphie" data-update="barchart">style({stroke:"grey",strokeWidth:2,arrows:"-&gt;"}),line([3*INDEX+1.5,MIDTERM[INDEX]/10],[3*INDEX+2.5,FINAL[INDEX]/10])</div>
+                        </div>
+                        <div data-else="">
+                            <p data-if="isMale(INDEX + 1)">La barra del examen final de <var>person( INDEX + 1 )</var> tiene la misma altura que la barra del examen de mitad de curso, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+<p data-else="">La barra del examen final de <var>person( INDEX + 1 )</var> tiene la misma altura que la barra del examen de mitad de curso, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+                        </div>
+                    </div>
+                    <p data-if="isMale(MOST_IMPROVED_IDX + 1)"><var>MOST_IMPROVED</var> fue quien mejoró más su calificación, anotando <code><var>BEST_IMPROVEMENT</var></code> puntos más en su examen final que en su examen parcial.</p>
+<p data-else=""><var>MOST_IMPROVED</var> fue quien mejoró más su calificación, anotando <code><var>BEST_IMPROVEMENT</var></code> puntos más puntos en su examen final que en su examen parcial.</p>
+                </div>
+            </div>
+
+            <div id="difference">
+                <div class="vars">
+                    <var id="INDEX" data-ensure="IMPROVEMENT[ INDEX ] &gt; 0">randRange( 0, 4 )</var>
+                    <var id="STUDENT">person( INDEX + 1 )</var>
+                </div>
+                <p id="qn" class="question">¿Por cuántos puntos mejoró <var>STUDENT</var> su puntuación del examen de mitad de curso al examen final?</p>
+
+                <div class="solution" data-type="multiple">
+                    <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>IMPROVEMENT[ INDEX ]</var></span> puntos</p>
+                </div>
+                <div class="hints">
+                    <div>
+                        <p>Encuentra las dos barras de <var>STUDENT</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*INDEX+2,-.6],[1.2,.5])</div>
+                    </div>
+
+                    <div>
+                        <p data-if="isMale(INDEX + 1)">Compara la altura de la barra azul de <var>STUDENT</var> con la escala de la izquierda para encontrar su puntuación en el examen de mitad de curso. <span data-if="MIDTERM[ INDEX ] % 10 === 5"> La altura de la barra está a la mitad entre <code><var>MIDTERM[ INDEX ] - 5</var></code> y <code><var>MIDTERM[ INDEX ] + 5</var></code>, así que </span> <var>STUDENT</var> obtuvo <code class="hint_blue"><var>MIDTERM[ INDEX ]</var></code>  puntos en el examen de mitad de curso.</p>
+<p data-else="">Compara la altura de la barra azul de <var>STUDENT</var> con la escala de la izquierda para encontrar su puntuación en el examen de mitad de curso. <span data-if="MIDTERM[ INDEX ] % 10 === 5"> La altura de la barra está a la mitad entre <code><var>MIDTERM[ INDEX ] - 5</var></code> y <code><var>MIDTERM[ INDEX ] + 5</var></code>, así que </span> <var>STUDENT</var> obtuvo <code class="hint_blue"><var>MIDTERM[ INDEX ]</var></code>  puntos en el examen de mitad de curso.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:BLUE,strokeWidth:2,arrows:"-&gt;",strokeDasharray:"-"}),line([3*INDEX+1,MIDTERM[INDEX]/10],[0,MIDTERM[INDEX]/10])</div>
+                    </div>
+
+                    <div>
+                        <p data-if="isMale(INDEX + 1)">Compara la altura de la barra anaranjada de <var>STUDENT</var> con la escala de la izquierda para encontrar su puntuación en el examen final. <span data-if="FINAL[ INDEX ] % 10 === 5"> La altura de la barra está a la mitad entre <code><var>FINAL[ INDEX ] - 5</var></code> y <code><var>FINAL[ INDEX ] + 5</var></code>, así que </span> <var>STUDENT</var> obtuvo <code class="hint_orange"><var>FINAL[ INDEX ]</var></code> puntos en el examen final.</p>
+<p data-else="">Compara la altura de la barra anaranjada de <var>STUDENT</var> con la escala de la izquierda para encontrar su puntuación en el examen final. <span data-if="FINAL[ INDEX ] % 10 === 5"> La altura de la barra está entre <code><var>FINAL[ INDEX ] - 5</var></code> y <code><var>FINAL[ INDEX ] + 5</var></code>, así que </span> <var>STUDENT</var> obtuvo <code class="hint_orange"><var>FINAL[ INDEX ]</var></code> puntos en el examen final.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:ORANGE,strokeWidth:2,arrows:"-&gt;",strokeDasharray:"-"}),line([3*INDEX+2,FINAL[INDEX]/10],[0,FINAL[INDEX]/10])</div>
+                    </div>
+
+                    <p>Resta la puntuación del examen de mitad de curso a la puntuación del examen final para averiguar cuánto mejoró <var>STUDENT</var>.</p>
+
+                    <p><code>\color{ORANGE}{<var>FINAL[ INDEX ]</var>} - \color{#6495ED}{<var>MIDTERM[ INDEX ]</var>} = <var>IMPROVEMENT[ INDEX ]</var></code>, así que <var>STUDENT</var> mejoraron por <code><var>IMPROVEMENT[ INDEX ]</var></code> puntos su calificación del parcial al examen final.</p>
+
+                </div>
+            </div>
+
+            <div id="reading">
+                <div class="vars">
+                    <var id="INDEX">randRange( 0, 4 )</var>
+                    <var id="STUDENT">person( INDEX + 1 )</var>
+                    <var id="COLUMN">randRange( 0, 1 )</var>
+                    <var id="TEST">[ $._("examen parcial"), $._("Examen final") ][ COLUMN ]</var>
+                    <var id="ANSWER">COLUMN === 0 ? MIDTERM[ INDEX ] : FINAL[ INDEX ]</var>
+                </div>
+                <p id="qn" class="question">¿Cuántos puntos obtuvo <var>STUDENT</var> en el <var>TEST</var>?</p>
+
+                <div class="solution" data-type="multiple">
+                    <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>ANSWER</var></span> puntos</p>
+                </div>
+                <div class="hints">
+                    <div>
+                        <p>Encuentra las dos barras de <var>STUDENT</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*INDEX+2,-.6],[1.2,.5])</div>
+                    </div>
+                    <div>
+                        <p>Usa la clave para averiguar cuál de las dos barras muestra la puntuación del <var>TEST</var>.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,fill:"none",strokeWidth:2}),ellipse([3*COLUMN+1.2,-2.25],[1.5,.5])</div>
+                    </div>
+                    <div>
+                        <p>Compara la altura de la barra <span data-if="COLUMN === 0">azul</span><span data-else="">naranja</span> de <var>STUDENT</var> con la escala de la izquierda.</p>
+                        <div class="graphie" data-update="barchart">style({stroke:PINK,strokeWidth:2,arrows:"-&gt;",strokeDasharray:"-"}),line([3*INDEX+1+COLUMN,ANSWER/10],[0,ANSWER/10])</div>
+                    </div>
+                    <p data-if="ANSWER % 10 === 5">La altura de la barra está a medio camino entre <code><var>ANSWER - 5</var></code> y <code><var>ANSWER + 5</var></code>, así que <var>STUDENT</var> obtuvo <code><var>ANSWER</var></code> puntos en el <var>TEST</var>.</p>
+                    <p data-else=""><var>STUDENT</var> obtuvieron <code><var>ANSWER</var></code> puntos en el <var>TEST</var>.</p>
+                </div>
+            </div>
+
+            <div id="num-improved">
+                <p id="qn" class="question">¿Cuántos estudiantes mejoraron sus calificaciones del examen de mitad de curso al examen final?</p>
+
+                <div class="solution" data-type="multiple">
+                    <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM_IMPROVED</var></span> estudiantes</p>
+                </div>
+
+                <div class="hints">
+                    <div data-each="5 times as INDEX">
+                        <div data-if="IMPROVEMENT[ INDEX ] &gt; 0">
+                            <p data-if="isMale(INDEX + 1)">La barra del examen final de <var>person( INDEX + 1 )</var> es más alta que la barra de su examen de mitad de curso, así que <var>person( INDEX + 1 )</var> mejoró su calificación.</p>
+<p data-else="">La barra del examen final de <var>person( INDEX + 1 )</var> es más alta que la de su parcial, así que <var>person( INDEX + 1 )</var> mejoró su calificación.</p>
+                            <div class="graphie" data-update="barchart">style({stroke:"grey",strokeWidth:2,arrows:"-&gt;"}),line([3*INDEX+1.5,MIDTERM[INDEX]/10],[3*INDEX+2.5,FINAL[INDEX]/10])</div>
+                        </div>
+                        <div data-else-if="IMPROVEMENT[ INDEX ] &lt; 0">
+                            <p data-if="isMale(INDEX + 1)">La barra del examen final de <var>person( INDEX + 1 )</var> es más corta que la de su parcial, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+<p data-else="">La barra del examen final de <var>person( INDEX + 1 )</var> es más corta que la de su parcial, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+                        </div>
+                        <div data-else="">
+                            <p data-if="isMale(INDEX + 1)">La barra del examen final de <var>person( INDEX + 1 )</var> tiene la misma altura que la barra del examen de mitad de curso, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+<p data-else="">La barra del examen final de <var>person( INDEX + 1 )</var> tiene la misma altura que la barra del examen de mitad de curso, así que <var>person( INDEX + 1 )</var> no mejoró su calificación.</p>
+                        </div>
+                    </div>
+                    <p>Cuenta el número de estudiantes que mejoraron sus calificaciones.</p>
+                    <p><code><var>NUM_IMPROVED</var></code> mejoraron sus calificaciones del parcial al final.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

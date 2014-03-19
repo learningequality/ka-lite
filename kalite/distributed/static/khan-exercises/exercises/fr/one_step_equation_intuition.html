@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html data-require="math graphie algebra-intuition">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Intuition sur les équations à une étape</title>
+<script src="../khan-exercise.js"></script><style>
+        div.description {
+            border: 1px dashed #aaaaaa;
+            background: #f5f5f5;
+            -moz-border-radius: 8px;
+            -webkit-border-radius: 8px;
+            border-radius: 8px;
+            margin-left: 20px;
+            margin-right: 20px;
+            padding: 0px 22px;
+        }
+        a.small-button {
+            font-size: 12px;
+        }
+        input.small-button {
+            padding: 5px 10px;
+            line-height: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange(1, 6)</var>
+            <var id="B">randRange(A + 1, 10)</var>
+            <var id="X">B - A</var>
+            <var id="UNKNOWN, AVATAR">randFromArray([[$._("Spunky Sam"),"spunky-sam.png"],[$._("M. Pink"),"mr-pink.png"],[$._("Pieuvre Jus d'Orange"),"orange-juice-squid.png"],[$._("Pi violet"),"purple-pi.png"],[$._("Pantalon"),"mr-pants.png"],[$._("Monsieur Old Spice"),"old-spice-man.png"]])</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">Combien pèse <var>UNKNOWN</var>?</p>
+
+                <div class="clearfix" style="width: 480px;">
+                    <div style="float: left; margin-left: 130px;">
+                        <form>
+                            <input class="simple-button small-button" id="sub-left" onclick="javascript:
+                                    KhanUtil.scale.subtractLeftWeight();
+                                " type="button" value="- 1"><input class="simple-button small-button" id="add-left" onclick="javascript:
+                                    KhanUtil.scale.addLeftWeight();
+                                " type="button" value="+ 1">
+</form>
+                    </div>
+                    <div style="float: right; margin-right: 130px;">
+                        <form>
+                            <input class="simple-button small-button" id="sub-right" onclick="javascript:
+                                    KhanUtil.scale.subtractRightWeight();
+                                " type="button" value="- 1"><input class="simple-button small-button" id="add-right" onclick="javascript:
+                                    KhanUtil.scale.addRightWeight();
+                                " type="button" value="+ 1">
+</form>
+                    </div>
+                </div>
+                <div class="graphie" id="scale">KhanUtil.scale.onChange=function(e,r,t,a){$("#sub-left").prop("disabled",0===r),$("#add-left").prop("disabled",10===r),$("#sub-right").prop("disabled",0===a),$("#add-right").prop("disabled",10===a);var n="",s="",o=r-A&gt;0?"+":"-",i=a-B&gt;0?"+":"-";$(".desc-a").text(abs(r-A)),$(".desc-b").text(abs(a-B)),$("#description1").children().hide(),$("#description2").parent().show();var _="",l="";r-A!==0&amp;&amp;a-B!==0?(n=" \\blue{"+o+abs(r-A)+"}",s=" \\green{"+i+abs(a-B)+"}",0&gt;r-A&amp;&amp;0&gt;a-B?$("#description1 .opt-1").show():0&gt;r-A&amp;&amp;a-B&gt;0?$("#description1 .opt-2").show():r-A&gt;0&amp;&amp;0&gt;a-B?$("#description1 .opt-3").show():r-A&gt;0&amp;&amp;a-B&gt;0&amp;&amp;$("#description1 .opt-4").show()):r-A!==0?(n=" \\blue{"+o+abs(r-A)+"}",0&gt;r-A?$("#description1 .opt-5").show():r-A&gt;0&amp;&amp;$("#description1 .opt-6").show()):a-B!==0?(s=" \\green{"+i+abs(a-B)+"}",0&gt;a-B?$("#description1 .opt-7").show():a-B&gt;0&amp;&amp;$("#description1 .opt-8").show()):($("#description1 .opt-none").show(),$("#description2").parent().hide()),_="\\qquad x + "+A+n+(r-A===a-B?" \\quad=\\quad ":" \\quad\\neq\\quad ")+B+s,$("#description3").children().hide(),r-A===a-B?r-A!==0?(0===r?($("#description3 .opt-done").show(),l="\\qquad x \\quad=\\quad "+X):($("#description3 .opt-notdone").show(),l="\\qquad x + "+r+" \\quad=\\quad "+a),$("#description3").show(),$("#description4").parent().show()):($("#description3").hide(),$("#description4").parent().hide()):($("#description3 .opt-different").show(),$("#description3").show(),$("#description4").parent().hide()),KhanUtil.processMath($("#description2")[0],_,!0),KhanUtil.processMath($("#description4")[0],l,!0)},KhanUtil.scale.init({unknown:X,leftConst:A,rightConst:B,image:Khan.imageBase+"avatars/"+AVATAR})</div>
+                <p></p>
+                <div style="width: 480px; position: relative; top: -60px; right: 50px;">
+                    <div style="text-align: center; float: right;">
+                        <a href="#" class="simple-button small-button" onclick="javascript:
+                            KhanUtil.scale.resetProblem();
+                        ">remise à zéro</a>
+                    </div>
+                </div>
+
+                <div class="description" style="clear: both;">
+                    <p><b>Ca, c'est de l'algèbre?</b></p>
+                    <p>Oui ! Nous pouvons représenter le problème par une équation si nous utilisons la lettre <code>x</code> pour représenter le poids de <var>UNKNOWN</var> :</p>
+                    <p><code>
+                        \qquad x + <var>A</var> \quad=\quad <var>B</var>
+                    </code></p>
+                    <p id="description1">
+                        <span class="opt-1">Tu <span class="hint_blue">as soustrait <span class="desc-a"><var>A</var></span> du côté gauche</span> et <span class="hint_green">soustrait <span class="desc-b"><var>B</var></span> du côté droit</span>:</span>
+                        <span class="opt-2">Tu <span class="hint_blue"> as soustrait <span class="desc-a"><var>A</var></span> du côté gauche</span> et <span class="hint_green">ajouté <span class="desc-b"><var>B</var></span> à droite</span>:</span>
+                        <span class="opt-3">Tu <span class="hint_blue">as ajouté <span class="desc-a"><var>A</var></span> à gauche</span> et <span class="hint_green">enlevé <span class="desc-b"><var>B</var></span> du côté droit</span>:</span>
+                        <span class="opt-4">Tu <span class="hint_blue">as ajouté <span class="desc-a"><var>A</var></span> à gauche </span> et <span class="hint_green">ajouté <span class="desc-b"><var>B</var></span> à droite</span>:</span>
+                        <span class="opt-5">Tu <span class="hint_blue">as soustrait <span class="desc-a"><var>A</var></span> du côté gauche</span>:</span>
+                        <span class="opt-6">Tu <span class="hint_blue">as ajouté <span class="desc-a"><var>A</var></span> à gauche</span>:</span>
+                        <span class="opt-7">Tu <span class="hint_green">as soustrait <span class="desc-b"><var>B</var></span> du côté droit</span>:</span>
+                        <span class="opt-8">Tu <span class="hint_green">as ajouté <span class="desc-b"><var>B</var></span> à droite</span>:</span>
+                        <span class="opt-none">Tu n'as rien ajouté ou retiré à gauche ou à droite, nous ne pouvons donc pas directement deviner le poids de <var>UNKNOWN</var> grâce à l'équation.</span>
+                    </p>
+                    <p><code id="description2"></code></p>
+                    <p id="description3">
+                        <span class="opt-done">En simplifiant, on peut voir le poids de <var>UNKNOWN</var>:</span>
+                        <span class="opt-notdone">En simplifiant, on ne peut toujours pas voir le poids de <var>UNKNOWN</var>:</span>
+                        <span class="opt-different">Comme tu as fait quelque chose de différent de chaque côté de l'équation, les côtés gauche et droit ne sont plus égaux et tu ne peux plus dire ce qu'est le poids de <var>UNKNOWN</var>.</span>
+                    </p>
+                    <p><code id="description4"></code></p>
+                </div>
+
+                <div class="solution" data-type="custom">
+                    <div class="instruction">
+                        <p>Balance the scale with <var>UNKNOWN</var> <b>alone on
+                        one side</b> and enter the weight:</p>
+                        <p><input id="answer" type="text"></p>
+                    </div>
+                    <div class="guess">[$("input#answer").val(),KhanUtil.scale.leftConst,KhanUtil.scale.rightConst]</div>
+                    <div class="validator-function">return""===guess[0]?"":0!==guess[1]?$._("Assure-toi que %(name)s est seul sur un côté de la balance.",{name:UNKNOWN}):guess[1]+X!==guess[2]?$._("Veille à ce que la balance soit équilibrée."):+guess[0]===X</div>
+                    <div class="show-guess">KhanUtil.scale.setLeftWeight(guess[1]),KhanUtil.scale.setRightWeight(guess[2])</div>
+                    <div class="show-guess-solutionarea">$("input#answer").val(guess[0])</div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

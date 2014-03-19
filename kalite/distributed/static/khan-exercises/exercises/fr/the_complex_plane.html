@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html data-require="math graphie math-format interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Le plan complexe</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars">
+        <var id="LOWER_BOUND">-5</var>
+        <var id="UPPER_BOUND">5</var>
+        <var id="REAL">randRange(LOWER_BOUND, UPPER_BOUND)</var>
+        <var id="IMAG" data-ensure="IMAG != 0">randRange(LOWER_BOUND, UPPER_BOUND)</var>
+        <var id="REP">complexNumber(REAL, IMAG)</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <p class="question">Placer le point orange au point d'affixe <code><var>REP</var></code>.</p>
+            <div class="graphie" id="gauss-plane">graphInit({range:[[LOWER_BOUND-1,UPPER_BOUND+1],[LOWER_BOUND-1,UPPER_BOUND+1]],tickStep:1,labelStep:1,scale:30}),label([6,.5],$._("Re"),"left"),label([.5,5],$._("Im"),"right"),addMouseLayer(),graph.movablePoint=addMovablePoint({constraints:{},snapX:.5,snapY:.5}),graph.movablePoint.onMove=function(e,r){return LOWER_BOUND&gt;e||e&gt;UPPER_BOUND||LOWER_BOUND&gt;r||r&gt;UPPER_BOUND?!1:void 0}</div>
+            <div class="solution" data-type="custom">
+                <div class="guess">graph.movablePoint.coord</div>
+                <div class="validator-function">return graph.movablePoint.coord.join()===[REAL,IMAG].join()</div>
+                <div class="show-guess">graph.movablePoint.setCoord(guess)</div>
+            </div>
+            <div class="hints">
+                <p>Les nombres complexes peuvent être visualisés comme des points d'un plan. Les coordonnées sur l'axe réel et sur l'axe complexe correspondent à leur partie réelle et à leur partie imaginaire.</p>
+                <p><code><var>REP</var></code> a pour partie réelle <code><var>REAL</var></code> et pour partie imaginaire <code><var>IMAG</var></code>.</p>
+                <div>
+                    <div class="graphie" data-update="gauss-plane">style({stroke:ORANGE,strokeWidth:2}),line([REAL,LOWER_BOUND-1],[REAL,UPPER_BOUND+1]),graph.movablePoint.visibleShape.toFront()</div>
+                    <p>La courbe verticale <strong class="hint_orange">orange</strong> représentes tous les nombres complexes ayant une partie réelle <code><var>REAL</var></code> (y compris <code><var>REP</var></code>).</p>
+</div>
+                <div>
+                    <div class="graphie" data-update="gauss-plane">style({stroke:BLUE,strokeWidth:2}),line([LOWER_BOUND-1,IMAG],[UPPER_BOUND+1,IMAG]),graph.movablePoint.visibleShape.toFront()</div>
+                    <p>La courbe horizontale <strong class="hint_blue"> bleue</strong> représente tous les nombres complexes ayant une partie imaginaire <code><var>IMAG</var></code>, y compris <code><var>REP</var></code>.</p>
+</div>
+                <div>
+                    <div class="graphie" data-update="gauss-plane">graph.movablePoint.moveTo(REAL,IMAG)</div>
+                    <p>Le seul nombre complexe ayant une partie réelle <code><var>REAL</var></code> et une partie imaginaire <code><var>IMAG</var></code> est <code><var>REP</var></code>. Il se trouve donc à l'intersection de la courbe verticale <strong class="hint_orange">orange</strong> et la courbe horizontale <strong class="hint_blue">bleue</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

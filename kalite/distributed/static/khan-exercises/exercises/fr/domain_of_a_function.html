@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Ensemble de définition d'une fonction</title>
+<script src="../khan-exercise.js"></script><script type="text/javascript">
+        function filter( o, f ) {
+            var n = {};
+            for ( var p in o ) {
+                if ( o.hasOwnProperty( p ) && f( p ) ) n[p] = o[p];
+            }
+            return n;
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange( 1, 10 )</var>
+            <var id="B" data-ensure="A !== B">randRange( 1, 10 )</var>
+            <var id="C" data-ensure="A !== C &amp;&amp; B !== C">randRange( 1, 10 )</var>
+
+            <var id="SET">function() { return "\\{ \\, x \\in \\RR \\mid " + Array.prototype.join.call( arguments, ", \\," ) + "\\, \\}"; }</var>
+            <var id="FN">function( n, sym ) { return "x " + sym + n; }</var>
+            <var id="FN2">function( n, m, sym1, sym2 ) { return n + sym1 + " x " + sym2 + m; }</var>
+            <var id="NEQ">function( n ) { return FN( n, "\\neq" ); }</var>
+            <var id="GEQ">function( n ) { return FN( n, "\\geq" ); }</var>
+            <var id="LEQ">function( n ) { return FN( n, "\\leq" ); }</var>
+            <var id="GE">function( n ) { return FN( n, "&gt;" ); }</var>
+            <var id="LE">function( n ) { return FN( n, "&lt;" ); }</var>
+            <var id="LE_LEQ">function( n, m ) { return FN2( n, m, "&lt;", "\\leq" ); }</var>
+            <var id="LEQ_LEQ">function( n, m ) { return FN2( n, m, "\\leq", "\\leq" ); }</var>
+            <var id="LE_LE">function( n, m ) { return FN2( n, m, "&lt;", "&lt;" ); }</var>
+
+            <var id="CHOICES">{"two-denom-simplify":SET(NEQ(-1*A),NEQ(B)),"two-denom-cond":SET(NEQ(-1*A)),sqrt:SET(GEQ(A)),"inverse-sqrt":SET(GE(A)),"inverse-sqrt-cond":SET(NEQ(A)),"sqrt-frac":SET(LE_LEQ(A,A+B)),"two-denom-cond-weird":SET(NEQ(-1*A),NEQ(C)),"sqrt-poly-frac":SET(GEQ(C)),"sqrt-abs":SET(LEQ_LEQ(-1*A,A)),"inverse-sqrt-abs":SET(LE_LE(-1*A,A))}</var>
+
+            <var id="IF">$._("si")</var>
+        </div>
+
+        <div class="problems">
+
+            <div id="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \dfrac{ x + <var>A</var> }{ ( x + <var>A</var> )( x - <var>B</var> ) }</code></p>
+
+                <p class="question">Quel est le domaine de définition de la fonction à valeurs réelles <code>f(x)</code>?</p>
+
+                <p class="solution"><code><var>CHOICES["two-denom-simplify"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'two-denom-simplify'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x)</code> est indéfinie lorsque le dénominateur vaut 0.</p>
+                    <p>Le dénominateur vaut 0 lorsque <code>x=<var>(-1*A)</var></code> ou <code>x=<var>B</var></code>.</p>
+                    <p>Donc nous savons que <code>x \neq <var>-1*A</var></code> et <code>x \neq <var>B</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["two-denom-simplify"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="two-denom-cond" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x)= \begin{cases} \dfrac{ x + <var>A</var> }{ ( x + <var>A</var> )( x - <var>B</var> ) } &amp; \text{<var>IF</var> } x \neq <var>B</var> \\ <var>C</var> &amp; \text{<var>IF</var> } x = <var>B</var> \end{cases}</code></p>
+
+                <p class="solution"><code><var>CHOICES["two-denom-cond"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'two-denom-cond'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x)</code> est une fonction par morceau donc nous devons vérifier si chaque morceau est indéfini ou non.</p>
+                    <p>Le premier ensemble de définition par morceaux de <code>f(x)</code>, <code>\frac{ x + <var>A</var> }{ ( x + <var>A</var> )( x - <var>B</var> ) }</code>, n'est pas valable lorsque son dénominateur vaut 0.</p>
+                    <p>Le dénominateur vaut 0 lorsque <code>x=<var>-1*A</var></code> ou <code>x=<var>B</var></code>.</p>
+                    <p>Donc, d'après la première définition de par morceau, nous savons que <code>x \neq <var>-1*A</var></code> et <code>x \neq <var>B</var></code>.</p>
+                    <p>Cependant, le deuxième ensemble de définition par morceaux s'applique lorsque <code>x = <var>B</var></code>, et le deuxième ensemble de définition par morceaux, <code><var>C</var></code>, n'a pas de saut étrange ou de trous, alors <code>f(x)</code> est définie en <code>x = <var>B</var></code>.</p>
+                    <p>Donc la seule condition sur le domaine de définition est que <code>x \neq <var>-1*A</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["two-denom-cond"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="sqrt" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \sqrt{ x - <var>A</var> }</code></p>
+
+                <p class="solution"><code><var>CHOICES.sqrt</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'sqrt'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x)</code> est indéfinie lorsque le radicande (l'expression sous le radical) vaut moins que zéro.</p>
+                    <p>Donc le radicande <code>x - <var>A</var></code> doit être supérieur ou égal à zéro.</p>
+                    <p>Donc <code>x - <var>A</var> \geq 0</code>; Ceci signifie que <code>x \geq <var>A</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES.sqrt</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="inverse-sqrt" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \dfrac{ 1 }{ \sqrt{ x - <var>A</var> } }</code></p>
+
+                <p class="solution"><code><var>CHOICES["inverse-sqrt"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'inverse-sqrt'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p>Dans un premier temps, nous devons considérer que <code>f(x)</code> est indéfinie lorsque le radicande (expression sous le radical) est strictement inférieur à zéro.</p>
+                    <p>Donc le radicande <code>x - <var>A</var></code> doit être supérieur ou égal à zéro.</p>
+                    <p>Donc <code>x - <var>A</var> \geq 0</code>; Ceci signifie que <code>x \geq <var>A</var></code>.</p>
+                    <p>Puis, nous devons aussi considérer que <code>f(x)</code> est indéfinie lorsque le dénominateur, <code>\sqrt{ x - <var>A</var> }</code>, vaut zéro.</p>
+                    <p>Donc <code>\sqrt{ x - <var>A</var> } \neq 0</code>.</p>
+                    <p><code>\sqrt{ z } = 0</code> uniquement lorsque <code>z = 0</code>, donc <code>\sqrt{ x - <var>A</var> } \neq 0</code> signifie que <code>x - <var>A</var> \neq 0</code>.</p>
+                    <p>Donc <code>x \neq <var>A</var></code>.</p>
+                    <p>Donc nous avons deux conditions: <code>x \geq <var>A</var></code> et <code>x \neq <var>A</var></code>.</p>
+                    <p>En combinant ces deux restrictions, il nous reste simplement <code>x &gt; <var>A</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["inverse-sqrt"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="inverse-sqrt-cond" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \begin{cases} \dfrac{ 1 }{ \sqrt{ x - <var>A</var> } } &amp; \text{<var>IF</var> } x \geq <var>A</var> \\ \dfrac{ 1 }{ \sqrt{ <var>A</var> - x } } &amp; \text{<var>IF</var> } x &lt; <var>A</var> \end{cases}</code></p>
+
+                <p class="solution"><code><var>CHOICES["inverse-sqrt-cond"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'inverse-sqrt-cond'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x)</code> est une fonction par morceau donc nous devons vérifier si chaque morceau est indéfini ou non.</p>
+                    <p>Le premier ensemble de définition par morceaux de <code>f(x)</code>, <code>\frac{ 1 }{ \sqrt{ x - <var>A</var> } }</code> n'est pas valable partout où le dénominateur est nul et où le radicande (expressions sous le radical) est strictement inférieur à zéro.</p>
+                    <p>Le dénominateur <code>\sqrt{ x - <var>A</var> }</code> est nul lorsque <code>x - <var>A</var> = 0</code>, donc nous savons que <code>x \neq <var>A</var></code>.</p>
+                    <p>Le radicande <code>x - <var>A</var></code> est strictement inférieur à zéro lorsque <code>x &lt; <var>A</var></code>, donc nous savons que <code>x \geq <var>A</var></code>.</p>
+                    <p>Donc le premier ensemble de définition par morceaux de <code>f(x)</code> est donné lorsque <code>x \neq <var>A</var></code> et <code>x \geq <var>A</var></code>. En combinant ces deux conditions, le premier ensemble de définition par morceaux est donné lorsque <code>x &gt; <var>A</var></code>. Le premier ensemble de définition par morceaux s'applique lorsque <code>x \geq <var>A</var></code>, donc cette condition est pertinente.</p>
+                    <p>La deuxième définition de par morceau de <code>f(x)</code>, <code>\frac{ 1 }{ \sqrt{ <var>A</var> - x } }</code>, s'applique lorsque <code>x &lt; <var>A</var></code> et n'est pas valable partout où le dénominateur est nul et où le radicande est strictement inférieur à zéro.</p>
+                    <p>Le dénominateur <code>\sqrt{ <var>A</var> - x }</code> est nul lorsque <code><var>A</var> - x = 0</code>, donc nous savons que <code>x \neq <var>A</var></code>.</p>
+                    <p>Le radicande <code><var>A</var> - x</code> est strictement inférieur à zéro lorsque <code>x &gt; <var>A</var></code>, donc nous savons que <code>x \leq <var>A</var></code>.</p>
+                    <p>Donc le deuxième ensemble de définition par morceaux de <code>f(x)</code> est donné lorsque <code>x \neq <var>A</var></code> et <code>x \leq <var>A</var></code>. En combinant ces deux conditions, la deuxième ensemble de définition par morceaux est donné lorsque <code>x &lt; <var>A</var></code>. Cependant, la deuxième ensemble de définition par morceau de <code>f(x)</code> s'applique uniquement lorsque <code>x &lt; <var>A</var></code>, donc cette condition n'est pas vraiment pertinente pour le domaine de définition de <code>f(x)</code>.</p>
+                    <p>Donc le premier ensemble de définition par morceaux est donné lorsque <code>x &gt; <var>A</var></code> et s'applique lorsque <code>x \geq <var>A</var></code>; le deuxième ensemble de définition par morceaux est donné lorsque <code>x &lt; <var>A</var></code> et s'applique lorsque <code>x &lt; <var>A</var></code>. En utilisant ces deux restrictions ensemble, le seul endroit ou le domaine de définition s'applique et la valeur est indéfinie est en <code>x = <var>A</var></code>. Ainsi la seule restriction sur le domaine de définition de <code>f(x)</code> est <code>x \neq <var>A</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["inverse-sqrt-cond"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="sqrt-frac" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \dfrac{ \sqrt{ <var>A+B</var> - x } }{ \sqrt{ x - <var>A</var> } }</code></p>
+
+                <p class="solution"><code><var>CHOICES["sqrt-frac"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'sqrt-frac'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p>Dans un premier temps, nous devons considérer que <code>f(x)</code> est indéfinie partout ou l'un des radicaux est indéfini, donc partout ou l'un des radicandes (l'expression sous le symbole radical) vaut moins de zéro.</p>
+                    <p>Le radical du haut est indéfini lorsque <code><var>A+B</var> - x &lt; 0</code>.</p>
+                    <p>Donc le radical du haut est indéfini lorsque <code>x &gt; <var>A+B</var></code>, donc nous savons que <code>x \leq <var>A+B</var></code>.</p>
+                    <p>Le radical du bas est indéfini lorsque <code>x - <var>A</var> &lt; 0</code>.</p>
+                    <p>Donc le radical du bas est indéfini lorsque <code>x &lt; <var>A</var></code>, donc nous savons que <code>x \geq <var>A</var></code>.</p>
+                    <p>Puis, nous devons considérer que <code>f(x)</code> est indéfinie partout où le dénominateur, <code>\sqrt{ x - <var>A</var> }</code>, est nul.</p>
+                    <p>Donc <code>\sqrt{ x - <var>A</var> } \neq 0</code>, so <code>x - <var>A</var> \neq 0</code>, so <code>x \neq <var>A</var></code>.</p>
+                    <p>Donc nous avons trois conditions: <code>x \leq <var>A+B</var></code>, <code>x \geq <var>A</var></code>, et <code>x \neq <var>A</var></code>.</p>
+                    <p>En combinant ces trois restrictions, nous savons que <code><var>A</var> &lt; x \leq <var>A+B</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["sqrt-frac"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="two-denom-cond-weird" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \begin{cases} \dfrac{ x + <var>A</var> }{ ( x + <var>A</var> )( x - <var>C</var> ) } &amp; \text{<var>IF</var> } x \neq <var>B</var> \\ <var>A</var> &amp; \text{<var>IF</var> } x = <var>B</var> \end{cases}</code></p>
+
+                <p class="solution"><code><var>CHOICES["two-denom-cond-weird"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'two-denom-cond-weird'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x)</code> est une fonction par morceau donc nous devons vérifier si chaque morceau est indéfini ou non.</p>
+                    <p>Le premier ensemble de définition par morceaux de <code>f(x)</code>, <code>\frac{ x + <var>A</var> }{ ( x + <var>A</var> )( x - <var>C</var> ) }</code>, n'est pas valable partout où le dénominateur est nul.</p>
+                    <p>Le dénominateur <code>(x + <var>A</var>)(x - <var>C</var>)</code> est nul lorsque <code>x = <var>-1*A</var></code> ou <code>x = <var>C</var></code>.</p>
+                    <p>Donc le premier ensemble de définition par morceaux de <code>f(x)</code> est donné lorsque <code>x \neq <var>-1*A</var></code> et <code>x \neq <var>C</var></code>. Le premier ensemble de définition par morceaux s'applique lorsque <code>x = <var>-1*A</var></code> et lorsque <code>x = <var>C</var></code>, donc ces restrictions sont pertinentes pour le domine de définition de<code>f(x)</code>.</p>
+                    <p>La deuxième définition de par morceau de <code>f(x)</code>, <code><var>A</var></code>, est une simple fonction linéaire horizontale et donc n'a pas de discontinuités desquelles on doit se soucier donc est définie partout.</p>
+                    <p>Donc le premier ensemble de définition par morceaux est donnée lorsque <code>x \neq <var>-1*A</var></code> et <code>x \neq <var>C</var></code> et s'applique lorsque <code>x \neq <var>B</var></code>; la deuxième ensemble de définition par morceaux est toujours valable et s'applique lorsque  <code>x = <var>B</var></code>. En regroupant ces deux restrictions ensemble, les seuls endroits où une définition s'applique et est indéfinie sont en <code>x = <var>-1*A</var></code> et <code>x = <var>C</var></code>. Donc les restrictions sur le domaine de définition de <code>f(x)</code> est que <code>x \neq <var>-1*A</var></code> et que <code>x \neq <var>C</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["two-denom-cond-weird"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="sqrt-poly-frac" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \dfrac{ \sqrt{ x - <var>C</var> } }{ x^2 + <var>A+B</var> x + <var>A*B</var> }</code></p>
+
+                <p class="solution"><code><var>CHOICES["sqrt-poly-frac"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'sqrt-poly-frac'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x) = \dfrac{ \sqrt{ x - <var>C</var> } }{ x^2 + <var>A+B</var> x + <var>A*B</var> } = \dfrac{ \sqrt{ x - <var>C</var> } }{ ( x + <var>A</var> )( x + <var>B</var> ) }</code></p>
+                    <p>Dans un premier temps, nous devons considérer que <code>f(x)</code> est indéfinie partout où le radical est indéfini, donc le radicande (expression sous le radical) ne peut pas valoir moins que zéro.</p>
+                    <p>Donc <code>x - <var>C</var> \geq 0</code>, ce qui signifie que <code>x \geq <var>C</var></code>.</p>
+                    <p>Puis, nous devons aussi considérer que <code>f(x)</code> est indéfinie partout où le dénominateur est nul.</p>
+                    <p>Donc <code>x \neq <var>-1*A</var></code> et <code>x \neq <var>-1*B</var></code>.</p>
+                    <p>Cependant, ces deux dernières restrictions n'ont pas de sens puisque <code><var>C</var> &gt; <var>-1*A</var></code> et <code><var>C</var> &gt; <var>-1*B</var></code> et donc <code>x \geq <var>C</var></code> assurera que <code>x \neq <var>-1*A</var></code> et que <code>x \neq <var>-1*B</var></code>.</p>
+                    <p>En combinant ces restrictions, il nous reste alors simplement <code>x \geq <var>C</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["sqrt-poly-frac"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="sqrt-abs" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \sqrt{ <var>A</var> - \lvert x \rvert }</code></p>
+
+                <p class="solution"><code><var>CHOICES["sqrt-abs"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'sqrt-abs'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p><code>f(x)</code> est indéfinie lorsque le radicande (l'expression sous le radical) vaut moins que zéro.</p>
+                    <p>Donc nous savons que <code><var>A</var> - \lvert x \rvert \geq 0</code>.</p>
+                    <p>Donc <code>\lvert x \rvert \leq <var>A</var></code>.</p>
+                    <p>Ceci signifie que <code>x \leq <var>A</var></code> et que <code>x \geq <var>-1*A</var></code>; ou alors, de façon équivalente, <code><var>-1*A</var> \leq x \leq <var>A</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["sqrt-abs"]</var></code>.</p>
+                </div>
+
+            </div>
+
+            <div id="inverse-sqrt-abs" data-type="two-denom-simplify">
+
+                <p class="problem"><code>f(x) = \dfrac{ <var>B</var> }{ \sqrt{ <var>A</var> - \lvert x \rvert } }</code></p>
+
+                <p class="solution"><code><var>CHOICES["inverse-sqrt-abs"]</var></code></p>
+                <ul class="choices" data-none="true" data-show="5">
+<li data-each="filter( CHOICES, function( c ) { return c !== 'inverse-sqrt-abs'; } ) as c"><code><var>c</var></code></li>
+                </ul>
+<div class="hints">
+                    <p>Dans un premier temps, nous devons considérer que <code>f(x)</code> est indéfinie partout où le radicande (expression sous le radical) est strictement inférieur a zéro.</p>
+                    <p>Donc nous savons que <code><var>A</var> - \lvert x \rvert \geq 0</code>.</p>
+                    <p>Ceci signifie que <code>\lvert x \rvert \leq <var>A</var></code>, qui signifie encore que <code><var>-1*A</var> \leq x \leq <var>A</var></code>.</p>
+                    <p>Puis, nous devons considérer que <code>f(x)</code> est aussi indéfinie partout où le dénominateur vaut zéro.</p>
+                    <p>Donc nous savons que <code>\sqrt{ <var>A</var> - \lvert x \rvert } \neq 0</code>, donc <code>\lvert x \rvert \neq <var>A</var></code>.</p>
+                    <p>Ceci signifie que <code>x \neq <var>A</var></code> et que <code>x \neq <var>-1*A</var></code>.</p>
+                    <p>Donc nous avons quatre conditions: <code>x \geq <var>-1*A</var></code>, <code>x \leq <var>A</var></code>, <code>x \neq <var>-1*A</var></code>, et <code>x \neq <var>A</var></code>.</p>
+                    <p>En combinant ces quatre-là, nous savons que <code>x &gt; <var>-1*A</var></code> et <code>x &lt; <var>A</var></code>; ou alors que <code><var>-1*A</var> &lt; x &lt; <var>A</var></code>.</p>
+                    <p>En exprimant ceci avec des notations mathématiques, le domaine de définition est <code><var>CHOICES["inverse-sqrt-abs"]</var></code>.</p>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Problèmes de ratios</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+
+    <div class="problems">
+        <div id="classroom">
+            <div class="vars">
+                <var id="RATIO_GIRLS">randRange( 2, 10 )</var>
+                <var id="RATIO_BOYS">randRange( 2, 10 )</var>
+                <var id="FACTOR">randRange( 2, 5 )</var>
+                <var id="NUM_GIRLS">RATIO_GIRLS * FACTOR</var>
+                <var id="NUM_BOYS">RATIO_BOYS * FACTOR</var>
+                <var id="TOTAL">NUM_GIRLS + NUM_BOYS</var>
+            </div>
+            <p class="problem">Dans la classe de <var>course( 1 )</var>, le ratio de filles aux garçons est <code><var>RATIO_GIRLS</var></code> à <code><var>RATIO_BOYS</var></code>.</p>
+            <p class="question">S'il y a <code><var>NUM_GIRLS</var></code> filles, combien de garçons il y a-t-il?</p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM_BOYS</var></span> boys</p>
+            </div>
+            <div class="hints">
+                <p>Un ratio de <code><var>RATIO_GIRLS</var></code> filles pour <code><var>RATIO_BOYS</var></code> garçons signifie qu'il y a un groupe de <code><var>RATIO_GIRLS</var></code> filles pour chaque groupe de <code><var>RATIO_BOYS</var></code> garçons.</p>
+                <p>S'il y a <code><var>NUM_GIRLS</var></code> filles, il y a donc <code><var>FACTOR</var></code> groupes de <code><var>RATIO_GIRLS</var></code> filles chacun.</p>
+                <p>Puisqu'on sait que le ratio est <code><var>RATIO_GIRLS</var>:<var>RATIO_BOYS</var></code>, il doit avoir <code><var>FACTOR</var></code> groupes de <code><var>RATIO_BOYS</var></code> garçons chacun.</p>
+                <p>Il y a un total de <code><var>NUM_BOYS</var></code> garçons dans la classe de <var>course( 1 )</var>.</p>
+            </div>
+        </div>
+
+        <div id="classroom-give-boys-ask-girls" data-type="classroom">
+            <p class="question">S'il y a <code><var>NUM_BOYS</var></code> garçons, combien de fille il y a-t-il?</p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM_GIRLS</var></span> girls</p>
+            </div>
+            <div class="hints">
+                <p>Un ratio de <code><var>RATIO_GIRLS</var></code> filles pour <code><var>RATIO_BOYS</var></code> garçons signifie qu'il y a un groupe de <code><var>RATIO_GIRLS</var></code> filles pour chaque groupe de <code><var>RATIO_BOYS</var></code> garçons.</p>
+                <p>S'il y a <code><var>NUM_BOYS</var></code> garçons, et puis il y a <code><var>FACTOR</var></code> groupes de <code><var>RATIO_BOYS</var></code> garçons chacun.</p>
+                <p>Puisqu'on sait que le ratio est <code><var>RATIO_GIRLS</var>:<var>RATIO_BOYS</var></code>, il doit avoir <code><var>FACTOR</var></code> groupes de <code><var>RATIO_GIRLS</var></code> filles chacun.</p>
+                <p>Il y a un total de <code><var>NUM_GIRLS</var></code> filles dans la classe de <var>course( 1 )</var>.</p>
+            </div>
+        </div>
+
+        <div id="classroom-give-total-ask-girls" data-type="classroom">
+            <p class="question">S'il y a un total de <code><var>TOTAL</var></code> étudiants, combien de filles il y a-t-il?</p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM_GIRLS</var></span> girls</p>
+            </div>
+            <div class="hints">
+                <p>Un ratio de <code><var>RATIO_GIRLS</var></code> filles pour <code><var>RATIO_BOYS</var></code> garçons signifie qu'un ensemble de <code><var>RATIO_GIRLS + RATIO_BOYS</var></code> étudiants aurait <code><var>RATIO_GIRLS</var></code> filles et <code><var>RATIO_BOYS</var></code> garçons.</p>
+                <p>Une classe de <code><var>TOTAL</var></code> étudiants a <code><var>FACTOR</var></code> séries de <code><var>RATIO_GIRLS + RATIO_BOYS</var></code> étudiants.</p>
+                <p>Puisqu'on sait qu'il y a <code><var>RATIO_GIRLS</var></code> filles dans chaque ensemble de <code><var>RATIO_GIRLS + RATIO_BOYS</var></code> étudiants, la classe doit avoir <code><var>FACTOR</var></code> groupes de <code><var>RATIO_GIRLS</var></code> filles chacun.</p>
+                <p>Il y a un total de <code><var>NUM_GIRLS</var></code> filles dans la classe de <var>course( 1 )</var>.</p>
+            </div>
+        </div>
+
+        <div id="classroom-give-total-ask-boys" data-type="classroom">
+            <p class="question">S'il y a un total de <code><var>TOTAL</var></code> étudiants, combien de garçons il y a-t-il?</p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM_BOYS</var></span> boys</p>
+            </div>
+            <div class="hints">
+                <p>Un ratio de <code><var>RATIO_GIRLS</var></code> filles pour <code><var>RATIO_BOYS</var></code> garçons signifie qu'un ensemble de <code><var>RATIO_GIRLS + RATIO_BOYS</var></code> étudiants aurait <code><var>RATIO_GIRLS</var></code> filles et <code><var>RATIO_BOYS</var></code> garçons.</p>
+                <p>Une classe de <code><var>TOTAL</var></code> étudiants a <code><var>FACTOR</var></code> séries de <code><var>RATIO_GIRLS + RATIO_BOYS</var></code> étudiants.</p>
+                <p>Puisqu'on sait qu'il y a <code><var>RATIO_BOYS</var></code> garçons dans chaque ensemble de <code><var>RATIO_GIRLS + RATIO_BOYS</var></code> étudiants, la classe doit avoir <code><var>FACTOR</var></code> groupes de <code><var>RATIO_BOYS</var></code> garçons chacun.</p>
+                <p>Il y a un total de <code><var>NUM_BOYS</var></code> garçons dans la classe de <var>course( 1 )</var>.</p>
+            </div>
+        </div>
+
+        <div id="map">
+            <div class="vars">
+                <var id="SCALE_MAP">randRange( 1, 10 )</var>
+                <var id="SCALE_REAL">randRange( 1, 10 )</var>
+                <var id="FACTOR">randRange( 2, 10 )</var>
+                <var id="DISTANCE_MAP">FACTOR * SCALE_MAP</var>
+                <var id="DISTANCE_REAL">FACTOR * SCALE_REAL</var>
+            </div>
+            <p class="problem">L'échelle sur la carte est <var>SCALE_MAP</var>cm : <var>SCALE_REAL</var>km.</p>
+            <p class="question">Si les deux villes sont <var>DISTANCE_MAP</var> de distance apart sur la carte, quel est la distance réelle en km entre les deux villes?</p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>DISTANCE_REAL</var></span> km</p>
+            </div>
+            <div class="hints">
+                <p>L'échelle signifie que chaque <var>SCALE_MAP</var>cm sur la carte corréspondent à une distance atuelle de <var>SCALE_REAL</var>km.</p>
+                <p>Une distance de <var>DISTANCE_MAP</var>cm sur une carte est la même chose que <var>FACTOR</var> <code>\cdot</code> <var>SCALE_MAP</var>cm.</p>
+                <p>La distance actuelle entre les deux villes est <var>FACTOR</var> <code>\cdot</code> <var>SCALE_REAL</var>km, ou <var>DISTANCE_REAL</var>km.</p>
+            </div>
+        </div>
+
+        <div id="map-give-real-ask-map" data-type="map">
+            <p class="question">Si la distance entre deux villes est <var>DISTANCE_REAL</var>km, à quelle distance en cm sont les deux villes l'une de l'autre sur la carte?</p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer" style="padding-right: 5px"><var>DISTANCE_MAP</var></span> cm</p>
+            </div>
+            <div class="hints">
+                <p>L'échelle signifie que chaque <var>SCALE_MAP</var>cm sur la carte corréspondent à une distance atuelle de <var>SCALE_REAL</var>km.</p>
+                <p>Une distance actuelle de <var>DISTANCE_REAL</var>km est la même chose que <var>FACTOR</var> <code>\cdot</code> <var>SCALE_REAL</var>km.</p>
+                <p>La distance entre les deux villes sur la carte est <var>FACTOR</var> <code>\cdot</code> <var>SCALE_MAP</var>cm, ou <var>DISTANCE_MAP</var>cm.</p>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
+</html>

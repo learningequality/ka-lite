@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html data-require="math word-problems expressions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Calculer avec de nouveaux opérateurs 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars" data-ensure="abs( VALU1 ) &lt; 40">
+        <var id="A">randRange(3, 8)</var>
+        <var id="B">randRange(2, 4)</var>
+
+        <var id="C">randRange(3, 8)</var>
+        <var id="D">randRange(2, 4)</var>
+
+        <var id="FUN1, FUN2">shuffle([function(r,e,a,n){return["+",["*",r,a],n]},function(r,e,a,n){return["-",["*",r,a],n]},function(r,e,a,n){return["+",a,["*",r,n]]},function(r,e,a,n){return["-",a,["*",r,n]]},function(r,e,a,n){return["-",["*",r,a],["*",e,n]]},function(r,e,a,n){return["-",["*",e,a],["*",r,n]]},function(r,e,a,n){return["*",a,["-",n,r]]},function(r,e,a,n){return["*",["-",r,a],n]},function(r,e,a,n){return["+",["^",a,2],["*",e,["^",n,2]]]},function(r,e,a,n){return["+",["*",e,["^",a,2]],["^",n,2]]},function(r,e,a,n){return["-",["^",a,2],["*",e,["^",n,2]]]},function(r,e,a,n){return["-",["*",e,["^",a,2]],["^",n,2]]},function(r,e,a){return["-",["*",e,a],r]},function(r,e,a,n){return["+",["*",r,n],e]},function(r,e,a,n){return["+",["*",a,n],["*",e,a],["-",n]]}],2)</var>
+
+        <var id="FUN1_XONLY">!isNaN(expr(FUN1(A, B, 0, NaN), true))</var>
+        <var id="FUN1_YONLY">!isNaN(expr(FUN1(A, B, NaN, 0), true))</var>
+
+        <var id="X">randRange(-6, 6)</var>
+        <var id="Y">randRange(-6, 6)</var>
+        <var id="Z">randRange(-6, 6)</var>
+
+        <var id="TEXT2">expr(FUN2(C, D, "x", "y"))</var>
+        <var id="SUBS2">expr(FUN2(C, D, Y, Z))</var>
+        <var id="VALU2">expr(FUN2(C, D, Y, Z), true)</var>
+
+        <var id="TEXT1">expr(FUN1(A, B, "x", "y"))</var>
+
+        <var id="TEXTS">shuffle(["&lt;code&gt;x "+binop(1)+" y = "+TEXT1+"&lt;/code&gt;","&lt;code&gt;x "+binop(2)+" y = "+TEXT2+"&lt;/code&gt;"]).join(" and ")</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <var id="SUBS1">expr(FUN1(A, B, X, VALU2))</var>
+                <var id="VALU1">expr(FUN1(A, B, X, VALU2), true)</var>
+                <var id="NEED_VALU1">!FUN1_XONLY</var>
+                <var id="NEED_VALU1_ONLY">"left"</var>
+            </div>
+
+            <div class="question">
+                <p>Si <var>TEXTS</var>, trouver <code><var>X</var> <var>binop(1)</var> (<var>Y</var> <var>binop(2)</var> <var>Z</var>)</code>.</p>
+            </div>
+            <div class="solution"><var>VALU1</var></div>
+
+            <div class="hints" data-apply="appendContents">
+                <p data-if="NEED_VALU1">Maintenant, trouvez <code><var>X</var> <var>binop(1)</var> <var>VALU2</var></code> :</p>
+<p data-else="">Trouvez <code><var>X</var> <var>binop(1)</var> y</code> :</p>
+                <p><code>\qquad <var>X</var> <var>binop(1)</var> <var>NEED_VALU1 ? VALU2 : "y"</var> = <var>SUBS1</var></code></p>
+                <p data-if="NEED_VALU1"><code>\qquad \hphantom{<var>X</var> <var>binop(1)</var> <var>VALU2</var>} = <var>VALU1</var></code>.</p>
+<p data-else=""><code>\qquad \hphantom{<var>X</var> <var>binop(1)</var> y} = <var>VALU1</var></code>.</p>
+            </div>
+        </div>
+        <div>
+            <div class="vars">
+                <var id="SUBS1">expr(FUN1(A, B, VALU2, X))</var>
+                <var id="VALU1">expr(FUN1(A, B, VALU2, X), true)</var>
+                <var id="NEED_VALU1">!FUN1_YONLY</var>
+                <var id="NEED_VALU1_ONLY">"right"</var>
+            </div>
+
+            <div class="question">
+                <p>Si <var>TEXTS</var>, trouver <code>(<var>Y</var> <var>binop(2)</var> <var>Z</var>) <var>binop(1)</var> <var>X</var></code>.</p>
+            </div>
+            <div class="solution"><var>VALU1</var></div>
+
+            <div class="hints" data-apply="appendContents">
+                <p data-if="NEED_VALU1">Maintenant, trouvez <code><var>VALU2</var> <var>binop(1)</var> <var>X</var></code> :</p>
+<p data-else="">On cherche <code>x <var>binop(1)</var> <var>X</var></code> :</p>
+                <p><code>\qquad <var>NEED_VALU1 ? VALU2 : "x"</var> <var>binop(1)</var> <var>X</var> = <var>SUBS1</var></code></p>
+                <p data-if="NEED_VALU1"><code>\qquad \hphantom{<var>VALU2</var> <var>binop(1)</var> <var>X</var>} = <var>VALU1</var></code>.</p>
+<p data-else=""><code>\qquad \hphantom{x <var>binop(1)</var> <var>X</var>} = <var>VALU1</var></code>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div data-if="NEED_VALU1" data-unwrap="">
+            <p>D'abord, on cherche <code><var>Y</var> <var>binop(2)</var> <var>Z</var></code>:</p>
+            <p><code>\qquad <var>Y</var> <var>binop(2)</var> <var>Z</var> = <var>SUBS2</var></code></p>
+            <p><code>\qquad \hphantom{<var>Y</var> <var>binop(2)</var> <var>Z</var>} = <var>VALU2</var></code>.</p>
+        </div>
+        <div data-else="" data-unwrap="">
+            <p>Ce n'est pas la peine de calculer <code><var>Y</var> <var>binop(2)</var> <var>Z</var></code> car <code>x <var>binop(1)</var> y</code> ne dépend que du premier <var>NEED_VALU1_ONLY</var> opérande.</p>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

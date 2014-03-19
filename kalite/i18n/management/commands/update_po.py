@@ -34,7 +34,7 @@ class Command(BaseCommand):
             '-t',
             dest='test_wrappings',
             action="store_true",
-            default=False,
+            default=not settings.CENTRAL_SERVER,
             help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.',
         ),
     )

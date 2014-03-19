@@ -30,6 +30,14 @@ def USER_FACING_PORT():
 # Django settings
 ##############################
 
+# TODO(bcipolli): change these to "login" and "logout", respectively, if/when
+#  we migrate to a newer version of Django.  Older versions require these
+#  to be set if using the login_required decorator.
+LOGIN_URL = "/securesync/login/"
+LOGOUT_URL = "/securesync/logout/"
+
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
@@ -98,6 +106,8 @@ ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
 CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("globe.%s:8008" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
+
+KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan-exercises")
 
 
 ########################

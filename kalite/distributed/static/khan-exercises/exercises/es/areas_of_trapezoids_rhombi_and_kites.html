@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html data-require="math graphie word-problems subhints graphie-geometry">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Área de trapecios, rombos y cometas</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="UNIT,UNIT_TEXT">randFromArray([["in",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["pulgada\n\npulgadas","pulgadas"]},e)})],["ft",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["pie","pies"]},e)})],["m",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["metros","metros"]},e)})],["cm",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["centímetros","centímetros"]},e)})],["",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["unidad\n\nunidades","unidades"]},e)})]])</var>
+        </div>
+
+        <div class="problems">
+            <div id="trapezoid">
+                <div class="vars">
+                    <var id="B1">randRange(2, 8)</var>
+                    <var id="B2">randRange(2, 8)</var>
+                    <var id="H">randRange(1, 6)</var>
+
+                    <var id="SH">randRangeNonZero(-2, 2)</var>
+
+                    <var id="K">1/2 * (B1 + B2) * H</var>
+                </div>
+
+                <div class="question">¿Cuál es el área de esta figura?</div>
+
+                <div class="graphie" id="figure">init({range:[[-4,max(B1,B2)+4],[-1,H+1]],scale:[30,30]});var v=[[0,0],[B1,0],[B2+SH,H],[SH,H],[0,0]];style({stroke:BLUE,fill:"#eee"},function(){path(v),label([B1/2,0],B1+"\\text{ "+UNIT+"}","below"),label([B2/2+SH,H],B2+"\\text{ "+UNIT+"}","above"),path([[B1,0],[B1,H]],H,{strokeDasharray:"."}),label([B1,H/2],H+"\\text{ "+UNIT+"}","right"),parallel([[0,0],[B1,0]],1),parallel([[SH,H],[B2+SH,H]],1)}),rightAngleBox([[0,0],[B1,0]],[[B1,0],[B1,H]],{stroke:GRAY,opacity:.5})</div>
+
+                <div class="solution" data-type="multiple">
+<span class="sol"><var>K</var></span> <var>plural_form(UNIT_TEXT)</var> cuadrados</div>
+
+                <div class="hints">
+                    <p>Esta figura es un cuadrilátero con dos lados paralelos (los lados superior e inferior), por lo tanto es un trapecio.</p>
+                    <div>
+                        <p>Área de un trapecio <code>= \dfrac12 \cdot (b_1 + b_2) \cdot h</code> [<a href="#" class="show-subhint" data-subhint="area-trapezoid">Muéstrame por qué</a>]</p>
+                        <div class="subhint" id="area-trapezoid">
+                            <p>Vamos a dibujar una línea entre los extremos opuestos de las dos bases.</p>
+                            <div class="graphie" data-update="figure">var showSubHint=function(){graph.subhint.show(),$("a[data-subhint='area-trapezoid']").unbind("click",showSubHint).click(hideSubHint)},hideSubHint=function(){graph.subhint.hide(),$("a[data-subhint='area-trapezoid']").unbind("click",hideSubHint).click(showSubHint)};graph.subhint=raphael.set().push(path([[0,0],[B1,0],[B2+SH,H]],{stroke:BLUE,fill:ORANGE,opacity:.5}),path([[SH,H],[B2+SH,H],[0,0]],{stroke:BLUE,fill:RED,opacity:.5})),hideSubHint()</div>
+                            <p>Observa que la línea divide al trapecio en dos triángulos: uno con base <code>b_1 = <var>B1</var></code>, y el otro con base  <code>b_2 = <var>B2</var></code>. Ambos triángulos tienen la misma altura <code>h = <var>H</var></code>.</p>
+                            <p>El área del trapecio es igual a la suma de las áreas de los dos triángulos.</p>
+                            <p><code>A = \dfrac12 \cdot b_1 \cdot h + \dfrac12 \cdot b_2 \cdot h</code></p>
+                            <p>Factoriza <code>\dfrac12 \cdot h</code> para obtener la fórmula del el área del trapecio:</p>
+                            <p><code>A = \dfrac12 \cdot h \cdot (b_1 + b_2) = \dfrac12 \cdot (b_1 + b_2) \cdot h</code></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Ahora, utiliza esta fórmula para calcular el área del trapecio.</p>
+                        <p><code>b_1 = <var>B1</var></code></p>
+                        <p><code>b_2 = <var>B2</var></code></p>
+                        <p><code>h = <var>H</var></code></p>
+                        <p><code>A = \dfrac12 \cdot (<var>B1</var> + <var>B2</var>) \cdot <var>H</var> = <var>K</var></code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kite">
+                <div class="vars" data-ensure="D1 &gt; SH">
+                    <var id="D1">randRange(1, 7) * 2</var>
+                    <var id="D2">randRange(1, 7) * 2</var>
+
+                    <var id="ORIENT">randFromArray(["v", "h"])</var>
+                    <var id="SH">rand(3) !== 0 ? randRange(1, 5) : D1/2</var>
+
+                    <var id="K">1/2 * D1 * D2</var>
+
+                    <var id="RHOMBUS">SH === D1/2</var>
+                </div>
+
+                <div class="question">¿Cuál es el área de esta figura?</div>
+
+                <div class="graphie" id="figure">var range,v,drawCongruencies,drawD1,drawD2;"h"===ORIENT?(range=[[-1,D1+2],[-D2/2-1,D2/2+1]],v=[[0,0],[SH,D2/2],[D1,0],[SH,-D2/2],[0,0]],drawCongruencies=function(e){congruent([[0,0],[SH,D2/2]],1,e),congruent([[0,0],[SH,-D2/2]],1,e),congruent([[SH,D2/2],[D1,0]],RHOMBUS?1:2,e),congruent([[SH,-D2/2],[D1,0]],RHOMBUS?1:2,e)},drawD1=function(e){return{label:label([D1/2,0],D1+"\\text{ "+UNIT+"}",e),path:path([[0,0],[D1,0]],e)}},drawD2=function(e){return{label:label([D1,0],D2+"\\text{ "+UNIT+"}","right",e),path:path([[D1,-D2/2],[D1,D2/2]],e)}}):(range=[[-D2/2-1,D2/2+1],[-1,D1+2]],v=[[0,0],[D2/2,SH],[0,D1],[-D2/2,SH],[0,0]],drawCongruencies=function(){congruent([[0,0],[D2/2,SH]],1),congruent([[0,0],[-D2/2,SH]],1),congruent([[D2/2,SH],[0,D1]],RHOMBUS?1:2),congruent([[0,D1],[-D2/2,SH]],RHOMBUS?1:2)},drawD1=function(e){return{label:label([0,D1/2],D1+"\\text{ "+UNIT+"}",e),path:path([[0,0],[0,D1]],e)}},drawD2=function(e){return{label:label([0,D1],D2+"\\text{ "+UNIT+"}","above",e),path:path([[-D2/2,D1],[D2/2,D1]],e)}}),init({range:range,scale:20}),path(v,{stroke:BLUE,fill:"#eee"}),drawCongruencies({stroke:BLUE}),style({stroke:BLUE,strokeDasharray:"."},function(){graph.d1=drawD1(),graph.d2=drawD2()}),rightAngleBox(graph.d1.path.graphiePath,graph.d2.path.graphiePath,{stroke:GRAY,opacity:.5})</div>
+
+                <div class="solution" data-type="multiple">
+<span class="sol"><var>K</var></span> <var>plural_form(UNIT_TEXT)</var> cuadrados</div>
+
+                <div class="hints">
+                    <div>
+                        <p>Esta figura es un cuadrilátero con diagonales perpendiculares y dos lados congruentes  adyacentes, por lo que es un cometa.</p>
+                        <p data-if="SH === D1/2">De hecho, como los lados de la figura son todos congruentes, también es un rombo.</p>
+                    </div>
+                    <div>
+                        <p>área de un cometa <code>= \dfrac12 \cdot d_1 \cdot d_2</code> [<a href="#" class="show-subhint" data-subhint="area-kite">Muéstrame por qué</a>]</p>
+                        <div class="subhint" id="area-kite">
+                            <p data-if="ORIENT === 'h'">La diagonal horizontal en el centro divide el cometa en dos triángulos congruentes.</p>
+<p data-else>La diagonal vertical divide el cometa en dos triángulos congruentes.</p>
+                            <div class="graphie" data-update="figure">var showSubHint=function(){graph.subhint.show(),$("a[data-subhint='area-kite']").unbind("click",showSubHint).click(hideSubHint)},hideSubHint=function(){graph.subhint.hide(),$("a[data-subhint='area-kite']").unbind("click",hideSubHint).click(showSubHint)};graph.subhint="h"===ORIENT?raphael.set().push(path([[0,0],[SH,D2/2],[D1,0],[0,0]],{fill:ORANGE,opacity:.5}),path([[0,0],[SH,-D2/2],[D1,0],[0,0]],{fill:GREEN,opacity:.5})):raphael.set().push(path([[0,0],[D2/2,SH],[0,D1],[0,0]],{fill:ORANGE,opacity:.5}),path([[0,0],[-D2/2,SH],[0,D1],[0,0]],{fill:GREEN,opacity:.5})),hideSubHint()</div>
+                            <p>Seat <code>d_1 = <var>D1</var></code>, la diagonal que divide en dos la cometa, entonces <code>d_2 = <var>D2</var></code>.</p>
+                            <p>Observa que <code>d_1</code> es la base de los dos triángulos, y <code>d_2</code> es la altura combinada de los dos triángulos, así que <code>\dfrac{d_2}{2}</code> es la altura de cada triángulo.</p>
+                            <p>Así que el área de cada triángulo es:</p>
+                            <p><code>A_T = \dfrac12 \cdot b \cdot h = \dfrac12 \cdot d_1 \cdot \dfrac{d_2}{2} = \dfrac14 \cdot d_1 \cdot d_2</code></p>
+                            <p>El área de los dos triángulos combinados, <code>2A_T</code>, es el área total del cometa:</p>
+                            <p><code>2A_T = 2(\dfrac14 \cdot d_1 \cdot d_2) = \dfrac12 \cdot d_1 \cdot d_2 = A</code></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Ahora, utiliza esta fórmula para calcular el área del cometa.</p>
+                        <p><code>d_1 = <var>D1</var></code></p>
+                        <p><code>d_2 = <var>D2</var></code></p>
+                        <p><code>A = \dfrac12 \cdot <var>D1</var> \cdot <var>D2</var> = <var>K</var></code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
