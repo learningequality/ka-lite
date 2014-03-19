@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Expresando razones como fracciones</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars">
+        <var id="FACTOR">randRange( 1, 5 )</var>
+        <var id="NUM">randRange( 1, 10 ) * FACTOR</var>
+        <var id="DENOM">randRange( 1, 10 ) * FACTOR</var>
+        <var id="GCD">getGCD( NUM, DENOM )</var>
+        <var id="TO">$._("para")</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <p class="question">
+                <!--TODO(jeresig): I18N: Find a better way to rewrite this.-->
+                <span data-if="$.ngetpos(NUM, 'es-ES') === 0"><var>person(1)</var> tiene <var>NUM</var> <var>fruit( 0 )</var></span><span data-else-if="$.ngetpos(NUM, 'es-ES') === 1"><var>person(1)</var> tiene <var>NUM</var> <var>plural_form(fruit( 0 ), NUM)</var></span> <span data-if="$.ngetpos(DENOM, 'es-ES') === 0">por cada <var>DENOM</var> <var>fruit( 1 )</var>.</span><span data-else-if="$.ngetpos(DENOM, 'es-ES') === 1">por cada <var>DENOM</var> <var>plural_form(fruit( 1 ), DENOM)</var>.</span>
+                <span>Escribe la proporción de <var>fruit( 0 )</var> a <var>fruit( 1 )</var> como una fracción simplificada.</span>
+            </p>
+            <p class="solution" data-ratio="true" data-type="improper"><var>NUM / DENOM</var></p>
+        </div>
+    </div>
+
+    <div class="hints">
+        <p>Las proporciones pueden escribirse de distintas formas que en realidad significan lo mismo.</p>
+        <div>
+            <p>Puedes expresar una proporción con dos puntos separando los dos números.</p>
+            <p><code><var>NUM</var>:<var>DENOM</var></code></p>
+        </div>
+        <div>
+            <p>Se puede escribirla como una frase como esta.</p>
+            <!-- I18N: Used in the "10 apples to 5 oranges" sense -->
+            <p><code><var>NUM</var> \text{ <var>TO</var> } <var>DENOM</var></code></p>
+        </div>
+        <div>
+            <p>o puedes expresar una proporción como una fracción.</p>
+            <p><code>\dfrac{<var>NUM</var>}{<var>DENOM</var>}<span data-if="GCD !== 1">=<var>fractionReduce( NUM, DENOM )</var></span></code></p>
+        </div>
+        <p>Por lo tanto, <code><var>fractionReduce( NUM, DENOM )</var></code> es la proporción de <var>fruit( 0 )</var>s a <var>fruit( 1 )</var>s escrita como una fracción simplificada.</p>
+    </div>
+    </div>
+</body>
+</html>

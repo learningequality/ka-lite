@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html data-require="math graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Puntos en el plano de coordenadas</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+        <div class="exercise">
+            <div class="vars">
+                <var id="POINTS">function(){for(var e=[];e.length&lt;5;){var r=[randRange(-9,9),randRangeExclude(-9,9,[-1])],a=!0;$.each(e,function(e,n){return r[0]===n[0]&amp;&amp;r[1]===n[1]?(a=!1,!1):void 0}),a&amp;&amp;e.unshift(r)}return e}()</var>
+
+                <var id="FORGOTTEN">randRange( 0, POINTS.length - 1 )</var>
+
+                <var id="PAIR">function(e){return"("+e.join(", ")+")"}</var>
+            </div>
+
+            <div class="problems">
+                <div>
+                    <div class="problem">
+                        <p>Considere los siguientes pares de coordenadas:</p>
+                        <p><code><var>$.map( POINTS, PAIR ).join( "\\qquad" )</var></code></p>
+                    </div>
+
+                    <div class="question">
+                        <p>¿Cuál de esos pares no esta trazado a continuación?</p>
+                        <div class="graphie" id="grid">graphInit({range:10,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:2}),$.each(POINTS,function(e,r){e!==FORGOTTEN&amp;&amp;style({stroke:"#6495ED",fill:"#6495ED"},function(){circle(r,.2)})})</div>
+                    </div>
+
+                    <p class="solution"><code><var>PAIR( POINTS[FORGOTTEN] )</var></code></p>
+                    <ul class="choices" data-category="true">
+<li data-each="POINTS as i, point"><code><var>PAIR( point )</var></code></li>
+                    </ul>
+</div>
+            </div>
+
+            <div class="hints">
+                <div data-each="POINTS as i, point" data-unwrap="">
+                    <div class="graphie" data-if="FORGOTTEN !== i" data-update="grid">label(point,PAIR(point),"above right")</div>
+                </div>
+
+                <div class="graphie" data-update="grid">var point=POINTS[FORGOTTEN];label(point,PAIR(point),"above right"),label(point,"\\text{"+$._("no estaba trazado")+"}","right"),circle(point,.3,{stroke:"red"})</div>
+            </div>
+        </div>
+</body>
+</html>

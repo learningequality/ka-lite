@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html data-require="math expressions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Escribiendo expresiones 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRangeNonZero( -9, 9 )</var>
+            <var id="B" data-ensure="abs( A ) !== abs( B )">randRangeNonZero( -9, 9 )</var>
+            <var id="C" data-ensure="abs( C ) !== 1">randRangeNonZero( -9, 9 )</var>
+            <var id="D">randRangeNonZero( -9, 9 )</var>
+        </div> <!-- C ( Bx + A ) + D is the expression we are creating -->
+
+        <div class="problems">
+            <div id="original">
+                <div class="problem">
+                    <p>Primero consideremos la expresión para:</p>
+                </div>
+                <p class="question">La suma de <code><var>A</var></code> y el producto de <code><var>B</var></code> y <code>x</code>.</p>
+                <p class="middle">Ahora selecciona la respuesta que coincide con lo siguiente:</p>
+                <p class="part-two"><b><code><var>D</var></code> más la cantidad de <code><var>C</var></code> veces esa expresión</b></p>
+                <p class="solution"><code><var>expr(["+",["*", C,["+",["*", B, "x"], A]], D])</var></code></p>
+<!-- Solution: C ( A + Bx ) + D, wrong 1: -C SAME, wrong 2: -C (B + Ax) - D, wrong 3: D ( -A + Bx ) + C, wrong 4: D ( -B + Ax ) + C -->
+                <ul class="choices" data-none="true" data-show="5">
+<li><code><var>expr(["+",["*", -C,["+",["*", B, "x"], A]], D])</var></code></li>
+                    <li><code><var>expr(["+",["*", -C,["+",["*", A, "x"], B]], D])</var></code></li>
+                    <li><code><var>expr(["+",["*", D,["+",["*", B, "x"], -A]], C])</var></code></li>
+                    <li><code><var>expr(["+",["*", D,["+",["*", A, "x"], -B]], C])</var></code></li>
+                </ul>
+<div class="hints" data-apply="appendContents">
+                    <p id="hint1">¿Cuál es <span class="hint_orange">el producto de <code><var>B</var></code> y <code>x</code></span>?</p>
+                    <p id="hint2">¿Cuál es <span class="hint_blue">la suma de <code><var>A</var></code></span> y <code class="hint_orange"><var>expr(["*", B, "x"])</var></code>?</p>
+                    <p id="hint3">¿Cuál es  <span class="hint_orange"> el resultado de <code><var>C</var></code> veces esa expresión</span>?</p>
+                    <p id="hint4">¿Qué es <span class="hint_blue"><code><var>D</var></code> más</span> <code>\color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code>?</p>
+                </div>
+
+            </div>
+            <div id="type-2" data-type="original">
+                <p class="question">la suma de <code><var>A</var></code> y el resultado de <code><var>B</var></code> veces <code>x</code></p>
+                <p class="part-two"><b><code><var>D</var></code> más el producto de <code><var>C</var></code> y esa expresión</b></p>
+
+                <div class="hints" data-apply="appendContents">
+                    <p id="hint1">¿Cuál es <span class="hint_orange">el resultado de <code><var>B</var></code> veces <code>x</code></span>?</p>
+                    <p id="hint2">¿Cuál es <span class="hint_blue">la suma de <code><var>A</var></code></span> y <code class="hint_orange"><var>expr(["*", B, "x"])</var></code>?</p>
+                    <p id="hint3">¿Cuál es <span class="hint_orange">el producto de <code><var>C</var></code> veces esa expresión</span>?</p>
+                    <p id="hint4">¿Qué es <span class="hint_blue"><code><var>D</var></code> más</span> <code>\color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code>?</p>
+                </div>
+
+            </div>
+            <div id="type-3" data-type="original">
+                <p class="question"><code><var>A</var></code> más el producto de <code><var>B</var></code> y <code>x</code></p>
+                <p class="part-two"><b>Toma la cantidad de <code><var>C</var></code> veces esa expresión y suma <code><var>D</var></code>.</b></p>
+
+                <div class="hints" data-apply="appendContents">
+                    <p id="hint1">¿Cuál es <span class="hint_orange">el producto de <code><var>B</var></code> y <code>x</code></span>?</p>
+                    <p id="hint2">¿Qué es <span class="hint_blue"><code><var>A</var></code> más</span> <code class="hint_orange"><var>expr(["*", B, "x"])</var></code>?</p>
+                    <p id="hint3">¿Cuál es  <span class="hint_orange"> el resultado de <code><var>C</var></code> veces esa expresión</span>?</p>
+                    <p id="hint4">¿Cuál es el resultado de <span class="hint_blue">sumar <code><var>D</var></code></span> a <code>\color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code>?</p>
+                </div>
+
+            </div>
+            <div id="type-4" data-type="original">
+                <p class="question"><code><var>A</var></code> más la cantidad de <code><var>B</var></code> veces <code>x</code></p>
+                <p class="part-two"><b>Toma el producto de <code><var>C</var></code> y esa expresión y luego suma <code><var>D</var></code>.</b></p>
+
+                <div class="hints" data-apply="appendContents">
+                    <p id="hint1">¿Cuál es <span class="hint_orange">el resultado de <code><var>B</var></code> veces <code>x</code></span>?</p>
+                    <p id="hint2">¿Qué es <span class="hint_blue"><code><var>A</var></code> más</span> <code class="hint_orange"><var>expr(["*", B, "x"])</var></code>?</p>
+                    <p id="hint3">¿Cuál es <span class="hint_orange">el producto de <code><var>C</var></code> veces esa expresión</span>?</p>
+                    <p id="hint4">¿Cuál es el resultado de <span class="hint_blue">sumar <code><var>D</var></code></span> a <code>\color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code>?</p>
+                </div>
+
+            </div>
+            <div id="type-5" data-type="original">
+                <p class="question">Toma el producto de <code><var>B</var></code> y <code>x</code> y suma <code><var>A</var></code>.</p>
+                <p class="part-two"><b>La suma de <code><var>D</var></code> y el producto de <code><var>C</var></code> y esa expresión.</b></p>
+
+                <div class="hints" data-apply="appendContents">
+                    <p id="hint1">¿Cuál es <span class="hint_orange">el producto de <code><var>B</var></code> y <code>x</code></span>?</p>
+                    <p id="hint2">¿Cuál es el resultado de <span class="hint_blue">sumar <code><var>A</var></code></span> a <code class="hint_orange"><var>expr(["*", B, "x"])</var></code>?</p>
+                    <p id="hint3">¿Cuál es  <span class="hint_orange"> el resultado de <code><var>C</var></code> veces esa expresión</span>?</p>
+                    <p id="hint4">¿Cuál es <span class="hint_blue"> la suma de <code><var>D</var></code> y </span><code>\color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code>?</p>
+                </div>
+
+            </div>
+            <div id="type-6" data-type="original">
+                <p class="question">Toma la cantidad de <code><var>B</var></code> veces <code>x</code> y suma <code><var>A</var></code>.</p>
+                <p class="part-two"><b>La suma de <code><var>D</var></code> y el producto de <code><var>C</var></code> y esa expresión</b></p>
+
+                <div class="hints" data-apply="appendContents">
+                    <p id="hint1">¿Cuál es <span class="hint_orange">el resultado de <code><var>B</var></code> veces <code>x</code></span>?</p>
+                    <p id="hint2">¿Cuál es el resultado de <span class="hint_blue">sumar <code><var>A</var></code></span> a <code class="hint_orange"><var>expr(["*", B, "x"])</var></code>?</p>
+                    <p id="hint3">¿Cuál es <span class="hint_orange">el producto de <code><var>C</var></code> veces esa expresión</span>?</p>
+                    <p id="hint4">¿Cuál es <span class="hint_blue"> la suma de <code><var>D</var></code> y </span><code>\color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code>?</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="hints">
+            <p>Vamos a desmenuzar este problema en trozos más pequeños y más fáciles.</p>
+            <p id="hint1"></p>
+            <p><code><var>B</var> \times x = \color{orange}{<var>expr(["*", B, "x"])</var>}</code></p>
+            <p id="hint2"></p>
+            <p><code class="hint_orange"><var>B</var>x</code><code class="hint_blue">{} + <var>A</var></code></p>
+            <p id="hint3"></p>
+            <p><code><var>C</var> \times (<var>B</var>x + <var>A</var>) = \color{orange}{<var>expr(["*", C,["+",["*", B, "x"], A]])</var>}</code></p>
+            <p id="hint4"></p>
+            <p><code class="hint_orange"><var>expr(["*", C,["+",["*", B, "x"], A]])</var></code><code class="hint_blue">{} + <var>D</var></code></p>
+            <p>así que la expresión completa que estamos considerando puede escribirse como <code><var>expr(["+",["*", C,["+",["*", B, "x"], A]], D])</var></code>.</p>
+        </div>
+    </div>
+</body>
+</html>

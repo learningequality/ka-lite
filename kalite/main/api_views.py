@@ -39,9 +39,9 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonRes
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.mplayer_launcher import play_video_in_new_thread
 from fle_utils.orderedset import OrderedSet
+from fle_utils.testing.decorators import allow_api_profiling
 from i18n import lcode_to_ietf
 from shared.decorators import require_admin
-from testing.decorators import allow_api_profiling
 
 
 class student_log_api(object):

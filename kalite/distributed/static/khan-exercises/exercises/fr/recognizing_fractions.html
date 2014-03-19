@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Identifier le numérateur et le dénominateur</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="NUMERATOR &lt; DENOMINATOR">
+            <var id="NUMERATOR">randRange( 1, 11 )</var>
+            <var id="DENOMINATOR">randRange( 2, 12 )</var>
+        </div>
+
+        <div class="problems">
+            <div id="original">
+                <p class="question">Quel est le numérateur de la fraction <code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>}</code> ?</p>
+                <p class="solution" data-forms="integer"><var>NUMERATOR</var></p>
+                <div class="hints">
+                    <p>Une fraction permet de représenter les parties d'un tout.</p>
+                    <div>
+                        <p>La fraction <code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>}</code> peut représenter <var>NUMERATOR</var> parts de tarte sur <var>DENOMINATOR</var>.Autrement dit, la tarte a été découpée en <var>DENOMINATOR</var> parts, et on ne considère que <var>NUMERATOR</var> de ces parts.</p>
+                        <div class="graphie">init({range:[[-2,10],[-2,2]],scale:25}),piechart([NUMERATOR,DENOMINATOR-NUMERATOR],["#6495ED","#FFA500"],2),label([2,0],"=\\dfrac{\\color{#6495ED}{"+NUMERATOR+"}}{"+DENOMINATOR+"}=\\dfrac{\\color{#6495ED}{\\text{"+$._("numérateur")+"}}}{\\text{"+$._("dénominateur")+"}}","right")</div>
+                    </div>
+                    <p>Le numérateur est le nombre de parts que l'on considère, et il est écrit au-dessus du trait de fraction. Le dénominateur est le nombre total de parts, et il est écrit en dessous du trait de fraction.</p>
+                    <p id="answer_hint">Donc, le numérateur est <code><var>NUMERATOR</var></code>.</p>
+                </div>
+            </div>
+            <div data-type="original">
+                <p class="question">Quel est le dénominateur de la fraction <code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>}</code> ?</p>
+                <p class="solution" data-forms="integer"><var>DENOMINATOR</var></p>
+                <div class="hints" data-apply="appendContents">
+                    <p id="answer_hint">Donc, le dénominateur est <code><var>DENOMINATOR</var></code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

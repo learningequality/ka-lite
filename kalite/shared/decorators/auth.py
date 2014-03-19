@@ -17,7 +17,6 @@ from facility.decorators import facility_from_request
 from facility.models import FacilityUser
 from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device, Zone
-from testing.asserts import central_server_only, distributed_server_only
 
 
 def get_user_from_request(handler=None, request=None, *args, **kwargs):
@@ -38,7 +37,6 @@ def require_login(handler):
     """
    (Level 1) Make sure that a user is logged in to the distributed server.
     """
-    @distributed_server_only
     def wrapper_fn(request, *args, **kwargs):
         if getattr(request, "is_logged_in", False):  # requires the securesync.middleware.AuthFlags middleware be hit
             return handler(request, *args, **kwargs)
@@ -84,7 +82,6 @@ def require_authorized_access_to_student_data(handler):
         return require_authorized_admin(handler)
 
     else:
-        @distributed_server_only
         @require_login
         def wrapper_fn_distributed(request, *args, **kwargs):
             """
@@ -115,7 +112,6 @@ def require_authorized_admin(handler):
     * central server: device not on zone/org, facility not on zone/org, zone not in org, zone with one org, zone with multi orgs, etc
     """
 
-    @central_server_only
     @require_admin
     def wrapper_fn_central(request, *args, **kwargs):
         """

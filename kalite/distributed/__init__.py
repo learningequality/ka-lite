@@ -13,17 +13,25 @@ The following apps are imported and used by the distributed app:
 * securesync - for sharing data between the KA Lite installation and our central data repository
 * updates - for dynamic updating of content, resources, and the server software.
 """
+import mimetypes
 import os
+import sys
 
 from django.conf import settings
 
 
 ########################
-# PROXY SETUP
+# Font setup
 ########################
 
-if settings.HTTP_PROXY:
-    os.environ['http_proxy'] = settings.HTTP_PROXY
+# Add additional mimetypes to avoid errors/warnings
+mimetypes.add_type("font/opentype", ".otf", True)
 
-if settings.HTTPS_PROXY:
-    os.environ['https_proxy'] = settings.HTTPS_PROXY
+
+# set the default encoding
+# OK, so why do we reload sys? Because apparently sys.setdefaultencoding
+# is deleted somewhere at startup. Reloading brings it back.
+# see: http://blog.ianbicking.org/illusive-setdefaultencoding.html
+if getattr(settings, "DEFAULT_ENCODING", None):
+    reload(sys)
+    sys.setdefaultencoding(settings.DEFAULT_ENCODING)

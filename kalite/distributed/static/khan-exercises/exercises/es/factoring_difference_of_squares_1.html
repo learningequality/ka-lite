@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Factorizando diferencia de cuadrados 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div>
+                <div class="vars">
+                    <var id="A">randRange( 2, 9 )</var>
+                    <var id="SQUARE">1</var>
+                    <var id="CONSTANT">-A * A</var>
+                </div>
+                <div>
+                    <p class="question">Factoriza la siguiente expresión:</p>
+                    <p>
+                        <code>x^2 + <var>CONSTANT</var></code>
+                    </p>
+                </div>
+
+                <div class="solution" data-type="set">
+                    <div class="set-sol" data-type="regex">^\s*\(\s*[xX]\s*\+\s*<var>abs( A )</var>\s*\)\s*\(\s*[xX]\s*[-\u2212]\s*<var>abs( A )</var>\s*\)\s*$</div>
+                    <div class="set-sol" data-type="regex">^\s*\(\s*[xX]\s*[-\u2212]\s*<var>abs( A )</var>\s*\)\s*\(\s*[xX]\s*\+\s*<var>abs( A )</var>\s*\)\s*$</div>
+                    <div class="input-format"><span class="entry"></span></div>
+                    <div class="example">Una expresión factorizada como <b>(x+1)(x+2)</b>
+</div>
+                </div>
+
+                <div class="hints">
+                    <p>La expresión está en la forma <code>\color{<var>PINK</var>}{a^2} - \color{<var>BLUE</var>}{b^2}</code>, lo que es una diferencia de cuadrador así que podemos factorizarla como <code>(\color{<var>PINK</var>}{a} + \color{<var>BLUE</var>}{b}) (\color{<var>PINK</var>}{a} - \color{<var>BLUE</var>}{b})</code>.</p>
+                    <p>¿Cuáles son los valores de <code class="hint_pink">a</code> y <code class="hint_blue">b</code>?</p>
+                    <div>
+                        <p><code class="hint_pink">\qquad a = x</code></p>
+                        <p><code class="hint_blue">\qquad b = \sqrt{<var>A * A</var>} = <var>A</var></code></p>
+                    </div>
+                    <p>Usa los valores que encontramos para <code class="hint_pink">a</code> y <code class="hint_blue">b</code> para completar la expresión factorizada, <code>(\color{<var>PINK</var>}{a} + \color{<var>BLUE</var>}{b}) (\color{<var>PINK</var>}{a} - \color{<var>BLUE</var>}{b})</code>.</p>
+                    <p class="final_answer">Así que podemos factorizar la expresión como <code>(\color{<var>PINK</var>}{x} + \color{<var>BLUE</var>}{<var>A</var>}) (\color{<var>PINK</var>}{x} - \color{<var>BLUE</var>}{<var>A</var>})</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

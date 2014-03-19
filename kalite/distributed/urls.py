@@ -44,9 +44,6 @@ urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),
-    url(r'^%s(?P<path>.*)$' % settings.STATIC_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.STATIC_ROOT,
-    }),
 )
 
 # Teaching / admin patterns
@@ -57,7 +54,7 @@ urlpatterns += patterns('distributed.views',
     # For admins
     url(r'^update/', include(updates.urls)),
 
-    url(r'^easyadmin/$', 'easy_admin', {}, 'easy_admin'),
+    url(r'^help/$', 'help', {}, 'help'),
 
     # API
     url(r'^api/', include(api_urls)),
@@ -65,7 +62,7 @@ urlpatterns += patterns('distributed.views',
     # Management: Zone, facility, device
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
     url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'), # only one device, so make an easy way to access it
-    url(r'^management/', include(control_panel.urls), {"org_id": ""}), # no org_id, but parameter needed for reverse url look-up
+    url(r'^management/', include(control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
 )
 
 # Testing

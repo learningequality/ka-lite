@@ -40,7 +40,6 @@ from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession
 from shared.decorators import require_admin
-from testing.asserts import central_server_only, distributed_server_only
 from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 
 
@@ -181,7 +180,7 @@ def splat_handler(request, splat):
 
 
 @backend_cache_page
-@render_to("topic.html")
+@render_to("distributed/topic.html")
 @refresh_topic_cache
 def topic_handler(request, topic):
     return topic_context(topic)
@@ -195,9 +194,9 @@ def topic_context(topic):
     videos    = topic_tools.get_videos(topic)
     exercises = topic_tools.get_exercises(topic)
     topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available')) for t in topics]
+    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
 
-    exercises_path = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercises_path = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
 
     for lang_code in (set(os.listdir(exercises_path)) - set(["test"])):  # hard-code out test
@@ -225,7 +224,7 @@ def topic_context(topic):
 
 
 @backend_cache_page
-@render_to("video.html")
+@render_to("distributed/video.html")
 @refresh_topic_cache
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
@@ -262,14 +261,14 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
 
 
 @backend_cache_page
-@render_to("exercise.html")
+@render_to("distributed/exercise.html")
 @refresh_topic_cache
 def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
     Display an exercise
     """
     lang = request.session[settings.LANGUAGE_COOKIE_NAME]
-    exercise_root = os.path.join(settings.STATIC_ROOT, "js", "khan-exercises", "exercises")
+    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
     exercise_localized_template = os.path.join(lang, exercise_file)
@@ -299,7 +298,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
 
 
 @backend_cache_page
-@render_to("knowledgemap.html")
+@render_to("distributed/knowledgemap.html")
 def exercise_dashboard(request):
     slug = request.GET.get("topic")
     if not slug:
@@ -316,7 +315,7 @@ def exercise_dashboard(request):
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
-@render_to("homepage.html")
+@render_to("distributed/homepage.html")
 @refresh_topic_cache
 def homepage(request, topics):
     """
@@ -328,17 +327,29 @@ def homepage(request, topics):
     })
     return context
 
+def help(request):
+    if request.is_admin:
+        return help_admin(request)
+    else:
+        return help_student(request)
+
 @require_admin
-@check_setup_status
-@render_to("admin_distributed.html")
-def easy_admin(request):
+@render_to("distributed/help_admin.html")
+def help_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
         "central_server_host" : settings.CENTRAL_SERVER_HOST,
-        "in_a_zone":  Device.get_own_device().get_zone() is not None,
-        "clock_set": settings.ENABLE_CLOCK_SET,
         "ips": get_ip_addresses(include_loopback=False),
-        "port": request.META.get("SERVER_PORT") or settings.user_facing_port(),
+        "port": request.META.get("SERVER_PORT") or settings.USER_FACING_PORT(),
+    }
+    return context
+
+
+@render_to("distributed/help_student.html")
+def help_student(request):
+
+    context = {
+        "wiki_url" : settings.CENTRAL_WIKI_URL,
     }
     return context
 
@@ -366,7 +377,6 @@ def device_redirect(request):
     return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
 
 JS_CATALOG_CACHE = {}
-@distributed_server_only
 def javascript_catalog_cached(request):
     global JS_CATALOG_CACHE
     lang = request.session['default_language']
@@ -381,7 +391,7 @@ def javascript_catalog_cached(request):
         JS_CATALOG_CACHE[lang] = src
         return resp
 
-@render_to('search_page.html')
+@render_to('distributed/search_page.html')
 @refresh_topic_cache
 def search(request, topics):  # we don't use the topics variable, but this setup will refresh the node cache
     # Inputs
@@ -470,7 +480,7 @@ def handler_403(request, *args, **kwargs):
 
 
 def handler_404(request):
-    return HttpResponseNotFound(render_to_string("404.html", {}, context_instance=RequestContext(request)))
+    return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))
 
 
 def handler_500(request):
@@ -479,4 +489,4 @@ def handler_500(request):
         "errortype": errortype.__name__,
         "value": unicode(value),
     }
-    return HttpResponseServerError(render_to_string("500.html", context, context_instance=RequestContext(request)))
+    return HttpResponseServerError(render_to_string("distributed/500.html", context, context_instance=RequestContext(request)))

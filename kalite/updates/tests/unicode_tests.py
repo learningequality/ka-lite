@@ -5,7 +5,8 @@ from django.conf import settings
 from django.utils import unittest
 
 from facility.models import Facility, FacilityGroup, FacilityUser
-from testing import KALiteTestCase, UnicodeModelsTest
+from fle_utils.testing import UnicodeModelsTest
+from testing import KALiteTestCase
 from updates.models import *
 
 

@@ -7,7 +7,7 @@ from django.conf import settings
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
-from i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_code
+from i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle
 from kalite.settings import LOG as logging
 from main.topic_tools import get_topic_tree, get_videos
 
@@ -41,6 +41,10 @@ def download_video(youtube_id, format="mp4", callback=None):
 
     download_url = ("http://%s/download/videos/" % (settings.CENTRAL_SERVER_HOST)) + "%s/%s"
     return videos.download_video(youtube_id, settings.CONTENT_ROOT, download_url, format, callback)
+
+
+def get_downloaded_youtube_ids(videos_path=settings.CONTENT_ROOT, format="mp4"):
+    return [path.split("/")[-1].split(".")[0] for path in glob.glob(os.path.join(videos_path, "*.%s" % format))]
 
 
 def delete_downloaded_files(youtube_id):
@@ -191,7 +195,7 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
             nvideos_known += child["nvideos_known"]
 
     # BASE CASE:
-    # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
+    #  Got a topic node, get immediate video children and figure out what to do.
     videos = get_videos(topic)
     for video in videos:
         if force or update_counts_question_mark or "availability" not in video:
@@ -205,6 +209,9 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
     topic["nvideos_available"] = nvideos_available
-    topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
+    # Topic is available if it contains a downloaded video, or any other resource type (other resources assumed to be downloaded)
+    topic["available"] = bool(nvideos_local)
+    topic["available"] = topic["available"] or bool(settings.BACKUP_VIDEO_SOURCE)
+    topic["available"] = topic["available"] or bool(set(topic.get("contains", [])) - set(["Topic", "Video"]))
 
     return (topic, nvideos_local, nvideos_known, nvideos_available, changed)

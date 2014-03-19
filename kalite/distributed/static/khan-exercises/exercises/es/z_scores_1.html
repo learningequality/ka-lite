@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Unidad tipificada 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="original">
+                <div class="vars">
+                    <var id="MEAN">randRange( 65, 85 )</var>
+                    <var id="STDDEV">randRange( 2, 5 ) + randRange( 0, 1 ) * 0.5</var>
+                    <var id="GRADE">randRangeWeighted( roundTo( 0, MEAN - STDDEV * 3 ), min( roundTo( 0, MEAN + STDDEV * 3 ), 100 ), MEAN, 0 )</var>
+                    <var id="ZSCORE">roundTo( 2, ( GRADE - MEAN ) / STDDEV )</var>
+                </div>
+
+                <div class="problem">Las calificaciones en un examen de mitad de semestre <var>course( 1 )</var> en <var>school( 1 )</var> normalmente son distribuidos con <code>\mu = <var>MEAN</var></code> and <code>\sigma = <var>localeToFixed(STDDEV, 1)</var></code>. <br><var>person( 1 )</var> obtuvo<span data-if="floorTo( 0, GRADE / 10 ) === 8">n</span> <code><var>GRADE</var></code> en el examen.</div>
+
+                <p class="question">Encuentra la unidad tipificada de la calificación del examen de <var>person( 1 )</var>. Redondéalo a dos decimales.</p>
+
+                <div class="solution" data-forms="integer, decimal"><var>ZSCORE</var></div>
+
+                <div class="hints">
+                    <p>La unidad tipificada se define como el número de <span class="hint_green"> desviaciones estándar </span> que un punto en específico se aleja de la <span class="hint_pink">media</span>.</p>
+                    <div>
+                        <p data-if="isMale(1)">Podemos calcular la unidad tipificada para la calificación del examen de <var>person( 1 )</var> si restamos la <span class="hint_pink">media <code>(\mu)</code></span> de su calificación y después dividimos entre la <span class="hint_green">desviación estándar <code>(\sigma)</code></span>.</p>
+<p data-else="">Podemos calcular la unidad tipificada para la calificación del examen de <var>person( 1 )</var> restando <span class="hint_pink">la media <code>(\mu)</code></span> de su calificación y después dividiendo entre <span class="hint_green"> la desviación estándar <code>(\sigma)</code></span>.</p>
+                        <p>
+                            <code>
+                                \large{\quad z \quad = \quad
+                                \dfrac{x - \color{<var>PINK</var>}{\mu}}{\color{<var>GREEN</var>}{\sigma}}}
+                            </code>
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            <code>
+                                \large{\quad z \quad = \quad
+                                \dfrac{<var>GRADE</var> - \color{<var>PINK</var>}{<var>MEAN</var>}}{\color{<var>GREEN</var>}{<var>localeToFixed(STDDEV, 1)</var>}}}
+                            </code>
+                        </p>
+                    </div>
+                    <div>
+                        <p><code>\large{\quad z \quad \approx \quad <var>localeToFixed(ZSCORE, 2)</var>}</code></p>
+                        <p class="final_answer" data-if="$.ngetpos(abs( ZSCORE ), 'es-ES') === 0">La unidad tipificada es <code><var>localeToFixed(ZSCORE, 2)</var></code>. En otras palabras, la calificación de <var>person( 1 )</var> fue de <code><var>localeToFixed(abs( ZSCORE ), 2)</var></code> desviación estándar <span data-if="ZSCORE &gt; 0">arriba</span><span data-else="">debajo</span> de la media.</p>
+<p class="final_answer" data-else-if="$.ngetpos(abs( ZSCORE ), 'es-ES') === 1">La unidad tipificada es <code><var>localeToFixed(ZSCORE, 2)</var></code>. En otras palabras, la calificación de <var>person( 1 )</var> fue de <code><var>localeToFixed(abs( ZSCORE ), 2)</var></code> desviaciones estándar <span data-if="ZSCORE &gt; 0">arriba</span><span data-else="">debajo</span> de la media.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

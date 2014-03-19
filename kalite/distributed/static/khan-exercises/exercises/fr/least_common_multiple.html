@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Plus petit commun multiple</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="C">randRange( 2, 6 )</var>
+            <var id="START_A">randRange( 1, 10 )</var>
+            <var id="START_B">randRangeExclude( 1, 10, [ START_A ] )</var>
+            <var id="A">START_A * C</var>
+            <var id="B">START_B * C</var>
+            <var id="BIGGER">Math.max( A, B )</var>
+            <var id="SMALLER">Math.min( A, B )</var>
+            <var id="PRODUCT">A * B</var>
+            <var id="GCD">getGCD( A, B )</var>
+            <var id="LCM">PRODUCT / GCD</var>
+            <var id="MULTIPLES">getMultiples( BIGGER, LCM )</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p>Quel est le plus petit multiple commun de <var>A</var> et <var>B</var> ?</p>
+                    <p>Ou encore :</p>
+                    <p><code>\lcm(<var>A</var>, <var>B</var>) = {?}</code></p>
+                </div>
+                <p class="solution" data-forms="integer"><var>LCM</var></p>
+            </div>
+        </div>
+
+        <div class="hints">
+            <p>Le plus petit multiple commun est le plus petit nombre qui est multiple à la fois de <var>A</var> et de <var>B</var>.</p>
+            <p>On sait que <var>A</var> x <var>B</var> (ou <var>PRODUCT</var>) est un multiple commun, mais est-ce le plus petit multiple commun ?</p>
+            <p>On écrit les multiples de <var>BIGGER</var> jusqu'à trouver un  nombre divisible par <var>SMALLER</var>.</p>
+            <span data-each="MULTIPLES as M"> <var>M</var>, </span>
+            <p>Donc, <var>LCM</var> est le plus petit multiple commun de <var>A</var> et de <var>B</var>.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,213 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block users_active %}active{% endblock users_active %}
+{% block control_panel_active %}{% endblock %}
+
+{% block title %}{% trans "Facility User Management" %}{{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel='stylesheet' type='text/css' href='{% static "css/control_panel/facility_user_management.css" %}'>
+    <style>
+        .selection {
+            margin-bottom: 20px;
+        }
+        .users {
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var TEMPLATE_GROUP_URL = "{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/facility_user_management.js' %}"></script>
+{% endblock headjs %}
+
+{% block control_panel_content %}
+    <div id="zone_container">
+        <div class="teachers">
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Coaches" %}</span>
+                <a href="{% url add_facility_teacher %}?facility={{ facility_id }}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new coach' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}
+                </span>
+            </div>
+
+            <div class="users">
+            {% if not coaches %}
+                <p>{% trans "You currently have no coaches for this facility." %}</p>
+
+            {% else %}
+            {% block coaches_table %}
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="headrowuser selectcol">
+                                {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "First Name" %}
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "Last Name" %}
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "Username" %}
+                            </th>
+                            <th class="headrowuser">
+                                {% trans "Group" %}
+                            </th>
+                        </tr>
+                        {% for user in coaches %}
+                        <tr>
+                            <td class="selectcol">
+                                <input type="checkbox" value="{{ user.username }}">
+                            </td>
+                            <td>
+                                <span title="{{ user.first_name }}">
+                                    <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                        {{ user.first_name }}
+                                    </a>
+                                </span>
+                            </td>
+                            <td>
+                                <span title="{{ user.last_name }}">
+                                    <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                        {{ user.last_name }}
+                                    </a>
+                                </span>
+                            </td>
+                            <td>
+                                <span title="{{ user.username }}">
+                                    <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                        {{ user.username }}
+                                    </a>
+                                </span>
+                            </td>
+                            <td>
+                                <span title="{{ user.group }}">
+                                    <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                        {{ user.group }}
+                                    </a>
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endblock %}
+            {% endif %}
+            </div>
+            <div style="clear: both;"></div>
+        </div><!-- teachers -->
+
+
+        <div class="students">
+            <div class="title-div">
+                <span class="title" style="float: left">{% trans "Students" %}</span>
+                <a href="{% url add_facility_student %}?facility={{ facility_id }}">
+                    <span class="icon-add icon-medium" title="{% trans 'Add a new student' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </a>
+            </div>
+            <div class="clear"></div>
+
+            <div>
+                <span>
+                    {% trans "Students belong to groups." %}
+                </span>
+            </div>
+
+
+
+            {% if not students %}
+                <p>{% trans "You currently have no students in this facility." %}</p>
+
+            {% else %}
+            {% block students_table %}
+                <div class="pagination">
+                    <span class="step-links">
+                        <a {% if users.has_previous %}href="{{ pageurls.prev_page }}"{% endif %}>&lt&lt</a>
+                        <span class="current">
+                            {% trans "Page" %} {{ users.number }} {% trans "of" %} {{ users.paginator.num_pages }}
+                        </span>
+                        <a {% if users.has_next %}href="{{ pageurls.next_page }}"{% endif %}>&gt&gt</a>
+                    </span>
+                </div>
+                <div style="clear: both;"></div>
+
+                <div class="users">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th class="headrowuser selectcol">
+                                    {% trans "Select" %} (<a id="all" href="#">{% trans "All" %}</a>/<a id="none" href="#">{% trans "None" %}</a>)
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "First Name" %}
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "Last Name" %}
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "Username" %}
+                                </th>
+                                <th class="headrowuser">
+                                    {% trans "Group" %}
+                                </th>
+                            </tr>
+                            {% for user in students %}
+                            <tr>
+                                <td class="selectcol">
+                                    <input type="checkbox" value="{{ user.username }}">
+                                </td>
+                                <td>
+                                    <span title="{{ user.first_name }}">
+                                        <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                            {{ user.first_name }}
+                                        </a>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="{{ user.last_name }}">
+                                        <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                            {{ user.last_name }}
+                                        </a>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="{{ user.username }}">
+                                        <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                            {{ user.username }}
+                                        </a>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="{{ user.group }}">
+                                        <a href="{% url edit_facility_user id=user.id %}?facility={{ facility_id }}">
+                                            {{ user.group }}
+                                        </a>
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+                </div>
+                <div style="clear: both;"></div>
+            {% endif %}
+        </div><!-- students -->
+    </div><!-- zone_container -->
+
+{% endblock control_panel_content %}

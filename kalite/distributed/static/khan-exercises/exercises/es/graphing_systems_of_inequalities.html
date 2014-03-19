@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Graficando sistemas de desigualdades</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <div data-ensure="( YINT_1 + SLOPE_FRAC_1[0] &lt;= 10 ) &amp;&amp; ( YINT_2 + SLOPE_FRAC_2[0] &lt;= 10 ) &amp;&amp; ( YINT_1 + SLOPE_FRAC_1[0] &gt;= -10 ) &amp;&amp; ( YINT_2 + SLOPE_FRAC_2[0] &gt;= -10 )">
+                    <var id="X">randRangeNonZero( -5, 5 )</var>
+                    <var id="Y">randRange( -5, 5 )</var>
+                    <div data-ensure="( abs(YINT_1 - YINT_2) &gt; 3 ) &amp;&amp; ( YINT_1 !== Y ) &amp;&amp; ( YINT_2 !== Y )">
+                        <var id="YINT_1">randRangeNonZero( -5, 5 )</var>
+                        <var id="YINT_2">randRangeNonZero( -5, 5 )</var>
+                    </div>
+                    <var id="SLOPE_1">(Y - YINT_1) / X</var>
+                    <var id="SLOPE_2">(Y - YINT_2) / X</var>
+                    <var id="SLOPE_FRAC_1">toFraction( SLOPE_1, 0.001 )</var>
+                    <var id="SLOPE_FRAC_2">toFraction( SLOPE_2, 0.001 )</var>
+                </div>
+                <var id="PRETTY_SLOPE_1">SLOPE_1 === 1 ? "" : ( SLOPE_1 === -1 ? "-" : fraction( SLOPE_FRAC_1[0], SLOPE_FRAC_1[1], true, true ) )</var>
+                <var id="PRETTY_SLOPE_2">SLOPE_2 === 1 ? "" : ( SLOPE_2 === -1 ? "-" : fraction( SLOPE_FRAC_2[0], SLOPE_FRAC_2[1], true, true ) )</var>
+                <var id="MULT_1">randRangeNonZero( -3, 3 )</var>
+                <var id="MULT_2">randRangeNonZero( -3, 3 )</var>
+                <var id="A_1">SLOPE_FRAC_1[0] * -MULT_1</var>
+                <var id="A_2">SLOPE_FRAC_2[0] * -MULT_2</var>
+                <var id="B_1">SLOPE_FRAC_1[1] * MULT_1</var>
+                <var id="B_2">SLOPE_FRAC_2[1] * MULT_2</var>
+                <var id="C_1">SLOPE_FRAC_1[1] * YINT_1 * MULT_1</var>
+                <var id="C_2">SLOPE_FRAC_2[1] * YINT_2 * MULT_2</var>
+                <var id="STD_FORM_1">randFromArray([ true, false ])</var>
+                <var id="STD_FORM_2">randFromArray([ true, false ])</var>
+                <var id="COMP_1">randFromArray([ "&lt;", "&gt;", "≤", "≥" ])</var>
+                <var id="COMP_2">randFromArray([ "&lt;", "&gt;", "≤", "≥" ])</var>
+                <var id="STD_FORM_COMP_1">B_1 &lt; 0 ? { "&lt;": "&gt;", "&gt;": "&lt;", "≤": "≥", "≥": "≤" }[ COMP_1 ] : COMP_1</var>
+                <var id="STD_FORM_COMP_2">B_2 &lt; 0 ? { "&lt;": "&gt;", "&gt;": "&lt;", "≤": "≥", "≥": "≤" }[ COMP_2 ] : COMP_2</var>
+                <var id="LESS_THAN_1">COMP_1 === "&lt;" || COMP_1 === "≤"</var>
+                <var id="LESS_THAN_2">COMP_2 === "&lt;" || COMP_2 === "≤"</var>
+                <var id="INCLUSIVE_1">COMP_1 === "≥" || COMP_1 === "≤"</var>
+                <var id="INCLUSIVE_2">COMP_2 === "≥" || COMP_2 === "≤"</var>
+            </div>
+
+            <p class="question">Grafica el siguiente sistema de desigualdades:</p>
+
+            <div class="problem">
+                <p class="hint_blue" data-if="STD_FORM_1">
+                    <code><var>expr([ "+", [ "*", A_1, "x" ], [ "*", B_1, "y" ] ])</var> <var>STD_FORM_COMP_1</var> <var>C_1</var></code>
+                </p>
+                <p class="hint_blue" data-else="">
+                    <code>y <var>COMP_1</var> <var>PRETTY_SLOPE_1</var> x + <var>YINT_1</var></code>
+                </p>
+                <p class="hint_green" data-if="STD_FORM_2">
+                    <code><var>expr([ "+", [ "*", A_2, "x" ], [ "*", B_2, "y" ] ])</var> <var>STD_FORM_COMP_2</var> <var>C_2</var></code>
+                </p>
+                <p class="hint_green" data-else="">
+                    <code>y <var>COMP_2</var> <var>PRETTY_SLOPE_2</var> x + <var>YINT_2</var></code>
+                </p>
+
+                <form>
+                    <span class="hint_blue" style="width: 40px">Desigualdad 1:</span>
+                    <input onclick="javascript:
+                        KhanUtil.currentGraph.graph.shadetop1 = !KhanUtil.currentGraph.graph.shadetop1;
+                        KhanUtil.currentGraph.graph.update();
+                    " type="button" value="Sombrea el otro lado"><label class="hint_blue">
+                        <input checked name="dashradio1" onclick="javascript:
+                            KhanUtil.currentGraph.graph.dasharray1 = '';
+                            KhanUtil.currentGraph.graph.update();
+                        " type="radio" value="solid">
+                        Solid line
+                    </label>
+                    <label class="hint_blue">
+                        <input name="dashradio1" onclick="javascript:
+                            KhanUtil.currentGraph.graph.dasharray1 = '- ';
+                            KhanUtil.currentGraph.graph.update();
+                        " type="radio" value="dashed">
+                        Dashed line
+                    </label>
+                    <br><span class="hint_green" style="width: 40px">Desigualdad 2:</span>
+                    <input onclick="javascript:
+                        KhanUtil.currentGraph.graph.shadetop2 = !KhanUtil.currentGraph.graph.shadetop2;
+                        KhanUtil.currentGraph.graph.update();
+                    " type="button" value="Sombrea el otro lado"><label class="hint_green">
+                        <input checked name="dashradio2" onclick="javascript:
+                            KhanUtil.currentGraph.graph.dasharray2 = '';
+                            KhanUtil.currentGraph.graph.update();
+                        " type="radio" value="solid">
+                        Solid line
+                    </label>
+                    <label class="hint_green">
+                        <input name="dashradio2" onclick="javascript:
+                            KhanUtil.currentGraph.graph.dasharray2 = '- ';
+                            KhanUtil.currentGraph.graph.update();
+                        " type="radio" value="dashed">
+                        Dashed line
+                    </label>
+                </form>
+                <div class="graphie" id="grid">graphInit({range:11,scale:20,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),label([0,-11],"y","below"),label([11,0],"x","right"),addMouseLayer(),graph.pointA=addMovablePoint({coord:[-5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointB=addMovablePoint({coord:[5,5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointC=addMovablePoint({coord:[-5,-5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.pointD=addMovablePoint({coord:[5,-5],snapX:.5,snapY:.5,normalStyle:{stroke:KhanUtil.BLUE,fill:KhanUtil.BLUE}}),graph.set=raphael.set(),graph.update=function(){if(graph.set.remove(),abs(graph.pointB.coord[0]-graph.pointA.coord[0])&gt;.001){var e=(graph.pointB.coord[1]-graph.pointA.coord[1])/(graph.pointB.coord[0]-graph.pointA.coord[0]),r=e*(0-graph.pointA.coord[0])+graph.pointA.coord[1],a=(graph.pointA.coord[0]&lt;graph.pointB.coord[0]?graph.shadetop1:!graph.shadetop1)?11:-11;style({stroke:BLUE,strokeWidth:2,strokeDasharray:graph.dasharray1},function(){graph.set.push(line([-11,-11*e+r],[11,11*e+r]))}),style({fill:BLUE,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.set.push(path([[11,a],[11,11*e+r],[-11,-11*e+r],[-11,a]]))})}else{var t=graph.pointA.coord[0],a=(graph.pointB.coord[1]&lt;graph.pointA.coord[1]?graph.shadetop1:!graph.shadetop1)?11:-11;style({stroke:BLUE,strokeWidth:2,strokeDasharray:graph.dasharray1},function(){graph.set.push(line([t,-11],[t,11]))}),style({fill:BLUE,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.set.push(path([[t,-11],[t,11],[a,11],[a,-11]]))})}if(abs(graph.pointD.coord[0]-graph.pointC.coord[0])&gt;.001){var e=(graph.pointD.coord[1]-graph.pointC.coord[1])/(graph.pointD.coord[0]-graph.pointC.coord[0]),r=e*(0-graph.pointC.coord[0])+graph.pointC.coord[1],a=(graph.pointC.coord[0]&lt;graph.pointD.coord[0]?graph.shadetop2:!graph.shadetop2)?11:-11;style({stroke:GREEN,strokeWidth:2,strokeDasharray:graph.dasharray2},function(){graph.set.push(line([-11,-11*e+r],[11,11*e+r]))}),style({fill:GREEN,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.set.push(path([[11,a],[11,11*e+r],[-11,-11*e+r],[-11,a]]))})}else{var t=graph.pointC.coord[0],a=(graph.pointD.coord[1]&lt;graph.pointC.coord[1]?graph.shadetop2:!graph.shadetop2)?11:-11;style({stroke:GREEN,strokeWidth:2,strokeDasharray:graph.dasharray2},function(){graph.set.push(line([t,-11],[t,11]))}),style({fill:GREEN,stroke:null,opacity:KhanUtil.FILL_OPACITY},function(){graph.set.push(path([[t,-11],[t,11],[a,11],[a,-11]]))})}graph.set.toBack()},graph.pointA.onMove=function(e,r){return e!=graph.pointB.coord[0]||r!=graph.pointB.coord[1]?(graph.pointA.setCoord([e,r]),graph.update(),!0):!1},graph.pointB.onMove=function(e,r){return e!=graph.pointA.coord[0]||r!=graph.pointA.coord[1]?(graph.pointB.setCoord([e,r]),graph.update(),!0):!1},graph.pointC.onMove=function(e,r){return e!=graph.pointD.coord[0]||r!=graph.pointD.coord[1]?(graph.pointC.setCoord([e,r]),graph.update(),!0):!1},graph.pointD.onMove=function(e,r){return e!=graph.pointC.coord[0]||r!=graph.pointC.coord[1]?(graph.pointD.setCoord([e,r]),graph.update(),!0):!1},graph.dasharray1="",graph.dasharray2="",graph.shadetop1=!0,graph.shadetop2=!1,graph.update(),graph.pointA.toFront(),graph.pointB.toFront(),graph.pointC.toFront(),graph.pointD.toFront()</div>
+
+            </div>
+            <div class="solution" data-type="multiple">
+                <div class="sol" data-type="custom">
+                    <div class="instruction">Arrastra los puntos para mover ambas líneas a la posición correcta.</div>
+                    <div class="guess">[graph.pointA.coord,graph.pointB.coord,graph.pointA.coord[0]&gt;graph.pointB.coord[0]?graph.shadetop1:!graph.shadetop1,"- "===graph.dasharray1?!1:!0,graph.pointC.coord,graph.pointD.coord,graph.pointC.coord[0]&gt;graph.pointD.coord[0]?graph.shadetop2:!graph.shadetop2,"- "===graph.dasharray2?!1:!0]</div>
+                    <div class="validator-function">var e=(guess[1][1]-guess[0][1])/(guess[1][0]-guess[0][0]),r=e*(0-guess[0][0])+guess[0][1],a=(guess[5][1]-guess[4][1])/(guess[5][0]-guess[4][0]),t=a*(0-guess[4][0])+guess[4][1];return abs(SLOPE_1-e)&lt;.001&amp;&amp;abs(YINT_1-r)&lt;.001&amp;&amp;guess[2]===LESS_THAN_1&amp;&amp;guess[3]===INCLUSIVE_1&amp;&amp;abs(SLOPE_2-a)&lt;.001&amp;&amp;abs(YINT_2-t)&lt;.001&amp;&amp;guess[6]===LESS_THAN_2&amp;&amp;guess[7]===INCLUSIVE_2||abs(SLOPE_2-e)&lt;.001&amp;&amp;abs(YINT_2-r)&lt;.001&amp;&amp;guess[2]===LESS_THAN_2&amp;&amp;guess[3]===INCLUSIVE_2&amp;&amp;abs(SLOPE_1-a)&lt;.001&amp;&amp;abs(YINT_1-t)&lt;.001&amp;&amp;guess[6]===LESS_THAN_1&amp;&amp;guess[7]===INCLUSIVE_1</div>
+                    <div class="show-guess">graph.pointA.setCoord(guess[0]),graph.pointB.setCoord(guess[1]),graph.pointC.setCoord(guess[4]),graph.pointD.setCoord(guess[5]),graph.shadetop1=graph.pointA.coord[0]&gt;graph.pointB.coord[0]?guess[2]:!guess[2],graph.shadetop2=graph.pointC.coord[0]&gt;graph.pointD.coord[0]?guess[6]:!guess[6],guess[3]?(graph.dasharray1="",$("input[name=dashradio1][value=solid]").attr("checked",!0)):(graph.dasharray1="- ",$("input[name=dashradio1][value=dashed]").attr("checked",!0)),guess[7]?(graph.dasharray2="",$("input[name=dashradio2][value=solid]").attr("checked",!0)):(graph.dasharray2="- ",$("input[name=dashradio2][value=dashed]").attr("checked",!0)),graph.update()</div>
+                </div>
+                <div class="example">grafica las desigualdades</div>
+                <div class="example">asegúrate que los lados correctos esten sombreados</div>
+                <div class="example">asegúrate que la línea se muestre correctamente continua o punteada</div>
+            </div>
+        </div>
+    </div>
+    <div class="hints">
+        <div data-if="STD_FORM_1" data-unwrap="">
+            <p class="hint_blue">Convierte la primera desigualdad, <code><var>expr([ "+", [ "*", A_1, "x" ], [ "*", B_1, "y" ] ])</var> <var>STD_FORM_COMP_1</var> <var>C_1</var></code>, a la forma pendiente intersección resolviendo para <code>y</code>.</p>
+            <div class="hint_blue">
+                <p data-if="A_1 &lt; 0">Suma <code><var>abs( A_1 )</var>x</code> a ambos lados:</p>
+<p data-else="">Resta <code><var>abs( A_1 )</var>x</code> a ambos lados:</p>
+<p>
+                    <code>\qquad <var>expr( [ "*", B_1, "y" ] )</var> <var>STD_FORM_COMP_1</var> <var>expr([ "+", [ "*", -A_1, "x" ], C_1 ])</var></code>
+                </p>
+            </div>
+            <div class="hint_blue" data-if="B_1 !== 1">
+                <p>Divide ambos lados entre <code><var>B_1</var></code><span data-if="B_1 &lt; 0">. Dado que estamos multiplicando o dividiendo por un número negativo, <strong>no olvides</strong> voltear el signo de la desigualdad</span>:</p>
+<p>
+                    <code>\qquad y <var>COMP_1</var> <var>expr([ "+", "\\dfrac{" + expr([ "*", -A_1, "x" ]) + "}{" + B_1 + "}", "\\dfrac{" + C_1 + "}{" + B_1 + "}" ])</var></code>
+                </p>
+            </div>
+        </div>
+        <div class="hint_blue">
+            <p>
+                <code>\qquad y <var>COMP_1</var> \color{purple}{<var>PRETTY_SLOPE_1</var>} x \color{gray}{+ <var>YINT_1</var>}</code>
+            </p>
+<p>La intersección con el eje y es <code class="hint_gray"><var>YINT_1</var></code> y la pendiente es <code class="hint_purple"><var>decimalFraction( SLOPE_1, true, true )</var></code>. Como la intersección con el eje y es <code class="hint_gray"><var>YINT_1</var></code>, la recta debe pasar por el punto <code class="hint_gray">(0, <var>YINT_1</var>)</code>.</p>
+        </div>
+        <div class="hint_blue">
+            <p>
+                <span>La pendiente es <code class="hint_purple"><var>decimalFraction( SLOPE_1, true, true )</var></code>. Recuerda que la pendiente te dice el aumento con el plazo.</span>
+                <span data-if="abs( SLOPE_FRAC_1[0] ) !== 1">Por cada paso que damos debemos movernos <code><var>abs( SLOPE_FRAC_1[0] )</var></code> posiciones hacia <span data-if="SLOPE_FRAC_1[0] &lt; 0"><em>abajo</em> (pues es negativa)</span><span data-else="">arriba</span>.</span><span data-else="">Por cada paso que damos debemos movernos <code><var>abs( SLOPE_FRAC_1[0] )</var></code> posiciones hacia <span data-if="SLOPE_FRAC_1[0] &lt; 0"><em>abajo</em> (pues es negativa)</span><span data-else="">arriba</span>.</span>
+                <span data-if="abs( SLOPE_FRAC_1[1] ) !== 1">Por cada paso que damos también debemos movernos <code><var>SLOPE_FRAC_1[1]</var></code> posiciones a la derecha.</span><span data-else="">Por cada paso que damos también debemos movernos <code><var>SLOPE_FRAC_1[1]</var></code> posición a la derecha.</span>
+                <span>Así que la recta también pasa a través de <code class="hint_purple">(<var>SLOPE_FRAC_1[1]</var>, <var>YINT_1 + SLOPE_FRAC_1[0]</var>)</code>.</span>
+            </p>
+        </div>
+        <p class="hint_blue" data-if="LESS_THAN_1">Como nuestra desigualdad tiene un signo menor que <span data-if="INCLUSIVE_1">o igual a</span>, eso significa que cualquier punto <strong>abajo</strong> de la linea es una solución a la desigualdad, así que el área arriba de la línea debe estar sombreada.</p>
+<p class="hint_blue" data-else="">Como nuestra desigualdad tiene un signo mayor que <span data-if="INCLUSIVE_1">o igual a</span>, eso significa que cualquier punto <strong>arriba</strong> de la linea es una solución a la desigualdad, así que el área arriba de la línea debe estar sombreada.</p>
+        <div class="hint_blue">
+            <p data-if="INCLUSIVE_1"><span data-if="LESS_THAN_1" data-unwrap="">Observa que como el signo es menor que o <strong>igual a</strong>, cualquier punto de la linea es solución, así que la linea debe ser continua.</span><span data-else="" data-unwrap="">Observa que como el signo es mayor que o <strong> igual a</strong>, cualquier punto de la línea es solución, así que la línea debe ser continua.</span></p>
+            <p data-else=""><span data-if="LESS_THAN_1" data-unwrap="">Observa que como el signo es menor que (y no igual a), cualquier punto de la línea <strong> no es</strong>parte de la solución, así que la línea debe ser punteada para indicar esto.</span><span data-else="" data-unwrap="">Observa que como el signo es mayor que (y no igual a), cualquier punto sobre la línea <strong>no es</strong> parte de la solución, así que la línea debe estar punteada para indicar esto.</span></p>
+        </div>
+
+        <!-- **** begin hints for second equation **** -->
+        <div data-if="STD_FORM_2" data-unwrap="">
+            <p class="hint_green">Convierte la segunda desigualdad, <code><var>expr([ "+", [ "*", A_2, "x" ], [ "*", B_2, "y" ] ])</var> <var>STD_FORM_COMP_2</var> <var>C_2</var></code>, a la forma pendiente intersección resolviendo para <code>y</code>.</p>
+            <div class="hint_green">
+                <p data-if="A_2 &lt; 0">Suma <code><var>abs( A_2 )</var>x</code> a ambos lados:</p>
+<p data-else="">Resta  <code><var>abs( A_2 )</var>x</code> a ambos lados:</p>
+<p>
+                    <code>\qquad <var>expr( [ "*", B_2, "y" ] )</var> <var>STD_FORM_COMP_2</var> <var>expr([ "+", [ "*", -A_2, "x" ], C_2 ])</var></code>
+                </p>
+            </div>
+            <div class="hint_green" data-if="B_2 !== 1">
+                <p>Divide ambos lados entre <code><var>B_2</var></code><span data-if="B_2 &lt; 0">. Dado que estamos multiplicando o dividiendo entre un número negativo, <strong>no olvides</strong> voltear el signo de la desigualdad</span>:</p>
+<p>
+                    <code>\qquad y <var>COMP_2</var> <var>expr([ "+", "\\dfrac{" + expr([ "*", -A_2, "x" ]) + "}{" + B_2 + "}", "\\dfrac{" + C_2 + "}{" + B_2 + "}" ])</var></code>
+                </p>
+            </div>
+        </div>
+        <div class="hint_green">
+            <p>
+                <code>\qquad y <var>COMP_2</var> \color{purple}{<var>PRETTY_SLOPE_2</var>} x \color{gray}{+ <var>YINT_2</var>}</code>
+            </p>
+<p>La intersección con el eje y es <code class="hint_gray"><var>YINT_2</var></code> y la PENDIENTE es  <code class="hint_purple"><var>decimalFraction( SLOPE_2, true, true )</var></code>. Como la intersección con el eje y es <code class="hint_gray"><var>YINT_2</var></code>, la recta debe pasar por el punto <code class="hint_gray">(0, <var>YINT_2</var>)</code>.</p>
+        </div>
+        <div class="hint_green">
+            <p>
+                <span>The slope is <code class="hint_purple"><var>decimalFraction( SLOPE_2, true, true )</var></code>. Remember that the slope tells you rise over run.</span>
+                <span data-if="abs( SLOPE_FRAC_2[0] ) !== 1">Por cada paso que damos debemos movernos <code><var>abs( SLOPE_FRAC_2[0] )</var></code> posiciones hacia <span data-if="SLOPE_FRAC_2[0] &lt; 0"><em>abajo</em> (pues es negativa)</span><span data-else="">arriba</span>.</span><span data-else="">Por cada paso que damos debemos movernos <code><var>abs( SLOPE_FRAC_2[0] )</var></code> posiciones hacia <span data-if="SLOPE_FRAC_2[0] &lt; 0"><em>abajo</em> (pues es negativa)</span><span data-else="">arriba</span>.</span>
+                <span data-if="abs( SLOPE_FRAC_2[1] ) !== 1">Por cada paso que damos también debemos movernos <code><var>SLOPE_FRAC_2[1]</var></code> posiciones a la derecha.</span><span data-else="">Por cada paso que damos también debemos movernos <code><var>SLOPE_FRAC_2[1]</var></code> posición a la derecha.</span>
+                <span>Así que la recta también pasa a través de <code class="hint_purple">(<var>SLOPE_FRAC_2[1]</var>, <var>YINT_2 + SLOPE_FRAC_2[0]</var>)</code>.</span>
+            </p>
+        </div>
+        <p class="hint_green" data-if="LESS_THAN_2">Como nuestra desigualdad tiene un signo menor que <span data-if="INCLUSIVE_2">o igual a</span>, eso significa que cualquier punto <strong>abajo</strong> de la linea es una solución a la desigualdad, así que el área arriba de la línea debe estar sombreada.</p>
+<p class="hint_green" data-else="">Como nuestra desigualdad tiene un signo mayor que <span data-if="INCLUSIVE_2">o igual a</span>, eso significa que cualquier punto <strong>arriba</strong> de la linea es una solución a la desigualdad, así que el área arriba de la línea debe estar sombreada.</p>
+        <div class="hint_green">
+            <p data-if="INCLUSIVE_2"><span data-if="LESS_THAN_2" data-unwrap="">Observa que como el signo es menor que o <strong>igual a</strong>, cualquier punto de la linea es solución, así que la linea debe ser continua.</span><span data-else="" data-unwrap="">Observa que como el signo es mayor que o <strong> igual a</strong>, cualquier punto de la línea es solución, así que la línea debe ser continua.</span></p>
+            <p data-else=""><span data-if="LESS_THAN_2" data-unwrap="">Observa que como el signo es menor que (y no igual a), cualquier punto de la línea <strong> no es</strong>parte de la solución, así que la línea debe ser punteada para indicar esto.</span><span data-else="" data-unwrap="">Observa que como el signo es mayor que (y no igual a), cualquier punto sobre la línea <strong>no es</strong> parte de la solución, así que la línea debe estar punteada para indicar esto.</span></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

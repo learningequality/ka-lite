@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Factorizando cuadráticas</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <div data-ensure="abs(A) !== abs(B)">
+                    <var id="A">randRangeNonZero( -10, 10 )</var>
+                    <var id="B">randRangeNonZero( -10, 10 )</var>
+                </div>
+                <var id="SQUARE">1</var>
+                <var id="CONSTANT">SQUARE*A*B</var>
+                <var id="SIMPLECONSTANT">A*B</var>
+                <var id="LINEAR">SQUARE*(-A-B)</var>
+                <var id="SIMPLELINEAR">-A-B</var>
+            </div>
+
+            <p class="problem">Factoriza la siguiente expresión:</p>
+            <p class="question"><code><var>plus(SQUARE + "x^2")</var> + <var>plus( LINEAR + "x" )</var> + <var>CONSTANT</var></code></p>
+
+            <p class="solution" data-type="expression" data-same-form>(x-<var>A</var>)(x-<var>B</var>)</p>
+
+            <div class="hints">
+
+                <div>
+                    <p>Cuando factorizamos un polinomio, básicamente estamos revirtiendo el proceso de multiplicar expresiones lineales:</p>
+                    <p><code>
+                        \qquad \begin{eqnarray}
+                            (x + a)(x + b) \quad&amp;=&amp;\quad xx &amp;+&amp; xb + ax &amp;+&amp; ab \\ \\
+                            &amp;=&amp;\quad x^2 &amp;+&amp; \color{<var>GREEN</var>}{(a + b)}x &amp;+&amp; \color{<var>BLUE</var>}{ab}
+                        \end{eqnarray}
+                    </code></p>
+                </div>
+
+                <div>
+                    <p><code>
+                        \qquad \begin{eqnarray}
+                            \hphantom{(x + a)(x + b) \quad}&amp;\hphantom{=}&amp;\hphantom{\quad xx }&amp;\hphantom{+}&amp;\hphantom{ (a + b)x }&amp;\hphantom{+}&amp; \\
+                            &amp;=&amp;\quad x^2 &amp;
+                            <var>SIMPLELINEAR &gt;= 0 ? "+" : ""</var>&amp;
+                            <var>plus( "\\color{" + GREEN + "}{" + SIMPLELINEAR + "}x" )</var>&amp;
+                            <var>SIMPLECONSTANT &gt;= 0 ? "+" : ""</var>&amp;
+                            <var>plus( "\\color{" + BLUE + "}{" + SIMPLECONSTANT + "}" )</var>
+                        \end{eqnarray}
+                    </code></p>
+                    <p>El coeficiente de <code>x</code> es <code class="hint_green"><var>SIMPLELINEAR</var></code> y el término constante es <code class="hint_blue"><var>SIMPLECONSTANT</var></code>, así que para rehacer los pasos anteriores en la dirección contraria, tenemos que encontrar dos números que <span class="hint_green">sumados den <code><var>SIMPLELINEAR</var></code></span> y <span class="hint_blue">multiplicados <code><var>SIMPLECONSTANT</var></code></span>.</p>
+                </div>
+
+                <div>
+                    <p>Puedes probar con diferentes factores de <code class="hint_blue"><var>SIMPLECONSTANT</var></code> para ver si puedes encontrar dos que satisfagan ambas condiciones. Si estas atorado y no puedes pensar en ninguno, también puedes reescribir las condiciones como un sistema de ecuaciones e intentar resolverlo para <code class="hint_pink">a</code> y <code class="hint_pink">b</code>:</p>
+                    <p><code>\qquad \color{<var>PINK</var>}{a} + \color{<var>PINK</var>}{b} = \color{<var>GREEN</var>}{<var>SIMPLELINEAR</var>}</code></p>
+                    <p><code>\qquad \color{<var>PINK</var>}{a} \times \color{<var>PINK</var>}{b} = \color{<var>BLUE</var>}{<var>SIMPLECONSTANT</var>}</code></p>
+                </div>
+
+                <div>
+                    <p>Los números <code class="hint_pink"><var>-A</var></code> y <code class="hint_pink"><var>-B</var></code> satisfacen las dos condiciones:</p>
+                    <p><code>
+                        \qquad \color{<var>PINK</var>}{<var>-A</var>} + \color{<var>PINK</var>}{<var>-B</var>} =
+                        \color{<var>GREEN</var>}{<var>SIMPLELINEAR</var>}
+                    </code></p>
+                    <p><code>
+                        \qquad \color{<var>PINK</var>}{<var>-A</var>} \times \color{<var>PINK</var>}{<var>-B</var>} =
+                        \color{<var>BLUE</var>}{<var>SIMPLECONSTANT</var>}
+                    </code></p>
+                </div>
+
+                <p><b>
+                    <span>Así que podemos factorizar la expresión como:</span>
+                    <code>(x <var>A &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-A</var>})(x <var>B &lt; 0 ? "+" : ""</var> \color{<var>PINK</var>}{<var>-B</var>})</code>
+                </b></p>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

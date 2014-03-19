@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html data-require="math math-format rational-expressions word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Soluciones extrañas para ecuaciones racionales</title>
+<script src="../khan-exercise.js"></script><style type="text/css">
+        #solutionarea.sol {
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRangeNonZero(-10, 10)</var>
+            <var id="B">randRangeNonZero(-10, 10)</var>
+            <var id="NUMERATOR" data-ensure="NUMERATOR !== A || NUMERATOR !== B">randFromArray([A, B, randRangeNonZero(-10, 10)])</var>
+            <var id="CONSTANT">A * B</var>
+            <var id="COEFFICIENT">-A - B</var>
+            <var id="TERMS">function(){var e,r=0,n=COEFFICIENT,s=0,a=CONSTANT;return rand(2)&lt;1?(r=randRange(-COEFFICIENT,COEFFICIENT),n=COEFFICIENT-r,e=0!==r&amp;&amp;0!==n):(s=randRange(-CONSTANT,CONSTANT),a=CONSTANT-s,e=0!==s&amp;&amp;0!==a),{coefficient1:r,coefficient2:n,constant1:s,constant2:a,simplify:e}}()</var>
+            <var id="TERM1">new RationalExpression([[1, {x: 2}], [TERMS.coefficient1, 'x'], TERMS.constant1])</var>
+            <var id="TERM2">new RationalExpression([[-TERMS.coefficient2, 'x'], -TERMS.constant2])</var>
+            <var id="TERM2NEG">TERM2.multiply(-1)</var>
+        </div>
+
+        <div class="problems">
+            <div id="ignore-extraneous">
+                <p class="problem">Resuelve para <code>x</code>, ignorando cualquier solución extraña:</p>
+                <p class="question">
+                    <code>\dfrac{<var>TERM1</var>}{x - <var>NUMERATOR</var>}
+                        = \dfrac{<var>TERM2</var>}{x - <var>NUMERATOR</var>}</code>
+                </p>
+
+                <div class="solution" data-type="set">
+                    <span class="set-sol" data-type="number" data-if="NUMERATOR !== A"><var>A</var></span>
+                    <span class="set-sol" data-type="number" data-if="NUMERATOR !== B &amp;&amp; A !== B"><var>B</var></span>
+
+                    <div class="input-format">
+                        <div>
+<code>x = </code> <span class="entry short50">a</span>
+</div>
+                        <div>
+<code>x = </code> <span class="entry short50">a</span>
+</div>
+                    </div>
+                </div>
+
+                <div class="hints" data-apply="appendContents">
+                    <div data-if="NUMERATOR === A || NUMERATOR === B">
+                        <div>Sin embargo, la expresión original no está definida cuando <code>x = <var>NUMERATOR</var></code>.</div>
+                        <div data-if="NUMERATOR !== A">Por lo tanto, la única solución es <code>x = <var>A</var></code>.</div>
+                        <div data-if="NUMERATOR !== B">Por lo tanto, la única solución es <code>x = <var>B</var></code>.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="extraneous-exists">
+                <div class="vars">
+                    <var id="ANSWER">NUMERATOR === A || NUMERATOR === B ? "&lt;code&gt;x = " + NUMERATOR + "&lt;/code&gt;" : "No extraneous solutions"</var>
+                    <var id="POSSIBILITIES">shuffle(["&lt;code&gt;x = "+NUMERATOR+"&lt;/code&gt;","&lt;code&gt;x = "+-NUMERATOR+"&lt;/code&gt;"])</var> 
+                </div>
+
+                <p class="problem">¿Cuál es la solución extraña de estas ecuaciones?</p>
+                <p class="question">
+                    <code>\dfrac{<var>TERM1</var>}{x - <var>NUMERATOR</var>}
+                        = \dfrac{<var>TERM2</var>}{x - <var>NUMERATOR</var>}</code>
+                </p>
+
+                <div class="solution"><var>ANSWER</var></div>
+                <ul class="choices" data-category="true">
+<li><var>POSSIBILITIES[0]</var></li>
+                    <li><var>POSSIBILITIES[1]</var></li>
+                    <li>No hay soluciones extrañas</li>
+                </ul>
+<div class="hints" data-apply="appendContents">
+                    <div data-if="NUMERATOR === A || NUMERATOR === B" data-unwrap="">
+                        <p>En <code>x = <var>NUMERATOR</var></code>, el denominador de la expresión original es cero.</p>
+                        <p>Como la expresión no está definida para <code>x = <var>NUMERATOR</var></code>, es una solución extraña.</p>
+                    </div>
+                    <div data-else="">La expresión original está definida en <code>x = <var>A</var></code> y <code>x = <var>B</var></code>, por lo tanto no existen soluciones extrañas.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="hints">
+            <div>
+                <p>Multiplica ambos lados por <code>x - <var>NUMERATOR</var></code>:</p>
+                <p><code>\qquad \dfrac{<var>TERM1</var>}{x - <var>NUMERATOR</var>} (x - <var>NUMERATOR</var>)
+                              = \dfrac{<var>TERM2</var>}{x - <var>NUMERATOR</var>} (x - <var>NUMERATOR</var>)</code></p>
+                <p><code>\qquad <var>TERM1</var> = <var>TERM2</var></code></p>
+            </div>
+
+            <div>
+                <p>Resta <code><var>TERM2</var></code> a ambos lados:</p>
+                <p><code>\qquad <var>TERM1</var> - (<var>TERM2</var>) = <var>TERM2</var> - (<var>TERM2</var>)</code></p>
+                <p><code>\qquad <var>TERM1</var> + <var>TERM2NEG</var> = 0</code></p>
+                <p data-if="TERMS.simplify"><code>\qquad <var>TERM1.add(TERM2NEG)</var> = 0</code></p>
+            </div>
+
+            <div>
+                <p>Factoriza la expresión:</p>
+                <p><code>\qquad (x - <var>A</var>)(x - <var>B</var>) = 0</code></p>
+            </div>
+
+            <p>Por lo tanto <code>x = <var>A</var></code> <span data-if="A !== B"> o <code>x = <var>B</var></code></span></p>
+        </div>
+    </div>
+</body>
+</html>

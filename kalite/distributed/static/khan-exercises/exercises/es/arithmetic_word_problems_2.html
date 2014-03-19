@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Problemas de multiplicación y división</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="NUM1">randRange( 1, 12 )</var>
+            <var id="NUM2">randRange( 2, 12 )</var>
+            <var id="TOTAL">NUM1 * NUM2</var>
+            <var id="RIDE,RODE,BIKE,BIKED,BIKING">randFromArray([["ride","rode","bike","biked","biking"],["row","rowed","boat","rowed","rowing"],["drive","drove","car","driven","driving"],["walk","walked","dog","walked","walking"]])</var>
+        <var id="DISTANCE_PER_DAY">$._("%(distance_unit)s por d\u00eda", {distance_unit: plural_form(distance( 1, NUM1 ))})</var>
+        <var id="DAYS">$._("d\u00edas")</var>
+        <var id="ROWS">$._("filas")</var>
+        <var id="DAYS_BIKING">$._("n\u00famero de d\u00edas %(BIKING)s", {BIKING: BIKING})</var>
+        <var id="ROWS_OF_CROPS">$._("filas de %(crop)s", {crop: plural_form(crop( 1 ))})</var>
+        <var id="CROPS_PER_ROW">$._("%(crop)s por fila", {crop: plural_form(crop( 1 ))})</var>
+        </div>
+
+        <div class="problems">
+
+            <div id="compare-product">
+                <p class="problem">Un <var>clothing(1)</var> <var>color(1)</var> cuesta <code>$<var>NUM1</var></code>, y un popular <var>clothing(2)</var> <var>color(2)</var> cuesta <code><var>NUM2</var></code> veces eso.</p>
+                <p class="question">¿Cuánto cuesta el <var>clothing(2)</var> <var>color(2)</var>?</p>
+                <div class="solution" data-type="multiple">
+<code>\$</code><span class="sol"><var>TOTAL</var></span>
+</div>
+
+                <div class="hints">
+                    <p>El precio del <var>clothing(2)</var> <var>color(2)</var> es un múltiplo del precio de <var>clothing(1)</var> <var>color(1)</var>, así que encuentra el producto.</p>
+                    <p>El producto es <code><var>NUM2</var> \times $<var>NUM1</var></code>.</p>
+                    <p>
+                    <code><var>NUM2</var> \times $<var>NUM1</var> = $<var>TOTAL</var></code>
+                    </p>
+                    <p>
+                    The <var>color(2)</var> <var>clothing(2)</var> costs <code>$<var>TOTAL</var></code>.
+                    </p>
+                </div>
+            </div>
+
+            <div id="compare-groupsize">
+                <p class="problem">
+                A <var>color(1)</var> <var>clothing(1)</var> costs <code>$<var>TOTAL</var></code>,
+                which is <code><var>NUM2</var></code> times as much as a <var>color(2)</var> <var>clothing(2)</var> costs.
+                </p>
+                <p class="question">¿Cuánto cuesta el <var>clothing(2)</var> <var>color(2)</var>?</p>
+                <div class="solution" data-type="multiple">
+<code>\$</code><span class="sol"><var>NUM1</var></span>
+</div>
+                <div class="hints">
+                    <p>El precio del <var>clothing(1)</var> <var>color(1)</var> es un múltiplo del precio del <var>clothing(2)</var> <var>color(2)</var>, así que busca el resultado de dividir.</p>
+                    <p>Este resultado, llamado cociente, es igual a <code>$<var>TOTAL</var> \div <var>NUM2</var></code>.</p>
+                    <p>
+                    <code>$<var>TOTAL</var> \div <var>NUM2</var> = $<var>NUM1</var></code>
+                    </p>
+                    <p>Un <var>clothing( 2 )</var> <var>color( 2 )</var> cuesta <code>$<var>NUM1</var></code>.</p>
+</div>
+            </div>
+
+            <div id="compare-number">
+                <p class="problem">Un <var>color(1)</var> <var>clothing(1)</var> cuesta <code>$<var>TOTAL</var></code>, y un <var>color(2)</var> <var>clothing(2)</var> cuesta <code>$<var>NUM2</var></code>.</p>
+                <p class="question">¿El <var>clothing( 1 )</var> <var>color( 1 )</var> cuesta cuántas veces más que el <var>clothing( 2 )</var> <var>color( 2 )</var>?</p>
+                <p class="solution" data-forms="integer">
+                    <var>NUM1</var>
+                </p>
+                <div class="hints">
+                    <p>El precio del <var>clothing(1)</var> <var>color(1)</var> es un múltiplo del precio del <var>clothing(2)</var> <var>color(2)</var>, así que busca el resultado de dividir.</p>
+                    <p>Este resultado, llamado cociente, es <code>$<var>TOTAL</var> \div $<var>NUM2</var></code>.</p>
+                    <p>
+                    <code>$<var>TOTAL</var> \div $<var>NUM2</var> = <var>NUM1</var></code>
+                    </p>
+                    <p>El <var>clothing( 1 )</var> <var>color( 1 )</var> cuesta <code><var>NUM1</var></code> veces más que el <var>clothing( 2 )</var> <var>color( 2 )</var>.</p>
+                </div>
+            </div>
+
+            <div id="groups-product">
+                <p class="problem" data-if="isMale(1)"><span data-if="$.ngetpos(NUM1, 'es-ES') === 0" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para <code><var>NUM1</var></code> <var>distance(1)</var> en cada uno de los <code><var>NUM2</var></code> días pasados.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para <code><var>NUM1</var></code> <var>plural_form(distance(1), NUM1)</var> en cada uno de los <code><var>NUM2</var></code> días pasados.</span></p>
+<p class="problem" data-else=""><span data-if="$.ngetpos(NUM1, 'es-ES') === 0" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para <code><var>NUM1</var></code> <var>distance(1)</var> en cada uno de los <code><var>NUM2</var></code> días pasados.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para <code><var>NUM1</var></code> <var>plural_form(distance(1), NUM1)</var> en cada uno de los  past <code><var>NUM2</var></code> días pasados.</span></p>
+                <p class="question" data-if="isMale(1)">¿Cuántos <var>plural_form(distance(1))</var> <var>person(1)</var> <var>RIDE</var> su <var>BIKE</var> en total?</p>
+<p class="question" data-else="">¿Cuántos <var>plural_form(distance(1))</var> <var>RIDE</var> <var>person(1)</var> su <var>BIKE</var> en total?</p>
+                <div class="solution" data-type="multiple">
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> <var>plural( distance(1) )</var>
+                </div>
+                <div class="hints">
+                    <p>El número total de <var>plural_form(distance(1))</var> <var>BIKED</var> es el producto del número de <var>plural_form(distance(1))</var> <var>BIKED</var> cada día y el número de días que <var>person(1)</var> salió <var>BIKING</var>.</p>
+                    <p>El producto es <code><var>NUM1</var>\text{ <var>DISTANCE_PER_DAY</var>} \times <var>NUM2</var>\text{ <var>DAYS</var>}</code>.</p>
+                    <p>
+                    <code><var>NUM1</var>\text{ <var>DISTANCE_PER_DAY</var>} \times <var>NUM2</var>\text{ <var>DAYS</var>}= <var>TOTAL</var>\text{ <var>plural( distance(1) )</var>}</code>
+                    </p>
+                    <p data-if="$.ngetpos(TOTAL, 'es-ES') === 0"><var>person( 1 )</var> <var>BIKED</var> un total de <code><var>TOTAL</var></code> <var>distance( 1 )</var>.</p>
+<p data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1"><var>person( 1 )</var> <var>BIKED</var> un total de <code><var>TOTAL</var></code> <var>plural_form(distance( 1 ), TOTAL)</var>.</p>
+                </div>
+            </div>
+
+            <div id="groups-groupsize">
+                <p class="problem" data-if="isMale(1)"><span data-if="$.ngetpos(TOTAL, 'es-ES') === 0" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para un total de <code><var>TOTAL</var></code> <var>distance(1)</var> en los <code><var>NUM2</var></code> días pasados, y ella <var>RODE</var> la misma cantidad cada día.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para un total de <code><var>TOTAL</var></code> <var>plural_form(distance(1), TOTAL)</var> en los <code><var>NUM2</var></code> días pasados, y ella <var>RODE</var> la misma cantidad cada día.</span></p>
+<p class="problem" data-else=""><span data-if="$.ngetpos(TOTAL, 'es-ES') === 0" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para un total de <code><var>TOTAL</var></code> <var>distance(1)</var> en los <code><var>NUM2</var></code> días pasados, y ella <var>RODE</var> la misma cantidad cada día.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1" data-unwrap=""><var>person(1)</var> <var>RODE</var> su <var>BIKE</var> para un total de <code><var>TOTAL</var></code> <var>plural_form(distance(1), TOTAL)</var> en los <code><var>NUM2</var></code> días pasados, y ella <var>RODE</var> la misma cantidad cada día.</span></p>
+                <p class="question" data-if="isMale(1)">¿Cuántos <var>plural_form(distance(1))</var> <var>RIDE</var> <var>person(1)</var>  su <var>BIKE</var> cada día?</p>
+<p class="question" data-else="">¿Cuántos <var>plural_form(distance(1))</var> <var>RIDE</var> <var>person(1)</var> su <var>BIKE</var> cada día?</p>
+                <div class="solution" data-type="multiple">
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> <var>plural( distance(1) )</var>
+                </div>
+                <div class="hints">
+                    <p>El número de <var>plural_form(distance(1))</var> <var>BIKED</var> cada día es el número total de <var>plural_form(distance(1))</var> <var>BIKED</var> dividido entre el número de días que <var>person(1)</var> salio <var>BIKING</var>.</p>
+                    <p>Buscamos el cociente, que es <code><var>TOTAL</var>\text{ <var>plural_form(distance( 1, TOTAL ))</var>} \div <var>NUM2</var>\text{ <var>DAYS</var>}</code>.</p>
+                    <p>
+                    <code><var>TOTAL</var>\text{ <var>plural( distance( 1 ) )</var>} \div <var>NUM2</var>\text{ <var>DAYS</var>} = <var>NUM1</var> \text{ <var>DISTANCE_PER_DAY</var>}</code>
+                    </p>
+                    <p><var>person( 1 )</var> <var>BIKED</var> <code><var>NUM1</var></code> <var>plural_form(distance(1), NUM1)</var> cada día.</p>
+                </div>
+            </div>
+
+            <div id="groups-number">
+                <p class="problem" data-if="isMale(1)">
+                    <span data-if="$.ngetpos(TOTAL, 'es-ES') === 0"><var>person(1)</var> ha <var>BIKED</var> su <var>BIKE</var> por un total de <code><var>TOTAL</var></code> <var>distance(1)</var> desde que empezó a <var>BIKING</var> diario.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1"><var>person(1)</var> ha <var>BIKED</var> su <var>BIKE</var> por un total de <code><var>TOTAL</var></code> <var>plural_form(distance(1), TOTAL)</var> desde que empezó a <var>BIKING</var> diario.</span>
+                    <span data-if="$.ngetpos(NUM2, 'es-ES') === 0">El ha estado <var>BIKING</var> <code><var>NUM2</var></code> <var>distance(1)</var> cada día.</span><span data-else-if="$.ngetpos(NUM2, 'es-ES') === 1">El ha estado <var>BIKING</var> <code><var>NUM2</var></code> <var>plural_form(distance(1), NUM2)</var> cada día.</span>
+                </p>
+<p class="problem" data-else="">
+                    <span data-if="$.ngetpos(TOTAL, 'es-ES') === 0"><var>person(1)</var> ha <var>BIKED</var> su <var>BIKE</var> for a total de <code><var>TOTAL</var></code> <var>distance(1)</var> desde que ella empezó a <var>BIKING</var> diario.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1"><var>person(1)</var> han <var>BIKED</var> sus <var>BIKE</var> por un total de <code><var>TOTAL</var></code> <var>plural_form(distance(1), TOTAL)</var> desde que empezaron a <var>BIKING</var> diario.</span>
+                    <span data-if="$.ngetpos(NUM2, 'es-ES') === 0">Ella ha estado <var>BIKING</var> <code><var>NUM2</var></code> <var>distance(1)</var> todos los días.</span><span data-else-if="$.ngetpos(NUM2, 'es-ES') === 1">Ella ha estado  <var>BIKING</var> <code><var>NUM2</var></code> <var>plural_form(distance(1), NUM2)</var> todos los días.</span>
+                </p>
+                <p class="question">¿Cuántos días ha estado <var>person(1)</var> <var>BIKING</var>?</p>
+                <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM1</var></span> días</div>
+                <div class="hints">
+                    <p>El número de días que <var>person(1)</var> ha estado <var>BIKING</var> es el número total de <var>plural_form(distance(1))</var> <var>BIKED</var> dividido entre el número de <var>plural_form(distance(1))</var> <var>BIKED</var> cada día.</p>
+                    <p>
+                    <code><var>TOTAL</var>\text{ <var>plural( distance( 1 ) )</var>} \div <var>NUM2</var>\text{ <var>DISTANCE_PER_DAY</var>} = \text{<var>DAYS_BIKING</var>}</code>
+                    </p>
+                    <p>
+                    <code><var>TOTAL</var>\text{ <var>plural( distance( 1 ) )</var>} \div <var>NUM2</var>\text{ <var>DISTANCE_PER_DAY</var>} = <var>NUM1</var>\text{ <var>DAYS</var>}</code>
+                    </p>
+                </div>
+            </div>
+
+            <div id="array-product">
+                <p class="problem" data-if="isMale(1)">
+                    <span><var>person(1)</var> es un <var>farmer(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM1, 'es-ES') === 0">Él siembra <code><var>NUM1</var></code> fila de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1">Él siembra <code><var>NUM1</var></code> filas de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM2, 'es-ES') === 0">Cada fila tiene <code><var>NUM2</var></code> <var>crop(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, 'es-ES') === 1">Cada fila tiene <code><var>NUM2</var></code> <var>plural_form(crop(1), NUM2)</var>.</span>
+                </p>
+<p class="problem" data-else="">
+                    <span><var>person(1)</var> es un <var>farmer(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM1, 'es-ES') === 0">Ella planta <code><var>NUM1</var></code> fila de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1">Ella planta  <code><var>NUM1</var></code> filas de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM2, 'es-ES') === 0">Cada fila tiene <code><var>NUM2</var></code> <var>crop(1)</var>.</span><span data-else-if="$.ngetpos(NUM2, 'es-ES') === 1">Cada fila tiene <code><var>NUM2</var></code> <var>plural_form(crop(1), NUM2)</var>.</span>
+                </p>
+                <p class="question">¿Cuántos <var>plural_form(crop(1))</var> plantó <var>person(1)</var> en el <var>field(1)</var>?</p>
+                <div class="solution" data-type="multiple">
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>TOTAL</var></span> <var>plural( crop(1) )</var>
+                </div>
+                <div class="hints">
+                    <p data-if="isMale(1)">El número de <var>plural_form(crop(1))</var> que <var>person(1)</var> plantó es el producto del número de filas que plantó y el número de <var>plural_form(crop(1))</var> en cada fila.</p>
+<p data-else="">El número de <var>plural_form(crop(1))</var> que <var>person(1)</var> planto es el producto del número de filas que plantó por el número de <var>plural_form(crop(1))</var> en cada fila.</p>
+                    <p>El producto es <code><var>NUM1</var>\text{ <var>ROWS_OF_CROPS</var>} \times <var>NUM2</var>\text{ <var>CROPS_PER_ROW</var>}</code>.</p>
+                    <p>
+                    <code><var>NUM1</var>\text{ <var>ROWS_OF_CROPS</var>} \times <var>NUM2</var>\text{ <var>CROPS_PER_ROW</var>} = <var>TOTAL</var></code> <var>plural( crop(1) )</var>
+                    </p>
+                </div>
+            </div>
+
+            <div id="array-groupsize">
+                <p class="problem" data-if="isMale(1)">
+                    <span><var>person(1)</var> es un <var>farmer(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM1, 'es-ES') === 0">Él siembra <code><var>NUM1</var></code> fila de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1">Él siembra <code><var>NUM1</var></code> filas de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span>
+                    <span>Cada fila tiene el mismo número de <var>plural_form(crop(1))</var>.</span>
+                    <span data-if="$.ngetpos(TOTAL, 'es-ES') === 0">Él planta un total de <code><var>TOTAL</var></code> <var>crop(1)</var> en el <var>field(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1">Él planta un total de <code><var>TOTAL</var></code> <var>plural_form(crop(1), TOTAL)</var> en el <var>field(1)</var>.</span>
+                </p>
+<p class="problem" data-else="">
+                    <span><var>person(1)</var> es un <var>farmer(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM1, 'es-ES') === 0">Ella planta <code><var>NUM1</var></code> fila de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1">Ella planta  <code><var>NUM1</var></code> filas de <var>plural_form(crop(1))</var> en un <var>field(1)</var>.</span>
+                    <span>Cada fila tiene el mismo número de <var>plural_form(crop(1))</var>.</span>
+                    <span data-if="$.ngetpos(TOTAL, 'es-ES') === 0">Ella planta un total de <code><var>TOTAL</var></code> <var>crop(1)</var> en el <var>field(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1">Ella planta un total de  <code><var>TOTAL</var></code> <var>plural_form(crop(1), TOTAL)</var> en el <var>field(1)</var>.</span>
+                </p>
+                <p class="question">¿Cuántos <var>plural_form(crop(1))</var> plantó <var>person(1)</var> en cada fila?</p>
+                <div class="solution" data-type="multiple">
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM2</var></span> <var>plural( crop(1) )</var>
+                </div>
+                <div class="hints">
+                    <p data-if="isMale(1)">El número de <var>plural_form(crop(1))</var> que <var>person(1)</var> planto en cada fila es el número total de <var>plural_form(crop(1))</var> que plantó dividido entre el número de filas.</p>
+<p data-else="">El número de <var>plural_form(crop(1))</var> que <var>person(1)</var> plantó en cada fila es el número total de <var>plural_form(crop(1))</var> que planto dividido entre el número de filas.</p>
+                    <p>El resultado, llamado cociente, es <code><var>TOTAL</var>\text{ <var>plural_form(crop( 1 ), TOTAL)</var>} \div <var>NUM1</var>\text{ <var>ROWS_OF_CROPS</var>}</code>.</p>
+                    <p>
+                    <code><var>TOTAL</var>\text{ <var>plural( crop( 1 ) )</var>} \div <var>NUM1</var>\text{ <var>ROWS_OF_CROPS</var>} = <var>NUM2</var>\text{ <var>CROPS_PER_ROW</var>}</code>
+                    </p>
+                </div>
+            </div>
+
+            <div id="array-number">
+                <p class="problem" data-if="isMale(1)">
+                    <span><var>person(1)</var> es un <var>farmer(1)</var>.</span>
+                    <span data-if="$.ngetpos(TOTAL, 'es-ES') === 0">Él siembra <code><var>TOTAL</var></code> <var>crop(1)</var> en un <var>field(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1">Él siembra <code><var>TOTAL</var></code> <var>plural_form(crop(1), TOTAL)</var> en un <var>field(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM1, 'es-ES') === 0">Cada fila tiene <code><var>NUM1</var></code> <var>crop(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1">Cada fila tiene <code><var>NUM1</var></code> <var>plural_form(crop(1), NUM1)</var>.</span>
+                </p>
+<p class="problem" data-else="">
+                    <span><var>person(1)</var> es un <var>farmer(1)</var>.</span>
+                    <span data-if="$.ngetpos(TOTAL, 'es-ES') === 0">Ella planta <code><var>TOTAL</var></code> <var>crop(1)</var> en un <var>field(1)</var>.</span><span data-else-if="$.ngetpos(TOTAL, 'es-ES') === 1">Ella planta <code><var>TOTAL</var></code> <var>plural_form(crop(1), TOTAL)</var> en un <var>field(1)</var>.</span>
+                    <span data-if="$.ngetpos(NUM1, 'es-ES') === 0">Cada fila tiene <code><var>NUM1</var></code> <var>crop(1)</var>.</span><span data-else-if="$.ngetpos(NUM1, 'es-ES') === 1">Cada fila tiene <code><var>NUM1</var></code> <var>plural_form(crop(1), NUM1)</var>.</span>
+                </p>
+                <p class="question">¿Cuántas filas de <var>plural_form(crop(1))</var> plantó <var>person(1)</var> en el <var>field(1)</var>?</p>
+                <div class="solution" data-type="multiple">
+                    <span class="sol" data-forms="integer" style="padding-right: 5px"><var>NUM2</var></span> <var>plural( 'row' )</var>
+                </div>
+                <div class="hints">
+                    <p data-if="isMale(1)">El número de filas de <var>plural_form(crop(1))</var> que <var>person(1)</var> planto es el número total de <var>plural_form(crop(1))</var> que plantó dividido entre el número de <var>plural_form(crop(1))</var> en cada fila.</p>
+<p data-else="">El número de filas de <var>plural_form(crop(1))</var> que <var>person(1)</var> plantó es el número total de <var>plural_form(crop(1))</var> que plantó dividido entre el número de <var>plural_form(crop(1))</var> en cada fila.</p>
+                    <p>El resultado, llamado cociente, es <code><var>TOTAL</var>\text{ <var>plural_form(crop( 1 ), TOTAL)</var>} \div <var>NUM1</var>\text{ <var>CROPS_PER_ROW</var>}</code>.</p>
+                    <p>
+                    <code><var>TOTAL</var>\text{ <var>plural( crop( 1 ) )</var>} \div <var>NUM1</var>\text{ <var>CROPS_PER_ROW</var>} = <var>NUM2</var>\text{ <var>ROWS</var>}</code>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
