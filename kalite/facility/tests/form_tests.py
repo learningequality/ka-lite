@@ -10,10 +10,9 @@ from django.test import TestCase
 
 from facility.forms import FacilityUserForm
 from facility.models import Facility, FacilityUser
-from testing import distributed_server_test, KALiteTestCase
+from testing import KALiteTestCase
 
 
-@distributed_server_test
 class UserRegistrationTest(KALiteTestCase):
 
     def setUp(self):
