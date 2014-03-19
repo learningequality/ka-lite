@@ -324,7 +324,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     @staticmethod
     def is_enabled():
-        return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
+        return getattr(settings, "USER_LOG_MAX_RECORDS_PER_USER", 0) != 0
 
     def __unicode__(self):
         if self.end_datetime:
