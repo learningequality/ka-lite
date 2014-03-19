@@ -36,6 +36,7 @@
             // TODO(bcipolli): use javascript to translate here
             $('a.video-unavailable').attr("title", "{% trans 'This video is not downloaded.' %}");
         });
+        
     </script>
 {% endblock headjs %}
 
@@ -80,6 +81,8 @@
             <a href="{{ video.path }}" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
                 {% trans video.title %}
             </a>
+
+            
 
             {# dubbed videos #}
             {% for lang, avail in video.availability.iteritems %}

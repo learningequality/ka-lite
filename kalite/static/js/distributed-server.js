@@ -201,9 +201,9 @@ $(function(){
 $(function(){
     // If new language is selected, redirect after adding django_language session key
     $("#language_selector").change(function() {
-        var lang_code = $("#language_selector").val();
+        var lang_code = $("#language_selector").val(); 
         if (lang_code != "") {
-            window.location = setGetParam(window.location.href, "set_user_language", lang_code);
+            window.location = setGetParam(window.location.href, "lang", lang_code);
         }
     });
 });
