@@ -61,6 +61,9 @@ function display_languages() {
 
             if ( lang_code != 'en')
                 lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(lang_code)s'), {lang_code: lang_code}));
+            else
+                if lang['subtitle_count'] > 0
+                lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(lang_code)s Subtitles'), {lang_code: lang_code}));
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
