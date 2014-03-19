@@ -19,10 +19,10 @@ $(function() {
             };
             doRequest(TIME_SET_URL, data)
                 .success(function(data) {
-                    show_api_messages(data, "id_set_time");
+                    handleSuccessAPI(data);
                 })
                 .fail(function(resp) {
-                    communicate_api_failure(resp, "id_set_time");
+                    handleFailedAPI(resp);
                 });
         });
 });

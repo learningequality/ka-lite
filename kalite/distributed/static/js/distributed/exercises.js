@@ -48,12 +48,12 @@ function updatePercentCompleted(correct) {
 
     doRequest("/api/save_exercise_log", data)
         .success(function(data) {
-            show_api_messages(data, "id_student_logs");
+            handleSuccessAPI(data);
             // update the top-right point display, now that we've saved the points successfully
             userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
         })
         .fail(function(resp) {
-            communicate_api_failure(resp, "id_student_logs");
+            handleFailedAPI(resp);
         });
 
 }
@@ -106,13 +106,11 @@ $(function() {
 
             updateStreakBar();
 
-            // Show all messages in "messages" object
-            show_api_messages(data.messages, "id_student_logs");
+            handleSuccessAPI(data);
         })
         .fail(function (resp) {
-            // Expects to receive messages ({ type: message } format) about failures
-            // turned off because this duplicates the "Progress not loaded" message    
-            // communicate_api_failure(resp, "id_student_logs");
+            // Expects to receive messages ({ type: message } format) about failures  
+            handleFailedAPI(resp);
         });
 });
 

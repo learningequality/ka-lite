@@ -127,7 +127,7 @@
                         // Translate cryptic error message
                         show_message("error", "{% trans 'Too many topics; please select fewer topics and retry.' %}", "id_coachreports");
                     } else {
-                        communicate_api_failure(resp, "id_coachreports");
+                        handleFailedAPI(resp);
                     }
                     $("#loading").text("");
                 });

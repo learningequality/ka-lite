@@ -39,19 +39,33 @@ function doRequest(url, data) {
         dataType: "json"
     })
     .fail(function(resp) {
-        communicate_api_failure(resp, "id_do_request");
+        handleFailedAPI(resp);
     });
 }
 
+// Generates a unique ID for each message - No duplicates.
+String.prototype.hashCode = function(){
+    var hash = 0, i, char;
+    if (this.length == 0) return hash;
+    for (i = 0, l = this.length; i < l; i++) {
+        char  = this.charCodeAt(i);
+        hash  = ((hash<<5)-hash)+char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
+
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
-
-function show_message(msg_class, msg_text, msg_id) {
+function show_message(msg_class, msg_text) {
     // This function is generic--can be called with server-side messages,
     //    or to display purely client-side messages.
     // msg_class includes error, warning, and success
 
     // remove any existing message with the same id
+
+    var msg_id = msg_text.hashCode();
+
     if (msg_id) {
         clear_message(msg_id);
     }

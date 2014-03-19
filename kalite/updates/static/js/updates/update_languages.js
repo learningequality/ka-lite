@@ -13,7 +13,7 @@ function get_available_languages() {
     }).error(function(data, status, error) {
         installable_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
+        handleFailedAPI(data, [status, error].join(" "));
     });
 }
 
@@ -28,7 +28,7 @@ function get_installed_languages() {
     }).error(function(data, status, error) {
         installed_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
+        handleFailedAPI(data, [status, error].join(" "));
     });
 }
 
@@ -131,14 +131,12 @@ function start_languagepack_download(lang_code) {
         );
         show_message(
             "success",
-            sprintf(gettext("Download for language %s started."), [lang_code]),
-            "id_languagepackdownload"
+            sprintf(gettext("Download for language %s started."), [lang_code])
         );
     }).error(function(progress, status, req) {
         handleFailedAPI(
             progress,
-            gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
-            "id_languagepackdownload"
+            gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - ")
         );
     });
 }
