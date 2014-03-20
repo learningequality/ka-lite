@@ -1,4 +1,3 @@
-
 /* gettext library */
 
 var catalog = new Array();
@@ -77,3 +76,4 @@ function get_format(format_type) {
       return value;
     }
 }
+
