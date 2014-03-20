@@ -76,12 +76,11 @@
         <div class="dropdown">
             Select your language
             <select onchange="selectVideo(this)" AutoPostBack="True">
-                <option value="nothing">--</option>
-                    {% for lang_code, lang_meta in language_choices.iteritems %}
-                        <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                            {% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}
-                    {% endfor %}
-                </option>
+                {% for lang_code, lang_meta in language_choices.iteritems %}
+                    <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                        {% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}
+                    </option>
+                {% endfor %}
             </select>
         </div>
         <div class="clear"></div>
