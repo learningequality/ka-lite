@@ -415,7 +415,7 @@ if CENTRAL_SERVER:
     POSTMARK_TEST_MODE = getattr(local_settings, "POSTMARK_TEST_MODE", POSTMARK_API_KEY == "")
 
     # Used for redirecting to the actual installer executables
-    INSTALLER_BASE_URL = getattr(local_settings, 'INSTALLER_BASE_URL', 'http://adhoc.learningequality.org/media/installer/')
+    INSTALLER_BASE_URL = getattr(local_settings, 'INSTALLER_BASE_URL', 'http://adhoc.learningequality.org:7007/media/installer/')
 
 else:
     # enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
