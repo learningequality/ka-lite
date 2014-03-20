@@ -80,53 +80,11 @@ class Command(UpdatesStaticCommand):
             elif args[0] == 'git':
                 self.update_via_git(**options)
             elif args[0] == 'download':
-                raise NotImplementedError("Not implemented yet. Use the 'git' update method first.")
+                self.update_via_zip(**options)
             elif args[0] == 'localzip':
-                raise NotImplementedError("Not implemented yet. Use the 'git' update method first.")
-
-
-            # Updating through zip files (the code below) is actually done, just haven't reworked them to use the new way to call update management command
-            if options.get("zip_file", None):
-                # Specified a file
-                if not os.path.exists(options.get("zip_file")):
-                    raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
                 self.update_via_zip(**options)
-
-            elif options.get("url", None):
-                self.update_via_zip(**options)
-
-            elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-                # If we detect a git repo, try git
-                if len(args) == 1 and not options["branch"]:
-                    options["branch"] = args[0]
-                elif len(args) != 0:
-                    raise CommandError("Specified too many command-line arguments")
-                self.update_via_git(**options)
-
-            elif len(args) > 1:
-                raise CommandError("Too many command-line arguments.")
-
-            elif len(args) == 1:
-                # Specify zip via first command-line arg
-                if options['zip_file'] is not None:
-                    raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
-                options['zip_file'] = args[0]
-                self.update_via_zip(**options)
-
             else:
-                # No params, no git repo: try to get a file online.
-                zip_file = tempfile.mkstemp()[1]
-                for url in ["http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")]:
-                    logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
-                    try:
-                        urllib.urlretrieve(url, zip_file)
-                        sys.stdout.write("success @ %s\n" % url)
-                        break;
-                    except Exception as e:
-                        logging.debug("Failed to get zipfile from %s: %s" % (url, e))
-                        continue
-                options["zip_file"] = zip_file
-                self.update_via_zip(**options)
+                raise CommandError("Enter one of [git, download, localzip]")
 
         except Exception as e:
             if self.started() and not not self.ended():
@@ -197,7 +155,13 @@ class Command(UpdatesStaticCommand):
     def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
         """
         """
-        assert (zip_file or url) and not (zip_file and url)
+
+        # No URL or zip file given; default is to download from central server
+        if not url and not zip_file:
+            url = "http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")
+
+        if not os.path.exists(zip_file):
+            raise CommandError("Specified zip file does not exist: %s" % zip_file)
 
         if not self.kalite_is_installed():
             raise CommandError("KA Lite not yet installed; cannot update.  Please install KA Lite first, then update.\n")
@@ -214,6 +178,10 @@ class Command(UpdatesStaticCommand):
             "move_to_final",
             "start_server",
         ]
+
+        # for continuation: so we now have to downlod the zip file if needed. The problem
+        # is that the starting stage changes if zip file is local or not; so do we have to make
+        # an if statement for self.start vs self.next_stage?
 
         # current_dir === base dir for current installation
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
