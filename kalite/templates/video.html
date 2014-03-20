@@ -24,7 +24,7 @@
 {% endblock headcss %}
 
 {% block headjs %}
-    <script src="{% static "distributed/js/videoplayer.js" %}"></script>
+    <script src="{% static "js/videoplayer.js" %}"></script>
 
     <script>
     $(function() {
@@ -74,7 +74,7 @@
         {% endif %}
 
         <div class="dropdown">
-            Select your language
+            {% trans Select your language %}
             <select onchange="selectVideo(this)" AutoPostBack="True">
                 {% for lang_code, lang_meta in language_choices.iteritems %}
                     <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
