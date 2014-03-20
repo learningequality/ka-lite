@@ -33,6 +33,14 @@
     });
     </script>
 
+
+    <script type="text/javascript">
+        function selectVideo(obj){
+            var selectedVideo = obj.options[obj.selectedIndex];
+            window.location = selectedVideo.value;
+        }
+    </script>
+
     <!--[if IE]>
     <script src="{% static "video-js-4/video.js" %}"></script>
     <script>
@@ -64,6 +72,18 @@
             <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
         </span>
         {% endif %}
+
+        <div class="dropdown">
+            Select your language
+            <select onchange="selectVideo(this)" AutoPostBack="True">
+                <option value="nothing">--</option>
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
+                        <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                            {% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}
+                    {% endfor %}
+                </option>
+            </select>
+        </div>
         <div class="clear"></div>
 
         <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
@@ -74,6 +94,7 @@
     <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
     {% endif %}
 
+    
     {% if next %}
     <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
