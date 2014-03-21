@@ -33,6 +33,13 @@
     });
     </script>
 
+    <script type="text/javascript">
+        function selectVideo(obj){
+            var selectedVideo = obj.options[obj.selectedIndex];
+            window.location = selectedVideo.value;
+        }
+    </script>
+
     <!--[if IE]>
     <script src="{% static "video-js-4/video.js" %}"></script>
     <script>
@@ -64,6 +71,22 @@
             <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
         </span>
         {% endif %}
+
+        <div class="dropdown">
+            {% trans "Select your language" %}
+            <select onchange="selectVideo(this)" AutoPostBack="True">
+                {% for lang in video.availability.en.subtitles.keys %}
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
+                        {% if lang_code == lang %}
+                            <option value="{{ video.path }}?lang={{ lang }}" {% if lang == current_language %}selected{% endif %}>
+                                {{lang_meta.native_name}}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+
         <div class="clear"></div>
 
         <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
