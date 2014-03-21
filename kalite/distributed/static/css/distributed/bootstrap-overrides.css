@@ -1,0 +1,68 @@
+/* ===================================
+	Global
+=================================== */
+html, body {
+	height: 100%;
+}
+body {
+	margin: 0;
+	padding-top: 79px;
+}
+.container {
+	max-width: 1000px;
+}
+
+/* ===================================
+	Nav Bar
+=================================== */
+.navbar {
+	border-bottom: 1px solid #000080;
+}
+.navbar-default, .navbar-collapse {
+	background: #d1d7b1;
+}
+.navbar-brand img { 
+	margin-top: -6px; 
+}
+form#search-box {
+	margin-top: 14px;
+}
+#search-button {
+	color: #FFF !important;
+	margin-left:-3px;
+}
+ul li a {
+	color: #000080 !important;
+	text-transform: uppercase;
+}
+input#search.ui-autocomplete-input {
+	font-size: 0.85em;
+	width: 140px;
+}
+select#language_selector {
+	margin-top: 16px;
+}
+
+/* ===================================
+	Footer
+=================================== */
+.wrapper {
+	margin: 0 auto -77px; 
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+}
+footer, .footer-clearfix {
+	height: 77px;
+}
+.footer-sticky {
+	background: #d1d7b1;	
+	border-top: 1px solid #000080;
+}
+
+/* ===================================
+	Media Queries
+=================================== */
+@media only screen and (max-width: 991px) and (min-width: 768px) {
+	.navbar-brand img { width: 69px; }
+}
