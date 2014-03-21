@@ -73,12 +73,16 @@
         {% endif %}
 
         <div class="dropdown">
-            {% trans Select your language %}
-            <select onchange="selectVideo(this)" AutoPostBack="True">8
-                {% for lang_code, lang_meta in language_choices.iteritems %}
-                    <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                        {% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}
-                    </option>
+            {% trans "Select your language" %}
+            <select onchange="selectVideo(this)" AutoPostBack="True">
+                {% for lang in video.availability.en.subtitles.keys %}
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
+                        {% if lang_code == lang %}
+                            <option value="{{ video.path }}?lang={{ lang }}" {% if lang == current_language %}selected{% endif %}>
+                                {{lang_meta.native_name}}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </select>
         </div>
