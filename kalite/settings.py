@@ -133,6 +133,9 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
+# Override
+KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(STATIC_ROOT, "khan-exercises"))
+
 
 ########################
 # IMPORTANT: Do not add new settings below this line
