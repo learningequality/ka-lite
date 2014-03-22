@@ -55,8 +55,16 @@ function display_languages() {
                 link_text = "(Default)";
             }
             var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+            var lang_code = lang['code'];
             var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
             var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
+
+            if ( lang_code != 'en')
+                lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(lang_code)s'), {lang_code: lang_code}));
+            else
+                if (lang['subtitle_count'] > 0) {
+                    lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(lang_code)s Subtitles'), {lang_code: lang_code}));
+                }
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -88,6 +96,25 @@ function display_languages() {
             $("div.installed-languages").append(lang_description);
         }
     });
+
+function delete_languagepack(lang_name) {
+        doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_name})
+            .success(function() {
+                handleSuccessAPI("deleted");
+                get_installed_languages();
+                display_languages(installables);
+            })
+            .fail(function(resp) {
+                handleFailedAPI(resp, gettext("Error"), "deleted");
+            });
+}
+
+$(function () {
+    $(".delete-language-button").children('button').click(function(event) {
+        language = $(this).val();
+        delete_languagepack(language);
+    });
+});
 
     //
     // show list of installable languages in the dropdown box
