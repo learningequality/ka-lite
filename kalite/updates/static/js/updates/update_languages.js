@@ -97,8 +97,8 @@ function display_languages() {
         }
     });
 
-function delete_languagepack(lang_name) {
-        doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_name})
+function delete_languagepack(lang_code) {
+        doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
             .success(function() {
                 handleSuccessAPI("deleted");
                 get_installed_languages();
@@ -111,8 +111,8 @@ function delete_languagepack(lang_name) {
 
 $(function () {
     $(".delete-language-button").children('button').click(function(event) {
-        language = $(this).val();
-        delete_languagepack(language);
+        var lang_code = $(this).val();
+        delete_languagepack(lang_code);
     });
 });
 
