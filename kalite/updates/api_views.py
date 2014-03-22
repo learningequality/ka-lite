@@ -31,6 +31,7 @@ from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
 from i18n import get_youtube_id, get_video_language, get_supported_language_map
 from i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
+from kalite.settings import LOG as logging
 from main.topic_tools import get_topic_tree
 from shared.decorators import require_admin
 
@@ -217,18 +218,22 @@ def delete_language_pack(request):
     API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
     That particular language folders are deleted and that language gets removed.
     """
-    delete_id = simplejson.loads(request.raw_post_data or "{}").get("lang")
-    delete_path=[ get_localized_exercise_dirpath(delete_id), get_srt_path(delete_id), get_locale_path(delete_id) ]
-    for path in delete_path:
+    lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    langpack_resource_paths=[ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+
+    for langpack_resource_path in langpack_resource_paths:
         try:
-            shutil.rmtree(path)
+            shutil.rmtree(langpack_resource_path)
+            logging.info("Deleted language pack resource path: %s" % langpack_resource_path)
         except OSError as e:
-            if e.errno!=2:    # Only ignore error: No Such File or Directory
+            if e.errno != 2:    # Only ignore error: No Such File or Directory
                 raise
+            else:
+                logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
 
     invalidate_web_cache()
 
-    return JsonResponse({})
+    return JsonResponse({"success": _("Deleted language pack %s successfully.") % lang_code})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
