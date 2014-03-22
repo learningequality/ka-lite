@@ -98,15 +98,16 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-        doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
-            .success(function() {
-                handleSuccessAPI("deleted");
-                get_installed_languages();
-                display_languages(installables);
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error"), "deleted");
-            });
+    doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
+        .success(function(resp) {
+            handleSuccessAPI("deleted");
+            get_installed_languages();
+            display_languages(installables);
+            show_message("success", sprintf(gettext("Successfully deleted language pack %(lang_code)s"), {lang_code: lang_code}));
+        })
+        .fail(function(resp) {
+            handleFailedAPI(resp, gettext("Error"), "deleted");
+        });
 }
 
 $(function () {
