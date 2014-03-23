@@ -28,9 +28,9 @@ function csrfSafeMethod(method) {
 }
 
 function doRequest(url, data) {
-    if ($.url().param("lang") === undefined) {
-        url = setGetParam(url, "lang", CURRENT_LANGUAGE);
-    }
+    console.log(url);
+    url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+    console.log(url);
     return $.ajax({
         url: url,
         type: data ? "POST" : "GET",

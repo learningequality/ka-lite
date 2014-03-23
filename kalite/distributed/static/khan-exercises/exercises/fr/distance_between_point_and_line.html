@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Distance d'un point à une droite</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars"></div>
+        <div class="problems">
+            <div id="original" data-weight="8">
+                <div class="vars">
+                    <var id="INDEX">randRangeNonZero( -3, 3 )</var>
+                    <var id="M1">INDEX &gt; 0 ? INDEX * randRangeNonZero( -1, 1 ) : 1 / INDEX * randRangeNonZero( -1, 1 )</var>
+                    <var id="M1_FRAC">decimalFraction( M1, "true", "true" )</var>
+                    <var id="M1_SIGN">M1 &gt; 0 ? "" : "-"</var>
+                    <var id="M2">-1 / M1</var>
+                    <var id="M2_FRAC">decimalFraction( M2, "true", "true" )</var>
+                    <var id="M2_SIGN">M2 &gt; 0 ? "" : "-"</var>
+                    <var id="B1">randRange( 2, 8 ) * randRangeNonZero( -1, 1 )</var>
+                    <var id="B2" data-ensure="( B1 - B2 ) % ( pow( abs( INDEX ), 2 ) + 1 ) === 0">randRange( -8, 8 )</var>
+                    <var id="X1" data-ensure="abs( X1 ) &lt; 9 &amp;&amp; abs( M1 * X1 + B1 ) &lt; 9 &amp;&amp; ( M1 * X1 + B1 ) !== ( M2 * X1 + B2 )">toFraction( M1 )[1] * randRangeNonZero( -3, 3 )</var>
+                    <var id="Y1">M1 * X1 + B1</var>
+                    <var id="X2">round( ( B2 - B1 ) / ( M1 - M2 ), 0 )</var>
+                    <var id="Y2">M2 * X2 + B2</var>
+                    <var id="DISTANCE">pow( X1 - X2, 2 ) + pow( Y1 - Y2, 2 )</var>
+                </div>
+                <div class="question">
+                    <p><b>Déterminer la distance du point <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> à la droite <code>\enspace \color{<var>BLUE</var>}{y = <span data-if="abs( M2_FRAC ) !== 1"><var>M2_FRAC</var></span><span data-else=""><var>M2_SIGN</var></span>x <span data-if="B2 !== 0">+ <var>B2</var></span>}\thinspace</code>.</b></p>
+                    <div class="graphie" id="grid">graphInit({range:[[-10,10],[-10,10]],scale:[18,18],tickStep:1,labelStep:1,unityLabels:!1,labelFormat:function(e){return"\\small{"+e+"}"},axisArrows:"&lt;-&gt;"}),plot(function(e){return M2*e+B2},[-10,10],{stroke:BLUE}),circle([X1,Y1],.25,{stroke:"none",fill:"#ff0000"})</div>
+                </div>
+                <div class="solution" data-type="radical">
+                    <p><var>DISTANCE</var></p>
+                </div>
+                <div class="hints">
+                    <p>Pour commencer, on établit une équation de la perpendiculaire passant par <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code>.</p>
+                    <div>
+                        <p>Le coefficient directeur de la droite bleue est <code>\color{<var>BLUE</var>}{<var>M2_FRAC</var>}</code>, est l'opposé de son inverse est <code>\color{<var>GREEN</var>}{<var>M1_FRAC</var>}</code>.</p>
+                        <p>Donc, l'équation de la perpendiculaire est de la forme <code>\enspace \color{<var>GREEN</var>}{y = <span data-if="abs( M1_FRAC ) !== 1"><var>M1_FRAC</var></span><span data-else=""><var>M1_SIGN</var></span>x + b}\thinspace</code>.</p>
+                    </div>
+                    <div>
+                        <p>We can plug our point, <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code>, into this equation to solve for <code>\color{<var>GREEN</var>}{b}</code>, the y-intercept.</p>
+                        <p data-if="M1 !== 1"><code><var>Y1</var> = \color{<var>GREEN</var>}{<span data-if="abs( M1_FRAC ) !== 1"><var>M1_FRAC</var></span><span data-else=""><var>M1_SIGN</var></span>}(<var>X1</var>) + \color{<var>GREEN</var>}{b}</code></p>
+                    </div>
+                    <div>
+                        <p><code><var>Y1</var> = <var>decimalFraction( M1 * X1, "true", "true" )</var> + \color{<var>GREEN</var>}{b}</code></p>
+                        <p><code><var>Y1</var> - <var>decimalFraction( M1 * X1, "true", "true" )</var> = \color{<var>GREEN</var>}{b} = <var>decimalFraction( Y1 - M1 * X1, "true", "true" )</var></code></p>
+                    </div>
+                    <div>
+                        <p>L'équation de la perpendiculaire est <code>\enspace \color{<var>GREEN</var>}{y = <span data-if="abs( M1_FRAC ) !== 1"><var>M1_FRAC</var></span><span data-else=""><var>M1_SIGN</var></span>x<span data-if="B1 !== 0"> + <var>B1</var></span>}\thinspace</code>.</p>
+                        <div class="graphie" data-update="grid">plot(function(e){return M1*e+B1},[-10,10],{stroke:GREEN})</div>
+                    </div>
+                    <div>
+                        <p>On peut voir sur le graphique (ou en résolvant le système des deux équations) que les deux droites se coupent en <code>\color{red}{(<var>X2</var>, <var>Y2</var>)}</code>. Ainsi, la distance cherchée est la distance entre les deux points rouges.</p>
+                        <div class="graphie" data-update="grid">circle([X2,Y2],.25,{stroke:"none",fill:"#ff0000"})</div>
+                    </div>
+                    <p>D'après la formule, la distance entre deux points est : <code>\sqrt{( x_{1} - x_{2} )^2 + ( y_{1} - y_{2} )^2}</code></p>
+                    <p>En remplaçant par les coordonnées <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> et <code>\color{red}{(<var>X2</var>, <var>Y2</var>)}</code> on obtient : <code>\sqrt{( \color{red}{<var>X1</var>} - \color{red}{<var>X2</var>} )^2 + ( \color{red}{<var>Y1</var>} - \color{red}{<var>Y2</var>} )^2}</code></p>
+                    <p><code>= \sqrt{( <var>X1 - X2</var> )^2 + ( <var>Y1 - Y2</var> )^2} = \sqrt{<var>DISTANCE</var>} <span data-if="squareRootCanSimplify( DISTANCE )"> = <var>formattedSquareRootOf( DISTANCE )</var></span></code></p>
+                    <p>La distance entre le point <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> et la droite <code>\thinspace \color{<var>BLUE</var>}{y = <span data-if="abs( M2_FRAC ) !== 1"><var>M2_FRAC</var></span><span data-else=""><var>M2_SIGN</var></span>x <span data-if="B2 !== 0">+ <var>B2</var></span>}\enspace</code> est <code>\thinspace<var>formattedSquareRootOf( DISTANCE )</var></code>.</p>
+                </div>
+            </div>
+            <div id="horizontal" data-type="original" data-weight="1">
+                <div class="vars">
+                    <var id="M1">0</var>
+                    <var id="M2">99999</var>
+                    <var id="B1">randRange( 2, 8 ) * randRangeNonZero( -1, 1 )</var>
+                    <var id="B2">0</var>
+                    <var id="X1">randRangeNonZero( -8, 8 )</var>
+                    <var id="Y1" data-ensure="abs( Y1 - B1 ) &gt; 2 &amp;&amp; abs( Y1 - B1 ) &lt; 9">randRange( -8, 8 )</var>
+                    <var id="X2">0</var>
+                </div>
+                <div class="question">
+                    <p><b>Déterminer la distance du point <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> à la droite <code>\enspace \color{<var>BLUE</var>}{y = <var>B1</var>}\thinspace</code>.</b></p>
+                    <div class="graphie" id="grid">graphInit({range:[[-10,10],[-10,10]],scale:[18,18],tickStep:1,labelStep:1,unityLabels:!1,labelFormat:function(e){return"\\small{"+e+"}"},axisArrows:"&lt;-&gt;"}),plot(function(e){return M1*e+B1},[-10,10],{stroke:BLUE}),circle([X1,Y1],.25,{stroke:"none",fill:"#ff0000"})</div>
+                </div>
+                <div class="solution" data-type="radical">
+                    <p><span><var>pow( Y1 - B1, 2 )</var></span></p>
+                </div>
+                <div class="hints">
+                    <p>Pour commencer, on établit une équation de la perpendiculaire passant par <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code>.</p>
+                    <p>Comme le coefficient directeur de la droite bleue est <code class="hint_blue">0</code>, le coefficient directeur de la perpendiculaire est infini et elle sera donc une droite verticale.</p>
+                    <div>
+                        <p>L'équation de la doite verticale passant par <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> est <code>\enspace \color{<var>GREEN</var>}{x = <var>X1</var>}\thinspace</code>.</p>
+                        <div class="graphie" data-update="grid">plot(function(e){return M2*(e-X1)},[-10,10],{stroke:GREEN})</div>
+                    </div>
+                    <div>
+                        <p>On voit sur le graphique que les deux droites se coupent en <code>\color{red}{(<var>X1</var>, <var>B1</var>)}</code>. Ainsi, la distance cherchée est la distance entre les deux points rouges.</p>
+                        <div class="graphie" data-update="grid">circle([X1,B1],.25,{stroke:"none",fill:"#ff0000"})</div>
+                    </div>
+                    <p>Since their <code>x</code> components are the same, the distance between the two points is simply the change in <code>y</code>:</p>
+                    <p><code>|\color{red}{<var>Y1</var>} - ( \color{red}{<var>B1</var>} )| = <var>abs( Y1 - B1 )</var></code></p>
+                    <p>La distance entre le point <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> et la droite <code>\enspace \color{<var>BLUE</var>}{y = <var>B1</var>}\enspace</code> est <code>\thinspace<var>abs( Y1 - B1 )</var></code>.</p>
+                </div>
+            </div>
+            <div id="vertical" data-type="original" data-weight="1">
+                <div class="vars">
+                    <var id="M1">99999</var>
+                    <var id="M2">0</var>
+                    <var id="B1">randRange( 2, 8 ) * randRangeNonZero( -1, 1 )</var>
+                    <var id="B2">0</var>
+                    <var id="X1" data-ensure="abs( X1 - B1 ) &gt; 2 &amp;&amp; abs( X1 - B1 ) &lt; 9">randRange( -8, 8 )</var>
+                    <var id="Y1">randRangeNonZero( -8, 8 )</var>
+                    <var id="X2">0</var>
+                </div>
+                <div class="question">
+                    <p><b>Déterminer la distance du point <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> à la droite <code>\enspace \color{<var>BLUE</var>}{x = <var>B1</var>}\thinspace</code>.</b></p>
+                    <div class="graphie" id="grid">graphInit({range:[[-10,10],[-10,10]],scale:[18,18],tickStep:1,labelStep:1,unityLabels:!1,labelFormat:function(e){return"\\small{"+e+"}"},axisArrows:"&lt;-&gt;"}),line([B1,-10],[B1,10],{stroke:BLUE}),circle([X1,Y1],.25,{stroke:"none",fill:"#ff0000"})</div>
+                </div>
+                <div class="solution" data-type="radical">
+                    <p><span><var>pow( X1 - B1, 2 )</var></span></p>
+                </div>
+                <div class="hints">
+                    <p>Pour commencer, on établit une équation de la perpendiculaire passant par <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code>.</p>
+                    <p>Comme le coefficient directeur de la droite bleue est infini, celui de la perpendiculaire est <code>\color{<var>GREEN</var>}{0}</code> et elle sera donc une droite horizontale.</p>
+                    <div>
+                        <p>L'équation de la perpendiculaire passant par <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> est <code>\enspace \color{<var>GREEN</var>}{y = <var>Y1</var>}\thinspace</code>.</p>
+                        <div class="graphie" data-update="grid">plot(function(e){return M2*e+Y1},[-10,10],{stroke:GREEN})</div>
+                    </div>
+                    <div>
+                        <p>On voit sur le graphique que les deux droites se coupent en <code>\color{red}{(<var>B1</var>, <var>Y1</var>)}</code>. Ainsi, la distance cherchée est la distance entre les deux points rouges.</p>
+                        <div class="graphie" data-update="grid">circle([B1,Y1],.25,{stroke:"none",fill:"#ff0000"})</div>
+                    </div>
+                    <p>Since their <code>y</code> components are the same, the distance between the two points is simply the change in <code>x</code>:</p>
+                    <p><code>|\color{red}{<var>X1</var>} - ( \color{red}{<var>B1</var>} )| = <var>abs( X1 - B1 )</var></code></p>
+                    <p>La distance entre le point <code>\color{red}{(<var>X1</var>, <var>Y1</var>)}</code> et la droite <code>\enspace \color{<var>BLUE</var>}{x = <var>B1</var>}\enspace</code> est <code>\thinspace<var>abs( X1 - B1 )</var></code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

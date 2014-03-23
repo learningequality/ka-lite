@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers word-problems math-format">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Fractions égales 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange(1, 10)</var>
+            <var id="Bf">randRange(2, 9)</var>
+            <var id="B">Bf + (Bf &gt;= A ? 1 : 0)</var>
+            <var id="M">randRange(3, 9)</var>
+            <var id="C">A * M</var>
+            <var id="D">B * M</var>
+            <var id="N">ceil(A / B)</var>
+            <var id="SYMBOL">randVar()</var>
+            <var id="FILLED">1</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">Quel nombre doit remplacer <code><var>SYMBOL</var></code> pour que l'égalité ci-dessous soit vraie ?</p>
+                <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>SYMBOL</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>D</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>La fraction de gauche représente <var>A</var> morceaux pris parmi les  <var>B</var> morceaux découpés dans une (ou plusieurs) <var>pizza(1).plural(2)</var> de forme rectangulaire.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED=A%B,0===FILLED&amp;&amp;(FILLED=B);for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,B-FILLED],[RED,GRAY],1.25*i):rectchart([B],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p>En combien de morceaux doit-on couper chaque <var>pizza(1)</var>, de façon à ce que <var>C</var> morceaux du nouveau découpage nous donne la même quantité de <var>pizza(1)</var> ?</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED*=M;for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,D-FILLED],[RED,BACKGROUND],1.25*i):rectchart([D],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p>Chacun des <var>A</var> morceaux de départ doit être divisé en <var>M</var> morceaux pour obtenir <var>C</var> morceaux au total.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([M,M*B-M],[RED,BACKGROUND])</div>
+                    </div>
+
+                    <div>
+                        <p>Si on divise toutes les morceaux de départ en <var>M</var> morceaux, alors  une <var>pizza(1)</var> aura un total de  <var>D</var> morceaux.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([M,M*B-M],[RED,GRAY])</div>
+                    </div>
+
+                    <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>D</var>}</code> et la réponse est donc <code><var>D</var></code>.</p>
+
+                    <div>
+                        <p>Une autre façon d'obtenir la réponse consiste à multiplier par <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> donc en fait on multiplie par 1.</p>
+                    </div>
+
+                    <p>L'équation finale est : <code>\dfrac{<var>A</var>}{<var>B</var>} \times \dfrac{<var>M</var>}{<var>M</var>} = \dfrac{<var>C</var>}{<var>D</var>} </code> notre réponse est donc <code><var>D</var></code>.</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="question">Quel nombre doit remplacer <code><var>SYMBOL</var></code> pour que l'égalité ci-dessous soit vraie ?</p>
+                <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>SYMBOL</var>}{<var>D</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>C</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>La fraction de gauche représente <var>A</var> morceaux pris parmi les  <var>B</var> morceaux découpés dans une (ou plusieurs) <var>pizza(1).plural(2)</var> de forme rectangulaire.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED=A%B,0===FILLED&amp;&amp;(FILLED=B);for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,B-FILLED],[RED,GRAY],1.25*i):rectchart([B],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p>Que se passe-t-il si, à la place, on coupe chaque <var>pizza(1)</var> en <var>D</var> morceaux ?</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED*=M;for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,D-FILLED],[RED,GRAY],1.25*i):rectchart([D],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p>Afin de prendre la même quantité de <var>pizza(1)</var> qu'avant, on doit maintenant prendre  <var>C</var> morceaux.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]});for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,D-FILLED],[RED,BACKGROUND],1.25*i):rectchart([D],[RED],1.25*i)</div>
+                    </div>
+
+                    <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>D</var>}</code> et la réponse est donc <code><var>C</var></code>.</p>
+
+                    <div>
+                        <p>Une autre façon d'obtenir la réponse consiste à multiplier par <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> donc en fait on multiplie par 1.</p>
+                    </div>
+
+                    <p>L'équation finale est : <code>\dfrac{<var>A</var>}{<var>B</var>} \times \dfrac{<var>M</var>}{<var>M</var>} = \dfrac{<var>C</var>}{<var>D</var>} </code> notre réponse est donc <code><var>C</var></code>.</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="question">Quel nombre doit remplacer <code><var>SYMBOL</var></code> pour que l'égalité ci-dessous soit vraie ?</p>
+                <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>A</var>}{<var>SYMBOL</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>B</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>La fraction de gauche représente <var>C</var> morceaux pris parmi les  <var>D</var> morceaux découpés dans une (ou plusieurs) <var>pizza(1).plural(2)</var> de forme rectangulaire.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED=C%D,0===FILLED&amp;&amp;(FILLED=D);for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,D-FILLED],[RED,GRAY],1.25*i):rectchart([D],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p data-if="$.ngetpos(A, 'fr') === 0">Si on partage ces <var>C</var> parts de façon égale entre <var>A</var> personnes, combien de parts aura chaque personne ?</p>
+<p data-else-if="$.ngetpos(A, 'fr') === 1">Si on partage ces <var>C</var> parts de façon égales entre <var>A</var> personnes, combien de parts aura chaque personne ?</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED/=M;for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,B-FILLED],[RED,BACKGROUND],1.25*i):rectchart([B],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p data-if="$.ngetpos(A, 'fr') === 0">Partager <var>C</var> parts équitablement entre <var>A</var> personne signifie que chaque personne aura <var>M</var> parts.</p>
+<p data-else-if="$.ngetpos(A, 'fr') === 1">Partager <var>C</var> parts équitablement entre <var>A</var> personnes signifie que chaque personne aura <var>M</var> parts.</p>
+                        <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]}),rectchart([M,D-M],[RED,BACKGROUND])</div>
+                        <p>Si on donne à chaque personne <var>M</var> parts, combien de personnes peut-on nourrir avec une <var>pizza(1)</var> ?</p>
+                    </div>
+
+                    <div>
+                        <div class="graphie">init({range:[[0,1],[0,1]],scale:[475,25]});var filled=A%B;rectchart([FILLED,B-FILLED],[RED,GRAY])</div>
+
+                        <p>Une <var>pizza(1).plural(N)</var> a <var>D</var> parts, donc, si on donne <var>M</var> parts à chaque personne, on peut nourrir  <var>B</var> personnes.</p>
+                    </div>
+
+                    <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>A</var>}{<var>B</var>}</code> et donc la réponse est <code><var>D</var></code>.</p>
+
+                    <div>
+                        <p>Une autre façon de trouver la réponse est de diviser par <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> donc on divise réellement par 1.</p>
+                    </div>
+
+                    <p>L'équation finale est : <code>\dfrac{<var>C</var>}{<var>D</var>} \div \dfrac{<var>M</var>}{<var>M</var>} = \dfrac{<var>A</var>}{<var>B</var>}</code> donc la réponse est <code><var>B</var></code>.</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="question">Quel nombre doit remplacer <code><var>SYMBOL</var></code> pour que l'égalité ci-dessous soit vraie ?</p>
+                <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>SYMBOL</var>}{<var>B</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>A</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>La fraction de gauche représente <var>C</var> morceaux pris parmi les  <var>D</var> morceaux découpés dans une (ou plusieurs) <var>pizza(1).plural(2)</var> de forme rectangulaire.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED=C%D,0===FILLED&amp;&amp;(FILLED=D);for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,D-FILLED],[RED,GRAY],1.25*i):rectchart([D],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p>Que se passe-t-il si, à la place, on coupe chaque <var>pizza(1)</var> en <var>B</var> morceaux ?</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]}),FILLED/=M;for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,B-FILLED],[RED,GRAY],1.25*i):rectchart([B],[RED],1.25*i)</div>
+                    </div>
+
+                    <div>
+                        <p>Afin de prendre la même quantité de <var>pizza(1)</var> qu'avant, on ne doit prendre que <var>A</var> morceaux.</p>
+
+                        <div class="graphie">init({range:[[0,1],[0,1.25*N]],scale:[475,25]});for(var i=0;N&gt;i;i++)0===i?rectchart([FILLED,B-FILLED],[RED,BACKGROUND],1.25*i):rectchart([B],[RED],1.25*i)</div>
+                    </div>
+
+                    <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>A</var>}{<var>B</var>}</code> et donc la réponse est <code><var>A</var></code>.</p>
+
+                    <div>
+                        <p>Une autre façon de trouver la réponse est de diviser par <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> donc on divise réellement par 1.</p>
+                    </div>
+
+                    <p>L'équation finale est : <code>\dfrac{<var>C</var>}{<var>D</var>} \div \dfrac{<var>M</var>}{<var>M</var>} = \dfrac{<var>A</var>}{<var>B</var>}</code> donc la réponse est <code><var>A</var></code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

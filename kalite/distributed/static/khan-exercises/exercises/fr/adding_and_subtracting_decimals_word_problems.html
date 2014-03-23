@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html data-require="math word-problems spin graphie graphie-helpers-arithmetic">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Énoncés faisant appel à des additions et des soustractions de décimaux</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="produceCost">
+
+            <div class="vars">
+                <var id="A">randRange(5,9)*100</var>
+                <var id="B">randRange(1,9)*10</var>
+                <var id="C">randRange(1,9)*1</var>
+                <var id="fruit_1_integer">A+B+C</var>
+                <var id="fruit_1_decimal">(2)</var>
+                <var id="fruit_1">truncate_to_max(fruit_1_integer*pow(10,-fruit_1_decimal), 2)</var>
+                <var id="D">randRange(3,9)*100</var>
+                <var id="E">randRange(1,9)*10</var>
+                <var id="F" data-ensure="F+C !== 10">randRange(1,9)*1</var>
+                <var id="fruit_2_integer">D+E+F</var>
+                <var id="fruit_2_decimal">(2)</var>
+                <var id="fruit_2">truncate_to_max(fruit_2_integer*pow(10,-fruit_2_decimal), 2)</var>
+                <var id="solution">truncate_to_max((fruit_1+fruit_2),2)</var>
+                <var id="DUMMY">[]</var>
+            </div>
+
+            <div class="question spin">
+                <p data-if="isMale(1)">{Un matin ensoleillé|Un bel après-midi}, <var>person(1)</var> est allé en vélo dans une ferme où l'on vendait <var>plural_form(fruit(1))</var> pour $<var>fruit_1</var> pièce et des paniers de <var>plural_form(fruit(2))</var> pour $<var>fruit_2</var> chacun.</p>
+<p data-else="">{Un matin ensoleillé|Un bel après-midi}, <var>person(1)</var> est allée en vélo dans une ferme où l'on vendait <var>plural_form(fruit(1))</var> pour $<var>fruit_1</var> pièce et des paniers de <var>plural_form(fruit(2))</var> pour $<var>fruit_2</var> chacun.</p>
+                <p data-if="isMale(1)"><var>person(1)</var> decided to buy a basket of <var>plural_form(fruit(1))</var> and a basket of <var>plural_form(fruit(2))</var> {before heading home|because those were his favorite kinds of fruit|}.</p>
+<p data-else=""><var>person(1)</var> decided to buy a basket of <var>plural_form(fruit(1))</var> and a basket of <var>plural_form(fruit(2))</var> {before heading home|because those were her favorite kinds of fruit|}.</p>
+                <p class="question" data-if="isMale(1)">Combien <var>person(1)</var> doit-il payer pour son produit ?</p>
+<p class="question" data-else="">Combien <var>person(1)</var> doit-elle payer pour ton produit ?</p>
+</div>
+
+
+            <div class="solution" data-type="multiple">
+<code>\$</code><span class="sol"><var>fruit_1+fruit_2</var></span>
+</div>
+
+            <div class="hints">
+                <p>Pour déterminer le montant total que doit payer <var>person(1)</var>, on doit ajouter le prix de <var>plural_form(fruit(1))</var> au prix de <var>plural_form(fruit(2))</var>.</p>
+                <p>Le prix de <var>plural_form(fruit(1))</var> + Le prix de <var>plural_form(fruit(2))</var> = Le prix total.</p>
+                <div class="graphie" id="numbers">graph.adder=new DecimalAdder(fruit_1_integer,fruit_1_decimal,fruit_2_integer,fruit_2_decimal),graph.adder.show(),graph.adder.showDecimals()</div>
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( fruit_1_integer, fruit_1_decimal, fruit_2_integer, fruit_2_decimal ) times" data-update="numbers">graph.adder.showHint()</div>
+
+                <p class="final_answer"><var>person(1)</var> doit payer $<var>solution</var>.</p>
+            </div>
+        </div>
+
+        <div id="racers">
+
+            <div class="vars">
+                <var id="meters">randRange(1, 3)*100</var>
+                <var id="time_1_integer">randRange(2000,9999)</var>
+                <var id="time_1_decimal">(2)</var>
+                <var id="time_1">truncate_to_max(time_1_integer*pow(10,-time_1_decimal), 2)</var>
+                <var id="time_2_integer" data-ensure="time_2_integer &lt; time_1_integer">randRange(2000,9999)</var>
+                <var id="time_2_decimal">(2)</var>
+                <var id="time_2">truncate_to_max(time_2_integer*pow(10,-time_2_decimal), 2)</var>
+                <var id="time_3_integer">randRange(100,999)</var>
+                <var id="time_3_decimal">(2)</var>
+                <var id="time_3">truncate_to_max(time_3_integer*pow(10,-time_3_decimal), 2)</var>
+                <var id="DUMMY">[]</var>
+                <var id="solution">truncate_to_max((time_1-time_2),2)</var>
+            </div>
+
+            <div class="question spin">
+                <p>{Lundi|La semaine dernière}, <var>person(1)</var> et <var>person(2)</var> ont décidé de voir en combien de temps ils pouvaient courir <var>meters</var> mètres. Ils ont demandé à leur ami <var>person(3)</var> de les chronométrer.</p>
+                <p data-if="isMale(2)">{Au bout de <var>time_3</var> minutes, <var>person(3)</var> a accepté de chronométrer les coureurs.|} <var>person(1)</var> a démarré en premier et a couru les <var>meters</var> mètres en <var>time_1</var> secondes. Lorsque vînt le tour de <var>person(2)</var>, il est parti à toute vitesse et a couru en <var>time_2</var> secondes.</p>
+<p data-else="">{Au bout de <var>time_3</var> minutes, <var>person(3)</var> a accepté de chronométrer les coureurs.|} <var>person(1)</var> a démarré le premier et a couru les <var>meters</var> mètres en <var>time_1</var> secondes. Lorsque vînt le tour de <var>person(2)</var>, elle est partie à toute vitesse et a couru en <var>time_2</var> secondes.</p>
+                <p class="question">De combien de secondes <var>person(2)</var> a-t-il été plus rapide que <var>person(1)</var> ?</p>
+            </div>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer, decimal"><var>time_1-time_2 </var></span> secondes</p>
+            </div>
+            <div class="hints">
+                <p>Pour déterminer de combien de secondes <var>person(2)</var> a été plus rapide que <var>person(1)</var>, il faut calculer la différence entre les temps qu'ils ont mis pour finir leur course.</p>
+<p>Le temps de <var>person(1)</var> - Le temps de <var>person(2)</var> = La différence de temps.</p>
+<div class="graphie" id="numbers">graph.subtractor=new DecimalSubtractor(time_1_integer,time_1_decimal,time_2_integer,time_2_decimal),graph.subtractor.show(),graph.subtractor.showDecimals()</div>
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( time_1_integer, time_1_decimal, time_2_integer, time_2_decimal ) times" data-update="numbers">graph.subtractor.showHint()</div>
+                <p class="final_answer"><var>person(2)</var> a été plus rapide de <var>solution</var> secondes que <var>person(1)</var>.</p>
+            </div>
+        </div>
+
+        <div id="twinWeight">
+
+            <div class="vars">
+                <var id="weight_1_integer">randRange(620, 920)</var>
+                <var id="weight_1_decimal">(2)</var>
+                <var id="weight_1">truncate_to_max(weight_1_integer*pow(10,-weight_1_decimal), 2)</var>
+                <var id="weight_2_integer">randRange(620, 920)</var>
+                <var id="weight_2_decimal">(2)</var>
+                <var id="weight_2">truncate_to_max(weight_2_integer*pow(10,-weight_2_decimal), 2)</var>
+                <var id="height_1">randRange(18.5,21.0)</var>
+                <var id="height_2">randRange(18.5,21.0)</var>
+                <var id="solution">truncate_to_max((weight_1+weight_2),2)</var>
+                <var id="DUMMY">[]</var>
+            </div>
+
+            <div class="question spin">
+                <p>{Lundi dernier|Samedi}, les parents de <var>person(1)</var> ont eu des jumeaux et les ont appelé <var>person(2)</var> et <var>person(3)</var>. A leur naissance, <var>person(2)</var> pesait <var>weight_1</var> kilos{ et mesurait <var>height_1</var> cm|}, et <var>person(3)</var> pesait <var>weight_2</var> {et mesurait <var>height_2</var> cm|}.</p>
+                <p class="question">Combien les bébés pesaient-ils au total ?</p>
+
+            </div>
+
+            <div class="solution" data-type="multiple">
+                    <p><span class="sol" data-forms="integer, decimal"><var> weight_1+weight_2 </var></span> kilos</p>
+            </div>
+
+            <div class="hints">
+                <p>Pour déterminer le poids des 2 bébés, nous devons sommer leurs deux poids.</p>
+<p>Le poids de <var>person(2)</var> + Le poids de <var>person(3)</var> = Le poids total.</p>
+                <div class="graphie" id="numbers">graph.adder=new DecimalAdder(weight_1_integer,weight_1_decimal,weight_2_integer,weight_2_decimal),graph.adder.show(),graph.adder.showDecimals()</div>
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( weight_1_integer, weight_1_decimal, weight_2_integer, weight_2_decimal ) times" data-update="numbers">graph.adder.showHint()</div>
+
+                <div class="graphie" data-each="DUMMY as dummy" data-update="numbers">graph.adder.showHint()</div>
+                <p class="final_answer">A eux deux, les bébés pèsent <var>solution</var> kilos.</p>
+            </div>
+        </div>
+
+        <div id="change">
+
+            <div class="vars">
+                <var id="M">randRange(1,9)</var>
+                <var id="N">randRange(1,9)</var>
+                <var id="O">randRange(2,9)</var>
+                <var id="amount_paid_integer">M*100+N*10+O</var>
+                <var id="amount_paid_decimal">(2)</var>
+                <var id="amount_paid">truncate_to_max(amount_paid_integer*pow(10,-amount_paid_decimal), 2)</var>
+                <var id="P">randRange(1,M)*100</var>
+                <var id="Q">randRange(1,N)*10</var>
+                <var id="R">randRange(1,O)*1</var>
+                <var id="price_1_integer">P+Q+R</var>
+                <var id="price_1_decimal">(2)</var>
+                <var id="price_1">truncate_to_max(price_1_integer*pow(10,-price_1_decimal), 2)</var>
+                <var id="time_1">randRange(3, 30)</var>
+                <var id="solution">truncate_to_max((amount_paid-price_1),2)</var>
+                <var id="DUMMY">[]</var>
+            </div>
+
+            <div class="question spin">
+                <p data-if="isMale(1)">{Mardi,|Jeudi dernier,|} <var>person(1)</var> est allé à pied au magasin de <var>store(1)</var> {<var>timeofday(1)</var>|} et{, après s'être promené dans les rayons pendant <var>time_1</var> minutes,|} a décidé d'acheter <var>storeItem(1,1)</var> pour $<var>price_1</var>. <var>person(1)</var> a tendu $<var>amount_paid</var> au caissier pour ses achats.</p>
+<p data-else="">{Mardi,|Jeudi dernier,|} <var>person(1)</var> est allée à pied au magasin de <var>store(1)</var> {<var>timeofday(1)</var>|} et{, après s'être promenée dans les rayons pendant <var>time_1</var> minutes,|} a décidé d'acheter <var>storeItem(1,1)</var> pour $<var>price_1</var>. <var>person(1)</var> a tendu $<var>amount_paid</var> au caissier pour ses achats.</p>
+                <p class="question">Combien de monnaie <var>person(1)</var> a-t-elle reçu ?</p>
+            </div>
+            <div class="solution" data-type="multiple">
+<code>\$</code><span class="sol"><var>amount_paid-price_1</var></span>
+</div>
+
+            <div class="hints">
+                <p data-if="isMale(1)">Pour déterminer le montant qu'a reçu <var>person(1)</var>, on peut soustraire le prix de <var>storeItem(1,1)</var> du montant qu'il a payé.</p>
+<p data-else="">Pour déterminer quel montant a reçu <var>person(1)</var>, on peut soustraire le prix de <var>storeItem(1,1)</var> du montant qu'elle a payé.</p>
+<p>Le montant que <var>person(1)</var> a payé - le prix de <var>storeItem(1,1)</var> = le montant en liquide que <var>person(1)</var> a reçu.</p>
+                <div class="graphie" id="numbers">graph.subtractor=new DecimalSubtractor(amount_paid_integer,amount_paid_decimal,price_1_integer,price_1_decimal),graph.subtractor.show(),graph.subtractor.showDecimals()</div>
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( amount_paid_integer, amount_paid_decimal, price_1_integer, price_1_decimal ) times" data-update="numbers">graph.subtractor.showHint()</div>
+                <p class="final_answer"><var>person(1)</var> a reçu $<var>solution</var> en monnaie.</p>
+            </div>
+        </div>
+
+        <div id="rainfall">
+
+            <div class="vars">
+                <var id="rain_1_integer">randRange(101,999)</var>
+                <var id="rain_1_decimal">(2)</var>
+                <var id="rain_1">truncate_to_max(rain_1_integer*pow(10,-rain_1_decimal), 2)</var>
+                <var id="rain_2_integer">randRange(rain_1_integer+1,999)</var>
+                <var id="rain_2_decimal">(2)</var>
+                <var id="rain_2">truncate_to_max(rain_2_integer*pow(10,-rain_2_decimal), 2)</var>
+                <var id="snow_1">randRange(2.1,15.89)</var>
+                <var id="DUMMY">[]</var>
+                <var id="solution">truncate_to_max((rain_2-rain_1),2)</var>
+            </div>
+
+            <div class="question spin">
+                <p>Pendant la dernière tempête, Il est tombé <var>rain_1</var> centimètres de pluie dans la ville de <var>person(1)</var>, et il est tombé <var>rain_2</var> centimètres de pluie dans la ville de <var>person(2)</var>. {Pendant la même tempête, il est tombé <var>snow_1</var> centimètres de neige dans la ville de <var>person(3)</var>.|}</p>
+                <p class="question">Quelle quantité de pluie la ville de <var>person(2)</var> a-t-elle reçue de plus que la ville de <var>person(1)</var> ?</p>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer, decimal"><var>rain_2-rain_1 </var></span> centimètres</p>
+            </div>
+            <div class="hints">
+                <p>Pour trouver la différence entre les quantités de pluie reçues, on va soustraire la quantité de pluie tombée dans la ville de <var>person(1)</var> de celle tombée dans la ville de <var>person(2)</var>.</p>
+<p>La quantité de pluie dans la ville de <var>person(2)</var> - La quantité de pluie dans la ville de <var>person(1)</var> = La différence entre les quantités de pluie dans les deux villes.</p>
+                <div class="graphie" id="numbers">graph.subtractor=new DecimalSubtractor(rain_2_integer,rain_2_decimal,rain_1_integer,rain_1_decimal),graph.subtractor.show(),graph.subtractor.showDecimals()</div>
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( rain_2_integer, rain_2_decimal, rain_1_integer, rain_1_decimal ) times" data-update="numbers">graph.subtractor.showHint()</div>
+                <p class="final_answer">La ville de <var>person(2)</var> a reçu <var>solution</var> cm de plus de pluie que la ville de <var>person(1)</var>.</p>
+            </div>
+        </div>
+
+        <div id="travel">
+
+            <div class="vars">
+                <var id="distance_1_integer">randRange(100,2000)</var>
+                <var id="distance_1_decimal">(2)</var>
+                <var id="distance_1">truncate_to_max(distance_1_integer*pow(10,-distance_1_decimal), 2)</var>
+                <var id="distance_2_integer">randRange(100,distance_1_integer-1)</var>
+                <var id="distance_2_decimal">(2)</var>
+                <var id="distance_2">truncate_to_max(distance_2_integer*pow(10,-distance_2_decimal), 2)</var>
+                <var id="solution">truncate_to_max((distance_1+distance_2),2)</var>
+                <var id="time_1">randRange(20.2,52.17)</var>
+                <var id="DUMMY">[]</var>
+            </div>
+
+            <div class="question spin">
+                <p data-if="isMale(1)">{Pour se rendre à l'école tous les matins|Pour se rendre au travail tous les matins|Pour rendre visite à sa grand-mère}, <var>person(1)</var> prend <var>vehicle(1)</var> <var>distance_1</var> <var>plural_form(distance(1), distance_1)</var> et <var>vehicle(2)</var> <var>distance_2</var> <var>plural_form(distance(1), distance_2)</var>. {Son trajet dure au total <var>time_1</var> minutes.|}</p>
+<p data-else="">{Pour se rendre à l'école tous les matins|Pour se rendre au travail tous les matins|Pour rendre visite à sa grand-mère}, <var>person(1)</var> prend <var>vehicle(1)</var> <var>distance_1</var> <var>plural_form(distance(1), distance_1)</var> et <var>vehicle(2)</var> <var>distance_2</var> <var>plural_form(distance(1), distance_2)</var>. {Son trajet dure au total <var>time_1</var> minutes.|}</p>
+                <p class="question">Quelle est la <var>plural_form(distance(1))</var> totale du voyage de <var>person(1)</var> ?</p>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <p> <span class="sol" data-forms="integer, decimal"><var>distance_1+distance_2</var></span> <var>plural(distance(1))</var></p>
+            </div>
+            <div class="hints">
+                <p>Pour déterminer la distance totale parcourue par <var>person(1)</var>, on doit sommer les deux distances.</p>
+<p>La distance sur <var>vehicle(1)</var> + La distance sur <var>vehicle(2)</var> = La distance totale.</p>
+                <div class="graphie" id="numbers">graph.adder=new DecimalAdder(distance_1_integer,distance_1_decimal,distance_2_integer,distance_2_decimal),graph.adder.show(),graph.adder.showDecimals()</div>
+                <div class="graphie" data-each="DecimalAdder.numHintsFor( distance_1_integer, distance_1_decimal, distance_2_integer, distance_2_decimal ) times" data-update="numbers">graph.adder.showHint()</div>
+
+                <div class="graphie" data-each="DUMMY as dummy" data-update="numbers">graph.adder.showHint()</div>
+                <p class="final_answer"><var>person(1)</var> parcourt <var>solution</var> <var>plural_form(distance(1), solution)</var> au total.</p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

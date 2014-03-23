@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-require="math word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Divisibilité</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="A !== ANSWER &amp;&amp; B !== ANSWER">
+            <var id="A">randRange( 10, 25 )</var>
+            <var id="B" data-ensure="A !== B">randRange( 10, 25 )</var>
+            <var id="LCM">getLCM( A, B )</var>
+            <var id="LCM_FACTORIZATION">getPrimeFactorization( LCM )</var>
+            <var id="ANSWER">function(){for(var e=randRange(ceil(LCM_FACTORIZATION.length/2),LCM_FACTORIZATION.length-1),r=shuffle(LCM_FACTORIZATION),a=1,t=0;e&gt;t;t++)a*=r.shift();return a}()</var>
+            <var id="WRONGS">function(){for(var e=[];e.length&lt;4;){var r=randRange(10,LCM);LCM%r!==0&amp;&amp;e.push(r)}return e}()</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">Les nombres divisibles par <code><var>A</var></code> et par <code><var>B</var></code> sont aussi divisibles par l'un des nombres ci-contre. Lequel ?</div>
+                <p class="solution"><code><var>ANSWER</var></code></p>
+                <ul class="choices">
+<li data-each="WRONGS as index, wrong"><code><var>wrong</var></code></li>
+                </ul>
+</div>
+        </div>
+
+        <div class="hints">
+            <p>Un nombre est divisible par un autre nombre (un diviseur) si sa décomposition en facteurs premiers contient la décomposition en facteurs premiers du diviseur. </p>
+            <p>La décomposition en facteurs premiers de <code><var>A</var></code> est <code><var>getPrimeFactorization( A ).join( "\\times" )</var></code>.</p>
+            <p>La décomposition en facteurs premiers de <code><var>B</var></code> est <code><var>getPrimeFactorization( B ).join( "\\times" )</var></code>.</p>
+            <p>Donc, tout nombre divisible par les deux doit avoir <code><var>LCM_FACTORIZATION.join( "\\times" )</var></code> dans sa décomposition en facteurs premiers.</p>
+            <p>Tout nombre qui divise un tel nombre aura une décomposition en facteurs premiers qui est une partie de <code><var>LCM_FACTORIZATION.join( "\\times" )</var></code>.</p>
+            <p>La décomposition en facteurs premiers de <code><var>ANSWER</var></code> est <code><var>getPrimeFactorization( ANSWER ).join( "\\times" )</var></code>.</p>
+            <p class="final_answer">Puisque <code><var>getPrimeFactorization( ANSWER ).join( "\\times" )</var></code> est une partie de <code><var>LCM_FACTORIZATION.join( "\\times" )</var></code>, tous les nombres divisibles par <code><var>A</var></code> et <code><var>B</var></code> sont aussi divisibles par <code><var>ANSWER</var></code>.</p>
+        </div>
+    </div>
+</body>
+</html>

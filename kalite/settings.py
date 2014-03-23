@@ -133,9 +133,6 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
-# Override
-KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(STATIC_ROOT, "khan-exercises"))
-
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -181,8 +178,8 @@ if package_selected("UserRestricted"):
 if package_selected("Demo"):
     LOG.info("Demo package selected.")
 
-    CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "adhoc.learningequality.org:7007")
-    SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "http")
+    CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST",   "globe.learningequality.org:8008")
+    SECURESYNC_PROTOCOL = "http"
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 

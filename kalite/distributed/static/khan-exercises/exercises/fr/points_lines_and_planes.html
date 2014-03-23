@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html data-require="math graphie word-problems subhints">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Points, droites et plans</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+
+    <div class="vars">
+        <var id="TILT">randRange(-100, 100) / 150</var>
+        <var id="TILT2">randRange(-100, 100) / 500</var>
+        <var id="A">randFromArray(["A", "F", "K", "U"])</var>
+        <var id="B">randFromArray(["B", "G", "L", "V"])</var>
+        <var id="C">randFromArray(["C", "H", "M", "W"])</var>
+        <var id="D">randFromArray(["D", "I", "N", "X"])</var>
+        <var id="E">randFromArray(["E", "J", "O", "Y"])</var>
+        <var id="R">randFromArray(["R", "S", "T", "P"])</var>
+    </div>
+
+    <p class="question"></p>
+
+    <div class="problem">
+        <div class="graphie">init({range:[[-1,15],[-5,8]],scale:[30,30]}),path([[6+-6*cos(TILT)- -2*sin(TILT),2+-6*sin(TILT)+-2*cos(TILT)],[6+4*cos(TILT)- -2*sin(TILT),2+4*sin(TILT)+-2*cos(TILT)],[6+6*cos(TILT)-2*sin(TILT),2+6*sin(TILT)+2*cos(TILT)],[6+-4*cos(TILT)-2*sin(TILT),2+-4*sin(TILT)+2*cos(TILT)],!0]),style({arrows:"-&gt;"},function(){line([6+-3*cos(TILT+TILT2)-1*sin(TILT+TILT2),2+-3*sin(TILT+TILT2)+1*cos(TILT+TILT2)],[6+3*cos(TILT+TILT2)- -1*sin(TILT+TILT2),2+3*sin(TILT+TILT2)+-1*cos(TILT+TILT2)]),line([6+3*cos(TILT+TILT2)- -1*sin(TILT+TILT2),2+3*sin(TILT+TILT2)+-1*cos(TILT+TILT2)],[6+-3*cos(TILT+TILT2)-1*sin(TILT+TILT2),2+-3*sin(TILT+TILT2)+1*cos(TILT+TILT2)]),line([6+0*cos(TILT)-0*sin(TILT),2+0*sin(TILT)+0*cos(TILT)],[6+0*cos(TILT)-4*sin(TILT),2+0*sin(TILT)+4*cos(TILT)]),line([6+0*cos(TILT)- -2*sin(TILT),2+0*sin(TILT)+-2*cos(TILT)],[6+0*cos(TILT)- -5*sin(TILT),2+0*sin(TILT)+-5*cos(TILT)])}),style({strokeDasharray:"- "},function(){line([6+0*cos(TILT)-0*sin(TILT),2+0*sin(TILT)+0*cos(TILT)],[6+0*cos(TILT)- -2*sin(TILT),2+0*sin(TILT)+-2*cos(TILT)])});var r=randRange(0,100)/150,theta=randRange(-314,314)/100;style({r:.15,stroke:"none"},function(){circle([6+-2*cos(TILT+TILT2)-(8/3-2)*sin(TILT+TILT2),2+-2*sin(TILT+TILT2)+(8/3-2)*cos(TILT+TILT2)],{fill:PINK}),circle([6,2],{fill:BLUE}),circle([6+2*cos(TILT+TILT2)-(4/3-2)*sin(TILT+TILT2),2+2*sin(TILT+TILT2)+(4/3-2)*cos(TILT+TILT2)],{fill:GREEN}),circle([6+0*cos(TILT)- -4*sin(TILT),2+0*sin(TILT)+-4*cos(TILT)],{fill:ORANGE}),circle([6+(17/6+r*cos(theta)-6)*cos(TILT)-(1.4+r*sin(theta)-2)*sin(TILT),2+(17/6+r*cos(theta)-6)*sin(TILT)+(1.4+r*sin(theta)-2)*cos(TILT)],{fill:"purple"})}),label([6+-2*cos(TILT+TILT2)-(8/3-2)*sin(TILT+TILT2),2+-2*sin(TILT+TILT2)+(8/3-2)*cos(TILT+TILT2)],A,"above right"),label([6.1,2],B,"above right"),label([6+2*cos(TILT+TILT2)-(4/3-2)*sin(TILT+TILT2),2+2*sin(TILT+TILT2)+(4/3-2)*cos(TILT+TILT2)],C,"above right"),label([6+0*cos(TILT)- -4*sin(TILT),2+0*sin(TILT)+-4*cos(TILT)],D,"right"),label([6+(17/6+r*cos(theta)-6)*cos(TILT)-(1.4+r*sin(theta)-2)*sin(TILT),2+(17/6+r*cos(theta)-6)*sin(TILT)+(1.4+r*sin(theta)-2)*cos(TILT)],E,"below"),label([6+(9.2-6)*cos(TILT+TILT2)- -1*sin(TILT+TILT2),2+(9.2-6)*sin(TILT+TILT2)+-1*cos(TILT+TILT2)],"\\ell","right"),label([6+6.1*cos(TILT)-2*sin(TILT),2+6.1*sin(TILT)+2*cos(TILT)],"\\mathcal{"+R+"}","right")</div>
+    </div>
+
+    <div class="problems">
+        <div id="name-plane">
+            <p class="question">Quelle est l'autre façon de désigner le plan <code>\mathcal{<var>R</var>}</code> ?</p>
+
+            <div class="solution" data-type="set">
+                <div class="set-sol" data-type="text"><var>A + B + E</var></div>
+                <div class="set-sol" data-type="text"><var>A + C + E</var></div>
+                <div class="set-sol" data-type="text"><var>A + E + B</var></div>
+                <div class="set-sol" data-type="text"><var>A + E + C</var></div>
+                <div class="set-sol" data-type="text"><var>B + A + E</var></div>
+                <div class="set-sol" data-type="text"><var>B + C + E</var></div>
+                <div class="set-sol" data-type="text"><var>B + E + A</var></div>
+                <div class="set-sol" data-type="text"><var>B + E + C</var></div>
+                <div class="set-sol" data-type="text"><var>C + A + E</var></div>
+                <div class="set-sol" data-type="text"><var>C + B + E</var></div>
+                <div class="set-sol" data-type="text"><var>C + E + A</var></div>
+                <div class="set-sol" data-type="text"><var>C + E + B</var></div>
+                <div class="set-sol" data-type="text"><var>E + A + B</var></div>
+                <div class="set-sol" data-type="text"><var>E + A + C</var></div>
+                <div class="set-sol" data-type="text"><var>E + B + A</var></div>
+                <div class="set-sol" data-type="text"><var>E + B + C</var></div>
+                <div class="set-sol" data-type="text"><var>E + C + A</var></div>
+                <div class="set-sol" data-type="text"><var>E + C + B</var></div>
+
+                <div class="input-format">
+                    <p>Plan <span class="entry"></span></p>
+                </div>
+            </div>
+            <div class="hints">
+                <div>
+                    <p>Les plans peuvent être désignés par trois points<a href="#" class="show-definition" data-definition="noncollinear">non alignés, encadrés par des parenthèses</a>.</p>
+                    <div class="definition" id="noncollinear">Des points non alignés sont des points qui ne sont pas sur la même droite.</div>
+                </div>
+                <p>On cherche trois points du plan <code>\mathcal{<var>R</var>}</code> qui ne sont pas sur une même droite, et on les énumère dans n'importe quel ordre.</p>
+                <p>
+                    For example, we can write <code>\mathcal{<var>R</var>}</code> as plane
+                    <code><var>A + B + E</var></code>, plane <code><var>A + C + E</var></code>,
+                    or plane <code><var>B + E + C</var></code>.
+                </p>
+            </div>
+        </div>
+
+        <div id="line-name">
+            <div class="vars">
+                <var id="SOLUTION">randFromArray(["\\overleftrightarrow{"+A+B+"}","\\overleftrightarrow{"+A+C+"}","\\overleftrightarrow{"+B+A+"}","\\overleftrightarrow{"+B+C+"}","\\overleftrightarrow{"+C+A+"}","\\overleftrightarrow{"+C+B+"}"])</var>
+                <var id="INCORRECT_1">randFromArray(["\\overleftrightarrow{"+A+"}","\\overleftrightarrow{"+B+"}","\\overleftrightarrow{"+C+"}"])</var>
+                <var id="INCORRECT_2">randFromArray(["\\overline{"+A+B+"}","\\overline{"+B+A+"}","\\overline{"+C+B+"}","\\overline{"+B+C+"}","\\overline{"+C+A+"}","\\overline{"+A+C+"}"])</var>
+                <var id="INCORRECT_3">randFromArray(["\\overleftrightarrow{"+E+C+"}","\\overleftrightarrow{"+C+E+"}","\\overleftrightarrow{"+D+A+"}","\\overleftrightarrow{"+D+B+"}","\\overleftrightarrow{"+D+C+"}","\\overleftrightarrow{"+A+D+"}"])</var>
+            </div>
+
+            <p class="question">Quelle est l'autre façon de désigner la droite <code>\ell</code> ?</p>
+
+            <div class="solution"><code><var>SOLUTION</var></code></div>
+
+            <ul class="choices">
+<li><code><var>INCORRECT_1</var></code></li>
+                <li><code><var>INCORRECT_2</var></code></li>
+                <li><code><var>INCORRECT_3</var></code></li>
+                <li><code>\overleftrightarrow{<var>A + B + C</var>}</code></li>
+            </ul>
+<div class="hints">
+                <p>Pour désigner une droite, on utilise deux points quelconques de cette droite. L'ordre n'a pas d'importance.</p>
+                <p>The points must have the <code>\leftrightarrow</code> above because we're
+                naming a line, not a ray or a segment.</p>
+                <p>L'autre façon de désigner la droite <code>\ell</code> est <code><var>SOLUTION</var></code>.</p>
+            </div>
+        </div>
+
+
+        <div id="collinear-3">
+            <div class="vars">
+                <var id="YES">$._("Oui")</var>
+                <var id="NO">$._("Non")</var>
+                <var id="POINTS,SOLUTION">randFromArray([[[A,B,C],!0],[[A,B,D],!1],[[A,C,B],!0],[[A,C,E],!1],[[B,A,C],!0],[[B,C,A],!0],[[B,E,C],!1],[[C,A,B],!0],[[C,A,D],!1],[[C,B,A],!0],[[C,B,E],!1],[[E,C,A],!1]])</var>
+            </div>
+
+            <p class="question">Are the points <var>toSentence(POINTS)</var> collinear?</p>
+
+            <div class="solution"><var>SOLUTION ? YES : NO</var></div>
+            <ul class="choices" data-category="true">
+<li><var>YES</var></li>
+                <li><var>NO</var></li>
+            </ul>
+<div class="hints">
+                <p>Des points sont alignés s'ils appartiennent à la même droite.</p>
+                <p>Peut-on tracer une droite passant par les points <var>toSentence(POINTS)</var> ?</p>
+                <p data-if="SOLUTION">Yes, points <var>toSentence(POINTS)</var> are collinear.</p>
+                <p data-else="">Non, les points <var>toSentence(POINTS)</var> ne sont pas alignés.</p>
+            </div>
+        </div>
+
+
+        <div id="collinear-2">
+            <div class="vars">
+                <var id="YES">$._("Oui")</var>
+                <var id="NO">$._("Non")</var>
+                <var id="POINTS">shuffle([A, B, C, D, E], 2)</var>
+            </div>
+
+            <p class="question">Are the points <var>toSentence(POINTS)</var> collinear?</p>
+
+            <div class="solution"><var>YES</var></div>
+            <ul class="choices" data-category="true">
+<li><var>YES</var></li>
+                <li><var>NO</var></li>
+            </ul>
+<div class="hints">
+                <p>Il existe une droite et une seule passant par deux points distincts.</p>
+                <p>Des points peuvent être alignés même si la droite n'est pas représentée sur la figure.</p>
+                <p>Can you draw a straight line through points <var>toSentence(POINTS)</var>?
+                Actually, can you draw a straight line through any two points?</p>
+                <p>Yes, points <var>toSentence(POINTS)</var> are collinear.</p>
+            </div>
+        </div>
+
+
+        <div id="coplanar">
+            <div class="vars">
+                <var id="YES">$._("Oui")</var>
+                <var id="NO">$._("Non")</var>
+                <var id="POINTS,SOLUTION,COPLANAR">randFromArray([[[A,B,C,E],!0,[]],[[A,B,D,E],!1,[A,B,E]],[[A,C,D],!0,[]],[[A,C,D,E],!1,[A,C,E]],[[B,A,C],!0,[]],[[B,C,A,E],!0,[]],[[E,C,D,A],!1,[E,C,A]],[[B,E,D,C],!1,[B,E,C]],[[C,B,D,E],!1,[C,B,E]],[[C,D,A],!0,[]],[[E,D,A],!0,[]]])</var>
+            </div>
+
+            <p class="question">Are the points <var>toSentence(POINTS)</var> coplanar?</p>
+
+            <p class="solution"><var>SOLUTION ? YES : NO</var></p>
+
+            <ul class="choices" data-category="true">
+<li><var>YES</var></li>
+                <li><var>NO</var></li>
+            </ul>
+<div class="hints">
+                <p>Des points sont coplanaires s'ils appartiennent au même plan.</p>
+                <p>Une surface plane peut-elle contenir tous les points sans se plier ?</p>
+                <p data-if="!SOLUTION">
+                    No, any flat surface that includes three of the points won't include the fourth.
+                    For example, points <var>toSentence(COPLANAR)</var> are in plane
+                    <code>\mathcal{<var>R</var>}</code>, but point <var>D</var> is not.
+                </p>
+                <p data-else-if="POINTS.length === 4">
+                    Yes, points <var>toSentence(POINTS)</var> all lie within a single
+                    flat surface. In this case, plane <code>\mathcal{<var>R</var>}</code>.
+                </p>
+                <p data-else="">Oui, il y a toujours au moins une surface plane qui passe par trois points quelconques.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

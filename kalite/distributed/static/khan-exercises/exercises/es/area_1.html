@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-geometry word-problems interactive subhints">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Área 1</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="UNIT,UNIT_TEXT">randFromArray([["in",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["pulgada\n\npulgadas","pulgadas"]},e)})],["ft",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["pie","pies"]},e)})],["m",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["metros","metros"]},e)})],["cm",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["centímetros","centímetros"]},e)})],["",new Plural(function(e){return $.ngettext({lang:"es-ES",messages:["unidad\n\nunidades","unidades"]},e)})]])</var>
+    </div>
+    <div class="problems">
+        <div id="square" data-weight="1">
+            <div class="vars">
+                <var id="S">randRange(2, 9)</var>
+                <var id="AREA">$._("\u00e1rea")</var>
+            </div>
+
+            <p class="question">¿Cuál es el área del cuadrado?</p>
+            <div class="problem">
+                <div class="graphie" id="area">init({range:[[-2,S+1],[-1,S+1]],scale:30}),path([[0,0],[0,S],[S,S],[S,0],!0],{stroke:BLUE,fill:"#eee"}),label([S/2,S],S+"\\text{ "+UNIT+"}","above"),label([0,S/2],S+"\\text{ "+UNIT+"}","left")</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer"><var>S * S</var></span> <var>plural_form(UNIT_TEXT)</var> cuadrados</div>
+
+            <div class="hints">
+                <p>El área es el largo multiplicado por el ancho (lado por lado).</p>
+                <div>
+                    <div class="graphie" data-update="area">_(S-1).times(function(e){style({stroke:GRAY,strokeWidth:1,strokeDasharray:"-"},function(){path([[0,e+61/60],[S,e+61/60]]),path([[e+61/60,0],[e+61/60,S]])})})</div>
+                    <p data-if="isSingular(S)">
+                        The length is <var>S</var> <var>UNIT_TEXT</var> and
+                        the width is <var>S</var> <var>UNIT_TEXT</var>, so the
+                        area is <code><var>S</var>\times<var>S</var></code>
+                        square <var>plural_form(UNIT_TEXT, S * S)</var>.
+                    </p>
+                </div>
+                <div>
+                    <p><code>
+                        \qquad\text{<var>AREA</var>} = <var>S</var> \times <var>S</var>
+                        = <var>S*S</var>
+                    </code></p>
+                    <p>También podemos contar <var>S * S</var> <var>plural_form(UNIT_TEXT, S * S)</var> cuadrados.</p>
+                    <div class="graphie" data-update="area">_(S*S).times(function(e){label([e%S+.5,S-floor(e/S)-.5],e+1,"center",!1).css({color:GRAY})})</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="rectangle" data-weight="1">
+            <div class="vars" data-ensure="L !== W">
+                <var id="L">randRange(2, 9)</var>
+                <var id="W">randRange(2, 9)</var>
+                <var id="AREA">$._("\u00e1rea")</var>
+            </div>
+
+            <p class="question">¿Cuál es el área del rectángulo?</p>
+
+            <div class="problem">
+                <div class="graphie" id="area">init({range:[[-2,L+1],[-1,W+1]],scale:30}),path([[0,0],[0,W],[L,W],[L,0],!0],{stroke:BLUE,fill:"#eee"}),label([L/2,W],L+"\\text{ "+UNIT+"}","above"),label([0,W/2],W+"\\text{ "+UNIT+"}","left")</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer"><var>L * W</var></span><var>plural_form(UNIT_TEXT)</var> cuadrados</div>
+
+            <div class="hints">
+                <p>El área es el largo multiplicado por el ancho (lado por lado).</p>
+                <div>
+                    <div class="graphie" data-update="area">style({stroke:GRAY,strokeWidth:1,strokeDasharray:"-"},function(){_(L-1).times(function(e){path([[e+61/60,0],[e+61/60,W]])}),_(W-1).times(function(e){path([[0,e+61/60],[L,e+61/60]])})})</div>
+                    <p>
+                        <span data-if="isSingular(L)">
+                            The length is <var>L</var> <var>UNIT_TEXT</var>.
+                        </span>
+                        <span data-if="isSingular(W)">
+                            The width is <var>W</var> <var>UNIT_TEXT</var>.
+                        </span>
+                        <span>Por tanto el área es <code><var>L</var>\times<var>W</var></code> <var>plural_form(UNIT_TEXT, L * W)</var> cuadrados.</span>
+                    </p>
+                </div>
+                <div>
+                    <p><code>
+                        \qquad\text{<var>AREA</var>} = <var>L</var> \times <var>W</var>
+                        = <var>L * W</var>
+                    </code></p>
+                    <p>También podemos contar <var>L * W</var> <var>plural_form(UNIT_TEXT, L * W)</var> cuadrados.</p>
+                    <div class="graphie" data-update="area">_(L*W).times(function(e){label([e%L+.5,W-floor(e/L)-.5],e+1,"center",!1).css({color:GRAY})})</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="odd-shape" data-weight="1">
+            <div class="vars">
+                <var id="WIDTH">randRange(5, 10)</var>
+                <var id="HEIGHT">randRange(5, 10)</var>
+                <var id="SHAPE" data-ensure="SHAPE.numSides&gt;4&amp;&amp;SHAPE.area&lt;15">createOddShape({width:WIDTH,height:HEIGHT})</var>
+            </div>
+
+            <p class="question">¿Cuál es el área de la figura? Cada cuadrado de la cuadrícula es <code>1 \times 1</code> <var>UNIT_TEXT</var> cuadrados.</p>
+
+            <div class="problem">
+                <div class="graphie" id="area">init({range:[[-1,WIDTH+1],[-1,HEIGHT+1]]});var shape=[];_(WIDTH+1).times(function(e){line([e,0],[e,HEIGHT],{"stroke-width":1,stroke:"#bbb"})}),_(HEIGHT+1).times(function(e){line([0,e],[WIDTH,e],{"stroke-width":1,stroke:"#bbb"})}),_.each(SHAPE.sides,function(e){path([e.start,e.end],{stroke:BLUE})})</div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+<span class="sol" data-forms="integer"><var>SHAPE.area</var></span> <var>plural_form(UNIT_TEXT)</var> cuadrados</div>
+
+            <div class="hints">
+                <p>El área es el número de cuadrados de <code>1 \times 1</code> que hay dentro de la figura.</p>
+                <div>
+                    <div class="graphie" data-update="area">SHAPE.labelSquares()</div>
+                    <p>Cuenta el número de cuadrados que hay dentro del rectángulo.</p>
+                </div>
+                <p>El área es <code><var>SHAPE.area</var></code> <var>plural_form(UNIT_TEXT, SHAPE.area)</var> cuadrados.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

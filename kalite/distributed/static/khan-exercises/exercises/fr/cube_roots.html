@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html data-require="math graphie">
+<head>
+<title>Racines cubiques</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="cx">0</var>
+            <var id="y">0</var>
+
+            <var id="N">randRange( 2, 12 )</var>
+            <var id="F_N">getPrimeFactorization( N )</var>
+        </div>
+
+        <div class="hints">
+            <p>Si vous n'arrivez pas &agrave; trouver ce nombre, vous pouvez d&eacute;composer <code><var>Q</var></code> pour trouver ses facteurs premiers et chercher des groupes &eacute;gaux de nombres.</p>
+            <div>
+                <p>Dessinons un arbre de facteurs.</p>
+                <div class="graphie" id="factor-tree">init({range:[[-1,FACTORIZATION.length+2],[-2*FACTORIZATION.length-1,1]],scale:[30,30]}),label([cx+1,y],curr)</div>
+            </div>
+
+            <div class="graphie" data-each="FACTORIZATION as factor" data-update="factor-tree">path([[cx+1,y-.5],[cx,y-1.5]]),path([[cx+1,y-.5],[cx+2,y-1.5]]),y-=2,cx+=1,curr/=factor,label([cx-1,y],factor),circle([cx-1,y],.5),label([cx+1,y],curr)</div>
+
+            <div class="graphie" data-update="factor-tree">circle([cx+1,y],.5)</div>
+
+            <p>Donc les facteurs premiers de <code><var>Q</var></code> sont <code><var>PRIMES.join( "\\times " )</var></code>.</p>
+        </div>
+
+        <div class="problems">
+            <div id="cube">
+                <div class="vars">
+                    <var id="Q">N * N * N</var>
+                    <var id="PRIMES">getPrimeFactorization( Q )</var>
+                    <var id="FACTORIZATION">PRIMES.slice( 0, PRIMES.length - 1 )</var>
+                    <var id="curr">Q</var>
+                </div>
+
+                <p class="question"><code>\Large{\sqrt[3]{<var>Q</var>} = \text{?}}</code></p>
+
+                <p class="solution" data-forms="integer"><var>N</var></p>
+
+                <div class="hints" data-apply="prependContents">
+                    <p><code>\sqrt[3]{<var>Q</var>}</code> est le nombre qui, lorsqu'il est multipli&eacute; trois fois par lui-m&ecirc;me, vaut <code><var>Q</var></code>.</p>
+                </div>
+
+                <div class="hints" data-apply="appendContents">
+                    <p>Nous cherchons <code>\sqrt[3]{<var>Q</var>}</code>, donc nous allons r&eacute;partir les facteurs premiers en trois groupes identiques.</p>
+
+                    <div data-if="PRIMES.length === 3" data-unwrap="">
+
+                        <p>Il n'y a que trois facteurs premiers, et nous voulons les r&eacute;partir en trois groupes, ce qui est donc facile.</p>
+                        <p><code><var>Q</var> = <var>PRIMES.join( "\\times " )</var></code>, donc <code><var>N</var>^3 = <var>Q</var></code>.</p>
+
+                    </div>
+<div data-else="" data-unwrap="">
+
+                        <div>
+                            <p>Remarquez qu'on peut r&eacute;organiser les facteurs ainsi:</p>
+                            <p><code><var>Q</var> = <var>PRIMES.join( "\\times " )</var> = \left(<var>[ F_N.join( "\\times " ), F_N.join( "\\times " ), F_N.join( "\\times ") ].join( "\\right)\\times\\left(" )</var>\right)</code></p>
+<p>
+                        </p>
+</div>
+
+                        <p data-if="F_N.length &gt; 1">Donc <code>\left(<var>F_N.join( "\\times " )</var>\right)^3 = <var>N</var>^3 = <var>Q</var></code>.</p>
+<p data-else="">Donc <code><var>N</var>^3 = <var>Q</var></code>.</p>
+
+                    </div>
+
+                    <p class="final_answer">Donc <code>\sqrt[3]{<var>Q</var>}</code> is <code><var>N</var></code>.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

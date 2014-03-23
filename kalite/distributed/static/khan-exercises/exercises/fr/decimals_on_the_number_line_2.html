@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems interactive">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Nombres décimaux sur la droite graduée 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars">
+        <var id="LOWER_BOUND">randRange(0, 9) / 10</var>
+        <var id="UPPER_BOUND">localeToFixed(LOWER_BOUND + 0.1, 1)</var>
+        <var id="MARK_INCREMENT">0.01</var>
+        <var id="HUNDRETHS">randRange(1, 9)</var>
+        <var id="SOLUTION">HUNDRETHS / 10</var>
+        <var id="SOLN_TXT">localeToFixed(LOWER_BOUND + HUNDRETHS * MARK_INCREMENT, 2)</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <div class="question">
+                <p>Sur la droite graduée, déplacer le point orange jusqu'à <code>\pink{<var>SOLN_TXT</var>}</code> .</p>
+
+                <div class="graphie" id="number-line">init({range:[[-.1,1.4],[-1,1]],scale:[400,40]}),style({arrows:"&gt;"}),line([0,0],[1.06,0]),style({arrows:"-&gt;"}),line([0,0],[-.06,0]),style({arrows:""});for(var x=0;10&gt;=x;x++)line([x/10,-.2],[x/10,.2]);style({stroke:BLUE,strokeWidth:3.5}),line([0,-.2],[0,.2]),label([0,-.53],LOWER_BOUND,"center",{color:BLUE}),line([1,-.2],[1,.2]),label([1,-.53],UPPER_BOUND,"center",{color:BLUE}),addMouseLayer(),graph.movablePoint=addMovablePoint({constraints:{constrainY:!0},snapX:.025}),graph.movablePoint.onMove=function(r,e){return[min(max(0,r),1),e]}</div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <span class="instruction">Placer le point orange à l'endroit voulu.</span>
+                <div class="guess"> graph.movablePoint.coord[0] </div>
+                <div class="validator-function">return 0===guess?"":abs(SOLUTION-guess)&lt;.001</div>
+                <div class="show-guess">graph.movablePoint.setCoord([guess,0])</div>
+            </div>
+
+            <div class="hints">
+                <p>Ci-dessus on a dessiné un morceau de la droite graduée compris entre <code><var>LOWER_BOUND</var></code> et <code><var>UPPER_BOUND</var></code>, puis on l'a divisé en <code>10</code> parties égales.</p>
+
+                <div>
+                    <p>Le morceau de droite graduée est divisé en <code>10</code> parties, ce qui veut dire que :</p>
+                    <p>Piece of line <code> = \dfrac{<var>UPPER_BOUND</var> - <var>LOWER_BOUND</var>}{10} =  \purple{<var>MARK_INCREMENT</var>}</code>
+                </p>
+</div>
+
+                <p><code>
+                    \pink{<var>SOLN_TXT</var>} =
+                    \blue{<var>LOWER_BOUND</var>} + \purple{<var>MARK_INCREMENT</var>} \times \green{<var>HUNDRETHS</var>}
+                </code></p>
+
+                <p data-if="$.ngetpos(HUNDRETHS, 'fr') === 0">Par conséquent, déplacer le point orange de <code>\green{<var>HUNDRETHS</var>}</code> place va le mettre à la position <code>\pink{<var>SOLN_TXT</var>}</code>.</p>
+<p data-else-if="$.ngetpos(HUNDRETHS, 'fr') === 1">Par conséquent, déplacer le point orange de <code>\green{<var>HUNDRETHS</var>}</code> places va le mettre à la position <code>\pink{<var>SOLN_TXT</var>}</code>.</p>
+                
+
+                <div>
+                    <div class="graphie" data-update="number-line">for(var x=1;10&gt;x;x++)label([x/10,-.53],localeToFixed(LOWER_BOUND+x*MARK_INCREMENT,2),"center")</div>
+                </div>
+
+                <div>
+                    <div class="graphie" data-update="number-line">style({stroke:"#6495ED",fill:"#6495ED",strokeWidth:3.5,arrows:"-&gt;"}),line([0,0],[SOLUTION,0]),graph.movablePoint.visibleShape.toFront(),label([HUNDRETHS/10,-.53],SOLN_TXT,"center",{color:PINK}),graph.movablePoint.moveTo(SOLUTION,0)</div>
+                    <p>Le nombre mis en évidence montre où est placé <code>\pink{<var>SOLN_TXT</var>}</code>  sur la droite numérique.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

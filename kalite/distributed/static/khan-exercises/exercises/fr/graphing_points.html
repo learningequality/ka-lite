@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html data-require="math interactive graphie">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Placer des points sur un graphique</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+        <div class="exercise">
+            <div class="vars" data-ensure="X !== 0 || Y !== 0">
+                <var id="X">randRange( 0, 10 )</var>
+                <var id="Y">randRange( 0, 10 )</var>
+            </div>
+            <div class="problems">
+                <div>
+                    <p class="question">Tracez <code>(<var>X</var>, <var>Y</var>)</code></p>
+                    <div class="problem">
+                        <br><div class="graphie" id="grid">graphInit({range:[[-1,11],[-1,11]],scale:30,axisArrows:"&lt;-&gt;",tickStep:1,labelStep:1,gridOpacity:.05,axisOpacity:.2,tickOpacity:.4,labelOpacity:.5}),label([0,11],"y","above"),label([11,0],"x","right"),addMouseLayer(),graph.movablePoint=addMovablePoint({coord:[0,0],snapY:1,snapX:1}),graph.movablePoint.onMove=function(e,r){return[max(0,min(e,10)),max(0,min(r,10))]}</div>
+                    </div>
+                    <div class="solution" data-type="custom">
+                        <div class="instruction">Déplacez le point orange avec votre souris pour placer le point sur le graphique.</div>
+                        <div class="guess">graph.movablePoint.coord</div>
+                        <div class="validator-function">return 0===guess[0]&amp;&amp;0===guess[1]?"":guess[0]===X&amp;&amp;guess[1]===Y</div>
+                        <div class="show-guess">graph.movablePoint.setCoord(guess)</div>
+                    </div>
+
+
+
+                    <div class="hints">
+                        <p>Les coordonnées sont listés comme Coordinates are listed as <code>(\blue{x},\green{y})</code>.</p>
+                        <p>Donc, pour <code>( \blue{<var>X</var>}, \green{<var>Y</var>} )</code> notre coordonné <span class="hint_blue"><code>x</code></span> est <code class="hint_blue"><var>X</var></code> et notre coordonné <span class="hint_green"><code>y</code></span> est <code class="hint_green"><var>Y</var></code>.</p>
+
+                        <p>La coordonnée <span class="hint_blue"><code>x</code></span> nous indique de quelle distance on doit se déplacer depuis l'origine en allant vers la droite et la coordonnée <span class="hint_green"><code>y</code></span> nous indique de quelle distance on doit se déplacer depuis l'origine en allant vers le haut.</p>
+
+                        <div>
+                            <div data-if="X === 0">Puisque notre coordonné <span class="hint_blue"><code>x</code></span> est égal à <code class="hint_blue">0</code>, on n'a pas besoin de se déplacer vers la droite de l'origine.</div>
+                            <div data-else="">
+                                <p>Puisque notre coordonné <span class="hint_blue"><code>x</code></span> est égale à <code class="hint_blue"><var>X</var></code>, on se déplace de <code class="hint_blue"><var>X</var></code> vers la droite de l'origine.</p>
+                                <div class="graphie" data-update="grid">style({stroke:BLUE,strokeWidth:3,arrows:"-&gt;"},function(){line([0,0],[X,0])}),graph.movablePoint.toFront()</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div data-if="Y === 0">Puisque l'ordonnée <span class="hint_green"><code>y</code></span> est égale à <code class="hint_green">0</code>, on n'a pas besoin de se déplacer vers le haut depuis l'origine.</div>
+                            <div data-else="">
+                                <p>Puisque l'ordonnée <span class="hint_green"><code>y</code></span>est égale à <code class="hint_green"><var>Y</var></code>, on se déplace de <code class="hint_green"><var>Y</var></code> depuis l'origine.</p>
+                                <div class="graphie" data-update="grid">style({stroke:GREEN,strokeWidth:3,arrows:"-&gt;"},function(){line([X,0],[X,Y])}),graph.movablePoint.toFront()</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="final_answer">Déplacer le point jusqu'à <code>( \blue{<var>X</var>}, \green{<var>Y</var>} )</code> à l'emplacement indiqué ci-dessus. <input onclick="javascript:KhanUtil.currentGraph.graph.movablePoint.moveTo( KhanUtil.tmpl.getVAR('X'), KhanUtil.tmpl.getVAR('Y') );" type="button" value="Show me">Me montrer"&gt;
+                            </p>
+                            <div class="graphie" data-update="grid">style({stroke:PINK,strokeWidth:3},function(){line([X-.25,Y-.25],[X+.25,Y+.25]),line([X+.25,Y-.25],[X-.25,Y+.25])}),graph.movablePoint.toFront()</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>

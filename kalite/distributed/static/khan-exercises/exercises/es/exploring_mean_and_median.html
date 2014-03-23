@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html data-require="math graphie interactive mean-and-median">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Explorando la media y mediana</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="LOWER_BOUND">-7</var>
+            <var id="UPPER_BOUND">-1 * LOWER_BOUND</var>
+            <!--
+                80% chance of getting 10 points to work with; otherwise 5. Any
+                other reasonable quantity leads to really messy means. This at
+                least covers both cases: where the median is a point, and
+                where the median is between two points. Weighted towards more
+                problems with 10 points to make it easier to get the intuition
+                how/why the mean and median can vary.
+            -->
+            <var id="POINTS">random() &lt; 0.8 ? 10 : 5</var>
+            <var id="MEDIAN">roundTo(1,randRangeNonZero(2*(LOWER_BOUND+1),2*(UPPER_BOUND-1))/2)</var>
+            <var id="MIN_MEAN">(POINTS/2*(MEDIAN+.5)+MEDIAN-.5+(POINTS/2-1)*LOWER_BOUND)/POINTS</var>
+            <var id="MAX_MEAN">(POINTS/2*(MEDIAN-.5)+MEDIAN+.5+(POINTS/2-1)*UPPER_BOUND)/POINTS</var>
+            <var id="MEAN">roundTo(1,randRangeNonZero(10*MIN_MEAN,10*MAX_MEAN)/10)</var>
+        </div>
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p>Coloca los <var>POINTS</var> puntos anaranjados en la recta numérica de tal forma que <span class="hint_blue"> la media aritmética sea <code><var>MEAN</var></code></span><br> y la <span class="hint_green"> mediana sea <code><var>MEDIAN</var></code></span>. La distancia entre entre las marcas es de 1.</p>
+                    <div class="graphie" id="number-line">graph.targetMedian=MEDIAN,graph.targetMean=MEAN,graph.numPoints=POINTS,init({range:[[LOWER_BOUND-.3,UPPER_BOUND+.2],[-3,3]],scale:35}),style({stroke:"#bbb"}),line([LOWER_BOUND,0],[UPPER_BOUND,0]);for(var x=LOWER_BOUND;UPPER_BOUND&gt;=x;x++)line([x,-.2],[x,.2]);style({strokeWidth:3.5}),line([0,-.2],[0,.2]),label([0,-.53],"0","center",{}),style({strokeWidth:2,stroke:BLUE,fill:BLUE,opacity:1}),graph.meanArrow=path([[0,.7],[.05,.7],[0,.6],[-.05,.7],[0,.7],[0,1]]),graph.meanLabel=label([0,1.3],"\\text{"+$._("media")+"}","above",{color:BLUE}),graph.meanValueLabel=label([0,.8],"0","above",{color:BLUE}),style({strokeWidth:2,stroke:GREEN,fill:GREEN}),graph.medianArrow=path([[0,-1.1],[.05,-1.1],[0,-1],[-.05,-1.1],[0,-1.1],[0,-1.4]]),graph.medianLabel=label([0,-1.7],"\\text{"+$._("mediana")+"}","below",{color:GREEN}),graph.medianValueLabel=label([0,-1.2],"0","below",{color:GREEN}),addMouseLayer(),graph.points=[];for(var x=0;POINTS&gt;x;x++)graph.points[x]=addMovablePoint({coord:[x-POINTS/2+.5,0],constraints:{constrainY:!0},snapX:.5});graph.median=0,graph.mean=0,graph.moved=!1,$.each(graph.points,function(e,r){this.onMove=function(e,a){return graph.moved=!0,onMovePoint(r,e,a,updateMeanAndMedian)}})</div>
+                </div>
+                <div class="solution" data-type="custom">
+                    <div class="instruction">Mueve los puntos naranjas para seleccionar tu respuesta.</div>
+                    <div class="guess">$.map(graph.points,function(e){return e.coord[0]})</div>
+                    <div class="validator-function">return roundTo(1,mean(guess))===MEAN&amp;&amp;roundTo(1,median(guess))===MEDIAN?!0:graph.moved?!1:""</div>
+                    <div class="show-guess">$.each(guess,function(e,r){onMovePoint(graph.points[e],r,0)}),updateMeanAndMedian()</div>
+                    <div class="example">cualquier arreglo de puntos naranjas de tal forma que el la media y la mediana sean correctos</div>
+                </div>
+
+                <div class="hints">
+                    <p>La mediana es el número de en medio. En otras palabras, siempre hay la misma cantidad de puntos a la derecha que a la izquierda de la media.</p>
+                    <p>Intenta arrastrar los puntos de tal forma que la mitad de ellos estén a la izquierda de <span class="hint_green"> <code><var>MEDIAN</var></code></span> y la otra mitad esté a la derecha de <span class="hint_green"> <code><var>MEDIAN</var></code></span>. <span data-if="POINTS % 2 === 0"> Los dos puntos de en medio deberían estar a la misma distancia de <span class="hint_green"> <code><var>MEDIAN</var></code></span>. </span> <span data-else=""> El punto de en medio debería estar en <span class="hint_green"> <code><var>MEDIAN</var></code></span>. </span><br><a class="simple-button" onclick="javascript: KhanUtil.showMedianExample();"> Muéstrame un ejemplo </a></p>
+                    <p>Mientras haya la misma cantidad de puntos a la derecha que a la izquierda de la mediana, la mediana se quedará en el mismo lugar. Pero la media aritmética se calcula usando el valor de todos los puntos. Mueve los puntos de ambos lados de la mediana, acercándolos y alejándolos para ver como cambia la media.</p>
+                    <p>Hay muchas formas de colocar los puntos para que la media sea <span class="hint_blue"> <code><var>MEAN</var></code></span> y la mediana sea  <span class="hint_green"> <code><var>MEDIAN</var></code></span>. <a class="simple-button" onclick="javascript: KhanUtil.showMeanExample();"> Muéstrame un ejemplo </a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

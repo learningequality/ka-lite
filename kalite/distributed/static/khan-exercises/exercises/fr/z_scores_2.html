@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems stat">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Écarts-réduits 2</title>
+<script src="../khan-exercise.js"></script><style>
+        .reading > span {
+            width: 32px;
+            font-size: 11px;
+            padding: 5px;
+        }
+        .reading > span:first-child {
+            font-weight: bold;
+            width: 22px;
+            border-right: 2px solid #CCCCCC;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div data-calculator="">
+            <div class="vars">
+                <var id="COL_INDEX">randRange(0, 9)</var>
+                <var id="ROW_INDEX">randRange(0, 9)</var>
+                <var id="ZSCORE">roundTo(2, randRange(0, 2) + ROW_INDEX / 10 + COL_INDEX / 100)</var>
+                <var id="GRADE">randRange(70, 90)</var>
+                <var id="STDDEV">randRange(2, 6)</var>
+                <var id="MEAN">localeToFixed(GRADE - ZSCORE * STDDEV, 2)</var>
+                <var id="ROWS">function(){for(var e=[],r=floorTo(0,ZSCORE);r&lt;floorTo(0,ZSCORE)+1;r+=.1)e.push(localeToFixed(r,1));return e}()</var>
+                <var id="COLUMNS">[.00, .01, .02, .03, .04, .05, .06, .07, .08, .09]</var>
+                <var id="ZGRID">function(){for(var e=[],r=0;r&lt;ROWS.length;r++){for(var a=[],n=0;n&lt;COLUMNS.length;n++)a.push(zScores(roundTo(2,100*(floorTo(0,ZSCORE)+r/10+n/100))));e.push(a)}return e}()</var>
+                <var id="ANSWER">ZGRID[ROW_INDEX][COL_INDEX]</var>
+                <var id="HEADER">"z"</var>
+            </div>
+            <div class="problem">Les notes à un examen régional de <var>course(1)</var> suivaient la loi normale avec <code>\mu = <var>MEAN</var></code> et <code>\sigma = <var>STDDEV</var></code>. <br><var>person(1)</var> a eu un <span data-if="floorTo(0, GRADE / 10) === 8"> n</span> <code><var>GRADE</var></code> à l'examen.</div>
+            <p class="question">Quelle fraction du nombre candidats a eu une note moins élevée que <var>person(1)</var> à l'exament ? Utilisez la table de l'écart-réduit ci-dessous.</p>
+            <div class="fake_header reading">
+                <span><var>HEADER</var></span><span data-each="COLUMNS as i, column"><var>localeToFixed(column, 2).substr(1)</var></span>
+            </div>
+            <div class="fake_row reading" data-each="ROWS as i, row">
+                <span><var>row</var></span><span data-each="ZGRID[i] as j, zgrid"><var>localeToFixed(zgrid, 4)</var></span>
+            </div>
+            <div class="solution" data-forms="integer, proper, improper, mixed, decimal, percent"><var>roundTo(4, ANSWER)</var></div>
+
+            <div class="hints">
+                <p>La table de l'écart-réduit indique la probabilité qu'une variable qui suit la loi normale centrée réduite soit <b>inférieure à</b> une certaine valeur <b>(z)</b>.</p>
+                <p>Pour utiliser la table de l'écart-réduit, on doit d'abord déterminer <span class="hint_blue">l'écart-réduit</span> de la note d'examen de <var>person( 1 )</var>.</p>
+                <div>
+                    <p data-if="isMale(1)">On peut calculer l'écart-réduit  en soustrayant la <span class="hint_pink">moyenne <code>(\mu)</code></span> à sa note puis en divisant par <span class="hint_green">l'écart-type <code>(\sigma)</code></span>.</p>
+<p data-else="">On peut calculer l'écart-réduit en soustrayant la <span class="hint_pink">moyenne <code>(\mu)</code></span> à sa note puis en divisant par <span class="hint_green">l'écart-type <code>(\sigma)</code></span>.</p>
+                    <p>
+                        <code>
+                            \large{\quad z \quad = \quad
+                            \dfrac{x - \pink{\mu}}{\green{\sigma}}
+                            \quad = \quad \dfrac{<var>GRADE</var> - \pink{<var>MEAN</var>}}{\green{<var>STDDEV</var>}}
+                            \quad = \quad <var>localeToFixed(ZSCORE, 2)</var>}
+                        </code>
+                    </p>
+                </div>
+                <div>
+                    <p>
+                        Look up <code><var>localeToFixed(ZSCORE, 2)</var></code> on the z-table. This value,
+                        <code class="hint_blue"><var>localeToFixed(ANSWER, 4)</var></code>, represents
+                        the portion of the population that scored lower than
+                        <code><var>GRADE</var></code> on the exam.
+                    </p>
+                    <div class="graphie">var nth=":nth-child("+(COL_INDEX+2)+")";$(".fake_row").eq(ROW_INDEX).find("span").css("background",ORANGE),$(".fake_row span"+nth).css("background",ORANGE),$(".fake_header span"+nth).css("background",ORANGE),$(".fake_row").eq(ROW_INDEX).find("span"+nth).css("background",BLUE)</div>
+                </div>
+                <p>
+                    <var>person( 1 )</var> scored higher than
+                    <code class="hint_blue"><var>localeToFixed(ANSWER * 100, 2)</var>\%</code> of the
+                    test-takers on the <var>course( 1 )</var> exam.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

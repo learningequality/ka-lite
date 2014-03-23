@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers-arithmetic word-problems">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Multiplicando números de 1 dígito</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange(0, 10)</var>
+            <var id="B">randRange(0, 10)</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="graphie" id="numbers">init({range:[[-1,12],[-3,B+1]],scale:[50,50]}),KhanUtil.currentGraph.labelHolder=label([0,B],"\\Huge{\\color{#6495ED}{"+A+"} \\times \\color{#28AE7B}{"+B+"} = {?}}","right")</div>
+                <div class="solution" data-forms="integer"><var>A * B</var></div>
+            </div>
+        </div>
+        <div class="hints">
+            <div data-if="B &gt; 0" data-unwrap="">
+                <div>
+                    <div class="graphie" data-update="numbers">label([0,B-1],$.ngettext({lang:"es-ES",messages:["Dibuja %(num)s círculos.","Dibuja %(num)s círculos."]},A),"right",!1),drawRow(A,B-3,"#6495ED",1)</div>
+                </div>
+                <div>
+                    <div class="graphie" data-update="numbers">isSingular(A)?label([0,B-2],$.ngettext({lang:"es-ES",messages:["Si hay %(num)s fila con %(a)s círculos, &lt;br&gt; ¿Hay un total de cuántos círculos?","Si hay %(num)s filas con %(a)s círculos cada una, &lt;br&gt; ¿Hay un total de cuántos círculos?"]},B,{a:A}),"right",!1):label([0,B-2],$.ngettext({lang:"es-ES",messages:["Si hay %(num)s filas con %(a)s círculos cada una, &lt;br&gt; ¿Hay un total de cuántos círculos?","Si hay %(num)s filas con %(a)s círculos, &lt;br&gt; ¿Hay un total de cuántos círculos?"]},B,{a:A}),"right",!1);for(var i=1;B&gt;i;i++)drawRow(A,B-3-i,"#28AE7B",A*i+1)</div>
+                </div>
+            </div>
+            <div data-else="">
+                <div class="graphie" data-update="numbers">label([0,B-1],"\\large{\\text{"+$._("Multiplicar cualquier número por 0 es igual a 0.")+"}}","right")</div>
+            </div>
+            <div class="graphie" data-update="numbers">KhanUtil.currentGraph.labelHolder.remove(),label([0,B],"\\Huge{\\color{#6495ED}{"+A+"} \\times \\color{#28AE7B}{"+B+"} = "+A*B+"}","right")</div>
+        </div>
+    </div>
+</body>
+</html>

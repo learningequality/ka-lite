@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Calculer des logarithmes 2</title>
+<script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="integral">
+                <div class="vars" data-ensure="ABS_NUM &lt; 1000">
+                    <var id="BASE">randRange(2, 16)</var>
+                    <var id="EXP">randRange(-4, 4)</var>
+                    <var id="ABS_NUM">pow(BASE, abs(EXP))</var>
+                    <var id="NUM_STR">0&gt;EXP?"\\dfrac{1}{"+ABS_NUM+"}":""+ABS_NUM</var>
+                </div>
+
+                <p class="question">Quelle est la valeur du logarithme ci-dessous ?</p>
+                <p><code>\log_{<var>BASE</var>} <var>EXP &lt; 0 ? "\\left(" + NUM_STR + "\\right)" : NUM_STR</var></code></p>
+                <p class="solution"><var>EXP</var></p>
+
+                <div class="hints">
+                    <p>Si <code>b^y = x</code>, alors <code>\log_{b} x = y</code>.</p>
+                    <p>Donc, nous devons trouver la valeur de <code>y</code> telle que <code><var>BASE</var>^{y} = <var>NUM_STR</var></code>.</p>
+                    <p data-if="EXP === 1">Tout nombre élevé à la puissance <code>1</code> est simplement lui-même, donc <code><var>BASE</var>^{1} = <var>BASE</var></code> et donc <code>\log_{<var>BASE</var>} <var>BASE</var> = 1</code>.</p>
+                    <p data-else-if="EXP === 0">Tout nombre différent de zéro élevé à la puissance <code>0</code> est égal à <code>1</code>, d'où <code><var>BASE</var>^0 = 1</code> et donc <code>\log_{<var>BASE</var>} 1 = 0</code>.</p>
+                    <p data-else-if="EXP === -1">Élever un nombre à la puissance <code>-1</code> c'est prendre son inverse, d'où <code><var>BASE</var>^{-1} = \dfrac{1}{<var>BASE</var>}</code> et donc <code>\log_{<var>BASE</var>} \left(\dfrac{1}{<var>BASE</var>}\right) = -1</code>.</p>
+                    <p data-else=""><span data-if="EXP &lt; 0" data-unwrap="">Dans ce cas, <code><var>BASE</var>^{<var>EXP</var>} = <var>NUM_STR</var></code>, donc <code>\log_{<var>BASE</var>} \left(<var>NUM_STR</var>\right) = <var>EXP</var></code>.</span><span data-else="" data-unwrap="">Dans ce cas, <code><var>BASE</var>^{<var>EXP</var>} = <var>NUM_STR</var></code>, donc <code>\log_{<var>BASE</var>} <var>NUM_STR</var> = <var>EXP</var></code>.</span></p>
+                </div>
+            </div>
+
+            <div id="root">
+                <div class="vars" data-ensure="NUM &lt; 1000">
+                    <var id="BASE">randRange(2, 16)</var>
+                    <var id="EXP">randRange(2, 5)</var>
+                    <var id="NUM">pow(BASE, EXP)</var>
+                </div>
+
+                <p class="question">Quelle est la valeur du logarithme ci-dessous ?</p>
+                <p><code>\log_{<var>NUM</var>} <var>BASE</var></code></p>
+                <p class="solution"><var>1/EXP</var></p>
+
+                <div class="hints">
+                    <p>Si <code>b^y = x</code>, alors <code>\log_{b} x = y</code>.</p>
+                    <p>Notice that <code><var>BASE</var></code> is the <var>["square", "cube", "fourth", "fifth"][EXP - 2]</var> root of <code><var>NUM</var></code>.</p>
+                    <p data-if="EXP === 2">Autrement dit, <code>\sqrt{<var>NUM</var>} = <var>NUM</var>^{1/<var>EXP</var>} = <var>BASE</var></code>.</p>
+<p data-else="">Autrement dit, <code>\sqrt[<var>EXP</var>]{<var>NUM</var>} = <var>NUM</var>^{1/<var>EXP</var>} = <var>BASE</var></code>.</p>
+                    <p>Donc, <code>\log_{<var>NUM</var>} <var>BASE</var> = \dfrac{1}{<var>EXP</var>}</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
