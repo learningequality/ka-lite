@@ -60,7 +60,7 @@ function handleFailedAPI(resp, error_text) {
         show_api_messages(messages);
         return;
     }
-    return;
+    
     switch (resp.status) {
         case 403:
             show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."));
