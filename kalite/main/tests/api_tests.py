@@ -13,10 +13,9 @@ from django.utils import unittest
 import i18n
 from facility.models import Facility, FacilityUser
 from main.models import VideoLog, ExerciseLog
-from testing import distributed_server_test, KALiteClient, KALiteTestCase
+from testing import KALiteClient, KALiteTestCase
 
 
-@distributed_server_test
 class TestSaveExerciseLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 37
@@ -132,7 +131,6 @@ class TestSaveExerciseLog(KALiteTestCase):
         self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS + 1, "The ExerciseLog did not have the correct number of attempts.")
 
 
-@distributed_server_test
 class TestSaveVideoLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 84
