@@ -12,10 +12,9 @@ import settings
 from main.tests.base import MainTestCase
 from facility.models import Facility, FacilityUser
 from main.models import VideoLog, ExerciseLog
-from testing import distributed_server_test, KALiteClient, KALiteTestCase
+from testing import KALiteClient, KALiteTestCase
 
 
-@distributed_server_test
 class TestGetTopicTree(KALiteTestCase):
     def setUp(self):
         self.client = KALiteClient()

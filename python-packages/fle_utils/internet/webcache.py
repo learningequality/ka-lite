@@ -147,8 +147,6 @@ def expire_page(path=None, url_name=None, failure_ok=False):
 
 
 def invalidate_web_cache():
-    pass#logging.debug("Clearing the web cache.")
     cache = get_web_cache()
     if cache:
         cache.clear()
-    pass#logging.debug("Great success emptying the web cache.")

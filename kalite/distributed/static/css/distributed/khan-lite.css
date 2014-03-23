@@ -57,15 +57,11 @@ a:hover {
     color: #2F92A5;
 }
 
-#language-preferences {
-    position: relative;
-    top: -2px;
-    float: right;
-    width: 75px;
-}
-
 #language_selector {
     width:75px;
+    position: relative;
+    top: -1px;
+    float: right;
 }
 
 #top-header {
