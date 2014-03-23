@@ -13,10 +13,12 @@ from distributed import caching
 from fle_utils.django_utils import call_command_with_output
 from main.tests.base import MainTestCase
 from testing.client import KALiteClient
+from testing.decorators import distributed_server_test
 from updates.models import VideoFile
 
 
 @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
+@distributed_server_test
 class VideoScanTests(MainTestCase):
 
     def setUp(self, *args, **kwargs):

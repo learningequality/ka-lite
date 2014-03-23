@@ -9,7 +9,6 @@ urlpatterns = patterns('updates.api_views',
 
     url(r'^languagepacks/start$', 'start_languagepack_download', {}, 'start_languagepack_download'),
     url(r'^languagepacks/installed$', 'installed_language_packs', {}, 'installed_language_packs'),
-    url(r'^languagepacks/delete$', 'delete_language_pack', {}, 'delete_language_pack'),
 
     url(r'^software/start$', 'start_update_kalite', {}, 'start_update_kalite'),
 

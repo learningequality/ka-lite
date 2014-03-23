@@ -13,8 +13,10 @@ from facility.models import Facility, FacilityUser
 from fle_utils.django_utils import call_command_with_output
 from main.tests.base import MainTestCase
 from testing.client import KALiteClient
+from testing.decorators import distributed_server_test
 
 
+@distributed_server_test
 class ChangeLocalUserPassword(MainTestCase):
     """Tests for the changelocalpassword command"""
 

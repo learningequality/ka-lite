@@ -7,7 +7,7 @@
 #language-packs {
     margin-top: 20px;
 }
-.lang-link, .lang-name, .lang-data, .upgrade-link, .delete-language-button {
+.lang-link, .lang-name, .lang-data, .upgrade-link {
     float: left;
     font-size: 12pt;
 }
@@ -19,7 +19,6 @@
 .lang-name { width: 250px; }
 .lang-data { width: 250px; }
 .upgrade-link { width: 300px; }
-.delete-language-button { width: 120px; float: right;}
 
 #langpack-details {
     margin-top: 10px;

@@ -5,8 +5,10 @@ Testing of the main-used internet utility functions
 from django.test import LiveServerTestCase
 
 from fle_utils.internet import am_i_online
+from testing.decorators import distributed_server_test
 
 
+@distributed_server_test
 class OnlineTests(LiveServerTestCase):
     def test_am_online(self):
         """The only thing I'm guaranteed to have online?  Myself."""

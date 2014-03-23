@@ -22,8 +22,10 @@ from kalite.settings import package_selected, LOG as logging
 from main.models import ExerciseLog
 from main.topic_tools import get_exercise_paths, get_node_cache
 from testing.browser import BrowserTestCase
+from testing.decorators import distributed_server_test
 
 
+@distributed_server_test
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
     """Base class for main server test cases.
     They will have different functions in here, for sure.
@@ -195,6 +197,7 @@ class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestC
         self.facility = self.create_facility(facility_name=self.facility_name)
 
 
+@distributed_server_test
 class TestAddFacility(KALiteDistributedBrowserTestCase):
     """
     Test webpage for adding a facility
@@ -218,6 +221,7 @@ class TestAddFacility(KALiteDistributedBrowserTestCase):
         self.browser_check_django_message(message_type="success", contains="has been successfully saved!")
 
 
+@distributed_server_test
 class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
     """Validate all the steps of registering a device.
 
@@ -240,6 +244,7 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
         self.browser_login_admin()
 
 
+@distributed_server_test
 @unittest.skipIf(package_selected("UserRestricted"), "Registration not allowed when UserRestricted set.")
 class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     username   = "user1"
@@ -321,6 +326,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
+@distributed_server_test
 class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
@@ -423,6 +429,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
 
 @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
+@distributed_server_test
 class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """Tests if the exercise is loaded without any JS error.
 
@@ -448,6 +455,7 @@ class LoadExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
             self.assertFalse(error_list)
 
 
+@distributed_server_test
 class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Submit forms with no values, make sure there are no errors.

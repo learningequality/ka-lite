@@ -12,9 +12,10 @@ from django.core.management import call_command
 from django.test import TestCase, Client
 from django.utils import unittest
 
-from testing import KALiteTestCase
+from testing import distributed_server_test, KALiteTestCase
 
 
+@distributed_server_test
 class UrlTestCases(KALiteTestCase):
     """Walk through a set of URLs, and validate very basic properties (status code, some text)
     A good test to weed out untested view/template errors"""

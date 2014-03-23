@@ -11,10 +11,11 @@ from django.utils import unittest
 from .command_tests import VideoScanTests
 from facility.models import Facility, FacilityUser
 from main.tests.base import MainTestCase
-from testing import KALiteClient, KALiteTestCase
+from testing import distributed_server_test, KALiteClient, KALiteTestCase
 from updates.models import VideoFile
 
 
+@distributed_server_test
 class TestAdminApiCalls(MainTestCase):
     """
     Test main.api_views that require an admin login

@@ -39,4 +39,3 @@ class Migration(SchemaMigration):
 
     complete_apps = ['i18n']
     symmetrical = True
-    no_dry_run = True
