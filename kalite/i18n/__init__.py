@@ -24,7 +24,7 @@ from django.views.i18n import javascript_catalog
 ################################################
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
-from kalite.settings import LANG_LOOKUP_FILEPATH, LOG as logging
+from kalite.settings import LOG as logging
 from kalite.version import VERSION
 
 CACHE_VARS = []
