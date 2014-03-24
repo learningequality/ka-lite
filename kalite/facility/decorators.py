@@ -30,7 +30,6 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
     """
     Goes through the request object to retrieve facility information, if possible.
     """
-    from .models import Facility
     assert handler or request
     if not handler:
         handler = lambda request, facility, *args, **kwargs: facility

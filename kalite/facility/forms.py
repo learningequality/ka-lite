@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
 from fle_utils.django_utils import verify_raw_password
-from i18n import get_installed_language_packs
+from kalite.i18n import get_installed_language_packs
 
 
 class FacilityUserForm(forms.ModelForm):
