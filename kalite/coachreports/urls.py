@@ -1,8 +1,9 @@
 from django.conf.urls.defaults import patterns, url, include
 
-import kalite.coachreports.api_urls
+from . import api_urls
 
-urlpatterns = patterns('kalite.coachreports.views',
+
+urlpatterns = patterns(__package__ + '.views',
     url(r'^$', 'landing_page', {}, 'coach_reports'),
 
     url(r'^scatter/$', 'scatter_view', {}, 'scatter_view'),
@@ -17,6 +18,6 @@ urlpatterns = patterns('kalite.coachreports.views',
     url(r'^table/$', 'tabular_view', {}, 'tabular_view'),
     url(r'^table/(?P<report_type>\w+)/$', 'tabular_view', {}, 'tabular_view'),
 
-    url(r'^api/', include(kalite.coachreports.api_urls)),
+    url(r'^api/', include(api_urls)),
 )
 
