@@ -8,8 +8,8 @@ from django.conf import settings
 from django.utils import unittest
 
 from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
-from facility.models import FacilityUser
-from main.models import UserLog
+from kalite.facility.models import FacilityUser
+from kalite.main.models import UserLog
 
 
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):

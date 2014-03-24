@@ -7,7 +7,7 @@ These include:
 """
 from django.conf import settings
 
-import version
+from kalite import version
 from kalite.settings import package_selected
 
 

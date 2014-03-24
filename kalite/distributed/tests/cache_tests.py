@@ -10,10 +10,10 @@ from django.conf import settings
 from django.test.client import Client
 from django.utils import unittest
 
-from distributed import caching
+from .. import caching
 from fle_utils.django_utils import call_command_with_output
-from main.topic_tools import get_node_cache
-from testing.base import KALiteTestCase
+from kalite.main.topic_tools import get_node_cache
+from kalite.testing.base import KALiteTestCase
 
 
 class CachingTest(KALiteTestCase):

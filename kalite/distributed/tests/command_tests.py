@@ -9,10 +9,10 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils import unittest
 
-from facility.models import Facility, FacilityUser
 from fle_utils.django_utils import call_command_with_output
-from main.tests.base import MainTestCase
-from testing.client import KALiteClient
+from kalite.facility.models import Facility, FacilityUser
+from kalite.main.tests.base import MainTestCase
+from kalite.testing.client import KALiteClient
 
 
 class ChangeLocalUserPassword(MainTestCase):
