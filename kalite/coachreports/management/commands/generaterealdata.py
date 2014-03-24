@@ -33,11 +33,11 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 import securesync
-from facility.models import Facility, FacilityUser, FacilityGroup
 from fle_utils.general import datediff
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import ExerciseLog, VideoLog, UserLog
+from kalite.main.topic_tools import get_topic_videos, get_topic_exercises
 from kalite.settings import LOG as logging
-from main.models import ExerciseLog, VideoLog, UserLog
-from main.topic_tools import get_topic_videos, get_topic_exercises
 from securesync.models import Device, DeviceMetadata
 
 

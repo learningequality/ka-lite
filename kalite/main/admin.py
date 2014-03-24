@@ -4,7 +4,8 @@ Manipulating models to expose to admins through the Django admin interface
 from django.conf import settings
 from django.contrib import admin
 
-from models import *
+from .models import *
+
 
 class VideoLogAdmin(admin.ModelAdmin):
     list_display = ("video_id", "user", "language", "points", "total_seconds_watched", "complete",)

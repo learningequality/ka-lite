@@ -9,16 +9,14 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils import unittest
 
-from distributed import caching
+from ..models import VideoFile
 from fle_utils.django_utils import call_command_with_output
-from main.tests.base import MainTestCase
-from testing.client import KALiteClient
-from testing.decorators import distributed_server_test
-from updates.models import VideoFile
+from kalite.distributed import caching
+from kalite.main.tests.base import MainTestCase
+from kalite.testing.client import KALiteClient
 
 
 @unittest.skipIf(settings.CACHE_TIME == 0, "Caching is disabled.")
-@distributed_server_test
 class VideoScanTests(MainTestCase):
 
     def setUp(self, *args, **kwargs):

@@ -33,15 +33,15 @@ from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
-from facility.models import FacilityGroup, FacilityUser
 from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.mplayer_launcher import play_video_in_new_thread
 from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
-from i18n import lcode_to_ietf
-from shared.decorators import require_admin
+from kalite.facility.models import FacilityGroup, FacilityUser
+from kalite.i18n import lcode_to_ietf
+from kalite.shared.decorators import require_admin
 
 
 class student_log_api(object):

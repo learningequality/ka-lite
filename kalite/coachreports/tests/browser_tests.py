@@ -3,8 +3,8 @@ Basic tests of coach reports, inside the browser
 """
 from selenium.common.exceptions import NoSuchElementException
 
-from distributed.tests.browser_tests import KALiteDistributedWithFacilityBrowserTestCase
-from facility.models import Facility, FacilityGroup, FacilityUser
+from kalite.distributed.tests.browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
 
 class TestTabularViewErrors(KALiteDistributedWithFacilityBrowserTestCase):

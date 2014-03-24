@@ -10,4 +10,5 @@ kind_slugs = {
     "Exercise": "e/",
     "Topic": ""
 }
+
 KHANLOAD_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "../_khanload_cache")

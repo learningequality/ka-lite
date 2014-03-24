@@ -49,30 +49,34 @@ function communicate_api_failure(resp, msg_id) {
 }
 
 
-function handleSuccessAPI(error_id) {
-    if (error_id === undefined) {
-        error_id = "id_updates";  // ID of message element
+function handleSuccessAPI(msg_id, resp) {
+    if (msg_id === undefined) {
+        msg_id = "id_updates";  // ID of message element
     }
-    clear_message(error_id);
+    clear_message(msg_id);
+    if (resp) {
+        messages = $.parseJSON(resp.responseText);
+        show_api_messages(messages, msg_id);
+    }
 }
 
-function handleFailedAPI(resp, error_text, error_id) {
-    if (error_id === undefined) {
-        error_id = "id_updates";  // ID of message element
+function handleFailedAPI(resp, error_text, msg_id) {
+    if (msg_id === undefined) {
+        msg_id = "id_updates";  // ID of message element
     }
 
     switch (resp.status) {
         case 403:
-            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id);
+            show_message("error", msg_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), msg_id);
             break;
         default:
             //communicate_api_failure(resp)
             messages = $.parseJSON(resp.responseText);
             if (messages && !("error" in messages)) {
                 // this should be an assert--should never happen
-                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
+                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), msg_id);
             } else {
-                show_message("error", error_text + ": " + messages["error"], error_id);
+                show_message("error", error_text + ": " + messages["error"], msg_id);
             }
             break;
     }

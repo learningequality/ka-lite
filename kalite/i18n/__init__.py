@@ -22,15 +22,14 @@ from django.views.i18n import javascript_catalog
 ###   we CANNOT import main.models in here.  ###
 ###                                          ###
 ################################################
+from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
 from kalite.settings import LANG_LOOKUP_FILEPATH, LOG as logging
-from version import VERSION
+from kalite.version import VERSION
 
 CACHE_VARS = []
 
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "dubbed_video_mappings.json")
-SUPPORTED_LANGUAGES_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "supported_languages.json")
-CROWDIN_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "..", "_crowdin_cache")
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 class LanguageNotFoundError(Exception):
@@ -52,22 +51,6 @@ def get_locale_path(lang_code=None):
     else:
         return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
 
-
-SUPPORTED_LANGUAGE_MAP = None
-CACHE_VARS.append("SUPPORTED_LANGUAGE_MAP")
-def get_supported_language_map(lang_code=None):
-    lang_code = lcode_to_ietf(lang_code)
-    global SUPPORTED_LANGUAGE_MAP
-    if not SUPPORTED_LANGUAGE_MAP:
-        with open(SUPPORTED_LANGUAGES_FILEPATH) as f:
-            SUPPORTED_LANGUAGE_MAP = json.loads(f.read())
-
-    if not lang_code:
-        return SUPPORTED_LANGUAGE_MAP
-    else:
-        lang_map = defaultdict(lambda: lang_code)
-        lang_map.update(SUPPORTED_LANGUAGE_MAP.get(lang_code) or {})
-        return lang_map
 
 def lang_best_name(l):
     return l.get('native_name') or l.get('ka_name') or l.get('name')
@@ -348,6 +331,16 @@ def _get_installed_language_packs():
 
     sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
+
+
+def get_default_language():
+    """Returns: the default language (ietf-formatted language code)"""
+    return Settings.get("default_language") or settings.LANGUAGE_CODE or "en"
+
+
+def set_default_language(lang_code):
+    """Sets the default language"""
+    Settings.set("default_language", lcode_to_ietf(lang_code))
 
 
 def get_langs_with_subtitle(youtube_id):

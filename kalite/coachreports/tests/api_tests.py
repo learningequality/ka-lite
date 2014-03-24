@@ -1,21 +1,20 @@
 import json
 import os
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-import i18n
-import settings
-from main.tests.base import MainTestCase
-from facility.models import Facility, FacilityUser
-from main.models import VideoLog, ExerciseLog
-from testing import distributed_server_test, KALiteClient, KALiteTestCase
+from kalite import i18n
+from kalite.facility.models import Facility, FacilityUser
+from kalite.main.tests.base import MainTestCase
+from kalite.main.models import VideoLog, ExerciseLog
+from kalite.testing import KALiteClient, KALiteTestCase
 
 
-@distributed_server_test
 class TestGetTopicTree(KALiteTestCase):
     def setUp(self):
         self.client = KALiteClient()

@@ -3,7 +3,7 @@ from django.conf.urls.defaults import include, patterns, url
 from . import api_urls
 
 
-urlpatterns = patterns('facility.views',
+urlpatterns = patterns(__package__ + '.views',
     url(r'^add/teacher/$', 'add_facility_teacher', {},'add_facility_teacher'),
     url(r'^add/student/$', 'add_facility_student', {}, 'add_facility_student'),
     url(r'^edit/(?P<id>\w+)/$', 'edit_facility_user', {}, 'edit_facility_user'),
@@ -16,9 +16,8 @@ urlpatterns = patterns('facility.views',
 
     url(r'^login/$', 'login', {}, 'login'),
     url(r'^logout/$', 'logout', {}, 'logout'),
-    url(r'^api/', include(api_urls)),
 )
 
-urlpatterns += patterns('securesync.users.api_views',
+urlpatterns += patterns(__package__ + '.api_views',
     url(r'^api/', include(api_urls)),
 )
