@@ -15,14 +15,14 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 
-from facility.models import Facility, FacilityGroup, FacilityUser
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
+from kalite.i18n import get_installed_language_packs
+from kalite.main.models import ExerciseLog
+from kalite.main.topic_tools import get_exercise_paths, get_node_cache
 from kalite.settings import package_selected, LOG as logging
-from main.models import ExerciseLog
-from main.topic_tools import get_exercise_paths, get_node_cache
-from testing.browser import BrowserTestCase
-from i18n import get_installed_language_packs
+from kalite.testing.browser import BrowserTestCase
 
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
@@ -197,12 +197,12 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
         return flag
 
     def test_add_language_pack(self):
-        ''' Test to check whether a language pack is added successfully or not'''	
+        ''' Test to check whether a language pack is added successfully or not'''
 
         #Login as admin
         self.browser_login_admin()
 
-        #Add the language pack	
+        #Add the language pack
         if self.is_language_installed("de"):
             print "Error already Installed "
         else:
@@ -210,7 +210,7 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
             self.browse_to(add_language_url)
 
         if not self.is_language_installed("de"):
-            print "Error Language Still Not Installed" 
+            print "Error Language Still Not Installed"
 
 
     def test_delete_language_pack(self):
