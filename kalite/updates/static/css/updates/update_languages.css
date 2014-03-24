@@ -1,0 +1,34 @@
+.download-actions {
+    width: 600px;
+    float: left;
+    margin: 5px 10px 20px 0px;
+    padding: 10px;
+}
+#language-packs {
+    margin-top: 20px;
+}
+.lang-link, .lang-name, .lang-data, .upgrade-link, .delete-language-button {
+    float: left;
+    font-size: 12pt;
+}
+.upgrade-link a {
+    font-weight: bold;
+    text-decoration: underline;
+}
+.lang-link { width: 120px; }
+.lang-name { width: 250px; }
+.lang-data { width: 250px; }
+.upgrade-link { width: 300px; }
+.delete-language-button { width: 120px; float: right;}
+
+#langpack-details {
+    margin-top: 10px;
+    display: none;
+}
+#langpack-details span {
+    margin-left: 10px;
+    font-weight: bold;
+}
+#languagepackdownload-progressbar {
+    margin-bottom: 25px;
+}

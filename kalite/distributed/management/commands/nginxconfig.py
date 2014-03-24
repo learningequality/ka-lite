@@ -18,7 +18,7 @@ config_template = """
     # If you need to run the KA-Lite cherrypyserver on a different port,
     #  add a PRODUCTION_PORT = nnnn setting in ka-lite/local_settings.py
     #
-    # IMPORTANT: after changing the local_settings.py
+    # importANT: after changing the local_settings.py
     #    execute ./scripts/optimizerpi.sh to regenerate this configuration
 
 

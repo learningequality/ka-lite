@@ -1,6 +1,6 @@
 import time
 
-from main.tests import KALiteDistributedBrowserTestCase
+from kalite.main.tests import KALiteDistributedBrowserTestCase
 
 
 class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
@@ -18,7 +18,7 @@ class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
         exercise_elements = self.browser.find_elements_by_css_selector('div.exercise a')
         self.assertTrue(len(exercise_elements) > 0, "# elements is non-zero for url=%s" % map_url)
 
-        # 
+        #
         link_urls = []
         for exercise in exercise_elements:
             #self.assertTrue(exercise.is_displayed(), "Exercise %s should be displayed @ %s" % (exercise, map_url))

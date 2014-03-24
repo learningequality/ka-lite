@@ -30,12 +30,12 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition
 
-import i18n
 from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
+from kalite import i18n
+from kalite.main import topic_tools
 from kalite.settings import LOG as logging
-from main import topic_tools
-from updates.models import VideoFile
+from kalite.updates.models import VideoFile
 
 
 # Signals

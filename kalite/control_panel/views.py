@@ -17,19 +17,19 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-import version
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
-from coachreports.views import student_view_context
-from facility.decorators import facility_required
-from facility.forms import FacilityForm
-from facility.models import Facility, FacilityUser, FacilityGroup
-from facility.views import user_management_context
 from fle_utils.internet import CsvResponse, render_to_csv
+from kalite.coachreports.views import student_view_context
+from kalite.facility.decorators import facility_required
+from kalite.facility.forms import FacilityForm
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.facility.views import user_management_context
+from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
+from kalite.main.topic_tools import get_node_cache
 from kalite.settings import LOG as logging
-from main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from main.topic_tools import get_node_cache
+from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
-from shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 
 
 def set_clock_context(request):
@@ -546,11 +546,11 @@ def control_panel_context(request, **kwargs):
 
 def local_device_context(request):
     database_path = settings.DATABASES["default"]["NAME"]
-    current_version = request.GET.get("version", version.VERSION)  # allows easy development by passing a different version
+    current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
 
     return {
         "software_version": current_version,
-        "software_release_date": version.VERSION_INFO[current_version]["release_date"],
+        "software_release_date": VERSION_INFO[current_version]["release_date"],
         "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),

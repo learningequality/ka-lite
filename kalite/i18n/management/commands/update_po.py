@@ -21,9 +21,9 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+from .. import lcode_to_django_dir, update_jsi18n_file
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import ensure_dir
-from i18n import lcode_to_django_dir, update_jsi18n_file
 from kalite.settings import LOG as logging
 
 
@@ -34,7 +34,7 @@ class Command(BaseCommand):
             '-t',
             dest='test_wrappings',
             action="store_true",
-            default=False,
+            default=not settings.CENTRAL_SERVER,
             help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.',
         ),
     )

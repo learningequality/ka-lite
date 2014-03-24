@@ -5,8 +5,8 @@ import datetime
 
 from django.utils import unittest
 
+from ..models import UpdateProgressLog
 from fle_utils.general import datediff
-from updates.models import UpdateProgressLog
 
 
 class TestSingleStageUpdate(unittest.TestCase):

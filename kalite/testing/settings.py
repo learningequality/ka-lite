@@ -1,3 +1,5 @@
+import os
+
 try:
     import local_settings
 except ImportError:
@@ -9,6 +11,7 @@ INSTALLED_APPS = tuple()
 MIDDLEWARE_CLASSES = tuple()
 
 USE_DEBUG_TOOLBAR = getattr(local_settings, "USE_DEBUG_TOOLBAR", False)
+
 if USE_DEBUG_TOOLBAR:
     INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
@@ -35,7 +38,7 @@ if getattr(local_settings, "DEBUG", False):
 
 
 
-if os.path.exists(PROJECT_PATH + "/testing/loadtesting/"):
+if os.path.exists(os.path.join(os.path.dirname(__file__), "loadtesting")):
     INSTALLED_APPS += ("testing.loadtesting",)
 
 TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'

@@ -16,7 +16,6 @@ if __name__ == "__main__":
     PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
     PROJECT_PYTHON_PATHS = [
         os.path.join(PROJECT_PATH, "..", "python-packages"),
-        PROJECT_PATH,
         os.path.join(PROJECT_PATH, ".."),
     ]
     sys.path = PROJECT_PYTHON_PATHS + sys.path
@@ -31,9 +30,6 @@ if __name__ == "__main__":
     if "runserver" in sys.argv:
         logging.info("You requested to run runserver; instead, we're funneling you through our 'kaserve' command.")
         sys.argv[sys.argv.index("runserver")] = "kaserve"
-
-        if "runserver" in sys.argv and "--nostatic" not in sys.argv:  # makes static file serving work in debug mode
-            sys.argv += ["--nostatic"]
 
     elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
         logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
