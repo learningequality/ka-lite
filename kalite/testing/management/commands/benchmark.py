@@ -8,8 +8,8 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
-from facility.models import Facility, FacilityUser
-from testing.benchmark.test_cases import *
+from kalite.facility.models import Facility, FacilityUser
+from kalite.testing.benchmark.test_cases import *
 
 
 class BenchmarkThread(threading.Thread):

@@ -52,11 +52,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 from . import base
-from facility.models import Facility, FacilityUser, FacilityGroup
+from ..browser import BrowserTestCase
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import ExerciseLog, VideoLog, UserLog
+from kalite.main.topic_tools import get_node_cache
 from kalite.settings import LOG as logging
-from main.models import ExerciseLog, VideoLog, UserLog
-from main.topic_tools import get_node_cache
-from testing.browser import BrowserTestCase
 
 
 class HelloWorld(base.Common):
