@@ -6,10 +6,10 @@ from datetime import datetime  # main.models imports this way, so we have this h
 from django.conf import settings
 from django.utils import unittest
 
-from facility.models import Facility, FacilityGroup, FacilityUser
+from .base import MainTestCase
+from ..models import *
 from fle_utils.testing import UnicodeModelsTest
-from main.models import *
-from main.tests.base import MainTestCase
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from securesync.models import Device
 
 

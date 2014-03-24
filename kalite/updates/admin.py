@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from models import *
+from .models import *
+
 
 class UpdateProgressLogAdmin(admin.ModelAdmin):
     list_display = ("process_name", "process_percent", "current_stage", "stage_name", "stage_percent", "total_stages", "completed",)

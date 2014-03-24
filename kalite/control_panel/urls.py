@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('control_panel.views',
+
+urlpatterns = patterns(__package__ + '.views',
     # Zone
     url(r'zone/None/$', 'zone_management', {}, 'zone_management'),
     url(r'zone/(?P<zone_id>\w+)/$', 'zone_management', {}, 'zone_management'),

@@ -29,18 +29,18 @@ from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
 from .caching import backend_cache_page
-from facility.models import Facility, FacilityUser,FacilityGroup
 from fle_utils.django_utils import is_loopback_connection
 from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params, backend_cache_page
-from i18n import select_best_available_language
+from kalite.facility.models import Facility, FacilityUser,FacilityGroup
+from kalite.i18n import select_best_available_language
+from kalite.main import topic_tools
+from kalite.main.models import VideoLog, ExerciseLog
+from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from kalite.settings import LOG as logging
-from main import topic_tools
-from main.models import VideoLog, ExerciseLog
-from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from kalite.shared.decorators import require_admin
+from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession
-from shared.decorators import require_admin
-from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 
 
 def check_setup_status(handler):

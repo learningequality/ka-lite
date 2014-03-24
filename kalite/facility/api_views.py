@@ -6,7 +6,7 @@ from django.utils import simplejson
 
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import api_handle_error_with_json, JsonResponse
-from shared.decorators import require_admin
+from kalite.shared.decorators import require_admin
 
 
 @require_admin

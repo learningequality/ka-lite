@@ -5,8 +5,8 @@ import sys
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
+from ...models import UpdateProgressLog
 from fle_utils.django_utils.command import LocaleAwareCommand
-from updates.models import UpdateProgressLog
 
 
 class UpdatesCommand(LocaleAwareCommand):

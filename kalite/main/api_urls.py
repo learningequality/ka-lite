@@ -7,7 +7,7 @@ they're imported into the project's urls.py file.
 from django.conf.urls.defaults import include, patterns, url
 
 
-urlpatterns = patterns('main.api_views',
+urlpatterns = patterns(__package__ + '.api_views',
 
     # For video / exercise pages
     url(r'^save_video_log$', 'save_video_log', {}, 'save_video_log'),
