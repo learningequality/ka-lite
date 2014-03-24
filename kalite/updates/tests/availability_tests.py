@@ -5,8 +5,8 @@ from django.conf import settings
 from django.utils import unittest
 
 from .base import UpdatesTestCase
-from main.topic_tools import get_node_cache, get_topic_tree
-from updates import stamp_availability_on_topic
+from .. import stamp_availability_on_topic
+from kalite.main.topic_tools import get_node_cache, get_topic_tree
 
 
 class TestTopicAvailability(UpdatesTestCase):
