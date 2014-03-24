@@ -55,6 +55,22 @@ ul, li {
     border-bottom: 1px #DFDFDF solid;
 }
 
+.selectable-table {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select:none;
+    user-select:none;
+    draggable: false;
+}
+
+.selectable-table tbody tr {
+    cursor: pointer;
+}
+
+.selectable-table tbody tr.selected {
+    background: #C4CAF5;
+}
+
 a.edit-link {
     font-size:11pt;
 }
@@ -120,8 +136,6 @@ a.edit-link {
 .icon-pencil {
     background-image:url(/static/images/icon-edit.png);
     position: relative;
-    top: -2px;
-    left: -2px;
 }
 .export_csv_div {
     float: right;
@@ -198,3 +212,29 @@ a.edit-link {
     background: linear-gradient(top, #bbbbbb 0%,#efefef 100%); /* W3C */
     cursor: default;
 }
+
+.action-bar {
+    display: inline;
+}
+
+.action-bar div {
+    padding-top: 10px;
+    height: 30px;
+}
+
+.selection {
+    float: left;
+}
+
+.action {
+    float: right;
+}
+
+.dotted {
+    border: dotted;
+    padding: 4px 0px;
+    border-width: 1px;
+    border-color: #444444;
+    margin-right: 3px;
+}
+

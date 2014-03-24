@@ -44,7 +44,7 @@
                 <div class="pagination">
                         <a {% if coaches.has_previous %}href="{{ page_urls.coaches.prev_page }}"{% endif %}>&lt&lt</a>
                         {% for listed_page in coaches.listed_pages %}
-                            {% if page == -1 %}
+                            {% if listed_page == -1 %}
                                 <span class="disabled">&hellip;</span>
                             {% elif listed_page == coaches.number %}
                                 <span class="current">
@@ -145,7 +145,7 @@
                 <div class="pagination">
                         <a {% if students.has_previous %}href="{{ page_urls.students.prev_page }}"{% endif %}>&lt&lt</a>
                         {% for listed_page in students.listed_pages %}
-                            {% if page == -1 %}
+                            {% if listed_page == -1 %}
                                 <span class="disabled">&hellip;</span>
                             {% elif listed_page == students.number %}
                                 <span class="current">

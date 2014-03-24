@@ -1,7 +1,7 @@
-function getSelectedUsers() {
+function getSelectedUsers(select) {
     // Retrieve a list of selected users.
-    var users = $("[type=checkbox]:checked").map(function () {
-        return this.value;
+    var users = $(select).find("tr.selected").map(function () {
+        return $(this).attr("value");
     }).get();
 
     return users;
@@ -15,20 +15,20 @@ $(function() {
         window.location.href = setGetParamDict(window.location.href, GetParams);
     });
 
-    $("#all").click(function(){
-        // Selected all users
-        $("[type=checkbox]").prop("checked",true)
+    $(".all").click(function(event){
+        // Select all users within local table
+        $(event.target.value).find("tr").addClass("selected")
     })
 
-    $("#none").click(function(){
-        // Unselect all users
-        $("[type=checkbox]").prop("checked",false)
+    $(".none").click(function(event){
+        // Unselect all users within local table
+        $(event.target.value).find("tr").removeClass("selected")
     })
 
-    $("#movegroup").click(function(event) {
+    $(".movegroup").click(function(event) {
         // Move users to the selected group
-        var users = getSelectedUsers();
-        var group = $('#movegrouplist option:selected').val();
+        var users = getSelectedUsers(this.value);
+        var group = $(this.value).find('.movegrouplist option:selected').val();
 
         if (!group) {
             alert(gettext("Please choose a group to move users to."));
@@ -44,9 +44,9 @@ $(function() {
         }
     });
 
-    $("#removegroup").click(function(event) {
+    $(".removegroup").click(function(event) {
         // Move users from the selected group to ungrouped.
-        var users = getSelectedUsers();
+        var users = getSelectedUsers(this.value);
 
         if (users.length == 0) {
             alert(gettext("Please select users first"));
@@ -60,9 +60,9 @@ $(function() {
         }
     });
 
-    $("#delete").click(function(event) {
+    $(".delete").click(function(event) {
         // Delete the selected users
-        var users = getSelectedUsers();
+        var users = getSelectedUsers(this.value);
 
         if (users.length == 0) {
             alert(gettext("Please select users first"));
@@ -75,4 +75,20 @@ $(function() {
                 });
         }
     });
+
+    $(".selectable-table").find("tbody").find("tr").mousedown(function(){
+        $(this).toggleClass("selected");
+        $(".selectable-table").find("tbody").find("tr").mouseover(function(){
+            $(this).toggleClass("selected");
+        });
+    });
+
+    $(".selectable-table").find("tbody").find("tr").mouseup(function(){
+        $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
+    });
+
+    $(".selectable-table").mouseleave(function(){
+        $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
+    })
+
 });

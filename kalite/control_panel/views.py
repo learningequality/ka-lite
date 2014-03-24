@@ -229,52 +229,61 @@ def group_report(request, facility, group_id=None, zone_id=None):
 
 @facility_required
 @require_authorized_admin
-@render_to("control_panel/facility_user_management.html")
-def facility_user_management(request, facility, user_type=None, group_id=None, zone_id=None, per_page=25):
+@render_to("control_panel/facility_management.html")
+@render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
+def facility_management(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None, per_page=25):
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
+
+    #Get pagination details
     coach_page=request.REQUEST.get("coaches_page","1")
     student_page=request.REQUEST.get("students_page","1")
-    groups = FacilityGroup.objects \
-        .filter(facility=facility) \
-        .order_by("name")
-    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id)
 
-
-    def pages_to_show(paginator, page):
-            page = int(page)
-            pages_wanted = set([1,2,
-                                page-2, page-1,
-                                page,
-                                page+1, page+2,
-                                paginator.num_pages-1, paginator.num_pages])
-
-            pages_to_show = set(paginator.page_range).intersection(pages_wanted)
-            pages_to_show = sorted(pages_to_show)
-
-            skip_pages = [ x[1] for x in zip(pages_to_show[:-1],
-                                             pages_to_show[1:])
-                           if (x[1] - x[0] != 1) ]
-
-            for i in skip_pages:
-                pages_to_show.insert(pages_to_show.index(i), -1)
-
-            return pages_to_show
     # This could be moved into a function shared across files, if necessary.
     #   For now, moving into function, as outside if function it looks more
     #   general-purpose than it's being used / tested now.
-    def get_users_from_group(user_type, group_id, page, facility=None):
+
+    def get_users_from_group(user_type, group_id, facility=None):
         if user_type == "coaches":
             user_list = FacilityUser.objects \
                 .filter(is_teacher=True) \
                 .filter(facility=facility)
-        elif not group_id or group_id == "None":
+        elif _(group_id) == _("Ungrouped"):
             user_list = FacilityUser.objects \
                 .filter(is_teacher=False) \
                 .filter(facility=facility, group__isnull=True)
-        else:
+        elif group_id:
             user_list = get_object_or_404(FacilityGroup, pk=group_id) \
                 .facilityuser_set
-        user_list = user_list.order_by("first_name", "last_name", "username")
+        else:
+            user_list = FacilityUser.objects \
+                .filter(facility=facility, is_teacher=False)
 
+        user_list = user_list \
+            .order_by("last_name", "first_name", "username") \
+            .prefetch_related("group")
+
+        return user_list
+
+
+    # Basic data
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
+    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
+
+    if request.method == "POST":
+        form = DateRangeForm(data=request.POST)
+        if form.is_valid():
+            frequency = frequency or request.GET.get("frequency", "months")
+            period_start = period_start or form.data["period_start"]
+            period_end = period_end or form.data["period_end"]
+            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+    else:
+        form = DateRangeForm()
+
+    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+
+    def paginate_users(user_list, user_type, per_page=25, page=1):
         if not user_list:
             users = []
             page_urls = {}
@@ -313,8 +322,38 @@ def facility_user_management(request, facility, user_type=None, group_id=None, z
                         page_urls.update({listed_page: "?" + GETParam.urlencode()})
                 users.listed_pages = listed_pages
 
-
         return users, page_urls
+
+    coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page)
+    student_data, student_urls = paginate_users(student_data, "students", page=student_page)
+
+    page_urls = {
+        "coaches": coach_urls,
+        "students": student_urls,
+        }
+
+    context.update({
+        "form": form,
+        "groups": group_data,
+        "students": student_data,
+        "coaches": coach_data,
+        "date_range": [period_start, period_end],
+        "page_urls": page_urls,
+    })
+    return context
+
+@facility_required
+@require_authorized_admin
+@render_to("control_panel/facility_user_management.html")
+def facility_user_management(request, facility, user_type=None, group_id=None, zone_id=None, per_page=25):
+    coach_page=request.REQUEST.get("coaches_page","1")
+    student_page=request.REQUEST.get("students_page","1")
+    groups = FacilityGroup.objects \
+        .filter(facility=facility) \
+        .order_by("name")
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id)
+
+
 
     coaches, coach_urls = get_users_from_group(user_type="coaches", group_id=group_id, page=coach_page, facility=facility)
     students, student_urls = get_users_from_group(user_type="students", group_id=group_id, page=student_page, facility=facility)
@@ -407,6 +446,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None)
         video_logs = video_logs.filter(completion_timestamp__lte=period_end)
         login_logs = login_logs.filter(end_datetime__lte=period_end)
 
+
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
@@ -414,6 +454,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None)
 
     for user in users:
         user_data[user.pk] = OrderedDict()
+        user_data[user.pk]["id"] = user.pk
         user_data[user.pk]["first_name"] = user.first_name
         user_data[user.pk]["last_name"] = user.last_name
         user_data[user.pk]["username"] = user.username
@@ -452,6 +493,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None)
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
         group_data[group_pk] = {
+            "id": group_pk,
             "name": group_name,
             "total_logins": 0,
             "total_hours": 0,
@@ -473,7 +515,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None)
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
 
-    return (user_data, group_data)
+    return (user_data.values(), group_data.values())
 
 
 # context functions
@@ -513,3 +555,25 @@ def local_device_context(request):
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
+
+
+#Function to select pages around currently selected page to show in pagination bar
+def pages_to_show(paginator, page):
+        page = int(page)
+        pages_wanted = set([1,2,
+                            page-2, page-1,
+                            page,
+                            page+1, page+2,
+                            paginator.num_pages-1, paginator.num_pages])
+
+        pages_to_show = set(paginator.page_range).intersection(pages_wanted)
+        pages_to_show = sorted(pages_to_show)
+
+        skip_pages = [ x[1] for x in zip(pages_to_show[:-1],
+                                         pages_to_show[1:])
+                       if (x[1] - x[0] != 1) ]
+
+        for i in skip_pages:
+            pages_to_show.insert(pages_to_show.index(i), -1)
+
+        return pages_to_show
