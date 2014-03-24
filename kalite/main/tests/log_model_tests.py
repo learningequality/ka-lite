@@ -1,9 +1,9 @@
 from django.utils import unittest
 
-import i18n
-from facility.models import Facility, FacilityUser
-from main.models import VideoLog, ExerciseLog
-from testing import KALiteTestCase
+from ..models import VideoLog, ExerciseLog
+from kalite import i18n
+from kalite.facility.models import Facility, FacilityUser
+from kalite.testing import KALiteTestCase
 
 
 class TestExerciseLogs(KALiteTestCase):

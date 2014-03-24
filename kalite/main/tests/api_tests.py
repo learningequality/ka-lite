@@ -10,10 +10,10 @@ from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-import i18n
-from facility.models import Facility, FacilityUser
-from main.models import VideoLog, ExerciseLog
-from testing import KALiteClient, KALiteTestCase
+from ..models import VideoLog, ExerciseLog
+from kalite import i18n
+from kalite.facility.models import Facility, FacilityUser
+from kalite.testing import KALiteClient, KALiteTestCase
 
 
 class TestSaveExerciseLog(KALiteTestCase):
