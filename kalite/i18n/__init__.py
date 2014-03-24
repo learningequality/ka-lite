@@ -22,6 +22,7 @@ from django.views.i18n import javascript_catalog
 ###   we CANNOT import main.models in here.  ###
 ###                                          ###
 ################################################
+from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
 from kalite.settings import LANG_LOOKUP_FILEPATH, LOG as logging
 from version import VERSION
@@ -348,6 +349,16 @@ def _get_installed_language_packs():
 
     sorted_list = sorted(installed_language_packs, key=lambda m: m['name'].lower())
     return OrderedDict([(lcode_to_ietf(val["code"]), val) for val in sorted_list])
+
+
+def get_default_language():
+    """Returns: the default language (ietf-formatted language code)"""
+    return Settings.get("default_language") or settings.LANGUAGE_CODE or "en"
+
+
+def set_default_language(lang_code):
+    """Sets the default language"""
+    Settings.set("default_language", lcode_to_ietf(lang_code))
 
 
 def get_langs_with_subtitle(youtube_id):
