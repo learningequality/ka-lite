@@ -109,16 +109,16 @@ a.edit-link {
     min-height: 13px;
 }
 .icon-trash {
-    background-image:url(/static/images/icon-trash.png);
+    background-image:url(../../images/control_panel/icon-trash.png);
 }
 .icon-add {
-    background-image:url(/static/images/icon-plus-sign.png);
+    background-image:url(../../images/control_panel/icon-plus-sign.png);
     background-size: 15px 15px;
     min-width: 20px; min-height: 20px;
     margin-left: 2px;
 }
 .icon-pencil {
-    background-image:url(/static/images/icon-edit.png);
+    background-image:url(../../images/control_panel/icon-edit.png);
     position: relative;
     top: -2px;
     left: -2px;
