@@ -76,6 +76,9 @@ $(function() {
         }
     });
 
+    // This code is to allow rows of a selectable-table class table to be clicked for selection,
+    // and dragged across with mousedown for selection.
+    // When mouse is pressed over a row in the table body (not the header row), make mouseovers select.
     $(".selectable-table").find("tbody").find("tr").mousedown(function(){
         $(this).toggleClass("selected");
         $(".selectable-table").find("tbody").find("tr").mouseover(function(){
@@ -83,12 +86,23 @@ $(function() {
         });
     });
 
+    // Unbind the mouseover selection once the button has been released.
     $(".selectable-table").find("tbody").find("tr").mouseup(function(){
         $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
     });
 
+    // If the mouse moves out of the table with the button still depressed, the above unbind will not fire.
+    // Unbind the mouseover once the mouse leaves the table.
+    // This means that moving the mouse out and then back in with the button depressed will not select.
     $(".selectable-table").mouseleave(function(){
         $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
     })
+
+    // Prevent propagation of click events on links to limit confusing behaviour
+    // of rows being selected when links clicked.
+    $(".selectable-table").find("a").mousedown(function(event) {
+        event.stopPropagation();
+        return false;
+    });
 
 });
