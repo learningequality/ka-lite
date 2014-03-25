@@ -16,7 +16,7 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="container front-page">
+    <div class="container">
 
         <div class="row jumbotron">
             <h2 class="main-headline">{% trans "A free world-class education for anyone. Anywhere." %}</h2>
@@ -24,7 +24,8 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-6 vertical-shadow suggested-action">
+ 
+            <div class="col-sm-5 vertical-shadow suggested-action">
                 <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
                 <p class="topic-list">
                     {% for subtopic in topics %}
@@ -38,16 +39,16 @@
                 </p>
             </div>
 
-            <div class="col-sm-6 vertical-shadow suggested-action">
+            <div class="col-sm-5 col-sm-offset-1 vertical-shadow suggested-action">
                 <a href="{% url exercise_dashboard %}">
                     <h2 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h2>
                     <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
                     <div class="suggested-action-image-link" style="background-image: url({% static 'images/distributed/knowledge-map-derivative-intuition.png' %});"></div>
                 </a>
             </div>
+ 
         </div>
 
     </div>
-
 
 {% endblock content %}
