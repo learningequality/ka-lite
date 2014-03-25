@@ -26,7 +26,8 @@ from kalite.testing.browser import BrowserTestCase
 
 from securesync.models import Zone, DeviceZone , Device
 from fle_utils.config.models import Settings
-
+from updates.api_views import delete_language
+from django.core.management import call_command
 
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
@@ -205,49 +206,43 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
                 break
         return flag
 
-    def test_add_language_pack(self):
-        ''' Test to check whether a language pack is added successfully or not'''
+    # def test_add_language_pack(self):
+    #     # Login as admin
+    #     self.browser_login_admin()
 
-        #Login as admin
-        self.browser_login_admin()
+    #     # Add the language pack
+    #     if self.is_language_installed("de"):
+    #         # what we want to test is if adding a language pack works.
+    #         # So we uninstall "de" to be able to test it
+    #         delete_language("de")
 
-        #Add the language pack
-        if self.is_language_installed("de"):
-            print "Add Error : Already Installed "
-        else:
-            self.register_device()
-            language_url = self.reverse("update_languages")
-            self.browse_to(language_url)
-            time.sleep(3)
-            select=self.browser.find_element_by_id("language-packs")
-            for option in select.find_elements_by_tag_name('option'):
-                if option.text == "German (de)":
-                    option.click()
-            time.sleep(1)
-            self.browser.find_element_by_css_selector("#get-language-button").click()
-            time.sleep(5)
+    #     self.register_device()
+    #     language_url = self.reverse("update_languages")
+    #     self.browse_to(language_url)
+    #     time.sleep(3)
+    #     select = self.browser.find_element_by_id("language-packs")
+    #     for option in select.find_elements_by_tag_name('option'):
+    #         if option.text == "German (de)":
+    #             option.click()
+    #     time.sleep(1)
+    #     self.browser.find_element_by_css_selector("#get-language-button").click()
+    #     time.sleep(5)
 
-        if not self.is_language_installed("de"):
-            print " Add Error: Language Still Not Installed"
-        else:
-            print " Add Success: Language Present"
-
+    #     self.assertTrue(self.is_language_installed("de"))
 
     def test_delete_language_pack(self):
-        ''' Test to check whether a language pack is deleted successfully or not'''
-        #Login as admin
+        ''' Test to check whether a language pack is deleted successfully or not '''
+        # Login as admin
         self.browser_login_admin()
 
-        #Delete the language pack
+        # Delete the language pack
         if not self.is_language_installed("de"):
-            print " Delete Error : Language Not Installed "
-        else:
-	    self.register_device()
-            language_url = self.reverse("update_languages")
-            self.browse_to(language_url)
-            self.browser.find_element_by_css_selector(".delete-language-button > button[value='de']").click()
+            call_command("languagepackdownload", lang_code="de")
 
-        if self.is_language_installed("de"):
-            print "Delete Error : Language Still Not Deleted"
-        else:
-            print " Delete Success: Language Not Present"
+	self.register_device()
+        language_url = self.reverse("update_languages")
+        self.browse_to(language_url)
+        time.sleep(1)
+        self.browser.find_element_by_css_selector(".delete-language-button > button[value='de']").click()
+
+        self.assertFalse(self.is_language_installed("de"))

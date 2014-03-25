@@ -221,14 +221,9 @@ def start_languagepack_download(request):
     return JsonResponseMessageSuccess(_("Started language pack download for %s successfully.") % lang_code)
 
 
-@require_admin
-@api_handle_error_with_json
-def delete_language_pack(request):
-    """
-    API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
-    That particular language folders are deleted and that language gets removed.
-    """
-    lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
+
+def delete_language(lang_code):
+
     langpack_resource_paths=[ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
 
     for langpack_resource_path in langpack_resource_paths:
@@ -243,7 +238,18 @@ def delete_language_pack(request):
 
     invalidate_web_cache()
 
-    return JsonResponseMessageSuccess(_("Deleted language pack %s successfully.") % lang_code)
+
+@require_admin
+@api_handle_error_with_json
+def delete_language_pack(request):
+    """
+    API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
+    That particular language folders are deleted and that language gets removed.
+    """
+    lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    delete_language(lang_code)
+
+    return JsonResponse({"success": _("Deleted language pack %s successfully.") % lang_code})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
