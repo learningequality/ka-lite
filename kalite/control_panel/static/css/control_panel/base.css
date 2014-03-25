@@ -111,6 +111,22 @@ a.edit-link {
     width: 180px;
 }
 
+#students, #groups, #coaches {
+    margin-bottom: 50px;
+}
+
+.no-data {
+    padding-left: 50px;
+    font-weight: bold;
+    color: #f00;
+}
+.definition {
+    font-style: italic;
+}
+.pagination {
+    margin-top: 25px;
+}
+
 .hidden {
     display: none;
 }

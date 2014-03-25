@@ -92,14 +92,14 @@
                 </a>
             </div>
             <div>
-                <span>
+                <span class="definition">
                     {% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}
                 </span>
             </div>
 
             <div class="users">
             {% if not coaches %}
-                <p>{% trans "You currently have no coaches for this facility." %}</p>
+                <p class="no-data">{% trans "You currently have no coaches for this facility." %}</p>
 
             {% else %}
             {% block coaches_table %}
@@ -162,7 +162,7 @@
         </div><!-- teachers -->
         {% endif %}
 
-        <div class="groups">
+        <div class="groups" id="groups">
             {% if not group_id %}
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Student Groups" %}</span>
@@ -173,12 +173,13 @@
             <div class="clear"></div>
 
             <div>
-                <span>
-                    {% trans "A group is group of students, such as a classroom of students or all students in one grade." %}
+                <span class="definition">
+                    {% trans "A 'group' is set of students, such as a classroom of students or all students in one grade." %}
+                    {% trans "Add students by selecting a group." %}
                 </span>
             </div>
             {% if not groups %}
-                <p>{% trans "You currently have no data available." %}</p>
+                <p class="no-data">{% trans "You currently have no data available." %}</p>
 
             {% else %}
                 <table class="simple-table">
@@ -264,13 +265,13 @@
             </div>
 
             <div>
-                <span>
+                <span class="definition">
                     {% trans "This report contains information about recent student activity." %}
                 </span>
             </div>
 
             {% if not students %}
-                <p>{% trans "You currently have no data available." %}</p>
+                <p class="no-data">{% trans "You currently have no student data available." %}</p>
 
             {% else %}
                 {% if students.num_listed_pages > 1 %}
