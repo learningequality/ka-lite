@@ -166,7 +166,7 @@
 
         <div class="container wrapper">
             {% block outer_content %}
-            <div id="container">
+            <!-- <div id="container"> -->
                 <article class="clearfix">
                     {% block precontent %}
                     <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
@@ -178,7 +178,7 @@
                     {% endblock precontent %}
                     {% block content %}{% endblock content %}
                 </article>
-            </div>
+            <!-- </div> -->
             {% endblock outer_content %}
 
             <div id="badge-notification-container" class="badge-award-container" style="display:none;"></div> <!-- What's this -->
@@ -188,13 +188,14 @@
         <footer class="footer-sticky navbar-default">
             <div class="container">
                 <a class="navbar-brand tiny">
-                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="KA Lite logo"> Creators of KA Lite &copy; 2014
+                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="KA Lite logo"> 
+                    <p>Creators of KA Lite &copy; 2014</p>
                 </a>
                 <ul class="nav navbar-nav navbar-right tiny">
                     <!-- {% block footerleft %} --> <!-- What's this -->
                     <!-- {% endblock footerleft %} --> <!-- What's this -->
-                    <li>{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</li>
-                    <li class="pull-right"><a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a></li>
+                    <li class="pull-right">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</li>
+                    <li class="pull-right"><a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a></li> <!-- What's this -->
                 </ul>
             </div>
         </footer>
