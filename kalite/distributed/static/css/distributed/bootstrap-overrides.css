@@ -53,7 +53,7 @@ input#search.ui-autocomplete-input {
 }
 #search-button {
 	color: #fff !important;
-	margin-left:-3px;
+	margin-left: -3px;
 }
 #search-button:hover {
     background: #6dc96d !important;
@@ -72,8 +72,7 @@ select#language_selector {
 }
 .suggested-action {
     background: #f8f8f8;
-    /*border-radius: 4px;*/
-    color: #444!important;
+    color: #444 !important;
     margin-bottom: 10px;
     min-height: 256px;
     padding: 14px;
@@ -82,7 +81,7 @@ select#language_selector {
     /*border-color: #C3CA7D;*/
     -webkit-box-shadow: 0 0 10px #76A005;
     -moz-box-shadow: 0 0 10px #76a005;
-    box-shadow: 0 0 10px #d1d7b1;
+    box-shadow: 0 0 10px #76a005;
 }
 .suggested-action a:hover {
     text-decoration: none !important;
@@ -180,6 +179,12 @@ ul .pull-right {
 /* ===================================
 	Media Queries
 =================================== */
-@media only screen and (max-width: 991px) and (min-width: 768px) {
+@media only screen and (max-width: 767px) {
+    footer div a p:nth-child(2) { margin: 0; }
+}
+@media only screen and (max-width: 767px) {
+    form#search-box { margin-left: 15px; margin-bottom: 10px; }
+}
+@media only screen and (min-width: 768px) and (max-width: 991px) {
 	.navbar-brand img { width: 69px; }
 }
