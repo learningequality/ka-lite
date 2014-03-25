@@ -81,7 +81,7 @@
         {% block analytics %}{% endblock analytics %}
     </head>
 
-    <body class="light {% block bodyclass %}{% endblock %}" id="background-photo"> <!-- What's this --> 
+    <body class="light {% block bodyclass %}{% endblock %}" id="background-photo" style="background-image: url({% static 'images/distributed/background.jpg' %});"> <!-- What's this --> 
         <!-- Background photo by D Sharon Pruitt / Creative Commons license -->
         
         <div class="navbar navbar-default navbar-fixed-top">
@@ -164,7 +164,7 @@
             </div>
         </div>
 
-        <div class="container wrapper">
+        <div class="container" id="wrapper">
             {% block outer_content %}
             <!-- <div id="container"> -->
                 <article class="clearfix">
