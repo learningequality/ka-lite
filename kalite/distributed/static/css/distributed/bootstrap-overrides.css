@@ -23,12 +23,16 @@ body {
 .container {
     max-width: 1000px;
 }
+.row {
+    width: 100%;
+}
 
 /* ===================================
 	Nav Bar
 =================================== */
 .navbar {
-	/*border-bottom: 1px solid #999;*/
+	border-bottom: 1px solid #999;
+    background: #c6ccc2;
 }
 .navbar-default {
 	/*background: #c6ccc2;*/
@@ -40,7 +44,7 @@ body {
     color: #333 !important;
     text-transform: uppercase;
 }
-.navbar ul li a:hover {
+.navbar ul li a:hover, .navbar ul li a:focus {
     background: #d1d7b1 !important;
 }
 form#search-box {
@@ -55,7 +59,7 @@ input#search.ui-autocomplete-input {
 	color: #fff !important;
 	margin-left: -3px;
 }
-#search-button:hover {
+#search-button:hover, #search-button:focus {
     background: #6dc96d !important;
 }
 select#language_selector {
@@ -72,20 +76,31 @@ select#language_selector {
 }
 .suggested-action {
     background: #f8f8f8;
-    color: #444 !important;
+    border-radius: 6px;
     margin-bottom: 10px;
     min-height: 256px;
-    padding: 14px;
+    padding: 0 30px;
+    /*width: 430px;*/
 }
-.suggested-action:hover {
+.suggested-action:hover, .suggested-action:focus {
     /*border-color: #C3CA7D;*/
     -webkit-box-shadow: 0 0 10px #76A005;
     -moz-box-shadow: 0 0 10px #76a005;
-    box-shadow: 0 0 10px #76a005;
+    box-shadow: 0 0 30px #76a005;
 }
-.suggested-action a:hover {
-    text-decoration: none !important;
-    /*color: #005987;*/
+.suggested-action-title {
+    color: #005987;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+.suggested-action a {
+    color: #777;
+    font-size: 1.25em;
+}
+.suggested-action a:hover, .suggested-action a:focus {
+    color: #005987;
+    font-weight: bold;
+    text-decoration: none;
 }
 .suggested-action-image-link {
     background-size: cover;
@@ -95,11 +110,9 @@ select#language_selector {
     height: 130px;
     margin: -5px -14px -15px -14px;
 }
-/*.suggested-action-title {
-    color: #005987;
-    text-decoration: none;
-    font-size: 21px;
-}*/
+.topic-link {
+    margin-left: 16px;
+}
 /*.message {
     margin-left: 7px;
 }*/
@@ -118,9 +131,6 @@ select#language_selector {
     padding: 0 0 8px 40px;
     font-size: 18px;
     line-height: 40px;
-}*/
-/*a:hover, a:hover .suggested-action-title {
-    color: #2F92A5!important;
 }*/
 /*.video-unavailable,
 .topic-unavailable,
@@ -150,7 +160,7 @@ a:visited.topic-unavailable {
 .footer-clearfix {
     height: 110px;
 }
-footer, footer div p:hover {
+footer, footer div p:hover, footer div p:focus  {
     color: #777;
 }
 footer div a.navbar-brand {
