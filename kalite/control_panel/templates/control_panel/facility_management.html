@@ -3,6 +3,9 @@
 {% load my_filters %}
 {% load staticfiles %}
 
+{% block control_panel_active %}{% endblock %}
+{% block users_active %}active{% endblock %}
+
 {% block title %}{{ facility.name }} - {% trans "Facility Management" %}{{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
