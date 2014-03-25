@@ -103,6 +103,7 @@
 
             {% else %}
             {% block coaches_table %}
+                {% if coaches.num_listed_pages > 1 %}
                 <div class="pagination">
                         <a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coaches.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&lt&lt</a>
                         {% for listed_page in coaches.listed_pages %}
@@ -119,6 +120,7 @@
                         <a title="{% trans 'Browse to the next page of coaches.' %}" {% if coaches.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&gt&gt</a>
                 </div>
                 <div class="clear"></div>
+                {% endif %}
                 <div class="action-bar"><div class="selection"><h4>{% trans "Select" %}: <button class="all" value="#coaches">{% trans "All" %}</button> <button class="none" value="#coaches">{% trans "None" %}</button></h4></div>
                         <div class="action">
                             <h4>{% trans "Action" %}
@@ -271,6 +273,7 @@
                 <p>{% trans "You currently have no data available." %}</p>
 
             {% else %}
+                {% if students.num_listed_pages > 1 %}
             <div class="pagination">
                     <a title="{% trans 'Browse to the previous page of students.' %}" {% if students.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&lt&lt</a>
                     {% for listed_page in students.listed_pages %}
@@ -287,6 +290,7 @@
                     <a title="{% trans 'Browse to the next page of students.' %}" {% if students.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&gt&gt</a>
             </div>
             <div class="clear"></div>
+            {% endif %}
             <div class="action-bar"><div class="selection"><h4>{% trans "Select" %}: <button class="all" value="#students">{% trans "All" %}</button> <button class="none" value="#students">{% trans "None" %}</button></h4></div>
                     <div class="action">
                         <h4>{% trans "Action" %}

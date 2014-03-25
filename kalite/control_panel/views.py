@@ -301,6 +301,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
                         GETParam[user_type + "_page"] = listed_page
                         page_urls.update({listed_page: "?" + GETParam.urlencode()})
                 users.listed_pages = listed_pages
+                users.num_listed_pages = len(listed_pages)
 
         return users, page_urls
 
