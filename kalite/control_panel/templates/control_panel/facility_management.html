@@ -17,7 +17,7 @@
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
         }
-        
+
         var TEMPLATE_GROUP_URL = "{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
 
         $(document).ready(function(){
@@ -80,10 +80,11 @@
         </div>
     </li>
 {% endblock buttons %}
+
 {% block control_panel_content %}
-{% trans "Ungrouped" as ungrouped %}
+    {% trans "Ungrouped" as ungrouped %}
     <div id="facility_container">
-        {% if not group_id %}
+        {% if not group_id %}{# Only show coaches when no group is selected #}
         <div class="coaches" id="coaches">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Coaches" %}</span>
@@ -121,14 +122,22 @@
                 </div>
                 <div class="clear"></div>
                 {% endif %}
-                <div class="action-bar"><div class="selection"><h4>{% trans "Select" %}: <button class="all" value="#coaches">{% trans "All" %}</button> <button class="none" value="#coaches">{% trans "None" %}</button></h4></div>
-                        <div class="action">
-                            <h4>{% trans "Action" %}
 
-                            <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
-                            </h4>
-                        </div>
+                <div class="action-bar">
+                    <div class="selection">
+                        <h4>
+                            {% trans "Select" %}:
+                            <button class="all" value="#coaches">{% trans "All" %}</button>
+                            <button class="none" value="#coaches">{% trans "None" %}</button>
+                        </h4>
                     </div>
+                        <div class="action">
+                        <h4>{% trans "Action" %}:
+
+                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                        </h4>
+                    </div>
+                </div>
 
                 <table class="simple-table selectable-table">
                     <thead>
@@ -163,7 +172,27 @@
         {% endif %}
 
         <div class="groups" id="groups">
-            {% if not group_id %}
+        {% if group_id %}
+            {# comment "First block is a group summary page for a single group's display" #}
+            {% with groups|first as groupdata %}
+            <dl class="dl-horizontal">
+            <dt>{% trans "# Students" %}</dt>
+            <dd>{{ groupdata.total_users }}</dd>
+            <dt>{% trans "Logins" %}</dt>
+            <dd>{{ groupdata.total_logins }}</dd>
+            <dt>{% trans "Login Time" %}</dt>
+            <dd>{{ groupdata.total_hours|floatformat }}</dd>
+            <dt>{% trans "Videos Viewed" %}</dt>
+            <dd>{{ groupdata.total_videos }}</dd>
+            <dt>{% trans "Exercises Completed" %}</dt>
+            <dd>{{ groupdata.total_exercises }}</dd>
+            <dt>{% trans "Mastery " %}</dt>
+            <dd>{{ groupdata.pct_mastery|percent:1 }}</dd>
+            </dl>
+            {% endwith %}
+
+        {% else %}
+            {# "Second block is a list of all available groups, in table form." %}{% endcomment #}
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Student Groups" %}</span>
                 <a title="{% trans 'Add a new group.' %}" href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
@@ -235,27 +264,10 @@
                     </tbody>
                 </table>
             {% endif %}
-            {% else %}
-            {% comment "Second block is a group summary page for a single group's display" %}{% endcomment %}
-            {% with groups|first as groupdata %}
-            <dl class="dl-horizontal">
-            <dt>{% trans "# Students" %}</dt>
-            <dd>{{ groupdata.total_users }}</dd>
-            <dt>{% trans "Logins" %}</dt>
-            <dd>{{ groupdata.total_logins }}</dd>
-            <dt>{% trans "Login Time" %}</dt>
-            <dd>{{ groupdata.total_hours|floatformat }}</dd>
-            <dt>{% trans "Videos Viewed" %}</dt>
-            <dd>{{ groupdata.total_videos }}</dd>
-            <dt>{% trans "Exercises Completed" %}</dt>
-            <dd>{{ groupdata.total_exercises }}</dd>
-            <dt>{% trans "Mastery " %}</dt>
-            <dd>{{ groupdata.pct_mastery|percent:1 }}</dd>
-            </dl>
-            {% endwith %}
-            {% endif %}
+        {% endif %}
         </div><!-- groups -->
 
+        {% if group_id or num_groups < 25 %}
         <div class="students" id="students">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Students" %}</span>
@@ -292,9 +304,17 @@
             </div>
             <div class="clear"></div>
             {% endif %}
-            <div class="action-bar"><div class="selection"><h4>{% trans "Select" %}: <button class="all" value="#students">{% trans "All" %}</button> <button class="none" value="#students">{% trans "None" %}</button></h4></div>
-                    <div class="action">
-                        <h4>{% trans "Action" %}
+            <div class="action-bar">
+                <div class="selection">
+                    <h4>
+                        {% trans "Select" %}:
+                        <button class="all" value="#students">{% trans "All" %}</button>
+                        <button class="none" value="#students">{% trans "None" %}</button>
+                    </h4>
+                </div>
+                <div class="action">
+                    <h4>
+                        {% trans "Action" %}:
                         {% if groups %}
                         <span class="dotted">
                             <button class="movegroup" value="#students">{% trans "Move Students to Group" %}</button>
@@ -310,13 +330,12 @@
                         {% endif %}
 
                          {% if not group_id == ungrouped %}
-                                 <button class="removegroup" value="#students">{% trans "Remove Students from Group" %}</button>
+                         <button class="removegroup" value="#students">{% trans "Remove Students from Group" %}</button>
                          {% endif %}
-                <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
-                        <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
-                        </h4>
-                    </div>
+                         <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                    </h4>
                 </div>
+            </div>
             <table class="simple-table selectable-table">
                 <thead>
                     <tr>
@@ -373,5 +392,6 @@
             </table>
             {% endif %}
         </div><!-- users -->
+        {% endif %}
     </div><!-- facility -->
 {% endblock control_panel_content %}
