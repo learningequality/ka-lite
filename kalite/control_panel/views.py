@@ -23,7 +23,6 @@ from kalite.coachreports.views import student_view_context
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
-from kalite.facility.views import user_management_context
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.main.topic_tools import get_node_cache
 from kalite.settings import LOG as logging
@@ -249,30 +248,42 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
 
     def paginate_users(user_list, user_type, per_page=25, page=1):
-        # Create pagination for users
+        """
+        Create pagination for users
+        """
         if not user_list:
             users = []
             page_urls = {}
         else:
+            #Create a Django Pagintor from QuerySet
             paginator = Paginator(user_list, per_page)
             try:
+                #Try to render the page with the passed 'page' number
                 users = paginator.page(page)
+                #Call pages_to_show function that selects a subset of pages to link to
                 listed_pages = pages_to_show(paginator, page)
             except PageNotAnInteger:
+                #If not a proper page number, render page 1
                 users = paginator.page(1)
+                #Call pages_to_show function that selects a subset of pages to link to
                 listed_pages = pages_to_show(paginator, 1)
             except EmptyPage:
+                #If past the end of the page range, render last page
                 users = paginator.page(paginator.num_pages)
+                #Call pages_to_show function that selects a subset of pages to link to
                 listed_pages = pages_to_show(paginator, paginator.num_pages)
 
         if users:
+            #Generate URLs for pagination links
             if users.has_previous():
+                #If there are pages before the current page, generate a link for 'previous page'
                 prevGETParam = request.GET.copy()
                 prevGETParam[user_type + "_page"] = users.previous_page_number()
                 previous_page_url = "?" + prevGETParam.urlencode()
             else:
                 previous_page_url = ""
             if users.has_next():
+                #If there are pages after the current page, generate a link for 'next page'
                 nextGETParam = request.GET.copy()
                 nextGETParam[user_type + "_page"] = users.next_page_number()
                 next_page_url = "?" + nextGETParam.urlencode()
@@ -281,6 +292,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
             page_urls = {"next_page": next_page_url, "prev_page": previous_page_url}
 
             if listed_pages:
+                #Generate URLs for other linked to pages
                 for listed_page in listed_pages:
                     if listed_page != -1:
                         GETParam = request.GET.copy()
@@ -427,7 +439,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id==_("Ungrouped")):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None]*(group_id==None or _(group_id)==_("Ungrouped")):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
         group_data[group_pk] = {
@@ -495,23 +507,33 @@ def local_device_context(request):
     }
 
 
-#Function to select pages around currently selected page to show in pagination bar
-def pages_to_show(paginator, page):
-        page = int(page)
-        pages_wanted = set([1,2,
-                            page-2, page-1,
-                            page,
-                            page+1, page+2,
-                            paginator.num_pages-1, paginator.num_pages])
+def pages_to_show(paginator, page, pages_wanted=None, max_pages_wanted=9):
+    """
+    Function to select first two pages, last two pages and pages around currently selected page
+    to show in pagination bar.
+    """
+    page = int(page)
 
-        pages_to_show = set(paginator.page_range).intersection(pages_wanted)
-        pages_to_show = sorted(pages_to_show)
+    #Set precedence for displaying each page on the navigation bar.
+    page_precedence_order = [page,1,paginator.num_pages,page+1,page-1,page+2,page-2,2,paginator.num_pages-1]
 
-        skip_pages = [ x[1] for x in zip(pages_to_show[:-1],
-                                         pages_to_show[1:])
-                       if (x[1] - x[0] != 1) ]
+    if pages_wanted is None:
+        pages_wanted = []
 
-        for i in skip_pages:
-            pages_to_show.insert(pages_to_show.index(i), -1)
+    #Allow for arbitrary pages wanted to be set via optional argument
+    pages_wanted = set(pages_wanted) or set(page_precedence_order[:max_pages_wanted])
 
-        return pages_to_show
+    #Calculate which pages actually exist
+    pages_to_show = set(paginator.page_range).intersection(pages_wanted)
+    pages_to_show = sorted(pages_to_show)
+
+    #Find gaps larger than 1 in pages_to_show, indicating that a range of pages has been skipped here
+    skip_pages = [ x[1] for x in zip(pages_to_show[:-1],
+                                     pages_to_show[1:])
+                   if (x[1] - x[0] != 1) ]
+
+    #Add -1 to stand in for skipped pages which can then be rendered as an ellipsis.
+    for i in skip_pages:
+        pages_to_show.insert(pages_to_show.index(i), -1)
+
+    return pages_to_show

@@ -72,12 +72,13 @@
                 {% csrf_token %}
                 <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></input>
                 <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></input>
-                <input type="submit" class="btn-large" id="CSV_EXPORT" title="User report for the previous month" value="{% trans "Export to CSV" %}" /></input>
+                <input type="submit" class="btn-large" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
 {% endblock buttons %}
 {% block control_panel_content %}
+{% trans "Ungrouped" as ungrouped %}
     <div id="facility_container">
         <div class="groups">
             {% if not group_id %}
@@ -120,7 +121,6 @@
                                     <span class="icon-pencil" title="{% trans 'Manage Group' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                     </a>
                                     {% else %}
-                                    {% trans "Ungrouped" as ungrouped %}
                                     <a href="{% url facility_management zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
                                         {{ group.name }}
                                         <span class="icon-pencil" title="{% trans 'Manage Ungrouped' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -205,7 +205,7 @@
                             </span>
                             {% endif %}
 
-                             {% if not group_id == "Ungrouped" %}
+                             {% if not group_id == ungrouped %}
                                      <button class="removegroup" value="#coaches">{% trans "Remove Coaches from Group" %}</button>
                              {% endif %}
                     <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
@@ -301,7 +301,7 @@
                         </span>
                         {% endif %}
 
-                         {% if not group_id == "Ungrouped" %}
+                         {% if not group_id == ungrouped %}
                                  <button class="removegroup" value="#students">{% trans "Remove Students from Group" %}</button>
                          {% endif %}
                 <!--         <button id="newuser">{% trans "Add New User to Group" %}</button> -->
