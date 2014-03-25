@@ -126,6 +126,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     elif user:
         form = FacilityUserForm(facility=facility, instance=user)
         title = _("Edit user") + " " + user.username
+        is_teacher = user.is_teacher
 
     else:
         assert is_teacher is not None, "Must call this function with is_teacher set."
