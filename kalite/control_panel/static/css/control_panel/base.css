@@ -238,3 +238,46 @@ a.edit-link {
     margin-right: 3px;
 }
 
+dl {
+    margin-bottom:20px;
+    }
+
+dt,dd {
+    line-height:20px;
+    }
+
+dt {
+    font-weight:bold;
+    }
+
+dd {
+    margin-left:10px;
+    }
+
+.dl-horizontal {
+    *zoom:1;
+    }
+
+.dl-horizontal:before,.dl-horizontal:after {
+    display:table;
+    line-height:0;
+    content:"";
+    }
+
+.dl-horizontal:after {
+    clear:both;
+    }
+
+.dl-horizontal dt {
+    float:left;
+    width:160px;
+    overflow:hidden;
+    clear:left;
+    text-align:right;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    }
+
+.dl-horizontal dd {
+    margin-left:180px;
+}
