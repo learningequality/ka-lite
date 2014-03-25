@@ -115,7 +115,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
             elif request.is_admin:
                 # Created: by admin
                 messages.success(request, _("You successfully created user '%s'") % form.instance.get_name())
-                return HttpResponseRedirect(request.META.get("PATH_INFO", request.next or reverse("homepage")))  # allow them to add more of the same thing.
+                return HttpResponseRedirect(request.next or request.get_full_path() or reverse("homepage"))  # allow them to add more of the same thing.
 
             else:
                 # Created: by self
