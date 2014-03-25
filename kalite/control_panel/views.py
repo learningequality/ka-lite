@@ -129,46 +129,6 @@ def zone_management(request, zone_id="None"):
     return context
 
 
-@facility_required
-@require_authorized_admin
-@render_to("control_panel/facility_usage.html")
-@render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
-def facility_usage(request, facility, zone_id=None, frequency=None, period_start="", period_end=""):
-    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
-
-    # Basic data
-    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
-    students = FacilityUser.objects \
-        .filter(facility=context["facility"], is_teacher=False) \
-        .order_by("last_name", "first_name", "username") \
-        .prefetch_related("group")
-    teachers = FacilityUser.objects \
-        .filter(facility=context["facility"], is_teacher=True) \
-        .order_by("last_name", "first_name", "username") \
-        .prefetch_related("group")
-
-    if request.method == "POST":
-        form = DateRangeForm(data=request.POST)
-        if form.is_valid():
-            frequency = frequency or request.GET.get("frequency", "months")
-            period_start = period_start or form.data["period_start"]
-            period_end = period_end or form.data["period_end"]
-            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-    else:
-        form = DateRangeForm()
-    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end)
-    (teacher_data, _) = _get_user_usage_data(teachers, period_start=period_start, period_end=period_end)
-
-    context.update({
-        "form": form,
-        "groups": group_data,
-        "students": student_data,
-        "teachers": teacher_data,
-        "date_range": [period_start, period_end],
-    })
-    return context
-
-
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
 def device_management(request, device_id, zone_id=None, n_sessions=10):
@@ -252,8 +212,8 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
                 .filter(is_teacher=False) \
                 .filter(facility=facility, group__isnull=True)
         elif group_id:
-            user_list = get_object_or_404(FacilityGroup, pk=group_id) \
-                .facilityuser_set
+            user_list = FacilityUser.objects \
+                .filter(facility=facility, group=group_id, is_teacher=False)
         else:
             user_list = FacilityUser.objects \
                 .filter(facility=facility, is_teacher=False)
@@ -266,7 +226,12 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
 
 
     # Basic data
-    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+    if not group_id:
+        groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+        group = None
+    else:
+        groups = FacilityGroup.objects.filter(pk=group_id)
+        group = get_object_or_None(groups)
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
@@ -280,10 +245,11 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     else:
         form = DateRangeForm()
 
-    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
 
     def paginate_users(user_list, user_type, per_page=25, page=1):
+        # Create pagination for users
         if not user_list:
             users = []
             page_urls = {}
@@ -334,42 +300,14 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
 
     context.update({
         "form": form,
+        "group": group,
         "groups": group_data,
         "students": student_data,
         "coaches": coach_data,
         "date_range": [period_start, period_end],
         "page_urls": page_urls,
+        "group_id": group_id,
     })
-    return context
-
-@facility_required
-@require_authorized_admin
-@render_to("control_panel/facility_user_management.html")
-def facility_user_management(request, facility, user_type=None, group_id=None, zone_id=None, per_page=25):
-    coach_page=request.REQUEST.get("coaches_page","1")
-    student_page=request.REQUEST.get("students_page","1")
-    groups = FacilityGroup.objects \
-        .filter(facility=facility) \
-        .order_by("name")
-    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id)
-
-
-
-    coaches, coach_urls = get_users_from_group(user_type="coaches", group_id=group_id, page=coach_page, facility=facility)
-    students, student_urls = get_users_from_group(user_type="students", group_id=group_id, page=student_page, facility=facility)
-
-    page_urls = {
-        "coaches": coach_urls,
-        "students": student_urls,
-        }
-
-    context.update({
-        "page_urls": page_urls,
-        "students": students,
-        "coaches": coaches,
-        "groups": groups,
-    })
-
     return context
 
 
@@ -417,7 +355,7 @@ def _get_date_range(frequency, period_start, period_end):
     return (period_start, period_end)
 
 
-def _get_user_usage_data(users, groups=None, period_start=None, period_end=None):
+def _get_user_usage_data(users, groups=None, period_start=None, period_end=None, group_id=None):
     """
     Returns facility user data, within the given date range.
     """
@@ -489,7 +427,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None)
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]:  # None for ungrouped
+    for group in list(groups) + [None]*(group_id==None or group_id==_("Ungrouped")):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
         group_data[group_pk] = {

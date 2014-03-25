@@ -15,7 +15,7 @@
             start_date.setDate(end_date.getDate() - 30)
         }
         
-        var TEMPLATE_GROUP_URL = "{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
+        var TEMPLATE_GROUP_URL = "{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
 
         $(document).ready(function(){
 
@@ -55,7 +55,6 @@
                 $("#top_export_button_id").click();
             });
 
-            console.log($('.sparklines'));
             $('.sparklines').sparkline('html', { enableTagOptions: true, disableInteraction: true });
 
         });
@@ -68,7 +67,6 @@
         <input class="top_export_button" id="top_export_button_id" type="button" value="{% trans 'Export data' %}"></input>
     </li>
     <li>
-        <span class="sparklines" sparkType="bar" sparkBarColor="green"><!-- 1,2,3,4,3,2,1 --></span>
         <div id="export_csv_div_id" class="export_csv_div">
             <form method="post" action="?format=csv">
                 {% csrf_token %}
@@ -82,6 +80,7 @@
 {% block control_panel_content %}
     <div id="facility_container">
         <div class="groups">
+            {% if not group_id %}
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Groups" %}</span>
                 <a href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
@@ -95,7 +94,7 @@
                     {% trans "A group is group of students, such as a classroom of students or all students in one grade." %}
                 </span>
             </div>
-
+            {% endif %}
             {% if not groups %}
                 <p>{% trans "You currently have no data available." %}</p>
 
@@ -104,7 +103,7 @@
                     <thead>
                         <tr>
                             <th class="headrowuser">{% trans "Group Name" %}</th>
-                            <th width="150px"></th>
+                            <th width="150px">{% trans "Coach" %}</th>
                             <th class="headrowuser">{% trans "# Students" %}</th>
                             <th class="headrowuser">{% trans "Logins" %}</th>
                             <th class="headrowuser">{% trans "Login Time" %}</th>
@@ -115,17 +114,29 @@
                     </thead>
                     <tbody>
                         {% for group in groups %}
-                            <tr>
-                                <td>{{ group.name }}</td>
+                            <tr>{# Translators: this is a verb; by clicking this link, the user will be able to manage student accounts. #}
+                                <td>{% if group.id %}<a href="{% url facility_management zone_id=zone_id facility_id=facility_id group_id=group.id %}">
+                                    {{ group.name }}
+                                    <span class="icon-pencil" title="{% trans 'Manage Group' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    </a>
+                                    {% else %}
+                                    {% trans "Ungrouped" as ungrouped %}
+                                    <a href="{% url facility_management zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
+                                        {{ group.name }}
+                                        <span class="icon-pencil" title="{% trans 'Manage Ungrouped' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    </a>{% endif %}
+                                </td>
                                 <td>
                                     {% if group.id %}
-                                    <span class="actions">[
-                                        {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                        <a href="{% url coach_reports %}?facility={{ facility_id }}&group={{ group.id }}">{% trans "coach" %}</a>
-                                        /
-                                        {# Translators: this is a verb; by clicking this link, the user will be able to manage student accounts. #}
-                                        <a href="{% url facility_user_management zone_id=zone_id facility_id=facility_id group_id=group.id %}">{% trans "manage" %}</a>
-                                    ]</span>
+                                    {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
+                                    <a href="{% url coach_reports %}?facility={{ facility_id }}&group={{ group.id }}" title={% trans "Coach Group" %}>
+                                    <div class="sparklines" sparkType="bar" sparkBarColor="green">
+                                    <!--
+                                        {{ group.total_logins }},
+                                        {{ group.total_videos }},
+                                        {{ group.total_exercises }}
+                                    -->
+                                    </div></a>
                                     {% endif %}
                                 </td>
                                 <td>{{ group.total_users }}</td>
@@ -141,7 +152,7 @@
                 </table>
             {% endif %}
         </div><!-- groups -->
-
+        {% if not group_id %}
         <div class="coaches" id="coaches">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Coaches" %}</span>
@@ -238,7 +249,7 @@
             </div>
             <div style="clear: both;"></div>
         </div><!-- teachers -->
-
+        {% endif %}
         <div class="students" id="students">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Students" %}</span>

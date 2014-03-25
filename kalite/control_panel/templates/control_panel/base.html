@@ -22,7 +22,7 @@
                     {% if org %}&gt;{% endif %}
                     {% if facility or device %}<a href="{%url zone_management zone_id=zone_id %}">{% endif %}
                         {% if zone %}
-                            {{ zone.name }}
+                            {{ zone.name|truncatechars:35 }}
                         {% elif not zone %}
                             {% if is_central %}
                             {% trans "New Sharing Network" %}
@@ -42,8 +42,9 @@
 
                 {% if facility %}
                 <li>
-                    &gt; {{ facility.name }}
-                    {% if not group %}
+                    &gt; {% if group_id %}<a href="{% url facility_management zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
+                    {% else %}
+                    {{ facility.name }}
                     <a class="edit-link" href="{% url facility_form zone_id=zone_id facility_id=facility.id %}">(edit)</a>
                     {% endif %}
                 </li>
