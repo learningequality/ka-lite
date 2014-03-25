@@ -1,63 +1,180 @@
 /* ===================================
+    To Do - Less
+=================================== */
+
+
+/* ===================================
 	Global
 =================================== */
-html, body {
+html, body, #background-photo {
 	height: 100%;
 }
 body {
+    background: #f8f8f8;
 	margin: 0;
 	padding-top: 79px;
 }
+#background-photo {
+	background-image: url('background.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 100%;
+}
 .container {
-	max-width: 1000px;
+    max-width: 1000px;
 }
 
 /* ===================================
 	Nav Bar
 =================================== */
 .navbar {
-	border-bottom: 1px solid #000080;
+	/*border-bottom: 1px solid #999;*/
 }
-.navbar-default, .navbar-collapse {
-	background: #d1d7b1;
+.navbar-default {
+	/*background: #c6ccc2;*/
 }
 .navbar-brand img { 
 	margin-top: -6px; 
 }
+.navbar ul li a {
+    color: #333 !important;
+    text-transform: uppercase;
+}
+.navbar ul li a:hover {
+    background: #d1d7b1 !important;
+}
 form#search-box {
+    margin-right: 15px;
 	margin-top: 14px;
 }
+input#search.ui-autocomplete-input {
+    font-size: 0.85em;
+    width: 140px;
+}
 #search-button {
-	color: #FFF !important;
+	color: #fff !important;
 	margin-left:-3px;
 }
-ul li a {
-	color: #000080 !important;
-	text-transform: uppercase;
-}
-input#search.ui-autocomplete-input {
-	font-size: 0.85em;
-	width: 140px;
+#search-button:hover {
+    background: #6dc96d !important;
 }
 select#language_selector {
 	margin-top: 16px;
 }
 
 /* ===================================
+	Home Page
+=================================== */
+.jumbotron {
+	background: #d1d7b1;
+	text-align: center;
+	width: 100%;
+}
+.suggested-action {
+    background: #f8f8f8;
+    /*border-radius: 4px;*/
+    color: #444!important;
+    margin-bottom: 10px;
+    min-height: 256px;
+    padding: 14px;
+}
+.suggested-action:hover {
+    /*border-color: #C3CA7D;*/
+    -webkit-box-shadow: 0 0 10px #76A005;
+    -moz-box-shadow: 0 0 10px #76a005;
+    box-shadow: 0 0 10px #d1d7b1;
+}
+.suggested-action a:hover {
+    text-decoration: none !important;
+    /*color: #005987;*/
+}
+.suggested-action-image-link {
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid #DCE0B3;
+    display: block;
+    height: 130px;
+    margin: -5px -14px -15px -14px;
+}
+/*.suggested-action-title {
+    color: #005987;
+    text-decoration: none;
+    font-size: 21px;
+}*/
+/*.message {
+    margin-left: 7px;
+}*/
+/*.main-headline {
+    font-size: 26px;
+    margin: 10px 0 20px 0;
+    padding: 0;
+}*/
+/*.topic-list {
+    padding: 7px 0 0 0;
+    margin: 0;
+    font-size: 24px;
+    font-family: "MuseoSans500", sans-serif;
+}*/
+/*.topic a {
+    padding: 0 0 8px 40px;
+    font-size: 18px;
+    line-height: 40px;
+}*/
+/*a:hover, a:hover .suggested-action-title {
+    color: #2F92A5!important;
+}*/
+/*.video-unavailable,
+.topic-unavailable,
+a:active.topic-unavailable,
+a:hover.topic-unavailable,
+a:link.topic-unavailable,
+a:visited.topic-unavailable {
+    color: #ACBDD1;
+}*/
+/*.vertical-shadow {
+    border: 1px solid #cccccc;
+    border-bottom: 1px solid #aaa;
+    -webkit-box-shadow: 0 1px 3px #cccccc;
+    -moz-box-shadow: 0 1px 3px #cccccc;
+    box-shadow: 0 1px 3px #cccccc;
+}*/
+
+/* ===================================
 	Footer
 =================================== */
 .wrapper {
-	margin: 0 auto -77px; 
-	min-height: 100%;
 	height: auto !important;
 	height: 100%;
+    margin: 0 auto -77px; 
+    min-height: 100%;
 }
-footer, .footer-clearfix {
+.footer-clearfix {
+    height: 110px;
+}
+footer, footer div p:hover {
+    color: #777;
+}
+footer div a.navbar-brand {
+    padding: 0;
+}
+footer {
+	/*background: #c6ccc2;	*/
+	/*border-top: 1px solid #999;*/
 	height: 77px;
 }
-.footer-sticky {
-	background: #d1d7b1;	
-	border-top: 1px solid #000080;
+footer div ul li {
+    margin-top: 15px;
+}
+ul .pull-right {
+    margin-right: 15px;
+}
+#fle-logo {
+    height: 18px;
+    margin-top: 21px;
+    width: 268px;
+}
+.tiny {
+	font-size: 0.85em;
 }
 
 /* ===================================
