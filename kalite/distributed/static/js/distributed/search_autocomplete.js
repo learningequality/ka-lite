@@ -87,7 +87,7 @@ $(document).ready(function() {
         minLength: 3,
         html: true,  // extension allows html-based labels
         source: function(request, response) {
-            clear_message("id_search_error");
+            clear_messages();
 
             // Executed when we're requested to give a list of results
             var titles_filtered = $.ui.autocomplete.filter(_titles, request.term);

@@ -66,15 +66,16 @@ function show_message(msg_class, msg_text) {
 
     var msg_id = msg_text.hashCode();
 
+    // Avoid duplicating the same message by removing
     if (msg_id) {
-        clear_message(msg_id);
+        $("#" + msg_id).remove();
     }
 
     x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
     msg_html = "<div class='alert alert-" + msg_class + "'";
     if (msg_id) {
-        clear_message(msg_id);
+        $("#" + msg_id).remove();
         msg_html += " id='" + msg_id + "'";
     }
     msg_html += ">" + x_button + msg_text + "</div>";
@@ -82,15 +83,11 @@ function show_message(msg_class, msg_text) {
     return $("#message_container");
 }
 
-function clear_message(msg_id) {
-    // Clear a single message, by ID
-    $("#" + msg_id).remove();
-    return $("#message_container");
-}
 
 function clear_messages() {
     // Clear all messages
     $("#message_container .message").remove();
+    $("#message_container .alert").remove();
     return $("#message_container");
 }
 
