@@ -10,20 +10,20 @@ html, body, #background-photo {
 	height: 100%;
 }
 body {
-    background: #f8f8f8;
+    background: ;
 	margin: 0;
 	padding-top: 79px;
 }
-#background-photo {
-	background-repeat: no-repeat;
-	background-size: cover;
+#background-photo, .row {
 	width: 100%;
+}
+#background-photo {
+    background-image: url('../../images/distributed/background.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .container {
     max-width: 1000px;
-}
-.row {
-    width: 100%;
 }
 
 /* ===================================
@@ -102,6 +102,7 @@ select#language_selector {
     text-decoration: none;
 }
 .suggested-action-image-link {
+    background-image: url('../../images/distributed/knowledge-map-derivative-intuition.png');
     background-size: cover;
     background-repeat: no-repeat;
     border-bottom: 1px solid #DCE0B3;
@@ -115,21 +116,6 @@ select#language_selector {
 }
 /*.message {
     margin-left: 7px;
-}*/
-/*.video-unavailable,
-.topic-unavailable,
-a:active.topic-unavailable,
-a:hover.topic-unavailable,
-a:link.topic-unavailable,
-a:visited.topic-unavailable {
-    color: #ACBDD1;
-}*/
-/*.vertical-shadow {
-    border: 1px solid #cccccc;
-    border-bottom: 1px solid #aaa;
-    -webkit-box-shadow: 0 1px 3px #cccccc;
-    -moz-box-shadow: 0 1px 3px #cccccc;
-    box-shadow: 0 1px 3px #cccccc;
 }*/
 
 /* ===================================
@@ -166,8 +152,8 @@ footer ul .pull-right {
     margin-top: 21px;
     width: 268px;
 }
-.tiny {
-	font-size: 0.85em;
+.tiny { 
+    font-size: 0.85em; 
 }
 
 /* ===================================

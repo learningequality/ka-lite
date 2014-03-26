@@ -14,9 +14,10 @@
         {% endblock %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}?{{ BUILD_ID }}">
-        <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-alerts.css' %}"> -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap.min.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' %}?{{ BUILD_ID }}">
 
         {% block headcss %}{% endblock headcss %}
@@ -81,7 +82,7 @@
         {% block analytics %}{% endblock analytics %}
     </head>
 
-    <body class="light {% block bodyclass %}{% endblock %}" id="background-photo" style="background-image: url({% static 'images/distributed/background.jpg' %});"> <!-- What's this --> 
+    <body class="{% block bodyclass %}{% endblock %}" id="background-photo">
         <!-- Background photo by D Sharon Pruitt / Creative Commons license -->
         
         <div class="navbar navbar-default navbar-fixed-top">
@@ -180,8 +181,6 @@
                 </article>
             <!-- </div> -->
             {% endblock outer_content %}
-
-            <div id="badge-notification-container" class="badge-award-container" style="display:none;"></div> <!-- What's this -->
             <div class="footer-clearfix"></div>
         </div>
 
@@ -194,14 +193,11 @@
                     <p class="visible-xs"><a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a></p> 
                 </a>
                 <ul class="nav navbar-nav navbar-right tiny">
-                    <!-- {% block footerleft %} --> <!-- What's this -->
-                    <!-- {% endblock footerleft %} --> <!-- What's this -->
                     <li class="pull-right hidden-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</li>
-                    <li class="pull-right hidden-xs"><a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a></li> <!-- What's this -->
+                    <li class="pull-right hidden-xs"><a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a></li>
                 </ul>
             </div>
         </footer>
 
     </body>
 </html>
-
