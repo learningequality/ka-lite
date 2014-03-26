@@ -26,7 +26,7 @@ from kalite.testing.browser import BrowserTestCase
 
 from securesync.models import Zone, DeviceZone , Device
 from fle_utils.config.models import Settings
-from updates.api_views import delete_language
+from updates import delete_language
 from django.core.management import call_command
 
 
@@ -239,7 +239,7 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
         if not self.is_language_installed("de"):
             call_command("languagepackdownload", lang_code="de")
 
-	self.register_device()
+        self.register_device()
         language_url = self.reverse("update_languages")
         self.browse_to(language_url)
         time.sleep(1)
