@@ -93,12 +93,10 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    show_message("info", sprintf(gettext("Language pack %(lang_code)s will be deleted shortly."), {lang_code: lang_code}));
     doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
-            show_message("success", sprintf(gettext("Successfully deleted language pack %(lang_code)s"), {lang_code: lang_code}));
         });
 }
 
@@ -139,6 +137,8 @@ $(function () {
 
 
 function start_languagepack_download(lang_code) {
+    clear_messages();  // get rid of any lingering messages before starting download
+
     // tell server to start languagepackdownload job
     doRequest(
         start_languagepackdownload_url,
@@ -148,10 +148,6 @@ function start_languagepack_download(lang_code) {
             "languagepackdownload",
             2000, // 2 seconds
             languagepack_callbacks
-        );
-        show_message(
-            "success",
-            sprintf(gettext("Download for language %s started."), [lang_code])
         );
     });
 }

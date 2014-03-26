@@ -46,13 +46,6 @@ function video_check_callback(progress_log, resp) {
             if (progress_log.process_percent == 1.) {
             // 100% done with the set of videos.  Display based on the total
 
-                if (nErrors != 0) {
-                    // Redisplay the download message as a warning.
-                    show_message("warning", sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos}));
-                    // could show the retry button, but we'd have to store which videos
-                    //   went poorly.
-                }
-
                 // 100% done with ALL videos.
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
@@ -172,6 +165,8 @@ $(function() {
     }, 200);
 
     $("#download-videos").click(function() {
+        clear_messages();
+
         // Prep
         // Get all videos to download
         var youtube_ids = getSelectedIncompleteMetadata("youtube_id");
@@ -181,10 +176,6 @@ $(function() {
         doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
             .success(function() {
                 updatesStart("videodownload", 5000, video_callbacks);
-                show_message(
-                    "success",
-                    sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos})
-                );
             })
             .fail(function(resp) {
                 $("#download-videos").removeAttr("disabled");
@@ -201,6 +192,8 @@ $(function() {
 
     // Delete existing videos
     $("#delete-videos").click(function() {
+        clear_messages();
+
         $("#modal_dialog").dialog({
             title: gettext("Are you sure you want to delete?"),
             resizable: true,
@@ -252,6 +245,8 @@ $(function() {
 
     // Cancel current downloads
     $("#cancel-download").click(function() {
+        clear_messages();
+
         // Prep
 
         // Do the request

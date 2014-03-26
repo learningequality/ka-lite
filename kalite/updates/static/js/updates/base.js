@@ -23,7 +23,6 @@ $(function() {
                 show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."));
             } else {
                 $(".enable-when-server-online").removeAttr("disabled");
-                clear_messages();
             }
         });},
         200);
@@ -49,9 +48,6 @@ function has_a_val(key, obj) {
 }
 
 function updatesStart(process_name, interval, callbacks) {
-    // Starts looking for updates
-    clear_messages();
-
     // Store the info
     if (! (process_name in process_names)) {
         process_names[process_name] = true;
@@ -199,8 +195,6 @@ function select_update_elements(process_name, selector) {
 function updateDisplay(process_name, progress_log) {
     window.progress_log = progress_log;
     window.process_name = process_name;
-
-    clear_messages();
 
     if (progress_log.completed) {
         select_update_elements(process_name, ".progress-section").hide();

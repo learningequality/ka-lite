@@ -14,7 +14,7 @@
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
         }
-        
+
         var TEMPLATE_GROUP_URL = "{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
 
         $(document).ready(function(){
@@ -51,7 +51,6 @@
             });
 
             $("#CSV_EXPORT").click(function() {
-                //show_message("success", "{% trans 'Exporting data to csv.' %}");
                 $("#top_export_button_id").click();
             });
 
@@ -321,11 +320,11 @@
                     {% for student in students %}
                         <tr value="{{ student.username }}">
                             <td>
-                                
+
                                    <a href="{% url edit_facility_user id=student.id %}?facility={{ facility_id }}">{{ student|format_name:"last_first" }}<span class="icon-pencil" title="{% trans 'Edit student' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a>
-                                
+
                             </td>
-                            
+
                             <td>
                                 <a href="{% url student_view %}?user={{ student.id }}">
                                 <div class="sparklines" sparkType="bar" sparkBarColor="green">
