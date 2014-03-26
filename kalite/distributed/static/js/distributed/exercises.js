@@ -48,14 +48,9 @@ function updatePercentCompleted(correct) {
 
     doRequest("/api/save_exercise_log", data)
         .success(function(data) {
-            handleSuccessAPI(data);
             // update the top-right point display, now that we've saved the points successfully
             userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
         })
-        .fail(function(resp) {
-            handleFailedAPI(resp);
-        });
-
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
@@ -105,12 +100,6 @@ $(function() {
             exerciseData.attempts = data[0].attempts;
 
             updateStreakBar();
-
-            handleSuccessAPI(data);
-        })
-        .fail(function (resp) {
-            // Expects to receive messages ({ type: message } format) about failures  
-            handleFailedAPI(resp);
         });
 });
 

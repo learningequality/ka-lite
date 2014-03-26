@@ -27,20 +27,39 @@ function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-function doRequest(url, data) {
+function doRequest(url, data, opts) {
+    // If locale is not already set, set it to the current language.
     if ($.url().param("lang") === undefined) {
         url = setGetParam(url, "lang", CURRENT_LANGUAGE);
     }
-    return $.ajax({
+
+    var request_options = {
         url: url,
         type: data ? "POST" : "GET",
         data: data ? JSON.stringify(data) : "",
         contentType: "application/json",
         dataType: "json"
-    })
-    .fail(function(resp) {
-        handleFailedAPI(resp);
-    });
+    };
+    var error_prefix = "";
+
+    for (opt_key in opts) {
+        switch (opt_key) {
+            case "error_prefix":  // Set the error prefix on a failure.
+                error_prefix = opts[opt_key];
+                break;
+            default:  // Tweak the default options
+                request_options[opt_key] = opts[opt_key];
+                break;
+        }
+    }
+
+    return $.ajax(request_options)
+        .success(function(resp) {
+            handleSuccessAPI(resp);
+        })
+        .fail(function(resp) {
+            handleFailedAPI(resp, error_prefix);
+        });
 }
 
 // Generates a unique ID for each message - No duplicates.
@@ -82,7 +101,6 @@ function show_message(msg_class, msg_text) {
     $("#message_container").append(msg_html);
     return $("#message_container");
 }
-
 
 function clear_messages() {
     // Clear all messages

@@ -6,9 +6,6 @@ var videos_downloading = false;
 var numVideos = null;
 
 function video_start_callback(progress_log, resp) {
-    if (!progress_log) {
-        handleFailedAPI(resp, "Error starting updates process");
-    }
     lastKey = null;
     nErrors = 0;
     videos_downloading = false;
@@ -85,7 +82,6 @@ function video_check_callback(progress_log, resp) {
         lastKey = currentKey;
 
     } else { // check failed.
-        handleFailedAPI(resp, gettext("Error downloading videos"));
         clearInterval(window.download_subtitle_check_interval);
         $("#download-videos").removeAttr("disabled");
     }
@@ -191,7 +187,6 @@ $(function() {
                 );
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error starting video download"));
                 $("#download-videos").removeAttr("disabled");
             });
 
@@ -220,37 +215,35 @@ $(function() {
                     //   no downloads are in progress.
                     // Prep
                     // Get all videos marked for download
-                
+
                     var youtube_ids = getSelectedStartedMetadata("youtube_id");
                     // Do the request
                     doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
                         .success(function() {
-                            handleSuccessAPI();
                             $.each(youtube_ids, function(ind, id) {
                                 setNodeClass(id, "unstarted");
                             });
                         })
                         .fail(function(resp) {
-                            handleFailedAPI(resp, gettext("Error deleting videos"));
                             $(".progress-waiting").hide();
                         });
                         // Update the UI
                         unselectAllNodes();
-                        
+
                         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
                         ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
-                        
+
                         $(this).dialog("close");
                     }
                 },
                 {
                     id: "input_cancel",
                     text: gettext("No"),
-                    click: function() {                                                   
+                    click: function() {
                         $(this).dialog("close");
                 }
             }]
-            
+
         });
         jQuery("button.ui-dialog-titlebar-close").hide();
         $("#modal_dialog").text(gettext("Deleting the downloaded video(s) will lead to permanent loss of data"));
@@ -264,7 +257,6 @@ $(function() {
         // Do the request
         doRequest(URL_CANCEL_VIDEO_DOWNLOADS)
             .success(function() {
-                handleSuccessAPI();
                 // Reset ALL of the progress tracking
                 updatesReset();
 
@@ -272,9 +264,6 @@ $(function() {
                 $("#download-videos").removeAttr("disabled");
                 $("#cancel-download").hide();
             })
-            .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error canceling downloads"));
-            });
 
         // Update the UI
 
@@ -287,13 +276,7 @@ $(function() {
         // Prep
 
         // Do the request
-        doRequest(URL_START_VIDEO_DOWNLOADS, {})
-            .success(function(resp) {
-                handleSuccessAPI();
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error restarting downloads"));
-            });
+        doRequest(URL_START_VIDEO_DOWNLOADS, {});
 
         // Update the UI
         $(this).attr("disabled", "disabled");

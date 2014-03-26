@@ -89,7 +89,6 @@ function updatesStart_callback(process_name, start_time) {
 
     doRequest(request_url)
         .success(function(progress_log, textStatus, request) {
-            handleSuccessAPI();
             // Store the info
             if (!progress_log.process_name) {
                 if (!start_time) {
@@ -130,7 +129,6 @@ function updatesStart_callback(process_name, start_time) {
                 process_callbacks[process_name]["start"](progress_log);
             }
         }).fail(function(resp) {
-            handleFailedAPI(resp, gettext("Error starting updates process"));
             // Do callbacks, with error
             if (process_callbacks[process_name] && "start" in process_callbacks[process_name]) {
                 process_callbacks[process_name]["start"](null, resp);
