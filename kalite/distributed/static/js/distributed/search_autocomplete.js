@@ -127,7 +127,7 @@ $(document).ready(function() {
             if (_nodes && title in _nodes && _nodes[title]) {
                 window.location.href = _nodes[title].path;
             } else {
-                show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."), "id_search_error");
+                show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
         }
 

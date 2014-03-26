@@ -18,7 +18,7 @@ function show_django_messages(messages) {
     }
 }
 
-function show_api_messages(messages, msg_id) {
+function show_api_messages(messages) {
     // When receiving an error response object,
     //   show errors reported in that object
     if (!messages) {
@@ -27,12 +27,12 @@ function show_api_messages(messages, msg_id) {
     switch (typeof messages) {
         case "object":
             for (msg_type in messages) {
-                show_message(msg_type, messages[msg_type], msg_id);
+                show_message(msg_type, messages[msg_type]);
             }
             break;
         case "string":
             // Should throw an exception, but try to handle gracefully
-            show_message("info", messages, msg_id);
+            show_message("info", messages);
             break;
         default:
             // Programming error; this should not happen
@@ -41,42 +41,36 @@ function show_api_messages(messages, msg_id) {
     }
 }
 
-function communicate_api_failure(resp, msg_id) {
-    // When receiving an error response object,
-    //   show errors reported in that object
-    var messages = $.parseJSON(resp.responseText);
-    show_api_messages(messages, msg_id);
-}
-
-
-function handleSuccessAPI(msg_id, resp) {
-    if (msg_id === undefined) {
-        msg_id = "id_updates";  // ID of message element
+function handleSuccessAPI(data) {
+    if(!data) {
+        return;
     }
-    clear_message(msg_id);
-    if (resp) {
-        messages = $.parseJSON(resp.responseText);
-        show_api_messages(messages, msg_id);
+
+    var messages = $.parseJSON(data.responseText);
+
+    if (messages){
+        show_api_messages(messages);
     }
 }
 
-function handleFailedAPI(resp, error_text, msg_id) {
-    if (msg_id === undefined) {
-        msg_id = "id_updates";  // ID of message element
-    }
+function handleFailedAPI(resp, error_text) {
+    var messages = $.parseJSON(resp.responseText);    
 
+    if (!error_text) {     
+        show_api_messages(messages);
+        return;
+    }
+    
     switch (resp.status) {
         case 403:
-            show_message("error", msg_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), msg_id);
+            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."));
             break;
         default:
-            //communicate_api_failure(resp)
-            messages = $.parseJSON(resp.responseText);
             if (messages && !("error" in messages)) {
                 // this should be an assert--should never happen
-                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), msg_id);
+                show_message("error", error_text + ": " + gettext("Uninterpretable message received."));
             } else {
-                show_message("error", error_text + ": " + messages["error"], msg_id);
+                show_message("error", error_text + ": " + messages["error"]);
             }
             break;
     }

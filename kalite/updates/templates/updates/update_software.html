@@ -108,7 +108,7 @@
         var current_version = "{{ software_version }}";
         var remote_version = data.version;
         if (! remote_version ) {
-            show_message("error", "Remote version information unavailable.", "id_message_update");
+            show_message("error", "Remote version information unavailable.");
         } else if (current_version != remote_version) {
             $("#update_info").show();  // show the related div
             $("#internet_update").show();
@@ -157,7 +157,7 @@
                     //
                     // Best to assume offline, as online check returns much faster than offline check.
                     if(false && (!status || !status["online"])){
-                        show_message("error", "{% trans 'Your installation is offline, and therefore cannot access updates.' %}", " id_offline_message")
+                        show_message("error", "{% trans 'Your installation is offline, and therefore cannot access updates.' %}")
                     } else {
                         $("#software_available").removeAttr("disabled");
                         $("#download-update-kalite").removeAttr("disabled");

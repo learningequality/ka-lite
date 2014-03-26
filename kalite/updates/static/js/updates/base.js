@@ -25,7 +25,7 @@ $(function() {
             // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
             // Best to assume offline, as online check returns much faster than offline check.
             if(!server_is_online){
-                show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."), "id_offline_message");
+                show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."));
             } else {
                 $(".enable-when-server-online").removeAttr("disabled");
                 clear_message("id_offline_message");
@@ -169,13 +169,13 @@ function updatesCheck(process_name, interval) {
                 //
                 if (progress_log.process_percent == 1. && !progress_log.stage_status) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
-                    show_message("success", message, "id_" + process_name);
+                    show_message("success", message);
                     updatesReset(process_name);
                 } else if (progress_log.completed && progress_log.stage_status == "cancelled") {
-                    show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]", "id_" + process_name);
+                    show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]");
                     updatesReset(process_name);
                 } else if (progress_log.process_name) {
-                    show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }), "id_" + process_name);
+                    show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }));
                     updatesReset(process_name);
                 }
             }
@@ -187,7 +187,7 @@ function updatesCheck(process_name, interval) {
                 message = gettext("Could not connect to the server.");
             }
 
-            show_message("error", sprintf(gettext("Error while checking update status: %(message)s"), { message : message }), "id_" + process_name);
+            show_message("error", sprintf(gettext("Error while checking update status: %(message)s"), { message : message }));
 
             // Do callbacks
             if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {

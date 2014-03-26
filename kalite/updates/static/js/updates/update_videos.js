@@ -3,11 +3,12 @@
 var lastKey = null;
 var nErrors = 0;
 var videos_downloading = false;
+var numVideos = null;
 
 function video_start_callback(progress_log, resp) {
-    //if (!progress_log) {
-        //handleFailedAPI(resp, "Error starting updates process");
-    //}
+    if (!progress_log) {
+        handleFailedAPI(resp, "Error starting updates process");
+    }
     lastKey = null;
     nErrors = 0;
     videos_downloading = false;
@@ -50,7 +51,7 @@ function video_check_callback(progress_log, resp) {
 
                 if (nErrors != 0) {
                     // Redisplay the download message as a warning.
-                    show_message("warning", get_message("id_videodownload"), "id_videodownload");
+                    show_message("warning", sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos}));
                     // could show the retry button, but we'd have to store which videos
                     //   went poorly.
                 }
@@ -84,7 +85,7 @@ function video_check_callback(progress_log, resp) {
         lastKey = currentKey;
 
     } else { // check failed.
-        handleFailedAPI(resp, gettext("Error downloading videos"), "id_video_download");
+        handleFailedAPI(resp, gettext("Error downloading videos"));
         clearInterval(window.download_subtitle_check_interval);
         $("#download-videos").removeAttr("disabled");
     }
@@ -178,7 +179,7 @@ $(function() {
         // Prep
         // Get all videos to download
         var youtube_ids = getSelectedIncompleteMetadata("youtube_id");
-        var numVideos = youtube_ids.length;
+        numVideos = youtube_ids.length;
 
         // Do the request
         doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
@@ -186,12 +187,11 @@ $(function() {
                 updatesStart("videodownload", 5000, video_callbacks);
                 show_message(
                     "success",
-                    sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos}),
-                    "id_videodownload"
+                    sprintf(gettext("Download of %(num)d video(s) starting soon!"), {num: numVideos})
                 );
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error starting video download"), "id_video_download");
+                handleFailedAPI(resp, gettext("Error starting video download"));
                 $("#download-videos").removeAttr("disabled");
             });
 
@@ -225,13 +225,13 @@ $(function() {
                     // Do the request
                     doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
                         .success(function() {
-                            handleSuccessAPI("id_video_download");
+                            handleSuccessAPI();
                             $.each(youtube_ids, function(ind, id) {
                                 setNodeClass(id, "unstarted");
                             });
                         })
                         .fail(function(resp) {
-                            handleFailedAPI(resp, gettext("Error deleting videos"), "id_video_download");
+                            handleFailedAPI(resp, gettext("Error deleting videos"));
                             $(".progress-waiting").hide();
                         });
                         // Update the UI
@@ -264,7 +264,7 @@ $(function() {
         // Do the request
         doRequest(URL_CANCEL_VIDEO_DOWNLOADS)
             .success(function() {
-                handleSuccessAPI("id_video_download");
+                handleSuccessAPI();
                 // Reset ALL of the progress tracking
                 updatesReset();
 
@@ -273,7 +273,7 @@ $(function() {
                 $("#cancel-download").hide();
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error canceling downloads"), "id_video_download");
+                handleFailedAPI(resp, gettext("Error canceling downloads"));
             });
 
         // Update the UI
@@ -289,10 +289,10 @@ $(function() {
         // Do the request
         doRequest(URL_START_VIDEO_DOWNLOADS, {})
             .success(function(resp) {
-                handleSuccessAPI("id_video_download");
+                handleSuccessAPI();
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, gettext("Error restarting downloads"), "id_video_download");
+                handleFailedAPI(resp, gettext("Error restarting downloads"));
             });
 
         // Update the UI
