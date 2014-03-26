@@ -29,11 +29,9 @@
                 <h3 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h3>
                 <p class="topic-list">
                     {% for subtopic in topics %}
-                    <span class="topic">
-                        <a href="{{ subtopic.path }}" class="topic-link topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
+                        <a href="{{ subtopic.path }}" class="topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
                             {% trans subtopic.title %}
                         </a>
-                    </span>
                     <br />
                     {% endfor %}
                 </p>
@@ -43,7 +41,7 @@
                 <a href="{% url exercise_dashboard %}">
                     <h3 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h3>
                     <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-                    <div class="suggested-action-image-link" style="background-image: url({% static 'images/distributed/knowledge-map-derivative-intuition.png' %});"></div>
+                    <div class="suggested-action-image-link" style="background-image: url({% static 'images/distributed/knowledge-map-derivative-intuition.png' %});"></div><!-- What's this -->
                 </a>
             </div>
  

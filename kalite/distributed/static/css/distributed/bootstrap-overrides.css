@@ -15,7 +15,6 @@ body {
 	padding-top: 79px;
 }
 #background-photo {
-	background-image: url('background.jpg');
 	background-repeat: no-repeat;
 	background-size: cover;
 	width: 100%;
@@ -106,7 +105,6 @@ select#language_selector {
     background-size: cover;
     background-repeat: no-repeat;
     border-bottom: 1px solid #DCE0B3;
-    display: block;
     height: 130px;
     margin: -5px -14px -15px -14px;
 }
@@ -137,7 +135,7 @@ a:visited.topic-unavailable {
 /* ===================================
 	Footer
 =================================== */
-.wrapper {
+#wrapper {
 	height: auto !important;
 	height: 100%;
     margin: 0 auto -77px; 
@@ -175,11 +173,19 @@ footer ul .pull-right {
 /* ===================================
 	Media Queries
 =================================== */
-@media only screen and (max-width: 767px) {
-    footer p:nth-child(2) { margin: 0; }
+@media only screen and (max-width: 991px) {
+    .suggested-action-title { font-size: 18px; }
+    .suggested-action a { font-size: 16px; }
 }
 @media only screen and (max-width: 767px) {
     form#search-box { margin-left: 15px; margin-bottom: 10px; }
+    .suggested-action-title { font-size: 24px; padding-top: 15px; }
+    .topic-list a { font-size: 1.25em; }
+    footer p:nth-child(2) { margin: 0; }
+}
+@media only screen and (max-width: 437px) {
+    .suggested-action-title { font-size: 18px; padding-top: 15px; }
+    .topic-list a { font-size: 16px; }
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {
 	.navbar-brand img { width: 69px; }
