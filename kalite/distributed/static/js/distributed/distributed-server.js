@@ -10,14 +10,6 @@ function toggle_state(state, status){
     $("." + (!status ? "not-" : "") + state + "-only").show();
 }
 
-function show_django_messages(messages) {
-    // This function knows to loop through the server-side messages,
-    //   received in the format from the status object
-    for (var mi in messages) {
-        show_message(messages[mi]["tags"], messages[mi]["text"]);
-    }
-}
-
 function show_api_messages(messages) {
     // When receiving an error response object,
     //   show errors reported in that object
@@ -41,39 +33,77 @@ function show_api_messages(messages) {
     }
 }
 
-function handleSuccessAPI(data) {
-    if(!data) {
+function handleSuccessAPI(obj) {
+
+    var messages = null;
+    var msg_types = ["success", "info", "warning", "error"];  // in case we need to dig for messages
+
+
+    if (!obj) {
         return;
+
+    } else if (obj.hasOwnProperty("responseText")) {
+        // Got a HTTP response object; parse it.
+        try {
+            if (obj.responseText) {  // No point in trying to parse empty response (which is common)
+                messages = $.parseJSON(obj.responseText);
+            }
+        } catch (e) {
+            // Many reasons this could fail, some valid; others not.
+            console.log(e);
+        }
+    } else if (obj.hasOwnProperty("messages")) {
+        // Got messages embedded in the object
+        messages = {}
+        for (idx in obj.messages) {
+            messages = obj.messages[idx];
+        }
+    } else {
+        // Got messages at the top level of the object; grab them.
+        messages = {};
+        for (idx in msg_types) {
+            var msg_type = msg_types[idx];
+            if (msg_type in obj) {
+                messages[msg_type] = obj[msg_type];
+                console.log(messages[msg_type]);
+            }
+        }
     }
 
-    var messages = $.parseJSON(data.responseText);
-
-    if (messages){
+    clear_messages("error");
+    if (messages) {
         show_api_messages(messages);
     }
 }
 
-function handleFailedAPI(resp, error_text) {
-    var messages = $.parseJSON(resp.responseText);    
+function handleFailedAPI(resp, error_prefix) {
+    // Two ways for this function to be called:
+    // 1. With an API response (resp) containing a JSON error.
+    // 2. With an explicit error_prefix
 
-    if (!error_text) {     
-        show_api_messages(messages);
-        return;
+    // Parse the messages.
+    var messages = {};
+    if (resp.status == 403) {
+        messages = {error: gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.")};
     }
-    
-    switch (resp.status) {
-        case 403:
-            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."));
-            break;
-        default:
-            if (messages && !("error" in messages)) {
-                // this should be an assert--should never happen
-                show_message("error", error_text + ": " + gettext("Uninterpretable message received."));
-            } else {
-                show_message("error", error_text + ": " + messages["error"]);
-            }
-            break;
+    else if (resp && resp.responseText) {
+        try {
+            messages = $.parseJSON(resp.responseText);
+        } catch (e) {
+            console.log("Response text: " + resp.responseText);
+            console.log(e);
+        }
     }
+
+    // Pre-pend any canned message
+    if (error_prefix) {
+        for (msg_key in messages) {
+            messages[msg_key] = sprintf("%s: %s", error_prefix, messages[msg_key]);
+        }
+    }
+
+    clear_messages();  // Clear all messages before showing the new (error) message.
+    show_api_messages(messages);
 }
 
 function force_sync() {
@@ -164,7 +194,6 @@ $(function(){
                     $('#logged-in-name').text(data.username);
                 }
             }
-            show_django_messages(data.messages);
         });
 });
 
