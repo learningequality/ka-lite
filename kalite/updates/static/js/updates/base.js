@@ -1,14 +1,9 @@
 
 function server_restart() {
-    $.ajax({
-        url: URL_SERVER_RESTART,
-        cache: false,
-        datatype: "json"
-    }).success(function(installed) {
-        show_message("success", "Initiated server restart.");
-    }).error(function(data, status, error) {
-        handleFailedAPI(data, [status, error].join(" "));
-    });
+    doRequest(URL_SERVER_RESTART, null, {cache: false})
+        .success(function(installed) {
+            show_message("success", gettext("Initiated server restart."));
+        });
 }
 
 

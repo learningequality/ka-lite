@@ -2,33 +2,28 @@ var installable_languages = [];
 var installed_languages = [];
 
 function get_available_languages() {
-    var url = AVAILABLE_LANGUAGEPACK_URL;
-    var request = $.ajax({
-        url: url,
+    doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
-    }).error(function(data, status, error) {
+    }).fail(function(data, status, error) {
         installable_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "));
     });
 }
 
 function get_installed_languages() {
-    $.ajax({
-        url: INSTALLED_LANGUAGES_URL,
+    doRequest(INSTALLED_LANGUAGES_URL, null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
         installed_languages = installed;
         display_languages();
-    }).error(function(data, status, error) {
+    }).fail(function(data, status, error) {
         installed_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "));
     });
 }
 
@@ -98,6 +93,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
+    show_message("info", sprintf(gettext("Language pack %(lang_code)s will be deleted shortly."), {lang_code: lang_code}));
     doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
@@ -193,6 +189,7 @@ $(function () {
         start_languagepack_download(language_downloading);
     });
 });
+
 
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
