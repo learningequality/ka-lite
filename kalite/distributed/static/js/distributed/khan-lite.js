@@ -102,10 +102,13 @@ function show_message(msg_class, msg_text) {
     return $("#message_container");
 }
 
-function clear_messages() {
-    // Clear all messages
-    $("#message_container .message").remove();
-    $("#message_container .alert").remove();
+function clear_messages(msg_type) {
+    if (!msg_type) {
+        // Clear all messages
+        $("#message_container .alert").remove();
+    } else {
+        $("#message_container .alert-" + msg_type).remove();
+    }
     return $("#message_container");
 }
 
