@@ -27,9 +27,9 @@ from django.core.management.base import BaseCommand, CommandError
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
+from kalite.version import VERSION
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, Command as InitCommand
 from securesync.models import Zone
-from version import VERSION
 
 
 def raw_input_yn(prompt):

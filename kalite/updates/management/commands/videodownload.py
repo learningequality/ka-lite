@@ -8,17 +8,17 @@ from youtube_dl.utils import DownloadError
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-import i18n
 from .classes import UpdatesDynamicCommand
-from distributed import caching
+from ... import download_video, DownloadCancelled, URLNotFound
+from ...models import VideoFile
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
+from kalite import i18n
+from kalite.distributed import caching
+from kalite.main.topic_tools import get_video_by_youtube_id
 from kalite.settings import LOG as logging
-from main.topic_tools import get_video_by_youtube_id
-from updates import download_video, DownloadCancelled, URLNotFound
-from updates.models import VideoFile
 
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):

@@ -29,11 +29,11 @@ from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, invalidate_web_cache
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
-from i18n import get_youtube_id, get_video_language, get_supported_language_map
-from i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
+from kalite.i18n import get_youtube_id, get_video_language
+from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
+from kalite.main.topic_tools import get_topic_tree
 from kalite.settings import LOG as logging
-from main.topic_tools import get_topic_tree
-from shared.decorators import require_admin
+from kalite.shared.decorators import require_admin
 
 
 def divide_videos_by_language(youtube_ids):
@@ -285,7 +285,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 
     elif node["kind"] == "Video":
         video_id = node["youtube_id"]
-        youtube_id = get_youtube_id(video_id, lang_code=get_supported_language_map(lang_code)["dubbed_videos"])
+        youtube_id = get_youtube_id(video_id, lang_code=lang_code)
 
         if not youtube_id:
             # This video doesn't exist in this language, so remove from the topic tree.

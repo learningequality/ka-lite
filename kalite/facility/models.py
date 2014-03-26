@@ -20,6 +20,7 @@ from fle_utils.config.models import Settings
 from fle_utils.django_utils import verify_raw_password
 from kalite.settings import LOG as logging
 from securesync import engine
+from securesync.models import DeviceZone
 from securesync.engine.models import DeferredCountSyncedModel
 
 

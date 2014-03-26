@@ -13,9 +13,9 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, ge
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from facility.decorators import facility_from_request
-from facility.models import FacilityUser
 from fle_utils.internet import JsonResponse, JsonpResponse
+from kalite.facility.decorators import facility_from_request
+from kalite.facility.models import FacilityUser
 from securesync.models import Device, Zone
 
 
@@ -120,7 +120,7 @@ def require_authorized_admin(handler):
         """
         # inline import, to avoid unnecessary dependency on central server module
         #    on the distributed server.
-        from central.models import Organization
+        from centralserver.central.models import Organization
 
         logged_in_user = request.user
         assert not logged_in_user.is_anonymous(), "Wrapped by login_required!"

@@ -36,12 +36,12 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from facility.models import FacilityUser
 from fle_utils.internet import JsonResponse, JsonResponseMessageError, set_query_params
+from kalite.facility.models import FacilityUser
+from kalite.main.models import ExerciseLog, VideoLog
+from kalite.main.topic_tools import get_node_cache
 from kalite.settings import LOG as logging
-from main.models import ExerciseLog, VideoLog
-from main.topic_tools import get_node_cache
-from shared.decorators import require_login
+from kalite.shared.decorators import require_login
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 CENTRAL_UPDATE_ALL_PATH = "/api/khanload/update/central/"

@@ -12,7 +12,7 @@ from django.core.management import call_command
 from django.test import TestCase, Client
 from django.utils import unittest
 
-from testing import KALiteTestCase
+from kalite.testing import KALiteTestCase
 
 
 class UrlTestCases(KALiteTestCase):

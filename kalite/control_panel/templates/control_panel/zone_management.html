@@ -102,7 +102,7 @@
             {% for id,facility in facilities.items %}
                 <tr>
                     <td nowrap>
-                        <a href="{% url facility_usage zone_id=zone_id facility_id=id %}">
+                        <a href="{% url facility_edit id=facility.id %}">
                             {{ facility.name }}
                         </a>
                         <a href="{% url facility_edit id=facility.id %}">
@@ -116,19 +116,19 @@
                     </td>
                     <td nowrap>
                         {{ facility.num_users }}
-                        <!--a href="{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <!--a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
                             <span class="icon-add icon-medium" title="{% trans 'Add users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a-->
-                        <a href="{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                     </td>
                     <td nowrap>
                         {{ facility.num_groups }}
-                        <!--a href="{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <!--a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
                             <span class="icon-add icon-medium" title="{% trans 'Add groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a-->
-                        <a href="{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                     </td>
@@ -143,9 +143,7 @@
                         {% endif %}
                     </td>
                     <td nowrap>
-                        <a href="{% url facility_user_management zone_id=zone_id facility_id=facility.id group_id='None' %}">{% trans "Manage Users" %}</a>
-                        /
-                        <a href="{% url facility_usage zone_id=zone_id facility_id=facility.id %}">{% trans "View Usage" %}</a>
+                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">{% trans "Manage Users and View Usage" %}</a>
                     </td>
                 </tr>
             {% endfor %}

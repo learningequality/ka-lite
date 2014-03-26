@@ -5,7 +5,7 @@ import re
 from django.conf import settings
 from django.utils import unittest
 
-from facility.models import Facility, FacilityUser, FacilityGroup
+from ..models import Facility, FacilityUser, FacilityGroup
 
 
 class TestPasswordSetting(unittest.TestCase):

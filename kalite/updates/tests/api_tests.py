@@ -9,10 +9,10 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 from .command_tests import VideoScanTests
-from facility.models import Facility, FacilityUser
-from main.tests.base import MainTestCase
-from testing import KALiteClient, KALiteTestCase
-from updates.models import VideoFile
+from ..models import VideoFile
+from kalite.facility.models import Facility, FacilityUser
+from kalite.main.tests.base import MainTestCase
+from kalite.testing import KALiteClient, KALiteTestCase
 
 
 class TestAdminApiCalls(MainTestCase):
