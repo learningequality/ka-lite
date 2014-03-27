@@ -69,7 +69,11 @@ class Command(BaseCommand):
         #                    format="[%(asctime)-15s] %(message)s")
 
         try:
-            time_wait = getattr(settings, "CRONSERVER_FREQUENCY", 60) if not args or not args[0].strip() else float(args[0])
+            # Specify polling frequency either on the command-line or inside settings
+            if args and args[0].strip():
+                time_wait = float(args[0])
+            else:
+                time_wait = getattr(settings, "CRONSERVER_FREQUENCY", 60)
         except:
             raise CommandError("Invalid wait time: %s is not a number." % args[0])
 
