@@ -21,21 +21,3 @@ if [[ $rc != 0 ]] ; then
     echo "Error: The web server was not started"
     exit $rc
 fi
-
-echo "The server should now be accessible locally at: http://127.0.0.1:$port/"
-
-ifconfig_path=`command -v ifconfig`
-if [ "$ifconfig_path" == ""  ]; then
-    ifconfig_path=`command -v /sbin/ifconfig`
-fi
-if [ "$ifconfig_path" ]; then
-    echo "To access it from another connected computer, try the following address(es):"
-    for ip in `"$ifconfig_path" | grep 'inet' | grep -oE '^[^0-9]+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | grep -v "127.0.0.1"`
-    do
-        echo http://$ip:$port/
-    done
-else
-    echo "To access it from another connected computer, determine the external IP of this"
-    echo "computer and append ':$port', so if the IP were 10.0.0.3, the url would then be:"
-    echo "http://10.0.0.3:$port/"
-fi
