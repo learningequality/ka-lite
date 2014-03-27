@@ -19,11 +19,9 @@ else
     # move any previously downloaded content from the old location to the new
     mv "$KALITE_DIR/static/videos/*" "$KALITE_DIR/../content" > /dev/null 2> /dev/null
 
-    central_server=`"$SCRIPT_DIR/get_setting.sh" CENTRAL_SERVER`
-    if [ "$central_server" == "False" ]; then
-        echo
-        source "$SCRIPT_DIR/cronstart.sh"
-    fi
+    echo
+    source "$SCRIPT_DIR/cronstart.sh"
+
     echo
     source "$SCRIPT_DIR/serverstart.sh"
 fi
