@@ -1,6 +1,7 @@
 {% extends "updates/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load i18n_filters %}
 
 {% block update_active %}active{% endblock update_active %}
 
@@ -36,7 +37,9 @@
             {% endblocktrans %}
                 <select id="download_language_selector">
                 {% for lang_code, lang_meta in language_choices.iteritems %}
-                    <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
+                    <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                        {{ lang_code|get_language_name:language_choices }}
+                    </option>
                 {% endfor %}
                 </select>
         </h2>
@@ -55,7 +58,7 @@
             <span id="delete-videos-text" class="old-video-count"></span>
         </button>
     </div>
-    
+
 
     <div class="download-actions vertical-shadow client-online-only">
         <h2>

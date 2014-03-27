@@ -194,8 +194,10 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
     #Get pagination details
-    coach_page=request.REQUEST.get("coaches_page","1")
-    student_page=request.REQUEST.get("students_page","1")
+    coach_page = request.REQUEST.get("coaches_page", "1")
+    coach_per_page = request.REQUEST.get("coaches_per_page", "5")
+    student_page = request.REQUEST.get("students_page", "1")
+    student_per_page = request.REQUEST.get("students_per_page", "25" if group_id else "10")
 
     # This could be moved into a function shared across files, if necessary.
     #   For now, moving into function, as outside if function it looks more
@@ -299,11 +301,12 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
                         GETParam[user_type + "_page"] = listed_page
                         page_urls.update({listed_page: "?" + GETParam.urlencode()})
                 users.listed_pages = listed_pages
+                users.num_listed_pages = len(listed_pages)
 
         return users, page_urls
 
-    coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page)
-    student_data, student_urls = paginate_users(student_data, "students", page=student_page)
+    coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page, per_page=coach_per_page)
+    student_data, student_urls = paginate_users(student_data, "students", page=student_page, per_page=student_per_page)
 
     page_urls = {
         "coaches": coach_urls,

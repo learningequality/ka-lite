@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
-{% load i18n %}
 {% load staticfiles %}
+{% load i18n %}
+{% load i18n_filters %}
 <html>
     <head>
         <!--[if lt IE 9]>
@@ -91,13 +92,14 @@
 
             <div class="top-header-links"><nav><span class="nav-subheader">
                 {% block sitewide_navigation %}
+
                 {% block lang_choices %}
                 <span class="not-admin-only">
                 {% if num_language_choices > 1 %}
                 <select id="language_selector">
                 {% for lang_code, lang_meta in language_choices.iteritems %}
                     <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                        <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
+                        {{ lang_code|get_language_name:language_choices }}
                     </option>
                 {% endfor %}
                 </select>

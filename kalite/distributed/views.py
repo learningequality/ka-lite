@@ -252,6 +252,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     context = {
         "video": video,
         "title": video["title"],
+        "num_videos_available": len(video["availability"]),
         "selected_language": vid_lang,
         "video_urls": video["availability"].get(vid_lang),
         "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
