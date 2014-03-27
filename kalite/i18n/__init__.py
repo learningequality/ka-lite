@@ -226,7 +226,7 @@ def get_code2lang_map(lang_code=None, force=False):
     return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
 
 
-def get_language_name(lang_code, native=False, error_on_missing=False):
+def get_language_name(lang_code, native=None, error_on_missing=False):
     """Return full English or native language name from ISO 639-1 language code; raise exception if it isn't hardcoded yet"""
 
     # Convert code if neccessary
@@ -242,11 +242,12 @@ def get_language_name(lang_code, native=False, error_on_missing=False):
 
     if not isinstance(language_entry, dict):
         return language_entry
+    elif native is None:  # choose ourselves
+        return language_entry.get('native_name') or language_entry.get('ka_name') or language_entry.get('name')
+    elif not native:
+        return language_entry.get("name")
     else:
-        if not native:
-            return language_entry["name"]
-        else:
-            return language_entry["native_name"]
+        return language_entry.get("native_name")
 
 
 def lcode_to_django_lang(lang_code):

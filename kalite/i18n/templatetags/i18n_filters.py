@@ -9,15 +9,11 @@ from django.template.defaultfilters import floatformat
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
-from i18n import get_installed_language_packs
+from .. import get_language_name as i18n_get_language_name
+
 
 register = Library()
 
 @register.filter
-def get_language_name(lang_code, language_choices=None):
-    language_choices = language_choices or get_installed_language_packs()
-
-    if not lang_code in language_choices:
-        return lang_code
-    else:
-        return language_choices[lang_code].get("native_name", language_choices[lang_code].get("name", lang_code))
+def get_language_name(lang_code):
+    return i18n_get_language_name(lang_code)
