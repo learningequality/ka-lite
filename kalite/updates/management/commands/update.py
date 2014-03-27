@@ -158,9 +158,9 @@ class Command(UpdatesStaticCommand):
 
         # No URL or zip file given; default is to download from central server
         if not url and not zip_file:
-            url = "http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")
+            url = "http://%s/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")
 
-        if not os.path.exists(zip_file):
+        if zip_file and not os.path.exists(zip_file):
             raise CommandError("Specified zip file does not exist: %s" % zip_file)
 
         if not self.kalite_is_installed():
