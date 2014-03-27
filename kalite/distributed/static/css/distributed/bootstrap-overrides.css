@@ -173,7 +173,7 @@ footer ul .pull-right {
     .topic-list a { font-size: 1.25em; }
     #fle-logo { margin-top: 0; }
     footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
-    p.visible-xs:last-child { height: 18px; }
+    p.visible-xs:last-child { height: 17px; }
 }
 @media only screen and (max-width: 437px) {
     .suggested-action-title { font-size: 18px; padding-top: 15px; }
