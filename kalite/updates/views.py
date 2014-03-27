@@ -24,7 +24,7 @@ from .models import VideoFile
 from fle_utils.chronograph import force_job
 from fle_utils.internet import am_i_online, JsonResponse
 from kalite.control_panel.views import local_device_context
-from kalite.i18n import lcode_to_ietf, get_installed_language_packs, lang_best_name
+from kalite.i18n import lcode_to_ietf, get_installed_language_packs, get_language_name
 from kalite.main import topic_tools
 from kalite.shared.decorators import require_admin
 from securesync.models import Device
@@ -53,17 +53,9 @@ def update(request):
 @require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
-    installed_languages = get_installed_language_packs(force=True).copy() # we copy to avoid changing the original installed language list
-    default_language_name = lang_best_name(installed_languages.pop(lcode_to_ietf(request.session["default_language"])))
-    languages_to_show = [lang_best_name(l) for l in installed_languages.values()[:max_to_show]]
-    other_languages_count = max(0, len(installed_languages) - max_to_show)
-
     context = update_context(request)
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-        "languages": languages_to_show,
-        "default_language_name": default_language_name,
-        "other_languages_count": other_languages_count,
     })
     return context
 
