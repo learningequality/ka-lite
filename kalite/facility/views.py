@@ -31,15 +31,6 @@ from kalite.shared.decorators import require_admin
 from securesync.devices.views import *
 
 
-
-@require_admin
-@render_to("facility/facility_admin.html")
-def facility_admin(request):
-    facilities = Facility.objects.all()
-    context = {"facilities": facilities}
-    return context
-
-
 @require_admin
 @render_to("facility/facility_edit.html")
 def facility_edit(request, id=None):
