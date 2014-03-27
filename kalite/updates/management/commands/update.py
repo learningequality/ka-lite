@@ -239,12 +239,20 @@ class Command(UpdatesStaticCommand):
 
 
     def download_zip(self, url):
-        response = requests.get(url)
-        zip_file = tempfile.mkstemp()[1]
-        with open(zip_file,"wb") as fp:
-            fp.write(response.content)
-        self.validate_zip(zip_file)
-        return zip_file
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            if response.status_code == 404:
+                raise CommandError("No zip file found in %s" % url)
+            else:
+                raise
+        else:
+            zip_file = tempfile.mkstemp()[1]
+            with open(zip_file,"wb") as fp:
+                fp.write(response.content)
+            self.validate_zip(zip_file)
+            return zip_file
 
 
     def validate_zip(self, zip_file):
