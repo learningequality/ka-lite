@@ -41,11 +41,6 @@ if not exist "%KALITE_DIR%\database\data.sqlite" (
 
 echo Starting the cron server in the background.
 call "%SCRIPT_DIR%\cronstart.bat"
-    echo The server should now be accessible locally at: http://127.0.0.1:%PORT%/
-    echo To access it from another connected computer, try the following:
 
-    for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /R /C:"IPv4 Address" /C:"IP Address"') do (
-        for /f "tokens=1 delims= " %%a in ("%%i") do echo http://%%a:%PORT%/
-    )
-)echo Running the web server in the background.
+echo Running the web server in the background.
 call "%SCRIPT_DIR%\serverstart.bat"
