@@ -141,6 +141,7 @@ class Command(BaseCommand):
         if not options["daemonize"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
+            call_command("collectstatic", interactive=False)
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
             for addr in get_ip_addresses():
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
