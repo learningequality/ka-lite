@@ -69,7 +69,6 @@ class Command(BaseCommand):
                 time_wait = float(args[0])
             else:
                 time_wait = getattr(settings, "CRONSERVER_FREQUENCY", 60)
-
         except:
             raise CommandError("Invalid wait time: %s is not a number." % args[0])
 
