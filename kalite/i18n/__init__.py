@@ -52,10 +52,6 @@ def get_locale_path(lang_code=None):
         return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
 
 
-def lang_best_name(l):
-    return l.get('native_name') or l.get('ka_name') or l.get('name')
-
-
 DUBBED_VIDEO_MAP_RAW = None
 CACHE_VARS.append("DUBBED_VIDEO_MAP_RAW")
 DUBBED_VIDEO_MAP = None
