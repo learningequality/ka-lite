@@ -17,12 +17,6 @@ $(function() {
             var data = {
                 date_time: $('#standard-date').val() + " " + $('#time_select').val()
             };
-            doRequest(TIME_SET_URL, data)
-                .success(function(data) {
-                    show_api_messages(data, "id_set_time");
-                })
-                .fail(function(resp) {
-                    communicate_api_failure(resp, "id_set_time");
-                });
+            doRequest(TIME_SET_URL, data);
         });
 });

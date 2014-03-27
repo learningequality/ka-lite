@@ -83,8 +83,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
             .success(function(data) {
                 self.pointsSaved = data.points;
                 self.saving = false;
-                // Show all messages in "messages" object
-                show_api_messages(data.messages, "id_student_logs");
+
                 // update the top-right points display to show the newly earned points
                 userModel.set("newpoints", data.points - self.get("starting_points"));
             })
@@ -267,7 +266,7 @@ window.VideoView = Backbone.View.extend({
     },
 
     _initializeEventListeners: function() {
-        
+
         var self = this;
 
         this.player

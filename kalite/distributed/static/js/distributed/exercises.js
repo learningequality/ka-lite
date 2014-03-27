@@ -48,14 +48,9 @@ function updatePercentCompleted(correct) {
 
     doRequest("/api/save_exercise_log", data)
         .success(function(data) {
-            show_api_messages(data, "id_student_logs");
             // update the top-right point display, now that we've saved the points successfully
             userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
         })
-        .fail(function(resp) {
-            communicate_api_failure(resp, "id_student_logs");
-        });
-
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
@@ -105,14 +100,6 @@ $(function() {
             exerciseData.attempts = data[0].attempts;
 
             updateStreakBar();
-
-            // Show all messages in "messages" object
-            show_api_messages(data.messages, "id_student_logs");
-        })
-        .fail(function (resp) {
-            // Expects to receive messages ({ type: message } format) about failures
-            // turned off because this duplicates the "Progress not loaded" message    
-            // communicate_api_failure(resp, "id_student_logs");
         });
 });
 

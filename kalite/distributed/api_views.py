@@ -143,11 +143,8 @@ def status(request):
         msg_txt = message.message
         if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
             msg_txt = cgi.escape(unicode(msg_txt))
-
-        message_dicts.append({
-            "tags": message.tags,
-            "text": msg_txt,
-        })
+        msg_type = message.tags
+        message_dicts.append({msg_type: msg_txt})
 
     # Default data
     data = {

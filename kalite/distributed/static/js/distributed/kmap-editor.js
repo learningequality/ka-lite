@@ -255,7 +255,7 @@ $(document).ready(function() {
                     })
                     .fail(function (resp) {
                         // Turned off because it duplicates "Progress not loaded" message
-                        // communicate_api_failure(resp, "id_student_logs");
+                        handleFailedAPI(resp);
                         KMapEditor.init(exercises, [], [], 8);
                     });
             });

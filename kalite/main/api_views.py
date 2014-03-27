@@ -34,7 +34,7 @@ from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 from fle_utils.general import break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.mplayer_launcher import play_video_in_new_thread
 from fle_utils.orderedset import OrderedSet
@@ -99,7 +99,6 @@ def save_video_log(request):
     return JsonResponse({
         "points": videolog.points,
         "complete": videolog.complete,
-        "messages": {},
     })
 
 
@@ -141,12 +140,12 @@ def save_exercise_log(request):
         exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
         junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
         if next_exercise:
-            return JsonResponse({"success": _("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
+            return JsonResponseMessageSuccess(_("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
                 "href": next_exercise["path"],
                 "title": _(next_exercise["title"]),
-            }})
+            })
         else:
-            return JsonResponse({"success": _("You have mastered this exercise and this topic!")})
+            return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
 
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})

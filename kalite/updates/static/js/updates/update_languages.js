@@ -2,33 +2,28 @@ var installable_languages = [];
 var installed_languages = [];
 
 function get_available_languages() {
-    var url = AVAILABLE_LANGUAGEPACK_URL;
-    var request = $.ajax({
-        url: url,
+    doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
-    }).error(function(data, status, error) {
+    }).fail(function(data, status, error) {
         installable_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 }
 
 function get_installed_languages() {
-    $.ajax({
-        url: INSTALLED_LANGUAGES_URL,
+    doRequest(INSTALLED_LANGUAGES_URL, null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
         installed_languages = installed;
         display_languages();
-    }).error(function(data, status, error) {
+    }).fail(function(data, status, error) {
         installed_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 }
 
@@ -100,13 +95,8 @@ function display_languages() {
 function delete_languagepack(lang_code) {
     doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
         .success(function(resp) {
-            handleSuccessAPI("deleted");
             get_installed_languages();
             display_languages(installables);
-            show_message("success", sprintf(gettext("Successfully deleted language pack %(lang_code)s"), {lang_code: lang_code}));
-        })
-        .fail(function(resp) {
-            handleFailedAPI(resp, gettext("Error"), "deleted");
         });
 }
 
@@ -147,6 +137,8 @@ $(function () {
 
 
 function start_languagepack_download(lang_code) {
+    clear_messages();  // get rid of any lingering messages before starting download
+
     // tell server to start languagepackdownload job
     doRequest(
         start_languagepackdownload_url,
@@ -156,17 +148,6 @@ function start_languagepack_download(lang_code) {
             "languagepackdownload",
             2000, // 2 seconds
             languagepack_callbacks
-        );
-        show_message(
-            "success",
-            sprintf(gettext("Download for language %s started."), [lang_code]),
-            "id_languagepackdownload"
-        );
-    }).error(function(progress, status, req) {
-        handleFailedAPI(
-            progress,
-            gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
-            "id_languagepackdownload"
         );
     });
 }
@@ -204,6 +185,7 @@ $(function () {
         start_languagepack_download(language_downloading);
     });
 });
+
 
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
