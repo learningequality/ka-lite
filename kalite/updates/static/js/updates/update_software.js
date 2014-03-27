@@ -62,7 +62,7 @@ function version_callback(data) {
         show_message("error", "Remote version information unavailable.", "id_message_update");
     } else if (current_version != remote_version) {
         $("#update_info").show();  // show the related div
-        $("#git_update").show();
+        $("#internet_update").show();
 
         version_info = data["version_info"];
 
@@ -111,7 +111,7 @@ $(function() {
                 $("#software_available").removeAttr("disabled");
                 $("#download-update-kalite").removeAttr("disabled");
                 $("#upload-update-kalite").removeAttr("disabled");
-                clear_message("id_offline_message");
+                clear_messages("id_offline_message");
             }
         });
 
