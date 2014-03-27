@@ -10,7 +10,7 @@ html, body, #background-photo {
 	height: 100%;
 }
 body {
-    background: ;
+    background: #123c3c;
 	margin: 0;
 	padding-top: 79px;
 }
@@ -155,6 +155,10 @@ footer ul .pull-right {
 .tiny { 
     font-size: 0.85em; 
 }
+#creative-commons-link {
+    height: 15px;
+    width: 82px;
+}
 
 /* ===================================
 	Media Queries
@@ -167,7 +171,9 @@ footer ul .pull-right {
     form#search-box { margin-left: 15px; margin-bottom: 10px; }
     .suggested-action-title { font-size: 24px; padding-top: 15px; }
     .topic-list a { font-size: 1.25em; }
-    footer p:nth-child(2) { margin: 0; }
+    #fle-logo { margin-top: 0; }
+    footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
+    p.visible-xs:last-child { height: 18px; }
 }
 @media only screen and (max-width: 437px) {
     .suggested-action-title { font-size: 18px; padding-top: 15px; }
