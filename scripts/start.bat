@@ -10,8 +10,6 @@ if exist "%SCRIPT_DIR%\python.bat" (
     set "KALITE_DIR=%SCRIPT_DIR%\kalite"
 )
 
-call "%SCRIPT_DIR%\get_port.bat" %*
-
 if not exist "%KALITE_DIR%\database\data.sqlite" (
     echo Please run install.bat first!
 ) else (
