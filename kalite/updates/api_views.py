@@ -6,7 +6,6 @@ import json
 import os
 import re
 import math
-import shutil
 from annoying.functions import get_object_or_None
 from collections import defaultdict
 
@@ -20,16 +19,17 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
+from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size, delete_language
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, invalidate_web_cache
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
-from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, get_srt_path, get_locale_path, lcode_to_ietf
+from kalite.i18n import get_youtube_id, get_video_language
+from kalite.i18n import get_localized_exercise_dirpath
 from kalite.main.topic_tools import get_topic_tree
 from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_admin
@@ -229,21 +229,9 @@ def delete_language_pack(request):
     That particular language folders are deleted and that language gets removed.
     """
     lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
-    langpack_resource_paths=[ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+    delete_language(lang_code)
 
-    for langpack_resource_path in langpack_resource_paths:
-        try:
-            shutil.rmtree(langpack_resource_path)
-            logging.info("Deleted language pack resource path: %s" % langpack_resource_path)
-        except OSError as e:
-            if e.errno != 2:    # Only ignore error: No Such File or Directory
-                raise
-            else:
-                logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
-
-    invalidate_web_cache()
-
-    return JsonResponseMessageSuccess(_("Deleted language pack %s successfully.") % lang_code)
+    return JsonResponse({"success": _("Deleted language pack %s successfully.") % lang_code})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
