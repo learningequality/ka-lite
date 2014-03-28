@@ -122,7 +122,7 @@
                 <div class="clear"></div>
                 {% endif %}
 
-                <div class="action-bar">
+                <!--<div class="action-bar">
                     <div class="selection">
                         <h4>
                             {% trans "Select" %}:
@@ -133,10 +133,10 @@
                         <div class="action">
                         <h4>{% trans "Action" %}:
 
-                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button> 
                         </h4>
                     </div>
-                </div>
+                </div>-->
 
                 <table class="simple-table selectable-table">
                     <thead>
@@ -195,7 +195,7 @@
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Student Groups" %}</span>
                 <a title="{% trans 'Add a new group.' %}" href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
-                    <span class="icon-add icon-medium" %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span class="icon-add icon-medium">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>
             <div class="clear"></div>
@@ -225,6 +225,7 @@
                     </thead>
                     <tbody>
                         {% for group in groups %}
+                            {% if group.name != ungrouped or group.total_users != 0 %}
                             <tr>
                                 <td>
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
@@ -258,7 +259,7 @@
                                 <td>{{ group.total_exercises }}</td>
                                 <td>{{ group.pct_mastery|percent:1 }}</td>
                             </tr>
-
+                            {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
@@ -316,7 +317,7 @@
                         {% trans "Action" %}:
                         {% if groups %}
                         <span class="dotted">
-                            <button class="movegroup" value="#students">{% trans "Move Students to Group" %}</button>
+                            <button class="movegroup" value="#students">{% trans "Change Student Groups" %}</button>
                             <select class="movegrouplist" value="#students">
                                     <option selected>----</option>
                                     {% for group in groups %}
@@ -328,10 +329,7 @@
                         </span>
                         {% endif %}
 
-                         {% if not group_id == ungrouped %}
-                         <button class="removegroup" value="#students">{% trans "Remove Students from Group" %}</button>
-                         {% endif %}
-                         <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                        <!-- <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button> -->
                     </h4>
                 </div>
             </div>

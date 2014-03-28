@@ -227,12 +227,11 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
 
 
     # Basic data
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
     if not group_id:
-        groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
         group = None
     else:
-        groups = FacilityGroup.objects.filter(pk=group_id)
-        group = get_object_or_None(groups)
+        group = get_object_or_None(FacilityGroup, id=group_id)
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
@@ -443,7 +442,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_logins"] += 1
 
     for group in list(groups) + [None]*(group_id==None or _(group_id)==_("Ungrouped")):  # None for ungrouped, if no group_id passed.
-        group_pk = getattr(group, "pk", None)
+        group_pk = getattr(group, "pk", _("Ungrouped"))
         group_name = getattr(group, "name", _("Ungrouped"))
         group_data[group_pk] = {
             "id": group_pk,
@@ -458,7 +457,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
-        group_pk = getattr(user.group, "pk", None)
+        group_pk = getattr(user.group, "pk", _("Ungrouped"))
         group_data[group_pk]["total_users"] += 1
         group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]

@@ -12,28 +12,22 @@ from kalite.shared.decorators import require_admin
 
 @require_admin
 @api_handle_error_with_json
-def remove_from_group(request):
-    """
-    API endpoint for removing users from group
-    (from user management page)
-    """
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", "")
-    users_to_remove = FacilityUser.objects.filter(username__in=users)
-    users_to_remove.update(group=None)
-    return JsonResponseMessageSuccess(_("Removed %(num_users)d users from their groups successfully.") % {"num_users": users_to_remove.count()})
-
-
-@require_admin
-@api_handle_error_with_json
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
-    group_update = FacilityGroup.objects.get(pk=group)
+    if group == _("Ungrouped"):
+        group_update = None
+    else:
+        group_update = FacilityGroup.objects.get(pk=group)
     users_to_move = FacilityUser.objects.filter(username__in=users)
     users_to_move.update(group=group_update)
+    if group_update:
+        group_name = group_update.name
+    else:
+        group_name = group
     return JsonResponseMessageSuccess(_("Moved %(num_users)d users to group %(group_name)s successfully.") % {
         "num_users": users_to_move.count(),
-        "group_name": group_update.name,
+        "group_name": group_name,
     })
 
 

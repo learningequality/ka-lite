@@ -30,6 +30,8 @@ $(function() {
         var users = getSelectedUsers(this.value);
         var group = $(this.value).find('.movegrouplist option:selected').val();
 
+        console.log(group);
+
         if (!group) {
             alert(gettext("Please choose a group to move users to."));
         } else if (users.length==0) {
@@ -44,21 +46,6 @@ $(function() {
         }
     });
 
-    $(".removegroup").click(function(event) {
-        // Move users from the selected group to ungrouped.
-        var users = getSelectedUsers(this.value);
-
-        if (users.length == 0) {
-            alert(gettext("Please select users first"));
-        } else if(!confirm(gettext("You are about to remove selected users from their current group."))) {
-            return;
-        } else {
-            doRequest("/securesync/api/remove_from_group", {users: users})
-                .success(function() {
-                    location.reload();
-                });
-        }
-    });
 
     $(".delete").click(function(event) {
         // Delete the selected users
