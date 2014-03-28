@@ -331,20 +331,21 @@ Software updates
 
 @require_admin
 def start_update_kalite(request):
-    data = json.loads(request.raw_post_data)
+    try:
+        data = json.loads(request.raw_post_data)
+        mechanism = data['mechanism']
+    except KeyError:
+        raise KeyError("You did not select a valid choice for an update mechanism.")
 
-    if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
-        # Got a download url
-        call_command_async("update", url=data["url"], in_proc=False, manage_py_dir=settings.PROJECT_PATH)
+    assert mechanism == 'internet' # handle only download updates for now
 
-    elif request.META.get("CONTENT_TYPE", "") == "application/zip":
-        # Streamed a file; save and call
-        fp, tempfile = tempfile.mkstmp()
-        with fp:
-            write(request.content)
-        call_command_async("update", zip_file=tempfile, in_proc=False, manage_py_dir=settings.PROJECT_PATH)
+    call_command_async('update', True, mechanism)
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
+
+@require_admin
+def cancel_update_kalite(request):
+    return JsonResponse({})
 
 
 @require_admin
