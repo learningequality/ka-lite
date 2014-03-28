@@ -70,6 +70,8 @@ select#language_selector {
 =================================== */
 .jumbotron {
 	background: #d1d7b1;
+    padding-bottom: 40px;
+    padding-top: 40px;
 	text-align: center;
 	width: 100%;
 }
@@ -142,7 +144,7 @@ footer {
 	height: 77px;
 }
 footer ul li {
-    margin-top: 15px;
+    margin-top: 19px;
 }
 footer ul .pull-right {
     margin-right: 15px;
