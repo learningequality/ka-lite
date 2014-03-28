@@ -28,12 +28,10 @@ class FacilityUserForm(forms.ModelForm):
         self.fields["facility"].initial = facility.id
         self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
 
-        # Select the initial default language
+        # Select the initial default language,
+        #   but only if we're not in the process of updating it to something else.
         if not self.fields["default_language"].initial and "default_language" not in self.changed_data:
-            if self.instance:
-                self.fields["default_language"].initial = self.instance.default_language or get_default_language()
-            else:
-                self.fields["default_language"].initial = get_default_language()
+            self.fields["default_language"].initial = (self.instance and self.instance.default_language) or get_default_language()
 
         # Passwords only required on new, not on edit
         self.fields["password_first"].required = self.instance.pk == ""

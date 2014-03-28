@@ -7,9 +7,9 @@
 <script>
     var DEFAULT_LANGUAGE = "{{ default_language }}";
     $(function() {
-        // Guarantee that SOME language code is selected.
-        var lang_code_found = $('#id_default_language option[selected]');
-        if (lang_code_found.length == 0) {
+        // Guarantee that SOME language code is either SELECTED by the back-end,
+        //   or selected to the default value in the front-end.
+        if ($('#id_default_language option[selected]').length == 0) {
             $("#id_default_language").val(DEFAULT_LANGUAGE);
         }
 
