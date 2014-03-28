@@ -16,6 +16,7 @@
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap.min.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-alerts.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
@@ -169,7 +170,7 @@
         <div class="container" id="wrapper">
             {% block outer_content %}
             <!-- <div id="container"> -->
-                <article class="clearfix">
+                <!-- <article class="clearfix"> -->
                     {% block precontent %}
                     <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
                     {% if messages %}
@@ -179,7 +180,7 @@
                     {% endif %}
                     {% endblock precontent %}
                     {% block content %}{% endblock content %}
-                </article>
+                <!-- </article> -->
             <!-- </div> -->
             {% endblock outer_content %}
             <div class="footer-clearfix"></div>
