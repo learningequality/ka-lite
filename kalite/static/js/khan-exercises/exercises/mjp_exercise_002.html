@@ -50,9 +50,24 @@
 	
 </script>
 	<style type="text/css">
-		#answer_area .short input[type=text] {
-			width: 30px;
-		}
+		//#answer_area .short input[type=text] {
+		//	width: 30px;
+		//}
+		
+		//#exercise-body{
+		//    width: 100 px;
+		//    }
+		
+		//#current-card-contents{
+		//    width: 100 px;
+		//    }
+		
+		
+		
+		//#problem-and-answer  {
+		//	width: 100px;
+		//}
+		
 	</style>
 </head>
 <body>
@@ -69,7 +84,24 @@
 			<div class="question">
 				<p>What is the "major third" of the <var>NOTE[HOUR]</var> Major Scale?...I think it is <var>INDNOTE[((HOUR+4)*7)%12]</var></p>
 				<div class="graphie" id="pie" style="float: left;">
-				    $('#answer_area').css("width","400px");
+                    $('.exercises-header').css("width","300px");
+				    $('#message-container').hide();
+				    $('.exercise-card current-card').css("width","300px");
+				    $('.question').css("width","300px");
+				    $('.current-card-container card-type-problem').css("width","300px");
+				    $('.current-card-container-inner vertical-shadow').css("width","300px");
+				    $('#hint-remainder').hide();
+				    $('.exercises-body').css("width","300px");
+				    $('.info-box-header').hide();
+				    $('.current-card-container-inner vertical-shadow').css("width","300px");
+				    $('.current-card-contents').css("width","300px");
+				    $('#id_do_request').hide();
+				    $('#problem-and-answer').css("width","300px");
+				    $('#problem-and-answer').css("height","300px");
+				    $('#problemarea').css("width","300px");
+				    $('#problemarea').css("height","100px");				    
+				    $('#answerform').css("width","100px");
+				    
 					init({ range: [ [-4, 4 ], [ -4, 4] ], scale: 25 });
 					PIECH = new analogMusic( HOUR, 0,  3.5, false,0 );
 					PIECH.draw();
