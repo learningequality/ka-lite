@@ -76,15 +76,15 @@ class Command(UpdatesStaticCommand):
 
         try:
             if not args:
-                raise CommandError("Too few arguments. Please specify how you would like to update KA Lite. Choices: [git, download, localzip]")
+                raise CommandError("Too few arguments. Please specify how you would like to update KA Lite. Choices: [git, internet, localzip]")
             elif args[0] == 'git':
                 self.update_via_git(**options)
-            elif args[0] == 'download':
+            elif args[0] == 'internet':
                 self.update_via_zip(**options)
             elif args[0] == 'localzip':
                 self.update_via_zip(**options)
             else:
-                raise CommandError("Enter one of [git, download, localzip]")
+                raise CommandError("Enter one of [git, internet, localzip]")
 
         except Exception as e:
             if self.started() and not not self.ended():
@@ -106,7 +106,7 @@ class Command(UpdatesStaticCommand):
         ]
 
         if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
-            raise CommandError("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'download' or 'localzip'")
+            raise CommandError("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'")
 
         # step 1: clean_pyc (has to be first)
         call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
