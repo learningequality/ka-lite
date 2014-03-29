@@ -137,7 +137,7 @@ select#language_selector {
 #wrapper {
 	height: auto !important;
 	height: 100%;
-    margin: 0 auto -77px; 
+    margin: 0 auto -78px; 
     min-height: 100%;
 }
 .footer-clearfix {
@@ -196,7 +196,6 @@ footer ul .pull-right {
 }
 @media only screen and (max-width: 439px) {
     .alert { font-size: 0.85em; margin: 0; }
-    .suggested-action { margin-top: 10px; }
     .suggested-action-title { font-size: 20px; padding-top: 0; }
     .topic-list a { font-size: 16px; }
 }
