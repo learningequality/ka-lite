@@ -3,7 +3,6 @@ These use a web-browser, along selenium, to simulate user actions.
 """
 import re
 import time
-import unittest
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -13,6 +12,7 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils import unittest
 from django.utils.translation import ugettext as _
 
 from fle_utils.django_utils import call_command_with_output
