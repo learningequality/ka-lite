@@ -155,7 +155,7 @@ footer a.navbar-brand {
 footer {
     /*background-image: url(/static/images/distributed/non-repeating-sprites.4.png);*/
     /*background-position: 319px -908px;*/
-	border-top: 1px solid #999 !importantfo;
+	border-top: 1px solid #999 !important;
 	height: 77px;
 }
 footer ul li {
