@@ -28,8 +28,7 @@ from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
-from kalite.i18n import get_youtube_id, get_video_language
-from kalite.i18n import get_localized_exercise_dirpath
+from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
 from kalite.main.topic_tools import get_topic_tree
 from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_admin
