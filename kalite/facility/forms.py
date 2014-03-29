@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
 from fle_utils.django_utils import verify_raw_password
-from kalite.i18n import get_installed_language_packs
+from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
 
 
 class FacilityUserForm(forms.ModelForm):
@@ -26,7 +26,12 @@ class FacilityUserForm(forms.ModelForm):
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
         self.fields["facility"].initial = facility.id
-        self.fields["default_language"].choices = [(key, val["native_name"]) for key, val in get_installed_language_packs().iteritems()]
+        self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
+
+        # Select the initial default language,
+        #   but only if we're not in the process of updating it to something else.
+        if not self.fields["default_language"].initial and "default_language" not in self.changed_data:
+            self.fields["default_language"].initial = (self.instance and self.instance.default_language) or get_default_language()
 
         # Passwords only required on new, not on edit
         self.fields["password_first"].required = self.instance.pk == ""
@@ -39,7 +44,7 @@ class FacilityUserForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         # Note: must preserve order
-        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "is_teacher")
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher")
         widgets = {
             "facility": forms.HiddenInput(),
             "is_teacher": forms.HiddenInput(),

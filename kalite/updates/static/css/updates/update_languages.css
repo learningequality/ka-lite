@@ -19,7 +19,7 @@
 .lang-name { width: 250px; }
 .lang-data { width: 250px; }
 .upgrade-link { width: 300px; }
-.delete-language-button { width: 120px; float: right;}
+.delete-language-button {float: right;}
 
 #langpack-details {
     margin-top: 10px;

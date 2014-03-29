@@ -36,7 +36,7 @@
                                 {% if facility.is_default %}
                                 <span class=default-setter>{% trans "(this is the default)" %}</span>
                                 {% else %}
-                                <a class=default-setter href="{{ selection_paths|get_item:facility.id  }}&set_default=True">
+                                <a class=default-setter href="{{ selection_paths|get_item:facility.id  }}?set_default=True">
                                 {% trans "(set as the default facility)" %}
                                 </a>
                                 {% endif %}

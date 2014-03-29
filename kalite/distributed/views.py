@@ -30,7 +30,7 @@ from django.views.i18n import javascript_catalog
 
 from .caching import backend_cache_page
 from fle_utils.django_utils import is_loopback_connection
-from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params, backend_cache_page
+from fle_utils.internet import JsonResponse, JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
 from kalite.facility.models import Facility, FacilityUser,FacilityGroup
 from kalite.i18n import select_best_available_language
 from kalite.main import topic_tools
@@ -199,7 +199,10 @@ def topic_context(topic):
     exercises_path = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
 
-    for lang_code in (set(os.listdir(exercises_path)) - set(["test"])):  # hard-code out test
+    # Determine what exercises (and languages) are available
+    exercise_all_lang_codes = os.listdir(exercises_path) if os.path.exists(exercises_path) else []
+    exercise_all_lang_codes = set(exercise_all_lang_codes) - set(["test"])
+    for lang_code in exercise_all_lang_codes:  # hard-code out test
         loc_path = os.path.join(exercises_path, lang_code)
         if not os.path.isdir(loc_path):
             continue
@@ -249,6 +252,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     context = {
         "video": video,
         "title": video["title"],
+        "num_videos_available": len(video["availability"]),
         "selected_language": vid_lang,
         "video_urls": video["availability"].get(vid_lang),
         "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
@@ -473,7 +477,7 @@ def handler_403(request, *args, **kwargs):
     #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
+        return JsonResponseMessageError(_("You must be logged in with an account authorized to view this page (API)."), status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
