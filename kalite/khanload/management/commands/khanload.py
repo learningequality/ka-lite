@@ -608,7 +608,7 @@ def save_topic_tree(topic_tree=None, node_cache=None, data_path=os.path.join(set
     # Dump the topic tree (again)
     topic_tree = topic_tree or node_cache["Topic"]["root"][0]
 
-    dest_filepath = os.path.join(data_path, topic_tools.topics_file)
+    dest_filepath = os.path.join(data_path, topic_tools.TOPICS_FILEPATH)
     logging.debug("Saving topic tree to %s" % dest_filepath)
     with open(dest_filepath, "w") as fp:
         fp.write(json.dumps(topic_tree, indent=2))
