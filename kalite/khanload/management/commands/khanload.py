@@ -335,7 +335,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
 
     knowledge_topics = {}  # Stored variable that keeps all exercises related to second-level topics
                            #   Much of this is duplicate information from node_cache
-    knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
+    #knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
 
     def scrub_knowledge_map(knowledge_map, node_cache):
         """
@@ -357,7 +357,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
 
             del knowledge_map["topics"][slug]
             topictree_node["in_knowledge_map"] = False
-    scrub_knowledge_map(knowledge_map, node_cache)
+    #scrub_knowledge_map(knowledge_map, node_cache)
 
 
     def recurse_nodes_to_extract_knowledge_map(node, node_cache):
@@ -562,7 +562,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
     return knowledge_map, knowledge_topics
 
 
-def validate_data(topic_tree, node_cache, slug2id_map, knowledge_map):
+def validate_data(topic_tree, node_cache, slug2id_map):
 
     # Validate related videos
     for exercise_nodes in node_cache['Exercise'].values():
@@ -646,11 +646,14 @@ class Command(BaseCommand):
         node_cache = topic_tools.generate_node_cache(topic_tree)
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
 
-        knowledge_map, _ = rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
+        # Disabled until we revamp it based on the current KA API.
+        # h_position and v_position are available on each exercise now.
+        # If not on the topic_tree, then here: http://api-explorer.khanacademy.org/api/v1/playlists/topic_slug/exercises
+        rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
 
         scrub_topic_tree(node_cache=node_cache)
 
-        validate_data(topic_tree, node_cache, slug2id_map, knowledge_map)
+        validate_data(topic_tree, node_cache, slug2id_map)
 
         save_topic_tree(topic_tree)
 
