@@ -81,19 +81,20 @@ INSTALLED_APPS = (
     "south",
     "fle_utils.config",
     "fle_utils.chronograph",
-    "django_cherrypy_wsgiserver",
+    "kalite.control_panel",  # in both apps
+    "kalite.coachreports",  # in both apps; reachable on central via control_panel
+    "kalite.django_cherrypy_wsgiserver",
+    "kalite.facility",
+    "kalite.i18n",  #
+    "kalite.khanload",  # khan academy interactions
+    "kalite.main", # in order for securesync to work, this needs to be here.
+    "kalite.testing",
+    "kalite.updates",  #
     "securesync",
-    "main", # in order for securesync to work, this needs to be here.
-    "control_panel",  # in both apps
-    "coachreports",  # in both apps; reachable on central via control_panel
-    "khanload",  # khan academy interactions
-    "updates",  #
-    "i18n",  #
-    "facility",
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
 if DEBUG:
-    INSTALLED_APPS += ("django_snippets","testing",)   # used in contact form and (debug) profiling middleware
+    INSTALLED_APPS += ("django_snippets")   # used in contact form and (debug) profiling middleware
 
 
 ##############################
