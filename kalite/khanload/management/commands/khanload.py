@@ -76,6 +76,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=KHANLOAD_CACH
     if not os.path.exists(debug_cache_dir):
         os.mkdir(debug_cache_dir)
     debug_cache_file = os.path.join(debug_cache_dir, debug_cache_file)
+    data = None
 
     # Use the cache file if:
     # a) We're in DEBUG mode
@@ -84,17 +85,29 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=KHANLOAD_CACH
     if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 1E6:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
-        with open(debug_cache_file, "r") as fp:
-            data = json.load(fp)
-    else:
+        try:
+            with open(debug_cache_file, "r") as fp:
+                data = json.load(fp)
+        except Exception as e:
+            sys.stderr.write("Error loading cached document %s: %s\n" % (debug_cache_file, e))
+
+    if data is None:  # Failed to get a cached copy
         sys.stdout.write("Downloading data from %s..." % url)
         sys.stdout.flush()
-        data = json.loads(requests.get(url).content)
-        sys.stdout.write("done.\n")
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = json.loads(response.content)
+            sys.stdout.write("done.\n")
+        except requests.HTTPError as e:
+            sys.stderr.write("Error downloading %s: %s\n" % (url, e))
+            return None
+
         # In DEBUG mode, store the debug cache file.
         if settings.DEBUG:
             with open(debug_cache_file, "w") as fh:
                 fh.write(json.dumps(data))
+
     return data
 
 
@@ -146,8 +159,8 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
             node["basepoints"] = ceil(7 * log(max(exp(5./7), node["seconds_per_fast_problem"])));
 
             # Related videos
-            related_video_slugs = [vid["readable_id"] for vid in download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")]
-            node["related_video_slugs"] = related_video_slugs
+            vids = download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")
+            node["related_video_slugs"] = [vid["readable_id"] for vid in vids] if vids else []
 
             related_exercise_metadata = {
                 "id": node["id"],
@@ -320,9 +333,9 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
     to rebuild the knowledge map (maplayout.json) and topics.json files.
     """
 
-    knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
     knowledge_topics = {}  # Stored variable that keeps all exercises related to second-level topics
                            #   Much of this is duplicate information from node_cache
+    knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
 
     def scrub_knowledge_map(knowledge_map, node_cache):
         """
