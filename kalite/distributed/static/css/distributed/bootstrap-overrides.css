@@ -45,7 +45,7 @@ body {
 }
 .navbar ul li a:hover, .navbar ul li a:focus {
     /*background: #d1d7b1 !important;*/
-    background: #f8f8f8 !important;
+    background: #dcdcdc !important;
 }
 form#search-box {
     margin-right: 15px;
@@ -110,8 +110,10 @@ select#language_selector {
 }
 .suggested-action a:hover, .suggested-action a:focus {
     color: #005987;
-    font-weight: bold;
     text-decoration: none;
+}
+.suggested-action:first-child a:hover, .suggested-action:first-child a:focus {
+    font-weight: bold;
 }
 .suggested-action-image-link {
     background-image: url('../../images/distributed/knowledge-map-derivative-intuition.png');
