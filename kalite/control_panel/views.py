@@ -227,12 +227,11 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
 
 
     # Basic data
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
     if not group_id:
-        groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
         group = None
     else:
-        groups = FacilityGroup.objects.filter(pk=group_id)
-        group = get_object_or_None(groups)
+        group = get_object_or_None(FacilityGroup, id=group_id)
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
