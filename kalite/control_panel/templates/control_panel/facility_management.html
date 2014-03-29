@@ -321,10 +321,13 @@
                             <select class="movegrouplist" value="#students">
                                     <option selected>----</option>
                                     {% for group in groups %}
-                                        {% if not group_id == group.id %}
+                                        {% if not group_id == group.id and group.id %}
                                             <option value="{{ group.id }}">{{ group.name }}</option>
                                         {% endif %}
                                     {% endfor %}
+                                    {% if group_id != ungrouped %}
+                                        <option value="">{{ ungrouped }}</option>
+                                    {% endif %}
                             </select>
                         </span>
                         {% endif %}

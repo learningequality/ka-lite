@@ -442,7 +442,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_logins"] += 1
 
     for group in list(groups) + [None]*(group_id==None or _(group_id)==_("Ungrouped")):  # None for ungrouped, if no group_id passed.
-        group_pk = getattr(group, "pk", _("Ungrouped"))
+        group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
         group_data[group_pk] = {
             "id": group_pk,
@@ -457,7 +457,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
-        group_pk = getattr(user.group, "pk", _("Ungrouped"))
+        group_pk = getattr(user.group, "pk", None)
         group_data[group_pk]["total_users"] += 1
         group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]

@@ -1,5 +1,8 @@
 """
 """
+
+from annoying.functions import get_object_or_None
+
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
@@ -14,17 +17,14 @@ from kalite.shared.decorators import require_admin
 @api_handle_error_with_json
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    group = simplejson.loads(request.raw_post_data or "{}").get("group", "")
-    if group == _("Ungrouped"):
-        group_update = None
-    else:
-        group_update = FacilityGroup.objects.get(pk=group)
+    group_id = simplejson.loads(request.raw_post_data or "{}").get("group", "")
+    group_update = get_object_or_None(FacilityGroup, id=group_id)
     users_to_move = FacilityUser.objects.filter(username__in=users)
     users_to_move.update(group=group_update)
     if group_update:
         group_name = group_update.name
     else:
-        group_name = group
+        group_name = group_id
     return JsonResponseMessageSuccess(_("Moved %(num_users)d users to group %(group_name)s successfully.") % {
         "num_users": users_to_move.count(),
         "group_name": group_name,

@@ -32,7 +32,7 @@ $(function() {
 
         console.log(group);
 
-        if (!group) {
+        if (group==="----") {
             alert(gettext("Please choose a group to move users to."));
         } else if (users.length==0) {
             alert(gettext("Please select users first."));
