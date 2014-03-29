@@ -10,7 +10,7 @@ import requests
 import shutil
 import sys
 import time
-from math import ceil, log  # needed for basepoints calculation
+from math import ceil, log, exp  # needed for basepoints calculation
 from optparse import make_option
 
 from django.conf import settings
@@ -142,8 +142,8 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
             node["exercise_id"] = node["slug"]
 
             # compute base points
-            # Paste points onto the exercise
-            node["basepoints"] = ceil(7 * log(node["seconds_per_fast_problem"]));
+            # Minimum points per exercise: 5
+            node["basepoints"] = ceil(7 * log(max(exp(5./7), node["seconds_per_fast_problem"])));
 
             # Related videos
             related_video_slugs = [vid["readable_id"] for vid in download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")]
