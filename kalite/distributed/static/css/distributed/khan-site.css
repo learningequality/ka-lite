@@ -256,14 +256,6 @@ article, section {
     padding: 2px;
 }
 
-/*.vertical-shadow {
-    border: 1px solid #cccccc;
-    border-bottom: 1px solid #aaa;
-    -webkit-box-shadow: 0 1px 3px #cccccc;
-    -moz-box-shadow: 0 1px 3px #cccccc;
-    box-shadow: 0 1px 3px #cccccc;
-}*/
-
 /* A simple 3D button style */
 .simple-button {
     border: 1px solid #ccc;

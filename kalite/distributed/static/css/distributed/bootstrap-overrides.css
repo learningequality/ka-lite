@@ -10,18 +10,18 @@ html, body, #background-photo {
 	height: 100%;
 }
 body {
-    background: #123c3c;
+    /*background: #123c3c;*/
 	margin: 0;
 	padding-top: 79px;
 }
 #background-photo, .row {
 	width: 100%;
 }
-#background-photo {
+/*#background-photo {
     background-image: url('../../images/distributed/background.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-}
+}*/
 .container {
     max-width: 1000px;
 }
@@ -68,12 +68,23 @@ select#language_selector {
 /* ===================================
 	Home Page
 =================================== */
-.jumbotron {
+/*.jumbotron {
 	background: #d1d7b1;
     padding-bottom: 40px;
     padding-top: 40px;
 	text-align: center;
 	width: 100%;
+}*/
+.main-headline {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.vertical-shadow {
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #aaa;
+    -webkit-box-shadow: 0 1px 3px #ccc;
+    -moz-box-shadow: 0 1px 3px #ccc;
+    box-shadow: 0 1px 3px #ccc;
 }
 .suggested-action {
     background: #f8f8f8;
@@ -81,10 +92,8 @@ select#language_selector {
     margin-bottom: 10px;
     min-height: 256px;
     padding: 0 30px;
-    /*width: 430px;*/
 }
 .suggested-action:hover, .suggested-action:focus {
-    /*border-color: #C3CA7D;*/
     -webkit-box-shadow: 0 0 10px #76A005;
     -moz-box-shadow: 0 0 10px #76a005;
     box-shadow: 0 0 30px #76a005;
@@ -116,9 +125,11 @@ select#language_selector {
     margin-left: 25px;
     /*font-family: "MuseoSans500", sans-serif;*/
 }
-/*.message {
-    margin-left: 7px;
-}*/
+.homepage-p {
+    font-size: 0.96em;
+    margin-top: 15px;
+    text-align: center;
+}
 
 /* ===================================
 	Footer
@@ -132,15 +143,17 @@ select#language_selector {
 .footer-clearfix {
     height: 110px;
 }
-footer, footer p:hover, footer p:focus  {
+footer, footer p:hover, footer p:focus {
     color: #777;
 }
 footer a.navbar-brand {
     padding: 0;
 }
 footer {
-	/*background: #c6ccc2;	*/
-	/*border-top: 1px solid #999;*/
+    /*background: #c6ccc2;*/
+    background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
+    background-position: 319px -908px;
+	border-top: 1px solid #e7e7e7;
 	height: 77px;
 }
 footer ul li {
@@ -170,7 +183,9 @@ footer ul .pull-right {
     .suggested-action a { font-size: 16px; }
 }
 @media only screen and (max-width: 767px) {
+    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
     form#search-box { margin-left: 15px; margin-bottom: 10px; }
+    .suggested-action { margin-top: 20px; }
     .suggested-action-title { font-size: 24px; padding-top: 15px; }
     .topic-list a { font-size: 1.25em; }
     #fle-logo { margin-top: 0; }
@@ -178,7 +193,7 @@ footer ul .pull-right {
     p.visible-xs:last-child { height: 17px; }
 }
 @media only screen and (max-width: 437px) {
-    .suggested-action-title { font-size: 18px; padding-top: 15px; }
+    .suggested-action-title { font-size: 18px; padding-top: 0; }
     .topic-list a { font-size: 16px; }
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {
