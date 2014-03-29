@@ -85,7 +85,6 @@
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}" id="background-photo">
-        <!-- Background photo by D Sharon Pruitt / Creative Commons license -->
         
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
@@ -186,16 +185,16 @@
             <div class="footer-clearfix"></div>
         </div>
 
-        <footer class="footer-sticky navbar-default">
+        <footer class="navbar-default">
             <div class="container">
                 <a class="navbar-brand tiny">
                     <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="KA Lite logo"> 
                     <p>Creators of KA Lite &copy; 2014</p>
                     <p class="visible-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</p> 
-                    <p class="visible-xs"><img id="creative-commons-link" src="{% static 'images/distributed/creative-commons.png' %}"></p> 
+                    <p class="visible-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></p> 
                 </a>
                 <ul class="nav navbar-nav navbar-right tiny">
-                    <li class="pull-right hidden-xs"><img id="creative-commons-link" src="{% static 'images/distributed/creative-commons.png' %}"></li>
+                    <li class="pull-right hidden-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></li>
                     <li class="pull-right hidden-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</li>
                 </ul>
             </div>

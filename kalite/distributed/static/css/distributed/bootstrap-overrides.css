@@ -31,10 +31,10 @@ body {
 =================================== */
 .navbar {
 	border-bottom: 1px solid #999;
-    background: #c6ccc2;
+    /*background: #c6ccc2;*/
 }
 .navbar-default {
-	/*background: #c6ccc2;*/
+	background: #c6ccc2; /* Also controls footer color */
 }
 .navbar-brand img { 
 	margin-top: -6px; 
@@ -141,7 +141,7 @@ select#language_selector {
     min-height: 100%;
 }
 .footer-clearfix {
-    height: 110px;
+    height: 100px;
 }
 footer, footer p:hover, footer p:focus {
     color: #777;
@@ -150,14 +150,16 @@ footer a.navbar-brand {
     padding: 0;
 }
 footer {
-    /*background: #c6ccc2;*/
-    background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-    background-position: 319px -908px;
+    /*background-image: url(/static/images/distributed/non-repeating-sprites.4.png);*/
+    /*background-position: 319px -908px;*/
 	border-top: 1px solid #e7e7e7;
 	height: 77px;
 }
 footer ul li {
     margin-top: 19px;
+}
+footer ul li:nth-child(2) {
+    margin-right: 10px;
 }
 footer ul .pull-right {
     margin-right: 15px;
@@ -170,7 +172,7 @@ footer ul .pull-right {
 .tiny { 
     font-size: 0.85em; 
 }
-#creative-commons-link {
+#creative-commons-icon {
     height: 15px;
     width: 82px;
 }
@@ -190,10 +192,12 @@ footer ul .pull-right {
     .topic-list a { font-size: 1.25em; }
     #fle-logo { margin-top: 0; }
     footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
-    p.visible-xs:last-child { height: 17px; }
+    p.visible-xs:last-child { height: 17px; } /* Controls space below footer */
 }
-@media only screen and (max-width: 437px) {
-    .suggested-action-title { font-size: 18px; padding-top: 0; }
+@media only screen and (max-width: 439px) {
+    .alert { font-size: 0.85em; margin: 0; }
+    .suggested-action { margin-top: 10px; }
+    .suggested-action-title { font-size: 20px; padding-top: 0; }
     .topic-list a { font-size: 16px; }
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {
