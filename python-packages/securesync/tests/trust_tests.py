@@ -25,7 +25,7 @@ class TestChainOfTrust(SecuresyncTestCase):
         super(SecuresyncTestCase, self).tearDown()
         Device.own_device = None  # clear the cache, which isn't cleared across tests otherwise.
 
-    @unittest.skipIf(version_diff("0.12", VERSION) > 0, "generate_zone not available before v0.12.")
+    @unittest.skipIf(version_diff("0.13", VERSION) > 0, "generate_zone not available before v0.13.")
     @distributed_server_test
     def test_valid_own_device(self):
         """
@@ -85,7 +85,7 @@ class TestChainOfTrust(SecuresyncTestCase):
 
 
     @distributed_server_test
-    @unittest.skipIf(version_diff("0.12", VERSION) > 0, "generate_zone not available before v0.12.")
+    @unittest.skipIf(version_diff("0.13", VERSION) > 0, "generate_zone not available before v0.13.")
     def test_invalid_invitation(self):
         """
         Chain of trust:
