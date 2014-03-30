@@ -11,8 +11,7 @@ from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseServerError
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe

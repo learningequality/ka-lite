@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 

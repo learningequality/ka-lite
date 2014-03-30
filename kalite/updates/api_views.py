@@ -13,7 +13,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation

@@ -4,7 +4,7 @@
 from annoying.functions import get_object_or_None
 
 from django.http import HttpResponseForbidden
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
