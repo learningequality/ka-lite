@@ -2,19 +2,21 @@
 
 [KA Lite](http://kalite.learningequality.org/) is a lightweight [Django](https://www.djangoproject.com/) web app for serving core Khan Academy content (videos and exercises) from a local server, with points and progress-tracking, without needing internet connectivity. 
 
-Primary use cases include:
-* For servers/computer labs located in remote schools, which could be slowly syncing with a central server over a cell/satellite network or via USB keys.
-* In correctional facilities and other environments where providing educational materials is of value, but users cannot be given general internet access.
-* Mobile school "vans", which transport a server and multiple laptops/tablets between a number of schools (or orphanages, community centers, etc) in remote communities on a rotating basis, and syncing up with a central database (to download new content and upload analytics) when in an area with internet connectivity.
+#### Primary use cases include:
+* For servers/**computer labs located in remote schools**, which could be slowly syncing with a central server over a cell/satellite network or via USB keys.
+* In **correctional facilities** and other environments where providing educational materials is of value, but users cannot be given general internet access.
+* **Mobile school "vans"**, which transport a server and multiple laptops/tablets between a number of schools (or orphanages, community centers, etc) in remote communities on a rotating basis, and syncing up with a central database (to download new content and upload analytics) when in an area with internet connectivity.
 
-We would love for you to get involved!
-* Read more about the motivation behind this project at ["Introducing KA Lite, an offline version of Khan Academy"](http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/).
-* Install KA Lite on Linux, OSX, or Windows by viewing the [installation guide](http://kalitewiki.learningequality.org/installation).
-* Report bugs by opening them on the [GitHub issue tracker](https://github.com/learningequality/ka-lite/issues).
-* Contribute to the project by visiting our [development wiki](http://kalitewiki.learningequality.org/development/coding/getting-started).
+#### We would love for you to get involved!
+* **Install KA Lite** on Linux, OSX, or Windows by viewing the [installation guide](http://kalitewiki.learningequality.org/installation).
+* **Report bugs** by opening them on the [GitHub issue tracker](https://github.com/learningequality/ka-lite/issues).
+* **Contribute to the project** by visiting our [development wiki](http://kalitewiki.learningequality.org/development/coding/getting-started).
+* **Read more about the project's motivation** at ["Introducing KA Lite, an offline version of Khan Academy"](http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/).
+
 
 Official website: http://kalite.learningequality.org/
 
 ---
+#### License information:
 
 The KA Lite sourcecode itself is open-source [MIT licensed](http://opensource.org/licenses/MIT), and the other included software and content is licensed as described in the [LICENSE](https://raw.github.com/learningequality/ka-lite/master/LICENSE) file. Please note that KA Lite is not officially affiliated with, nor maintained by, Khan Academy, but rather makes use of Khan Academy's open API and Creative Commons content, which may only be used for non-commercial purposes.
