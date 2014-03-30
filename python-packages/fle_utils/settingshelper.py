@@ -44,7 +44,8 @@ def import_installed_app_settings(installed_apps, global_vars):
                 global_vars.update({var: global_vars.get(var, tuple()) + var_val})
             elif isinstance(var_val, dict):
                 # combine the above dict variables
-                global_vars.get(var, {}).update(var_val)
+                global_vars[var] = global_vars.get(var, {})
+                global_vars[var].update(var_val)
             elif var not in global_vars:
                 # Unknown variables that don't exist get set
                 global_vars.update({var: var_val})
