@@ -22,7 +22,7 @@ def import_installed_app_settings(installed_apps, global_vars):
                 app_path = os.path.join(path, app.replace(".", "/"))
                 settings_filepath = os.path.join(app_path, "settings.py")
                 if os.path.exists(settings_filepath):
-                    app_settings = {}
+                    app_settings = {"__package__": app}  # explicit setting of the __package__, to allow absolute package ref'ing
                     global_vars.update({"__file__": settings_filepath})  # must let the app's settings file be set to that file!
                     execfile(settings_filepath, global_vars, app_settings)
                     break
