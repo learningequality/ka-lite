@@ -7,7 +7,7 @@ import os
 import re
 import requests
 import shutil
-from collections import OrderedDict, defaultdict
+from collections_local_copy import OrderedDict, defaultdict
 
 from django.conf import settings
 from django.core.management import call_command

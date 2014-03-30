@@ -24,7 +24,7 @@ from .models import VideoFile
 from fle_utils.chronograph import force_job
 from fle_utils.internet import am_i_online, JsonResponse
 from kalite.control_panel.views import local_device_context
-from kalite.i18n import lcode_to_ietf, get_installed_language_packs, get_language_name
+from kalite.i18n import get_installed_language_packs, get_language_name
 from kalite.main import topic_tools
 from kalite.shared.decorators import require_admin
 from securesync.models import Device

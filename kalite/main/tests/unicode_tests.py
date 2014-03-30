@@ -54,12 +54,12 @@ class MainUnicodeModelsTest(MainTestCase, UnicodeModelsTest):
         #
         elog = ExerciseLog(user=user, exercise_id=self.korean_string)
         self.assertNotIn(unicode(elog), "Bad Unicode data", "ExerciseLog: Bad conversion to unicode (before saving).")
-        elog.save()
+        elog.save(update_userlog=False)
         self.assertNotIn(unicode(elog), "Bad Unicode data", "ExerciseLog: Bad conversion to unicode (after saving).")
 
         vlog = VideoLog(user=user, video_id=self.korean_string, youtube_id=self.korean_string)
         self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode (before saving).")
-        vlog.save()
+        vlog.save(update_userlog=False)
         self.assertNotIn(unicode(vlog), "Bad Unicode data", "VideoLog: Bad conversion to unicode (after saving).")
 
         ulog = UserLog(user=user)
