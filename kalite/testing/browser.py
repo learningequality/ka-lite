@@ -209,7 +209,7 @@ class BrowserTestCase(KALiteTestCase):
             num_tabs += 1
 
         if num_expected_links is not None:
-            self.assertEqual(num_links, num_expected_links, "Num links (%d) == %d" % (num_links, num_expected_links))
+            self.assertEqual(num_links, num_expected_links, "Num links: actual (%d) != expected (%d)" % (num_links, num_expected_links))
 
         return num_tabs
 
