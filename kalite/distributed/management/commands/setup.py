@@ -266,35 +266,34 @@ class Command(BaseCommand):
             admin.set_password(password)
             admin.save()
 
-
-        # Move scripts
-        for script_name in ["start", "stop", "run_command"]:
-            script_file = script_name + system_script_extension()
-            dest_dir = os.path.join(settings.PROJECT_PATH, "..")
-            src_dir = os.path.join(dest_dir, "scripts")
-            shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-            shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-
-        start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
-
-        # Run videoscan, on the distributed server.
-        if not settings.CENTRAL_SERVER:
-            sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
-            call_command("videoscan")
-
         # Now deploy the static files
         call_command("collectstatic", interactive=False)
 
-        # done; notify the user.
-        sys.stdout.write("\n")
-        if install_clean:
-            sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
-            sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
-            sys.stdout.write("\tthen load one of the following addresses in your browser to complete the configuration:\n")
-            for ip in get_ip_addresses():
-                sys.stdout.write("\t\thttp://%s:%d/\n" % (ip, settings.USER_FACING_PORT()))
+        if not settings.CENTRAL_SERVER:
+            # Move scripts
+            for script_name in ["start", "stop", "run_command"]:
+                script_file = script_name + system_script_extension()
+                dest_dir = os.path.join(settings.PROJECT_PATH, "..")
+                src_dir = os.path.join(dest_dir, "scripts")
+                shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+                shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
 
-        else:
-            sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
-            sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)
-        sys.stdout.write("\n")
+            start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
+
+            # Run videoscan, on the distributed server.
+            sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
+            call_command("videoscan")
+
+            # done; notify the user.
+            sys.stdout.write("\n")
+            if install_clean:
+                sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
+                sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
+                sys.stdout.write("\tthen load one of the following addresses in your browser to complete the configuration:\n")
+                for ip in get_ip_addresses():
+                    sys.stdout.write("\t\thttp://%s:%d/\n" % (ip, settings.USER_FACING_PORT()))
+
+            else:
+                sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
+                sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)
+            sys.stdout.write("\n")
