@@ -128,7 +128,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not options["interactive"]:
-            options["username"] = options["username"] or settings.INSTALL_ADMIN_USERNAME or getpass.getuser()
+            options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or getpass.getuser()
             options["hostname"] = options["hostname"] or get_host_name()
 
         sys.stdout.write("  _   __  ___    _     _ _        \n")
@@ -211,8 +211,8 @@ class Command(BaseCommand):
             (username, password) = get_username_password(options["username"], options["password"])
             (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
         else:
-            username = options["username"] or settings.INSTALL_ADMIN_USERNAME
-            password = options["password"] or settings.INSTALL_ADMIN_PASSWORD
+            username = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None)
+            password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
             hostname = options["hostname"]
             description = options["description"]
 
