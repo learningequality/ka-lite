@@ -85,11 +85,13 @@ def get_device_counters(**kwargs):
     return device_counters
 
 
-def get_models(device_counters=None, limit=settings.SYNCING_MAX_RECORDS_PER_REQUEST, zone=None, dest_version=None, **kwargs):
+def get_models(device_counters=None, limit=None, zone=None, dest_version=None, **kwargs):
     """Serialize models for some intended version (dest_version)
     Default is our own version--i.e. include all known fields.
     If serializing for a device of a lower version, pass in that device's version!
     """
+    limit = limit or settings.SYNCING_MAX_RECORDS_PER_REQUEST  # must be specified
+
     from securesync.devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
     own_device = Device.get_own_device()
 
