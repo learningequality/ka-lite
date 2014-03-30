@@ -132,7 +132,7 @@ def zone_management(request, zone_id="None"):
 
 
 @require_authorized_admin
-def delete_zone(request, org_id, zone_id):
+def delete_zone(request, zone_id):
     zone = get_object_or_404(Zone, id=zone_id)
     if not zone.has_dependencies(passable_classes=["Organization"]):
         zone.delete()
