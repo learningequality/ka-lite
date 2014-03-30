@@ -95,7 +95,7 @@ INSTALLED_APPS = (
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
 if DEBUG:
-    INSTALLED_APPS += ("django_snippets")   # used in contact form and (debug) profiling middleware
+    INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
 
 
 ##############################
