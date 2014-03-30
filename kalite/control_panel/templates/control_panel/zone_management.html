@@ -6,7 +6,9 @@
 {% block title %}{{ zone.name }} - {% trans "Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-    {% include_block "control_panel/snippets/clock_set.html" "headcss" %}
+    {% if clock_set %}
+        {% include_block "control_panel/snippets/clock_set.html" "headcss" %}
+    {% endif %}
     <style>
         .reports {
             padding-right: 15px;
@@ -26,7 +28,9 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
+    {% if clock_set %}
+        {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
+    {% endif %}
     <script>
         $(function () {
             $("#form_data").hide()
