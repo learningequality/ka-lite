@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     "south",
     "fle_utils.config",
     "fle_utils.chronograph",
+    "fle_utils.django_utils",  # templatetags
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
     "kalite.django_cherrypy_wsgiserver",
