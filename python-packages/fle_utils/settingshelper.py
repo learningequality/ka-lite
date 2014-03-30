@@ -53,9 +53,10 @@ def import_installed_app_settings(installed_apps, global_vars):
                 # Unknown variables that do exist must have the same value--otherwise, conflict!
                 raise Exception("(%s) %s is already set; resetting can cause confusion." % (app, var))
 
-            if var == "INSTALLED_APPS":
+        # Now if INSTALLED_APPS exist, go do those.
+        if "INSTALLED_APPS" in app_settings:
                 # Combine the variable values, then import
-                import_installed_app_settings(var_val, global_vars)
+                import_installed_app_settings(app_settings["INSTALLED_APPS"], global_vars)
 
     global_vars.update({"__file__": this_filepath})  # Set __file__ back to the project settings file
 
