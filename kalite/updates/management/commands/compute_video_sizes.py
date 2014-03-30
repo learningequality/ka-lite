@@ -4,7 +4,7 @@ This is a command-line tool to execute functions helpful to testing.
 import glob
 import json
 import os
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 from optparse import make_option
 
 from django.conf import settings

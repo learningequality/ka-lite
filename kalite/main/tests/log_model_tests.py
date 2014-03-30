@@ -28,7 +28,7 @@ class TestExerciseLogs(KALiteTestCase):
         self.original_exerciselog = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user)
         self.original_exerciselog.points = self.ORIGINAL_POINTS
         self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
-        self.original_exerciselog.save()
+        self.original_exerciselog.save(update_userlog=False)
 
         # get a new reference to the existing ExerciseLog
         exerciselog = ExerciseLog.objects.get(id=self.original_exerciselog.id)
@@ -45,7 +45,7 @@ class TestExerciseLogs(KALiteTestCase):
         # update the ExerciseLog
         exerciselog.points = self.NEW_POINTS
         exerciselog.attempts = self.NEW_ATTEMPTS
-        exerciselog.save()
+        exerciselog.save(update_userlog=False)
 
         # get a new reference to the existing ExerciseLog
         exerciselog2 = ExerciseLog.objects.get(id=self.original_exerciselog.id)
@@ -63,7 +63,7 @@ class TestExerciseLogs(KALiteTestCase):
         exerciselog.attempts = self.NEW_ATTEMPTS
 
         # try saving the new ExerciseLog: this is where the collision will happen, hopefully leading to a merge
-        exerciselog.save()
+        exerciselog.save(update_userlog=False)
 
         # get a new reference to the existing ExerciseLog
         exerciselog2 = ExerciseLog.objects.get(id=self.original_exerciselog.id)
@@ -95,7 +95,7 @@ class TestVideoLogs(KALiteTestCase):
         self.original_videolog = VideoLog(video_id=self.VIDEO_ID, youtube_id=self.YOUTUBE_ID, user=self.user)
         self.original_videolog.points = self.ORIGINAL_POINTS
         self.original_videolog.total_seconds_watched = self.ORIGINAL_SECONDS_WATCHED
-        self.original_videolog.save()
+        self.original_videolog.save(update_userlog=False)
 
         # get a new reference to the existing VideoLog
         videolog = VideoLog.objects.get(id=self.original_videolog.id)
@@ -112,7 +112,7 @@ class TestVideoLogs(KALiteTestCase):
         # update the VideoLog
         videolog.points = self.NEW_POINTS
         videolog.total_seconds_watched = self.NEW_SECONDS_WATCHED
-        videolog.save()
+        videolog.save(update_userlog=False)
 
         # get a new reference to the existing VideoLog
         videolog2 = VideoLog.objects.get(id=self.original_videolog.id)
@@ -130,7 +130,7 @@ class TestVideoLogs(KALiteTestCase):
         videolog.total_seconds_watched = self.NEW_SECONDS_WATCHED
 
         # try saving the new VideoLog: this is where the collision will happen, hopefully leading to a merge
-        videolog.save()
+        videolog.save(update_userlog=False)
 
         # get a new reference to the existing VideoLog
         videolog2 = VideoLog.objects.get(id=self.original_videolog.id)

@@ -7,7 +7,7 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q

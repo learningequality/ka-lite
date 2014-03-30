@@ -4,7 +4,7 @@ import datetime
 import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
-from collections import OrderedDict, namedtuple
+from collections_local_copy import OrderedDict, namedtuple
 
 from django.conf import settings
 from django.contrib import messages

@@ -46,7 +46,7 @@ class TestSaveExerciseLog(KALiteTestCase):
         self.original_exerciselog.points = self.ORIGINAL_POINTS
         self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
         self.original_exerciselog.streak_progress = self.ORIGINAL_STREAK_PROGRESS
-        self.original_exerciselog.save()
+        self.original_exerciselog.save(update_userlog=False)
 
     def test_new_exerciselog(self):
 
@@ -157,7 +157,7 @@ class TestSaveVideoLog(KALiteTestCase):
         self.original_videolog = VideoLog(video_id=self.VIDEO_ID, youtube_id=self.YOUTUBE_ID, user=self.user)
         self.original_videolog.points = self.ORIGINAL_POINTS
         self.original_videolog.total_seconds_watched = self.ORIGINAL_SECONDS_WATCHED
-        self.original_videolog.save()
+        self.original_videolog.save(update_userlog=False)
 
     def test_new_videolog(self):
 
