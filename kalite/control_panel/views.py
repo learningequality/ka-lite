@@ -49,10 +49,10 @@ def zone_form(request, zone_id):
 
     if request.method == "POST":
         form = ZoneForm(data=request.POST, instance=context["zone"])
-        if form.is_valid():
+        if not form.is_valid():
+            messages.error(request, _("Failed to save the sharing network; please review errors below."))
+        else:
             form.instance.save()
-#            if context["org"]:
-#                context["org"].zones.add(form.instance)
             if zone_id == "new":
                 zone_id = form.instance.pk
             return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
@@ -162,7 +162,9 @@ def facility_form(request, facility, zone_id=None):
 
     else:
         form = FacilityForm(data=request.POST, instance=context["facility"])
-        if form.is_valid():
+        if not form.is_valid():
+            messages.error(request, _("Failed to save the facility; please review errors below."))
+        else:
             form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
             form.save()
             return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
@@ -185,6 +187,63 @@ def group_report(request, facility, group_id=None, zone_id=None):
     context.update(control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
     return context
 
+
+
+def paginate_users(user_list, user_type, per_page=25, page=1):
+    """
+    Create pagination for users
+    """
+    if not user_list:
+        users = []
+        page_urls = {}
+    else:
+        #Create a Django Pagintor from QuerySet
+        paginator = Paginator(user_list, per_page)
+        try:
+            #Try to render the page with the passed 'page' number
+            users = paginator.page(page)
+            #Call pages_to_show function that selects a subset of pages to link to
+            listed_pages = pages_to_show(paginator, page)
+        except PageNotAnInteger:
+            #If not a proper page number, render page 1
+            users = paginator.page(1)
+            #Call pages_to_show function that selects a subset of pages to link to
+            listed_pages = pages_to_show(paginator, 1)
+        except EmptyPage:
+            #If past the end of the page range, render last page
+            users = paginator.page(paginator.num_pages)
+            #Call pages_to_show function that selects a subset of pages to link to
+            listed_pages = pages_to_show(paginator, paginator.num_pages)
+
+    if users:
+        #Generate URLs for pagination links
+        if users.has_previous():
+            #If there are pages before the current page, generate a link for 'previous page'
+            prevGETParam = request.GET.copy()
+            prevGETParam[user_type + "_page"] = users.previous_page_number()
+            previous_page_url = "?" + prevGETParam.urlencode()
+        else:
+            previous_page_url = ""
+        if users.has_next():
+            #If there are pages after the current page, generate a link for 'next page'
+            nextGETParam = request.GET.copy()
+            nextGETParam[user_type + "_page"] = users.next_page_number()
+            next_page_url = "?" + nextGETParam.urlencode()
+        else:
+            next_page_url = ""
+        page_urls = {"next_page": next_page_url, "prev_page": previous_page_url}
+
+        if listed_pages:
+            #Generate URLs for other linked to pages
+            for listed_page in listed_pages:
+                if listed_page != -1:
+                    GETParam = request.GET.copy()
+                    GETParam[user_type + "_page"] = listed_page
+                    page_urls.update({listed_page: "?" + GETParam.urlencode()})
+            users.listed_pages = listed_pages
+            users.num_listed_pages = len(listed_pages)
+
+    return users, page_urls
 
 @facility_required
 @require_authorized_admin
@@ -228,98 +287,46 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
 
     # Basic data
     groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
-    if not group_id:
-        group = None
-    else:
-        group = get_object_or_None(FacilityGroup, id=group_id)
+    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
-    if request.method == "POST":
+    if request.method != "POST":
+        form = DateRangeForm()
+    else:
         form = DateRangeForm(data=request.POST)
-        if form.is_valid():
+        if not form.is_valid():
+            messages.error(request, _("Unexpected error parsing date range; please review and re-submit."))
+            period_start = None
+            period_end = None
+        else:
             frequency = frequency or request.GET.get("frequency", "months")
             period_start = period_start or form.data["period_start"]
             period_end = period_end or form.data["period_end"]
             (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-    else:
-        form = DateRangeForm()
 
-    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
+    if period_start and period_end:
+        (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
+        (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
 
-    def paginate_users(user_list, user_type, per_page=25, page=1):
-        """
-        Create pagination for users
-        """
-        if not user_list:
-            users = []
-            page_urls = {}
-        else:
-            #Create a Django Pagintor from QuerySet
-            paginator = Paginator(user_list, per_page)
-            try:
-                #Try to render the page with the passed 'page' number
-                users = paginator.page(page)
-                #Call pages_to_show function that selects a subset of pages to link to
-                listed_pages = pages_to_show(paginator, page)
-            except PageNotAnInteger:
-                #If not a proper page number, render page 1
-                users = paginator.page(1)
-                #Call pages_to_show function that selects a subset of pages to link to
-                listed_pages = pages_to_show(paginator, 1)
-            except EmptyPage:
-                #If past the end of the page range, render last page
-                users = paginator.page(paginator.num_pages)
-                #Call pages_to_show function that selects a subset of pages to link to
-                listed_pages = pages_to_show(paginator, paginator.num_pages)
+        coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page, per_page=coach_per_page)
+        student_data, student_urls = paginate_users(student_data, "students", page=student_page, per_page=student_per_page)
 
-        if users:
-            #Generate URLs for pagination links
-            if users.has_previous():
-                #If there are pages before the current page, generate a link for 'previous page'
-                prevGETParam = request.GET.copy()
-                prevGETParam[user_type + "_page"] = users.previous_page_number()
-                previous_page_url = "?" + prevGETParam.urlencode()
-            else:
-                previous_page_url = ""
-            if users.has_next():
-                #If there are pages after the current page, generate a link for 'next page'
-                nextGETParam = request.GET.copy()
-                nextGETParam[user_type + "_page"] = users.next_page_number()
-                next_page_url = "?" + nextGETParam.urlencode()
-            else:
-                next_page_url = ""
-            page_urls = {"next_page": next_page_url, "prev_page": previous_page_url}
+        page_urls = {
+            "coaches": coach_urls,
+            "students": student_urls,
+            }
 
-            if listed_pages:
-                #Generate URLs for other linked to pages
-                for listed_page in listed_pages:
-                    if listed_page != -1:
-                        GETParam = request.GET.copy()
-                        GETParam[user_type + "_page"] = listed_page
-                        page_urls.update({listed_page: "?" + GETParam.urlencode()})
-                users.listed_pages = listed_pages
-                users.num_listed_pages = len(listed_pages)
-
-        return users, page_urls
-
-    coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page, per_page=coach_per_page)
-    student_data, student_urls = paginate_users(student_data, "students", page=student_page, per_page=student_per_page)
-
-    page_urls = {
-        "coaches": coach_urls,
-        "students": student_urls,
-        }
+        context.update({
+            "groups": group_data,
+            "students": student_data,
+            "coaches": coach_data,
+        })
 
     context.update({
         "form": form,
         "group": group,
-        "groups": group_data,
-        "students": student_data,
-        "coaches": coach_data,
         "date_range": [period_start, period_end],
-        "page_urls": page_urls,
         "group_id": group_id,
     })
     return context
