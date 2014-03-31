@@ -474,7 +474,7 @@ a:visited.topic-unavailable {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    background-color: #91ca7f;
+    background-color: #81ba6f;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 13px;
     color: #ffffff;
@@ -488,7 +488,10 @@ a.green_button, a.green_button:hover,input.green_button, input.green_button:hove
     text-decoration: none;
 }
 a.green_button:hover,input.green_button:hover{
-    background-color:#C0C0C0;
+    background-color:#318a3f;
+}
+a.disabled {
+    background-color: #C0C0C0;
 }
 
 #search-box {
