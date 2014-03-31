@@ -22,4 +22,3 @@ else
     echo "----------------------------------------------------------------"
     "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop host=0.0.0.0
 fi
-
