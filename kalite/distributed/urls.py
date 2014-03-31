@@ -69,6 +69,7 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
+    url(r'^watch/$', 'watch_home', {}, 'watch_home'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
     # the following pattern is a catch-all, so keep it last:
