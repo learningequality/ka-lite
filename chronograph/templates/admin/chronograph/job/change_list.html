@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+
+{% load adminmedia admin_list i18n %}
+
+{% block object-tools %}
+{% if has_add_permission %}
+  <ul class="object-tools">
+    <li style="background: transparent; line-height: 16px; margin-right: 8px;">{% now "F j, Y, g:i a" %}</li>
+    <li>
+      <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
+        {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+      </a>
+    </li>
+  </ul>
+{% endif %}
+{% endblock %}

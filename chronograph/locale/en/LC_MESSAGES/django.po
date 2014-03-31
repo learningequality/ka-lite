@@ -1,0 +1,241 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-29 13:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:39
+msgid ""
+"Can't specify a shell_command if a django admin command is already specified"
+msgstr ""
+
+#: admin.py:47
+msgid "Must specify either command or shell command"
+msgstr ""
+
+#: admin.py:64
+msgid "Job Details"
+msgstr ""
+
+#: admin.py:68
+msgid "E-mail subscriptions"
+msgstr ""
+
+#: admin.py:72
+msgid "Frequency options"
+msgstr ""
+
+#: admin.py:93
+msgid "Last run"
+msgstr ""
+
+#: admin.py:98 admin.py:157
+msgid "OK"
+msgstr ""
+
+#: admin.py:105
+msgid "Run"
+msgstr ""
+
+#: admin.py:111
+msgid "Logs"
+msgstr ""
+
+#: admin.py:122
+#, python-format
+msgid "The job \"%(job)s\" was run successfully."
+msgstr ""
+
+#: admin.py:146
+msgid "Output"
+msgstr ""
+
+#: admin.py:153
+msgid "Name"
+msgstr ""
+
+#: admin.py:165
+msgid "(No output)"
+msgstr ""
+
+#: admin.py:172
+msgid "(No errors)"
+msgstr ""
+
+#: models.py:28
+msgid "Yearly"
+msgstr ""
+
+#: models.py:29
+msgid "Monthly"
+msgstr ""
+
+#: models.py:30
+msgid "Weekly"
+msgstr ""
+
+#: models.py:31
+msgid "Daily"
+msgstr ""
+
+#: models.py:32
+msgid "Hourly"
+msgstr ""
+
+#: models.py:33
+msgid "Minutely"
+msgstr ""
+
+#: models.py:34
+msgid "Secondly"
+msgstr ""
+
+#: models.py:40
+msgid "name"
+msgstr ""
+
+#: models.py:41
+msgid "frequency"
+msgstr ""
+
+#: models.py:42
+msgid "params"
+msgstr ""
+
+#: models.py:43
+msgid ""
+"Comma-separated list of <a href=\"http://labix.org/python-dateutil\" target="
+"\"_blank\">rrule parameters</a>. e.g: interval:15"
+msgstr ""
+
+#: models.py:44
+msgid "command"
+msgstr ""
+
+#: models.py:45
+msgid "A valid django-admin command to run."
+msgstr ""
+
+#: models.py:46
+msgid "shell command"
+msgstr ""
+
+#: models.py:47
+msgid "A shell command."
+msgstr ""
+
+#: models.py:48
+msgid "This command needs to run within a shell?"
+msgstr ""
+
+#: models.py:49
+msgid "args"
+msgstr ""
+
+#: models.py:50
+msgid "Space separated list; e.g: arg1 option1=True"
+msgstr ""
+
+#: models.py:51
+msgid "disabled"
+msgstr ""
+
+#: models.py:51
+msgid "If checked this job will never run."
+msgstr ""
+
+#: models.py:52
+msgid "next run"
+msgstr ""
+
+#: models.py:52
+msgid "If you don't set this it will be determined automatically"
+msgstr ""
+
+#: models.py:53
+msgid "last run"
+msgstr ""
+
+#: models.py:54
+msgid "Running?"
+msgstr ""
+
+#: models.py:56
+msgid "subscribers"
+msgstr ""
+
+#: models.py:65
+#, python-format
+msgid "%(name)s - disabled"
+msgstr ""
+
+#: models.py:85
+msgid "never (disabled)"
+msgstr ""
+
+#: models.py:90
+msgid "due"
+msgstr ""
+
+#: models.py:93
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: models.py:94
+#, python-format
+msgid "%(number)d %(type)s"
+msgstr ""
+
+#: models.py:100
+msgid "time until next run"
+msgstr ""
+
+#: templates/admin/chronograph/job/change_form.html:6
+msgid "Changelog"
+msgstr ""
+
+#: templates/admin/chronograph/job/change_form.html:7
+msgid "View Logs"
+msgstr ""
+
+#: templates/admin/chronograph/job/change_form.html:8
+msgid "Run Job"
+msgstr ""
+
+#: templates/admin/chronograph/job/change_form.html:11
+#: templates/admin/chronograph/log/change_form.html:8
+msgid "View on site"
+msgstr ""
+
+#: templates/admin/chronograph/job/change_list.html:11
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: templates/admin/chronograph/log/change_form.html:7
+msgid "History"
+msgstr ""
+
+#: templates/admin/chronograph/log/change_form.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/admin/chronograph/log/change_form.html:30
+msgid "Delete"
+msgstr ""

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Deployments Map{% endblock title %}
+
+{% block deployments_map %}selected{% endblock deployments_map %}
+
+{% block extrahead %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.9&sensor=false&libraries=places"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script>
+            function initialize() {
+                console.log("initializing")
+                var map = new google.maps.Map(document.getElementById('map-canvas'), {
+                    mapTypeId: google.maps.MapTypeId.HYBRID,
+                    // scrollwheel: false,
+                    maxZoom: 20,
+                    minZoom: 2,
+                    zoomControl: true,
+                    panControl: true,
+                    streetViewControl: false
+                });
+
+                var defaultBounds = new google.maps.LatLngBounds(
+                                    new google.maps.LatLng(70, -100),
+                                    new google.maps.LatLng(-60, 100));
+                                    map.fitBounds(defaultBounds);
+
+                
+                // var locations = {{ locations|safe }};
+                // {% for item in locationinfo %}
+                //     [{{ item.0 }}, {{ item.1 }}, "{{ item.2 }}", "{{ item.3 }}", "{{ item.4 }}"]
+                // {% endfor %}
+                var deployments = $.parseJSON('{{ deployments|safe }}');
+                $(deployments).each(function(d, deployment){
+                    // Extract relevent info 
+                    // TODO(dylan): refactor this into it's own function
+                    var fields = deployment["fields"];
+                    var title = fields["title"];
+                    var latitude = fields["latitude"];
+                    var longitude = fields["longitude"];
+                    var user_story_html = fields["_user_story_rendered"];
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(latitude, longitude),
+                        map: map,
+                        title: title,
+                        user_story: user_story_html,
+                        // draggable: true,
+                        // clickable: true,
+                    });
+                    // listen for click 
+                    google.maps.event.addListener(marker, 'click', function() {
+                        // replace info window content and position
+                        $("#deployment-info-title").html(marker.title);
+                        $("#deployment-info-story").html(marker.user_story);
+                    });
+                });
+            }
+
+            google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
+
+{% endblock extrahead %}
+{% block bodycontents %}
+<div id="deployments-content">
+    <div class="row">
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <div id="map-container">
+                <div id="map-canvas"></div>
+            </div>
+        </div>
+        <div id="live-deployment-info" class="col-md-3 col-sm-3 col-xs-12 well">
+            <h3 id="deployment-info-title">Click a deployment</h3>
+            <p id="deployment-info-story">And read more about it in this box!</p>
+        </div>
+    </div>
+</div>
+{% endblock bodycontents %}
