@@ -28,6 +28,7 @@ from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
 from kalite.version import VERSION
+from kalite.facility.models import Facility
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, Command as InitCommand
 from securesync.models import Zone
 
@@ -243,6 +244,7 @@ class Command(BaseCommand):
             # Create device, load on any zone data
             call_command("generatekeys", verbosity=options.get("verbosity"))
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
+            Facility.initialize_default_facility()
 
         #else:
             # Device exists; load data if required.
@@ -255,7 +257,6 @@ class Command(BaseCommand):
             #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
         #    confirm_or_generate_zone()
-        #    Facility.initialize_default_facility()
 
         # Create the admin user
         if password:  # blank password (non-interactive) means don't create a superuser
