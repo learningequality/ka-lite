@@ -12,7 +12,7 @@ from mock import patch
 
 sys.path += [os.path.realpath('..'), os.path.realpath('.')]
 
-from platforms import system_script_extension, system_specific_unzipping
+from ..platforms import system_script_extension, system_specific_unzipping
 
 class SystemScriptExtensionTests(unittest.TestCase):
 
