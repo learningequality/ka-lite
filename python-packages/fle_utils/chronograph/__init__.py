@@ -1,21 +1,10 @@
 """
 Django app for scheduled jobs, python-style!
 """
-import os
 from datetime import datetime
-
-from django.conf import settings
 
 from .models import Job
 from fle_utils.django_utils import call_command_async
-
-
-# Proxy setup
-if getattr(settings, "HTTP_PROXY", None):
-    os.environ['http_proxy'] = settings.HTTP_PROXY
-if getattr(settings, "HTTPS_PROXY", None):
-    os.environ['https_proxy'] = settings.HTTPS_PROXY
-
 
 
 def force_job(command, name="", frequency="YEARLY", stop=False, **kwargs):

@@ -16,7 +16,6 @@ from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
 from ....chronograph.models import Job
-from kalite.settings import LOG as logger
 
 
 class CronThread(Thread):
@@ -64,16 +63,13 @@ class Command(BaseCommand):
     )
     def handle( self, *args, **options ):
 
-        #logging.basicConfig(stream=sys.stdout,
-        #                    datefmt="%Y-%m-%d %H:%M:%S",
-        #                    format="[%(asctime)-15s] %(message)s")
-
         try:
             # Specify polling frequency either on the command-line or inside settings
             if args and args[0].strip():
                 time_wait = float(args[0])
             else:
                 time_wait = getattr(settings, "CRONSERVER_FREQUENCY", 60)
+
         except:
             raise CommandError("Invalid wait time: %s is not a number." % args[0])
 
