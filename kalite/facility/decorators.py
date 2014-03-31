@@ -75,7 +75,6 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
             facility = None
 
         if "set_default" in request.GET and request.is_admin and facility:
-            logging.debug("Default facility!")
             Settings.set("default_facility", facility.id)
 
         return handler(request, *args, facility=facility, **kwargs)
