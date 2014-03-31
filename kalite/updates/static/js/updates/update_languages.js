@@ -139,7 +139,8 @@ $(function () {
 
 function start_languagepack_download(lang_code) {
     clear_messages();  // get rid of any lingering messages before starting download
-
+    $("#get-language-button").prop("disabled", true);
+    downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
         start_languagepackdownload_url,
@@ -184,8 +185,6 @@ var language_downloading = null;
 $(function () {
     $("#get-language-button").click(function(event) {
         language_downloading = $("#language-packs").val();
-        $("#get-language-button").prop("disabled", true);
-        downloading = true;
         start_languagepack_download(language_downloading);
         
     });
