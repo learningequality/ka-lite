@@ -1,5 +1,6 @@
 var installable_languages = [];
 var installed_languages = [];
+var downloading = false;
 
 function get_available_languages() {
     doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
@@ -161,8 +162,9 @@ $(function() {
         var matching_installable = installable_languages.filter(function(installable_lang) { return lang_code === installable_lang.code; });
         var found = (matching_installable.length != 0);
 
-        $("#get-language-button").prop("disabled", !found);
-
+        if( !downloading){
+                $("#get-language-button").prop("disabled", !found);
+        }
         if (found) {
             var langdata = matching_installable[0];
             // For each of the following, || 0 will return 0 if the quantity is undefined.
@@ -182,7 +184,10 @@ var language_downloading = null;
 $(function () {
     $("#get-language-button").click(function(event) {
         language_downloading = $("#language-packs").val();
+        $("#get-language-button").prop("disabled", true);
+        downloading = true;
         start_languagepack_download(language_downloading);
+        
     });
 });
 
@@ -190,6 +195,7 @@ $(function () {
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
+    downloading = false;
 }
 
 var languagepack_callbacks = {
