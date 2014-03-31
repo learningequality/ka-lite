@@ -15,7 +15,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -76,7 +75,6 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
             facility = None
 
         if "set_default" in request.GET and request.is_admin and facility:
-            logging.debug("Default facility!")
             Settings.set("default_facility", facility.id)
 
         return handler(request, *args, facility=facility, **kwargs)

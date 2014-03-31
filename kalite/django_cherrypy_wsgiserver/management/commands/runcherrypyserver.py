@@ -1,11 +1,20 @@
 #!/usr/bin/env python
-
-import logging, sys, os, signal, socket, time, errno
+import errno
+import logging
+import os
+import signal
+import socket
+import sys
+import time
 from socket import gethostname
 from urllib import urlopen
-from django.core.management.base import BaseCommand
+
 import django.contrib.admin
-from django_cherrypy_wsgiserver import cherrypyserver
+from django.conf import settings
+from django.core.management.base import BaseCommand
+
+from ... import cherrypyserver
+
 
 CPWSGI_HELP = r"""
   Run this project in CherryPy's production quality http webserver.
@@ -41,8 +50,8 @@ Examples:
 
 CPWSGI_OPTIONS = {
     'host': '127.0.0.1', # changed from localhost to avoid ip6 problem -clm
-    'port': 8008,   # changed from 8088 to 8000 to follow django devserver default
-    'threads': 50,
+    'port': getattr(settings, "CHERRYPY_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
+    'threads': getattr(settings, "CHERRPY_THREAD_COUNT", 50),
     'daemonize': False,
     'pidfile': None,
     'autoreload': False,

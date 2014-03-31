@@ -483,7 +483,7 @@ def control_panel_context(request, **kwargs):
 
     if "zone_id" in kwargs:
         context["zone"] = get_object_or_None(Zone, pk=kwargs["zone_id"]) if kwargs["zone_id"] else default_zone
-        context["zone_id"] = kwargs["zone_id"] or default_zone.id
+        context["zone_id"] = kwargs["zone_id"] or (default_zone and default_zone.id) or "None"
     if "facility_id" in kwargs:
         context["facility"] = get_object_or_404(Facility, pk=kwargs["facility_id"]) if kwargs["facility_id"] != "new" else None
         context["facility_id"] = kwargs["facility_id"] or "None"
