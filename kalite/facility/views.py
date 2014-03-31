@@ -4,7 +4,7 @@ import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -26,7 +26,6 @@ from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
-from kalite.settings import package_selected, LOG as logging
 from kalite.shared.decorators import require_admin
 from securesync.devices.views import *
 
@@ -78,7 +77,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     if user and not request.is_admin and user != request.session.get("facility_user"):
         # Editing a user, user being edited is not self, and logged in user is not admin
         raise PermissionDenied()
-    elif package_selected("UserRestricted") and not request.is_admin:
+    elif settings.DISABLE_SELF_ADMIN and not request.is_admin:
         # Users cannot create/edit their own data when UserRestricted
         raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
 
@@ -231,7 +230,7 @@ def login(request, facility):
             if not landing_page:
                 # Just going back to the homepage?  We can do better than that.
                 landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-                landing_page = landing_page or (reverse("account_management") if not package_selected("RPi") else reverse("homepage"))
+                landing_page = landing_page or (reverse("account_management") if False else reverse("homepage"))  # TODO: pass the redirect as a parameter.
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
 

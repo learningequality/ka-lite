@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions, ui
 from selenium.webdriver.firefox.webdriver import WebDriver
 
 from django.conf import settings
+from django.conf.settings import package_selected, LOG as logging
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
@@ -21,7 +22,6 @@ from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.i18n import get_installed_language_packs
 from kalite.main.models import ExerciseLog
 from kalite.main.topic_tools import get_exercise_paths, get_node_cache
-from kalite.settings import package_selected, LOG as logging
 from kalite.testing.browser import BrowserTestCase
 
 from securesync.models import Zone, DeviceZone , Device

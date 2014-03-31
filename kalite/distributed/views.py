@@ -16,7 +16,7 @@ from functools import partial
 
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -35,7 +35,6 @@ from kalite.i18n import select_best_available_language
 from kalite.main import topic_tools
 from kalite.main.models import VideoLog, ExerciseLog
 from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
-from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_admin
 from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient

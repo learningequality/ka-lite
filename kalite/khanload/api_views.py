@@ -27,7 +27,7 @@ import requests
 import sys
 import time
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -40,7 +40,6 @@ from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonRespo
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.main.topic_tools import get_node_cache
-from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_login
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)

@@ -11,7 +11,7 @@ from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
@@ -24,7 +24,6 @@ from kalite.distributed import caching
 from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
-from kalite.settings import LOG as logging
 from kalite.version import VERSION
 
 

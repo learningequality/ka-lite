@@ -17,14 +17,13 @@ import os
 import shutil
 from optparse import make_option
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 from .. import lcode_to_django_dir, update_jsi18n_file
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import ensure_dir
-from kalite.settings import LOG as logging
 
 
 class Command(BaseCommand):

@@ -18,9 +18,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 
+from django.conf import settings; logging = settings.LOG
 from django.core import management
-
-from kalite.settings import LOG as logging
 
 
 class Common(object):

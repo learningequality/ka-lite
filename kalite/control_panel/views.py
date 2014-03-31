@@ -6,7 +6,7 @@ from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections_local_copy import OrderedDict, namedtuple
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -25,7 +25,6 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.main.topic_tools import get_node_cache
-from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession

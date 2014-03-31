@@ -10,7 +10,7 @@ from math import ceil
 from datetime import datetime
 from dateutil import relativedelta
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -22,7 +22,6 @@ from fle_utils.django_utils import ExtendedModel
 from fle_utils.general import datediff, isnumeric
 from kalite import i18n
 from kalite.facility.models import FacilityUser
-from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 

@@ -6,11 +6,9 @@ import os
 import pdb
 import sys
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core import management
 from django.test.simple import DjangoTestSuiteRunner
-
-from kalite.settings import LOG as logging
 
 
 def auto_pdb(*exceptions):
