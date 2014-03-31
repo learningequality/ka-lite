@@ -84,23 +84,34 @@
 			<div class="question">
 				<p>What is the "major third" of the <var>NOTE[HOUR]</var> Major Scale?...I think it is <var>INDNOTE[((HOUR+4)*7)%12]</var></p>
 				<div class="graphie" id="pie" style="float: left;">
-                    $('.exercises-header').css("width","300px");
+				
+                    $('#outer-wrapper').css("width","320px");
+                    $('#outer-wrapper').css("height","480px");
+                    $('#page-container').css("width","320px");
+                    $('#page-container-inner').css("width","320px");
+				    $('#container').css("width","320px");
+                    $('.exercises-header').css("width","320px");
+                    $('#top-header').css("width","320px");
 				    $('#message-container').hide();
-				    $('.exercise-card current-card').css("width","300px");
-				    $('.question').css("width","300px");
-				    $('.current-card-container card-type-problem').css("width","300px");
-				    $('.current-card-container-inner vertical-shadow').css("width","300px");
-				    $('#hint-remainder').hide();
 				    $('.exercises-body').css("width","300px");
-				    $('.info-box-header').hide();
-				    $('.current-card-container-inner vertical-shadow').css("width","300px");
+				    $('.exercise-card').css("width","300px");
+				    $('.current-card').css("width","300px");
+				    $('.current-card-container').css("width","300px");
+				    $('.card-type-problem').css("width","300px");
+				    $('.current-card-container-inner').css("width","300px");
+				    $('.vertical-shadow').css("width","300px");
+				    $('.clearfix').css("width","300px");
+				    $('.question').css("width","300px");
+				    $('#scratchpad-show').hide();
+				    $('#hint-remainder').hide();
+				    $('.info-box-header').hide(); 
 				    $('.current-card-contents').css("width","300px");
 				    $('#id_do_request').hide();
 				    $('#problem-and-answer').css("width","300px");
 				    $('#problem-and-answer').css("height","300px");
-				    $('#problemarea').css("width","300px");
-				    $('#problemarea').css("height","100px");				    
-				    $('#answerform').css("width","100px");
+				    $('#problemarea').css("width","300px");			    
+				    $('#answerform').css("width","200px");
+				    $('#footer').css("width","320px");
 				    
 					init({ range: [ [-4, 4 ], [ -4, 4] ], scale: 25 });
 					PIECH = new analogMusic( HOUR, 0,  3.5, false,0 );
