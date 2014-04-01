@@ -59,7 +59,7 @@
 
         function auto_register() {
             // Disable and show message
-            $("a#one-click-register").toggleClass("disabled", true);
+            $("#one-click-register").toggleClass("disabled", true);
             show_message("info", gettext("Contacting central server to register; page will reload upon success."));
 
             doRequest("{{ auto_registration_url }}", null, {dataType: "jsonp"})
@@ -69,7 +69,7 @@
                 })
                 .fail(function(a, b) {
                     // Re-enable
-                    $("a#one-click-register").toggleClass("disabled", false);
+                    $("#one-click-register").toggleClass("disabled", false);
                 });
         }
     </script>
