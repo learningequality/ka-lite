@@ -36,7 +36,7 @@
 
 					<div class="problem">
 						<p class="question">
-							Leave Checked only <code>\sqrt{2}</code> and <code>\sqrt{5}</code>. YOU MUST FIRST CLICK OFF ALL BOXES!</p>
+							Leave Checked only <code>\sqrt{2}</code> and <code>\sqrt{5}</code>.</br> YOU MUST FIRST CLICK OFF ALL BOXES!</p>
 						
 						<div class="graphie" id="Venn_Diagram">
 							init({
@@ -54,8 +54,11 @@
 								stroke: "Black",
 								strokeWidth: 5, 
 							    });
+							label( [-17.5, 5.4],"\\Huge{\\sqrt{7}}", "right" );
                             label( [-17.5, 3.9],"\\Huge{\\sqrt{5}}", "right" );
+                            label( [-17.5, 2.4],"\\Huge{\\sqrt{3}}", "right" );
 							label( [-17.5, 0.9],"\\Huge{\\sqrt{2}}", "right" );
+							label( [-17.5, -0.4],"\\Huge{\\sqrt{1}}", "right" );
                             //label( [-5, 0],"\\Huge{"+commonAngles[1].rad+"}", "right" );
 
                             $("#solutionarea input:eq(0)").val( "0" );
@@ -63,27 +66,27 @@
 							graph.box0= raphael.path("M 70 170 l 25 0 l 0 25 l -25 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
 							jQuery(graph.box0.node).bind("vmousedown",function() {
 								graph.box0.attr({'fill-opacity': graph.box0.attr('fill-opacity') === 1 ? 0 : 1});
-                                                        $("#solutionarea input:eq(0)").val( graph.box0.attr('fill-opacity') );
+                                                        $("#solutionarea input:eq(0)").val( graph.box0.attr('fill-opacity') ).hide();
 							})
                                                         graph.box1= raphael.path("M 70 235 l 25 0 l 0 25 l -25 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
 							jQuery(graph.box1.node).bind("vmousedown",function() {
 								graph.box1.attr({'fill-opacity': graph.box1.attr('fill-opacity') === 1 ? 0 : 1})
-                                                         $("#solutionarea input:eq(1)").val( graph.box1.attr('fill-opacity') );
+                                                         $("#solutionarea input:eq(1)").val( graph.box1.attr('fill-opacity') ).hide();
 							})
                                                         graph.box2= raphael.path("M 70 290 l 25 0 l 0 25 l -25 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
 							jQuery(graph.box2.node).bind("vmousedown",function() {
 								graph.box2.attr({'fill-opacity': graph.box2.attr('fill-opacity') === 1 ? 0 : 1})
-                                                         $("#solutionarea input:eq(2)").val( graph.box2.attr('fill-opacity') );
+                                                         $("#solutionarea input:eq(2)").val( graph.box2.attr('fill-opacity') ).hide();
 							})
                                                         graph.box3= raphael.path("M 75 350 l 25 0 l 0 25 l -25 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
 							jQuery(graph.box3.node).bind("vmousedown",function() {
 								graph.box3.attr({'fill-opacity': graph.box3.attr('fill-opacity') === 1 ? 0 : 1})
-                                                         $("#solutionarea input:eq(3)").val( graph.box3.attr('fill-opacity') );
+                                                         $("#solutionarea input:eq(3)").val( graph.box3.attr('fill-opacity') ).hide();
 							})
                                                         graph.box4= raphael.path("M 75 410 l 25 0 l 0 25 l -25 0 Z").attr({ fill: BLUE, "stroke-width" : 1, "fill-opacity" : 0 });							
 							jQuery(graph.box4.node).bind("vmousedown",function() {
 								graph.box4.attr({'fill-opacity': graph.box4.attr('fill-opacity') === 1 ? 0 : 1})
-                                                        $("#solutionarea input:eq(4)").val( graph.box4.attr('fill-opacity') );
+                                                        $("#solutionarea input:eq(4)").val( graph.box4.attr('fill-opacity') ).hide();
 							})
                                                         graph.box0.attr({"fill-opacity" : 1 });
                                                         graph.box1.attr({"fill-opacity" : 1 });
