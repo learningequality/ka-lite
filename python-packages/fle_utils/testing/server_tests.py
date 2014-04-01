@@ -26,6 +26,10 @@ class ServerRestartTests(unittest.TestCase):
 
         assert utime_method.call_count == 1
 
+    def test_exception_raised_if_unknown_server(self):
+        with self.assertRaises(NotImplementedError):
+            server_restart('unknown server 123')
+
 
 if __name__ == '__main__':
     unittest.main()
