@@ -167,6 +167,7 @@ $(function(){
                 }
             }
             show_django_messages(data.messages);
+            $('.navbar-right').show();
         });
 });
 
