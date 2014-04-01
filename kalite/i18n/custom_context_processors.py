@@ -5,7 +5,7 @@ def languages(request):
     if "default_language" not in request.session:
         return {}  # temporarily skipped middleware, but we'll get back here again.  Tricky Django...
 
-    language_choices = get_installed_language_packs()
+    language_choices = get_installed_language_packs(force=True)
 
     return {
         "default_language": lcode_to_ietf(request.session["default_language"]),
