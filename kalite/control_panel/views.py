@@ -188,7 +188,6 @@ def group_report(request, facility, group_id=None, zone_id=None):
     return context
 
 
-
 @facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_management.html")
@@ -237,8 +236,10 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
 
     if request.method != "POST":
         form = DateRangeForm()
-    else:
+
+    else:  # POST request
         form = DateRangeForm(data=request.POST)
+
         if not form.is_valid():
             messages.error(request, _("Unexpected error parsing date range; please review and re-submit."))
             period_start = None
@@ -249,29 +250,26 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
             period_end = period_end or form.data["period_end"]
             (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
-    if period_start and period_end:
-        (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
-        (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
+    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
 
-        coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page, per_page=coach_per_page)
-        student_data, student_urls = paginate_users(student_data, "students", page=student_page, per_page=student_per_page)
+    coach_data, coach_urls = paginate_users(request, coach_data, "coaches", page=coach_page, per_page=coach_per_page)
+    student_data, student_urls = paginate_users(request, student_data, "students", page=student_page, per_page=student_per_page)
 
-        page_urls = {
-            "coaches": coach_urls,
-            "students": student_urls,
-            }
-
-        context.update({
-            "groups": group_data,
-            "students": student_data,
-            "coaches": coach_data,
-        })
+    page_urls = {
+        "coaches": coach_urls,
+        "students": student_urls,
+    }
 
     context.update({
         "form": form,
         "group": group,
         "date_range": [period_start, period_end],
         "group_id": group_id,
+
+        "groups": group_data,
+        "students": student_data,
+        "coaches": coach_data,
     })
     return context
 
