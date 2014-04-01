@@ -1,5 +1,6 @@
 """
 """
+import os
 import youtube_dl
 from functools import partial
 from optparse import make_option
