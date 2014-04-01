@@ -5,9 +5,7 @@ import unittest
 import cherrypy
 from mock import patch, MagicMock as Mock
 
-sys.path += [os.path.realpath( '..'), os.path.realpath('.')] + sys.path
-
-from server import server_restart
+from ..server import server_restart
 
 
 class ServerRestartTests(unittest.TestCase):
