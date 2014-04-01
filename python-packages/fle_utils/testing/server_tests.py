@@ -7,10 +7,10 @@ from mock import patch, MagicMock as Mock
 
 sys.path += [os.path.realpath('..'), os.path.realpath('.')]
 
-from server import server_restart
-
-
 class ServerRestartTests(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super(unittest.TestCase, self).__init__(*args, **kwargs)
+        from server import server_restart
 
     @patch.object(cherrypy.engine, 'restart')
     def test_cherrypy_restart_called(self, restart_method):
