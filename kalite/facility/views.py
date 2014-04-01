@@ -34,7 +34,7 @@ from securesync.devices.views import *
 @require_admin
 @render_to("facility/facility_edit.html")
 def facility_edit(request, id=None):
-    facil = id != "new" and get_object_or_404(Facility, pk=id)
+    facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
 
     if request.method != "POST":
         form = FacilityForm(instance=facil)
@@ -74,11 +74,13 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     """
 
     title = ""
-    user = get_object_or_404(FacilityUser, id=id) if id != "new" else None
+    user = (id != "new" and get_object_or_404(FacilityUser, id=id)) or None
+
     # Check permissions
     if user and not request.is_admin and user != request.session.get("facility_user"):
         # Editing a user, user being edited is not self, and logged in user is not admin
         raise PermissionDenied()
+
     elif package_selected("UserRestricted") and not request.is_admin:
         # Users cannot create/edit their own data when UserRestricted
         raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
@@ -202,7 +204,7 @@ def add_group(request, facility):
 @facility_from_request
 @render_to("facility/login.html")
 def login(request, facility):
-    facility_id = facility and facility.id or None
+    facility_id = (facility and facility.id) or None
     facilities = list(Facility.objects.all())
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
