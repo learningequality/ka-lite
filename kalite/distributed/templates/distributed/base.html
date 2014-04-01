@@ -98,22 +98,8 @@
                 </a>
                 
                 <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right">                        
                         {% block sitewide_navigation %}
-                        
-                        {% block lang_choices %}
-                        <li><span class="not-admin-only">
-                        {% if num_language_choices > 1 %}
-                        <select id="language_selector">
-                        {% for lang_code, lang_meta in language_choices.iteritems %}
-                            <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
-                            </option>
-                        {% endfor %}
-                        </select>
-                        {% endif %}
-                        </span></li>
-                        {% endblock lang_choices %}
 
                         <li><form action="{% url search %}" method="GET" id="search-box">
                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -158,6 +144,20 @@
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a></li>
+
+                        {% block lang_choices %}
+                        <li><span class="not-admin-only">
+                        {% if num_language_choices > 1 %}
+                        <select id="language_selector">
+                        {% for lang_code, lang_meta in language_choices.iteritems %}
+                            <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
+                            </option>
+                        {% endfor %}
+                        </select>
+                        {% endif %}
+                        </span></li>
+                        {% endblock lang_choices %}
 
                         {% endblock sitewide_navigation %}
                         </span>
