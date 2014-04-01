@@ -47,17 +47,20 @@ def sync_now_context(request):
 def zone_form(request, zone_id):
     context = control_panel_context(request, zone_id=zone_id)
 
-    if request.method == "POST":
+    if request.method != "POST":
+        form = ZoneForm(instance=context["zone"])
+
+    else:  # POST request
         form = ZoneForm(data=request.POST, instance=context["zone"])
+
         if not form.is_valid():
             messages.error(request, _("Failed to save the sharing network; please review errors below."))
+
         else:
             form.instance.save()
             if zone_id == "new":
                 zone_id = form.instance.pk
             return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
-    else:
-        form = ZoneForm(instance=context["zone"])
 
     context.update({"form": form})
     return context
