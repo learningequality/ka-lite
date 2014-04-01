@@ -104,7 +104,28 @@ function delete_languagepack(lang_code) {
 $(function () {
     $(".delete-language-button").children('button').click(function(event) {
         var lang_code = $(this).val();
-        delete_languagepack(lang_code);
+        ConfirmDialog('Are you sure you want to delete');
+
+        function ConfirmDialog(message){
+                $('<div></div>').appendTo('body')
+                        .html('<div><h6>'+message+'?</h6></div>')
+                        .dialog({
+                                modal: true, title: 'Confirm Delete', zIndex: 10000, autoOpen: true,
+                                width: 'auto', resizable: false,
+                                buttons: {
+                                Yes: function () {
+                                        delete_languagepack(lang_code);
+                                        $(this).remove();
+                                },
+                                No: function () {
+                                        $(this).remove();
+                                }
+                                }
+                        });
+        };
+
+        jQuery("button.ui-dialog-titlebar-close").hide();
+
     });
 });
 
