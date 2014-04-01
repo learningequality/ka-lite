@@ -522,7 +522,7 @@ a.big-button:active > div {
     height: 15px;
     position: absolute;
     right: -1px;
-    top: -24px;
+    top: -16px;
 }
 
 .current-card #problemarea {
