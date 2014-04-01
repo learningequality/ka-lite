@@ -15,7 +15,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -30,7 +29,6 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
     """
     Goes through the request object to retrieve facility information, if possible.
     """
-    from .models import Facility
     assert handler or request
     if not handler:
         handler = lambda request, facility, *args, **kwargs: facility
@@ -46,8 +44,6 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         if not facility and "facility" in request.GET:
             # Facility from querystring
             facility = get_object_or_None(Facility, pk=request.GET["facility"])
-            if "set_default" in request.GET and request.is_admin and facility:
-                Settings.set("default_facility", facility.id)
 
         if facility:
             pass
@@ -77,6 +73,9 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         else:
             # There's nothing; don't bother even hitting the DB
             facility = None
+
+        if "set_default" in request.GET and request.is_admin and facility:
+            Settings.set("default_facility", facility.id)
 
         return handler(request, *args, facility=facility, **kwargs)
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)

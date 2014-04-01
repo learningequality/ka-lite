@@ -8,12 +8,10 @@ from django.conf import settings
 from django.utils import unittest
 
 from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
-from facility.models import FacilityUser
-from main.models import UserLog
-from testing.decorators import distributed_server_test
+from kalite.facility.models import FacilityUser
+from kalite.main.models import UserLog
 
 
-@distributed_server_test
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):

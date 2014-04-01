@@ -2,13 +2,24 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load my_filters %}
-
+{% load i18n_filters %}
 {% block watch_active %}active{% endblock watch_active %}
 
 {% block headcss %}
     <style>
         .not-client-online-only {
             display:none;
+        }
+
+        #video_language_selector {
+
+            display:none;
+            position: relative;
+            top: -2px;
+        }
+
+        #lang_display_name a {
+            cursor: pointer;
         }
     </style>
     <!--[if IE]>
@@ -24,7 +35,7 @@
 {% endblock headcss %}
 
 {% block headjs %}
-    <script src="{% static "distributed/js/videoplayer.js" %}"></script>
+    <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
     <script>
     $(function() {
@@ -47,14 +58,42 @@
     </script>
     <!-- <![endif]-->
 
-{% endblock headjs %}
 
+    <script type="text/javascript">
+        function selectVideoLanguage(obj){
+            //
+            var selectedVideoURL = obj.options[obj.selectedIndex].value;
+            window.location = selectedVideoURL;
+        }
+        $(function() {
+            $('#lang_display_name a').click(function() {
+                $('#video_language_selector').show();
+                $('#lang_display_name').hide();
+            });
+        });
+    </script>
+
+{% endblock headjs %}
 
 {% block content %}
     <h2 class="title-header">
-        <span class="title">{% trans video.title %}</span><br/>
+
+        {% if num_videos_available > 1 %}
+            <span id="lang_display_name">
+                [<a >{{ selected_language|get_language_name }}</a>]
+            </span>
+            <select id="video_language_selector" onchange="selectVideoLanguage(this)" AutoPostBack="True">
+                {% for lang_code, avail in video.availability.iteritems %}
+                    <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == selected_language %}selected{% endif %}>
+                    {{ lang_code|get_language_name }}
+                {% endfor %}
+            </select>
+        {% endif %}
+
+        <span class="title">{% trans video.title %}</span>
+        <br/>
         {% if video.description %}
-            <span class="long-description">{% trans video.description %}</span>
+        <span class="long-description">{% trans video.description %}</span>
         {% endif %}
         {% if video.related_exercise %}
         <span style="float:right; margin-top: -17px; font-size: 14px;">

@@ -3,8 +3,8 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from distributed import caching
-from main import topic_tools
+from kalite.distributed import caching
+from kalite.main import topic_tools
 
 
 class Command(BaseCommand):

@@ -19,14 +19,14 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
+from .classes import UpdatesStaticCommand
 from fle_utils import crypto
 from fle_utils.django_utils import call_outside_command_with_output
 from fle_utils.general import ensure_dir
 from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
-from i18n import get_dubbed_video_map
+from kalite.i18n import get_dubbed_video_map
 from kalite.settings import LOG as logging
 from securesync.models import Device
-from updates.management.commands.classes import UpdatesStaticCommand
 
 
 class Command(UpdatesStaticCommand):
@@ -75,51 +75,16 @@ class Command(UpdatesStaticCommand):
             exit(0)
 
         try:
-            if options.get("branch", None):
-                # Specified a repo
+            if not args:
+                raise CommandError("Too few arguments. Please specify how you would like to update KA Lite. Choices: [git, internet, localzip]")
+            elif args[0] == 'git':
                 self.update_via_git(**options)
-
-            elif options.get("zip_file", None):
-                # Specified a file
-                if not os.path.exists(options.get("zip_file")):
-                    raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
+            elif args[0] == 'internet':
                 self.update_via_zip(**options)
-
-            elif options.get("url", None):
+            elif args[0] == 'localzip':
                 self.update_via_zip(**options)
-
-            elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-                # If we detect a git repo, try git
-                if len(args) == 1 and not options["branch"]:
-                    options["branch"] = args[0]
-                elif len(args) != 0:
-                    raise CommandError("Specified too many command-line arguments")
-                self.update_via_git(**options)
-
-            elif len(args) > 1:
-                raise CommandError("Too many command-line arguments.")
-
-            elif len(args) == 1:
-                # Specify zip via first command-line arg
-                if options['zip_file'] is not None:
-                    raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
-                options['zip_file'] = args[0]
-                self.update_via_zip(**options)
-
             else:
-                # No params, no git repo: try to get a file online.
-                zip_file = tempfile.mkstemp()[1]
-                for url in ["http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")]:
-                    logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
-                    try:
-                        urllib.urlretrieve(url, zip_file)
-                        sys.stdout.write("success @ %s\n" % url)
-                        break;
-                    except Exception as e:
-                        logging.debug("Failed to get zipfile from %s: %s" % (url, e))
-                        continue
-                options["zip_file"] = zip_file
-                self.update_via_zip(**options)
+                raise CommandError("Enter one of [git, internet, localzip]")
 
         except Exception as e:
             if self.started() and not not self.ended():
@@ -139,6 +104,9 @@ class Command(UpdatesStaticCommand):
             "download",
             "syncdb",
         ]
+
+        if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
+            raise CommandError("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'")
 
         # step 1: clean_pyc (has to be first)
         call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
@@ -187,7 +155,13 @@ class Command(UpdatesStaticCommand):
     def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
         """
         """
-        assert (zip_file or url) and not (zip_file and url)
+
+        # No URL or zip file given; default is to download from central server
+        if not url and not zip_file:
+            url = "http://%s/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")
+
+        if zip_file and not os.path.exists(zip_file):
+            raise CommandError("Specified zip file does not exist: %s" % zip_file)
 
         if not self.kalite_is_installed():
             raise CommandError("KA Lite not yet installed; cannot update.  Please install KA Lite first, then update.\n")
@@ -204,6 +178,10 @@ class Command(UpdatesStaticCommand):
             "move_to_final",
             "start_server",
         ]
+
+        # for continuation: so we now have to downlod the zip file if needed. The problem
+        # is that the starting stage changes if zip file is local or not; so do we have to make
+        # an if statement for self.start vs self.next_stage?
 
         # current_dir === base dir for current installation
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
@@ -261,12 +239,20 @@ class Command(UpdatesStaticCommand):
 
 
     def download_zip(self, url):
-        response = requests.get(url)
-        zip_file = tempfile.mkstemp()[1]
-        with open(zip_file,"wb") as fp:
-            fp.write(response.content)
-        self.validate_zip(zip_file)
-        return zip_file
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            if response.status_code == 404:
+                raise CommandError("No zip file found in %s" % url)
+            else:
+                raise
+        else:
+            zip_file = tempfile.mkstemp()[1]
+            with open(zip_file,"wb") as fp:
+                fp.write(response.content)
+            self.validate_zip(zip_file)
+            return zip_file
 
 
     def validate_zip(self, zip_file):

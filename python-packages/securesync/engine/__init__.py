@@ -24,7 +24,7 @@ def add_syncing_models(models):
 
     for model in models:
         if model in _syncing_models:
-            logging.warn("We are already syncing model %s" % unicode(model))
+            logging.debug("We are already syncing model %s; likely from different ways of importing the same models file." % unicode(model))
             continue
 
         # When we add models to be synced, we need to make sure

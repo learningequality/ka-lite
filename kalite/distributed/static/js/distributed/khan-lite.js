@@ -27,40 +27,74 @@ function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-function doRequest(url, data) {
-    console.log(url);
-    url = setGetParam(url, "lang", CURRENT_LANGUAGE);
-    console.log(url);
-    return $.ajax({
+function doRequest(url, data, opts) {
+    // If locale is not already set, set it to the current language.
+    if ($.url().param("lang") === undefined) {
+        url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+    }
+
+    var request_options = {
         url: url,
         type: data ? "POST" : "GET",
         data: data ? JSON.stringify(data) : "",
         contentType: "application/json",
         dataType: "json"
-    })
-    .fail(function(resp) {
-        communicate_api_failure(resp, "id_do_request");
-    });
+    };
+    var error_prefix = "";
+
+    for (opt_key in opts) {
+        switch (opt_key) {
+            case "error_prefix":  // Set the error prefix on a failure.
+                error_prefix = opts[opt_key];
+                break;
+            default:  // Tweak the default options
+                request_options[opt_key] = opts[opt_key];
+                break;
+        }
+    }
+
+    return $.ajax(request_options)
+        .success(function(resp) {
+            handleSuccessAPI(resp);
+        })
+        .fail(function(resp) {
+            handleFailedAPI(resp, error_prefix);
+        });
 }
+
+// Generates a unique ID for each message - No duplicates.
+String.prototype.hashCode = function(){
+    var hash = 0, i, char;
+    if (this.length == 0) return hash;
+    for (i = 0, l = this.length; i < l; i++) {
+        char  = this.charCodeAt(i);
+        hash  = ((hash<<5)-hash)+char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
 
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
-
-function show_message(msg_class, msg_text, msg_id) {
+function show_message(msg_class, msg_text) {
     // This function is generic--can be called with server-side messages,
     //    or to display purely client-side messages.
     // msg_class includes error, warning, and success
 
     // remove any existing message with the same id
+
+    var msg_id = msg_text.hashCode();
+
+    // Avoid duplicating the same message by removing
     if (msg_id) {
-        clear_message(msg_id);
+        $("#" + msg_id).remove();
     }
 
     x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
     msg_html = "<div class='alert alert-" + msg_class + "'";
     if (msg_id) {
-        clear_message(msg_id);
+        $("#" + msg_id).remove();
         msg_html += " id='" + msg_id + "'";
     }
     msg_html += ">" + x_button + msg_text + "</div>";
@@ -68,15 +102,13 @@ function show_message(msg_class, msg_text, msg_id) {
     return $("#message_container");
 }
 
-function clear_message(msg_id) {
-    // Clear a single message, by ID
-    $("#" + msg_id).remove();
-    return $("#message_container");
-}
-
-function clear_messages() {
-    // Clear all messages
-    $("#message_container .message").remove();
+function clear_messages(msg_type) {
+    if (!msg_type) {
+        // Clear all messages
+        $("#message_container .alert").remove();
+    } else {
+        $("#message_container .alert-" + msg_type).remove();
+    }
     return $("#message_container");
 }
 

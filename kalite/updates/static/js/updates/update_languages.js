@@ -1,34 +1,30 @@
 var installable_languages = [];
 var installed_languages = [];
+var downloading = false;
 
 function get_available_languages() {
-    var url = AVAILABLE_LANGUAGEPACK_URL;
-    var request = $.ajax({
-        url: url,
+    doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
-    }).error(function(data, status, error) {
+    }).fail(function(data, status, error) {
         installable_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 }
 
 function get_installed_languages() {
-    $.ajax({
-        url: INSTALLED_LANGUAGES_URL,
+    doRequest(INSTALLED_LANGUAGES_URL, null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
         installed_languages = installed;
         display_languages();
-    }).error(function(data, status, error) {
+    }).fail(function(data, status, error) {
         installed_languages = [];
         display_languages();
-        handleFailedAPI(data, [status, error].join(" "), "id_languagepackdownload");
     });
 }
 
@@ -55,8 +51,16 @@ function display_languages() {
                 link_text = "(Default)";
             }
             var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+            var lang_code = lang['code'];
             var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
             var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
+
+            if ( lang_code != 'en')
+                lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
+            else
+                if (lang['subtitle_count'] > 0) {
+                    lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
+                }
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -89,6 +93,42 @@ function display_languages() {
         }
     });
 
+function delete_languagepack(lang_code) {
+    doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
+        .success(function(resp) {
+            get_installed_languages();
+            display_languages(installables);
+        });
+}
+
+$(function () {
+    $(".delete-language-button").children('button').click(function(event) {
+        var lang_code = $(this).val();
+        ConfirmDialog('Are you sure you want to delete');
+
+        function ConfirmDialog(message){
+                $('<div></div>').appendTo('body')
+                        .html('<div><h6>'+message+'?</h6></div>')
+                        .dialog({
+                                modal: true, title: 'Confirm Delete', zIndex: 10000, autoOpen: true,
+                                width: 'auto', resizable: false,
+                                buttons: {
+                                Yes: function () {
+                                        delete_languagepack(lang_code);
+                                        $(this).remove();
+                                },
+                                No: function () {
+                                        $(this).remove();
+                                }
+                                }
+                        });
+        };
+
+        jQuery("button.ui-dialog-titlebar-close").hide();
+
+    });
+});
+
     //
     // show list of installable languages in the dropdown box
     //
@@ -119,6 +159,9 @@ function display_languages() {
 
 
 function start_languagepack_download(lang_code) {
+    clear_messages();  // get rid of any lingering messages before starting download
+    $("#get-language-button").prop("disabled", true);
+    downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
         start_languagepackdownload_url,
@@ -128,17 +171,6 @@ function start_languagepack_download(lang_code) {
             "languagepackdownload",
             2000, // 2 seconds
             languagepack_callbacks
-        );
-        show_message(
-            "success",
-            sprintf(gettext("Download for language %s started."), [lang_code]),
-            "id_languagepackdownload"
-        );
-    }).error(function(progress, status, req) {
-        handleFailedAPI(
-            progress,
-            gettext("An error occurred while contacting the server to start the download process") + ": " + [status, req].join(" - "),
-            "id_languagepackdownload"
         );
     });
 }
@@ -152,8 +184,9 @@ $(function() {
         var matching_installable = installable_languages.filter(function(installable_lang) { return lang_code === installable_lang.code; });
         var found = (matching_installable.length != 0);
 
-        $("#get-language-button").prop("disabled", !found);
-
+        if( !downloading){
+                $("#get-language-button").prop("disabled", !found);
+        }
         if (found) {
             var langdata = matching_installable[0];
             // For each of the following, || 0 will return 0 if the quantity is undefined.
@@ -174,12 +207,15 @@ $(function () {
     $("#get-language-button").click(function(event) {
         language_downloading = $("#language-packs").val();
         start_languagepack_download(language_downloading);
+        
     });
 });
+
 
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
+    downloading = false;
 }
 
 var languagepack_callbacks = {

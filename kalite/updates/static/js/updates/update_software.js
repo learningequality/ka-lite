@@ -100,7 +100,7 @@ $(function() {
     updatesStart("update", 1000, software_callbacks);
 
     setTimeout(function() {
-        get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
+        get_server_status({path: GET_SERVER_INFO_URL}, ["online"], function(status){
             // We assume the distributed server is offline.
             //   if it's online, then we show all tools only usable when online.
             //
@@ -111,23 +111,24 @@ $(function() {
                 $("#software_available").removeAttr("disabled");
                 $("#download-update-kalite").removeAttr("disabled");
                 $("#upload-update-kalite").removeAttr("disabled");
-                clear_message("id_offline_message");
+                clear_messages("id_offline_message");
             }
         });
 
     }, 200);
 
     $("#download-update-kalite").click(function() {
-        // Get all videos to download
         //updatesStart("update", 1000, software_callbacks)
 
         // Start the download and updating process
-        doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value })
-            .success(function() {
-                updatesStart_callback("update");
-            }).fail(function(response) {
-                show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
-            });
+        doRequest(
+            UPDATE_SOFTWARE_URL,
+            { mechanism: $("#download-update-kalite").attr("mechanism") }
+        ).success(function() {
+            updatesStart_callback("update");
+        }).fail(function(response) {
+            show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
+        });
 
         // Update the UI to reflect that we're waiting to start
         $("#cancel-update").show();

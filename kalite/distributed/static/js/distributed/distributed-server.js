@@ -10,15 +10,7 @@ function toggle_state(state, status){
     $("." + (!status ? "not-" : "") + state + "-only").show();
 }
 
-function show_django_messages(messages) {
-    // This function knows to loop through the server-side messages,
-    //   received in the format from the status object
-    for (var mi in messages) {
-        show_message(messages[mi]["tags"], messages[mi]["text"]);
-    }
-}
-
-function show_api_messages(messages, msg_id) {
+function show_api_messages(messages) {
     // When receiving an error response object,
     //   show errors reported in that object
     if (!messages) {
@@ -27,12 +19,12 @@ function show_api_messages(messages, msg_id) {
     switch (typeof messages) {
         case "object":
             for (msg_type in messages) {
-                show_message(msg_type, messages[msg_type], msg_id);
+                show_message(msg_type, messages[msg_type]);
             }
             break;
         case "string":
             // Should throw an exception, but try to handle gracefully
-            show_message("info", messages, msg_id);
+            show_message("info", messages);
             break;
         default:
             // Programming error; this should not happen
@@ -41,41 +33,77 @@ function show_api_messages(messages, msg_id) {
     }
 }
 
-function communicate_api_failure(resp, msg_id) {
-    // When receiving an error response object,
-    //   show errors reported in that object
-    var messages = $.parseJSON(resp.responseText);
-    show_api_messages(messages, msg_id);
-}
+function handleSuccessAPI(obj) {
+
+    var messages = null;
+    var msg_types = ["success", "info", "warning", "error"];  // in case we need to dig for messages
 
 
-function handleSuccessAPI(error_id) {
-    if (error_id === undefined) {
-        error_id = "id_updates";  // ID of message element
-    }
-    clear_message(error_id);
-}
+    if (!obj) {
+        return;
 
-function handleFailedAPI(resp, error_text, error_id) {
-    if (error_id === undefined) {
-        error_id = "id_updates";  // ID of message element
-    }
-
-    switch (resp.status) {
-        case 403:
-            show_message("error", error_text + ": " + gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry."), error_id);
-            break;
-        default:
-            //communicate_api_failure(resp)
-            messages = $.parseJSON(resp.responseText);
-            if (messages && !("error" in messages)) {
-                // this should be an assert--should never happen
-                show_message("error", error_text + ": " + gettext("Uninterpretable message received."), error_id);
-            } else {
-                show_message("error", error_text + ": " + messages["error"], error_id);
+    } else if (obj.hasOwnProperty("responseText")) {
+        // Got a HTTP response object; parse it.
+        try {
+            if (obj.responseText) {  // No point in trying to parse empty response (which is common)
+                messages = $.parseJSON(obj.responseText);
             }
-            break;
+        } catch (e) {
+            // Many reasons this could fail, some valid; others not.
+            console.log(e);
+        }
+    } else if (obj.hasOwnProperty("messages")) {
+        // Got messages embedded in the object
+        messages = {}
+        for (idx in obj.messages) {
+            messages = obj.messages[idx];
+        }
+    } else {
+        // Got messages at the top level of the object; grab them.
+        messages = {};
+        for (idx in msg_types) {
+            var msg_type = msg_types[idx];
+            if (msg_type in obj) {
+                messages[msg_type] = obj[msg_type];
+                console.log(messages[msg_type]);
+            }
+        }
     }
+
+    clear_messages("error");
+    if (messages) {
+        show_api_messages(messages);
+    }
+}
+
+function handleFailedAPI(resp, error_prefix) {
+    // Two ways for this function to be called:
+    // 1. With an API response (resp) containing a JSON error.
+    // 2. With an explicit error_prefix
+
+    // Parse the messages.
+    var messages = {};
+    if (resp.status == 403) {
+        messages = {error: gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.")};
+    }
+    else if (resp && resp.responseText) {
+        try {
+            messages = $.parseJSON(resp.responseText);
+        } catch (e) {
+            console.log("Response text: " + resp.responseText);
+            console.log(e);
+        }
+    }
+
+    // Pre-pend any canned message
+    if (error_prefix) {
+        for (msg_key in messages) {
+            messages[msg_key] = sprintf("%s: %s", error_prefix, messages[msg_key]);
+        }
+    }
+
+    clear_messages();  // Clear all messages before showing the new (error) message.
+    show_api_messages(messages);
 }
 
 function force_sync() {
@@ -166,7 +194,6 @@ $(function(){
                     $('#logged-in-name').text(data.username);
                 }
             }
-            show_django_messages(data.messages);
         });
 });
 

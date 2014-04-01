@@ -10,13 +10,12 @@ from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-import i18n
-from facility.models import Facility, FacilityUser
-from main.models import VideoLog, ExerciseLog
-from testing import distributed_server_test, KALiteClient, KALiteTestCase
+from ..models import VideoLog, ExerciseLog
+from kalite import i18n
+from kalite.facility.models import Facility, FacilityUser
+from kalite.testing import KALiteClient, KALiteTestCase
 
 
-@distributed_server_test
 class TestSaveExerciseLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 37
@@ -47,7 +46,7 @@ class TestSaveExerciseLog(KALiteTestCase):
         self.original_exerciselog.points = self.ORIGINAL_POINTS
         self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
         self.original_exerciselog.streak_progress = self.ORIGINAL_STREAK_PROGRESS
-        self.original_exerciselog.save()
+        self.original_exerciselog.save(update_userlog=False)
 
     def test_new_exerciselog(self):
 
@@ -132,7 +131,6 @@ class TestSaveExerciseLog(KALiteTestCase):
         self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS + 1, "The ExerciseLog did not have the correct number of attempts.")
 
 
-@distributed_server_test
 class TestSaveVideoLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 84
@@ -159,7 +157,7 @@ class TestSaveVideoLog(KALiteTestCase):
         self.original_videolog = VideoLog(video_id=self.VIDEO_ID, youtube_id=self.YOUTUBE_ID, user=self.user)
         self.original_videolog.points = self.ORIGINAL_POINTS
         self.original_videolog.total_seconds_watched = self.ORIGINAL_SECONDS_WATCHED
-        self.original_videolog.save()
+        self.original_videolog.save(update_userlog=False)
 
     def test_new_videolog(self):
 

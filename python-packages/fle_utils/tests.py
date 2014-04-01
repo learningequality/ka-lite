@@ -5,11 +5,18 @@ there's no other app to include them with!
 import datetime
 import os
 import shutil
+import sys
 import tempfile
+import unittest
 
-from django.test import TestCase
+sys.path += [os.path.realpath('..')]
 
-from fle_utils.general import datediff, version_diff, ensure_dir
+try:
+    from unittest import TestCase
+except ImportError:
+    from django.utils.unittest import TestCase
+
+from general import datediff, version_diff, ensure_dir
 
 
 class DateDiffTestCase(TestCase):
@@ -136,3 +143,6 @@ class EnsureDirTestCase(TestCase):
         with self.assertRaisesRegexp(OSError, 'Not a directory'):
             ensure_dir(newdir)
         self.assertNotExists(newdir)
+
+if __name__ == '__main__':
+    unittest.main()

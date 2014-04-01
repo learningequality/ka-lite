@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 
+
 class LockdownCheck:
     def process_request(self, request):
         """

@@ -109,7 +109,7 @@
             var url = base_url + "?";
             url = url + $.param(props, true);
 
-            clear_message("id_coachreports")
+            clear_messages();
             doRequest(url)
                 .success(function(json) {
                     $("#loading").text(sprintf(gettext("Drawing %(xaxis_name)s versus %(yaxis_name)s"), {
@@ -122,12 +122,14 @@
                         show_message("error", "{% trans 'No student accounts in this group have been created.' %}", "id_coachreports");
                     }
                     $("#loading").text("");
+
                 }).fail(function(resp) {
                     if (resp.responseText.indexOf("too many SQL variables") != -1) {
+                       clear_messages();  // disable the default behavior.
                         // Translate cryptic error message
                         show_message("error", "{% trans 'Too many topics; please select fewer topics and retry.' %}", "id_coachreports");
                     } else {
-                        communicate_api_failure(resp, "id_coachreports");
+                        handleFailedAPI(resp);
                     }
                     $("#loading").text("");
                 });
