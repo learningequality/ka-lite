@@ -138,7 +138,7 @@
                                                     {% for video in related_videos %}
                                                     {% if forloop.first %}
                                                         <li>
-                                                            <div class="thumbnail">
+                                                            <div class="thumbnail_vid">
                                                                 <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                                     <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
                                                                         <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
