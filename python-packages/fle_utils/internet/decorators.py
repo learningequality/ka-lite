@@ -1,6 +1,6 @@
 import csv
 from annoying.decorators import wraps
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 from cStringIO import StringIO
 
 from django.core.exceptions import PermissionDenied

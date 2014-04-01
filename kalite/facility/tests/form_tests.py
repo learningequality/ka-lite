@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from facility.forms import FacilityUserForm
-from facility.models import Facility, FacilityUser
-from testing import KALiteTestCase
+from ..forms import FacilityUserForm
+from ..models import Facility, FacilityUser
+from kalite.testing import KALiteTestCase
 
 
 class UserRegistrationTest(KALiteTestCase):

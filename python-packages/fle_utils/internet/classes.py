@@ -48,6 +48,14 @@ class JsonResponseMessage(JsonResponse):
 
         super(JsonResponseMessage, self).__init__(content, *args, **kwargs)
 
+class JsonResponseMessageSuccess(JsonResponseMessage):
+    def __init__(self, *args, **kwargs):
+        super(JsonResponseMessageSuccess, self).__init__(level="success", *args, **kwargs)
+
+class JsonResponseMessageInfo(JsonResponseMessage):
+    def __init__(self, *args, **kwargs):
+        super(JsonResponseMessageInfo, self).__init__(level="info", *args, **kwargs)
+
 class JsonResponseMessageError(JsonResponseMessage):
     def __init__(self, *args, **kwargs):
         super(JsonResponseMessageError, self).__init__(level="error", *args, **kwargs)

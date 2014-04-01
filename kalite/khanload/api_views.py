@@ -36,12 +36,12 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from facility.models import FacilityUser
-from fle_utils.internet import JsonResponse, JsonResponseMessageError, set_query_params
+from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, set_query_params
+from kalite.facility.models import FacilityUser
+from kalite.main.models import ExerciseLog, VideoLog
+from kalite.main.topic_tools import get_node_cache
 from kalite.settings import LOG as logging
-from main.models import ExerciseLog, VideoLog
-from main.topic_tools import get_node_cache
-from shared.decorators import require_login
+from kalite.shared.decorators import require_login
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 CENTRAL_UPDATE_ALL_PATH = "/api/khanload/update/central/"
@@ -51,7 +51,8 @@ CENTRAL_UPDATE_ALL_PATH = "/api/khanload/update/central/"
 def update_all_distributed(request):
     """
     """
-    logging.debug("Getting data.")
+    logging.debug("Getting Khan Academy data.")
+
     return HttpResponseRedirect(set_query_params(CENTRAL_SERVER_URL + CENTRAL_UPDATE_ALL_PATH, {
         "callback": request.build_absolute_uri(reverse("update_all_distributed_callback")),
         "user_id": request.session["facility_user"].id,
@@ -91,7 +92,7 @@ def update_all_distributed_callback(request):
         except KeyError:  #
             logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
-            error_message = "Unexpected error importing videos: %s" % e
+            error_message = _("Unexpected error importing videos: %(err_msg)s") % {"err_msg": e}
             return JsonResponseMessageError(error_message)
 
     # Save exercises
@@ -112,7 +113,10 @@ def update_all_distributed_callback(request):
         except KeyError:
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
-            error_message = "Unexpected error importing exercises: %s" % e
+            error_message = _("Unexpected error importing exercises: %(err_msg)s") % {"err_msg": e}
             return JsonResponseMessageError(error_message)
 
-    return JsonResponse({"success": "Uploaded %d exercises and %d videos" % (n_exercises_uploaded, n_videos_uploaded)})
+    return JsonResponseMessageSuccess(_("Uploaded %(num_exercises)d exercises and %(num_videos)d videos") % {
+        "num_exercises": n_exercises_uploaded,
+        "num_videos": n_videos_uploaded,
+    })

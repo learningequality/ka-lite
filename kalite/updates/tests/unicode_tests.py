@@ -4,10 +4,11 @@ from datetime import datetime  # main.models imports this way, so we have this h
 from django.conf import settings
 from django.utils import unittest
 
-from facility.models import Facility, FacilityGroup, FacilityUser
+from ..models import *
 from fle_utils.testing import UnicodeModelsTest
-from testing import KALiteTestCase
-from updates.models import *
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
+from kalite.settings import logging
+from kalite.testing import KALiteTestCase
 
 
 class UpdatesUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):

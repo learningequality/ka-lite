@@ -4,7 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from version import VERSION
+from kalite.version import VERSION
 
 
 class Migration(SchemaMigration):

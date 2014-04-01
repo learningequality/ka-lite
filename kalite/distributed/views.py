@@ -21,7 +21,6 @@ from django.contrib import messages
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -29,18 +28,18 @@ from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
 from .caching import backend_cache_page
-from facility.models import Facility, FacilityUser,FacilityGroup
 from fle_utils.django_utils import is_loopback_connection
-from fle_utils.internet import JsonResponse, get_ip_addresses, set_query_params, backend_cache_page
-from i18n import select_best_available_language
+from fle_utils.internet import JsonResponse, JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
+from kalite.facility.models import Facility, FacilityUser,FacilityGroup
+from kalite.i18n import select_best_available_language
+from kalite.main import topic_tools
+from kalite.main.models import VideoLog, ExerciseLog
+from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes, get_topic_tree
 from kalite.settings import LOG as logging
-from main import topic_tools
-from main.models import VideoLog, ExerciseLog
-from main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from kalite.shared.decorators import require_admin
+from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession
-from shared.decorators import require_admin
-from updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 
 
 def check_setup_status(handler):
@@ -199,7 +198,10 @@ def topic_context(topic):
     exercises_path = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
 
-    for lang_code in (set(os.listdir(exercises_path)) - set(["test"])):  # hard-code out test
+    # Determine what exercises (and languages) are available
+    exercise_all_lang_codes = os.listdir(exercises_path) if os.path.exists(exercises_path) else []
+    exercise_all_lang_codes = set(exercise_all_lang_codes) - set(["test"])
+    for lang_code in exercise_all_lang_codes:  # hard-code out test
         loc_path = os.path.join(exercises_path, lang_code)
         if not os.path.isdir(loc_path):
             continue
@@ -249,6 +251,7 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     context = {
         "video": video,
         "title": video["title"],
+        "num_videos_available": len(video["availability"]),
         "selected_language": vid_lang,
         "video_urls": video["availability"].get(vid_lang),
         "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
@@ -312,6 +315,12 @@ def exercise_dashboard(request):
         "title": title,
     }
     return context
+
+
+def watch_home(request):
+    """Dummy wrapper function for topic_handler with url=/"""
+    return topic_handler(request, cached_nodes={"topic": get_topic_tree()})
+
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page
@@ -473,7 +482,7 @@ def handler_403(request, *args, **kwargs):
     #message = None  # Need to retrieve, but can't figure it out yet.
 
     if request.is_ajax():
-        return JsonResponse({ "error": _("You must be logged in with an account authorized to view this page.") }, status=403)
+        return JsonResponseMessageError(_("You must be logged in with an account authorized to view this page (API)."), status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))

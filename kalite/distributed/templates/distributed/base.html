@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
-{% load i18n %}
 {% load staticfiles %}
+{% load i18n %}
+{% load i18n_filters %}
 <html>
     <head>
         <!--[if lt IE 9]>
@@ -108,7 +109,10 @@
                         </form></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url homepage %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a></li>
+                        <li><a href="{% url homepage %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Home" %}</a></li>
+
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url watch_home %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a></li>
@@ -125,7 +129,7 @@
                         <li><a href="{% url zone_redirect %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url facility_user_management zone_id='None' facility_id='None' group_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a></li>
+                        <li><a href="{% url facility_management zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url update_videos %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a></li>
@@ -151,7 +155,7 @@
                         <select id="language_selector">
                         {% for lang_code, lang_meta in language_choices.iteritems %}
                             <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                                {% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}
+                                {{ lang_code|get_language_name }}
                             </option>
                         {% endfor %}
                         </select>

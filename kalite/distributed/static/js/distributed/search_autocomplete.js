@@ -14,47 +14,42 @@ function ls_key(node_type, lang) {
 }
 
 function fetchTopicTree(lang, force_reparse) {
-    var abc = $.ajax({
-        url: SEARCH_TOPICS_URL,  // already has language information embedded in it
+    doRequest(SEARCH_TOPICS_URL, null, {  // already has language information embedded in it
         cache: true,
         dataType: "json",
         timeout: _timeout_length,
-        ifModified:true,
-        error: function(resp) {
-            handleFailedAPI(resp, gettext("Error getting search data"));
-        },
-        success: function(categories, textStatus, xhr) {
-            if (xhr.status == 304  && force_reparse !== true) {
-                console.log(sprintf("got the remote topic tree for %s and it is the same as before; not re-parsing.", lang));
-            } else {
-                console.log(sprintf("got the remote topic tree for %s and it changed; re-parsing.", lang));
+        ifModified: true
+    }).success(function(categories, textStatus, xhr) {
+        if (xhr.status == 304  && force_reparse !== true) {
+            console.log(sprintf("got the remote topic tree for %s and it is the same as before; not re-parsing.", lang));
+        } else {
+            console.log(sprintf("got the remote topic tree for %s and it wasn't cached; re-parsing.", lang));
 
-                _nodes = {};
-                for (var category_name in categories) { // category is either Video, Exercise or Topic
-                    var category = categories[category_name];
-                    for (var node_name in category) {
-                        node = category[node_name];
-                        title = node.title;
+            _nodes = {};
+            for (var category_name in categories) { // category is either Video, Exercise or Topic
+                var category = categories[category_name];
+                for (var node_name in category) {
+                    node = category[node_name];
+                    title = node.title;
 
-                        if (title in _nodes) {
-                            continue;  // avoid duplicates
-                        }
-                        if (!(category_name in _nodes)) {
-                            // Store nodes by category
-                            _nodes[category_name] = {};
-                        }
-                        _nodes[category_name][node.title] = {
-                            title: node.title,
-                            type: category_name.toLowerCase(),
-                            path: node.path,
-                            available: node.available
-                        };
+                    if (title in _nodes) {
+                        continue;  // avoid duplicates
                     }
+                    if (!(category_name in _nodes)) {
+                        // Store nodes by category
+                        _nodes[category_name] = {};
+                    }
+                    _nodes[category_name][node.title] = {
+                        title: node.title,
+                        type: category_name.toLowerCase(),
+                        path: node.path,
+                        available: node.available
+                    };
                 }
-
-                // But for now, for search purposes, flatten
-                flattenNodes();
             }
+
+            // But for now, for search purposes, flatten
+            flattenNodes();
         }
     });
 }
@@ -87,7 +82,7 @@ $(document).ready(function() {
         minLength: 3,
         html: true,  // extension allows html-based labels
         source: function(request, response) {
-            clear_message("id_search_error");
+            clear_messages();
 
             // Executed when we're requested to give a list of results
             var titles_filtered = $.ui.autocomplete.filter(_titles, request.term);
@@ -127,7 +122,7 @@ $(document).ready(function() {
             if (_nodes && title in _nodes && _nodes[title]) {
                 window.location.href = _nodes[title].path;
             } else {
-                show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."), "id_search_error");
+                show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
         }
 

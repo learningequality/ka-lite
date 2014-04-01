@@ -11,10 +11,11 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _
 
-from facility.models import Facility
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
+from fle_utils.internet import get_ip_addresses
+from kalite.facility.models import Facility
 from kalite.settings import LOG as logging
 from securesync.models import Device
 
@@ -101,8 +102,8 @@ class Command(BaseCommand):
         def preload_global_data():
             if not settings.CENTRAL_SERVER:
                 logging.info("Preloading topic data.")
-                from main.topic_tools import get_topic_tree
-                from updates import stamp_availability_on_topic
+                from kalite.main.topic_tools import get_topic_tree
+                from kalite.updates import stamp_availability_on_topic
                 stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
         preload_global_data()
 
@@ -140,4 +141,8 @@ class Command(BaseCommand):
         if not options["daemonize"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
+            call_command("collectstatic", interactive=False)
+            sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
+            for addr in get_ip_addresses():
+                sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
             call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()])

@@ -15,17 +15,17 @@ from django.conf import settings
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
-from version import VERSION
 from .classes import UpdatesStaticCommand
-from distributed import caching
+from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import callback_percent_proxy, download_file
-from i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from i18n import get_localized_exercise_dirpath, get_srt_path
-from i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
+from kalite.distributed import caching
+from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
+from kalite.i18n import get_localized_exercise_dirpath, get_srt_path
+from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.settings import LOG as logging
-from updates import REMOTE_VIDEO_SIZE_FILEPATH
+from kalite.version import VERSION
 
 
 class Command(UpdatesStaticCommand, CronCommand):

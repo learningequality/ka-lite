@@ -22,13 +22,13 @@ from django.http import HttpResponseRedirect
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
-from . import get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language
+from . import get_default_language, get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language, set_default_language
 from fle_utils.config.models import Settings
 from fle_utils.internet import set_query_params
 from kalite.settings import LOG as logging
 
 
-def set_default_language(request, lang_code, global_set=False):
+def set_default_language_from_request(request, lang_code, global_set=False):
     """
     global_set has different meanings for different users.
     For students, it means their personal default language
@@ -45,9 +45,9 @@ def set_default_language(request, lang_code, global_set=False):
         request.session["default_language"] = lang_code
 
     if global_set:
-        if request.is_django_user and lang_code != Settings.get("default_language"):
+        if request.is_django_user and lang_code != get_default_language():
             logging.debug("setting server default language to %s" % lang_code)
-            Settings.set("default_language", lang_code)
+            set_default_language(lang_code)
         elif not request.is_django_user and request.is_logged_in and lang_code != request.session["facility_user"].default_language:
             logging.debug("setting user default language to %s" % lang_code)
             request.session["facility_user"].default_language = lang_code
@@ -70,7 +70,7 @@ def set_request_language(request, lang_code):
     translation.activate(request.language)
 
 
-def set_language_data(request):
+def set_language_data_from_request(request):
     """
     Process requests to set language, redirect to the same URL to continue processing
     without leaving the "set" in the browser history.
@@ -80,7 +80,7 @@ def set_language_data(request):
         if not request.is_admin:
             raise PermissionDenied(_("You don't have permissions to set the server's default language."))
 
-        set_default_language(request, lang_code=request.GET["set_server_language"], global_set=True)
+        set_default_language_from_request(request, lang_code=request.GET["set_server_language"], global_set=True)
 
         # Redirect to the same URL, but without the GET param,
         #   to remove the language setting from the browser history.
@@ -89,7 +89,7 @@ def set_language_data(request):
 
     elif "set_user_language" in request.GET:
         # Set the current user's session language, and redirect (to clean browser history)
-        set_default_language(request, request.GET["set_user_language"], global_set=(request.is_logged_in and not request.is_django_user))
+        set_default_language_from_request(request, request.GET["set_user_language"], global_set=(request.is_logged_in and not request.is_django_user))
 
         # Redirect to the same URL, but without the GET param,
         #   to remove the language setting from the browser history.
@@ -103,8 +103,7 @@ def set_language_data(request):
         #   settings' value
         request.session["default_language"] = select_best_available_language( \
             getattr(request.session.get("facility_user"), "default_language", None) \
-            or Settings.get("default_language") \
-            or settings.LANGUAGE_CODE
+            or get_default_language()
         )
 
     # Set this request's language based on the listed priority
@@ -116,4 +115,4 @@ def set_language_data(request):
 
 class SessionLanguage:
     def process_request(self, request):
-        return set_language_data(request)
+        return set_language_data_from_request(request)

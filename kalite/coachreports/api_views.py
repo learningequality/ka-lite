@@ -7,12 +7,12 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -20,13 +20,13 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
-from facility.decorators import facility_required
-from facility.models import Facility, FacilityUser, FacilityGroup
 from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from fle_utils.testing.decorators import allow_api_profiling
+from kalite.facility.decorators import facility_required
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
+from kalite.main.topic_tools import get_topic_by_path, get_node_cache
 from kalite.settings import LOG as logging
-from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from main.topic_tools import get_topic_by_path, get_node_cache
 
 
 # Global variable of all the known stats, their internal and external names,

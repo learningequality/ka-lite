@@ -4,15 +4,15 @@ This is a command-line tool to execute functions helpful to testing.
 import glob
 import json
 import os
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from fle_utils.general import ensure_dir, softload_json
 from kalite.settings import LOG as logging
-from updates import REMOTE_VIDEO_SIZE_FILEPATH
 
 
 class Command(BaseCommand):

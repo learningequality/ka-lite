@@ -7,30 +7,31 @@ import os
 import re
 import math
 from annoying.functions import get_object_or_None
-from collections import defaultdict
+from collections_local_copy import defaultdict
 
 from django.conf import settings
 from django.core.management import call_command
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
+from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size, delete_language
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
-from i18n import get_youtube_id, get_video_language, get_supported_language_map
-from main.topic_tools import get_topic_tree
-from shared.decorators import require_admin
+from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
+from kalite.main.topic_tools import get_topic_tree
+from kalite.settings import LOG as logging
+from kalite.shared.decorators import require_admin
 
 
 def divide_videos_by_language(youtube_ids):
@@ -77,7 +78,7 @@ def process_log_from_request(handler):
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
                 return JsonResponseMessageError(unicode(e));
         else:
-            return JsonResponse({"error": _("Must specify process_id or process_name")})
+            return JsonResponseMessageError(_("Must specify process_id or process_name"))
 
         return handler(request, process_log, *args, **kwargs)
     return wrapper_fn_pfr
@@ -124,7 +125,7 @@ def cancel_update_progress(request, process_log):
     process_log.cancel_requested = True
     process_log.save()
 
-    return JsonResponse({})
+    return JsonResponseMessageSuccess(_("Cancelled update progress successfully."))
 
 
 @require_admin
@@ -150,7 +151,7 @@ def start_video_download(request):
 
     force_job("videodownload", _("Download Videos"), locale=request.language)
 
-    return JsonResponse({})
+    return JsonResponseMessageSuccess(_("Launched video download process successfully."))
 
 
 @require_admin
@@ -161,7 +162,8 @@ def retry_video_download(request):
     """
     VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
     force_job("videodownload", _("Download Videos"), locale=request.language)
-    return JsonResponse({})
+
+    return JsonResponseMessageSuccess(_("Launched video download process successfully."))
 
 
 @require_admin
@@ -171,14 +173,18 @@ def delete_videos(request):
     API endpoint for deleting videos.
     """
     youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    num_deleted = 0
+
     for id in youtube_ids:
         # Delete the file on disk
         delete_downloaded_files(id)
 
         # Delete the file in the database
-        VideoFile.objects.filter(youtube_id=id).delete()
+        found_videos = VideoFile.objects.filter(youtube_id=id)
+        num_deleted += found_videos.count()
+        found_videos.delete()
 
-    return JsonResponse({})
+    return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
 
 @require_admin
@@ -193,7 +199,8 @@ def cancel_video_download(request):
 
     force_job("videodownload", stop=True, locale=request.language)
 
-    return JsonResponse({})
+    return JsonResponseMessageSuccess(_("Cancelled video download process successfully."))
+
 
 @api_handle_error_with_json
 def installed_language_packs(request):
@@ -202,11 +209,28 @@ def installed_language_packs(request):
 @require_admin
 @api_handle_error_with_json
 def start_languagepack_download(request):
-    if request.POST:
-        data = json.loads(request.raw_post_data) # Django has some weird post processing into request.POST, so use raw_post_data
-        force_job('languagepackdownload', _("Language pack download"), lang_code=data['lang'], locale=request.language)
+    if not request.POST:
+        raise Exception(_("Must call API endpoint with POST verb."));
 
-        return JsonResponse({'success': True})
+    data = json.loads(request.raw_post_data)  # Django has some weird post processing into request.POST, so use raw_post_data
+    lang_code = lcode_to_ietf(data['lang'])
+
+    force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
+
+    return JsonResponseMessageSuccess(_("Started language pack download for %s successfully.") % lang_code)
+
+
+@require_admin
+@api_handle_error_with_json
+def delete_language_pack(request):
+    """
+    API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
+    That particular language folders are deleted and that language gets removed.
+    """
+    lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    delete_language(lang_code)
+
+    return JsonResponse({"success": _("Deleted language pack %s successfully.") % lang_code})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
@@ -258,7 +282,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 
     elif node["kind"] == "Video":
         video_id = node["youtube_id"]
-        youtube_id = get_youtube_id(video_id, lang_code=get_supported_language_map(lang_code)["dubbed_videos"])
+        youtube_id = get_youtube_id(video_id, lang_code=lang_code)
 
         if not youtube_id:
             # This video doesn't exist in this language, so remove from the topic tree.
@@ -320,11 +344,7 @@ def start_update_kalite(request):
             write(request.content)
         call_command_async("update", zip_file=tempfile, in_proc=False, manage_py_dir=settings.PROJECT_PATH)
 
-    return JsonResponse({})
-
-@require_admin
-def cancel_update_kalite(request):
-    return JsonResponse({})
+    return JsonResponseMessageSuccess(_("Launched software update process successfully."))
 
 
 @require_admin
@@ -332,6 +352,6 @@ def cancel_update_kalite(request):
 def server_restart(request):
     try:
         server_restart_util(request)
-        return JsonResponse({})
+        return JsonResponseMessageSuccess(_("Launched software restart process successfully."))
     except Exception as e:
         return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})
