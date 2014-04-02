@@ -34,7 +34,6 @@ function show_api_messages(messages) {
 }
 
 
-
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
