@@ -5,94 +5,6 @@
 
 {% block home_active %}active{% endblock home_active %}
 
-{% block headcss %}
-    {{ block.super }}
-    <style>
-        .suggested-action {
-            background-color: #F7F7F7;
-            color: #444!important;
-            display: block;
-            margin-bottom: 0;
-            padding: 14px;
-            position: relative;
-            width: 370px;
-            float: left;
-            margin-right: 25px;
-            min-height: 221px;
-        }
-
-        .suggested-actions {
-            padding-top: 124px;
-        }
-
-        .suggested-action:hover {
-            border-color: #C3CA7D;
-            -webkit-box-shadow: 0 0 10px #76A005;
-            -moz-box-shadow: 0 0 10px #76a005;
-            box-shadow: 0 0 10px #76A005;
-        }
-
-        .suggested-action a:hover {
-            text-decoration: none!important;
-            color: #005987;
-        }
-        .suggested-action-image-link {
-            background-size: cover;
-            background-repeat: no-repeat;
-            border-bottom: 1px solid #DCE0B3;
-            display: block;
-            height: 130px;
-            margin: -5px -14px -15px -14px;
-        }
-
-        .suggested-action-title {
-            color: #005987;
-            text-decoration: none;
-            font-size: 21px;
-        }
-
-        .message {
-            margin-left: 7px;
-        }
-
-        .main-headline {
-            font-size: 26px;
-            margin: 10px 0 20px 0;
-            padding: 0;
-        }
-
-        .topic-list {
-            padding: 7px 0 0 0;
-            margin: 0;
-            font-size: 24px;
-            font-family: "MuseoSans500", sans-serif;
-        }
-
-        .topic a {
-            padding: 0 0 8px 40px;
-            font-size: 18px;
-            line-height: 40px;
-        }
-
-        a:hover, a:hover .suggested-action-title {
-            color: #2F92A5!important;
-        }
-
-        .front-page {
-            padding-left: 7px;
-        }
-
-        .video-unavailable,
-        .topic-unavailable,
-        a:active.topic-unavailable,
-        a:hover.topic-unavailable,
-        a:link.topic-unavailable,
-        a:visited.topic-unavailable {
-            color: #ACBDD1;
-        }
-    </style>
-{% endblock headcss %}
-
 {% block headjs %}
     {% if settings.AUTO_LOAD_TEST %}
     <script>
@@ -104,35 +16,42 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="front-page">
+    <div class="container">
 
-        <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
-
-        <div class="vertical-shadow suggested-action">
-            <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
-            <p class="topic-list">
-                {% for subtopic in topics %}
-                <span class="topic">
-                    <a href="{{ subtopic.path }}" class="topic-link topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
-                        {% trans subtopic.title %}
-                    </a>
-                </span>
-                <br />
-                {% endfor %}
-            </p>
+        <!-- <div class="row jumbotron hidden-xs"> -->
+        <div class="row">
+            <h2 class="main-headline hidden-xs">{% trans "A free world-class education for anyone anywhere." %}</h2>
+<!--             <p>{% trans "KA Lite is a lightweight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p> -->
         </div>
 
-        <div class="vertical-shadow suggested-action">
-            <a href="{% url exercise_dashboard %}">
-                <h2 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h2>
-                <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-                <div class="suggested-action-image-link" style="background-image: url({% static 'images/distributed/knowledge-map-derivative-intuition.png' %});"></div>
-            </a>
+        <div class="row">
+            
+            <div class="col-sm-6 vertical-shadow suggested-action">
+                <h3 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h3>
+                <p class="topic-list">
+                    {% for subtopic in topics %}
+                        <a href="{{ subtopic.path }}" class="topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
+                            {% trans subtopic.title %}
+                        </a>
+                    <br />
+                    {% endfor %}
+                </p>
+            </div>
+
+            <div class="col-sm-5 col-sm-offset-1 vertical-shadow suggested-action">
+                <a href="{% url exercise_dashboard %}">
+                    <h3 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h3>
+                    <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
+                    <div class="suggested-action-image-link"></div>
+                </a>
+            </div>
+
+            <div class="row col-sm-12">
+                <p class="homepage-p">{% trans "KA Lite is a lightweight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
+            </div>
+ 
         </div>
 
-        <div class="clear"></div>
     </div>
-
-    <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
 
 {% endblock content %}

@@ -199,6 +199,7 @@ $(function(){
                     $('#logged-in-name').text(data.username);
                 }
             }
+            $('.navbar-right').show();
         });
 });
 

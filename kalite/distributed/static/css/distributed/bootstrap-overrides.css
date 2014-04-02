@@ -1,0 +1,222 @@
+/* ===================================
+    To Do - Less
+=================================== */
+
+
+/* ===================================
+	Global
+=================================== */
+html, body, #background-photo {
+	height: 100%;
+}
+body {
+    /*background: #123c3c;*/
+	margin: 0;
+	padding-top: 79px;
+}
+#background-photo, .row {
+	width: 100%;
+}
+/*#background-photo {
+    background-image: url('../../images/distributed/background.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}*/
+.container {
+    max-width: 1000px;
+}
+a:hover, a:focus {
+    text-decoration: none;
+}
+input.submit {
+    background: #dcdcdc;
+    color: #000;
+    border-radius: 4px;
+}
+input.submit:hover, input.submit:focus {
+    background: #c6d1ad;
+}
+
+/* ===================================
+	Nav Bar
+=================================== */
+.navbar {
+	border-bottom: 1px solid #999;
+    /*background: #c6ccc2;*/
+}
+.navbar-default {
+	background: #c6d1ad; /* Also controls footer color */
+}
+.navbar-brand img { 
+	margin-top: -6px; 
+}
+.navbar ul li a {
+    color: #333 !important;
+    text-transform: uppercase;
+}
+.navbar ul li a:hover, .navbar ul li a:focus {
+    /*background: #d1d7b1 !important;*/
+    background: #dcdcdc !important;
+}
+.navbar-right {
+    display: none;
+}
+form#search-box {
+    margin-right: 15px;
+	margin-top: 14px;
+}
+input#search.ui-autocomplete-input {
+    font-size: 12px;
+    height: 23px;
+    width: 140px;
+}
+#search-button {
+	color: #fff !important;
+	margin-left: -3px;
+}
+#search-button:hover, #search-button:focus {
+    background: #6dc96d !important;
+}
+#language_selector {
+    margin: 16px 15px 0 15px;
+    /*width: 75px;*/
+}
+
+/* ===================================
+	Home Page
+=================================== */
+/*.jumbotron {
+	background: #d1d7b1;
+    padding-bottom: 40px;
+    padding-top: 40px;
+	text-align: center;
+	width: 100%;
+}*/
+.main-headline {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.vertical-shadow {
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #aaa;
+    -webkit-box-shadow: 0 1px 3px #ccc;
+    -moz-box-shadow: 0 1px 3px #ccc;
+    box-shadow: 0 1px 3px #ccc;
+}
+.suggested-action {
+    background: #f8f8f8;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    min-height: 256px;
+    padding: 0 30px;
+}
+.suggested-action:hover, .suggested-action:focus {
+    -webkit-box-shadow: 0 0 10px #76A005;
+    -moz-box-shadow: 0 0 10px #76a005;
+    box-shadow: 0 0 30px #76a005;
+}
+.suggested-action-title {
+    color: #005987;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+.suggested-action a {
+    color: #777;
+    font-size: 1.25em;
+}
+.suggested-action a:hover, .suggested-action a:focus {
+    color: #005987;
+}
+.suggested-action:first-child a:hover, .suggested-action:first-child a:focus {
+    font-weight: bold;
+}
+.suggested-action-image-link {
+    background-image: url('../../images/distributed/knowledge-map-derivative-intuition.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid #DCE0B3;
+    height: 130px;
+    margin: -5px -14px -15px -14px;
+}
+.topic-list {
+    line-height: 35px;
+    margin-left: 25px;
+    /*font-family: "MuseoSans500", sans-serif;*/
+}
+.homepage-p {
+    font-size: 0.96em;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* ===================================
+	Footer
+=================================== */
+#wrapper {
+	height: auto !important;
+	height: 100%;
+    margin: 0 auto -78px; 
+    min-height: 100%;
+}
+.footer-clearfix {
+    height: 100px;
+}
+footer, footer p:hover, footer p:focus {
+    color: #777;
+}
+footer a.navbar-brand {
+    padding: 0;
+}
+footer {
+    /*background-image: url(/static/images/distributed/non-repeating-sprites.4.png);*/
+    /*background-position: 319px -908px;*/
+	border-top: 1px solid #999 !important;
+	height: 77px;
+}
+footer ul li {
+    margin-top: 19px;
+}
+footer ul li:nth-child(2) {
+    margin-right: 10px;
+}
+footer ul .pull-right {
+    margin-right: 15px;
+}
+#fle-logo {
+    height: 18px;
+    margin-top: 21px;
+    width: 268px;
+}
+.tiny { 
+    font-size: 0.85em; 
+}
+#creative-commons-icon {
+    height: 15px;
+    width: 82px;
+}
+
+/* ===================================
+	Media Queries
+=================================== */
+@media only screen and (max-width: 991px) {
+    .suggested-action-title { font-size: 18px; }
+    .suggested-action a { font-size: 16px; }
+}
+@media only screen and (max-width: 767px) {
+    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
+    form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
+    .suggested-action { margin-top: 20px; }
+    .suggested-action-title { font-size: 24px; padding-top: 15px; }
+    .topic-list a { font-size: 1.25em; }
+    #fle-logo { margin-top: 0; }
+    footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
+    p.visible-xs:last-child { height: 17px; } /* Controls space below footer */
+}
+@media only screen and (max-width: 439px) {
+    .alert { font-size: 0.85em; margin: 0; }
+    .suggested-action-title { font-size: 20px; padding-top: 0; }
+    .topic-list a { font-size: 16px; }
+}
+@media only screen and (min-width: 768px) and (max-width: 1199px) {
+	.navbar-brand img { width: 69px; }
+}

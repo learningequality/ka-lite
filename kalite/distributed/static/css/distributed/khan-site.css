@@ -3,53 +3,8 @@
      License: none (public domain)
 */
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-    display: block;
-}
-body {
-    line-height: 1;
-}
-ol, ul {
-    list-style: none;
-}
-blockquote, q {
-    quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-    content: '';
-    content: none;
-}
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-/* End Reset */
-
 /* Clearfix */
-.clearfix:before,
+/*.clearfix:before,
 .clearfix:after {
     content: "";
     display: table;
@@ -61,62 +16,38 @@ table {
 
 .clearfix {
     *zoom: 1;
-}
+}*/
 /* End Clearfix */
 
-html, body {
-    height: 100%;
-}
 html {
     overflow-y: scroll;
 }
 
 body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+/*    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
     margin: 0;
     color: #444;
-    line-height: 22px;
+    line-height: 22px;*/
     /* extend background to cover #page-container on horizontal scroll */
-    min-width: 1000px;
-}
-
-
-#outer-wrapper {
-    background: url(/static/images/distributed/light-page-bg.png) repeat-x;
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    margin: 0 0 -77px;
-}
-
-#page-container, #page-container-inner {
-    background: transparent url(/static/distributed/images/content-border.1.png) no-repeat right 85px;
-}
-
-#page-container {
-    background-position: 0 85px;
-    min-width: 1000px;
-    max-width: 1200px;
-    position: relative;
-    margin: 0 auto;
+    /*min-width: 1000px;*/
 }
 
 .ie6 #page-container {
     width: 1000px; /* IE6 doesn't support min/max-width, so hard-code */
 }
 
-article {
+/*article {
     padding: 0 19px;
     background: #fff;
     position: relative;
     margin: 0 1px;
     border-top: 1px solid #C6D1AD;
-}
+}*/
 
 /* Basic typography for the entire site */
 
-h1, h2, h3, h4, h5 { color: #111; font-family: "MuseoSans500", sans-serif; }
+/*h1, h2, h3, h4, h5 { color: #111; font-family: "MuseoSans500", sans-serif; }
 h1 {font-size:25px; margin-bottom: 22px;}
 h2 {font-size:20px; margin-bottom: 22px;}
 h3 {font-size:18px; margin-bottom: 22px;}
@@ -125,9 +56,9 @@ h5 {font-size: 15px; margin-bottom: -22px;}
 p { font-size: 14px; margin: 22px 0;}
 
 b, strong { font-weight: bold; }
-em { font-style: italic; }
+em { font-style: italic; }*/
 
-.tiny { font-size: 10px; }
+/*.tiny { font-size: 10px; }*/
 .right { text-align: right; }
 .left { text-align: left; }
 .center { text-align: center; }
@@ -198,10 +129,10 @@ hr {
     height: 50px;
 }
 
-a:link, a:visited {
+/*a:link, a:visited {
     color: #005987;
     text-decoration: none;
-}
+}*/
 
 img {
     -ms-interpolation-mode: bicubic;
@@ -212,54 +143,9 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     -webkit-appearance: none;
 }
 
-footer {
-    height: 208px;
-    clear: both;
-    background: url(/static/images/distributed/footer-bg.png) repeat-x 0 0; /*! data-uri(/images/footer-bg.png) */
-    min-width: 970px;
-    position: relative;
+.ie6 footer.short .inner {
+    width: 1000px; /* IE6 doesn't support min/max-width, so hard-code */
 }
-    footer.short {
-        height: 38px;
-        margin-top: 38px;
-        color: #555;
-        background: url(/static/images/distributed/light-page-bg.png) repeat-x 0 -30px;
-        border-top: 1px solid #C6D1AD;
-        z-index: 10;
-    }
-    footer #leaves {
-        background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-        background-position: 319px -908px;
-        height: 188px;
-    }
-    footer.short #leaves {
-        height: 38px;
-    }
-    footer a {
-        color: white;
-        text-decoration: none;
-    }
-    footer #copyright {
-        float: right;
-        text-align: right;
-        padding: 8px 10px 0 0;
-    }
-    footer #creative-commons-link {
-        background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-        background-position: -143px -67px;
-        display: inline-block;
-        height: 15px;
-        position: relative;
-        top: 4px;
-        width: 82px;
-    }
-    footer.short .inner {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .ie6 footer.short .inner {
-        width: 1000px; /* IE6 doesn't support min/max-width, so hard-code */
-    }
 
 article, section {
     display: block;
@@ -368,14 +254,6 @@ article, section {
     position: relative;
     border: 1px solid #000;
     padding: 2px;
-}
-
-.vertical-shadow {
-    border: 1px solid #cccccc;
-    border-bottom: 1px solid #aaa;
-    -webkit-box-shadow: 0 1px 3px #cccccc;
-    -moz-box-shadow: 0 1px 3px #cccccc;
-    box-shadow: 0 1px 3px #cccccc;
 }
 
 /* A simple 3D button style */
@@ -583,13 +461,13 @@ input.simple-button {
     line-height: 15px;
 }
 
-.vertical-shadow {
+/*.vertical-shadow {
     border: 1px solid #cccccc;
     border-bottom: 1px solid #aaa;
     -webkit-box-shadow: 0 1px 3px #cccccc;
     -moz-box-shadow: 0 1px 3px #cccccc;
     box-shadow: 0 1px 3px #cccccc;
-}
+}*/
 /* links that wrap divs and are big buttons */
 a.big-button:link,
 a.big-button:visited {
@@ -644,7 +522,7 @@ a.big-button:active > div {
     height: 15px;
     position: absolute;
     right: -1px;
-    top: -24px;
+    top: -16px;
 }
 
 .current-card #problemarea {

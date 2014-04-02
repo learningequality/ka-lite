@@ -9,15 +9,6 @@
 
     <!-- Used by KA to dynamically add styling to the exercise -->
     <style id="exercise-inline-style"></style>
-
-    <style>
-        .return-link {
-            font-size: 13px;
-            padding-bottom: 4px;
-            opacity: 0.8;
-            margin-top: -2px;
-        }
-    </style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -73,121 +64,123 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="exercises-header">
+    <div class="container">
+        
+        <div class="exercises-header">
 
-        {% if prev %}
-        <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
-        {% endif %}
+            {% if prev %}
+            <div class="row">
+                <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
+                {% endif %}
 
-        {% if next %}
-        <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
-        {% endif %}
-        <div class="clear"></div>
+                {% if next %}
+                <div class="vidnext pull-right"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+                {% endif %}
+            </div>
 
-        <h2>
-            <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
-            {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
-        </h2>
-    </div>
-    <div class="exercises-body">
-        <div class="exercises-card current-card">
-            <div class="current-card-container card-type-problem">
-                <div class="current-card-container-inner vertical-shadow">
-                    <div class="current-card-contents">
-                        <div id="problem-and-answer">
-                            <div id='problemarea'>
-                                <div id='scratchpad'><div></div></div>
-                                <div id='workarea'></div>
-                                <div id='hintsarea'></div>
-                            </div>
-                            <div id="answer_area_wrap"><div id="answer_area">
-                                <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
-                                    {% trans "Your progress streak bar for this exercise" as prog_streak %}
-                                    <div id="streakbar" class="info-box" title="{{ prog_streak }}">
-                                        <div class="streak">
-                                            <div class="progress-bar"><div id="totalpoints"></div></div>
-                                        </div>
-                                    </div>
-                                    <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
-                                    <div id="answercontent" class="info-box">
-                                    <span id="examples-show"> {% trans "Acceptable formats" %}</span>
-                                        <span class="info-box-header">{% trans "Answer" %}</span>
-                                        <ul id="examples" style="display: none"></ul>
-                                        <div id="questionpoints"></div>
-                                        <div id="solutionarea" class="fancy-scrollbar"></div>
-                                        <div class="answer-buttons">
-                                        {% trans "Check Answer" as check_btn %}
-                                        <input type="button" class="simple-button green" id="check-answer-button" value="{{ check_btn }}"/>
-                                        {% trans "Correct! Next Question..." as next_btn %}
-                                        <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="{{ next_btn }}"/>
-                                        <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
-                                        </div>
-                                    </div>
-                                    <div class="info-box hint-box">
-                                        <span class="info-box-header">{% trans "Need help?" %}</span>
-                                        <div id="get-hint-button-container">
-                                            {% trans "I'd like a hint" as hint %}
-                                            <input id="hint" type="button" class="simple-button orange full-width" value="{{ hint }}" name="hint"/>
-                                        </div>
-                                        <div id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</div>
-                                    </div>
-
-                                    {% if related_videos %}
-                                    <div class="info-box related-video-box">
-                                        <div id="related-video-content">
-                                            <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
-
-                                            <div id="related-video-list">
-                                                <ul class="related-video-list">
-                                                {% for video in related_videos %}
-                                                {% if forloop.first %}
-                                                    <li>
-                                                        <div class="thumbnail">
-                                                            <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
-                                                                <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
-                                                                    <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
-                                                                    <div class="thumbnail_label" style="margin-top: 68px; ">
-                                                                        <div class="thumbnail_desc">
-                                                                            <span class="progress-circle" data-video-id="{{ video.id }}"></span>
-                                                                            <span>{% trans video.title %}</span>
-                                                                        </div>
-                                                                        <div class="thumbnail_teaser" style="height: 0px; ">{% if video.description %}{% trans video.description %}{% endif %}</div>
-                                                                    </div>
-                                                                </div>
-                                                            </a>
-                                                        </div>
-                                                    </li>
-
-                                                {% else %}
-                                                    <li>
-                                                        <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
-                                                            <span class="video-title">
-                                                                <span class="progress-circle" data-video-id="{{ video.id }}"></span>
-                                                                {% trans video.title %}
-                                                            </span>
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                {% endfor %}
-                                                </ul>
+            <h3 class="row">
+                <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
+                {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
+            </h3>
+            
+        </div>
+        
+        <div class="row exercises-body">
+            <div class="exercises-card current-card">
+                <div class="current-card-container card-type-problem">
+                    <div class="current-card-container-inner vertical-shadow">
+                        <div class="current-card-contents">
+                            <div id="problem-and-answer">
+                                <div id='problemarea'>
+                                    <div id='scratchpad'><div></div></div>
+                                    <div id='workarea'></div>
+                                    <div id='hintsarea'></div>
+                                </div>
+                                <div id="answer_area_wrap"><div id="answer_area">
+                                    <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
+                                        {% trans "Your progress streak bar for this exercise" as prog_streak %}
+                                        <div id="streakbar" class="info-box" title="{{ prog_streak }}">
+                                            <div class="streak">
+                                                <div class="progress-bar"><div id="totalpoints"></div></div>
                                             </div>
-                                            <div class="clear"></div>
                                         </div>
-                                    </div>
-                                    {% endif %}
-                                </form>
-                            </div></div>
-                            <div class="clear"></div>
+                                        <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
+                                        <div id="answercontent" class="info-box">
+                                        <span id="examples-show"> {% trans "Acceptable formats" %}</span>
+                                            <span class="info-box-header">{% trans "Answer" %}</span>
+                                            <ul id="examples" style="display: none"></ul>
+                                            <div id="questionpoints"></div>
+                                            <div id="solutionarea" class="fancy-scrollbar"></div>
+                                            <div class="answer-buttons">
+                                            {% trans "Check Answer" as check_btn %}
+                                            <input type="button" class="simple-button green" id="check-answer-button" value="{{ check_btn }}"/>
+                                            {% trans "Correct! Next Question..." as next_btn %}
+                                            <input type="button" class="simple-button green" id="next-question-button" style="display:none;" name="correctnextbutton" value="{{ next_btn }}"/>
+                                            <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
+                                            </div>
+                                        </div>
+                                        <div class="info-box hint-box">
+                                            <span class="info-box-header">{% trans "Need help?" %}</span>
+                                            <div id="get-hint-button-container">
+                                                {% trans "I'd like a hint" as hint %}
+                                                <input id="hint" type="button" class="simple-button orange full-width" value="{{ hint }}" name="hint"/>
+                                            </div>
+                                            <div id="hint-remainder">{% trans "Note: this will reset your streak and points for this exercise!" %}</div>
+                                        </div>
+
+                                        {% if related_videos %}
+                                        <div class="info-box related-video-box">
+                                            <div id="related-video-content">
+                                                <span class="info-box-header">{% trans "Stuck? Watch a video." %}</span>
+
+                                                <div id="related-video-list">
+                                                    <ul class="related-video-list">
+                                                    {% for video in related_videos %}
+                                                    {% if forloop.first %}
+                                                        <li>
+                                                            <div class="thumbnail_vid">
+                                                                <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
+                                                                    <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
+                                                                        <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
+                                                                        <div class="thumbnail_label" style="margin-top: 68px; ">
+                                                                            <div class="thumbnail_desc">
+                                                                                <span class="progress-circle" data-video-id="{{ video.id }}"></span>
+                                                                                <span>{% trans video.title %}</span>
+                                                                            </div>
+                                                                            <div class="thumbnail_teaser" style="height: 0px; ">{% if video.description %}{% trans video.description %}{% endif %}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </div>
+                                                        </li>
+
+                                                    {% else %}
+                                                        <li>
+                                                            <a class="related-video related-video-inline" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
+                                                                <span class="video-title">
+                                                                    <span class="progress-circle" data-video-id="{{ video.id }}"></span>
+                                                                    {% trans video.title %}
+                                                                </span>
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    </ul>
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </form>
+                                </div></div>
+                                <div class="clear"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <ul>
-                        <li>
-                            <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
-                            <span id="scratchpad-not-available" style="display: none;">{% trans "Scratchpad not available" %}</span>
-                        </li>
-                    </ul>
+                    <div>
+                        <a id="scratchpad-show" href style>{% trans "Show scratchpad" %}</a>
+                        <span id="scratchpad-not-available" style="display: none;">{% trans "Scratchpad not available" %}</span>
+                    </div>
                 </div>
             </div>
         </div>
