@@ -662,7 +662,7 @@ class Command(UpdatesStaticCommand):
         cmd_glob += system_script_extension()
 
         # Find the command
-        cmd = glob.glob(location + "/" + cmd_glob)
+        cmd = glob.glob(os.path.join(location, "scripts", cmd_glob))
         if len(cmd) > 1:
             raise CommandError("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
         elif len(cmd)==1:
