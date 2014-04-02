@@ -540,12 +540,11 @@ class Command(UpdatesStaticCommand):
 
         # Shut down the old server
         self.update_stage(stage_percent=0.5, notes="Stopping server.")
-        stop_cmd = self.get_shell_script("stop*", location=self.current_dir)
-        p = subprocess.Popen(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
+        p = subprocess.Popen(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0])#, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
-        if out[1]:
-            if  "No such process" not in out[1]:
-                raise CommandError(out[1])
+        if p.returncode != 0:
+            raise CommandError("Got stderr: %s" % out[1])
 
         # Make sure we know if the current_dir will be changed during process running
         in_place_move = (self.dest_dir == self.current_dir)
@@ -631,10 +630,15 @@ class Command(UpdatesStaticCommand):
         sys.stdout.write("* Starting the server\n")
 
         # Start the server to validate
-        start_cmd = self.get_shell_script("start*", location=self.dest_dir)
+        start_cmd = self.get_shell_script("serverstart*", location=self.dest_dir)
         full_cmd = [start_cmd] if not port else [start_cmd, port]
-        p = subprocess.Popen(full_cmd, shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #out = p.communicate()
+        p = subprocess.Popen(full_cmd,
+                             shell=False,
+                             cwd=os.path.split(start_cmd)[0],
+                             # stdout=subprocess.PIPE,
+                             # stderr=subprocess.PIPE,
+        )
+        out = p.communicate()
         #if out[1]:
         #    raise CommandError(out[1])
 
