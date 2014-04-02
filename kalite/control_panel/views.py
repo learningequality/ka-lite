@@ -269,7 +269,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
         "group": group,
         "date_range": [period_start, period_end],
         "group_id": group_id,
-
+        "page_urls": page_urls,
         "groups": group_data,
         "students": student_data,
         "coaches": coach_data,
