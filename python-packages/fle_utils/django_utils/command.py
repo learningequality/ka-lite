@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import re
 import subprocess
@@ -50,31 +51,18 @@ def call_command_with_output(cmd, *args, **kwargs):
         sys.exit   = backups[2]
 
 
-def call_command_subprocess(cmd, *args, **kwargs):
-    assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
-    manage_py_dir = kwargs["manage_py_dir"]
-    del kwargs["manage_py_dir"]
-
-    # Use sys to get the same executable running as is running this process.
-    # Make sure to call the manage.py from this project.
-    call_args = [sys.executable, os.path.join(manage_py_dir, "manage.py"), cmd]
-    call_args += list(args)
-    for key,val in kwargs.iteritems():
-        call_args.append("--%s=%s" % (key, val))
-
-    # We don't need to hold onto the process handle.
-    #    we expect all commands to return eventually, on their own--
-    #    we have no way to deal with a rogue process.
-    # But, because they're subprocesses of this process, when the
-    #    server stops, so do these processes.
-    # Note that this is also OK because chronograph does all "stopping"
-    #    using messaging through the database
-    subprocess.Popen(call_args)
-
-
-
 
 JOB_THREADS = {}
+
+class CommandProcess(multiprocessing.Process):
+    def __init__(self, cmd, *args, **kwargs):
+        super(CommandProcess, self).__init__()
+        self.cmd = cmd
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        call_command(self.cmd, *self.args, **self.kwargs)
 
 class CommandThread(threading.Thread):
     def __init__(self, cmd, *args, **kwargs):
@@ -86,6 +74,12 @@ class CommandThread(threading.Thread):
     def run(self):
         #logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
         call_command(self.cmd, *self.args, **self.kwargs)
+
+
+def call_command_subprocess(cmd, *args, **kwargs):
+    p = CommandProcess(cmd, *args, **kwargs)
+    p.start()
+
 
 def call_command_threaded(cmd, *args, **kwargs):
     global JOB_THREADS
