@@ -87,7 +87,9 @@ function handleFailedAPI(resp, error_prefix) {
         case 0:
             messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
             break;
-        case 200:
+
+        case 200:  # return JSON messages
+        case 500:  # also currently return JSON messages
             try {
                 messages = $.parseJSON(resp.responseText);
             } catch (e) {
@@ -101,9 +103,11 @@ function handleFailedAPI(resp, error_prefix) {
             messages = {error: gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.")};
             break;
 
+        case 500:
+
         default:
             console.log(resp);
-            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, response);
+            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
             messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)"), {error_msg: error_msg})};
     }
 
