@@ -20,5 +20,5 @@ else
     echo "----------------------------------------------------------------"
     echo "Checking port to close if a server is found"
     echo "----------------------------------------------------------------"
-    "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop host=0.0.0.0
+    "$pyexec" "$KALITE_DIR/manage.py" runcherrypyserver stop host=0.0.0.0 pidfile="$KALITE_DIR/runcherrypyserver.pid"
 fi
