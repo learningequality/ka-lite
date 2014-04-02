@@ -99,6 +99,7 @@ def zone_management(request, zone_id="None"):
             "is_own_device": device.get_metadata().is_own_device and not settings.CENTRAL_SERVER,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
             "counter": device.get_counter_position(),
+            "is_registered": device.is_registered(),
         }
 
     # Accumulate facility data
