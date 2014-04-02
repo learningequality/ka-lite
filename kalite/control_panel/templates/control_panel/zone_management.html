@@ -22,7 +22,7 @@
             display: inline;
             padding-right: 10px;
         }
-        tr.not-registered-only{
+        tr.unregistered{
             background-color: pink;
         }
     </style>
@@ -188,7 +188,7 @@
                     </th-->
                 </tr>
                 {% for id,device in devices.items %}
-                    <tr class="registered-only {% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
+                    <tr class="{% if not device.is_registered %}unregistered {% endif %}{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
                             {% if device.num_times_synced != None %}<a href="{% url device_management zone_id=zone_id device_id=id %}">{% endif %}
                                 {{ device.name }}
@@ -223,52 +223,7 @@
                         <td nowrap>
                             {% if device.is_own_device %}
                             <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
-                            {% if clock_set %}
-                            /
-                            <a onclick="$('#clock_set').show()">set clock</a>
-                            <div id="clock_set" style="display:none">
-                                {% include_block "control_panel/snippets/clock_set.html" "content" %}
-                            </div>
-                            {% endif %}
-                            {% endif %}
-                        </td>
-                        <!--td nowrap>{{ device.counter }}</td-->
-                    </tr>
-                    <tr class="not-registered-only {% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
-                        <td nowrap>
-                            {% if device.num_times_synced != None %}<a href="{% url device_management zone_id=zone_id device_id=id %}">{% endif %}
-                                {{ device.name }}
-                                {% if device.is_demo_device %}[Demo data]{% endif %}
-                            {% if device.num_times_synced != None %}</a>{% endif %}
-                        </td>
-                        <td>
-                            {% if device.num_times_synced != None %}
-                                {{ device.num_times_synced }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td nowrap>
-                            {% if device.last_time_synced != None %}
-                                {{ device.last_time_synced }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td nowrap>
-                            {% if not device.last_time_used %}
-                                {% trans "Never" %}
-                            {% elif device.last_time_used.completion_timestamp %}
-                                {{ device.last_time_used.completion_timestamp|date }}
-                            {% elif device.last_time_used.last_activity_datetime %}
-                                {{ device.last_time_used.last_activity_datetime }}
-                            {% elif device.last_time_used.start_datetime %}
-                                {{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}
-                            {% endif %}
-                        </td>
-                        <td nowrap>
-                            {% if device.is_own_device %}
-                            <button class="btn btn-success not-registered-only" href="{% url register_public_key %}">{% trans "Register device" %}</button>
+                            <a class="btn btn-success not-registered-only" href="{% url register_public_key %}">{% trans "Register device" %}</a>
                             {% if clock_set %}
                             /
                             <a onclick="$('#clock_set').show()">set clock</a>
