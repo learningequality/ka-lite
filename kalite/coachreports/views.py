@@ -6,7 +6,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -23,7 +23,6 @@ from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog
 from kalite.main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from kalite.settings import LOG as logging
 
 
 def get_accessible_objects_from_logged_in_user(request, facility):

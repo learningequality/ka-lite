@@ -6,13 +6,13 @@ from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections_local_copy import OrderedDict, namedtuple
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
@@ -25,7 +25,6 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.main.topic_tools import get_node_cache
-from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
@@ -33,7 +32,7 @@ from securesync.models import DeviceZone, Device, Zone, SyncSession
 
 def set_clock_context(request):
     return {
-        "clock_set": settings.ENABLE_CLOCK_SET,
+        "clock_set": getattr(settings, "ENABLE_CLOCK_SET", False),
     }
 
 def sync_now_context(request):
@@ -45,6 +44,13 @@ def sync_now_context(request):
 @require_authorized_admin
 @render_to("control_panel/zone_form.html")
 def zone_form(request, zone_id):
+    context = process_zone_form
+    if request.method == "POST" and context["form"].is_valid:
+        return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
+    else:
+        return context
+
+def process_zone_form(request, zone_id):
     context = control_panel_context(request, zone_id=zone_id)
 
     if request.method != "POST":
@@ -130,6 +136,17 @@ def zone_management(request, zone_id="None"):
     })
     context.update(set_clock_context(request))
     return context
+
+
+@require_authorized_admin
+def delete_zone(request, zone_id):
+    zone = get_object_or_404(Zone, id=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, _("You have successfully deleted ") + zone.name + ".")
+    else:
+        messages.warning(request, _("You cannot delete this zone because it is syncing data with with %d device(s)") % zone.devicezone_set.count())
+    return HttpResponseRedirect(reverse("org_management"))
 
 
 @require_authorized_admin

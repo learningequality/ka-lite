@@ -9,10 +9,9 @@ import math
 from annoying.functions import get_object_or_None
 from collections_local_copy import defaultdict
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
@@ -30,7 +29,6 @@ from fle_utils.orderedset import OrderedSet
 from fle_utils.server import server_restart as server_restart_util
 from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
 from kalite.main.topic_tools import get_topic_tree
-from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_admin
 
 

@@ -2,12 +2,12 @@ import sys
 from datetime import datetime  # main.models imports this way, so we have this hacky dependency.
 
 from django.conf import settings
+from django.conf.settings import logging
 from django.utils import unittest
 
 from ..models import *
 from fle_utils.testing import UnicodeModelsTest
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.settings import logging
 from kalite.testing import KALiteTestCase
 
 

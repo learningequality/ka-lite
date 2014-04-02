@@ -1,11 +1,12 @@
 """
 """
+import os
 import youtube_dl
 from functools import partial
 from optparse import make_option
 from youtube_dl.utils import DownloadError
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 
 from .classes import UpdatesDynamicCommand
@@ -18,7 +19,6 @@ from fle_utils.internet import URLNotFound
 from kalite import i18n
 from kalite.distributed import caching
 from kalite.main.topic_tools import get_video_by_youtube_id
-from kalite.settings import LOG as logging
 
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):

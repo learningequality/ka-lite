@@ -1,6 +1,6 @@
 function assert(val, msg) {
     if (!val) {
-        show_message("error", msg, "id_assert");
+        show_message("error", msg);
     }
 }
 

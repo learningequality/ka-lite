@@ -23,14 +23,13 @@ import glob
 import os
 from functools import partial
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from fle_utils.general import softload_json
 from kalite import i18n
 from kalite import khanload  # should be removed ASAP, to make more generic and separate apps.
-from kalite.settings import LOG as logging
 
 TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
 

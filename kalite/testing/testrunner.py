@@ -6,11 +6,9 @@ import os
 import pdb
 import sys
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core import management
 from django.test.simple import DjangoTestSuiteRunner
-
-from kalite.settings import LOG as logging
 
 
 def auto_pdb(*exceptions):
@@ -49,7 +47,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
-    def run_tests(self, test_labels, extra_tests=None, **kwargs):
+    def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
         """By default, only run relevant app tests.  If you specify... you're on your own!"""
 
         # Purge all .pyc files using the clean_pyc django extension.
@@ -60,12 +58,9 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         logging.info("Purging pyc files")
         management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
-        if not test_labels:
-            test_labels = set(['main', 'central', 'securesync'])
-            if settings.CENTRAL_SERVER:
-                test_labels -= set(['main',])
-            else:
-                test_labels -= set(['central',])
+        if not test_labels:  # by default, come in as empty list
+            test_labels = set(['main', 'securesync'])
+
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
 
 

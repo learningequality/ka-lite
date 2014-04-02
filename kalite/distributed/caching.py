@@ -15,7 +15,7 @@ import datetime
 import os
 from functools import partial
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
@@ -34,7 +34,6 @@ from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
 from kalite import i18n
 from kalite.main import topic_tools
-from kalite.settings import LOG as logging
 from kalite.updates.models import VideoFile
 
 

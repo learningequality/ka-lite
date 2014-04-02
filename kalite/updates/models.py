@@ -2,13 +2,12 @@
 """
 import datetime
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
 
 from fle_utils.django_utils import ExtendedModel
-from kalite.settings import LOG as logging
 
 
 class UpdateProgressLog(ExtendedModel):

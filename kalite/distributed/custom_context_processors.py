@@ -8,7 +8,6 @@ These include:
 from django.conf import settings
 
 from kalite import version
-from kalite.settings import package_selected
 
 
 # TODO(jamalex): this should be calculated more intelligently, and incorporated into a template tag
@@ -22,7 +21,7 @@ def custom(request):
         "base_template": "distributed/base.html",
         "is_central": False,
         "settings": settings,
-        "restricted": package_selected("UserRestricted"),
+        "restricted": settings.DISABLE_SELF_ADMIN,
         "VERSION": version.VERSION,
         "BUILD_ID": BUILD_ID,
     }
