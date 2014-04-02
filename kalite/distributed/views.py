@@ -34,7 +34,7 @@ from kalite.facility.models import Facility, FacilityUser,FacilityGroup
 from kalite.i18n import select_best_available_language
 from kalite.main import topic_tools
 from kalite.main.models import VideoLog, ExerciseLog
-from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
+from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes, get_topic_tree
 from kalite.shared.decorators import require_admin
 from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
@@ -314,6 +314,12 @@ def exercise_dashboard(request):
         "title": title,
     }
     return context
+
+
+def watch_home(request):
+    """Dummy wrapper function for topic_handler with url=/"""
+    return topic_handler(request, cached_nodes={"topic": get_topic_tree()})
+
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
 @backend_cache_page

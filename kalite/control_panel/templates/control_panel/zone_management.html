@@ -24,6 +24,15 @@
             display: inline;
             padding-right: 10px;
         }
+        tr.unregistered{
+            background-color: pink;
+        }
+        .not-registered-only{
+            /*Remove after bootstrap*/
+            font-weight: bold;
+            background-color: #CCCCCC;
+            padding: 5px;
+        }
     </style>
 {% endblock headcss %}
 
@@ -46,6 +55,9 @@
             */
                 return false;
             });
+            $("#force-sync").click(function(){
+                force_sync();
+            })
         })
     </script>
 {% endblock headjs %}
@@ -106,7 +118,7 @@
             {% for id,facility in facilities.items %}
                 <tr>
                     <td nowrap>
-                        <a href="{% url facility_edit id=facility.id %}">
+                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
                             {{ facility.name }}
                         </a>
                         <a href="{% url facility_edit id=facility.id %}">
@@ -186,7 +198,7 @@
                     </th-->
                 </tr>
                 {% for id,device in devices.items %}
-                    <tr class="{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
+                    <tr class="{% if not device.is_registered %}unregistered {% endif %}{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
                             {% if device.num_times_synced != None %}<a href="{% url device_management zone_id=zone_id device_id=id %}">{% endif %}
                                 {{ device.name }}
@@ -220,8 +232,8 @@
                         </td>
                         <td nowrap>
                             {% if device.is_own_device %}
-                            <a class="registered-only" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
-                            <a class="not-registered-only" href="{% url register_public_key %}">{% trans "Register device" %}</a>
+                            <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
+                            <a class="btn btn-success not-registered-only" href="{% url register_public_key %}">{% trans "Register device" %}</a>
                             {% if clock_set %}
                             /
                             <a onclick="$('#clock_set').show()">set clock</a>
