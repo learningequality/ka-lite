@@ -24,7 +24,7 @@
     {% if not is_central %}
         {% if not restricted %}
         <li>
-            <a class="green_button" href="{% url edit_facility_user id=student.id %}?next={{ request.path }}">{% trans "Change password" %}</a>
+            <a class="green_button" href="{% url edit_facility_user id=student.id %}?next={{ request.path }}">{% trans "Edit account preferences" %}</a>
         </li>
         {% endif %}
         <li class="client-online-only">
