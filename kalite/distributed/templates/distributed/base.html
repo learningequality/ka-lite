@@ -16,8 +16,8 @@
         {% endblock %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}?{{ BUILD_ID }}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap.min.css' %}?{{ BUILD_ID }}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-alerts.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
@@ -60,7 +60,7 @@
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
         <script>
          // the following variables are used by functions in distributed-server.js,
@@ -86,7 +86,7 @@
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}" id="background-photo">
-        
+
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -97,9 +97,9 @@
                 <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
                     <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="KA Lite logo">
                 </a>
-                
+
                 <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">                        
+                    <ul class="nav navbar-nav navbar-right">
                         {% block sitewide_navigation %}
 
                         <li><form action="{% url search %}" method="GET" id="search-box">
@@ -192,10 +192,10 @@
         <footer class="navbar-default">
             <div class="container">
                 <a class="navbar-brand tiny">
-                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="KA Lite logo"> 
+                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="KA Lite logo">
                     <p>Creators of KA Lite &copy; 2014</p>
-                    <p class="visible-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</p> 
-                    <p class="visible-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></p> 
+                    <p class="visible-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</p>
+                    <p class="visible-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></p>
                 </a>
                 <ul class="nav navbar-nav navbar-right tiny">
                     <li class="pull-right hidden-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></li>
