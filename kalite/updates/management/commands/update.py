@@ -1,14 +1,16 @@
 """
 """
 import git
-import os
 import glob
+import os
 import platform
 import requests
 import shutil
-import sys
+import signal
 import subprocess
+import sys
 import tempfile
+import time
 import urllib
 import zipfile
 from functools import partial
@@ -62,6 +64,12 @@ class Command(UpdatesStaticCommand):
             dest="interactive",
             default=False,
             help="Display interactive prompts"),
+        make_option(
+            '--oldserverpid',
+            action='store',
+            default=None,
+            dest='old_server_pid',
+            help='The PID of the currently running server'),
         )
 
     signature_filename = "zip_signature.txt"
@@ -73,6 +81,11 @@ class Command(UpdatesStaticCommand):
             # Callback for "weak" test--checks at least that the django project compiles (local_settings is OK)
             sys.stdout.write("Success!\n")
             exit(0)
+
+        if options['old_server_pid']:
+            self.old_server_pid = options['old_server_pid']
+        else:
+            raise CommandError('We need the old server PID for now! Pass it in with --oldserverpid')
 
         try:
             if not args:
@@ -541,11 +554,21 @@ class Command(UpdatesStaticCommand):
 
     def stop_server(self):
         '''Stop the server running on $CWD/runcherrypyserver.pid'''
-        stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
-        p = subprocess.Popen(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0])#, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if p.returncode != 0:
-            raise CommandError("Got stderr: %s" % out[1])
+
+        sys.stdout.write("* Stopping the currently running server\n")
+
+        if getattr(self, "old_server_pid", None):
+            old_pid = self.old_server_pid
+            if os.name == 'posix':
+                os.kill(old_pid, signal.SIGTERM)
+            elif os.name == 'nt':
+                raise NotImplementedError("Stopping servers for Windows not implemented yet")
+        else:
+            # use serverstop script here, if needed
+            pass
+
+        sys.stdout.write("* Sleeping for 10 seconds to allow the old server to shut down")
+        time.sleep(10)
 
 
     def move_to_final(self, interactive=True):

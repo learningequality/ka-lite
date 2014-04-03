@@ -339,7 +339,7 @@ def start_update_kalite(request):
 
     assert mechanism == 'internet' # handle only download updates for now
 
-    call_command_async('update', True, mechanism)
+    call_command_async('update', True, mechanism, old_server_pid=os.getpid())
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
 
