@@ -1,9 +1,4 @@
 /* ===================================
-    To Do - Less
-=================================== */
-
-
-/* ===================================
 	Global
 =================================== */
 html, body, #background-photo {
@@ -55,7 +50,6 @@ input.submit:hover, input.submit:focus {
     text-transform: uppercase;
 }
 .navbar ul li a:hover, .navbar ul li a:focus {
-    /*background: #d1d7b1 !important;*/
     background: #dcdcdc !important;
 }
 .navbar-right {
@@ -76,6 +70,11 @@ input#search.ui-autocomplete-input {
 }
 #search-button:hover, #search-button:focus {
     background: #6dc96d !important;
+}
+.active {
+    background: #dcdcdc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
 }
 #language_selector {
     margin: 16px 15px 0 15px;
@@ -147,6 +146,30 @@ input#search.ui-autocomplete-input {
     font-size: 0.96em;
     margin-top: 15px;
     text-align: center;
+}
+
+/* ===================================
+    Watch Page
+=================================== */
+.long-description {
+    margin-top: 5px;
+}
+.topic-list {
+   padding-left: 0;
+}
+.topic-list li {
+   font-size: 15px;
+   line-height: 23px;
+}
+.subtitle-indicator {
+    background-color: #aaf;
+    margin: 0px 1px 0px 0px;
+    padding: 2px;
+}
+.dubbedvideo-indicator {
+    background-color: #faa;
+    margin: 0px 1px 0px 0px;
+    padding: 2px;
 }
 
 /* ===================================
