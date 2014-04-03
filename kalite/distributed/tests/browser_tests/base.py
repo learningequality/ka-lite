@@ -16,15 +16,9 @@ from django.test import TestCase
 from django.utils import unittest
 from django.utils.translation import ugettext as _
 
-from fle_utils.config.models import Settings
 from fle_utils.django_utils import call_command_with_output
-from fle_utils.general import isnumeric
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.i18n import get_installed_language_packs
-from kalite.main.models import ExerciseLog
-from kalite.main.topic_tools import get_exercise_paths, get_node_cache
 from kalite.testing.browser import BrowserTestCase
-from kalite.updates import delete_language
 
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
