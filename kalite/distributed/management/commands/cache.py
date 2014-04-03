@@ -57,11 +57,11 @@ class Command(BaseCommand):
                 self.stdout.write("[Redo]\t%s\n" % path)
             else:
                 self.stdout.write("[Miss]\t%s\n" % path)
-            caching.create_cache(path=path)
+            caching.create_cache_entry(path=path)
 
         else:
             if not caching.has_cache_key(path=path):
-                caching.create_cache(path=path)
+                caching.create_cache_entry(path=path)
                 self.stdout.write("[Miss]\t%s\n" % path)
 
         if not caching.has_cache_key(path=path):

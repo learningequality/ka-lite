@@ -11,7 +11,7 @@ from django.utils import unittest
 
 from ..models import VideoFile
 from fle_utils.django_utils import call_command_with_output
-from kalite.distributed import caching
+from kalite.main import topic_tools
 from kalite.main.tests.base import MainTestCase
 from kalite.testing.client import KALiteClient
 
@@ -53,7 +53,7 @@ class VideoScanTests(MainTestCase):
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
         self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
         self.assertTrue(self.get_num_cache_entries() > 0, "Check that cache is not empty.")
-        cached_paths = caching.get_video_page_paths(video_id=self.video_id)
+        cached_paths = topic_tools.get_video_page_paths(video_id=self.video_id)
         for path in cached_paths:
             self.assertTrue(caching.has_cache_key(path), "Check that cache has path %s" % path)
 
@@ -82,7 +82,7 @@ class VideoScanTests(MainTestCase):
         Run videoscan to create cache items, then re-run to verify that the cache is cleared.
         """
         out = call_command("videoscan", auto_cache=True)
-        cached_paths = caching.get_video_page_paths(video_id=self.video_id)
+        cached_paths = topic_tools.get_video_page_paths(video_id=self.video_id)
         for path in cached_paths:
             self.assertTrue(caching.has_cache_key(path), "Check that cache has path %s" % path)
         self.assertTrue(os.path.exists(self.fake_video_file), "Check that video file exists.")
