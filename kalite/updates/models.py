@@ -91,10 +91,10 @@ class UpdateProgressLog(ExtendedModel):
         logging.info("Cancelling stage %s of process %s" % (self.stage_name, self.process_name))
 
         self.stage_percent = 0.
-        #self.update_total_stages(self.total_stages - 1)
         self.stage_name = None
         self.stage_status = stage_status or "cancelled"
         self.notes = notes
+        self.process_percent = self._compute_process_percent()
         self.save()
 
 

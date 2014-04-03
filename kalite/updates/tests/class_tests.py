@@ -140,7 +140,7 @@ class TestMultiStageUpdate(unittest.TestCase):
     def test_cancel_current_stage(self):
 
         # Create the object
-        progress_log = UpdateProgressLog(process_name="test_process", total_stages=11)
+        progress_log = UpdateProgressLog(process_name="test_process", total_stages=10)
         progress_log.save()
         progress_log.update_stage("test_stage", 0.25)
         progress_log.update_stage("test_stage2", 0.5)  # completes stage 1
