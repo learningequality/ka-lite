@@ -79,6 +79,7 @@ class CommandThread(threading.Thread):
 def call_command_subprocess(cmd, *args, **kwargs):
     p = CommandProcess(cmd, *args, **kwargs)
     p.start()
+    return p
 
 
 def call_command_threaded(cmd, *args, **kwargs):
@@ -90,6 +91,7 @@ def call_command_threaded(cmd, *args, **kwargs):
     th = CommandThread(cmd, *args, **kwargs)
     th.start()
     JOB_THREADS[cmd] = th
+    return th
 
 
 def call_command_async(cmd, in_proc=True, *args, **kwargs):
@@ -103,9 +105,9 @@ def call_command_async(cmd, in_proc=True, *args, **kwargs):
     (which will work for str, bool, int, etc).
     """
     if in_proc:
-        call_command_threaded(cmd, *args, **kwargs)
+        return call_command_threaded(cmd, *args, **kwargs)
     else:
-        call_command_subprocess(cmd, *args, **kwargs)
+        return call_command_subprocess(cmd, *args, **kwargs)
 
 
 def call_outside_command_with_output(command, *args, **kwargs):
