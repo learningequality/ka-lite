@@ -23,7 +23,7 @@ from django.core.management.base import CommandError
 
 from .classes import UpdatesStaticCommand
 from fle_utils import crypto
-from fle_utils.django_utils import call_outside_command_with_output
+from fle_utils.django_utils import call_outside_command_with_output, call_command_async
 from fle_utils.general import ensure_dir
 from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 from kalite.i18n import get_dubbed_video_map
@@ -573,6 +573,7 @@ class Command(UpdatesStaticCommand):
                 requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
             except requests.exceptions.ConnectionError:
                 break
+        sys.stdout.write("* Server shut down!\n")
 
 
     def move_to_final(self, interactive=True):
@@ -662,17 +663,7 @@ class Command(UpdatesStaticCommand):
         sys.stdout.write("* Starting the server\n")
 
         # Start the server to validate
-        start_cmd = self.get_shell_script("serverstart*", location=self.dest_dir)
-        full_cmd = [start_cmd] if not port else [start_cmd, port]
-        p = subprocess.Popen(full_cmd,
-                             shell=False,
-                             cwd=os.path.split(start_cmd)[0],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,
-        )
-        out = p.communicate()
-        if p.returncode != 0:
-            raise CommandError(out[1])
+        call_command_async('kaserve', True, host='0.0.0.0', daemonize=True)
 
         #running_port = out[0].split(" ")[-1]
         #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
