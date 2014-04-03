@@ -175,6 +175,7 @@ class Command(UpdatesStaticCommand):
             "update_local_settings",
             "move_files",
             "test_server",
+            "stop_server",
             "move_to_final",
             "start_server",
         ]
@@ -214,6 +215,9 @@ class Command(UpdatesStaticCommand):
 
         self.next_stage(notes="Updating local settings")
         self.update_local_settings()
+
+        self.next_stage(notes="Stopping the server")
+        self.stop_server()
 
         self.next_stage(notes="Moving video files")
         self.move_files()
@@ -535,16 +539,17 @@ class Command(UpdatesStaticCommand):
                 sys.stdout.write("Warning: failed stopping the new server: %s\n" % e)
 
 
-    def move_to_final(self, interactive=True):
-        """Confirm the move to the new location"""
-
-        # Shut down the old server
-        self.update_stage(stage_percent=0.5, notes="Stopping server.")
+    def stop_server(self):
+        '''Stop the server running on $CWD/runcherrypyserver.pid'''
         stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
         p = subprocess.Popen(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0])#, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         if p.returncode != 0:
             raise CommandError("Got stderr: %s" % out[1])
+
+
+    def move_to_final(self, interactive=True):
+        """Confirm the move to the new location"""
 
         # Make sure we know if the current_dir will be changed during process running
         in_place_move = (self.dest_dir == self.current_dir)
