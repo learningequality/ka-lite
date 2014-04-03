@@ -1,8 +1,7 @@
 import sys
 from datetime import datetime  # main.models imports this way, so we have this hacky dependency.
 
-from django.conf import settings
-from django.conf.settings import logging
+from django.conf import settings; logging = settings.LOG
 from django.utils import unittest
 
 from ..models import *
