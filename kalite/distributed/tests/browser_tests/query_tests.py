@@ -7,7 +7,7 @@ import string
 from django.conf import settings
 from django.utils import unittest
 
-from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 

@@ -121,7 +121,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         self.browser_login_user(username=username, password=password, expect_success=expect_success)
         if expect_success:
-            self.assertIn(reverse("zone_management", kwargs={zone_id: "None"}), self.browser.current_url, "Login browses to zone_management page" )
+            self.assertIn(reverse("zone_management", kwargs={"zone_id": "None"}), self.browser.current_url, "Login browses to zone_management page" )
 
     def browser_login_teacher(self, username, password, facility_name=None, expect_success=True):
         self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
@@ -178,4 +178,16 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 return username_text.lower() == user_obj[0].get_name().lower()
             else:
                 assert username_text == "", "Impossible for anybody to be logged in."
+
+
+class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):
+    """
+    Same thing, but do the setup steps to register a facility.
+    """
+    facility_name = 'middle of nowhere'
+
+    def setUp(self):
+        """Add a facility, so users can begin registering / logging in immediately."""
+        super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
+        self.facility = self.create_facility(facility_name=self.facility_name)
 
