@@ -58,9 +58,6 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         logging.info("Purging pyc files")
         management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
-        if not test_labels:  # by default, come in as empty list
-            test_labels = set(['main', 'securesync'])
-
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
 
 
