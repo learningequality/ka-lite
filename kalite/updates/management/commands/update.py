@@ -667,12 +667,12 @@ class Command(UpdatesStaticCommand):
         p = subprocess.Popen(full_cmd,
                              shell=False,
                              cwd=os.path.split(start_cmd)[0],
-                             # stdout=subprocess.PIPE,
-                             # stderr=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
         )
         out = p.communicate()
-        #if out[1]:
-        #    raise CommandError(out[1])
+        if p.returncode != 0:
+            raise CommandError(out[1])
 
         #running_port = out[0].split(" ")[-1]
         #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
