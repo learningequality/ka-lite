@@ -567,8 +567,12 @@ class Command(UpdatesStaticCommand):
             # use serverstop script here, if needed
             pass
 
-        sys.stdout.write("* Sleeping for 10 seconds to allow the old server to shut down")
-        time.sleep(10)
+        sys.stdout.write("* Waiting for server to shut down\n")
+        while True:
+            try:
+                requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
+            except requests.exceptions.ConnectionError:
+                break
 
 
     def move_to_final(self, interactive=True):
