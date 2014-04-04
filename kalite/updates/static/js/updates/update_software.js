@@ -41,7 +41,7 @@ function software_check_callback(progress_log, resp) {
             window.location.reload();  // Only happens if we were remotely logged out.
             break;
         default:
-            show_message("error", "Error downloading videos: " + resp.responseText);
+            show_message("error", gettext("Error updating software: ") + resp.responseText);
             clearInterval(window.download_subtitle_check_interval);
             break;
         }
