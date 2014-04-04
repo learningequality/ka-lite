@@ -8,13 +8,7 @@ import shutil
 import sys
 import tempfile
 import unittest
-
-sys.path += [os.path.realpath('..')]
-
-try:
-    from unittest import TestCase
-except ImportError:
-    from django.utils.unittest import TestCase
+from unittest import TestCase
 
 from general import datediff, version_diff, ensure_dir
 
@@ -145,4 +139,4 @@ class EnsureDirTestCase(TestCase):
         self.assertNotExists(newdir)
 
 if __name__ == '__main__':
-    unittest.main()
+    sys.exit(unittest.main())
