@@ -212,7 +212,7 @@ def group_report(request, facility, group_id=None, zone_id=None):
 @facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_management.html")
-@render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
+@render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
 def facility_management(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None, per_page=25):
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
@@ -274,8 +274,8 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
     (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
 
-    coach_data, coach_urls = paginate_users(request, coach_data, "coaches", page=coach_page, per_page=coach_per_page)
-    student_data, student_urls = paginate_users(request, student_data, "students", page=student_page, per_page=student_per_page)
+    coach_pages, coach_urls = paginate_users(request, coach_data.values(), "coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_users(request, student_data.values(), "students", page=student_page, per_page=student_per_page)
 
     page_urls = {
         "coaches": coach_urls,
@@ -288,9 +288,11 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
         "date_range": [period_start, period_end],
         "group_id": group_id,
         "page_urls": page_urls,
-        "groups": group_data,
-        "students": student_data,
-        "coaches": coach_data,
+        "groups": group_data.values(),
+        "student_pages": student_pages,  # paginated data
+        "coach_pages": coach_pages,  # paginated data
+        "students": student_data,  # raw data
+        "coaches": coach_data,  # raw data
     })
     return context
 
@@ -437,7 +439,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
 
-    return (user_data.values(), group_data.values())
+    return (user_data, group_data)
 
 
 # context functions
