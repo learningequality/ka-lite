@@ -98,26 +98,26 @@
             </div>
 
             <div class="users">
-            {% if not coaches %}
+            {% if not coach_pages %}
                 <p class="no-data">{% trans "You currently have no coaches for this facility." %}</p>
 
             {% else %}
             {% block coaches_table %}
-                {% if coaches.num_listed_pages > 1 %}
+                {% if coach_pages.num_listed_pages > 1 %}
                 <div class="pagination">
-                        <a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coaches.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&lt&lt</a>
-                        {% for listed_page in coaches.listed_pages %}
+                        <a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coach_pages.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&lt&lt</a>
+                        {% for listed_page in coach_pages.listed_pages %}
                             {% if listed_page == -1 %}
                                 <span class="disabled">&hellip;</span>
-                            {% elif listed_page == coaches.number %}
+                            {% elif listed_page == coach_pages.number %}
                                 <span class="current">
-                                   {{ coaches.number }}
+                                   {{ coach_pages.number }}
                                 </span>
                             {% else %}
                                 <a title="{% blocktrans %}Browse to page # {{ listed_page }} of coaches.{% endblocktrans %}" href="{{ page_urls.coaches|get_item:listed_page }}#coaches">{{ listed_page }}</a>
                             {% endif %}
                         {% endfor %}
-                        <a title="{% trans 'Browse to the next page of coaches.' %}" {% if coaches.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&gt&gt</a>
+                        <a title="{% trans 'Browse to the next page of coaches.' %}" {% if coach_pages.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&gt&gt</a>
                 </div>
                 <div class="clear"></div>
                 {% endif %}
@@ -133,7 +133,7 @@
                         <div class="action">
                         <h4>{% trans "Action" %}:
 
-                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button> 
+                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
                         </h4>
                     </div>
                 </div>-->
@@ -148,7 +148,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for coach in coaches %}
+                        {% for coach in coach_pages %}
                         <tr value="{{ coach.username }}">
                             <td>
                                 <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url edit_facility_user id=coach.id %}?facility={{ facility_id }}">
@@ -186,7 +186,7 @@
             <dt>{% trans "Exercises Completed" %}</dt>
             <dd>{{ groupdata.total_exercises }}</dd>
             <dt>{% trans "Mastery " %}</dt>
-            <dd>{{ groupdata.pct_mastery|percent:1 }}</dd>
+            <dd>{{ groupdata.pct_mastery }}</dd>
             </dl>
             {% endwith %}
 
@@ -282,25 +282,25 @@
                 </span>
             </div>
 
-            {% if not students %}
+            {% if not student_pages %}
                 <p class="no-data">{% trans "You currently have no student data available." %}</p>
 
             {% else %}
-                {% if students.num_listed_pages > 1 %}
+                {% if student_pages.num_listed_pages > 1 %}
             <div class="pagination">
-                    <a title="{% trans 'Browse to the previous page of students.' %}" {% if students.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&lt&lt</a>
-                    {% for listed_page in students.listed_pages %}
+                    <a title="{% trans 'Browse to the previous page of students.' %}" {% if student_pages.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&lt&lt</a>
+                    {% for listed_page in student_pages.listed_pages %}
                         {% if listed_page == -1 %}
                             <span class="disabled">&hellip;</span>
-                        {% elif listed_page == students.number %}
+                        {% elif listed_page == student_pages.number %}
                             <span class="current">
-                                {{ students.number }}
+                                {{ student_pages.number }}
                             </span>
                         {% else %}
                             <a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a>
                         {% endif %}
                     {% endfor %}
-                    <a title="{% trans 'Browse to the next page of students.' %}" {% if students.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&gt&gt</a>
+                    <a title="{% trans 'Browse to the next page of students.' %}" {% if student_pages.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&gt&gt</a>
             </div>
             <div class="clear"></div>
             {% endif %}
@@ -350,7 +350,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for student in students %}
+                    {% for student in student_pages %}
                         <tr value="{{ student.username }}">
                             <td>
                                 <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url edit_facility_user id=student.id %}?facility={{ facility_id }}">
