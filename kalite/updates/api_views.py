@@ -337,7 +337,7 @@ def start_update_kalite(request):
     except KeyError:
         raise KeyError("You did not select a valid choice for an update mechanism.")
 
-    assert mechanism == 'internet' # handle only download updates for now
+    assert mechanism == 'internet', "Sorry, we can only handle internet updates for now"
 
     call_command_async('update', True, mechanism, old_server_pid=os.getpid())
 
