@@ -116,8 +116,9 @@ def call_outside_command_with_output(command, *args, **kwargs):
     and returns the output.
     """
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
-    manage_py_dir = kwargs["manage_py_dir"]
-    del kwargs["manage_py_dir"]
+    manage_py_dir = kwargs.pop('manage_py_dir')
+
+    output_to_stdin = kwargs.pop('output_to_stdin', False)
 
     # build the command
     cmd = (sys.executable, os.path.join(manage_py_dir, "manage.py"), command)
@@ -131,15 +132,17 @@ def call_outside_command_with_output(command, *args, **kwargs):
         else:
             cmd += (u"%s%s=%s" % (prefix, key, unicode(val)),)
 
-    # Execute the command, using subprocess/Popen
-    cwd = os.getcwd()
-    os.chdir(manage_py_dir)
-    p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(
+        cmd,
+        shell=False,
+        # cwd=os.path.split(cmd[0])[0],
+        stdout=None if output_to_stdin else subprocess.PIPE,
+        stderr=None if output_to_stdin else subprocess.PIPE,
+    )
     out = p.communicate()
-    os.chdir(cwd)
 
-    # tuple output of stdout, stderr, and exit code
-    return out + (1 if out[1] else 0,)
+    # tuple output of stdout, stderr, exit code and process object
+    return out + (1 if out[1] else 0, p)
 
 
 class LocaleAwareCommand(BaseCommand):
