@@ -567,13 +567,7 @@ class Command(UpdatesStaticCommand):
             # use serverstop script here, if needed
             pass
 
-        sys.stdout.write("* Waiting for server to shut down\n")
-        while True:
-            try:
-                requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
-            except requests.exceptions.ConnectionError:
-                break
-        sys.stdout.write("* Server shut down!\n")
+        self._wait_for_server_to_be_down()
 
 
     def move_to_final(self, interactive=True):
@@ -665,9 +659,31 @@ class Command(UpdatesStaticCommand):
         # Start the server to validate
         call_command_async('kaserve', True, host='0.0.0.0', daemonize=True)
 
-        #running_port = out[0].split(" ")[-1]
-        #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
+        self._wait_for_server_to_be_up()
+
         sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.USER_FACING_PORT()))
+
+
+    def _wait_for_server_to_be_up(self):
+        sys.stdout.write(_("* Waiting for server to go up\n"))
+        while True:
+            try:
+                requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
+                break
+            except requests.exceptions.ConnectionError:
+                time.sleep(1)
+        sys.stdout.write(_("* Server is up!\n"))
+
+    def _wait_for_server_to_be_down(self):
+        sys.stdout.write(_("* Waiting for server to go down\n"))
+        while True:
+            try:
+                requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
+                time.sleep(1)
+            except requests.exceptions.ConnectionError:
+                break
+        sys.stdout.write(_("* Server is down!\n"))
+
 
 
     def print_footer(self):
