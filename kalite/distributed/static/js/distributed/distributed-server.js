@@ -144,6 +144,7 @@ var TotalPointView = Backbone.View.extend({
         _.bindAll(this);
         this.model.bind("change:points", this.render);
         this.model.bind("change:newpoints", this.render);
+        this.model.bind("change:username", this.render);
         this.render();
     },
 
@@ -151,14 +152,20 @@ var TotalPointView = Backbone.View.extend({
 
         // add the points that existed at page load and the points earned since page load, to get the total current points
         var points = this.model.get("points") + this.model.get("newpoints");
+        var username_span = sprintf("<span id='logged-in-name'>%s</span>", this.model.get("username"));
+        var message = null;
 
         // only display the points if they are greater than zero, and the user is logged in
-        if (points > 0 && this.model.get("is_logged_in")) {
-            this.$el.text(sprintf(gettext("Total Points : %(points)d "), { points : points }));
-            this.$el.show();
+        if (!this.model.get("is_logged_in")) {
+            return;
+        } else if (points > 0) {
+            message = sprintf("%s | %s", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
         } else {
-            this.$el.hide();
+            message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
         }
+
+        this.$el.html(message);
+        this.$el.show();
     }
 
 });
@@ -166,7 +173,7 @@ var TotalPointView = Backbone.View.extend({
 // Related to showing elements on screen
 $(function(){
     // global Backbone model instance to store state related to the user (username, points, admin status, etc)
-    window.userModel = new UserModel();
+    window.userModel = new UserModel({el: "#sitepoints"});
 
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
     var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
@@ -194,15 +201,9 @@ $(function(){
             toggle_state("registered", data.registered);
             toggle_state("super-user", data.is_django_user);
             toggle_state("teacher", data.is_admin && !data.is_django_user);
+            toggle_state("student", !data.is_admin && !data.is_django_user && data.is_logged_in);
             toggle_state("admin", data.is_admin); // combination of teachers & super-users
-            if (data.is_logged_in){
-                if (data.is_django_user) {
-                    $('#nav_logout').text(sprintf(gettext("%(username)s (Logout)"), { username : data.username }));
-                }
-                else {
-                    $('#logged-in-name').text(data.username);
-                }
-            }
+
             $('.navbar-right').show();
         });
 });
