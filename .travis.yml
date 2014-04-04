@@ -11,3 +11,4 @@ before_install:
 notifications:
   email:
     - aron@learningequality.org
+    - ben@learningequality.org

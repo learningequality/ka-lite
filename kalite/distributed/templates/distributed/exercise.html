@@ -140,12 +140,13 @@
                                             <div id="related-video-list">
                                                 <ul class="related-video-list">
                                                 {% for video in related_videos %}
-                                                {% if forloop.first %}
+                                                {# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
+                                                {% if forloop.first and video.availability.en.thumbnail %}
                                                     <li>
                                                         <div class="thumbnail">
                                                             <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
-                                                                <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
-                                                                    <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
+                                                                <div class="thumb">
+                                                                    <img class="thumbimage" src="{{ video.availability.en.thumbnail }}"/>
                                                                     <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                         <div class="thumbnail_desc">
                                                                             <span class="progress-circle" data-video-id="{{ video.id }}"></span>
