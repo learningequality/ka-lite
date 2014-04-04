@@ -2,8 +2,14 @@ language: python
 python:
   - "2.6"
   - "2.7"
-# command to run tests
-script: python kalite/manage.py test
+install:
+  - npm install
+  - sudo npm install -g grunt-cli
+script:
+# run django tests
+  - python kalite/manage.py test
+# run jshint
+  - grunt jshint
 notifications:
   email:
     - ben@learningequality.org
