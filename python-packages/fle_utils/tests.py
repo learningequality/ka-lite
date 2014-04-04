@@ -129,10 +129,14 @@ class EnsureDirTestCase(TestCase):
         self.assertDirExists(newdir)
 
     def test_file(self):
+        if sys.version_info < (2,7):  # we don't even get skipIf in Python 2.6!
+            return
         with self.assertRaisesRegexp(OSError, 'Not a directory'):
             ensure_dir(self.filename)
 
     def test_new_dir_after_file(self):
+        if sys.version_info < (2,7):  # we don't even get skipIf in Python 2.6!
+            return
         newdir = os.path.join(self.filename, 'newdir')
         with self.assertRaisesRegexp(OSError, 'Not a directory'):
             ensure_dir(newdir)
