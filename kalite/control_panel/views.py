@@ -1,5 +1,6 @@
 """
 """
+import copy
 import datetime
 import os
 from annoying.decorators import render_to, wraps
@@ -274,23 +275,21 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
     (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
 
-    coach_pages, coach_urls = paginate_users(request, coach_data.values(), "coaches", page=coach_page, per_page=coach_per_page)
-    student_pages, student_urls = paginate_users(request, student_data.values(), "students", page=student_page, per_page=student_per_page)
-
-    page_urls = {
-        "coaches": coach_urls,
-        "students": student_urls,
-    }
+    coach_pages, coach_urls = paginate_users(request, copy.deepcopy(coach_data.values()), "coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_users(request, copy.deepcopy(student_data.values()), "students", page=student_page, per_page=student_per_page)
 
     context.update({
         "form": form,
         "group": group,
         "date_range": [period_start, period_end],
         "group_id": group_id,
-        "page_urls": page_urls,
-        "groups": group_data.values(),
+        "page_urls": {
+            "coaches": coach_urls,
+            "students": student_urls,
+        },
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
+        "groups": group_data.values(),
         "students": student_data,  # raw data
         "coaches": coach_data,  # raw data
     })
