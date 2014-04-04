@@ -4,7 +4,7 @@ python:
   - "2.7"
 install:
   - npm install
-  - sudo npm install -g grunt-cli
+  - npm install -g grunt-cli
 script:
 # run django tests
   - python kalite/manage.py test
