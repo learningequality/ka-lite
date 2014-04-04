@@ -35,22 +35,22 @@ module.exports = function(grunt) {
 				'kalite/static/js/coachreports/',
 				'kalite/static/js/securesync/',
 				'kalite/static/js/updates/',
+				'kalite/static/js/distributed-server.js',
 				'kalite/static/js/exercises.js',
 				'kalite/static/js/khan-lite.js',
 				'kalite/static/js/kmap-editor.js',
+				'kalite/static/js/language-selector.js',
 				'kalite/static/js/search_autocomplete.js',
 				'kalite/static/js/videoplayer.js'
 			],
 			// http://www.jshint.com/docs/options/
 			options: {
-				"-W018": false, // Confusing use of '!'.
-				"-W032": false, // Unnecessary semicolon.
 				"-W038": false, // 'variable' used out of scope.
 				"-W041": false, // Use '===' to compare with ''.
 				"-W047": false, // A trailing decimal point can be confused with a dot
 				"-W065": false, // Missing radix parameter.
-				"-W070": false, // Extra comma. (it breaks older versions of IE)
 				"-W088": false, // Creating global 'for' variable.
+				"-W107": false, // Script URL.
 
 				// Enforcing options
 				bitwise: true, // Unexpected use of '&'.
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
 				//undef: true, // 'variable' is not defined.
 				//unused: true, // 'variable' is defined but never used.
 				//strict: true, // Missing "use strict" statement.
-				//trailing: true, // Trailing whitespace.
+				trailing: true, // Trailing whitespace.
 
 				// Relaxing options
 				asi: true, // Missing semicolon.
