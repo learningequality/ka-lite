@@ -1,6 +1,6 @@
 import time
 
-from kalite.main.tests import KALiteDistributedBrowserTestCase
+from .base import KALiteDistributedBrowserTestCase
 
 
 class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
