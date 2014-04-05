@@ -152,7 +152,7 @@ def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
     """Accepts lang_code in ietf format"""
     if not lang_code:  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
+    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id, video_id)
 
 
 def get_video_id(youtube_id):
