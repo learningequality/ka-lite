@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
+from securesync.devices.models import Zone
 from fle_utils.django_utils import verify_raw_password
 from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
 
@@ -84,9 +85,11 @@ class FacilityUserForm(forms.ModelForm):
 
 class FacilityForm(forms.ModelForm):
 
+    zone_fallback = forms.ModelChoiceField(queryset=Zone.objects.all(), widget=forms.HiddenInput())
+
     class Meta:
         model = Facility
-        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count",)
+        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count", "zone_fallback", )
 
     def clean_user_count(self):
         user_count = self.cleaned_data['user_count']

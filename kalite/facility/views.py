@@ -28,15 +28,18 @@ from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
 from kalite.shared.decorators import require_admin
 from securesync.devices.views import *
+from securesync.devices.models import Zone
 
 
 @require_admin
 @render_to("facility/facility_edit.html")
-def facility_edit(request, id=None):
+def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
+    zone_id = zone_id or facil.get_zone()
+    zone = get_object_or_None(Zone, pk=zone_id)
 
     if request.method != "POST":
-        form = FacilityForm(instance=facil)
+        form = FacilityForm(instance=facil, initial={"zone_fallback": zone})
     else:
         form = FacilityForm(data=request.POST, instance=facil)
         if not form.is_valid():
@@ -149,25 +152,6 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
         "num_groups": form.fields["group"].choices.queryset.count(),
         "teacher": is_teacher,
         "cur_url": request.path,
-    }
-
-
-@require_admin
-@render_to("facility/add_facility.html")
-def add_facility(request):
-
-    if request.method != "POST":
-        form = FacilityForm()
-    else:
-        form = FacilityForm(data=request.POST)
-        if not form.is_valid():
-            messages.error(request, _("Failed to save the facility; please review errors below."))
-        else:
-            form.save()
-            return HttpResponseRedirect(reverse("add_facility_student") + "?facility=" + form.instance.pk)
-
-    return {
-        "form": form
     }
 
 
