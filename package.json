@@ -16,13 +16,13 @@
   "author": "",
   "license": "BSD",
   "readmeFilename": "README.md",
-  "gitHead": "2eeb596f6d76493bcfb957e0df6b83f2f1b036f0",
+  "gitHead": "656531e178669a9b0a27571e11982b4d245c6ac8",
   "bugs": {
     "url": "https://github.com/learningequality/ka-lite/issues"
   },
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-less": "~0.6.4",
-    "grunt-contrib-jshint": "~0.8.0"
+    "grunt-contrib-jshint": "^0.10.0"
   }
 }
