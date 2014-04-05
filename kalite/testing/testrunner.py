@@ -56,6 +56,9 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
         logging.info("Purging pyc files")
+        import logging as orig_logging
+        orig_logging.getLogger('django.request').setLevel('CRITICAL')
+        orig_logging.getLogger('kalite').setLevel('INFO')
         management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
         return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
