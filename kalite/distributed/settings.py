@@ -61,8 +61,6 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "fle_utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "securesync.middleware.RegisteredCheck",
-    "securesync.middleware.DBCheck",
     __package__ + ".middleware.LockdownCheck",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
