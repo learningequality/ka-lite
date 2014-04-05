@@ -47,7 +47,7 @@ else:
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
-    "i18n.custom_context_processors.languages",
+    __package__ + ".custom_context_processors.languages",
 )
 
 MIDDLEWARE_CLASSES = (
