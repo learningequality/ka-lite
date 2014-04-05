@@ -11,7 +11,7 @@ from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtub
 from kalite.main.topic_tools import get_topic_tree, get_videos
 
 
-REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH, "content", "video_file_sizes.json")
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.UPDATES_DATA_PATH, "video_file_sizes.json")
 AVERAGE_VIDEO_SIZE = 14000000
 
 REMOTE_VIDEO_SIZES = None
