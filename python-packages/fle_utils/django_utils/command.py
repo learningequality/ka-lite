@@ -52,15 +52,21 @@ def call_command_with_output(cmd, *args, **kwargs):
 
 def call_command_subprocess(cmd, *args, **kwargs):
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
+
     manage_py_dir = kwargs["manage_py_dir"]
     del kwargs["manage_py_dir"]
+    wait_for_exit = kwargs.get("wait_for_exit", True)
+    if "wait_for_exit" in kwargs: del kwargs["wait_for_exit"]
 
     # Use sys to get the same executable running as is running this process.
     # Make sure to call the manage.py from this project.
     call_args = [sys.executable, os.path.join(manage_py_dir, "manage.py"), cmd]
     call_args += list(args)
     for key,val in kwargs.iteritems():
-        call_args.append("--%s=%s" % (key, val))
+        if isinstance(val, bool):
+            call_args.append("--%s" % key)
+        else:
+            call_args.append("--%s=%s" % (key, val))
 
     # We don't need to hold onto the process handle.
     #    we expect all commands to return eventually, on their own--
@@ -69,9 +75,10 @@ def call_command_subprocess(cmd, *args, **kwargs):
     #    server stops, so do these processes.
     # Note that this is also OK because chronograph does all "stopping"
     #    using messaging through the database
-    subprocess.Popen(call_args)
-
-
+    p = subprocess.Popen(call_args)
+    if wait_for_exit:
+        p.communicate()
+    return p
 
 
 JOB_THREADS = {}

@@ -80,6 +80,25 @@ def invalidate_all_pages_related_to_video(video_id=None):
             expire_page(path=path)
 
 
+def create_cache_entry(path=None, url_name=None, cache=None, force=False):
+    """Create a cache entry"""
+
+    assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
+    if not cache:
+        cache = get_web_cache()
+
+    if not path:
+        path = reverse(url_name)
+    if force and has_cache_key(path=path, cache=cache):
+        expire_page(path=path)
+        assert not has_cache_key(path=path, cache=cache)
+    if not has_cache_key(path=path, cache=cache):
+        Client().get(path)
+
+    if not has_cache_key(path=path, cache=cache):
+        logging.warn("Did not create cache entry for %s" % path)
+
+
 def regenerate_all_pages_related_to_videos(video_ids):
     """Regenerate all webpages related to a specific list of videos.  This is good for increasing new server performance."""
     paths_to_regenerate = set() # unique set
@@ -92,7 +111,7 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
     # Now, regenerate any page.
     for path in paths_to_regenerate:
-        create_cache(path=path, force=True)
+        create_cache_entry(path=path, force=True)
 
     return paths_to_regenerate
 

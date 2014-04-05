@@ -15,6 +15,7 @@ from django.test import TestCase
 from django.utils import unittest
 from django.utils.translation import ugettext as _
 
+from .base import KALiteDistributedBrowserTestCase, KALiteDistributedWithFacilityBrowserTestCase
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser

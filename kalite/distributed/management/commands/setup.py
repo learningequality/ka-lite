@@ -9,15 +9,16 @@ import tempfile
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
-# This is necessary for this script to run before KA Lite has ever been installed.
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
 
-sys.path = [
-    os.path.join(BASE_DIR, "python-packages"),
-    os.path.join(BASE_DIR, "kalite")
-] + sys.path
-os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
+# This is necessary for this script to run before KA Lite has ever been installed.
+if not os.environ.get("DJANGO_SETTINGS_MODULE"):
+    sys.path = [
+        os.path.join(BASE_DIR, "python-packages"),
+        os.path.join(BASE_DIR, "kalite")
+    ] + sys.path
+    os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
 
 from django.conf import settings
 from django.contrib.auth.models import User

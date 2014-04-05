@@ -3,7 +3,7 @@ Basic tests of coach reports, inside the browser
 """
 from selenium.common.exceptions import NoSuchElementException
 
-from kalite.distributed.tests.browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
 
@@ -48,7 +48,9 @@ class TestTabularViewErrors(KALiteDistributedWithFacilityBrowserTestCase):
     def test_users_out_of_group(self):
         group = FacilityGroup(name="Test Group", facility=self.facility)
         group.save()
-        FacilityUser(username="test_user", password="not-blank", facility=self.facility).save()
+        fu = FacilityUser(username="test_user", facility=self.facility)
+        fu.set_password(password="not-blank")
+        fu.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction&group=" + group.id)
         self.browser.find_element_by_css_selector('#error_message')
@@ -58,7 +60,9 @@ class TestTabularViewErrors(KALiteDistributedWithFacilityBrowserTestCase):
     def test_success_with_group(self):
         group = FacilityGroup(name="Test Group", facility=self.facility)
         group.save()
-        FacilityUser(username="test_user", password="not-blank", facility=self.facility, group=group).save()
+        fu = FacilityUser(username="test_user", facility=self.facility)
+        fu.set_password(password="not-blank")
+        fu.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction&group=" + group.id)
         with self.assertRaises(NoSuchElementException):
@@ -66,7 +70,9 @@ class TestTabularViewErrors(KALiteDistributedWithFacilityBrowserTestCase):
 
 
     def test_success_no_group(self):
-        FacilityUser(username="test_user", password="not-blank", facility=self.facility).save()
+        fu = FacilityUser(username="test_user", facility=self.facility)
+        fu.set_password(password="not-blank")
+        fu.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction")
         with self.assertRaises(NoSuchElementException):
