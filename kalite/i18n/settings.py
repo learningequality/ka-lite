@@ -45,7 +45,8 @@ def allow_languages_in_locale_path_alist(localepaths):
 ########################
 
 # JSON file of all languages and their names
-LANG_LOOKUP_FILEPATH = os.path.join(DATA_PATH, "i18n", "languagelookup.json")
+I18N_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+LANG_LOOKUP_FILEPATH = os.path.join(I18N_DATA_PATH, "languagelookup.json")
 
 # This is a bit more involved, as we need to hand out to a function to calculate
 #   the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of

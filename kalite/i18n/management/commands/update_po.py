@@ -21,10 +21,11 @@ from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from .. import lcode_to_django_dir, update_jsi18n_file
+from .. import get_po_filepath, lcode_to_django_dir, update_jsi18n_file
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import ensure_dir
 
+POT_PATH = os.path.join(settings.I18N_DATA_PATH, "pot")
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -72,14 +73,13 @@ def delete_current_templates():
     """Delete existing en po/pot files"""
     logging.info("Deleting English language po files")
     for locale_path in settings.LOCALE_PATHS:
-        english_path = os.path.join(locale_path, "en", "LC_MESSAGES")
+        english_path = get_po_filepath("en")
         if os.path.exists(english_path):
             shutil.rmtree(english_path)
 
     logging.info("Deleting English language pot files")
-    pot_path = os.path.join(settings.DATA_PATH, "i18n", "pot")
-    if os.path.exists(pot_path):
-        shutil.rmtree(pot_path)
+    if os.path.exists(POT_PATH):
+        shutil.rmtree(POT_PATH)
 
     logging.info("Deleting old English language pot files")
     old_pot_path = os.path.join(settings.STATIC_ROOT, "pot")
@@ -99,13 +99,12 @@ def run_makemessages():
 
 def update_templates():
     """Update template po files"""
-    pot_path = os.path.join(settings.DATA_PATH, "i18n", "pot")
-    logging.info("Copying english po files to %s" % pot_path)
+    logging.info("Copying english po files to %s" % POT_PATH)
 
     #  post them to exposed URL
-    ensure_dir(pot_path)
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(pot_path, "kalite.pot"))
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(pot_path, "kalitejs.pot"))
+    ensure_dir(POT_PATH)
+    shutil.copy(get_po_filepath(lang_code="en", filename="django.po"), os.path.join(POT_PATH, "kalite.pot"))
+    shutil.copy(get_po_filepath(lang_code="en", filename="djangojs.po"), os.path.join(POT_PATH, "kalitejs.pot"))
 
 
 def generate_test_files():
@@ -113,8 +112,7 @@ def generate_test_files():
 
     # Open them up and insert asterisks for all empty msgstrs
     logging.info("Generating test po files")
-    en_po_dir = os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/")
-    for po_file in glob.glob(os.path.join(en_po_dir, "*.po")):
+    for po_file in glob.glob(get_po_filepath(lang_code="en"), "*.po")):
 
         msgid_pattern = re.compile(r'msgid \"(.*)\"\nmsgstr', re.S | re.M)
 
