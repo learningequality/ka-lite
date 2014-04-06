@@ -352,7 +352,13 @@ def api_data(request, xaxis="", yaxis=""):
     """
 
     # Get the request form
-    form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    try:
+        form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    except Exception as e:
+        # In investigating #1509: we can catch SQL errors here and communicate clearer error
+        #   messages with the user here.  For now, we have no such error to catch, so just
+        #   pass the errors on to the user (via the @api_handle_error_with_json decorator).
+        raise e
 
     # Query out the data: who?
     if form.data.get("user"):
