@@ -44,7 +44,6 @@ else:
     except Exception as e:
         logging.error("Error loading %s (%s); Django will use its own builtin LANGUAGES list." % (LANG_LOOKUP_FILEPATH, e))
 
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     __package__ + ".custom_context_processors.languages",

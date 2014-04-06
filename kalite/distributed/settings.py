@@ -61,6 +61,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "fle_utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "kalite.facility.middleware.AuthFlags",  # for dependency reasons, this one needs to be early.
     __package__ + ".middleware.LockdownCheck",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 

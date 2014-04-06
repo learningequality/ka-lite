@@ -11,8 +11,8 @@
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery.sparkline.min.js' %}"></script>
     <script type="text/javascript">
-        var end_date = new Date({{ date_range.1 }})
-        var start_date = new Date({{ date_range.0 }})
+        var end_date = new Date("{{ date_range.1 }}");
+        var start_date = new Date("{{ date_range.0 }}");
 
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
@@ -20,22 +20,19 @@
 
         var TEMPLATE_GROUP_URL = "{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
 
-        $(document).ready(function(){
+        $(function() {
 
-            $(function() {
+            $('#start_date_select').datepicker({
+                dateFormat: "d MM yy",
+                altField: "#start_standard_date",
+                altFormat: "yy-mm-dd",
+                autoclose: true,
+            });
 
-                $('#start_date_select').datepicker({
-                    dateFormat: "d MM yy",
-                    altField: "#start_standard_date",
-                    altFormat: "yy-mm-dd",
-                    autoclose: true,
-                });
-
-                $('#end_date_select').datepicker({
-                    dateFormat: "d MM yy",
-                    altField: "#end_standard_date",
-                    altFormat: "yy-mm-dd"
-                });
+            $('#end_date_select').datepicker({
+                dateFormat: "d MM yy",
+                altField: "#end_standard_date",
+                altFormat: "yy-mm-dd"
             });
         });
 
@@ -54,7 +51,16 @@
             });
 
             $("#CSV_EXPORT").click(function() {
-                $("#top_export_button_id").click();
+                $("#top_export_button_id").click(); // hides the form on submit
+
+                start_date = $("#start_date_select").datepicker('getDate');
+                end_date = $("#end_date_select").datepicker('getDate');
+
+                // Format the dates as needed by the back-end.
+                $("#start_date_select").val($.datepicker.formatDate('yy-mm-dd', start_date));
+                $("#end_date_select").val($.datepicker.formatDate('yy-mm-dd', end_date));
+
+                $("#date_picker_form").submit()
             });
 
             $('.sparklines').sparkline('html', { enableTagOptions: true, disableInteraction: true });
@@ -70,11 +76,11 @@
     </li>
     <li>
         <div id="export_csv_div_id" class="export_csv_div">
-            <form method="post" action="?format=csv">
+            <form method="post" action="?format=csv" id="date_picker_form">
                 {% csrf_token %}
-                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></input>
-                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></input>
-                <input type="submit" class="btn-large" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
+                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" name="period_start" id="start_date_select" type="text" value=""></input>
+                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" name="period_end" id="end_date_select" type="text" value=""></input>
+                <input type="button" class="btn-large" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>

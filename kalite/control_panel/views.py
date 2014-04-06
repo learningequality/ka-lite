@@ -21,6 +21,7 @@ from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.internet import CsvResponse, render_to_csv
 from fle_utils.django_utils.paginate import paginate_users, pages_to_show
 from kalite.coachreports.views import student_view_context
+from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
@@ -212,9 +213,50 @@ def group_report(request, facility, group_id=None, zone_id=None):
 
 @facility_required
 @require_authorized_admin
-@render_to("control_panel/facility_management.html")
 @render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
-def facility_management(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None, per_page=25):
+def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
+    """"""
+    assert request.method == "POST", "facility_management_csv must be accessed via POST"
+
+    # Search form for errors.
+    form = DateRangeForm(data=request.POST)
+    if not form.is_valid():
+        raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
+
+    frequency = frequency or request.GET.get("frequency", "months")
+    period_start = period_start or form.data["period_start"]
+    period_end = period_end or form.data["period_end"]
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+
+
+    # Basic data
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
+    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
+    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
+
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+
+    context.update({
+        "students": student_data,  # raw data
+        "coaches": coach_data,  # raw data
+    })
+    return context
+
+
+@facility_required
+@require_authorized_admin
+@render_to("control_panel/facility_management.html")
+def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
+
+    if request.method == "POST" and request.GET.get("format") == "csv":
+        try:
+            return facility_management_csv(request, facility=facility, group_id=group_id, zone_id=zone_id)
+        except Exception as e:
+            messages.error(request, e)
+
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
     #Get pagination details
@@ -223,75 +265,37 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     student_page = request.REQUEST.get("students_page", "1")
     student_per_page = request.REQUEST.get("students_per_page", "25" if group_id else "10")
 
-    # This could be moved into a function shared across files, if necessary.
-    #   For now, moving into function, as outside if function it looks more
-    #   general-purpose than it's being used / tested now.
-
-    def get_users_from_group(user_type, group_id, facility=None):
-        if user_type == "coaches":
-            user_list = FacilityUser.objects \
-                .filter(is_teacher=True) \
-                .filter(facility=facility)
-        elif _(group_id) == _("Ungrouped"):
-            user_list = FacilityUser.objects \
-                .filter(is_teacher=False) \
-                .filter(facility=facility, group__isnull=True)
-        elif group_id:
-            user_list = FacilityUser.objects \
-                .filter(facility=facility, group=group_id, is_teacher=False)
-        else:
-            user_list = FacilityUser.objects \
-                .filter(facility=facility, is_teacher=False)
-
-        user_list = user_list \
-            .order_by("last_name", "first_name", "username") \
-            .prefetch_related("group")
-
-        return user_list
-
-
     # Basic data
-    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
     group = group_id and get_object_or_None(FacilityGroup, id=group_id)
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
-    if request.method != "POST":
-        form = DateRangeForm()
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches)
 
-    else:  # POST request
-        form = DateRangeForm(data=request.POST)
+    coach_pages, coach_urls = paginate_users(request, coach_data.values(), "coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_users(request, student_data.values(), "students", page=student_page, per_page=student_per_page)
 
-        if not form.is_valid():
-            messages.error(request, _("Unexpected error parsing date range; please review and re-submit."))
-            period_start = None
-            period_end = None
-        else:
-            frequency = frequency or request.GET.get("frequency", "months")
-            period_start = period_start or form.data["period_start"]
-            period_end = period_end or form.data["period_end"]
-            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-
-    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
-
-    coach_pages, coach_urls = paginate_users(request, copy.deepcopy(coach_data.values()), "coaches", page=coach_page, per_page=coach_per_page)
-    student_pages, student_urls = paginate_users(request, copy.deepcopy(student_data.values()), "students", page=student_page, per_page=student_per_page)
+    # Now prep the CSV form (even though we won't process it)
+    form = DateRangeForm(data=request.POST) if request.method == "POST" else DateRangeForm()
+    frequency = request.GET.get("frequency", "months")
+    period_start = form.data.get("period_start")
+    period_end = form.data.get("period_end")
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
     context.update({
         "form": form,
+        "date_range": [str(period_start), str(period_end)],
         "group": group,
-        "date_range": [period_start, period_end],
         "group_id": group_id,
+        "groups": group_data.values(),
+        "student_pages": student_pages,  # paginated data
+        "coach_pages": coach_pages,  # paginated data
         "page_urls": {
             "coaches": coach_urls,
             "students": student_urls,
         },
-        "student_pages": student_pages,  # paginated data
-        "coach_pages": coach_pages,  # paginated data
-        "groups": group_data.values(),
-        "students": student_data,  # raw data
-        "coaches": coach_data,  # raw data
     })
     return context
 

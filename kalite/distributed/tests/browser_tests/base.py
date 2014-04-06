@@ -121,11 +121,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         self.browser_login_user(username=username, password=password, expect_success=expect_success)
         if expect_success:
-<<<<<<< HEAD:ka-lite/kalite/i18n/tests/browser_tests.py
-            self.assertIn(reverse("zone_management", kwargs={zone_id: "None"}), self.browser.current_url, "Login browses to zone_management page" )
-=======
             self.assertIn(reverse("zone_management", kwargs={"zone_id": "None"}), self.browser.current_url, "Login browses to zone_management page" )
->>>>>>> 9416443534231d77559ffef54323886802371add:ka-lite/kalite/distributed/tests/browser_tests/base.py
 
     def browser_login_teacher(self, username, password, facility_name=None, expect_success=True):
         self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
