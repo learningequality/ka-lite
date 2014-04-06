@@ -40,7 +40,7 @@ function force_sync() {
     //   then shows a message for success/failure
     doRequest("/securesync/api/force_sync")
         .success(function() {
-            show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."), "id_command");
+            show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."));
         });
 }
 

@@ -119,21 +119,14 @@
                     if (Object.keys(json["data"]).length > 0) {
                         drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
                     } else {
-                        show_message("error", "{% trans 'No student accounts in this group have been created.' %}", "id_coachreports");
+                        show_message("error", gettext("No student accounts in this group have been created."));
                     }
                     $("#loading").text("");
 
                 }).fail(function(resp) {
-                    if (resp.responseText.indexOf("too many SQL variables") != -1) {
-                       clear_messages();  // disable the default behavior.
-                        // Translate cryptic error message
-                        show_message("error", "{% trans 'Too many topics; please select fewer topics and retry.' %}", "id_coachreports");
-                    } else {
-                        handleFailedAPI(resp);
-                    }
                     $("#loading").text("");
                 });
-            $("#loading").text("Loading '" + stat2name(props["xaxis"]) + "' vs. '" + stat2name(props["yaxis"]) + "'...");
+            $("#loading").text(sprintf(gettext("Loading '%(xaxis)s' vs. '%(yaxis)s' ..."), props));
             $("#chart_div").html("");
         }
 
