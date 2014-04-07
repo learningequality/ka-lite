@@ -2,6 +2,7 @@
 """
 import copy
 import datetime
+import re
 import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
@@ -82,6 +83,9 @@ def zone_management(request, zone_id="None"):
     if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
         raise Http404()  # on distributed server, we can make due if they're not registered.
 
+    # Denote the zone as headless or not
+    headless_zone = re.search(r'Zone for public key .{50}', context["zone"].name)
+
     # Accumulate device data
     device_data = OrderedDict()
     if context["zone"]:
@@ -130,6 +134,7 @@ def zone_management(request, zone_id="None"):
         }
 
     context.update({
+        "headless_zone": headless_zone,
         "facilities": facility_data,
         "devices": device_data,
         "upload_form": UploadFileForm(),
