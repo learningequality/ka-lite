@@ -84,7 +84,7 @@ def zone_management(request, zone_id="None"):
         raise Http404()  # on distributed server, we can make due if they're not registered.
 
     # Denote the zone as headless or not
-    headless_zone = re.search(r'Zone for public key .{50}', context["zone"].name)
+    is_headless_zone = re.search(r'Zone for public key ', context["zone"].name)
 
     # Accumulate device data
     device_data = OrderedDict()
@@ -134,7 +134,7 @@ def zone_management(request, zone_id="None"):
         }
 
     context.update({
-        "headless_zone": headless_zone,
+        "is_headless_zone": is_headless_zone,
         "facilities": facility_data,
         "devices": device_data,
         "upload_form": UploadFileForm(),
