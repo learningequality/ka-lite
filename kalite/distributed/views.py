@@ -61,10 +61,11 @@ def check_setup_status(handler):
                 # Being able to register is more rare, so prioritize.
                 redirect_url = reverse("register_public_key")
             elif not request.session["facility_exists"]:
-                redirect_url = reverse("add_facility")
+                zone = Device.get_own_device().get_zone()
+                zone_id = None if not zone else zone.id
+                redirect_url = reverse("facility_edit", kwargs={"id": "new"})
             else:
                 redirect_url = None
-
             if redirect_url:
                 messages.warning(request, mark_safe(
                     "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
