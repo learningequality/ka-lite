@@ -171,6 +171,9 @@ $(function(){
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
     var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
 
+    // For mobile (Bootstrap xs) view
+    var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints-xs"});
+
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
         show_message(

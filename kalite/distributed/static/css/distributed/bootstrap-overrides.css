@@ -77,9 +77,18 @@ input#search.ui-autocomplete-input {
     border-right: 1px solid #ccc;
 }
 #language_selector {
-    margin: 16px 15px 0 15px;
+    margin: 0 15px 0 15px;
     /*width: 75px;*/
 }
+/* == Logged in only ============== */
+    #sitepoints {
+        font-size: 0.85em;
+        opacity: 0.7;
+    }
+    #sitepoints-xs {
+        font-size: 12px;
+        margin-top: -12px;
+    }
 
 /* ===================================
 	Home Page
@@ -170,6 +179,14 @@ input#search.ui-autocomplete-input {
     background-color: #faa;
     margin: 0px 1px 0px 0px;
     padding: 2px;
+}
+
+/* ===================================
+    Sign Up Page
+=================================== */
+#id_default_language {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 /* ===================================

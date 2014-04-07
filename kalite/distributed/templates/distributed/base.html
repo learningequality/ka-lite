@@ -96,6 +96,7 @@
                 </button>
                 <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
                     <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="KA Lite logo">
+                    <div class="pull-right visible-xs" id="sitepoints-xs"></div>
                 </a>
 
                 <div class="collapse navbar-collapse">
@@ -144,13 +145,14 @@
                         <li><a href="{% url help %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><span class="not-super-user-only"><a href="{% url account_management %}" id="logged-in-name" class="logged-in-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a></span></li>
+                        <li class="not-super-user-only><a {% block username_active %}{% endblock username_active %}" href="{% url account_management %}" id="logged-in-name" class="logged-in-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a></li>
 
                         {% block lang_choices %}
-                        <li><span class="not-admin-only">
+                        <li><div class="hidden-xs" id="sitepoints"></div>
+                            <span class="not-admin-only">
                         {% if num_language_choices > 1 %}
                         <select id="language_selector">
                         {% for lang_code, lang_meta in language_choices.iteritems %}

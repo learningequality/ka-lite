@@ -302,15 +302,6 @@ li .progress-circle {
     padding-right: 4px;
 }*/
 
-#sitepoints {
-    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
-    float: right;
-    margin-top: 7px;
-    margin-right: 19px;
-    opacity: 0.7;
-    font-size: 1.05em;
-}
-
 #scratchpad > div {
     margin-top: 10px;
     max-width: 514px;
