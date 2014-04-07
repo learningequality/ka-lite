@@ -22,7 +22,7 @@
                     {% if org %}&gt;{% endif %}
                     {% if facility or device %}<a href="{%url zone_management zone_id=zone_id %}">{% endif %}
                         {% if headless_zone %}
-                            Facility &amp; Device Management for Auto-Registered Zone
+                            Overview for Auto-Registered Zone
                         {% elif zone %}
                             {{ zone.name|truncatechars:35 }}
                         {% elif not zone %}
