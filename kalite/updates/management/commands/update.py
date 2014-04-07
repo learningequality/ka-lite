@@ -685,6 +685,10 @@ class Command(UpdatesStaticCommand):
         sys.stdout.write(_("* Server is down!\n"))
 
 
+    @staticmethod
+    def _print_message(msg):
+        sys.stdout.write("* %s\n" % msg)
+
 
     def print_footer(self):
         sys.stdout.write("*\n")
