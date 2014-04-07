@@ -46,8 +46,8 @@ def sync_now_context(request):
 @require_authorized_admin
 @render_to("control_panel/zone_form.html")
 def zone_form(request, zone_id):
-    context = process_zone_form
-    if request.method == "POST" and context["form"].is_valid:
+    context = process_zone_form(request, zone_id)
+    if request.method == "POST" and context["form"].is_valid():
         return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
     else:
         return context
@@ -68,7 +68,6 @@ def process_zone_form(request, zone_id):
             form.instance.save()
             if zone_id == "new":
                 zone_id = form.instance.pk
-            return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
 
     context.update({"form": form})
     return context
