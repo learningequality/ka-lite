@@ -335,9 +335,9 @@ def start_update_kalite(request):
         data = json.loads(request.raw_post_data)
         mechanism = data['mechanism']
     except KeyError:
-        raise KeyError("You did not select a valid choice for an update mechanism.")
+        raise KeyError(_("You did not select a valid choice for an update mechanism."))
 
-    assert mechanism == 'internet', "Sorry, we can only handle internet updates for now"
+    assert mechanism == 'internet', _("Sorry, we can only handle internet updates for now")
 
     # To you the maintainer: You may think that this True parameter
     # may be better served if it was passed in as a keyword argument,
