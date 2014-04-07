@@ -6,7 +6,7 @@ import random
 import requests
 import urllib
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.test.client import Client
 from django.utils import unittest
 
@@ -27,7 +27,7 @@ class CachingTest(KALiteTestCase):
         # Get a random video id
         n_videos = len(self.video_cache)
         video_id = self.video_cache.keys()[10]#random.choice(self.video_cache.keys())
-        sys.stdout.write("Testing on video_id = %s\n" % video_id)
+        logging.DEBUG("Testing on video_id = %s" % video_id)
         video_path = self.video_cache[video_id][0]['path']
 
         # Clean the cache for this item
@@ -52,7 +52,7 @@ class CachingTest(KALiteTestCase):
         # Get a random video id
         n_videos = len(self.video_cache)
         video_id = random.choice(self.video_cache.keys())
-        sys.stdout.write("Testing on video_id = %s\n" % video_id)
+        logging.DEBUG("Testing on video_id = %s" % video_id)
         video_path = self.video_cache[video_id][0]['path']
 
         # Clean the cache for this item
