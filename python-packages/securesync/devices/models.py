@@ -236,7 +236,7 @@ class Device(SyncedModel):
         if soft_set and self.signed_by.get_counter_position() >= counter_position:
             return
 
-        assert counter_position > metadata.counter_position, "You should not be setting the counter position to a number lower than its current value!"
+        assert counter_position >= metadata.counter_position, "You should not be setting the counter position to a number lower than its current value!"
         metadata.counter_position = counter_position
         metadata.save()
 
