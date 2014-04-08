@@ -35,8 +35,7 @@ from securesync.devices.models import Zone
 @render_to("facility/facility_edit.html")
 def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
-    zone_id = zone_id or facil.get_zone()
-    zone = get_object_or_None(Zone, pk=zone_id)
+    zone = facil.get_zone() or get_object_or_None(Zone, pk=zone_id)
 
     if request.method != "POST":
         form = FacilityForm(instance=facil, initial={"zone_fallback": zone})
@@ -132,7 +131,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
         form = FacilityUserForm(facility, initial={
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
-            "default_language": get_default_language()
+            "default_language": get_default_language(),
         })
 
     if not title:
@@ -162,14 +161,13 @@ def add_group(request, facility):
     groups = FacilityGroup.objects.all()
 
     if request.method != 'POST':
-        form = FacilityGroupForm()
+        form = FacilityGroupForm(facility)
 
     else:
-        form = FacilityGroupForm(data=request.POST)
+        form = FacilityGroupForm(facility, data=request.POST)
         if not form.is_valid():
             messages.error(request, _("Failed to save the facility; please review errors below."))
         else:
-            form.instance.facility = facility
             form.save()
 
             redir_url = request.next or request.GET.get("prev") or reverse("add_facility_student")
