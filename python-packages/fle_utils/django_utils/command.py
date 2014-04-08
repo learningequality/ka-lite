@@ -102,7 +102,7 @@ class CommandThread(threading.Thread):
         #logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
         call_command(self.cmd, *self.args, **self.kwargs)
 
-
+JOB_THREADS = {}
 def call_command_subprocess(cmd, *args, **kwargs):
     p = CommandProcess(cmd, *args, **kwargs)
     p.start()
