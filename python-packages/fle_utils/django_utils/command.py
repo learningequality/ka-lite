@@ -145,7 +145,10 @@ def call_outside_command_with_output(command, *args, **kwargs):
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
     manage_py_dir = kwargs.pop('manage_py_dir')
 
+    # some custom variables that have to be put inside kwargs
+    # or else will mess up the way the command is called
     output_to_stdin = kwargs.pop('output_to_stdin', False)
+    wait = kwargs.pop('wait', True)
 
     # build the command
     cmd = (sys.executable, os.path.join(manage_py_dir, "manage.py"), command)
@@ -166,7 +169,7 @@ def call_outside_command_with_output(command, *args, **kwargs):
         stdout=None if output_to_stdin else subprocess.PIPE,
         stderr=None if output_to_stdin else subprocess.PIPE,
     )
-    out = p.communicate()
+    out = p.communicate() if wait else (None, None)
 
     # tuple output of stdout, stderr, exit code and process object
     return out + (1 if out[1] else 0, p)
