@@ -56,6 +56,13 @@ class Command(BaseCommand):
             default=os.path.join(settings.PROJECT_PATH, "runcherrypyserver.pid"),
             help="PID file"
         ),
+        make_option(
+            '--production',
+            action='store_true',
+            dest='production',
+            default=not settings.DEBUG,
+            help="Whether to run the production wsgi server (CherryPy). If False, run the development server"
+        ),
     )
 
     def setup_server_if_needed(self):
@@ -137,9 +144,10 @@ class Command(BaseCommand):
             self.reinitialize_server()
 
         # Now call the proper command
-        if not options["daemonize"]:
+        if not options["production"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
+            del options["production"]
             call_command("collectstatic", interactive=False)
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
             for addr in get_ip_addresses():
