@@ -80,7 +80,6 @@ function user2tooltip2(json, user, xaxis, yaxis) {
 
 function user2tooltip(json, user, xaxis, yaxis) {
     // Creating a HTML blob for the tooltip that shows when a user's is clicked.
-    window.json = json;
     var axes = [xaxis];
     var exercises = json['exercises'];
     var videos = json['videos'];
