@@ -113,20 +113,20 @@ function user2tooltip(json, user, xaxis, yaxis) {
                         struggles[d] = {
                             "num": parseInt(row[d]),
                             "name": exercises[i]["full_name"],
-                            "url": exercises[i]["url"],
+                            "url": exercises[i]["url"]
                         }    
                     } else {
                         attempts[d] = {
                             "num": parseInt(row[d]),
                             "name": exercises[i]["full_name"],
-                            "url": exercises[i]["url"],
+                            "url": exercises[i]["url"]
                         } 
                     }
                 } else {
                     notattempts[exercises[i]["slug"]] = {
                         "num": 0,
                         "name": exercises[i]["full_name"],
-                        "url": exercises[i]["url"],
+                        "url": exercises[i]["url"]
                     }
                 }
             }
