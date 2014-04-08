@@ -119,7 +119,7 @@ class Command(UpdatesStaticCommand):
         ]
 
         if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
-            raise CommandError("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'")
+            raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
 
         # step 1: clean_pyc (has to be first)
         call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
