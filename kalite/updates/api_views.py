@@ -353,7 +353,7 @@ def start_update_kalite(request):
 @api_handle_error_with_json
 def server_restart(request):
     try:
-        server_type = _get_server_type(request) or "UNKNOWN"
+        server_type = _get_server_type(request)
         server_restart_util(server_type)
         return JsonResponseMessageSuccess(_("Launched software restart process successfully."))
     except Exception as e:
