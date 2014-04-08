@@ -62,10 +62,13 @@ def raw_input_password():
 def validate_username(username):
     return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
 
+def get_clean_default_username():
+    return (getpass.getuser() or "").replace("-", "_")
+
 def get_username(username):
     while not validate_username(username):
 
-        username = raw_input("Username (leave blank to use '%s'): " % getpass.getuser()) or getpass.getuser()
+        username = raw_input("Username (leave blank to use '%s'): " % get_clean_default_username()) or get_clean_default_username()
         if not validate_username(username):
             sys.stderr.write("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
 
@@ -133,7 +136,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not options["interactive"]:
-            options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or getpass.getuser()
+            options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or get_clean_default_username()
             options["hostname"] = options["hostname"] or get_host_name()
 
         sys.stdout.write("                                  \n")  # blank allows ansible scripts to dump errors cleanly.
