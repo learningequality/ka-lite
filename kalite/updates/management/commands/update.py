@@ -194,10 +194,6 @@ class Command(UpdatesStaticCommand):
             "start_server",
         ]
 
-        # for continuation: so we now have to downlod the zip file if needed. The problem
-        # is that the starting stage changes if zip file is local or not; so do we have to make
-        # an if statement for self.start vs self.next_stage?
-
         # current_dir === base dir for current installation
         self.current_dir = os.path.realpath(settings.PROJECT_PATH + "/../")
 
