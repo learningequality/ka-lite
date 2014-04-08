@@ -189,8 +189,10 @@ class Command(UpdatesStaticCommand):
             "update_local_settings",
             "move_files",
             "test_server",
+            "stop_server",
             "move_to_final",
-            "restart_server",
+            "collectstatic",
+            "start_server",
         ]
 
         # for continuation: so we now have to downlod the zip file if needed. The problem
@@ -643,6 +645,11 @@ class Command(UpdatesStaticCommand):
                         except:
                             sys.stderr.write("**** failed to copy %s\n" % os.path.join(self.working_dir, frelpath))
                 sys.stdout.write("* Successfully copied %d files into final directory\n" % copy_success)
+
+
+    def collectstatic(self):
+        call_command("collectstatic", interactive=False)
+
 
     def restart_server(self, port=None):
         if not port:
