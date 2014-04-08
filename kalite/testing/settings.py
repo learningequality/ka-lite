@@ -39,9 +39,9 @@ if getattr(local_settings, "DEBUG", False):
 
 
 if os.path.exists(os.path.join(os.path.dirname(__file__), "loadtesting")):
-    INSTALLED_APPS += ("testing.loadtesting",)
+    INSTALLED_APPS += (__package__ + ".loadtesting",)
 
-TEST_RUNNER = 'kalite.testing.testrunner.KALiteTestRunner'
+TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
 
 TESTS_TO_SKIP = getattr(local_settings, "TESTS_TO_SKIP", ["long"])  # can be
 assert not (set(TESTS_TO_SKIP) - set(["fast", "medium", "long"])), "TESTS_TO_SKIP must contain only 'fast', 'medium', and 'long'"

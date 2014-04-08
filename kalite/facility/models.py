@@ -8,7 +8,7 @@ import zlib
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
@@ -18,7 +18,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import verify_raw_password
-from kalite.settings import LOG as logging
 from securesync import engine
 from securesync.models import DeviceZone
 from securesync.engine.models import DeferredCountSyncedModel
@@ -63,15 +62,19 @@ class Facility(DeferredCountSyncedModel):
 
     @classmethod
     def initialize_default_facility(cls, facility_name=None):
-        facility_name = facility_name or settings.INSTALL_FACILITY_NAME
+        facility_name = facility_name or getattr(settings, "INSTALL_FACILITY_NAME", None) or unicode(_("Default Facility"))
 
         # Finally, install a facility--would help users get off the ground
-        if facility_name:
-            facility = get_object_or_None(cls, name=facility_name)
-            if not facility:
-                facility = Facility(name=facility_name)
-                facility.save()
+        facilities = Facility.objects.filter(name=facility_name)
+        if facilities.count() == 0:
+            # Create a facility, set it as the default.
+            facility = Facility(name=facility_name)
+            facility.save()
             Settings.set("default_facility", facility.id)
+
+        elif Settings.get("default_facility") not in [fac.id for fac in facilities.all()]:
+            # Use an existing facility as the default, if one of them isn't the default already.
+            Settings.set("default_facility", facilities[0].id)
 
 
 class FacilityGroup(DeferredCountSyncedModel):

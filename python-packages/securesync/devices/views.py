@@ -98,7 +98,6 @@ def register_public_key_server(request):
         if form.is_valid():
             form.save()
             zone_id = form.data["zone"]
-            org_id = Zone.objects.get(id=zone_id).get_org().id
 
             callback_url = form.cleaned_data.get("callback_url", None)
             if callback_url:
@@ -108,7 +107,7 @@ def register_public_key_server(request):
             else:
                 # Old style, for clients that don't send a callback url
                 messages.success(request, _("The device's public key has been successfully registered. You may now close this window."))
-                return HttpResponseRedirect(reverse("zone_management", kwargs={'org_id': org_id, 'zone_id': zone_id}))
+                return HttpResponseRedirect(reverse("zone_management", kwargs={'zone_id': zone_id}))
 
     else:
         # This is hackish--we now create default organizations and zones for users, based on their

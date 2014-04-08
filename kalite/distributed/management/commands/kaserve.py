@@ -5,7 +5,7 @@ import os
 import sys
 from optparse import make_option
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
@@ -16,7 +16,6 @@ from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
 from kalite.facility.models import Facility
-from kalite.settings import LOG as logging
 from securesync.models import Device
 
 

@@ -9,6 +9,7 @@ from annoying.functions import get_object_or_None
 from functools import partial
 from collections_local_copy import OrderedDict
 
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
@@ -26,7 +27,6 @@ from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from kalite.main.topic_tools import get_topic_by_path, get_node_cache
-from kalite.settings import LOG as logging
 
 
 # Global variable of all the known stats, their internal and external names,

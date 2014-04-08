@@ -282,7 +282,7 @@ $(function() {
 
 
     if ($("#download_language_selector option").length > 1) {
-        $("#toggle_language_dropdown").attr("href", "javascript:show_language_selector()");
+        $("#toggle_language_dropdown").attr("onclick", "show_language_selector();");
     }
 
     $("#download_language_selector").change(function() {

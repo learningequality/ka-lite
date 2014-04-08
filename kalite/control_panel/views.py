@@ -1,31 +1,33 @@
 """
 """
+import copy
 import datetime
+import re
 import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
 from collections_local_copy import OrderedDict, namedtuple
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.internet import CsvResponse, render_to_csv
+from fle_utils.django_utils.paginate import paginate_users, pages_to_show
 from kalite.coachreports.views import student_view_context
+from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.main.topic_tools import get_node_cache
-from kalite.settings import LOG as logging
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
@@ -33,7 +35,7 @@ from securesync.models import DeviceZone, Device, Zone, SyncSession
 
 def set_clock_context(request):
     return {
-        "clock_set": settings.ENABLE_CLOCK_SET,
+        "clock_set": getattr(settings, "ENABLE_CLOCK_SET", False),
     }
 
 def sync_now_context(request):
@@ -45,19 +47,28 @@ def sync_now_context(request):
 @require_authorized_admin
 @render_to("control_panel/zone_form.html")
 def zone_form(request, zone_id):
+    context = process_zone_form(request, zone_id)
+    if request.method == "POST" and context["form"].is_valid():
+        return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
+    else:
+        return context
+
+def process_zone_form(request, zone_id):
     context = control_panel_context(request, zone_id=zone_id)
 
-    if request.method == "POST":
+    if request.method != "POST":
+        form = ZoneForm(instance=context["zone"])
+
+    else:  # POST request
         form = ZoneForm(data=request.POST, instance=context["zone"])
-        if form.is_valid():
+
+        if not form.is_valid():
+            messages.error(request, _("Failed to save the sharing network; please review errors below."))
+
+        else:
             form.instance.save()
-#            if context["org"]:
-#                context["org"].zones.add(form.instance)
             if zone_id == "new":
                 zone_id = form.instance.pk
-            return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
-    else:
-        form = ZoneForm(instance=context["zone"])
 
     context.update({"form": form})
     return context
@@ -71,6 +82,9 @@ def zone_management(request, zone_id="None"):
 
     if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
         raise Http404()  # on distributed server, we can make due if they're not registered.
+
+    # Denote the zone as headless or not
+    is_headless_zone = re.search(r'Zone for public key ', context["zone"].name)
 
     # Accumulate device data
     device_data = OrderedDict()
@@ -96,6 +110,7 @@ def zone_management(request, zone_id="None"):
             "is_own_device": device.get_metadata().is_own_device and not settings.CENTRAL_SERVER,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
             "counter": device.get_counter_position(),
+            "is_registered": device.is_registered(),
         }
 
     # Accumulate facility data
@@ -119,6 +134,7 @@ def zone_management(request, zone_id="None"):
         }
 
     context.update({
+        "is_headless_zone": is_headless_zone,
         "facilities": facility_data,
         "devices": device_data,
         "upload_form": UploadFileForm(),
@@ -126,6 +142,17 @@ def zone_management(request, zone_id="None"):
     })
     context.update(set_clock_context(request))
     return context
+
+
+@require_authorized_admin
+def delete_zone(request, zone_id):
+    zone = get_object_or_404(Zone, id=zone_id)
+    if not zone.has_dependencies(passable_classes=["Organization"]):
+        zone.delete()
+        messages.success(request, _("You have successfully deleted ") + zone.name + ".")
+    else:
+        messages.warning(request, _("You cannot delete this zone because it is syncing data with with %d device(s)") % zone.devicezone_set.count())
+    return HttpResponseRedirect(reverse("org_management"))
 
 
 @require_authorized_admin
@@ -162,7 +189,9 @@ def facility_form(request, facility, zone_id=None):
 
     else:
         form = FacilityForm(data=request.POST, instance=context["facility"])
-        if form.is_valid():
+        if not form.is_valid():
+            messages.error(request, _("Failed to save the facility; please review errors below."))
+        else:
             form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
             form.save()
             return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
@@ -186,11 +215,86 @@ def group_report(request, facility, group_id=None, zone_id=None):
     return context
 
 
+@require_authorized_admin
+@render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
+def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
+    """"""
+    assert request.method == "POST", "facility_management_csv must be accessed via POST"
+
+    # Search form for errors.
+    form = DateRangeForm(data=request.POST)
+    if not form.is_valid():
+        raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
+
+    frequency = frequency or request.GET.get("frequency", "months")
+    period_start = period_start or form.data["period_start"]
+    period_end = period_end or form.data["period_end"]
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+
+
+    # Basic data
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
+    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
+    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
+
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+
+    context.update({
+        "students": student_data,  # raw data
+        "coaches": coach_data,  # raw data
+    })
+    return context
+
+
+@facility_required
+@require_authorized_admin
+@render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
+def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
+    """"""
+    assert request.method == "POST", "facility_management_csv must be accessed via POST"
+
+    # Search form for errors.
+    form = DateRangeForm(data=request.POST)
+    if not form.is_valid():
+        raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
+
+    frequency = frequency or request.GET.get("frequency", "months")
+    period_start = period_start or form.data["period_start"]
+    period_end = period_end or form.data["period_end"]
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+
+
+    # Basic data
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
+    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
+    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
+
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+
+    context.update({
+        "students": student_data,  # raw data
+        "coaches": coach_data,  # raw data
+    })
+    return context
+
+
 @facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_management.html")
-@render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
-def facility_management(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None, per_page=25):
+def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
+
+    if request.method == "POST" and request.GET.get("format") == "csv":
+        try:
+            return facility_management_csv(request, facility=facility, group_id=group_id, zone_id=zone_id)
+        except Exception as e:
+            messages.error(request, e)
+
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
     #Get pagination details
@@ -199,128 +303,37 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     student_page = request.REQUEST.get("students_page", "1")
     student_per_page = request.REQUEST.get("students_per_page", "25" if group_id else "10")
 
-    # This could be moved into a function shared across files, if necessary.
-    #   For now, moving into function, as outside if function it looks more
-    #   general-purpose than it's being used / tested now.
-
-    def get_users_from_group(user_type, group_id, facility=None):
-        if user_type == "coaches":
-            user_list = FacilityUser.objects \
-                .filter(is_teacher=True) \
-                .filter(facility=facility)
-        elif _(group_id) == _("Ungrouped"):
-            user_list = FacilityUser.objects \
-                .filter(is_teacher=False) \
-                .filter(facility=facility, group__isnull=True)
-        elif group_id:
-            user_list = FacilityUser.objects \
-                .filter(facility=facility, group=group_id, is_teacher=False)
-        else:
-            user_list = FacilityUser.objects \
-                .filter(facility=facility, is_teacher=False)
-
-        user_list = user_list \
-            .order_by("last_name", "first_name", "username") \
-            .prefetch_related("group")
-
-        return user_list
-
-
     # Basic data
+    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
     groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
-    if not group_id:
-        group = None
-    else:
-        group = get_object_or_None(FacilityGroup, id=group_id)
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
-    if request.method == "POST":
-        form = DateRangeForm(data=request.POST)
-        if form.is_valid():
-            frequency = frequency or request.GET.get("frequency", "months")
-            period_start = period_start or form.data["period_start"]
-            period_end = period_end or form.data["period_end"]
-            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-    else:
-        form = DateRangeForm()
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches)
 
-    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
+    coach_pages, coach_urls = paginate_users(request, coach_data.values(), "coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_users(request, student_data.values(), "students", page=student_page, per_page=student_per_page)
 
-    def paginate_users(user_list, user_type, per_page=25, page=1):
-        """
-        Create pagination for users
-        """
-        if not user_list:
-            users = []
-            page_urls = {}
-        else:
-            #Create a Django Pagintor from QuerySet
-            paginator = Paginator(user_list, per_page)
-            try:
-                #Try to render the page with the passed 'page' number
-                users = paginator.page(page)
-                #Call pages_to_show function that selects a subset of pages to link to
-                listed_pages = pages_to_show(paginator, page)
-            except PageNotAnInteger:
-                #If not a proper page number, render page 1
-                users = paginator.page(1)
-                #Call pages_to_show function that selects a subset of pages to link to
-                listed_pages = pages_to_show(paginator, 1)
-            except EmptyPage:
-                #If past the end of the page range, render last page
-                users = paginator.page(paginator.num_pages)
-                #Call pages_to_show function that selects a subset of pages to link to
-                listed_pages = pages_to_show(paginator, paginator.num_pages)
-
-        if users:
-            #Generate URLs for pagination links
-            if users.has_previous():
-                #If there are pages before the current page, generate a link for 'previous page'
-                prevGETParam = request.GET.copy()
-                prevGETParam[user_type + "_page"] = users.previous_page_number()
-                previous_page_url = "?" + prevGETParam.urlencode()
-            else:
-                previous_page_url = ""
-            if users.has_next():
-                #If there are pages after the current page, generate a link for 'next page'
-                nextGETParam = request.GET.copy()
-                nextGETParam[user_type + "_page"] = users.next_page_number()
-                next_page_url = "?" + nextGETParam.urlencode()
-            else:
-                next_page_url = ""
-            page_urls = {"next_page": next_page_url, "prev_page": previous_page_url}
-
-            if listed_pages:
-                #Generate URLs for other linked to pages
-                for listed_page in listed_pages:
-                    if listed_page != -1:
-                        GETParam = request.GET.copy()
-                        GETParam[user_type + "_page"] = listed_page
-                        page_urls.update({listed_page: "?" + GETParam.urlencode()})
-                users.listed_pages = listed_pages
-                users.num_listed_pages = len(listed_pages)
-
-        return users, page_urls
-
-    coach_data, coach_urls = paginate_users(coach_data, "coaches", page=coach_page, per_page=coach_per_page)
-    student_data, student_urls = paginate_users(student_data, "students", page=student_page, per_page=student_per_page)
-
-    page_urls = {
-        "coaches": coach_urls,
-        "students": student_urls,
-        }
+    # Now prep the CSV form (even though we won't process it)
+    form = DateRangeForm(data=request.POST) if request.method == "POST" else DateRangeForm()
+    frequency = request.GET.get("frequency", "months")
+    period_start = form.data.get("period_start")
+    period_end = form.data.get("period_end")
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
     context.update({
         "form": form,
+        "date_range": [str(period_start), str(period_end)],
         "group": group,
-        "groups": group_data,
-        "students": student_data,
-        "coaches": coach_data,
-        "date_range": [period_start, period_end],
-        "page_urls": page_urls,
         "group_id": group_id,
+        "groups": group_data.values(),
+        "student_pages": student_pages,  # paginated data
+        "coach_pages": coach_pages,  # paginated data
+        "page_urls": {
+            "coaches": coach_urls,
+            "students": student_urls,
+        },
     })
     return context
 
@@ -467,7 +480,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
 
-    return (user_data.values(), group_data.values())
+    return (user_data, group_data)
 
 
 # context functions
@@ -508,34 +521,3 @@ def local_device_context(request):
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
 
-
-def pages_to_show(paginator, page, pages_wanted=None, max_pages_wanted=9):
-    """
-    Function to select first two pages, last two pages and pages around currently selected page
-    to show in pagination bar.
-    """
-    page = int(page)
-
-    #Set precedence for displaying each page on the navigation bar.
-    page_precedence_order = [page,1,paginator.num_pages,page+1,page-1,page+2,page-2,2,paginator.num_pages-1]
-
-    if pages_wanted is None:
-        pages_wanted = []
-
-    #Allow for arbitrary pages wanted to be set via optional argument
-    pages_wanted = set(pages_wanted) or set(page_precedence_order[:max_pages_wanted])
-
-    #Calculate which pages actually exist
-    pages_to_show = set(paginator.page_range).intersection(pages_wanted)
-    pages_to_show = sorted(pages_to_show)
-
-    #Find gaps larger than 1 in pages_to_show, indicating that a range of pages has been skipped here
-    skip_pages = [ x[1] for x in zip(pages_to_show[:-1],
-                                     pages_to_show[1:])
-                   if (x[1] - x[0] != 1) ]
-
-    #Add -1 to stand in for skipped pages which can then be rendered as an ellipsis.
-    for i in skip_pages:
-        pages_to_show.insert(pages_to_show.index(i), -1)
-
-    return pages_to_show

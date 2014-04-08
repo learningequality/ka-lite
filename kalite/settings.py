@@ -50,8 +50,6 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Not really a Django setting, but we treat it like one--it's eeeeverywhere.
 PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
-DATA_PATH = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
-
 
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
@@ -95,8 +93,8 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 
 LANGUAGE_COOKIE_NAME    = "django_language"
 
-ROOT_URLCONF = "distributed.urls"
-INSTALLED_APPS = ("distributed",)
+ROOT_URLCONF = "kalite.distributed.urls"
+INSTALLED_APPS = ("kalite.distributed",)
 MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static'),)  # libraries common to all apps
@@ -157,7 +155,7 @@ CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
 
 # Config for Raspberry Pi distributed server
 if package_selected("RPi"):
-    logging.info("RPi package selected.")
+    LOG.info("RPi package selected.")
     # nginx proxy will normally be on 8008 and production port on 7007
     # If ports are overridden in local_settings, run the optimizerpi script
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
@@ -178,7 +176,7 @@ if package_selected("UserRestricted"):
 
     if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
         KEY_PREFIX += "|restricted"  # this option changes templates
-
+    DISABLE_SELF_ADMIN = True  # hard-code facility app setting.
 
 if package_selected("Demo"):
     LOG.info("Demo package selected.")

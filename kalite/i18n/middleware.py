@@ -16,7 +16,7 @@ Other values set here:
   request.session["django_language"] - (via settings.LANGUAGE_COOKIE_NAME) used by Django, it's what it uses as the request language.
   request.language - proxy for request.session["django_language"] / request.session[settings.LANGUAGE_COOKIE_NAME]
 """
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.utils import translation
@@ -25,7 +25,6 @@ from django.utils.translation import ugettext_lazy as _
 from . import get_default_language, get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language, set_default_language
 from fle_utils.config.models import Settings
 from fle_utils.internet import set_query_params
-from kalite.settings import LOG as logging
 
 
 def set_default_language_from_request(request, lang_code, global_set=False):

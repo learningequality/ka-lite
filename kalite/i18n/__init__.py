@@ -9,7 +9,7 @@ import requests
 import shutil
 from collections_local_copy import OrderedDict, defaultdict
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
@@ -24,12 +24,11 @@ from django.views.i18n import javascript_catalog
 ################################################
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
-from kalite.settings import LANG_LOOKUP_FILEPATH, LOG as logging
 from kalite.version import VERSION
 
 CACHE_VARS = []
 
-DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "dubbed_video_mappings.json")
+DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 class LanguageNotFoundError(Exception):
@@ -50,6 +49,11 @@ def get_locale_path(lang_code=None):
         return LOCALE_ROOT
     else:
         return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
+
+def get_po_filepath(lang_code, filename=None):
+    """Return the LC_MESSAGES directory for the language code, with an optional filename appended."""
+    base_dirpath = os.path.join(get_locale_path(lang_code=lang_code), "LC_MESSAGES")
+    return (filename and os.path.join(base_dirpath, filename)) or base_dirpath
 
 
 DUBBED_VIDEO_MAP_RAW = None
@@ -149,7 +153,7 @@ def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
     """Accepts lang_code in ietf format"""
     if not lang_code:  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
+    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id, video_id)
 
 
 def get_video_id(youtube_id):
@@ -168,12 +172,9 @@ def get_file2lang_map(force=False):
         YT2LANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
             for dubbed_youtube_id in dic.values():
-                if dubbed_youtube_id in YT2LANG_MAP:
+                if dubbed_youtube_id in YT2LANG_MAP and YT2LANG_MAP[dubbed_youtube_id] != lang_code:
                     # Sanity check, but must be failsafe, since we don't control these data
-                    if YT2LANG_MAP[dubbed_youtube_id] == lang_code:
-                        logging.warn("Duplicate entry found in %s language map for dubbed video %s" % (lang_code, dubbed_youtube_id))
-                    else:
-                        logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
+                    logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
                 YT2LANG_MAP[dubbed_youtube_id] = lang_code
     return YT2LANG_MAP
 

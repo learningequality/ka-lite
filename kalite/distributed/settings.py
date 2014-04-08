@@ -44,7 +44,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
-    "distributed.custom_context_processors.custom",
+    __package__ + ".custom_context_processors.custom",
 )
 
 # List of callables that know how to import templates from various sources.
@@ -61,11 +61,8 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "fle_utils.django_utils.middleware.GetNextParam",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "facility.middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
-    "facility.middleware.FacilityCheck",
-    "securesync.middleware.RegisteredCheck",
-    "securesync.middleware.DBCheck",
-    "distributed.middleware.LockdownCheck",
+    "kalite.facility.middleware.AuthFlags",  # for dependency reasons, this one needs to be early.
+    __package__ + ".middleware.LockdownCheck",
 ) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
 
 INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
@@ -81,6 +78,7 @@ INSTALLED_APPS = (
     "south",
     "fle_utils.config",
     "fle_utils.chronograph",
+    "fle_utils.django_utils",  # templatetags
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
     "kalite.django_cherrypy_wsgiserver",

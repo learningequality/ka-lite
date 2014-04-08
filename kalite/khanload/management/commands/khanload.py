@@ -10,16 +10,15 @@ import requests
 import shutil
 import sys
 import time
-from math import ceil, log  # needed for basepoints calculation
+from math import ceil, log, exp  # needed for basepoints calculation
 from optparse import make_option
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 
 from ... import KHANLOAD_CACHE_DIR, kind_slugs
 from fle_utils.general import datediff
 from kalite.main import topic_tools
-from kalite.settings import LOG as logging
 
 
 # get the path to an exercise file, so we can check, below, which ones exist
@@ -76,6 +75,7 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=KHANLOAD_CACH
     if not os.path.exists(debug_cache_dir):
         os.mkdir(debug_cache_dir)
     debug_cache_file = os.path.join(debug_cache_dir, debug_cache_file)
+    data = None
 
     # Use the cache file if:
     # a) We're in DEBUG mode
@@ -84,17 +84,29 @@ def download_khan_data(url, debug_cache_file=None, debug_cache_dir=KHANLOAD_CACH
     if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 1E6:
         # Slow to debug, so keep a local cache in the debug case only.
         #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
-        with open(debug_cache_file, "r") as fp:
-            data = json.load(fp)
-    else:
+        try:
+            with open(debug_cache_file, "r") as fp:
+                data = json.load(fp)
+        except Exception as e:
+            sys.stderr.write("Error loading cached document %s: %s\n" % (debug_cache_file, e))
+
+    if data is None:  # Failed to get a cached copy
         sys.stdout.write("Downloading data from %s..." % url)
         sys.stdout.flush()
-        data = json.loads(requests.get(url).content)
-        sys.stdout.write("done.\n")
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = json.loads(response.content)
+            sys.stdout.write("done.\n")
+        except requests.HTTPError as e:
+            sys.stderr.write("Error downloading %s: %s\n" % (url, e))
+            return None
+
         # In DEBUG mode, store the debug cache file.
         if settings.DEBUG:
             with open(debug_cache_file, "w") as fh:
                 fh.write(json.dumps(data))
+
     return data
 
 
@@ -142,12 +154,12 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
             node["exercise_id"] = node["slug"]
 
             # compute base points
-            # Paste points onto the exercise
-            node["basepoints"] = ceil(7 * log(node["seconds_per_fast_problem"]));
+            # Minimum points per exercise: 5
+            node["basepoints"] = ceil(7 * log(max(exp(5./7), node["seconds_per_fast_problem"])));
 
             # Related videos
-            related_video_slugs = [vid["readable_id"] for vid in download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")]
-            node["related_video_slugs"] = related_video_slugs
+            vids = download_khan_data("http://www.khanacademy.org/api/v1/exercises/%s/videos" % node["name"], node["name"] + ".json")
+            node["related_video_slugs"] = [vid["readable_id"] for vid in vids] if vids else []
 
             related_exercise_metadata = {
                 "id": node["id"],
@@ -320,9 +332,9 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
     to rebuild the knowledge map (maplayout.json) and topics.json files.
     """
 
-    knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
     knowledge_topics = {}  # Stored variable that keeps all exercises related to second-level topics
                            #   Much of this is duplicate information from node_cache
+    #knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
 
     def scrub_knowledge_map(knowledge_map, node_cache):
         """
@@ -344,7 +356,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
 
             del knowledge_map["topics"][slug]
             topictree_node["in_knowledge_map"] = False
-    scrub_knowledge_map(knowledge_map, node_cache)
+    #scrub_knowledge_map(knowledge_map, node_cache)
 
 
     def recurse_nodes_to_extract_knowledge_map(node, node_cache):
@@ -549,7 +561,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
     return knowledge_map, knowledge_topics
 
 
-def validate_data(topic_tree, node_cache, slug2id_map, knowledge_map):
+def validate_data(topic_tree, node_cache, slug2id_map):
 
     # Validate related videos
     for exercise_nodes in node_cache['Exercise'].values():
@@ -595,7 +607,7 @@ def save_topic_tree(topic_tree=None, node_cache=None, data_path=os.path.join(set
     # Dump the topic tree (again)
     topic_tree = topic_tree or node_cache["Topic"]["root"][0]
 
-    dest_filepath = os.path.join(data_path, topic_tools.topics_file)
+    dest_filepath = os.path.join(data_path, topic_tools.TOPICS_FILEPATH)
     logging.debug("Saving topic tree to %s" % dest_filepath)
     with open(dest_filepath, "w") as fp:
         fp.write(json.dumps(topic_tree, indent=2))
@@ -633,11 +645,14 @@ class Command(BaseCommand):
         node_cache = topic_tools.generate_node_cache(topic_tree)
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
 
-        knowledge_map, _ = rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
+        # Disabled until we revamp it based on the current KA API.
+        # h_position and v_position are available on each exercise now.
+        # If not on the topic_tree, then here: http://api-explorer.khanacademy.org/api/v1/playlists/topic_slug/exercises
+        rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
 
         scrub_topic_tree(node_cache=node_cache)
 
-        validate_data(topic_tree, node_cache, slug2id_map, knowledge_map)
+        validate_data(topic_tree, node_cache, slug2id_map)
 
         save_topic_tree(topic_tree)
 

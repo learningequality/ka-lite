@@ -83,23 +83,30 @@ function handleFailedAPI(resp, error_prefix) {
 
     // Parse the messages.
     var messages = {};
-    if (resp.status == 403) {
-        messages = {error: gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.")};
-    }
-    else if (resp && resp.responseText) {
-        try {
-            messages = $.parseJSON(resp.responseText);
-        } catch (e) {
-            console.log("Response text: " + resp.responseText);
-            console.log(e);
-        }
-    }
+    switch (resp.status) {
+        case 0:
+            messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
+            break;
 
-    // Pre-pend any canned message
-    if (error_prefix) {
-        for (msg_key in messages) {
-            messages[msg_key] = sprintf("%s: %s", error_prefix, messages[msg_key]);
-        }
+        case 200:  // return JSON messages
+        case 500:  // also currently return JSON messages
+            try {
+                messages = $.parseJSON(resp.responseText);
+            } catch (e) {
+                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, response);
+                messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)"), {error_msg: error_msg})};
+                console.log("Response text: " + resp.responseText);
+                console.log(e);
+            }
+            break;
+        case 403:
+            messages = {error: gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.")};
+            break;
+
+        default:
+            console.log(resp);
+            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
+            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)"), {error_msg: error_msg})};
     }
 
     clear_messages();  // Clear all messages before showing the new (error) message.

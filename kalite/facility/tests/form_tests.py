@@ -20,8 +20,10 @@ class UserRegistrationTest(KALiteTestCase):
         self.f = Facility.objects.create(name='testfac')
         password = make_password('insecure')
         self.admin = User.objects.create(username='testadmin',password=password)
-        self.data = {'username': 'testuser',
+        self.data = {
+            'username': 'testuser',
             'facility': self.f.id,
+            'default_language': 'en',
         }
         self.data['password_first'] = self.data['password_recheck'] = 'k' * settings.PASSWORD_CONSTRAINTS['min_length']
 

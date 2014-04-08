@@ -58,17 +58,19 @@
         });
 
         function auto_register() {
-            var auto_registration_url = "{{ auto_registration_url }}";
-            $.ajax({
-                url: auto_registration_url,
-                dataType: "jsonp"
-            }).success(function() {
-                show_message("success", "Auto-registered.");
-                window.location.reload();
-            });
-            $("a#1-click-register").css("background-color", "#C0C0C0");
-            $("a#1-click-register").toggleClass("disabled", true);
-            show_message("warning", gettext("Querying central server for 1-click registration"));
+            // Disable and show message
+            $("#one-click-register").toggleClass("disabled", true);
+            show_message("info", gettext("Contacting central server to register; page will reload upon success."));
+
+            doRequest("{{ auto_registration_url }}", null, {dataType: "jsonp"})
+                .success(function() {
+                    show_message("success", "Auto-registered.");
+                    window.location.reload();
+                })
+                .fail(function(a, b) {
+                    // Re-enable
+                    $("#one-click-register").toggleClass("disabled", false);
+                });
         }
     </script>
 {% endblock headjs %}
@@ -114,7 +116,7 @@
 
         <table class="normalized-table">
             <tr class="table-header">
-                <td width="50%"><h3 class="blurb">{% trans "1-click registration (no online access to data)" %}</h3></td>
+                <td width="50%"><h3 class="blurb">{% trans "One-click registration (no online access to data)" %}</h3></td>
                 <td width="50%"><h3 class="blurb">{% trans "Register with online access to data!" %}</h3></td>
             </tr>
             <tr>
@@ -137,7 +139,7 @@
             </tr>
             <tr>
                 <td>
-                    <a class="green_button nudge-right" id="1-click-register" href="javascript:auto_register()">{% trans "1-click registration now!" %}</a>
+                    <a class="green_button nudge-right" id="one-click-register" href="javascript:auto_register()">{% trans "One-click registration now!" %}</a>
                 </td>
                 <td>
                     <a class="green_button nudge-right" id="online-register" href="{{ classic_registration_url }}">{% trans "Register with an online account now!" %}</a>
