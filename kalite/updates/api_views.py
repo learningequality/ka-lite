@@ -348,10 +348,6 @@ def start_update_kalite(request):
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
 
-@require_admin
-def cancel_update_kalite(request):
-    return JsonResponse({})
-
 
 @require_admin
 @api_handle_error_with_json
