@@ -104,6 +104,11 @@ class Command(BaseCommand):
             dest='username',
             default=None,
             help='Superuser username'),
+        make_option('-e', '--email',
+            action='store',
+            dest='email',
+            default="dummy@learningequality.org",
+            help='Superuser email address (optional)'),
         make_option('-p', '--password',
             action='store',
             dest='password',
@@ -133,6 +138,7 @@ class Command(BaseCommand):
             options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or getpass.getuser()
             options["hostname"] = options["hostname"] or get_host_name()
 
+        sys.stdout.write("                                  \n")  # blank allows ansible scripts to dump errors cleanly.
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -211,10 +217,12 @@ class Command(BaseCommand):
                 sys.stdout.write("\tto enter it to administer this installation of KA Lite.\n")
                 sys.stdout.write("\n")
             (username, password) = get_username_password(options["username"], options["password"])
+            email = options["email"]
             (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
         else:
             username = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None)
             password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
+            email = options["email"]  # default is non-empty
             hostname = options["hostname"]
             description = options["description"]
 
@@ -263,7 +271,7 @@ class Command(BaseCommand):
         if password:  # blank password (non-interactive) means don't create a superuser
             admin = get_object_or_None(User, username=username)
             if not admin:
-                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
+                call_command("createsuperuser", username=username, email=email, interactive=False, verbosity=options.get("verbosity"))
                 admin = User.objects.get(username=username)
             admin.set_password(password)
             admin.save()
