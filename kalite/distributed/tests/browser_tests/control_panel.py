@@ -1,7 +1,8 @@
 """
 Basic tests of coach reports, inside the browser
 """
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
+from selenium.webdriver.support.ui import Select
 
 from securesync.devices.models import Device, Zone
 from facility.models import Facility, FacilityGroup, FacilityUser
@@ -14,64 +15,78 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
     """
 
     def test_no_groups_no_users(self):
-        device = Device.get_own_device()
-        zone = device.get_zone()
         facility = self.facility
         params = {
-            "zone_id": zone.id,
+            "zone_id": None,
             "facility_id": facility.id,
         }
         self.browser_login_admin()
-        self.browse_to(url_name="zone/%(zone_id)/facility/%(facility_id)" % params)
-        self.assertContains(self.browser.find_element_by_css_selector('#coaches').text, "You currently have no coaches for this facility.", "Does not report no coaches with no coaches.")
-        self.assertContains(self.browser.find_element_by_css_selector('#groups').text, "No Groups at this Facility", "Does not report no groups with no groups.")
-        self.assertContains(self.browser.find_element_by_css_selector('#students').text, "No Users at this Facility", "Does not report no users with no users.")
+        self.browse_to(self.reverse("facility_management", kwargs=params))
+        self.assertEqual(self.browser.find_element_by_css_selector('div#coaches p.no-data').text, "You currently have no coaches for this facility.", "Does not report no coaches with no coaches.")
+        self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "No Groups at this Facility", "Does not report no groups with no groups.")
+        self.assertEqual(self.browser.find_element_by_css_selector('div#students p.no-data').text, "You currently have no student data available.", "Does not report no users with no users.")
 
     def test_groups_one_group_no_user_in_group_no_ungrouped_no_group_selected(self):
-        device = Device.get_own_device()
-        zone = device.get_zone()
         facility = self.facility
         params = {
-            "zone_id": zone.id,
+            "zone_id": None,
             "facility_id": facility.id,
         }
         group_name = "Test Group"
         group = FacilityGroup(name=group_name, facility=self.facility)
         group.save()
-        user = FacilityUser(username="test_user", password="not-blank", facility=self.facility, group=group)
-        user.save()
         self.browser_login_admin()
-        self.browse_to(url_name="zone/%(zone_id)/facility/%(facility_id)" % params)
-        self.assertContains(self.browser.find_element_by_css_selector('#group').text, "Test Group", "Does not show group in list.")
+        self.browse_to(self.reverse("facility_management", kwargs=params))
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text, "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text, "0", "Does not report zero users for empty group.")
+
 
 
     def test_groups_one_group_one_user_in_group_no_ungrouped_no_group_selected(self):
-        device = Device.get_own_device()
-        zone = device.get_zone()
         facility = self.facility
         params = {
-            "zone_id": zone.id,
+            "zone_id": None,
             "facility_id": facility.id,
         }
         group_name = "Test Group"
         group = FacilityGroup(name=group_name, facility=self.facility)
         group.save()
-        user = FacilityUser(username="test_user", password="not-blank", facility=self.facility, group=group)
+        user = FacilityUser(username="test_user", facility=self.facility, group=group)
+        user.set_password(raw_password="not-blank")
         user.save()
         self.browser_login_admin()
-        self.browse_to(url_name="zone/%(zone_id)/facility/%(facility_id)" % params)
-        self.browser.find_element_by_css_selector('#selection-bar')
-        self.assertNotContains(self.browser.find_element_by_css_selector('#selection-bar').text, "Please select a group above.", "Asks user to select group when only one group, and ungrouped is empty.")
-        self.assertEqual(self.browser.find_element_by_css_selector('#group').text, "Test Group", "Allows user to select when only one group, and ungrouped is empty.")
+        self.browse_to(self.reverse("facility_management", kwargs=params))
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text, "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text, "1", "Does not report one user for group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[1]").text, "test_user", "Does not show user in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text, "Test Group", "Does not report user in group.")
 
-    def remove_user_one_group_one_user_in_group_no_ungrouped_no_group_selected(self):
-        facility_name = "Test Group"
-        group = FacilityGroup(name=facility_name, facility=self.facility)
-        group.save()
-        username = "test_user"
-        user = FacilityUser(username=username, password="not-blank", facility=self.facility, group=group)
+
+    def test_groups_two_groups_one_user_in_group_no_ungrouped_group_selected_move(self):
+        facility = self.facility
+        params = {
+            "zone_id": None,
+            "facility_id": facility.id,
+        }
+        group_name_1 = "From Group"
+        group1 = FacilityGroup(name=group_name_1, facility=self.facility)
+        group1.save()
+        group_name_2 = "To Group"
+        group2 = FacilityGroup(name=group_name_2, facility=self.facility)
+        group2.save()
+        user = FacilityUser(username="test_user", facility=self.facility, group=group1)
+        user.set_password(raw_password="not-blank")
         user.save()
         self.browser_login_admin()
-        self.browse_to(url_name="userlist")
-        self.browser.find_element_by_css_selector('input[value=%s]' % username).click()
-        self.browser.find_element_by_id("removegroup").click()
+        self.browse_to(self.reverse("facility_management", kwargs=params))
+        self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[4]").click()
+        Select(self.browser.find_element_by_css_selector("div#students select.movegrouplist")).select_by_visible_text("To Group")
+        self.browser.find_element_by_css_selector("div#students button.movegroup").click()
+        try:
+            alert = self.browser.switch_to_alert()
+        except NoAlertPresentException:
+            alert = None
+        self.AssertIsNotNone(alert, "Does not produce alert of group movement.")
+        self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")
