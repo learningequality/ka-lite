@@ -670,9 +670,9 @@ class Command(UpdatesStaticCommand):
         os.chdir(manage_py_dir)
         stdout, stderr, exit_code, proc = call_outside_command_with_output(
             'kaserve',
+            wait=False,
             manage_py_dir=manage_py_dir,
             output_to_stdin=True,
-            production=True,
         )
 
         self._wait_for_server_to_be_up()
