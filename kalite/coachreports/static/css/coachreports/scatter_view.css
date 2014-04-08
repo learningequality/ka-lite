@@ -24,7 +24,7 @@ table.detail td.data {
 
 .tooltip > div {
     max-height: 100px;
-    overflow: hidden;
+    overflow: scroll;
     overflow-x: hidden;
     margin-top: 3px;
 }

@@ -376,9 +376,20 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: what?
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+
+    # Quickly add back in exercise meta-data (could potentially be used in future for other data too!)
+    ex_nodes = get_node_cache()["Exercise"]
+    exercises = []
+    for e in computed_data["exercises"]:
+        exercises.append({
+            "slug": e,
+            "full_name": ex_nodes[e][0]["display_name"],
+            "url": ex_nodes[e][0]["path"],
+        })  
+
     json_data = {
         "data": computed_data["data"],
-        "exercises": computed_data["exercises"],
+        "exercises": exercises,
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
                           ["%s, %s" % (u.last_name, u.first_name) for u in users]

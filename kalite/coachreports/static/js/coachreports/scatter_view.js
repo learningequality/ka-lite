@@ -56,24 +56,14 @@ function json2dataTable(json, xaxis, yaxis) {
     return dataTable;
   }
 
-
-function bySortedValue(obj, callback, context) {
-    // I guess this sorts values?
-    var tuples = [];
-
-    for (var key in obj) tuples.push([key, obj[key]]);
-
-    tuples.sort(function(a, b) { return a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0; });
-
-    return tuples;
-}
-
-function tablifyThis(tuples, urlpath, descriptor) {
+function tablifyThis(ex_data) {
     // I guess this generates small tables?
     var table = "<table class='detail'>";
-    for (var i in tuples.slice(0,3)) {
-        table += "<tr><td><a href='" + urlpath + tuples[i][0] + "'>" + tuples[i][0] + "</a></td>" + "<td class='data'>" + tuples[i][1] + descriptor +"</td>";
+    for (var i in ex_data) {
+        var ex = ex_data[i];
+        table += "<tr><td><a href='" + ex["url"] + "'>" + ex["name"] + "</a></td><td class='data'>" + ex["num"] + " attempts</td>";
     }
+        
     table += "</table>";
     return table;
 }
@@ -117,20 +107,33 @@ function user2tooltip(json, user, xaxis, yaxis) {
         var notattempts = {};
         if (stat_types[0] == "ex") {
             for (var i in exercises) {
-                if (exercises[i] in row) {
-                    d = exercises[i];
+                if (exercises[i]["slug"] in row) {
+                    d = exercises[i]["slug"];
                     if (parseInt(row[d]) >= 30) { // TODO: Get mastery and struggling data from API to check this more rigorously
-                        struggles[d] = parseInt(row[d]);
+                        struggles[d] = {
+                            "num": parseInt(row[d]),
+                            "name": exercises[i]["full_name"],
+                            "url": exercises[i]["url"]
+                        }    
                     } else {
-                        attempts[d] = parseInt(row[d]);
+                        attempts[d] = {
+                            "num": parseInt(row[d]),
+                            "name": exercises[i]["full_name"],
+                            "url": exercises[i]["url"]
+                        } 
                     }
                 } else {
-                    notattempts[exercises[i]] = 0;
+                    notattempts[exercises[i]["slug"]] = {
+                        "num": 0,
+                        "name": exercises[i]["full_name"],
+                        "url": exercises[i]["url"]
+                    }
                 }
             }
-            struggling += tablifyThis(bySortedValue(struggles), "/exercise/", " attempts") + "</div>"; // TODO: need to funnel in the topic_path here
-            attempted += tablifyThis(bySortedValue(attempts), "/exercise/", " attempts") + "</div>"; // need to funnel in the topic_path here
-            notattempted += tablifyThis(bySortedValue(notattempts), "/exercise/", " attempts") + "</div>"; // need to funnel in the topic_path here
+
+            struggling += tablifyThis(struggles) + "</div>"; 
+            attempted += tablifyThis(attempts) + "</div>"; 
+            notattempted += tablifyThis(notattempts) + "</div>"; 
         } else {
             attempted += "<tr><th>" + "Video" + "</th><th>" + stat_types[1] + "</th>";
             notattempted += "<tr><th>" + "Video" + "</th>";
