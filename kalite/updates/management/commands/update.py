@@ -654,35 +654,36 @@ class Command(UpdatesStaticCommand):
 
         Assumes the web server is shut down.
         """
-        sys.stdout.write("* Starting the server\n")
+        self._print_message("Starting the server")
 
         # Start the server to validate
         call_command_async('kaserve', True, host='0.0.0.0', daemonize=True)
 
         self._wait_for_server_to_be_up()
 
-        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.USER_FACING_PORT()))
+        self._print_message("Server should be accessible @ port %s.\n" % (port or settings.USER_FACING_PORT()))
 
 
     def _wait_for_server_to_be_up(self):
-        sys.stdout.write(_("* Waiting for server to go up\n"))
+        self._print_message("Waiting for the server to go up")
         while True:
             try:
                 requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
                 break
             except requests.exceptions.ConnectionError:
                 time.sleep(1)
-        sys.stdout.write(_("* Server is up!\n"))
+        self._print_message("Server is up!")
+
 
     def _wait_for_server_to_be_down(self):
-        sys.stdout.write(_("* Waiting for server to go down\n"))
+        self._print_message("Waiting for server to go down")
         while True:
             try:
                 requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
                 time.sleep(1)
             except requests.exceptions.ConnectionError:
                 break
-        sys.stdout.write(_("* Server is down!\n"))
+        self._print_message("Server is down!")
 
 
     @staticmethod
