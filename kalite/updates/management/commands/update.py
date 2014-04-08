@@ -20,6 +20,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.core.urlresolvers import reverse
 
 from .classes import UpdatesStaticCommand
 from fle_utils import crypto
@@ -188,9 +189,8 @@ class Command(UpdatesStaticCommand):
             "update_local_settings",
             "move_files",
             "test_server",
-            "stop_server",
             "move_to_final",
-            "start_server",
+            "restart_server",
         ]
 
         # for continuation: so we now have to downlod the zip file if needed. The problem
@@ -229,9 +229,6 @@ class Command(UpdatesStaticCommand):
         self.next_stage(notes="Updating local settings")
         self.update_local_settings()
 
-        self.next_stage(notes="Stopping the server")
-        self.stop_server()
-
         self.next_stage(notes="Moving video files")
         self.move_files()
 
@@ -247,8 +244,8 @@ class Command(UpdatesStaticCommand):
         self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
 
-        self.next_stage("Starting the updated server")
-        self.start_server()
+        self.next_stage("Restarting the server")
+        self.restart_server()
 
         self.print_footer()
 
@@ -646,6 +643,18 @@ class Command(UpdatesStaticCommand):
                         except:
                             sys.stderr.write("**** failed to copy %s\n" % os.path.join(self.working_dir, frelpath))
                 sys.stdout.write("* Successfully copied %d files into final directory\n" % copy_success)
+
+    def restart_server(self, port=None):
+        if not port:
+            port = settings.USER_FACING_PORT()
+
+        self._print_message("Restarting the server")
+
+        restart_url = 'http://localhost:%(port)s%(url)s' % {'port': port, 'url': reverse('server_restart')}
+        requests.get(restart_url)
+        time.sleep(1)           # let it sleep to give time for the server to digest the request
+
+        self._wait_for_server_to_be_up()
 
 
     def start_server(self, port=None):
