@@ -25,6 +25,7 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+import kalite
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
@@ -187,9 +188,11 @@ class Command(BaseCommand):
         if not os.access(BASE_DIR, os.W_OK):
             raise CommandError("You do not have permission to write to this directory!")
 
-        database_file = settings.DATABASES["default"]["NAME"]
-        install_clean = True
-        if os.path.exists(database_file):
+        install_clean = not kalite.is_installed()
+        database_kind = settings.DATABASES["default"]["ENGINE"]
+        database_file = ("sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
+
+        if database_file and os.path.exists(database_file):
             # We found an existing database file.  By default,
             #   we will upgrade it; users really need to work hard
             #   to delete the file (but it's possible, which is nice).
@@ -202,11 +205,14 @@ class Command(BaseCommand):
                or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                 install_clean = False
                 sys.stdout.write("Upgrading database to KA Lite version %s\n" % VERSION)
-
-            if install_clean:
-                # After all, don't delete--just move.
+            else:
+                install_clean = True
                 sys.stdout.write("OK.  We will run a clean install; \n")
-                sys.stdout.write("the database file will be moved to a deletable location.\n")
+                sys.stdout.write("the database file will be moved to a deletable location.\n")  # After all, don't delete--just move.
+
+        if not install_clean and not database_file and not kalite.is_installed():
+            # Make sure that, for non-sqlite installs, the database exists.
+            raise Exception("For databases not using SQLIte, you must set up your database before running setup.")
 
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
@@ -235,7 +241,7 @@ class Command(BaseCommand):
         ########################
 
         # Move database file (if exists)
-        if install_clean and os.path.exists(database_file):
+        if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
             sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
