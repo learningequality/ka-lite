@@ -652,19 +652,6 @@ class Command(UpdatesStaticCommand):
         call_command("collectstatic", interactive=False)
 
 
-    def restart_server(self, port=None):
-        if not port:
-            port = settings.USER_FACING_PORT()
-
-        self._print_message("Restarting the server")
-
-        restart_url = 'http://localhost:%(port)s%(url)s' % {'port': port, 'url': reverse('server_restart')}
-        requests.get(restart_url)
-        time.sleep(1)           # let it sleep to give time for the server to digest the request
-
-        self._wait_for_server_to_be_up()
-
-
     def start_server(self, port=None):
         """
         Start the server, for real (not to test) (cron and web server)
