@@ -243,11 +243,17 @@ class Command(UpdatesStaticCommand):
 
         #raise CommandError("Don't replace--I need this code!")
 
+        self.next_stage("Stopping the server")
+        self.stop_server()
+
         self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
 
-        self.next_stage("Restarting the server")
-        self.restart_server()
+        self.next_stage("Placing static files in the right place")
+        self.collectstatic()
+
+        self.next_stage("Starting the server")
+        self.start_server()
 
         self.print_footer()
 
@@ -673,7 +679,18 @@ class Command(UpdatesStaticCommand):
         self._print_message("Starting the server")
 
         # Start the server to validate
-        call_command_async('kaserve', True, host='0.0.0.0', daemonize=True)
+        # call_command_async('kaserve', False, host='0.0.0.0', daemonize=True)
+
+        manage_py_dir = os.path.join(self.dest_dir, 'kalite')
+        # shift to an existing directory first to remove the reference to a deleted directory;w
+        os.chdir(os.path.expanduser("~"))
+        # now go back to the working directory
+        os.chdir(manage_py_dir)
+        stdout, stderr, exit_code, proc = call_outside_command_with_output(
+            'kaserve',
+            manage_py_dir=manage_py_dir,
+            output_to_stdin=True,
+        )
 
         self._wait_for_server_to_be_up()
 
