@@ -59,9 +59,6 @@ def raw_input_password():
     return password
 
 
-def find_owner(file):
-    return getpass.getuser()
-
 def validate_username(username):
     return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
 
@@ -178,13 +175,6 @@ class Command(BaseCommand):
                 sys.stdout.write("\n")
 
         # Check to see if the current user is the owner of the install directory
-        current_owner = find_owner(BASE_DIR)
-        current_user = getpass.getuser()
-        if current_owner != current_user:
-            raise CommandError("""You are not the owner of this directory!
-    Please copy all files to a directory that you own and then
-    re-run this script.""")
-
         if not os.access(BASE_DIR, os.W_OK):
             raise CommandError("You do not have permission to write to this directory!")
 
