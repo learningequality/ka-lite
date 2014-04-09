@@ -76,6 +76,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(last_name) # last name
         self.browser_form_fill(password) #password
         self.browser_form_fill(password) #password (again)
+        self.browser_form_fill(Keys.TAB) # skip language
         self.browser_send_keys(Keys.RETURN)
 
         # Make sure that the page changed to the admin homepage
