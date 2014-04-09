@@ -4,7 +4,7 @@
 function software_start_callback(progress_log, resp) {
     if (!progress_log) {
         clear_messages();
-        show_message("error", resp.status_code + resp.responseText);
+        show_message("error", sprintf("%(status_code)s: %(responseText)s", resp));
     }
 }
 
@@ -145,6 +145,7 @@ $(function() {
             updatesStart_callback("update");
         }).fail(function(response) {
             show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
+            show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
         });
 
         // Update the UI to reflect that we're waiting to start
