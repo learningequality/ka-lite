@@ -62,8 +62,8 @@ def check_setup_status(handler):
                 redirect_url = reverse("register_public_key")
             elif not request.session["facility_exists"]:
                 zone = Device.get_own_device().get_zone()
-                zone_id = None if not zone else zone.id
-                redirect_url = reverse("facility_edit", kwargs={"id": "new"})
+                zone_id = "None" if not zone else zone.id
+                redirect_url = reverse("add_facility", kwargs={"zone_id": zone_id})
             else:
                 redirect_url = None
             if redirect_url:

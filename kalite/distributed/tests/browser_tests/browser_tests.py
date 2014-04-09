@@ -36,7 +36,7 @@ class TestAddFacility(KALiteDistributedBrowserTestCase):
         self.browser_login_admin()
 
         # Add the facility
-        add_facility_url = self.reverse("add_facility", kwargs={"id": "new"})
+        add_facility_url = self.reverse("add_facility")
         self.browse_to(add_facility_url)
 
         self.browser_activate_element(id="id_name") # explicitly set the focus, to start

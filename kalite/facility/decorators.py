@@ -100,7 +100,7 @@ def facility_required(handler):
             else:
                 messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
-            return HttpResponseRedirect(reverse("facility_edit", kwargs={"id": "new"}))
+            return HttpResponseRedirect(reverse("add_facility"))
 
         else:
             @render_to("facility/facility_selection.html")
