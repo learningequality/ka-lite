@@ -187,7 +187,6 @@ class Command(UpdatesStaticCommand):
             "test_server",
             "stop_server",
             "move_to_final",
-            "collectstatic",
             "start_server",
         ]
 
@@ -240,9 +239,6 @@ class Command(UpdatesStaticCommand):
 
         self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
-
-        self.next_stage("Placing static files in the right place")
-        self.collectstatic()
 
         self.next_stage("Starting the server")
         self.start_server()
