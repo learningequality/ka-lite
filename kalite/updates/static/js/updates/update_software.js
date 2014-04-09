@@ -41,11 +41,28 @@ function software_check_callback(progress_log, resp) {
             window.location.reload();  // Only happens if we were remotely logged out.
             break;
         default:
-            show_message("error", gettext("Error updating software: ") + resp.responseText);
+            // server got brought down, we wait X seconds now and then
+            // inform the user that their software may be up now
+
+            // clear the progress bar first
             clearInterval(window.download_subtitle_check_interval);
+
+            // clear the messages too!
+            clear_messages();
+
+            show_message("info", gettext("The server is now going to restart. Please hold still."));
+            show_message("info", gettext("Restarting the server in 15 seconds."));
+            refresh_page_after_x_seconds(15);
             break;
         }
     }
+}
+
+function refresh_page_after_x_seconds(seconds) {
+    var millisec = seconds * 1000;
+    setInterval(function() {
+        window.location.reload();
+    }, millisec);
 }
 
 var software_callbacks = {
