@@ -31,7 +31,7 @@ from securesync.devices.views import *
 from securesync.devices.models import Zone
 
 
-@require_admin
+@require_authorized_admin
 @render_to("facility/facility_edit.html")
 def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
@@ -55,7 +55,7 @@ def facility_edit(request, id=None, zone_id=None):
     }
 
 
-@require_admin
+@require_authorized_admin
 def add_facility_teacher(request):
     return edit_facility_user(request, id="new", is_teacher=True)
 
@@ -154,7 +154,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     }
 
 
-@require_admin
+@require_authorized_admin
 @facility_required
 @render_to("facility/add_group.html")
 def add_group(request, facility):

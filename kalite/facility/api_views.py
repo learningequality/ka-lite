@@ -13,7 +13,7 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponseMessageSu
 from kalite.shared.decorators import require_admin
 
 
-@require_admin
+@require_authorized_admin
 @api_handle_error_with_json
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
@@ -31,7 +31,7 @@ def move_to_group(request):
     })
 
 
-@require_admin
+@require_authorized_admin
 @api_handle_error_with_json
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
@@ -40,7 +40,7 @@ def delete_users(request):
     return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": users_to_delete.count()})
 
 
-@require_admin
+@require_authorized_admin
 @api_handle_error_with_json
 def facility_delete(request, facility_id=None):
     if not request.is_django_user:
