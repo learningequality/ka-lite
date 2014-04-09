@@ -24,38 +24,8 @@ from kalite.updates import delete_language
 
 class LanguagePackTest(KALiteDistributedBrowserTestCase):
 
-    def is_language_installed(self,lang_code):
-        flag = False	# flag to check language de is installed or not
-        installed_languages= get_installed_language_packs()
-        for lang in installed_languages:
-            if lang == lang_code:
-                flag = True
-                break
-        return flag
-
-    # def test_add_language_pack(self):
-    #     # Login as admin
-    #     self.browser_login_admin()
-
-    #     # Add the language pack
-    #     if self.is_language_installed("de"):
-    #         # what we want to test is if adding a language pack works.
-    #         # So we uninstall "de" to be able to test it
-    #         delete_language("de")
-
-    #     self.register_device()
-    #     language_url = self.reverse("update_languages")
-    #     self.browse_to(language_url)
-    #     time.sleep(3)
-    #     select = self.browser.find_element_by_id("language-packs")
-    #     for option in select.find_elements_by_tag_name('option'):
-    #         if option.text == "German (de)":
-    #             option.click()
-    #     time.sleep(1)
-    #     self.browser.find_element_by_css_selector("#get-language-button").click()
-    #     time.sleep(5)
-
-    #     self.assertTrue(self.is_language_installed("de"))
+    def is_language_installed(self, lang_code, force_reload=True):
+        return lang_code in get_installed_language_packs(force=force_reload)
 
     def test_delete_language_pack(self):
         ''' Test to check whether a language pack is deleted successfully or not '''
@@ -71,5 +41,7 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
         self.browse_to(language_url)
         time.sleep(1)
         self.browser.find_element_by_css_selector(".delete-language-button > button[value='de']").click()
-
+        time.sleep(0.5)
+        self.browser_send_keys(Keys.RETURN)
+        time.sleep(1)
         self.assertFalse(self.is_language_installed("de"))

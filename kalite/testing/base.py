@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase
 from django.test.client import Client
 
+from fle_utils.config.models import Settings
 from securesync.models import Zone, DeviceZone , Device
 from securesync.tests.base import SecuresyncTestCase
 
