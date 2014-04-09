@@ -1,12 +1,14 @@
 """
 Basic tests of coach reports, inside the browser
 """
+import time
 from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
-from securesync.devices.models import Device, Zone
-from facility.models import Facility, FacilityGroup, FacilityUser
 from distributed.tests.browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from facility.models import Facility, FacilityGroup, FacilityUser
+from securesync.devices.models import Device, Zone
 
 
 class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
@@ -86,7 +88,10 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
             alert = self.browser.switch_to_alert()
         except NoAlertPresentException:
             alert = None
-        self.AssertIsNotNone(alert, "Does not produce alert of group movement.")
+        self.assertNotEqual(alert, None, "Does not produce alert of group movement.")
         self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
+        self.browser.switch_to_alert().accept()
+
+        time.sleep(2)
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")
