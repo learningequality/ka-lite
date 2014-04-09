@@ -564,8 +564,14 @@ class Command(UpdatesStaticCommand):
             elif os.name == 'nt':
                 raise NotImplementedError("Stopping servers for Windows not implemented yet")
         else:
-            # use serverstop script here, if needed
-            pass
+            self.update_stage(stage_percent=0.5, notes="Stopping server.")
+            stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
+            try:
+                p = subprocess.check_call(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                if  "No such process" not in out[1]:
+                    raise CommandError(out[1])
+
 
         self._wait_for_server_to_be_down()
 
