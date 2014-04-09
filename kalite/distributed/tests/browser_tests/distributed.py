@@ -181,7 +181,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         From an exercise page, insert an answer into the text box and submit.
         """
-        self.browser.find_element_by_css_selector('#solutionarea input[type=text]').click()
+        self.browser.find_element_by_id('solutionarea').find_element_by_css_selector('input[type=text]').click()
         self.browser_send_keys(unicode(answer))
         self.browser_send_keys(Keys.RETURN)
 
