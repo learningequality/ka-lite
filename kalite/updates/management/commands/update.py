@@ -82,10 +82,7 @@ class Command(UpdatesStaticCommand):
             sys.stdout.write("Success!\n")
             exit(0)
 
-        if options['old_server_pid']:
-            self.old_server_pid = options['old_server_pid']
-        else:
-            raise CommandError('We need the old server PID for now! Pass it in with --oldserverpid')
+        self.old_server_pid = options['old_server_pid']
 
         try:
             if not args:
