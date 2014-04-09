@@ -127,6 +127,20 @@
 
 
     <!-- fake way to do JSONP -->
-    <script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback&current_version={{ software_version }}"></script>
-    <script type="text/javascript" src="{% central_server_api path='/api/download/kalite/' %}?callback=download_urls_callback"></script>
+    <script type="text/javascript">
+     $(function() {
+         doRequest("{% central_server_api path='/api/version' %}?current_version={{ software_version }}",
+               null,
+               { dataType: "jsonp" }
+     ).success(function(data) {
+         version_callback(data);
+     });
+     doRequest("{% central_server_api path='/api/download/kalite/' %}",
+               null,
+               { dataType: "jsonp" }
+     ).success(function(data) {
+         download_urls_callback(data);
+     });})
+
+    </script>
 {% endblock content %}
