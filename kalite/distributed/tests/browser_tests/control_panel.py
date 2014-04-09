@@ -6,7 +6,7 @@ from selenium.common.exceptions import NoSuchElementException, NoAlertPresentExc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
-from distributed.tests.browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from .base import KALiteDistributedWithFacilityBrowserTestCase
 from facility.models import Facility, FacilityGroup, FacilityUser
 from securesync.devices.models import Device, Zone
 
