@@ -52,13 +52,13 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(9):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(4):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_student(self):
@@ -71,19 +71,19 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(17 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(7 + 0*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(16 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(6 + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(14 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(4 + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
 
