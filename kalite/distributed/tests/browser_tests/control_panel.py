@@ -5,6 +5,7 @@ import time
 from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 from .base import KALiteDistributedWithFacilityBrowserTestCase
 from facility.models import Facility, FacilityGroup, FacilityUser
@@ -84,14 +85,10 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[4]").click()
         Select(self.browser.find_element_by_css_selector("div#students select.movegrouplist")).select_by_visible_text("To Group")
         self.browser.find_element_by_css_selector("div#students button.movegroup").click()
-        try:
-            alert = self.browser.switch_to_alert()
-        except NoAlertPresentException:
-            alert = None
+        alert = self.browser.switch_to_alert()
         self.assertNotEqual(alert, None, "Does not produce alert of group movement.")
         self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
-        self.browser.switch_to_alert().accept()
-
-        time.sleep(2)
+        alert.accept()
+        self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("#groups table").is_displayed()), "Closing modal doesn't cause page to change")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")
