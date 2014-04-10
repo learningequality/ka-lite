@@ -659,7 +659,7 @@ class Command(UpdatesStaticCommand):
         # Start the server to validate
         manage_py_dir = os.path.join(self.dest_dir, 'kalite')
         # shift to an existing directory first to remove the reference to a deleted directory
-        os.chdir(os.path.expanduser("~"))
+        os.chdir(tempfile.gettempdir())
         # now go back to the working directory
         os.chdir(manage_py_dir)
         stdout, stderr, exit_code, proc = call_outside_command_with_output(
