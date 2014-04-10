@@ -26,9 +26,11 @@ from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
+
 from kalite.shared.decorators import require_authorized_admin
-from securesync.devices.views import *
 from securesync.devices.models import Zone
+from securesync.devices.views import *
+
 
 
 @require_authorized_admin
@@ -39,6 +41,9 @@ def facility_edit(request, id=None, zone_id=None):
         zone = facil.get_zone()
     else:
         zone = get_object_or_None(Zone, pk=zone_id)
+
+    if settings.CENTRAL_SERVER:
+        assert zone is not None
 
     if request.method != "POST":
         form = FacilityForm(instance=facil, initial={"zone_fallback": zone})
