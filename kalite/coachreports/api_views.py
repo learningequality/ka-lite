@@ -325,7 +325,7 @@ def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
 
         return {
             "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node["description"] or "")),
+            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
             "isFolder": True,
             "key": node["path"],
             "children": topic_children,
