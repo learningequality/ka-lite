@@ -135,20 +135,40 @@ $(function() {
     }, 200);
 
     $("#download-update-kalite").click(function() {
-        //updatesStart("update", 1000, software_callbacks)
 
-        // Start the download and updating process
-        doRequest(
-            UPDATE_SOFTWARE_URL,
-            { mechanism: $("#download-update-kalite").attr("mechanism") }
-        ).success(function() {
-            updatesStart_callback("update");
-        }).fail(function(response) {
-            show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
+        // we have to define the modal dialog buttons
+        // here rather than inline because having
+        // gettext("Yes") in a definition of a dictionary
+        // is a syntax error.
+        var button_behaviors = {};
+        button_behaviors[gettext("Yes")] = function() {
+            // Start the download and updating process
+            // Update the UI to reflect that we're waiting to start
+            doRequest(
+                UPDATE_SOFTWARE_URL,
+                { mechanism: $("#download-update-kalite").attr("mechanism") }
+            ).success(function() {
+                updatesStart_callback("update");
+            }).fail(function(response) {
+                show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
+            });
+            // remove the dialog box
+            $(this).remove();
+        };
+        button_behaviors[gettext("No")] = function() {
+            $(this).remove();
+        };
+
+        $("<div></div>").appendTo("body")
+        .html("<div>" + gettext("Are you sure you want to update your installation of KA Lite? This process is irreversible!") + "</div>")
+        .dialog({
+            modal: true,
+            title: gettext("Confirm update"),
+            width: "auto",
+            resizable: false,
+            buttons: button_behaviors
         });
-
-        // Update the UI to reflect that we're waiting to start
-        $("#cancel-update").show();
+        //updatesStart("update", 1000, software_callbacks)
     });
     // onload
 });
