@@ -252,7 +252,7 @@ class Command(UpdatesStaticCommand):
         try:
             response = requests.get(url)
             response.raise_for_status()
-        except requests.exceptions.BaseHTTPError as e:
+        except Exception as e:
             if response.status_code == 404:
                 raise CommandError("No zip file found in %s" % url)
             else:
