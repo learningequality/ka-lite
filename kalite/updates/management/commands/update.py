@@ -115,6 +115,7 @@ class Command(UpdatesStaticCommand):
             "syncdb",
         ]
 
+        # TODO: use the git package to detect if we're in a git repo
         if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
             raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
 
