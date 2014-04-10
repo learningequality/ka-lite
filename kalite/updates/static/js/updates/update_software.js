@@ -50,19 +50,34 @@ function software_check_callback(progress_log, resp) {
             // clear the messages too!
             clear_messages();
 
-            show_message("info", gettext("The server is now going to restart. Please hold still."));
-            show_message("info", gettext("Restarting the server in 15 seconds."));
-            refresh_page_after_x_seconds(15);
+            refresh_countdown_dialog_box(15);
             break;
         }
     }
 }
 
-function refresh_page_after_x_seconds(seconds) {
+function refresh_countdown_dialog_box(seconds) {
+    $("#refresh-page-dialog").dialog({
+        modal: true,
+        title: gettext("Installation finished."),
+        width: "auto",
+        resizable: false
+    });
     var millisec = seconds * 1000;
+    var decrement = 1000;
+    var dialog_text = "";
+    dialog_text = sprintf("Installation finished! Refreshing the page in %(sec)s seconds", {sec: seconds});
+    $("#dialog-content").html(dialog_text);
     setInterval(function() {
-        window.location.reload();
-    }, millisec);
+        if (millisec > 0) {
+            var seconds = Math.floor(millisec / 1000);
+            dialog_text = sprintf("Installation finished! Refreshing the page in %(sec)s seconds", {sec: seconds});
+            $("#dialog-content").html(dialog_text);
+            millisec -= decrement;
+        } else {
+            window.location.reload();
+        }
+    }, decrement);
 }
 
 var software_callbacks = {
@@ -115,6 +130,9 @@ function download_urls_callback(data) {
 
 $(function() {
     updatesStart("update", 1000, software_callbacks);
+
+    // hide the installation complete dialog box
+    $("#refresh-page-dialog").hide();
 
     setTimeout(function() {
         get_server_status({path: GET_SERVER_INFO_URL}, ["online"], function(status){
