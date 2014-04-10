@@ -35,7 +35,10 @@ from securesync.devices.models import Zone
 @render_to("facility/facility_edit.html")
 def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
-    zone = facil.get_zone() or get_object_or_None(Zone, pk=zone_id)
+    if facil:
+        zone = facil.get_zone()
+    else:
+        zone = get_object_or_None(Zone, pk=zone_id)
 
     if request.method != "POST":
         form = FacilityForm(instance=facil, initial={"zone_fallback": zone})
