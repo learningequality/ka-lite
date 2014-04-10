@@ -660,10 +660,8 @@ class Command(UpdatesStaticCommand):
         self._print_message("Starting the server")
 
         # Start the server to validate
-        # call_command_async('kaserve', False, host='0.0.0.0', daemonize=True)
-
         manage_py_dir = os.path.join(self.dest_dir, 'kalite')
-        # shift to an existing directory first to remove the reference to a deleted directory;w
+        # shift to an existing directory first to remove the reference to a deleted directory
         os.chdir(os.path.expanduser("~"))
         # now go back to the working directory
         os.chdir(manage_py_dir)
