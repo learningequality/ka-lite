@@ -47,7 +47,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='daemonize',
             default=False,
-            help="Daemonize"
+            help="Daemonize the server. Relevant only when we're running the CherryPy server (a.k.a. when running with the --production option)"
         ),
         make_option(
             '--pidfile',
