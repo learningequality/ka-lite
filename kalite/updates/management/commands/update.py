@@ -555,7 +555,7 @@ class Command(UpdatesStaticCommand):
             if os.name == 'posix':
                 os.kill(old_pid, signal.SIGTERM)
             elif os.name == 'nt':
-                raise NotImplementedError("Stopping servers for Windows not implemented yet")
+                subprocess.check_call(["taskkill", "/pid", old_pid, "/f"])
         else:
             self.update_stage(stage_percent=0.5, notes="Stopping server.")
             stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
