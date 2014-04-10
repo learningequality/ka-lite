@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import api_handle_error_with_json, JsonResponseMessageSuccess, JsonResponseMessageError
-from kalite.shared.decorators import require_admin
+from kalite.shared.decorators import require_authorized_admin
 
 
 @require_authorized_admin

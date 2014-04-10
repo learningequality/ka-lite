@@ -12,36 +12,23 @@ import os
 import re
 import os
 import datetime
-from annoying.functions import get_object_or_None
-from functools import partial
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
-from django.db.models import Q
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from django.utils import simplejson
-from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy
-from django.views.decorators.cache import cache_control, cache_page
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-from django.views.decorators.gzip import gzip_page
 
 from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
-from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.mplayer_launcher import play_video_in_new_thread
-from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
-from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.i18n import lcode_to_ietf
-from kalite.shared.decorators import require_admin
 
 
 class student_log_api(object):

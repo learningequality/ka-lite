@@ -26,7 +26,7 @@ from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
-from kalite.shared.decorators import require_admin
+from kalite.shared.decorators import require_authorized_admin
 from securesync.devices.views import *
 from securesync.devices.models import Zone
 
