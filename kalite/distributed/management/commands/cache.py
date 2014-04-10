@@ -1,7 +1,8 @@
 """
 """
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
+from fle_utils.internet.webcache import invalidate_web_cache
 
 from kalite.distributed import caching
 from kalite.main import topic_tools
@@ -33,6 +34,8 @@ class Command(BaseCommand):
             self.show_cache()
         elif cmd in ["clear", "delete"]:
             self.clear_cache()
+        elif cmd in ["clearweb"]:
+            self.clear_web_cache()
         else:
             raise CommandError("Unknown option: %s" % cmd)
 
@@ -77,6 +80,12 @@ class Command(BaseCommand):
                 for n in narr:
                     if caching.has_cache_key(path=n["path"]):
                         self.stdout.write("\t%s\n" % n["path"])
+
+
+    def clear_web_cache(self):
+        invalidate_web_cache()
+        logging.info("Cleared the web cache.")
+
 
     def clear_cache(self):
         """Go through each cacheable page, and show which are cached and which are NOT"""
