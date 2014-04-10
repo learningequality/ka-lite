@@ -337,14 +337,8 @@ def start_update_kalite(request):
 
     assert mechanism == 'internet', _("Sorry, we can only handle internet updates for now")
 
-    # To you the maintainer: You may think that this True parameter
-    # may be better served if it was passed in as a keyword argument,
-    # to make things easier to read. However! the update command
-    # expects the mechanism as a positional argument, and thus it
-    # needs to be in the *args part. You can't have it as the second
-    # argument in call_command_async since call_command_async will
-    # think mechanism is for the in_proc parameter.
-    call_command_async('update', True, mechanism, old_server_pid=os.getpid())
+
+    call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
 

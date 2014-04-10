@@ -121,7 +121,7 @@ def call_command_threaded(cmd, *args, **kwargs):
     return th
 
 
-def call_command_async(cmd, in_proc=True, *args, **kwargs):
+def call_command_async(cmd, *args, **kwargs):
     """
     Runs a manage.py command asynchronously, by calling into
     the subprocess module.
@@ -131,6 +131,7 @@ def call_command_async(cmd, in_proc=True, *args, **kwargs):
     that stringify in a way that commands can parse
     (which will work for str, bool, int, etc).
     """
+    in_proc = kwargs.pop('in_proc', True)
     if in_proc:
         return call_command_threaded(cmd, *args, **kwargs)
     else:
