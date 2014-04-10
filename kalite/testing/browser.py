@@ -198,6 +198,7 @@ class BrowserTestCase(KALiteTestCase):
         """
 
         # Move to the next actable element.
+        cur_element = self.browser.switch_to_active_element()
         self.browser_send_keys(Keys.TAB)
         num_tabs = 1
 
@@ -208,7 +209,7 @@ class BrowserTestCase(KALiteTestCase):
             self.browser_send_keys(Keys.TAB)
             num_tabs += 1
 
-        self.assertLessEqual(num_tabs, max_tabs, "# of tabs exceeded max # of tabs.")
+        self.assertLessEqual(num_tabs, max_tabs, "# of tabs exceeded max # of tabs (orig element: tag '%s' text '%s')." % (cur_element.tag_name, cur_element.text))
 
         if num_expected_links is not None:
             self.assertEqual(num_links, num_expected_links, "Num links: actual (%d) != expected (%d)" % (num_links, num_expected_links))
