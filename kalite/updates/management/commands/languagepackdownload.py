@@ -120,7 +120,7 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     ensure_dir(get_po_filepath(lang_code=lang_code))
 
     ## Unpack into temp dir
-    z = zipfile.ZipFile(zip_fp or (StringIO(zip_data) if zip_data else open(zip_filepath, "rb")))
+    z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
     z.extractall(os.path.join(LOCALE_ROOT, lang_code))
 
 def move_dubbed_video_map(lang_code):
