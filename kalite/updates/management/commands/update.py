@@ -648,10 +648,6 @@ class Command(UpdatesStaticCommand):
                 sys.stdout.write("* Successfully copied %d files into final directory\n" % copy_success)
 
 
-    def collectstatic(self):
-        call_command("collectstatic", interactive=False)
-
-
     def start_server(self, port=None):
         """
         Start the server, for real (not to test) (cron and web server)
