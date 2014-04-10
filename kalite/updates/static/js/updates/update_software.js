@@ -76,7 +76,7 @@ function version_callback(data) {
     var current_version = "{{ software_version }}";
     var remote_version = data.version;
     if (! remote_version ) {
-        show_message("error", "Remote version information unavailable.", "id_message_update");
+        show_message("error", gettext("Remote version information unavailable."));
     } else if (current_version != remote_version) {
         $("#update_info").show();  // show the related div
         $("#internet_update").show();
@@ -144,7 +144,6 @@ $(function() {
         ).success(function() {
             updatesStart_callback("update");
         }).fail(function(response) {
-            show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
             show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
         });
 
