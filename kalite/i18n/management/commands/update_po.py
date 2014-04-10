@@ -15,13 +15,14 @@ import glob
 import re
 import os
 import shutil
+import sys
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from .. import get_po_filepath, lcode_to_django_dir, update_jsi18n_file
+from ... import get_po_filepath, lcode_to_django_dir, update_jsi18n_file
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import ensure_dir
 
@@ -90,11 +91,14 @@ def run_makemessages():
     """Run makemessages command for english po files"""
     logging.info("Executing makemessages command")
     # Generate english po file
-    ignore_pattern = ['python-packages/*'] + ['kalite/%s/*' % dirname for dirname in ['central', 'contact', 'faq', 'registration', 'tests', 'stats']]
-    call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    ignore_pattern = ['ka-lite/python-packages/*', 'centralserver*']
+    sys.stdout.write("Compiling .py / .html files... ")
+    call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, extension='html,py', no_obsolete=True)
+
     # Generate english po file for javascript
-    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*', 'kalite/static/js/khan-exercises/*']
-    call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    ignore_pattern += ['ka-lite/kalite/static/*', 'ka-lite/static/admin/js/*', 'ka-lite/static/js/i18n/*', 'ka-lite/kalite/distributed/static/khan-exercises/*']
+    sys.stdout.write("Compiling .js files... ")
+    call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, extension='html,js', no_obsolete=True)
 
 
 def update_templates():
@@ -112,7 +116,7 @@ def generate_test_files():
 
     # Open them up and insert asterisks for all empty msgstrs
     logging.info("Generating test po files")
-    for po_file in glob.glob(get_po_filepath(lang_code="en"), "*.po")):
+    for po_file in glob.glob(get_po_filepath(lang_code="en"), "*.po"):
 
         msgid_pattern = re.compile(r'msgid \"(.*)\"\nmsgstr', re.S | re.M)
 

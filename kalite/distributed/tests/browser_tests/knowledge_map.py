@@ -1,10 +1,14 @@
 import time
 
+from django.conf import settings
+from django.utils import unittest
+
 from .base import KALiteDistributedBrowserTestCase
 
 
 class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
 
+    @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
     def test_exercise_dashboard(self, map_url=None):
         """
         Get the dashboard.  Validate it, as well as all subpages.

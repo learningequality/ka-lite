@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.internet import CsvResponse, render_to_csv
-from fle_utils.django_utils.paginate import paginate_users, pages_to_show
+from fle_utils.django_utils.paginate import paginate_data, pages_to_show
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -315,8 +315,8 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
     (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id)
     (coach_data, coach_group_data) = _get_user_usage_data(coaches)
 
-    coach_pages, coach_urls = paginate_users(request, coach_data.values(), "coaches", page=coach_page, per_page=coach_per_page)
-    student_pages, student_urls = paginate_users(request, student_data.values(), "students", page=student_page, per_page=student_per_page)
+    coach_pages, coach_urls = paginate_data(request, coach_data.values(), data_type="coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_data(request, student_data.values(), data_type="students", page=student_page, per_page=student_per_page)
 
     # Now prep the CSV form (even though we won't process it)
     form = DateRangeForm(data=request.POST) if request.method == "POST" else DateRangeForm()

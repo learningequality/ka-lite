@@ -104,7 +104,7 @@ function delete_languagepack(lang_code) {
 $(function () {
     $(".delete-language-button").children('button').click(function(event) {
         var lang_code = $(this).val();
-        ConfirmDialog(sprintf(gettext("'Are you sure you want to delete language pack '%(lang_code)s'"), {lang_code: lang_code}));
+        ConfirmDialog(sprintf(gettext("Are you sure you want to delete language pack '%(lang_code)s'"), {lang_code: lang_code}));
 
         function ConfirmDialog(message){
             $('<div></div>').appendTo('body')

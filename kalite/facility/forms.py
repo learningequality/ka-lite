@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
+from securesync.devices.models import Zone
 from fle_utils.django_utils import verify_raw_password
 from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
 
@@ -39,15 +40,17 @@ class FacilityUserForm(forms.ModelForm):
 
         # Across POST and GET requests
         self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
+        self.fields["zone_fallback"].initial = facility.get_zone()
         self.fields["facility"].initial = facility
 
     class Meta:
         model = FacilityUser
         # Note: must preserve order
-        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher")
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher", "zone_fallback")
         widgets = {
             "facility": forms.HiddenInput(),
             "is_teacher": forms.HiddenInput(),
+            "zone_fallback": forms.HiddenInput(),
         }
 
     def clean_username(self):
@@ -86,7 +89,10 @@ class FacilityForm(forms.ModelForm):
 
     class Meta:
         model = Facility
-        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count",)
+        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count", "zone_fallback", )
+        widgets = {
+            "zone_fallback": forms.HiddenInput(),
+        }
 
     def clean_user_count(self):
         user_count = self.cleaned_data['user_count']
@@ -98,9 +104,20 @@ class FacilityForm(forms.ModelForm):
 
 class FacilityGroupForm(forms.ModelForm):
 
+    def __init__(self, facility, *args, **kwargs):
+        super(FacilityGroupForm, self).__init__(*args, **kwargs)
+
+        # Across POST and GET requests
+        self.fields["zone_fallback"].initial = facility.get_zone()
+        self.fields["facility"].initial = facility
+
     class Meta:
         model = FacilityGroup
-        fields = ("name",)
+        fields = ("name", "facility", "zone_fallback", )
+        widgets = {
+            "facility": forms.HiddenInput(),
+            "zone_fallback": forms.HiddenInput(),
+        }
 
     def clean(self):
         name = self.cleaned_data.get("name", "")
