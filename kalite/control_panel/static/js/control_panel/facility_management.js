@@ -52,7 +52,7 @@ $(function() {
         var users = getSelectedUsers(this.value);
 
         if (users.length == 0) {
-            alert(gettext("Please select users first"));
+            alert(gettext("Please select users first."));
         } else if (!confirm(gettext("You are about to delete selected users, they will be permanently deleted."))) {
             return;
         } else {

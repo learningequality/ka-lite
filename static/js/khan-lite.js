@@ -123,7 +123,7 @@ function handleFailedAPI(resp, error_prefix) {
                 messages = $.parseJSON(resp.responseText);
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, response);
-                messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)"), {error_msg: error_msg})};
+                messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
                 console.log("Response text: " + resp.responseText);
                 console.log(e);
             }
@@ -135,7 +135,7 @@ function handleFailedAPI(resp, error_prefix) {
         default:
             console.log(resp);
             var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
-            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)"), {error_msg: error_msg})};
+            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
     }
 
     clear_messages();  // Clear all messages before showing the new (error) message.
