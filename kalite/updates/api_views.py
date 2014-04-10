@@ -329,18 +329,13 @@ Software updates
 
 @require_admin
 def start_update_kalite(request):
-    data = json.loads(request.raw_post_data)
+    try:
+        data = json.loads(request.raw_post_data)
+        mechanism = data['mechanism']
+    except KeyError:
+        raise KeyError(_("You did not select a valid choice for an update mechanism."))
 
-    if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
-        # Got a download url
-        call_command_async("update", url=data["url"], in_proc=False, manage_py_dir=settings.PROJECT_PATH)
-
-    elif request.META.get("CONTENT_TYPE", "") == "application/zip":
-        # Streamed a file; save and call
-        fp, tempfile = tempfile.mkstmp()
-        with fp:
-            write(request.content)
-        call_command_async("update", zip_file=tempfile, in_proc=False, manage_py_dir=settings.PROJECT_PATH)
+    call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
 
@@ -349,7 +344,8 @@ def start_update_kalite(request):
 @api_handle_error_with_json
 def server_restart(request):
     try:
-        server_restart_util(request)
+        server_type = request.META.get('SERVER_SOFTWARE')
+        server_restart_util(server_type)
         return JsonResponseMessageSuccess(_("Launched software restart process successfully."))
     except Exception as e:
         return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})

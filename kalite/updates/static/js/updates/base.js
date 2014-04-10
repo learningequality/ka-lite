@@ -1,6 +1,6 @@
 
 function server_restart() {
-    doRequest(URL_SERVER_RESTART, null, {cache: false})
+    doRequest(SERVER_RESTART_URL, null, {cache: false})
         .success(function(installed) {
             show_message("success", gettext("Initiated server restart."));
         });

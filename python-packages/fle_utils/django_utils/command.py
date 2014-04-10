@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import re
 import subprocess
@@ -80,8 +81,15 @@ def call_command_subprocess(cmd, *args, **kwargs):
         p.communicate()
     return p
 
+class CommandProcess(multiprocessing.Process):
+    def __init__(self, cmd, *args, **kwargs):
+        super(CommandProcess, self).__init__()
+        self.cmd = cmd
+        self.args = args
+        self.kwargs = kwargs
 
-JOB_THREADS = {}
+    def run(self):
+        call_command(self.cmd, *self.args, **self.kwargs)
 
 class CommandThread(threading.Thread):
     def __init__(self, cmd, *args, **kwargs):
@@ -94,18 +102,26 @@ class CommandThread(threading.Thread):
         #logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
         call_command(self.cmd, *self.args, **self.kwargs)
 
+JOB_THREADS = {}
+def call_command_subprocess(cmd, *args, **kwargs):
+    p = CommandProcess(cmd, *args, **kwargs)
+    p.start()
+    return p
+
+
 def call_command_threaded(cmd, *args, **kwargs):
     global JOB_THREADS
 
     #logging.debug("Threaded launch of command %s with parameters %s, %s)" % (cmd, args, kwargs))
     if cmd in JOB_THREADS and JOB_THREADS[cmd].is_alive():
         pass#raise Exception(_("Command %(cmd)s is already currently running.  Please stop the previous job before trying to start.") % {"cmd": cmd})
-    th = CommandThread(cmd=cmd, *args, **kwargs)
+    th = CommandThread(cmd, *args, **kwargs)
     th.start()
     JOB_THREADS[cmd] = th
+    return th
 
 
-def call_command_async(cmd, in_proc=True, *args, **kwargs):
+def call_command_async(cmd, *args, **kwargs):
     """
     Runs a manage.py command asynchronously, by calling into
     the subprocess module.
@@ -115,10 +131,11 @@ def call_command_async(cmd, in_proc=True, *args, **kwargs):
     that stringify in a way that commands can parse
     (which will work for str, bool, int, etc).
     """
+    in_proc = kwargs.pop('in_proc', True)
     if in_proc:
-        call_command_threaded(cmd, *args, **kwargs)
+        return call_command_threaded(cmd, *args, **kwargs)
     else:
-        call_command_subprocess(cmd, *args, **kwargs)
+        return call_command_subprocess(cmd, *args, **kwargs)
 
 
 def call_outside_command_with_output(command, *args, **kwargs):
@@ -127,8 +144,12 @@ def call_outside_command_with_output(command, *args, **kwargs):
     and returns the output.
     """
     assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
-    manage_py_dir = kwargs["manage_py_dir"]
-    del kwargs["manage_py_dir"]
+    manage_py_dir = kwargs.pop('manage_py_dir')
+
+    # some custom variables that have to be put inside kwargs
+    # or else will mess up the way the command is called
+    output_to_stdin = kwargs.pop('output_to_stdin', False)
+    wait = kwargs.pop('wait', True)
 
     # build the command
     cmd = (sys.executable, os.path.join(manage_py_dir, "manage.py"), command)
@@ -142,15 +163,17 @@ def call_outside_command_with_output(command, *args, **kwargs):
         else:
             cmd += (u"%s%s=%s" % (prefix, key, unicode(val)),)
 
-    # Execute the command, using subprocess/Popen
-    cwd = os.getcwd()
-    os.chdir(manage_py_dir)
-    p = subprocess.Popen(cmd, shell=False, cwd=os.path.split(cmd[0])[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out = p.communicate()
-    os.chdir(cwd)
+    p = subprocess.Popen(
+        cmd,
+        shell=False,
+        # cwd=os.path.split(cmd[0])[0],
+        stdout=None if output_to_stdin else subprocess.PIPE,
+        stderr=None if output_to_stdin else subprocess.PIPE,
+    )
+    out = p.communicate() if wait else (None, None)
 
-    # tuple output of stdout, stderr, and exit code
-    return out + (1 if out[1] else 0,)
+    # tuple output of stdout, stderr, exit code and process object
+    return out + (1 if out[1] else 0, p)
 
 
 class LocaleAwareCommand(BaseCommand):
