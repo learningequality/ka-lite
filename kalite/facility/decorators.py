@@ -22,7 +22,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, JsonpResponse
-from securesync.models import Device
+from securesync.models import Zone, Device
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
@@ -100,7 +100,8 @@ def facility_required(handler):
             else:
                 messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
-            return HttpResponseRedirect(reverse("add_facility"))
+            zone_id = getattr(Device.get_own_device().get_zone(), "id", "None")
+            return HttpResponseRedirect(reverse("add_facility", kwargs={"zone_id": zone_id}))
 
         else:
             @render_to("facility/facility_selection.html")
