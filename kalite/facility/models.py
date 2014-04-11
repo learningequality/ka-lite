@@ -126,8 +126,11 @@ class FacilityUser(DeferredCountSyncedModel):
             # Could fail if password doesn't split into parts nicely
             pass
 
-        elif self.password:
+        elif self.password is not None:
             raise ValidationError(_("Unknown password format."))
+
+        else:
+            raise ValidationError(_("Call set_password before saving the user."))
 
         super(FacilityUser, self).save(*args, **kwargs)
 
