@@ -96,16 +96,15 @@
                 <th width="120px">{% trans "# Users" %}</th>
                 <th width="120px">{% trans "# Groups" %}</th>
                 <th width="200px">{% trans "Last Usage" %}</th>
-                <th width="200px">{% trans "Available Actions" %}</th>
             </tr>
 
             {% for id,facility in facilities.items %}
                 <tr>
                     <td nowrap>
-                        <a href="{% url facility_edit id=facility.id %}">
+                         <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
                             {{ facility.name }}
-                        </a>
-                        <a href="{% url facility_edit id=facility.id %}">
+                        </a>|
+                        <a class="btn btn-warning" href="{% url facility_edit id=facility.id %}">{% trans 'Edit facility' %}
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% if facility.is_deletable %}
@@ -141,9 +140,6 @@
                         {% else %}
                             {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
                         {% endif %}
-                    </td>
-                    <td nowrap>
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">{% trans "Manage Users and View Usage" %}</a>
                     </td>
                 </tr>
             {% endfor %}
