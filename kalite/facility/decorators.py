@@ -22,7 +22,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, JsonpResponse
-from securesync.models import Zone, Device
+from securesync.models import Device
 
 
 def facility_from_request(handler=None, request=None, *args, **kwargs):
