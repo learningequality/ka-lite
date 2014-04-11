@@ -153,9 +153,14 @@ def delete_zone(request, zone_id):
     if not zone.has_dependencies(passable_classes=["Organization"]):
         zone.delete()
         messages.success(request, _("You have successfully deleted ") + zone.name + ".")
+        if settings.CENTRAL_SERVER:
+            return HttpResponseRedirect(reverse("org_management"))
+        else:
+            return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": "None"}))
     else:
         messages.warning(request, _("You cannot delete this zone because it is syncing data with with %d device(s)") % zone.devicezone_set.count())
-    return HttpResponseRedirect(reverse("org_management"))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
+    
 
 
 @require_authorized_admin
