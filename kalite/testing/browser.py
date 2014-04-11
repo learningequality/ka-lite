@@ -67,7 +67,7 @@ class BrowserTestCase(KALiteTestCase):
     clients and logging in profiles.
     """
 
-    persistent_browser = True
+    persistent_browser = False #not bool(os.environ.get("TRAVIS"))  # only use persistent browser when local.
 
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "button", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
 
