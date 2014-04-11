@@ -42,7 +42,7 @@ function changeData(type) {
     });
     $("#" + type + "_editable").show();
     $("#" + type).hide();
-    if (type==="facility") {
+    if (type === "facility") {
         // Show the appropriate group selection for a particular facility when the facility is changed.
         $(".group_div").hide();
         $("#" + $("#facility").val()).show();
@@ -50,17 +50,16 @@ function changeData(type) {
     }
 }
 function make_editable(type) {
-    if ($("#" + type + " option").length>1) {
+    if ($("#" + type + " option").length > 1) {
         $("#" + type + "_editable").hide();
         $("#" + type).show();
     }
 }
 
 $(function() {
-    // Make sure that each dropdown has a callback
-    //   to replot upon selection.
-    // Dynamically read the group id from the change event.
-    $(".group_select").change(   function(event) { changeData(event.target.id); });
+    // Make sure that each dropdown has a callback to replot upon selection.
+    // Then, dynamically read the group id from the change event.
+    $(".group_select").change(function(event) { changeData(event.target.id); });
 
     $("#facility").change(function() { changeData("facility"); });
 
