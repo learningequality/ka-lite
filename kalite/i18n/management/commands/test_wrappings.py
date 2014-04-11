@@ -29,21 +29,8 @@ from fle_utils.general import ensure_dir
 POT_PATH = os.path.join(settings.I18N_DATA_PATH, "pot")
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '--test',
-            '-t',
-            dest='test_wrappings',
-            action="store_true",
-            default=not settings.CENTRAL_SERVER,
-            help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.',
-        ),
-    )
-    help = 'USAGE: \'python manage.py update_po\' defaults to creating new template files. If run with -t, will generate test po files that make it easy to identify strings that need wrapping.'
 
     def handle(self, **options):
-        if not settings.CENTRAL_SERVER and not options['test_wrappings']:
-            raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
         # All commands must be run from project root
         change_dir_to_project_root()
@@ -55,11 +42,8 @@ class Command(BaseCommand):
         run_makemessages()
 
         # Handle flags
-        if options["test_wrappings"]:
-            generate_test_files()
-            update_jsi18n_file()  # needed for test purposes only--regenerate the static js file
-        else:
-            update_templates()
+        generate_test_files()
+        update_jsi18n_file()  # needed for test purposes only--regenerate the static js file
 
 
 def change_dir_to_project_root():
@@ -99,16 +83,6 @@ def run_makemessages():
     ignore_pattern += ['ka-lite/kalite/static/*', 'ka-lite/static/admin/js/*', 'ka-lite/static/js/i18n/*', 'ka-lite/kalite/distributed/static/khan-exercises/*']
     sys.stdout.write("Compiling .js files... ")
     call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, extension='html,js', no_obsolete=True)
-
-
-def update_templates():
-    """Update template po files"""
-    logging.info("Copying english po files to %s" % POT_PATH)
-
-    #  post them to exposed URL
-    ensure_dir(POT_PATH)
-    shutil.copy(get_po_filepath(lang_code="en", filename="django.po"), os.path.join(POT_PATH, "kalite.pot"))
-    shutil.copy(get_po_filepath(lang_code="en", filename="djangojs.po"), os.path.join(POT_PATH, "kalitejs.pot"))
 
 
 def generate_test_files():
