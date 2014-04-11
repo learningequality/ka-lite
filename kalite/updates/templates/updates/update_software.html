@@ -44,6 +44,10 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/bootstrap-fileupload.min.js' %}"></script>
+    <script type="text/javascript">
+        var CENTRAL_KALITE_VERSION_URL = "{% central_server_api path='/api/version' %}?current_version={{ software_version }}"
+        var CENTRAL_KALITE_DOWNLOAD_URL = "{% central_server_api path='/api/download/kalite/' %}";
+    </script>
     <script type="text/javascript" src="{% static 'js/updates/update_software.js' %}"></script>
 {% endblock headjs %}
 
@@ -120,23 +124,4 @@
     <div id="refresh-page-dialog" title="refresh page dialog">
       <p id="dialog-content">The JS of this page isn't working properly!</p>
     </div>
-
-
-    <!-- fake way to do JSONP -->
-    <script type="text/javascript">
-     $(function() {
-         doRequest("{% central_server_api path='/api/version' %}?current_version={{ software_version }}",
-               null,
-               { dataType: "jsonp" }
-     ).success(function(data) {
-         version_callback(data);
-     });
-     doRequest("{% central_server_api path='/api/download/kalite/' %}",
-               null,
-               { dataType: "jsonp" }
-     ).success(function(data) {
-         download_urls_callback(data);
-     });})
-
-    </script>
 {% endblock content %}

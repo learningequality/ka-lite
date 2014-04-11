@@ -40,26 +40,10 @@
     {% if clock_set %}
         {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
     {% endif %}
-    <script>
-        $(function () {
-            $("#form_data").hide()
-            $("#upload_form").submit(function() {
-            // Disable until we get to this stage of the IDOC deployment.
-            /*
-                // First press: show file entry
-                if ($('#form_data').filter(":visible").length==0) {
-                    $('#form_data').show();
-                    return false;
-                }
-                // Second press: submit form (default)
-            */
-                return false;
-            });
-            $("#force-sync").click(function(){
-                force_sync();
-            })
-        })
+    <script type="text/javascript">
+        var DELETE_ZONE_URL = "{% url delete_zone zone_id=zone_id %}";
     </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/zone_management.js' %}"></script>
 {% endblock headjs %}
 
 {% block buttons %}
@@ -73,12 +57,12 @@
             {% endblock download_button %}
             <li>
                 <ul id="zone-management-options">
-                    {% if not facilities and not devices %}{# can only happen on the central server #}
                         <li>
-                            <a class="zone-delete-link" href="{% url delete_zone zone_id=zone_id %}" onclick="return confirm(gettext('Are you sure you want to delete') + ' {{zone.name}}?');">
-                                <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>
+                            <a href="#" class="zone-delete-link" value="{{ zone.name }}">
+                                <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>www
                             </a>
                         </li>
+                    {% if not facilities and not devices %}{# can only happen on the central server #}
                     {% endif %}
                 </ul>
             </li>

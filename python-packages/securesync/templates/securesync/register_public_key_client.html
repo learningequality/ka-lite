@@ -60,7 +60,7 @@
         function auto_register() {
             // Disable and show message
             $("#one-click-register").toggleClass("disabled", true);
-            show_message("info", gettext("Contacting central server to register; page will reload upon success."));
+            show_message("info", "{% trans 'Contacting central server to register; page will reload upon success.' %}");
 
             doRequest("{{ auto_registration_url }}", null, {dataType: "jsonp"})
                 .success(function() {
