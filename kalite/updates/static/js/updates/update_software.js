@@ -190,3 +190,17 @@ $(function() {
     });
     // onload
 });
+
+
+
+ $(function() {
+    doRequest(CENTRAL_KALITE_VERSION_URL, null, { dataType: "jsonp" })
+        .success(function(data) {
+            version_callback(data);
+         });
+
+    doRequest(CENTRAL_KALITE_DOWNLOAD_URL, null, { dataType: "jsonp" })
+        .success(function(data) {
+            download_urls_callback(data);
+        });
+ });

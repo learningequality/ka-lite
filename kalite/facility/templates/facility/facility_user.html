@@ -4,54 +4,54 @@
 {% block users_active %}active{% endblock %}
 
 {% block headjs %}{{ block.super }}
-<script>
-    var DEFAULT_LANGUAGE = "{{ default_language }}";
-    $(function() {
-        // Guarantee that SOME language code is either SELECTED by the back-end,
-        //   or selected to the default value in the front-end.
-        if ($('#id_default_language option[selected]').length == 0) {
-            $("#id_default_language").val(DEFAULT_LANGUAGE);
-        }
+    <script>
+        var DEFAULT_LANGUAGE = "{{ default_language }}";
+        $(function() {
+            // Guarantee that SOME language code is either SELECTED by the back-end,
+            //   or selected to the default value in the front-end.
+            if ($('#id_default_language option[selected]').length == 0) {
+                $("#id_default_language").val(DEFAULT_LANGUAGE);
+            }
 
-    {# Allow admins to add a new group #}
-    {% if request.is_admin %}
-        {% trans "Add a new group" as add_new_group %}
-        $('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
-    {% elif num_groups == 0 %}
-        $('#id_group').parent().hide();
-    {% endif %}
+        {# Allow admins to add a new group #}
+        {% if request.is_admin %}
+            {% trans "Add a new group" as add_new_group %}
+            $('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
+        {% elif num_groups == 0 %}
+            $('#id_group').parent().hide();
+        {% endif %}
 
-    {# Don't allow teacher accounts to be in a group. #}
-    {% if request.is_admin and teacher %}
-        $("#id_group").attr('disabled',true);
-        $("#id_group").parent().hide();
-    {% endif %}
-    });
-</script>
+        {# Don't allow teacher accounts to be in a group. #}
+        {% if request.is_admin and teacher %}
+            $("#id_group").attr('disabled',true);
+            $("#id_group").parent().hide();
+        {% endif %}
+        });
+    </script>
 {% endblock headjs %}
 
 {% block content %}
-<h1>{{ title }}</h1>
+    <h1>{{ title }}</h1>
 
-<form method="post" class="basic-form">
-    {% csrf_token %}
+    <form method="post" class="basic-form">
+        {% csrf_token %}
 
-    {% if not singlefacility %}
-        <p>
-            <label>{% trans "Facility: " %}</label>
-            {{ facility }}
-            {% if request.is_admin %}
-                <a href="?facility=select">{% trans "(Select a different facility)" %}</a>
-            {% endif %}
-        </p>
-    {% endif %}
+        {% if not singlefacility %}
+            <p>
+                <label>{% trans "Facility: " %}</label>
+                {{ facility }}
+                {% if request.is_admin %}
+                    <a href="?facility=select">{% trans "(Select a different facility)" %}</a>
+                {% endif %}
+            </p>
+        {% endif %}
 
-    {{ form.as_p }}
+        {{ form.as_p }}
 
-    {% if user_id == "new" %}
-    <input type="submit" value="{% trans 'Create user' %}" class="submit"/>
-    {% else %}
-    <input type="submit" value="{% trans 'Update user' %}" class="submit"/>
-    {% endif %}
-</form>
+        {% if user_id == "new" %}
+        <input type="submit" value="{% trans 'Create user' %}" class="submit"/>
+        {% else %}
+        <input type="submit" value="{% trans 'Update user' %}" class="submit"/>
+        {% endif %}
+    </form>
 {% endblock content %}

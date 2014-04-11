@@ -1,5 +1,6 @@
 {% extends base_template %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block title %}{% trans "Edit Facility" %}{% endblock title %}
 
@@ -49,8 +50,8 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.9&sensor=false&libraries=places"></script>
-    <script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUVMGp6Uks8OCczFfrWo20zHnmENyW5O0&v=3.9&sensor=false&libraries=places"></script>
+    <script type="text/javascript">
         $(function() {
             $('#id_address_normalized').parent().hide();
             $('#id_zoom').parent().hide();

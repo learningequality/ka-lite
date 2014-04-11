@@ -5,7 +5,7 @@
 {% load i18n_filters %}
 {% block watch_active %}active{% endblock watch_active %}
 
-{% block headcss %}
+{% block headcss %}{{ block.super }}
     <style>
         .not-client-online-only {
             display:none;
@@ -34,7 +34,7 @@
     <!-- <![endif]-->
 {% endblock headcss %}
 
-{% block headjs %}
+{% block headjs %}{{ block.super }}
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
     <script>

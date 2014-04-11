@@ -87,15 +87,6 @@ var video_callbacks = {
 };
 
 
-/*
- depends on the following definitions:
-var URL_GET_ANNOTATED_TOPIC_TREE = "{% url get_annotated_topic_tree %}";
-var URL_START_VIDEO_DOWNLOADS = "{% url start_video_download %}";
-var URL_DELETE_VIDEOS = "{% url delete_videos %}";
-var URL_CANCEL_VIDEO_DOWNLOADS = "{% url cancel_video_download %}";
-*/
-
-
 $(function() {
 
     setTimeout(function() {
