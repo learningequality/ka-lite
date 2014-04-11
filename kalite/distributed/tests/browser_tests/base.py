@@ -76,8 +76,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(last_name) # last name
         self.browser_form_fill(password) #password
         self.browser_form_fill(password) #password (again)
-        self.browser_form_fill(Keys.TAB) # skip language
-        self.browser_send_keys(Keys.RETURN)
+        self.browser.find_element_by_id("id_username").submit()
 
         # Make sure that the page changed to the admin homepage
         if expect_success:
@@ -93,7 +92,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         login_url = self.reverse("login")
         self.browse_to(login_url) # Load page
-        self.assertIn(_("Log in"), self.browser.title, "Login page title")
+        # self.assertIn(_("Log in"), self.browser.title, "Login page title")
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
