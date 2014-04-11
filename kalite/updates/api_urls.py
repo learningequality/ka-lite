@@ -15,6 +15,4 @@ urlpatterns = patterns('updates.api_views',
 
     url(r'^updates/progress$', 'check_update_progress', {}, 'check_update_progress'),
     url(r'^updates/cancel$', 'cancel_update_progress', {}, 'cancel_update_progress'),
-
-    url(r'^server/restart$', 'server_restart', {}, 'server_restart'),
 )

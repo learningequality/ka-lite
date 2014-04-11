@@ -26,7 +26,6 @@ from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from fle_utils.server import server_restart as server_restart_util
 from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
 from kalite.main.topic_tools import get_topic_tree
 from kalite.shared.decorators import require_admin
@@ -338,14 +337,3 @@ def start_update_kalite(request):
     call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
-
-
-@require_admin
-@api_handle_error_with_json
-def server_restart(request):
-    try:
-        server_type = request.META.get('SERVER_SOFTWARE')
-        server_restart_util(server_type)
-        return JsonResponseMessageSuccess(_("Launched software restart process successfully."))
-    except Exception as e:
-        return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})
