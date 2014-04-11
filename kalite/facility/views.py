@@ -214,10 +214,11 @@ def login(request, facility):
         password = request.POST.get("password", "")
 
         # first try logging in as a Django user
-        user = authenticate(username=username, password=password)
-        if user:
-            auth_login(request, user)
-            return HttpResponseRedirect(request.next or reverse("zone_redirect"))
+        if not settings.CENTRAL_SERVER:
+            user = authenticate(username=username, password=password)
+            if user:
+                auth_login(request, user)
+                return HttpResponseRedirect(request.next or reverse("zone_redirect"))
 
         # try logging in as a facility user
         form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
