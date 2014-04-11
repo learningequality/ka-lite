@@ -58,8 +58,8 @@
             <li>
                 <ul id="zone-management-options">
                         <li>
-                            <a href="#" class="zone-delete-link" value="{{ zone.name }}">
-                                <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>www
+                            <a href="#" class="zone-delete-link btn btn-danger" title="{% trans 'Delete this sharing network' %}" value="{{ zone.name }}">
+                                {% trans 'Delete this sharing network' %}<i class="icon-trash"></i>
                             </a>
                         </li>
                     {% if not facilities and not devices %}{# can only happen on the central server #}
