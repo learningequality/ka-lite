@@ -22,20 +22,17 @@ from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from ... import get_po_filepath, lcode_to_django_dir, update_jsi18n_file
+from ... import LOCALE_ROOT, get_po_filepath, lcode_to_django_dir, update_jsi18n_file
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import ensure_dir
 
-POT_PATH = os.path.join(settings.I18N_DATA_PATH, "pot")
+
+PROJECT_ROOT = os.path.join(settings.PROJECT_PATH, "../")
 
 class Command(BaseCommand):
 
     def handle(self, **options):
 
-        # All commands must be run from project root
-        change_dir_to_project_root()
-
-        # (safety measure) prevent any english or test translations from being uploaded
         delete_current_templates()
 
         # Create new files
@@ -46,14 +43,6 @@ class Command(BaseCommand):
         update_jsi18n_file()  # needed for test purposes only--regenerate the static js file
 
 
-def change_dir_to_project_root():
-    """Change into the project root directory to run i18n commands"""
-    logging.debug("Moving to project root directory")
-    project_root = os.path.join(settings.PROJECT_PATH, "../")
-    os.chdir(project_root)
-    ensure_dir(os.path.join(project_root, "locale/"))
-
-
 def delete_current_templates():
     """Delete existing en po/pot files"""
     logging.info("Deleting English language po files")
@@ -62,17 +51,17 @@ def delete_current_templates():
         if os.path.exists(english_path):
             shutil.rmtree(english_path)
 
-    logging.info("Deleting English language pot files")
-    if os.path.exists(POT_PATH):
-        shutil.rmtree(POT_PATH)
-
-    logging.info("Deleting old English language pot files")
-    old_pot_path = os.path.join(settings.STATIC_ROOT, "pot")
-    if os.path.exists(old_pot_path):
-        shutil.rmtree(old_pot_path)
 
 def run_makemessages():
     """Run makemessages command for english po files"""
+
+    logging.debug("Creating / validating locale root folder")
+    ensure_dir(LOCALE_ROOT)
+
+    # Command must be run from project root
+    logging.debug("Moving to project root directory")
+    os.chdir(PROJECT_ROOT)
+
     logging.info("Executing makemessages command")
     # Generate english po file
     ignore_pattern = ['ka-lite/python-packages/*', 'centralserver*']
