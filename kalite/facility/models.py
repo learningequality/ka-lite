@@ -120,17 +120,18 @@ class FacilityUser(DeferredCountSyncedModel):
         if self.password.split("$", 1)[0] == "sha1":
             # Django's built-in password checker for SHA1-hashed passwords
             pass
-
         elif len(self.password.split("$", 2)) == 3 and self.password.split("$", 2)[1] == "p5k2":
             # PBKDF2 password checking
             # Could fail if password doesn't split into parts nicely
             pass
-
         elif self.password is not None:
             raise ValidationError(_("Unknown password format."))
-
         else:
             raise ValidationError(_("Call set_password before saving the user."))
+
+        # Now, validate group:
+        if self.group and self.facility and self.group.facility != self.facility:
+            raise ValidationError(_("Facility group must be in the same facility as the user."))
 
         super(FacilityUser, self).save(*args, **kwargs)
 

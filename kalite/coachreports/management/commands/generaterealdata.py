@@ -453,11 +453,17 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
     return video_logs
 
 def generate_fake_coachreport_logs(password="hellothere"):
-    t,_ = FacilityUser.objects.get_or_create(
-        facility=Facility.objects.all()[0],
-        username=random.choice(firstnames)
-    )
-    t.set_password(password)
+    try:
+        t = FacilityUser.objects.get(
+            facility=Facility.objects.all()[0],
+            username=random.choice(firstnames),
+        )
+    except FacilityUser.DoesNotExist as e:
+        t = FacilityUser(
+            facility=Facility.objects.all()[0],
+            username=random.choice(firstnames),
+        )
+        t.set_password(password)
 
     # TODO: create flags later
     num_logs = 20
