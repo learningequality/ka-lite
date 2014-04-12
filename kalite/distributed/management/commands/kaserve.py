@@ -143,12 +143,14 @@ class Command(BaseCommand):
             # as we don't know what happens when we're not looking.
             self.reinitialize_server()
 
+        if not settings.DEBUG:
+            call_command("collectstatic", interactive=False)
+
         # Now call the proper command
         if not options["production"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
             del options["production"]
-            call_command("collectstatic", interactive=False)
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
             for addr in get_ip_addresses():
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))

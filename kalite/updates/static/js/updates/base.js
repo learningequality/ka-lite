@@ -1,12 +1,3 @@
-
-function server_restart() {
-    doRequest(SERVER_RESTART_URL, null, {cache: false})
-        .success(function(installed) {
-            show_message("success", gettext("Initiated server restart."));
-        });
-}
-
-
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information

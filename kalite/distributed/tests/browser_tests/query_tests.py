@@ -12,6 +12,22 @@ from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 
 
+#To test range of query numbers.
+#TODO: Put in more general location.
+class FuzzyInt(int):
+    def __new__(cls, lowest, highest):
+        obj = super(FuzzyInt, cls).__new__(cls, highest)
+        obj.lowest = lowest
+        obj.highest = highest
+        return obj
+
+    def __eq__(self, other):
+        return other >= self.lowest and other <= self.highest
+
+    def __repr__(self):
+        return "[%d..%d]" % (self.lowest, self.highest)
+
+
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
@@ -52,13 +68,13 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(9):
+        with self.assertNumQueries(FuzzyInt(6,9)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(FuzzyInt(4,6)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_student(self):

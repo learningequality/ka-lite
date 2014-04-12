@@ -32,9 +32,15 @@
 {% block content %}
     <div class="download-actions vertical-shadow">
         <h2>
-            {% blocktrans with lang_name=current_language_name %}
-                Videos for language <a id="toggle_language_dropdown">{{ lang_name }}</a>
-            {% endblocktrans %}
+            {% if num_language_choices == 1 %}
+                {% blocktrans with lang_name=current_language_name %}
+                    Videos for language {{ lang_name }}
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans with lang_name=current_language_name %}
+                    Videos for language <a href="#" id="toggle_language_dropdown">{{ lang_name }}</a>
+                {% endblocktrans %}
+            {% endif %}
                 <select id="download_language_selector">
                 {% for lang_code, lang_meta in language_choices.iteritems %}
                     <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>

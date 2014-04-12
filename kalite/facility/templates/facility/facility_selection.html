@@ -51,9 +51,6 @@
                         <li>{% trans "There are currently no facilities available, please ask an administrator or teacher to set one up." %}</li>
                     {% endif %}
                 {% endif %}
-                {% if request.is_admin %}
-                    <p><a href="{% url zone_redirect %}">{% trans "Administer Facilities" %}</a></p>
-                {% endif %}
             </ul>
         </div>
     </div>

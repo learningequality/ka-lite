@@ -50,7 +50,7 @@ def invalidate_on_video_update(sender, **kwargs):
     if just_now_available:
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
-        logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
+        logging.debug("Invalidating cache on VideoFile save for %s" % kwargs["instance"])
         invalidate_all_caches()
 
 @receiver(pre_delete, sender=VideoFile)
@@ -60,7 +60,7 @@ def invalidate_on_video_delete(sender, **kwargs):
     """
     was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
     if was_available:
-        logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
+        logging.debug("Invalidating cache on VideoFile delete for %s" % kwargs["instance"])
         invalidate_all_caches()
 
 
@@ -137,7 +137,7 @@ def invalidate_all_caches():
     Basic entry-point for clearing necessary caches.  Most functions can
     call in here.
     """
+    invalidate_inmemory_caches()
     if caching_is_enabled():
-        invalidate_inmemory_caches()
         invalidate_web_cache()
-        logging.debug("Great success emptying all caches.")
+    logging.debug("Great success emptying all caches.")

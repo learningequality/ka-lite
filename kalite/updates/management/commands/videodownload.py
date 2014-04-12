@@ -186,6 +186,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
 
+                    # caching.invalidate_all_caches()  # Unnecessary; we have a database listener for this.
+
                 except DownloadCancelled:
                     # Cancellation event
                     video.percent_complete = 0
