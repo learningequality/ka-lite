@@ -222,7 +222,7 @@ function get_message(msg_id) {
 function setGetParam(href, name, val) {
     // Generic function for changing a querystring parameter in a url
     var vars = {};
-    var base = href.replace(/([?].*)$/gi, ""); // no querystring
+    var base = href.replace(/([#?].*)$/gi, ""); // no querystring, nor bookmark
     var parts = href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
         vars[key] = value;
     });
