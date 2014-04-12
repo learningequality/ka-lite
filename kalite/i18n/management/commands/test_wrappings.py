@@ -79,13 +79,13 @@ def generate_test_files():
 
     # Open them up and insert asterisks for all empty msgstrs
     logging.info("Generating test po files")
-    for po_file in glob.glob(get_po_filepath(lang_code="en"), "*.po"):
+    for po_file in glob.glob(get_po_filepath(lang_code="en", filename="*.po")):
 
         msgid_pattern = re.compile(r'msgid \"(.*)\"\nmsgstr', re.S | re.M)
 
-        content = open(os.path.join(en_po_dir, po_file), 'r').read()
+        content = open(get_po_filepath(lang_code="en", filename=po_file), 'r').read()
         results = content.split("\n\n")
-        with open(os.path.join(en_po_dir, "tmp.po"), 'w') as temp_file:
+        with open(get_po_filepath(lang_code="en", filename="tmp.po"), 'w') as temp_file:
             # We know the first block is static, so just dump that.
             temp_file.write(results[0])
 
@@ -100,7 +100,7 @@ def generate_test_files():
                     logging.error("Failed to insert test string: %s\n\n%s\n\n" % (e, result))
 
         # Once done replacing, rename temp file to overwrite original
-        os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
+        os.rename(get_po_filepath(lang_code="en", filename="tmp.po"), get_po_filepath(lang_code="en", filename=po_file))
 
         (out, err, rc) = compile_po_files("en")
         if err:
@@ -114,7 +114,8 @@ def compile_po_files(lang_codes=None, failure_ok=True):
     First argument (lang_codes) can be None (means all), a list/tuple, or even a string (shh...)
     """
     # before running compilemessages, ensure in correct directory
-    change_dir_to_project_root()
+    logging.debug("Moving to project root directory")
+    os.chdir(PROJECT_ROOT)
 
     if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
