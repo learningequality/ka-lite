@@ -8,8 +8,11 @@ from pbkdf2 import crypt
 from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
+from django.db.models.base import ModelBase
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -85,6 +88,9 @@ class SyncedModelManager(models.Manager):
     class Meta:
         app_label = "securesync"
 
+    def get_query_set(self, *args, **kwargs):
+        return super(SyncedModelManager, self).get_query_set(*args, **kwargs).filter(deleted=False)
+
     def by_zone(self, zone):
         """Get model instances that were signed by devices in the zone,
         or signed by a trusted authority that said they were for the zone,
@@ -100,6 +106,19 @@ class SyncedModelManager(models.Manager):
             condition = condition | Q(signed_by=None)
 
         return self.filter(condition)
+
+
+class PreventSyncedModelDelete(ModelBase):
+
+    def __init__(cls, name, bases, clsdict):
+        if len(cls.mro()) > 4:
+            @receiver(pre_delete, sender=cls)
+            def disallow_delete(sender, instance, **kwargs):
+                raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
+
+            cls._do_not_delete_signal = disallow_delete  # don't let Python garbage collect this.
+
+        super(PreventSyncedModelDelete, cls).__init__(name, bases, clsdict)
 
 
 class SyncedModel(ExtendedModel):
@@ -138,9 +157,24 @@ class SyncedModel(ExtendedModel):
     _import_excluded_validation_fields = []  # fields that should not be validated upon import
 
 
+    __metaclass__ = PreventSyncedModelDelete
+
     class Meta:
         abstract = True
         app_label = "securesync"
+
+    @transaction.commit_on_success
+    def delete(self):
+        print "marking self as deleted: ", self
+        self.deleted = True
+        for related_model in (self._meta.get_all_related_objects() + self._meta.get_all_related_many_to_many_objects()):
+            print related_model.get_accessor_name()
+            manager = getattr(self, related_model.get_accessor_name())
+            related_objects = manager.all()
+            print "marking related objects as deleted: ", related_objects
+            for obj in related_objects:
+                obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+        self.save()
 
     def sign(self, device=None):
         """
@@ -363,7 +397,7 @@ class SyncedModel(ExtendedModel):
 
         For now, just implement the first.
         """
-        return self.get_zone() is None
+        return True
 
     def __unicode__(self):
         pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
