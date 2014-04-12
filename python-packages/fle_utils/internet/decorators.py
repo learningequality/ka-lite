@@ -4,11 +4,12 @@ from annoying.decorators import wraps
 from collections_local_copy import OrderedDict
 from cStringIO import StringIO
 
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
 
-from .classes import CsvResponse, JsonResponse, JsonResponseMessageError, JsonpResponse
+from .classes import CsvResponse, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, JsonpResponse
 
 
 def api_handle_error_with_json(handler):
@@ -118,3 +119,15 @@ def render_to_csv(context_keys, delimiter=",", key_label="key", order="stacked")
         return render_to_csv_renderer_wrapper
     return render_to_csv_renderer
 
+
+def api_response_causes_reload(api_request_handler):
+    @api_handle_error_with_json
+    def api_response_causes_reload_wrapper_fn(request, *args, **kwargs):
+        """If it's a non-error message, the page will reload, so add to messages instead of an AJAX response"""
+        response = api_request_handler(request, *args, **kwargs)
+        for msg_type, msg_text in json.loads(response.content).iteritems():
+            if msg_type not in ["error"]:  # Only error should prevent the page from reloading
+                fn = getattr(messages, msg_type)
+                fn(request, msg_text)
+        return response
+    return api_response_causes_reload_wrapper_fn
