@@ -50,8 +50,6 @@ def facility_delete(request, facility_id=None):
 
     facility_id = facility_id or simplejson.loads(request.raw_post_data or "{}").get("facility_id")
     fac = get_object_or_404(Facility, id=facility_id)
-    if not fac.is_deletable():
-        return JsonResponseMessageError(_("Facility %(facility_name)s is not deletable.") % {"facility_name": fac.name})
 
     fac.delete()
     return JsonResponseMessageSuccess(_("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
