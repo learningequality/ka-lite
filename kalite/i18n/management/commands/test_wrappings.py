@@ -36,7 +36,7 @@ class Command(BaseCommand):
         delete_current_templates()
 
         # Create new files
-        run_makemessages()
+        run_makemessages(verbosity=options["verbosity"])
 
         # Handle flags
         generate_test_files()
@@ -52,8 +52,17 @@ def delete_current_templates():
             shutil.rmtree(english_path)
 
 
-def run_makemessages():
+def run_makemessages(ignore_patterns_py=[], ignore_patterns_js=[], verbosity=0):
     """Run makemessages command for english po files"""
+
+    # Do some packages only
+    python_package_dirs = glob.glob(os.path.join(PROJECT_ROOT, 'python-packages', '*'))
+    ignored_packages = [os.path.join('*/python-packages/', os.path.basename(pp)) for pp in python_package_dirs if os.path.basename(pp) not in ['securesync', 'fle_utils']]
+
+    # Besides externally requested ignores, add on a few standard ones.
+    ignore_shared = ignored_packages + ['*/data/*', '*/.git/*', '*/migrations/*', '*/node_modules/*', ]
+    ignore_patterns_py = ignore_patterns_py + ignore_shared + ['*/static/*']
+    ignore_patterns_js = ignore_patterns_js + ignore_shared + ['*/kalite/static/*', '*/static/admin/*', '*/static/js/i18n/*', '*/kalite/distributed/static/khan-exercises/*'] + ['*jquery*', '*bootstrap*']
 
     logging.debug("Creating / validating locale root folder")
     ensure_dir(LOCALE_ROOT)
@@ -62,16 +71,16 @@ def run_makemessages():
     logging.debug("Moving to project root directory")
     os.chdir(PROJECT_ROOT)
 
+    call_command('clean_pyc', path=PROJECT_ROOT)
+
     logging.info("Executing makemessages command")
     # Generate english po file
-    ignore_pattern = ['ka-lite/python-packages/*', 'centralserver*']
-    sys.stdout.write("Compiling .py / .html files... ")
-    call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, extension='html,py', no_obsolete=True)
+    sys.stdout.write("\n\nCompiling .py / .html files... ")
+    call_command('makemessages', extensions=['html', 'py'], verbosity=verbosity, locale='en', ignore_patterns=ignore_patterns_py, no_obsolete=True)
 
     # Generate english po file for javascript
-    ignore_pattern += ['ka-lite/kalite/static/*', 'ka-lite/static/admin/js/*', 'ka-lite/static/js/i18n/*', 'ka-lite/kalite/distributed/static/khan-exercises/*']
-    sys.stdout.write("Compiling .js files... ")
-    call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, extension='html,js', no_obsolete=True)
+    sys.stdout.write("\n\nCompiling .js files... ")
+    call_command('makemessages', extensions=['js'], domain='djangojs', verbosity=verbosity, locale='en', ignore_patterns=ignore_patterns_js, no_obsolete=True)
 
 
 def generate_test_files():
@@ -116,6 +125,7 @@ def compile_po_files(lang_codes=None, failure_ok=True):
     # before running compilemessages, ensure in correct directory
     logging.debug("Moving to project root directory")
     os.chdir(PROJECT_ROOT)
+
 
     if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
