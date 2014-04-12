@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from fle_utils.general import get_host_name
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
 from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
-from securesync import crypto, engine
+from securesync import crypto
 from securesync.engine.models import SyncedModel
 
 class RegisteredDevicePublicKey(ExtendedModel):
@@ -637,12 +637,3 @@ class ChainOfTrust(object):
         if obj and not (terminal_device.is_creator(obj) or terminal_device.is_trusted()):
             logging.warn("Could not verify chain of trust.")
         return chain
-
-# No device data gets "synced" through the same sync mechanism as data--it is only synced
-#   through the special hand-shaking mechanism
-# ... except, now Device, DeviceZone, and Zone do--so that any changes to the models
-#    will be synced.  The special handshake is necessary for new Device/Zone objects.
-#
-# These have circular dependencies, but because they've already been manually added,
-#   dependencies aren't any issue.
-engine.add_syncing_models([Device, Zone, DeviceZone], dependency_check=False)
