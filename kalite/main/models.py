@@ -22,7 +22,6 @@ from fle_utils.django_utils import ExtendedModel
 from fle_utils.general import datediff, isnumeric
 from kalite import i18n
 from kalite.facility.models import FacilityUser
-from securesync import engine
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 
 
@@ -513,6 +512,3 @@ def cull_records(sender, **kwargs):
             to_discard = current_models \
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
-
-
-engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])

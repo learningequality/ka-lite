@@ -108,17 +108,28 @@ class SyncedModelManager(models.Manager):
         return self.filter(condition)
 
 
-class PreventSyncedModelDelete(ModelBase):
+class SyncedModelMetaclass(ModelBase):
+    """
+    This class does the following:
+        * adds a signal listener to prevent any deletes from ever happening
+        * adds subclasses of SyncedModel to the set of syncing models
+    """
 
     def __init__(cls, name, bases, clsdict):
-        if len(cls.mro()) > 4:
+
+        if len(cls.mro()) > 4 and not cls._meta.abstract:
+
+            # Add the deletion signal listener.
+            assert not hasattr(cls, "_do_not_delete_signal"), "Only add signal once."
             @receiver(pre_delete, sender=cls)
             def disallow_delete(sender, instance, **kwargs):
                 raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
-
             cls._do_not_delete_signal = disallow_delete  # don't let Python garbage collect this.
 
-        super(PreventSyncedModelDelete, cls).__init__(name, bases, clsdict)
+            # Add subclass to set of syncing models.
+            add_syncing_models([cls])
+
+        super(SyncedModelMetaclass, cls).__init__(name, bases, clsdict)
 
 
 class SyncedModel(ExtendedModel):
@@ -157,7 +168,7 @@ class SyncedModel(ExtendedModel):
     _import_excluded_validation_fields = []  # fields that should not be validated upon import
 
 
-    __metaclass__ = PreventSyncedModelDelete
+    __metaclass__ = SyncedModelMetaclass
 
     class Meta:
         abstract = True
@@ -462,5 +473,3 @@ class ImportPurgatory(ExtendedModel):
     def save(self, *args, **kwargs):
         self.counter = self.counter or _get_own_device().get_counter_position()
         super(ImportPurgatory, self).save(*args, **kwargs)
-
-add_syncing_models([SyncedLog])

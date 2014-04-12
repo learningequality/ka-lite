@@ -17,7 +17,7 @@ from securesync import VERSION
 
 _syncing_models = []  # all models we want to sync
 
-def add_syncing_models(models, dependency_check=True):
+def add_syncing_models(models, dependency_check=False):
     """When sync is run, these models will be sync'd"""
 
     get_foreign_key_classes = lambda m: set([field.rel.to for field in m._meta.fields if isinstance(field, ForeignKey)])
