@@ -61,7 +61,7 @@ def get_local_device_unsynced_count():
     """
     count = 0
     for Model in _syncing_models:
-        count += Model.objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()
+        count += Model.all_objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()  # include deleted records
     return count
 
 
@@ -70,7 +70,7 @@ def get_device_counters(**kwargs):
     assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
 
     from securesync.devices.models import Device
-    devices = kwargs.get("devices") or Device.objects.by_zone(kwargs["zone"])
+    devices = kwargs.get("devices") or Device.all_objects.by_zone(kwargs["zone"])  # include deleted objects
 
     device_counters = {}
     for device in list(devices):
@@ -106,7 +106,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
     # if no devices specified, assume we're starting from zero, and include all devices in the zone
     if device_counters is None:
-        device_counters = dict((device.id, 0) for device in Device.objects.by_zone(zone))
+        device_counters = dict((device.id, 0) for device in Device.all_objects.by_zone(zone))  # include deleted devices
 
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
@@ -122,7 +122,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     #   Models within a device are highly dependent (on explicit dependencies,
     #   as well as counter position)
     for device_id, counter in device_counters.items():
-        device = Device.objects.get(pk=device_id)
+        device = Device.all_objects.get(pk=device_id)  # include deleted devices
 
         # We need to track the min counter position (send things above this value)
         #   and the max (we're sending up to this value, so make sure nothing
@@ -135,7 +135,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
         #    all models below the counter position selected are sent NOW,
         #    otherwise they will be forgotten FOREVER)
         for Model in _syncing_models:
-            queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
+            queryset = Model.all_objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))  # include deleted records
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):
