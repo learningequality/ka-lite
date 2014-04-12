@@ -388,17 +388,6 @@ class SyncedModel(ExtendedModel):
     def in_zone(self, zone):
         return zone == self.get_zone()
 
-    def is_deletable(self):
-        """
-        Safe to delete IF:
-            the current device is not registered
-            OR
-            object, and all its dependencies, were created after the last sync.
-
-        For now, just implement the first.
-        """
-        return True
-
     def __unicode__(self):
         pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
         signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"

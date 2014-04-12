@@ -90,9 +90,9 @@
                          <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
                             {{ facility.name }}
                         </a>
-                        {% if facility.is_deletable %}
-                            <a class="facility-delete-link" href="{% url facility_delete facility_id=facility.id %}" title="{% trans 'Delete facility' %}">{% trans "(delete)" %}</a>
-                        {% endif %}
+                        <a class="facility-delete-link" href="#">
+                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}" value="{% url facility_delete facility_id=facility.id %}">{% trans "(delete)" %</span>
+                        </a>
                     </td>
                     <td nowrap>
                         {{ facility.num_users }}
