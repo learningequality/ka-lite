@@ -197,6 +197,16 @@ class SyncedModel(ExtendedModel):
                 obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
         self.save()
 
+    def full_clean(self, exclude=[]):
+        """
+        When I am deleted, don't validate my foreign keys anymore--they may fail.
+
+        TODO(bcipolli): get validation to really work!
+        """
+        if self.deleted:
+            exclude = exclude + [f.name for f in self._meta.fields if isinstance(f, models.ForeignKey) ]
+        super(SyncedModel, self).full_clean()
+
     def sign(self, device=None):
         """
         Get all of the relevant fields of this model into a single string (self._hashable_representation()),
