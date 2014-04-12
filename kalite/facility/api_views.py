@@ -20,7 +20,9 @@ def move_to_group(request):
     group_id = simplejson.loads(request.raw_post_data or "{}").get("group", "")
     group_update = get_object_or_None(FacilityGroup, id=group_id)
     users_to_move = FacilityUser.objects.filter(username__in=users)
-    users_to_move.update(group=group_update)
+    for user in users_to_move:  # can't do update for syncedmodel
+        user.group = group_update
+        user.save()
     if group_update:
         group_name = group_update.name
     else:
