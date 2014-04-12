@@ -40,9 +40,6 @@
     {% if clock_set %}
         {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
     {% endif %}
-    <script type="text/javascript">
-        var DELETE_ZONE_URL = "{% url delete_zone zone_id=zone_id %}";
-    </script>
     <script type="text/javascript" src="{% static 'js/control_panel/zone_management.js' %}"></script>
 {% endblock headjs %}
 
