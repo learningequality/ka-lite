@@ -150,10 +150,14 @@ def get_id2oklang_map(video_id, force=False):
 
 
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
-    """Accepts lang_code in ietf format"""
-    if not lang_code:  # looking for the base/default youtube_id
+    """Given a video ID, return the youtube ID for the given language.
+    If lang_code is None, return the base / default youtube_id for the given video_id.
+    If youtube_id for the given lang_code is not found, function returns None.
+    Accepts lang_code in ietf format
+    """
+    if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id, video_id)
+    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
 
 
 def get_video_id(youtube_id):
