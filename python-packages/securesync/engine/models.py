@@ -173,6 +173,8 @@ class SyncedModel(ExtendedModel):
     deleted = models.BooleanField(default=False)
 
     objects = SyncedModelManager()
+    all_objects = SyncedModelManager(show_deleted=True)
+
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
     _import_excluded_validation_fields = []  # fields that should not be validated upon import

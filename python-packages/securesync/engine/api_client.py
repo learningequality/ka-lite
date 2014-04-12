@@ -177,7 +177,7 @@ class SyncClient(BaseClient):
         #   metadata does not exist.  Let's just force it here.
         for device_id in devices_to_download: # force
             try:
-                d = Device.objects.get(id=device_id)
+                d = Device.all_objects.get(id=device_id)  # even do deleted devices.
             except Exception as e:
                 logging.error("Exception locating device %s for metadata creation: %s" % (device_id, e))
                 continue

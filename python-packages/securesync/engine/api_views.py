@@ -115,7 +115,7 @@ def destroy_session(data, session):
 def device_download(data, session):
     """This device is having its own devices downloaded"""
     zone = session.client_device.get_zone()
-    devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
+    devicezones = list(DeviceZone.all_objects.filter(zone=zone, device__in=data["devices"]))  # including deleted devicezones
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
 
