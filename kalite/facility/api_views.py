@@ -9,12 +9,12 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.internet import api_handle_error_with_json, JsonResponseMessageSuccess, JsonResponseMessageError
+from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess, JsonResponseMessageError
 from kalite.shared.decorators import require_authorized_admin
 
 
 @require_authorized_admin
-@api_handle_error_with_json
+@api_response_causes_reload
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group_id = simplejson.loads(request.raw_post_data or "{}").get("group", "")
@@ -34,7 +34,7 @@ def move_to_group(request):
 
 
 @require_authorized_admin
-@api_handle_error_with_json
+@api_response_causes_reload
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(username__in=users)
@@ -43,7 +43,7 @@ def delete_users(request):
 
 
 @require_authorized_admin
-@api_handle_error_with_json
+@api_response_causes_reload
 def facility_delete(request, facility_id=None):
     if not request.is_django_user:
         raise PermissionDenied("Teachers cannot delete facilities.")
