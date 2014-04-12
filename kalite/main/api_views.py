@@ -113,7 +113,7 @@ def save_exercise_log(request):
 
     try:
         exerciselog.full_clean()
-        exerciselog.save()
+        exerciselog.save(update_userlog=True)
     except ValidationError as e:
         return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
 
