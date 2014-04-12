@@ -87,7 +87,7 @@ def zone_management(request, zone_id="None"):
     if context["zone"]:
         is_headless_zone = re.search(r'Zone for public key ', context["zone"].name)
     else:
-        is_headless_zone = False 
+        is_headless_zone = False
 
     # Accumulate device data
     device_data = OrderedDict()
@@ -145,22 +145,6 @@ def zone_management(request, zone_id="None"):
     })
     context.update(set_clock_context(request))
     return context
-
-
-@require_authorized_admin
-def delete_zone(request, zone_id):
-    zone = get_object_or_404(Zone, id=zone_id)
-    if not zone.has_dependencies(passable_classes=["Organization"]):
-        zone.delete()
-        messages.success(request, _("You have successfully deleted ") + zone.name + ".")
-        if settings.CENTRAL_SERVER:
-            return HttpResponseRedirect(reverse("org_management"))
-        else:
-            return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": "None"}))
-    else:
-        messages.warning(request, _("You cannot delete this zone because it is syncing data with with %d device(s)") % zone.devicezone_set.count())
-        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
-    
 
 
 @require_authorized_admin
