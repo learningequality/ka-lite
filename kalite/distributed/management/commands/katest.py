@@ -24,11 +24,14 @@ def unregister_distributed_server():
     own_device = Device.get_own_device()
 
     # Delete zone info
+    tmp, settings.DEBUG_ALLOW_DELETIONS = settings.DEBUG_ALLOW_DELETIONS, True
     DeviceZone.objects.filter(device=own_device).delete()
     Zone.objects.all().delete()
 
     # Delete central server
     Device.objects.filter(devicemetadata__is_trusted=True).delete()
+
+    settings.DEBUG_ALLOW_DELETIONS = tmp
 
 def clean_db():
     """

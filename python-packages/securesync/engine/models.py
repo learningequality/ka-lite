@@ -88,8 +88,17 @@ class SyncedModelManager(models.Manager):
     class Meta:
         app_label = "securesync"
 
+    def __init__(self, show_deleted=None, *args, **kwargs):
+        super(SyncedModelManager, self).__init__(*args, **kwargs)
+
+        self.show_deleted = show_deleted is None and getattr(settings, "SHOW_DELETED_OBJECTS", False) or show_deleted
+
     def get_query_set(self, *args, **kwargs):
-        return super(SyncedModelManager, self).get_query_set(*args, **kwargs).filter(deleted=False)
+        qset = super(SyncedModelManager, self).get_query_set(*args, **kwargs)
+
+        if not self.show_deleted:
+            qset = qset.filter(deleted=False)
+        return qset
 
     def by_zone(self, zone):
         """Get model instances that were signed by devices in the zone,
@@ -123,8 +132,9 @@ class SyncedModelMetaclass(ModelBase):
             assert not hasattr(cls, "_do_not_delete_signal"), "Only add signal once."
             @receiver(pre_delete, sender=cls)
             def disallow_delete(sender, instance, **kwargs):
-                raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
-            cls._do_not_delete_signal = disallow_delete  # don't let Python garbage collect this.
+                if not getattr(settings, "DEBUG_ALLOW_DELETIONS", False):
+                    raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
+            cls._do_not_delete_signal = disallow_delete  # don't let Python destroy this fn on __init__ completion.
 
             # Add subclass to set of syncing models.
             add_syncing_models([cls])
@@ -176,13 +186,11 @@ class SyncedModel(ExtendedModel):
 
     @transaction.commit_on_success
     def delete(self):
-        print "marking self as deleted: ", self
-        self.deleted = True
+        self.deleted = True  # mark self as deleted
+
         for related_model in (self._meta.get_all_related_objects() + self._meta.get_all_related_many_to_many_objects()):
-            print related_model.get_accessor_name()
             manager = getattr(self, related_model.get_accessor_name())
             related_objects = manager.all()
-            print "marking related objects as deleted: ", related_objects
             for obj in related_objects:
                 obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
         self.save()
