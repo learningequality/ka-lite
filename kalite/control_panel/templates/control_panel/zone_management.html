@@ -97,8 +97,8 @@
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% if facility.is_deletable %}
-                        <a href="{% url facility_delete facility_id=facility.id %}">
-                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <a class="facility-delete-link" href="#">
+                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}"  value="{% url facility_delete facility_id=facility.id %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% endif %}
                     </td>
