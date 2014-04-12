@@ -60,7 +60,7 @@ def run_makemessages(ignore_patterns_py=[], ignore_patterns_js=[], verbosity=0):
     ignored_packages = [os.path.join('*/python-packages/', os.path.basename(pp)) for pp in python_package_dirs if os.path.basename(pp) not in ['securesync', 'fle_utils']]
 
     # Besides externally requested ignores, add on a few standard ones.
-    ignore_shared = ignored_packages + ['*/data/*', '*/.git/*', '*/migrations/*', '*/node_modules/*', ]
+    ignore_shared = ignored_packages + ['*/data/*', '*/.git/*', '*/migrations/*', '*/node_modules/*', '*/fle_utils/chronograph/*']
     ignore_patterns_py = ignore_patterns_py + ignore_shared + ['*/static/*']
     ignore_patterns_js = ignore_patterns_js + ignore_shared + ['*/kalite/static/*', '*/static/admin/*', '*/static/js/i18n/*', '*/kalite/distributed/static/khan-exercises/*'] + ['*jquery*', '*bootstrap*']
 
