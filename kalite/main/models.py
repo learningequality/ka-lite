@@ -52,7 +52,7 @@ class VideoLog(DeferredCountSyncedModel):
             " (completed)" if self.complete else "",
         )
 
-    def save(self, update_userlog=True, *args, **kwargs):
+    def save(self, update_userlog=False, *args, **kwargs):
         # To deal with backwards compatibility,
         #   check video_id, whether imported or not.
         if not self.video_id:
@@ -115,7 +115,7 @@ class VideoLog(DeferredCountSyncedModel):
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
         videolog.full_clean()
-        videolog.save()
+        videolog.save(update_userlog=True)
 
         return videolog
 
@@ -139,7 +139,7 @@ class ExerciseLog(DeferredCountSyncedModel):
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d, language=%s%s" % (self.user, self.exercise_id, self.points, self.language, " (completed)" if self.complete else "")
 
-    def save(self, update_userlog=True, *args, **kwargs):
+    def save(self, update_userlog=False, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
