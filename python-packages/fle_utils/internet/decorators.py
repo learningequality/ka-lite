@@ -1,4 +1,5 @@
 import csv
+import json
 from annoying.decorators import wraps
 from collections_local_copy import OrderedDict
 from cStringIO import StringIO
@@ -15,7 +16,7 @@ def api_handle_error_with_json(handler):
     All API requests should return JSON objects, even when unexpected errors occur.
     This decorator makes sure that all uncaught errors are not returned as HTML to the user, but instead JSON errors.
     """
-    def wrapper_fn(*args, **kwargs):
+    def api_handle_error_with_json_wrapper_fn(*args, **kwargs):
         try:
             return handler(*args, **kwargs)
         except PermissionDenied:
@@ -24,7 +25,7 @@ def api_handle_error_with_json(handler):
             raise
         except Exception as e:
             return JsonResponseMessageError(_("Unexpected exception: %s") % e)
-    return wrapper_fn
+    return api_handle_error_with_json_wrapper_fn
 
 
 def allow_jsonp(handler):
@@ -37,7 +38,7 @@ def allow_jsonp(handler):
         The api view, which must return a JsonResponse object, under normal circumstances.
 
     """
-    def wrapper_fn(request, *args, **kwargs):
+    def allow_jsonp_wrapper_fn(request, *args, **kwargs):
         if "callback" in request.REQUEST and request.method == "OPTIONS":
             # return an empty body, for OPTIONS requests, with the headers defined below included
             response = HttpResponse("", content_type="text/plain")
@@ -61,7 +62,7 @@ def allow_jsonp(handler):
 
         return response
 
-    return wrapper_fn
+    return allow_jsonp_wrapper_fn
 
 
 def render_to_csv(context_keys, delimiter=",", key_label="key", order="stacked"):
@@ -73,9 +74,9 @@ def render_to_csv(context_keys, delimiter=",", key_label="key", order="stacked")
 
     TODO(bcipolli): This won't work properly for unicode names.
     """
-    def renderer(function):
+    def render_to_csv_renderer(function):
         @wraps(function)
-        def wrapper(request, *args, **kwargs):
+        def render_to_csv_renderer_wrapper(request, *args, **kwargs):
             """
             The header row are all the keys from all the context_key dicts.
             The rows are accumulations of data across all the context_key dicts,
@@ -114,6 +115,6 @@ def render_to_csv(context_keys, delimiter=",", key_label="key", order="stacked")
                     writer.writerow(row_data)
 
             return CsvResponse(output_string.getvalue())
-        return wrapper
-    return renderer
+        return render_to_csv_renderer_wrapper
+    return render_to_csv_renderer
 
