@@ -171,12 +171,9 @@
         <div id="container">
             <article class="clearfix">
                 {% block precontent %}
-                <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
-                {% if messages %}
-                    <!--Normal messages loaded from the view get inserted here-->
-                    <div id="messages">
-                    </div>
-                {% endif %}
+                <div id="message_container">
+                    <!--Ajax messages from central server get inserted here-->
+                </div>
                 {% endblock precontent %}
                 {% block content %}{% endblock content %}
             </article>
