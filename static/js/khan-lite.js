@@ -29,7 +29,7 @@ function csrfSafeMethod(method) {
 
 function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
-    if ($.url().param("lang") === undefined) {
+    if ($.url(url).param("lang") === undefined) {
         url = setGetParam(url, "lang", CURRENT_LANGUAGE);
     }
 
