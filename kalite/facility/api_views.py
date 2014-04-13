@@ -9,17 +9,17 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.internet import api_handle_error_with_json, JsonResponseMessageSuccess, JsonResponseMessageError
+from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess, JsonResponseMessageError
 from kalite.shared.decorators import require_authorized_admin
 
 
 @require_authorized_admin
-@api_handle_error_with_json
+@api_response_causes_reload
 def move_to_group(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     group_id = simplejson.loads(request.raw_post_data or "{}").get("group", "")
     group_update = get_object_or_None(FacilityGroup, id=group_id)
-    users_to_move = FacilityUser.objects.filter(username__in=users)
+    users_to_move = FacilityUser.objects.filter(id__in=users)
     for user in users_to_move:  # can't do update for syncedmodel
         user.group = group_update
         user.save()
@@ -34,16 +34,16 @@ def move_to_group(request):
 
 
 @require_authorized_admin
-@api_handle_error_with_json
+@api_response_causes_reload
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    users_to_delete = FacilityUser.objects.filter(username__in=users)
+    users_to_delete = FacilityUser.objects.filter(id__in=users)
     users_to_delete.delete()
     return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": users_to_delete.count()})
 
 
 @require_authorized_admin
-@api_handle_error_with_json
+@api_response_causes_reload
 def facility_delete(request, facility_id=None):
     if not request.is_django_user:
         raise PermissionDenied("Teachers cannot delete facilities.")

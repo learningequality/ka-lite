@@ -122,7 +122,7 @@ function handleFailedAPI(resp, error_prefix) {
             try {
                 messages = $.parseJSON(resp.responseText);
             } catch (e) {
-                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, response);
+                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
                 console.log("Response text: " + resp.responseText);
                 console.log(e);

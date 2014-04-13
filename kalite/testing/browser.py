@@ -172,7 +172,7 @@ class BrowserTestCase(KALiteTestCase):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        time.sleep(0.50) # wait for the message to get created via AJAX
+        time.sleep(2) # wait for the message to get created via AJAX
 
         # Get messages (and limit by type)
         messages = self.browser.find_elements_by_class_name("alert")

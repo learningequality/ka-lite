@@ -155,7 +155,7 @@
                     </thead>
                     <tbody>
                         {% for coach in coach_pages %}
-                        <tr value="{{ coach.username }}">
+                        <tr value="{{ coach.id }}">
                             <td>
                                 <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url edit_facility_user id=coach.id %}?facility={{ facility_id }}">
                                     {{ coach|format_name:"last_first" }}
@@ -357,7 +357,7 @@
                 </thead>
                 <tbody>
                     {% for student in student_pages %}
-                        <tr value="{{ student.username }}">
+                        <tr value="{{ student.id }}">
                             <td>
                                 <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url edit_facility_user id=student.id %}?facility={{ facility_id }}">
                                     {{ student|format_name:"last_first" }}

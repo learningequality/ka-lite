@@ -31,7 +31,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
         user = get_object_or_None(FacilityUser, id=request.REQUEST["user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
         user = user or request.session.get("facility_user", None)
         return handler(request, *args, user=user, **kwargs)
-    return get_user_from_request_wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
+    return get_user_from_request_wrapper_fn if not request else get_user_from_request_wrapper_fn(request=request, *args, **kwargs)
 
 def require_login(handler):
     """
