@@ -57,51 +57,48 @@ class FacilityUserForm(forms.ModelForm):
             "warned": forms.HiddenInput(),
         }
 
-    def clean_username(self):
-        facility = self.cleaned_data.get('facility', "")
-        username = self.cleaned_data.get('username', "")
+    def clean(self):
 
-        # check if given username is unique on both facility users and admins, whatever the casing
-        username_taken = FacilityUser.objects.filter(username__iexact=username, facility=facility).count() > 0
+        new_errors = {}
+
+        ## check if given username is unique on both facility users and admins, whatever the casing
+        facility = self.cleaned_data.get('facility')
+        username = self.cleaned_data.get('username')
+        zone = self.cleaned_data.get('zone_fallback')
+        # Change: don't allow (only through the form) the same username either in the same facility,
+        #   or even in the same zone.
+        users_with_same_username = FacilityUser.objects.filter(username__iexact=username, facility=facility) \
+            or FacilityUser.objects.filter(username__iexact=username) \
+                .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same zone
+        username_taken = users_with_same_username.count() > 0
         username_changed = not self.instance or self.instance.username != username
         if username_taken and username_changed:
-            if self.fields["facility"].queryset and self.fields["facility"].queryset.count() > 1:
-                error_message = _("A user with this username at this facility already exists. Please choose a new username (or select a different facility) and try again.")
-            else:
-                error_message = _("A user with this username already exists. Please choose a new username and try again.")
-            raise forms.ValidationError(error_message)
+            error_message = _("A user with this username already exists. Please choose a new username and try again.")
+            new_errors['username'] = error_message
 
         elif User.objects.filter(username__iexact=username).count() > 0:
             # Admin (django) user exists with the same name; we don't want overlap there!
-            raise forms.ValidationError(_("The specified username is unavailable. Please choose a new username and try again."))
+            new_errors['username'] = _("The specified username is unavailable. Please choose a new username and try again.")
 
-        return self.cleaned_data['username']
-
-    def clean_password_first(self):
-        password = self.cleaned_data.get('password_first', "")
-        if (self.instance and not self.instance.password) or password:
-            # No password set, or password is being reset
-            verify_raw_password(password)
-        return password
-
-    def clean_password_recheck(self):
+        ## Check password
         password_first = self.cleaned_data.get('password_first', "")
         password_recheck = self.cleaned_data.get('password_recheck', "")
+        if (self.instance and not self.instance.password) or password_first:
+            # No password set, or password is being reset
+            try:
+                verify_raw_password(password_first)
+            except ValidationError as ve:
+                new_errors['password'] = ve
 
         if (self.instance and not self.instance.password) or password_first or password_recheck:
             # Only perform check on a new user or a password change
             if password_first != password_recheck:
-                raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
-        return self.cleaned_data['password_recheck']
+                new_errors['password_recheck'] = _("The passwords didn't match. Please re-enter the passwords.")
 
-    def clean(self):
-        super(FacilityUserForm, self).clean()
 
-        # Check the name combo; do it here so it's a general error.
+        ## Check the name combo; do it here so it's a general error.
         if not self.cleaned_data.get("warned", False):
-            facility = self.cleaned_data.get("facility")
-            zone = facility and facility.get_zone() or None
-            users_with_same_name = FacilityUser.objects.filter(first_name=self.cleaned_data["first_name"], last_name=self.cleaned_data["last_name"]) \
+            users_with_same_name = FacilityUser.objects.filter(first_name__iexact=self.cleaned_data["first_name"], last_name__iexact=self.cleaned_data["last_name"]) \
                 .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same facility
             if users_with_same_name and (not self.instance or self.instance not in users_with_same_name):
                 self.data = copy.deepcopy(self.data)
@@ -110,7 +107,12 @@ class FacilityUserForm(forms.ModelForm):
                     "num_users": users_with_same_name.count(),
                     "username_list": "" if not self.admin_access else " " + str([user["username"] for user in users_with_same_name.values("username")]),
                 }, _("Please consider choosing another name, or re-submit to complete."))
-                raise ValidationError(msg)  # general error, not associated with a field.
+                new_errors['__all__'] = msg  # general error, not associated with a field.
+
+        if new_errors:
+            raise ValidationError(new_errors)
+
+        super(FacilityUserForm, self).clean()
         return self.cleaned_data
 
 class FacilityForm(forms.ModelForm):
