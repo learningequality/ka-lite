@@ -1,0 +1,18 @@
+{% extends base_template %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+    </style>
+{% endblock headcss %}
+
+{% block content %}
+    Error: {{ error }}
+    <br/>
+    Current access level: {{ current_access_level }}
+
+    <p>
+    [[ Description of access options ]]
+    </p>
+{% endblock %}

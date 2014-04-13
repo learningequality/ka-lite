@@ -232,7 +232,8 @@ if CENTRAL_SERVER:
     ROOT_URLCONF = "central.urls"
     ACCOUNT_ACTIVATION_DAYS = getattr(local_settings, "ACCOUNT_ACTIVATION_DAYS", 7)
     DEFAULT_FROM_EMAIL      = getattr(local_settings, "DEFAULT_FROM_EMAIL", CENTRAL_FROM_EMAIL)
-    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats", "announcements",)
+    INSTALLED_APPS         += ("postmark", "kalite.registration", "central", "faq", "contact", "stats", "announcements","paywall",)
+    MIDDLEWARE_CLASSES += ('kalite.paywall.middleware.AccessCheck',)
     EMAIL_BACKEND           = getattr(local_settings, "EMAIL_BACKEND", "postmark.backends.PostmarkBackend")
     AUTH_PROFILE_MODULE     = "central.UserProfile"
     CSRF_COOKIE_NAME        = "csrftoken_central"

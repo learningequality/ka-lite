@@ -7,6 +7,7 @@ from collections import OrderedDict, namedtuple
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
@@ -22,6 +23,7 @@ except:
     from django.db import models
     class Organization(models.Model):
         pass
+from paywall.models import AccessLevelExceeded
 from coachreports.views import student_view_context
 from facility.decorators import facility_required
 from facility.forms import FacilityForm
@@ -43,12 +45,20 @@ def zone_form(request, zone_id, org_id=None):
     if request.method == "POST":
         form = ZoneForm(data=request.POST, instance=context["zone"])
         if form.is_valid():
-            form.instance.save()
-            if context["org"]:
-                context["org"].zones.add(form.instance)
-            if zone_id == "new":
-                zone_id = form.instance.pk
-            return HttpResponseRedirect(reverse("zone_management", kwargs={ "org_id": org_id, "zone_id": zone_id }))
+            try:
+                @transaction.commit_on_success
+                def save_zone_to_org():
+                    form.instance.save()
+                    if context["org"]:
+                        context["org"].zones.add(form.instance)
+                save_zone_to_org()
+
+                if zone_id == "new":
+                    zone_id = form.instance.pk
+                return HttpResponseRedirect(reverse("zone_management", kwargs={ "org_id": org_id, "zone_id": zone_id }))
+            except AccessLevelExceeded as ae:
+                messages.error(request, ae)
+
     else:
         form = ZoneForm(instance=context["zone"])
 
