@@ -99,7 +99,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
 
-        form = FacilityUserForm(facility, data=request.POST, instance=user)
+        form = FacilityUserForm(facility, admin_access=request.is_admin, data=request.POST, instance=user)
         if not form.is_valid():
             messages.error(request, _("There was a problem saving the information provided; please review errors below."))
 
@@ -131,11 +131,11 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
                 return HttpResponseRedirect(request.next or "%s?facility=%s" % (reverse("login"), form.data["facility"]))
 
     elif user:  # edit
-        form = FacilityUserForm(facility=facility, instance=user)
+        form = FacilityUserForm(facility=facility, admin_access=request.is_admin, instance=user)
 
     else:  # new
         assert is_teacher is not None, "Must call this function with is_teacher set."
-        form = FacilityUserForm(facility, initial={
+        form = FacilityUserForm(facility, admin_access=request.is_admin, initial={
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
             "default_language": get_default_language(),

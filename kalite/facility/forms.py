@@ -27,9 +27,10 @@ class FacilityUserForm(forms.ModelForm):
     default_language = forms.ChoiceField(label=_("Default Language"))
     warned           = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
 
-    def __init__(self, facility, *args, **kwargs):
+    def __init__(self, facility, admin_access=False, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
 
+        self.admin_access = admin_access
         self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
 
         # Select the initial default language,
@@ -105,9 +106,9 @@ class FacilityUserForm(forms.ModelForm):
             if users_with_same_name and (not self.instance or self.instance not in users_with_same_name):
                 self.data = copy.deepcopy(self.data)
                 self.data["warned"] = self.cleaned_data["warned"] = True
-                msg = "%s %s" % (_("%(num_users)d user(s) with this name already exists (usernames=%(username_list)s).") % {
+                msg = "%s %s" % (_("%(num_users)d user(s) with this name already exist(s)%(username_list)s.") % {
                     "num_users": users_with_same_name.count(),
-                    "username_list": [user["username"] for user in users_with_same_name.values("username")],
+                    "username_list": "" if not self.admin_access else " " + str([user["username"] for user in users_with_same_name.values("username")]),
                 }, _("Please consider choosing another name, or re-submit to complete."))
                 raise ValidationError(msg)  # general error, not associated with a field.
         return self.cleaned_data
