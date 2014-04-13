@@ -73,13 +73,19 @@ class FacilityUserForm(forms.ModelForm):
 
     def clean_password_first(self):
         password = self.cleaned_data.get('password_first', "")
-        verify_raw_password(password)
+        if (self.instance and not self.instance.password) or password:
+            # No password set, or password is being reset
+            verify_raw_password(password)
         return password
 
     def clean_password_recheck(self):
+        password_first = self.cleaned_data.get('password_first', "")
+        password_recheck = self.cleaned_data.get('password_recheck', "")
 
-        if self.cleaned_data.get("password_first") and self.cleaned_data.get('password_first') != self.cleaned_data.get('password_recheck'):
-            raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
+        if (self.instance and not self.instance.password) or password_first or password_recheck:
+            # Only perform check on a new user or a password change
+            if password_first != password_recheck:
+                raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
         return self.cleaned_data['password_recheck']
 
 
