@@ -26,7 +26,6 @@ class FacilityUserForm(forms.ModelForm):
 
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
-        self.fields["facility"].initial = facility.id
         self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
 
         # Select the initial default language,
@@ -48,7 +47,6 @@ class FacilityUserForm(forms.ModelForm):
         # Note: must preserve order
         fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher", "zone_fallback")
         widgets = {
-            "facility": forms.HiddenInput(),
             "is_teacher": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(),
         }
@@ -96,11 +94,11 @@ class FacilityForm(forms.ModelForm):
 
     def clean_user_count(self):
         user_count = self.cleaned_data['user_count']
-        if user_count is None:
-            return
-        if user_count < 1:
+
+        if user_count is not None and user_count < 1:
             raise ValidationError(_("User count should should be at least one."), code='invalid_user_count')
 
+        return user_count
 
 class FacilityGroupForm(forms.ModelForm):
 
@@ -145,6 +143,7 @@ class LoginForm(forms.ModelForm):
             self.fields["facility"].widget = forms.HiddenInput()
 
     def clean(self):
+        # Don't call super; this isn't a proper where the model (FacilityUser) is being fully completed.
         username = self.cleaned_data.get('username', "")
         facility = self.cleaned_data.get('facility', "")
         password = self.cleaned_data.get('password', "")
