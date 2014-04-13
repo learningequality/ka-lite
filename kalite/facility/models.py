@@ -37,7 +37,7 @@ class Facility(DeferredCountSyncedModel):
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
     class Meta:
-        verbose_name_plural = "Facilities"
+        verbose_name_plural = _("Facilities")
         app_label = "securesync"  # for back-compat reasons
 
     def __unicode__(self):
@@ -47,6 +47,22 @@ class Facility(DeferredCountSyncedModel):
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
+
+    def validate_unique(self, exclude=None):
+        """Django method for validating uniqueness contraints.
+        We have uniqueness constraints that can't be expressed as a tuple of fields,
+        so need to override this to implement."""
+        rv = super(Facility, self).validate_unique(exclude=exclude)
+
+        if not exclude or "name" not in exclude:
+            # Has to have the same name, has to be within the same zone.
+            facilities_with_same_name = list(self.__class__.objects.filter(name=self.name) \
+                .filter(Q(signed_by__devicezone__zone=self.get_zone()) | Q(zone_fallback=self.get_zone())))
+            if self not in facilities_with_same_name and len(facilities_with_same_name) > 0:
+                # Don't raise for facilities already with duplicate names, just for changes.
+                raise ValidationError({"name": [_("There is already a facility with this name.")]})
+
+        return rv
 
     @classmethod
     def from_zone(cls, zone):
