@@ -84,6 +84,8 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
     title = ""
     user = (id != "new" and get_object_or_404(FacilityUser, id=id)) or None
+    is_teacher = user and user.is_teacher or is_teacher
+    is_editing_user = user is not None
 
     # Check permissions
     if user and not request.is_admin and user != request.session.get("facility_user"):
@@ -128,13 +130,10 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
                 messages.success(request, _("You successfully registered."))
                 return HttpResponseRedirect(request.next or "%s?facility=%s" % (reverse("login"), form.data["facility"]))
 
-    # For GET requests
-    elif user:
+    elif user:  # edit
         form = FacilityUserForm(facility=facility, instance=user)
-        title = _("Edit user") + " " + user.username
-        is_teacher = user.is_teacher
 
-    else:
+    else:  # new
         assert is_teacher is not None, "Must call this function with is_teacher set."
         form = FacilityUserForm(facility, initial={
             "group": request.GET.get("group", None),
@@ -142,13 +141,15 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
             "default_language": get_default_language(),
         })
 
-    if not title:
-        if not request.is_admin:
-            title = _("Sign up for an account")
-        elif is_teacher:
-            title = _("Add a new teacher")
-        else:
-            title = _("Add a new student")
+    # Set the title
+    if is_editing_user: # editing a specific user
+        title = _("Edit user %(username)s") % {"username": user.username}
+    elif not request.is_admin:  # new student sign-up
+        title = _("Sign up for an account")
+    elif is_teacher:  # new admin teacher creation
+        title = _("Add a new teacher")
+    else:  # new admin student creation
+        title = _("Add a new student")
 
     return {
         "title": title,
