@@ -273,7 +273,7 @@ $(function() {
 
 
     if ($("#download_language_selector option").length > 1) {
-        $("#toggle_language_dropdown").attr("onclick", "show_language_selector();");
+        $("#language_choice_titlebar a").attr("onclick", "show_language_selector();");
     }
 
     $("#download_language_selector").change(function() {
@@ -285,7 +285,7 @@ $(function() {
 
 function show_language_selector() {
     $("#download_language_selector").show();
-    $("#toggle_language_dropdown").hide();
+    $("#language_choice_titlebar a").hide();
 }
 
 /* script functions for doing stuff with the topic tree*/

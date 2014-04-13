@@ -23,8 +23,10 @@ class LinkUserManual:
             return
         if request.path == reverse("homepage"):
             messages.info(request, mark_safe(_("Welcome to our demo server!"
-                "  Please visit our <a href='http://kalitewiki.learningequality.org/user-s-manual/using-ka-lite'>user's manual</a> or <a href='http://kalite.learningequality.org/'>homepage</a> for more information."
-            )))
+                "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {
+                    "um_url": "http://kalitewiki.learningequality.org/user-s-manual/using-ka-lite",
+                    "home_url": "http://kalite.learningequality.org/",
+            }))
 
 class ShowAdminLogin:
     """Shows a message with the admin username/password"""
@@ -43,5 +45,6 @@ class StopAdminAccess:
     """Prevents access to the Django admin"""
     def process_request(self, request):
         if request.path.startswith(reverse("admin:index")):
-            messages.error(request, _("The admin interface is disabled in the demo server."))
-            raise PermissionDenied("Admin interface is disabled in the demo server.")
+            msg = _("The admin interface is disabled in the demo server.")
+            messages.error(request, msg)
+            raise PermissionDenied(msg)
