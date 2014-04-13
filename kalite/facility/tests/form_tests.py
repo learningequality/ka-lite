@@ -189,7 +189,7 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.data['first_name'] += '-different'
         user_form = FacilityUserForm(facility=self.facility, data=self.data)
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
-        self.assertIn('A user with this username already exists.', user_form.errors['__all__'][0], "Error message must contain # of users")
+        self.assertIn('A user with this username already exists.', user_form.errors['username'][0], "Error message must contain # of users")
 
     def test_form_duplicate_name_count(self):
         """Should have the proper duplicate user name count."""

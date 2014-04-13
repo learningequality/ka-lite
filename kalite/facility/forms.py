@@ -58,14 +58,25 @@ class FacilityUserForm(forms.ModelForm):
             "warned": forms.HiddenInput(),
         }
 
+
+    def set_field_error(self, message, field_name=forms.forms.NON_FIELD_ERRORS):
+        self._errors[field_name] = self.error_class(ValidationError(message).messages)
+        if field_name in self.cleaned_data:
+            del self.cleaned_data[field_name]
+
+
+    def has_errors(self):
+        return bool(self._errors)
+
+
     def clean(self):
 
-        new_errors = {}
+        facility = self.cleaned_data.get('facility')
+        username = self.cleaned_data.get('username', '')
+        zone = self.cleaned_data.get('zone_fallback')
 
         ## check if given username is unique on both facility users and admins, whatever the casing
-        facility = self.cleaned_data.get('facility')
-        username = self.cleaned_data.get('username')
-        zone = self.cleaned_data.get('zone_fallback')
+        #
         # Change: don't allow (only through the form) the same username either in the same facility,
         #   or even in the same zone.
         users_with_same_username = FacilityUser.objects.filter(username__iexact=username, facility=facility) \
@@ -75,11 +86,11 @@ class FacilityUserForm(forms.ModelForm):
         username_changed = not self.instance or self.instance.username != username
         if username_taken and username_changed:
             error_message = _("A user with this username already exists. Please choose a new username and try again.")
-            new_errors['username'] = error_message
+            self.set_field_error(field_name='username', message=error_message)
 
         elif User.objects.filter(username__iexact=username).count() > 0:
             # Admin (django) user exists with the same name; we don't want overlap there!
-            new_errors['username'] = _("The specified username is unavailable. Please choose a new username and try again.")
+            self.set_field_error(field_name='username', message=_("The specified username is unavailable. Please choose a new username and try again."))
 
         ## Check password
         password_first = self.cleaned_data.get('password_first', "")
@@ -89,12 +100,11 @@ class FacilityUserForm(forms.ModelForm):
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
-                new_errors['password'] = ve
-
-        if (self.instance and not self.instance.password) or password_first or password_recheck:
+                self.set_field_error(field_name='password_first', message=ve.messages[0])
+        elif (self.instance and not self.instance.password) or password_first or password_recheck:
             # Only perform check on a new user or a password change
             if password_first != password_recheck:
-                new_errors['password_recheck'] = _("The passwords didn't match. Please re-enter the passwords.")
+                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
 
 
         ## Check the name combo; do it here so it's a general error.
@@ -108,13 +118,12 @@ class FacilityUserForm(forms.ModelForm):
                     "num_users": users_with_same_name.count(),
                     "username_list": "" if not self.admin_access else " " + str([user["username"] for user in users_with_same_name.values("username")]),
                 }, _("Please consider choosing another name, or re-submit to complete."))
-                new_errors['__all__'] = msg  # general error, not associated with a field.
+                self.set_field_error(message=msg)  # general error, not associated with a field.
 
-        if new_errors:
-            raise ValidationError(new_errors)
-
-        super(FacilityUserForm, self).clean()
-        return self.cleaned_data
+        if self.has_errors():
+            return self.cleaned_data
+        else:
+            return super(FacilityUserForm, self).clean()
 
 
 class FacilityForm(forms.ModelForm):
