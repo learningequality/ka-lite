@@ -23,9 +23,11 @@ class FacilityUserForm(forms.ModelForm):
     password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
     default_language = forms.ChoiceField(label=_("Default Language"))
+    warned           = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
 
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
+
         self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
 
         # Select the initial default language,
@@ -45,10 +47,11 @@ class FacilityUserForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         # Note: must preserve order
-        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher", "zone_fallback")
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher", "zone_fallback", "warned")
         widgets = {
             "is_teacher": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(),
+            "warned": forms.HiddenInput(),
         }
 
     def clean_username(self):
@@ -88,6 +91,21 @@ class FacilityUserForm(forms.ModelForm):
                 raise forms.ValidationError(_("The passwords didn't match. Please re-enter the passwords."))
         return self.cleaned_data['password_recheck']
 
+    def clean(self):
+        super(FacilityUserForm, self).clean()
+
+        # Check the name combo
+        if not self.cleaned_data.get("warned", False):
+            users_with_same_name = FacilityUser.objects.filter(first_name=self.cleaned_data["first_name"], last_name=self.cleaned_data["last_name"]) \
+                .filter(facility=self.cleaned_data["facility"])  # within the same facility
+            if users_with_same_name and (not self.instance or self.instance not in users_with_same_name):
+                self.cleaned_data["warned"] = True
+                msg = "%s %s" % (_("%(num_users)d user(s) with this name already exists (usernames=%(username_list)s).") % {
+                    "num_users": users_with_same_name.count(),
+                    "username_list": [user["username"] for user in users_with_same_name.values("username")],
+                }, _("Please consider choosing another name, or re-submit to complete."))
+                raise ValidationError(msg)
+        return self.cleaned_data
 
 class FacilityForm(forms.ModelForm):
 
@@ -150,6 +168,7 @@ class LoginForm(forms.ModelForm):
 
     def clean(self):
         # Don't call super; this isn't a proper where the model (FacilityUser) is being fully completed.
+
         username = self.cleaned_data.get('username', "")
         facility = self.cleaned_data.get('facility', "")
         password = self.cleaned_data.get('password', "")
