@@ -1,11 +1,13 @@
 """
 """
+import copy
 import re
 
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
@@ -94,17 +96,20 @@ class FacilityUserForm(forms.ModelForm):
     def clean(self):
         super(FacilityUserForm, self).clean()
 
-        # Check the name combo
+        # Check the name combo; do it here so it's a general error.
         if not self.cleaned_data.get("warned", False):
+            facility = self.cleaned_data.get("facility")
+            zone = facility and facility.get_zone() or None
             users_with_same_name = FacilityUser.objects.filter(first_name=self.cleaned_data["first_name"], last_name=self.cleaned_data["last_name"]) \
-                .filter(facility=self.cleaned_data["facility"])  # within the same facility
+                .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same facility
             if users_with_same_name and (not self.instance or self.instance not in users_with_same_name):
-                self.cleaned_data["warned"] = True
+                self.data = copy.deepcopy(self.data)
+                self.data["warned"] = self.cleaned_data["warned"] = True
                 msg = "%s %s" % (_("%(num_users)d user(s) with this name already exists (usernames=%(username_list)s).") % {
                     "num_users": users_with_same_name.count(),
                     "username_list": [user["username"] for user in users_with_same_name.values("username")],
                 }, _("Please consider choosing another name, or re-submit to complete."))
-                raise ValidationError(msg)
+                raise ValidationError(msg)  # general error, not associated with a field.
         return self.cleaned_data
 
 class FacilityForm(forms.ModelForm):
