@@ -43,9 +43,10 @@ class FacilityUserForm(forms.ModelForm):
         self.fields["password_recheck"].required = self.instance.pk == ""
 
         # Across POST and GET requests
-        self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
         self.fields["zone_fallback"].initial = facility.get_zone()
         self.fields["facility"].initial = facility
+        self.fields["facility"].queryset = Facility.objects.by_zone(facility.get_zone())
+        self.fields["group"].queryset = FacilityGroup.objects.filter(facility=facility)
 
     class Meta:
         model = FacilityUser
@@ -114,6 +115,7 @@ class FacilityUserForm(forms.ModelForm):
 
         super(FacilityUserForm, self).clean()
         return self.cleaned_data
+
 
 class FacilityForm(forms.ModelForm):
 
