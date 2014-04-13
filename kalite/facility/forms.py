@@ -119,14 +119,14 @@ class FacilityGroupForm(forms.ModelForm):
             "zone_fallback": forms.HiddenInput(),
         }
 
-    def clean(self):
+    def clean_name(self):
         name = self.cleaned_data.get("name", "")
-        ungrouped = re.compile("[uU]+ngroup")
+        ungrouped = re.compile("[uU]+ngrouped")
 
         if ungrouped.match(name):
-            raise forms.ValidationError(_("This group name is reserved. Please choose one without 'ungroup' in the title."))
+            raise forms.ValidationError(_("This group name is reserved. Please choose one without 'ungrouped' in the name."))
 
-        return self.cleaned_data
+        return name
 
 
 class LoginForm(forms.ModelForm):
