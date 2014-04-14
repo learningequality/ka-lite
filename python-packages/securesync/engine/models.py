@@ -129,15 +129,15 @@ class SyncedModelMetaclass(ModelBase):
         if len(cls.mro()) > 4 and not cls._meta.abstract:
 
             # Add the deletion signal listener.
-            assert not hasattr(cls, "_do_not_delete_signal"), "Only add signal once."
-            @receiver(pre_delete, sender=cls)
-            def disallow_delete(sender, instance, **kwargs):
-                if not getattr(settings, "DEBUG_ALLOW_DELETIONS", False):
-                    raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
-            cls._do_not_delete_signal = disallow_delete  # don't let Python destroy this fn on __init__ completion.
+            if not hasattr(cls, "_do_not_delete_signal"):
+                @receiver(pre_delete, sender=cls)
+                def disallow_delete(sender, instance, **kwargs):
+                    if not getattr(settings, "DEBUG_ALLOW_DELETIONS", False):
+                        raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
+                cls._do_not_delete_signal = disallow_delete  # don't let Python destroy this fn on __init__ completion.
 
-            # Add subclass to set of syncing models.
-            add_syncing_models([cls])
+                # Add subclass to set of syncing models.
+                add_syncing_models([cls])
 
         super(SyncedModelMetaclass, cls).__init__(name, bases, clsdict)
 
