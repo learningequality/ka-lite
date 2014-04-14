@@ -26,6 +26,11 @@
             $("#id_group").attr('disabled',true);
             $("#id_group").parent().hide();
         {% endif %}
+
+        {# Hide facility info #}
+        {% if singlefacility %}
+        $("#id_facility").parent().hide()
+        {% endif %}
         });
     </script>
 {% endblock headjs %}
@@ -35,16 +40,6 @@
 
     <form method="post" class="basic-form">
         {% csrf_token %}
-
-        {% if not singlefacility %}
-            <p>
-                <label>{% trans "Facility: " %}</label>
-                {{ facility }}
-                {% if request.is_admin %}
-                    <a href="?facility=select">{% trans "(Select a different facility)" %}</a>
-                {% endif %}
-            </p>
-        {% endif %}
 
         {{ form.as_p }}
 
