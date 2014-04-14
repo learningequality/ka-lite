@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import patterns, url, include
 
-from . import api_urls
 
 urlpatterns = patterns(__package__ + '.views',
     # Zone
@@ -16,6 +15,4 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/group/(?P<group_id>\w+)/$', 'facility_management', {}, 'facility_management'),
 
     url(r'account/$', 'account_management', {}, 'account_management'),
-
-    url(r'^api/', include(api_urls)),
 )

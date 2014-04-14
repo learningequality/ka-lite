@@ -77,7 +77,10 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         if "set_default" in request.GET and request.is_admin and facility:
             Settings.set("default_facility", facility.id)
 
-        return handler(request, *args, facility=facility, **kwargs)
+        if facility or "facility" not in kwargs:  # this syntax allows passed in facility param to work.
+            kwargs["facility"] = facility
+        return handler(request, *args, **kwargs)
+
     return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
 
 
@@ -89,7 +92,7 @@ def facility_required(handler):
         for whatever action hey were doing.
     """
     @facility_from_request
-    def inner_fn(request, facility, *args, **kwargs):
+    def facility_required_inner_fn(request, facility, *args, **kwargs):
         if facility:
             return handler(request, facility, *args, **kwargs)
 
@@ -129,5 +132,5 @@ def facility_required(handler):
                 }
             return facility_selection(request)
 
-    return inner_fn
+    return facility_required_inner_fn
 

@@ -207,45 +207,11 @@ def group_report(request, facility, group_id=None, zone_id=None):
     return context
 
 
-@require_authorized_admin
-@render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
-def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
-    """"""
-    assert request.method == "POST", "facility_management_csv must be accessed via POST"
-
-    # Search form for errors.
-    form = DateRangeForm(data=request.POST)
-    if not form.is_valid():
-        raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
-
-    frequency = frequency or request.GET.get("frequency", "months")
-    period_start = period_start or form.data["period_start"]
-    period_end = period_end or form.data["period_end"]
-    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-
-
-    # Basic data
-    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
-    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
-    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
-    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
-    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
-
-    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
-
-    context.update({
-        "students": student_data,  # raw data
-        "coaches": coach_data,  # raw data
-    })
-    return context
-
-
 @facility_required
 @require_authorized_admin
 @render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
 def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
-    """"""
+    """NOTE: THIS IS NOT A VIEW FUNCTION"""
     assert request.method == "POST", "facility_management_csv must be accessed via POST"
 
     # Search form for errors.

@@ -27,23 +27,23 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     if not handler:
         handler = lambda request, user, *args, **kwargs: user
 
-    def wrapper_fn(request, *args, **kwargs):
+    def get_user_from_request_wrapper_fn(request, *args, **kwargs):
         user = get_object_or_None(FacilityUser, id=request.REQUEST["user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
         user = user or request.session.get("facility_user", None)
         return handler(request, *args, user=user, **kwargs)
-    return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
+    return get_user_from_request_wrapper_fn if not request else get_user_from_request_wrapper_fn(request=request, *args, **kwargs)
 
 def require_login(handler):
     """
    (Level 1) Make sure that a user is logged in to the distributed server.
     """
-    def wrapper_fn(request, *args, **kwargs):
+    def require_login_wrapper_fn(request, *args, **kwargs):
         if getattr(request, "is_logged_in", False):  # requires the securesync.middleware.AuthFlags middleware be hit
             return handler(request, *args, **kwargs)
 
         # Failed.  Send different response for ajax vs non-ajax requests.
         raise PermissionDenied(_("You must be logged in to access this page."))
-    return wrapper_fn
+    return require_login_wrapper_fn
 
 
 def require_admin(handler):
@@ -55,7 +55,7 @@ def require_admin(handler):
     Note: different behavior for api_request or not
     """
 
-    def wrapper_fn(request, *args, **kwargs):
+    def require_admin_wrapper_fn(request, *args, **kwargs):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
 
@@ -63,7 +63,7 @@ def require_admin(handler):
         # Don't redirect users to login for an API request.
         raise PermissionDenied(_("You must be logged in as an admin to access this page."))
 
-    return wrapper_fn
+    return require_admin_wrapper_fn
 
 
 
@@ -83,7 +83,7 @@ def require_authorized_access_to_student_data(handler):
 
     else:
         @require_login
-        def wrapper_fn_distributed(request, *args, **kwargs):
+        def require_authorized_access_to_student_data_wrapper_fn_distributed(request, *args, **kwargs):
             """
             Everything is allowed for admins on distributed server.
             For students, they can only access their own account.
@@ -97,7 +97,7 @@ def require_authorized_access_to_student_data(handler):
                 else:
                     raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
             return require_admin(handler)
-        return wrapper_fn_distributed
+        return require_authorized_access_to_student_data_wrapper_fn_distributed
 
 
 def require_authorized_admin(handler):
@@ -113,7 +113,7 @@ def require_authorized_admin(handler):
     """
 
     @require_admin
-    def wrapper_fn_central(request, *args, **kwargs):
+    def require_authorized_admin_wrapper_fn_central(request, *args, **kwargs):
         """
         The check for distributed servers already exists (require_login), so just use that below.
         All this nuance is for the central server only.
@@ -180,7 +180,7 @@ def require_authorized_admin(handler):
         return handler(request, *args, **kwargs)
 
     # This is where the actual distributed server check is done (require_admin)
-    return wrapper_fn_central if settings.CENTRAL_SERVER else require_admin(handler)
+    return require_authorized_admin_wrapper_fn_central if settings.CENTRAL_SERVER else require_admin(handler)
 
 
 def require_superuser(handler):
@@ -192,9 +192,9 @@ def require_superuser(handler):
     ***
 
     """
-    def wrapper_fn(request, *args, **kwargs):
+    def require_superuser_wrapper_fn(request, *args, **kwargs):
         if getattr(request.user, is_superuser, False):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("You must be logged in as a superuser to access this endpoint."))
-    return wrapper_fn
+    return require_superuser_wrapper_fn

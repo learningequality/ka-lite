@@ -20,6 +20,8 @@ class Command(BaseCommand):
     def stderr_writeln(self, str):  self.stderr.write("%s\n"%str)
 
     def handle(self, *args, **options):
+        if settings.CENTRAL_SERVER:
+            raise CommandError("syncmodels cannot be run on the central server.")
 
         # Parse input parameters
         kwargs = {"host": args[0]} if len(args) >= 1 else {}

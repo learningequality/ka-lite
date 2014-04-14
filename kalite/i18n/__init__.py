@@ -222,9 +222,9 @@ def get_code2lang_map(lang_code=None, force=False):
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
-            CODE2LANG_MAP[lcode_to_ietf(lc)] = entry
+            CODE2LANG_MAP[lcode_to_ietf(lc)] = entry  # key entries by ieft format
 
-    return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
+    return CODE2LANG_MAP.get(lcode_to_ietf(lang_code)) if lang_code else CODE2LANG_MAP
 
 
 def get_language_name(lang_code, native=None, error_on_missing=False):
