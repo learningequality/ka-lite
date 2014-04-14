@@ -35,12 +35,10 @@ from .caching import backend_cache_page
 from fle_utils.config.models import Settings
 from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
-from fle_utils.mplayer_launcher import play_video_in_new_thread
 from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
-from kalite.main.api_views import _update_video_log_with_points
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.shared.decorators import require_admin
 
@@ -76,35 +74,6 @@ def time_set(request):
 
 
 # Functions below here focused on users
-
-
-@api_handle_error_with_json
-def launch_mplayer(request):
-    """
-    Launch an mplayer instance in a new thread, to play the video requested via the API.
-    """
-
-    if not settings.USE_MPLAYER:
-        raise PermissionDenied("You can only initiate mplayer if USE_MPLAYER is set to True.")
-
-    if "youtube_id" not in request.REQUEST:
-        return JsonResponseMessageError(_("No youtube_id specified"))
-
-    youtube_id = request.REQUEST["youtube_id"]
-    video_id = request.REQUEST["video_id"]
-    facility_user = request.session.get("facility_user")
-
-    callback = partial(
-        _update_video_log_with_points,
-        video_id=video_id,
-        youtube_id=youtube_id,
-        facility_user=facility_user,
-        language=request.language,
-    )
-
-    play_video_in_new_thread(youtube_id, content_root=settings.CONTENT_ROOT, callback=callback)
-
-    return JsonResponse({})
 
 
 def compute_total_points(user):

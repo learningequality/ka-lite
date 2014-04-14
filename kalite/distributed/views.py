@@ -259,7 +259,6 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
-        "use_mplayer": settings.USE_MPLAYER and is_loopback_connection(request),
     }
     return context
 

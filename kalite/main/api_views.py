@@ -27,7 +27,6 @@ from .models import VideoLog, ExerciseLog
 from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
-from fle_utils.mplayer_launcher import play_video_in_new_thread
 from fle_utils.testing.decorators import allow_api_profiling
 
 
@@ -171,30 +170,6 @@ def get_exercise_logs(request):
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts")
     return JsonResponse(list(logs))
-
-
-
-def _update_video_log_with_points(seconds_watched, video_id, video_length, youtube_id, facility_user, language):
-    """Handle the callback from the mplayer thread, saving the VideoLog. """
-    # TODO (bcipolli) add language info here
-
-    if not facility_user:
-        return  # in other places, we signal to the user that info isn't being saved, but can't do it here.
-                #   adding this code for consistency / documentation purposes.
-
-    new_points = VideoLog.calc_points(seconds_watched, video_length)
-
-    videolog = VideoLog.update_video_log(
-        facility_user=facility_user,
-        video_id=video_id,
-        youtube_id=youtube_id,
-        additional_seconds_watched=seconds_watched,
-        new_points=new_points,
-        language=language,
-    )
-
-    if "points" in request.session:
-        del request.session["points"]  # will be recomputed when needed
 
 
 @api_handle_error_with_json

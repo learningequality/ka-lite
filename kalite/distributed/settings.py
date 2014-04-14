@@ -180,10 +180,6 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 # RPi features
 ########################
 
-# enable this to use a background mplayer instance instead of playing the video in the browser, on loopback connections
-# TODO(jamalex): this will currently only work when caching is disabled, as the conditional logic is in the Django template
-USE_MPLAYER = getattr(local_settings, "USE_MPLAYER", False) if CACHE_TIME == 0 else False
-
 # Clock Setting disabled by default unless overriden.
 # Note: This will only work on Linux systems where the server is running as root.
 ENABLE_CLOCK_SET = False
