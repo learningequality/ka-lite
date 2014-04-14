@@ -90,6 +90,6 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertNotEqual(alert, None, "Does not produce alert of group movement.")
         self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
         alert.accept()
-        self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("#groups table").is_displayed()), "Closing modal doesn't cause page to change")
+        self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("body")), "Closing modal doesn't cause page to change")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")
