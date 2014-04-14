@@ -34,7 +34,7 @@ from securesync.devices.views import *
 
 
 @require_authorized_admin
-@render_to("facility/facility_edit.html")
+@render_to("facility/facility.html")
 def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
     if facil:
@@ -165,7 +165,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
 @require_authorized_admin
 @facility_required
-@render_to("facility/add_group.html")
+@render_to("facility/facility_group.html")
 def add_group(request, facility):
     groups = FacilityGroup.objects.all()
 
