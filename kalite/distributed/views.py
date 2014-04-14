@@ -443,7 +443,7 @@ def search(request, topics):  # we don't use the topics variable, but this setup
             hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
 
     return {
-        'title': _("Search results for '%s'") % (query if query else ""),
+        'title': _("Search results for '%(query)s'") % {"query": (query if query else "")},
         'query_error': query_error,
         'results': possible_matches,
         'hit_max': hit_max,

@@ -114,13 +114,13 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
             elif id != "new":
                 # Edited: by admin; someone else's ID
-                messages.success(request, _("User changes saved for user '%s'") % form.instance.get_name())
+                messages.success(request, _("Changes saved for user '%(username)s'") % {"username": form.instance.get_name()})
                 if request.next:
                     return HttpResponseRedirect(request.next)
 
             elif request.is_admin:
                 # Created: by admin
-                messages.success(request, _("You successfully created user '%s'") % form.instance.get_name())
+                messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
                 return HttpResponseRedirect(request.next or request.get_full_path() or reverse("homepage"))  # allow them to add more of the same thing.
 
             else:

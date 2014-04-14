@@ -52,7 +52,7 @@ def time_set(request):
     """
 
     if not settings.ENABLE_CLOCK_SET:
-        return JsonResponseMessageError(_("This can only be done on Raspberry Pi systems"), status=403)
+        return JsonResponseMessageError(_("Time reset can only be done on Raspberry Pi systems."))
 
     # Form does all the data validation - including ensuring that the data passed is a proper date time.
     # This is necessary to prevent arbitrary code being run on the system.
@@ -66,11 +66,11 @@ def time_set(request):
             raise PermissionDenied
 
     except PermissionDenied as e:
-        return JsonResponseMessageError(_("System permissions prevented time setting, please run with root permissions"))
+        return JsonResponseMessageError(_("System permissions prevented time setting, please run with root permissions."))
 
     now = datetime.datetime.now().isoformat(" ").split(".")[0]
 
-    return JsonResponseMessage(_("System time was reset successfully; current system time: %s") % now)
+    return JsonResponseMessage(_("System time was reset successfully.")
 
 
 # Functions below here focused on users

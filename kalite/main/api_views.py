@@ -77,7 +77,7 @@ def save_video_log(request):
         )
 
     except ValidationError as e:
-        return JsonResponseMessageError(_("Could not save VideoLog: %s") % e)
+        return JsonResponseMessageError(_("Could not save VideoLog: %(err)s") % {"err": e})
 
     if "points" in request.session:
         del request.session["points"]  # will be recomputed when needed
@@ -125,13 +125,13 @@ def save_exercise_log(request):
     if not previously_complete and exerciselog.complete:
         exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
         junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
-        if next_exercise:
+        if not next_exercise:
+            return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
+        else:
             return JsonResponseMessageSuccess(_("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
                 "href": next_exercise["path"],
                 "title": _(next_exercise["title"]),
             })
-        else:
-            return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
 
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})
