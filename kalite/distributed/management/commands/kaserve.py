@@ -143,8 +143,7 @@ class Command(BaseCommand):
             # as we don't know what happens when we're not looking.
             self.reinitialize_server()
 
-        if not settings.DEBUG:
-            call_command("collectstatic", interactive=False)
+        call_command("collectstatic", interactive=False)
 
         # Now call the proper command
         if not options["production"]:

@@ -135,6 +135,8 @@ class SyncedModel(ExtendedModel):
     objects = SyncedModelManager()
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
+    _import_excluded_validation_fields = []  # fields that should not be validated upon import
+
 
     class Meta:
         abstract = True
@@ -237,6 +239,19 @@ class SyncedModel(ExtendedModel):
                 chunks.append("%s=%s" % (field, val))
 
         return "&".join(chunks)
+
+    def full_clean(self, exclude=None, imported=False):
+        """Django method for validating uniqueness contraints.
+        We can have uniqueness constraints that can't be expressed as a tuple of fields,
+        so need to override this to implement.
+
+        We can also have "soft" uniqueness constraints that may not be used when importing,
+        so we add that parameter here.
+        """
+        exclude = exclude or []
+        if imported:
+            exclude = list(set(exclude + self._import_excluded_validation_fields))
+        return super(SyncedModel, self).full_clean(exclude=exclude)
 
     def save(self, imported=False, increment_counters=True, sign=True, *args, **kwargs):
         """

@@ -1,11 +1,16 @@
 """
 Basic tests of coach reports, inside the browser
 """
+import sys
 import time
 from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
+from selenium.webdriver.support.ui import Select, WebDriverWait
+
+
+from django.utils import unittest
 
 from .base import KALiteDistributedWithFacilityBrowserTestCase
 from facility.models import Facility, FacilityGroup, FacilityUser
@@ -41,7 +46,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         group.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text, "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text, "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text, "0", "Does not report zero users for empty group.")
 
 
@@ -60,7 +65,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text.strip(), "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text.strip(), "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text.strip(), "1", "Does not report one user for group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr[1]/td[1]").text.strip(), "test_user", "Does not show user in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text.strip(), "Test Group", "Does not report user in group.")
@@ -90,6 +95,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertNotEqual(alert, None, "Does not produce alert of group movement.")
         self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
         alert.accept()
-        self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("#groups table").is_displayed()), "Closing modal doesn't cause page to change")
+        WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "students")))
+        #self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("body")), "Closing modal doesn't cause page to change")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")

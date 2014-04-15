@@ -257,7 +257,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
                 model._state.adding = False
 
                 # verify that all fields are valid, and that foreign keys can be resolved
-                model.full_clean()
+                model.full_clean(imported=True)
 
                 # save the imported model (checking that the signature is valid in the process)
                 model.save(imported=True, increment_counters=increment_counters)

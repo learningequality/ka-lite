@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{{ device.name }}{% trans "Device Syncing History" %}{{ block.super }}{% endblock title %}
+{% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
 {% endblock headcss %}

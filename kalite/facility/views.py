@@ -34,7 +34,7 @@ from securesync.devices.views import *
 
 
 @require_authorized_admin
-@render_to("facility/facility_edit.html")
+@render_to("facility/facility.html")
 def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
     if facil:
@@ -84,6 +84,8 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
     title = ""
     user = (id != "new" and get_object_or_404(FacilityUser, id=id)) or None
+    is_teacher = user and user.is_teacher or is_teacher
+    is_editing_user = user is not None
 
     # Check permissions
     if user and not request.is_admin and user != request.session.get("facility_user"):
@@ -97,7 +99,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
 
-        form = FacilityUserForm(facility, data=request.POST, instance=user)
+        form = FacilityUserForm(facility, admin_access=request.is_admin, data=request.POST, instance=user)
         if not form.is_valid():
             messages.error(request, _("There was a problem saving the information provided; please review errors below."))
 
@@ -128,27 +130,26 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
                 messages.success(request, _("You successfully registered."))
                 return HttpResponseRedirect(request.next or "%s?facility=%s" % (reverse("login"), form.data["facility"]))
 
-    # For GET requests
-    elif user:
-        form = FacilityUserForm(facility=facility, instance=user)
-        title = _("Edit user") + " " + user.username
-        is_teacher = user.is_teacher
+    elif user:  # edit
+        form = FacilityUserForm(facility=facility, admin_access=request.is_admin, instance=user)
 
-    else:
+    else:  # new
         assert is_teacher is not None, "Must call this function with is_teacher set."
-        form = FacilityUserForm(facility, initial={
+        form = FacilityUserForm(facility, admin_access=request.is_admin, initial={
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
             "default_language": get_default_language(),
         })
 
-    if not title:
-        if not request.is_admin:
-            title = _("Sign up for an account")
-        elif is_teacher:
-            title = _("Add a new teacher")
-        else:
-            title = _("Add a new student")
+    # Set the title
+    if is_editing_user: # editing a specific user
+        title = _("Edit user %(username)s") % {"username": user.username}
+    elif not request.is_admin:  # new student sign-up
+        title = _("Sign up for an account")
+    elif is_teacher:  # new admin teacher creation
+        title = _("Add a new teacher")
+    else:  # new admin student creation
+        title = _("Add a new student")
 
     return {
         "title": title,
@@ -164,17 +165,18 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
 @require_authorized_admin
 @facility_required
-@render_to("facility/add_group.html")
-def add_group(request, facility):
-    groups = FacilityGroup.objects.all()
+@render_to("facility/facility_group.html")
+def group_edit(request, facility, group_id):
+    group = get_object_or_None(FacilityGroup, id=group_id)
+    facility = facility or (group and group.facility)
 
     if request.method != 'POST':
-        form = FacilityGroupForm(facility)
+        form = FacilityGroupForm(facility, instance=group)
 
     else:
-        form = FacilityGroupForm(facility, data=request.POST)
+        form = FacilityGroupForm(facility, data=request.POST, instance=group)
         if not form.is_valid():
-            messages.error(request, _("Failed to save the facility; please review errors below."))
+            messages.error(request, _("Failed to save the group; please review errors below."))
         else:
             form.save()
 
@@ -184,9 +186,10 @@ def add_group(request, facility):
 
     return {
         "form": form,
+        "group_id": group_id,
         "facility": facility,
-        "groups": groups,
         "singlefacility": request.session["facility_count"] == 1,
+        "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
 

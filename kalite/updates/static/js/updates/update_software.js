@@ -1,60 +1,19 @@
-
-// Callback functions
-
-function software_start_callback(progress_log, resp) {
-    if (!progress_log) {
-        clear_messages();
-        show_message("error", sprintf("%(status_code)s: %(responseText)s", resp));
-    }
-}
-
 function software_check_callback(progress_log, resp) {
-    // When video status is checked
-    if (progress_log) { // check succeeded
 
-        if (progress_log.stage_percent == 1.) {
-            // 100% done with the video
-            setNodeClass(currentKey, "complete");
-            if (progress_log.process_percent == 1.) {
-                // 100% done with ALL videos.
-                $(".progress-section, #cancel-download").hide();
-                updatesReset(progress_log.process_name);
-                if ($(".subtitle-section:visible").length == 0) {
-                    $("#cancel-download").hide();
-                }
-                return;
-            }
+    if (!progress_log && resp.status != 403) {
+        // server got brought down, we wait X seconds now and then
+        // inform the user that their software may be up now
 
-        } else if (progress_log.completed) {
-            // Completed without 100% done means there was a problem.
-            $("#retry-video-download").show();
-            $("#cancel-download").hide();
-        } else {
-            // Everything's good for now!
-            $("#retry-video-download").hide();
-            $("#cancel-download").show();
-        }
-        $("#cancel-download").show();
-    } else { // check failed.
-        switch (resp.status) {
-        case 403:
-            window.location.reload();  // Only happens if we were remotely logged out.
-            break;
-        default:
-            // server got brought down, we wait X seconds now and then
-            // inform the user that their software may be up now
+        // clear the messages too!
+        clear_messages();
 
-            // clear the progress bar first
-            clearInterval(window.download_subtitle_check_interval);
-
-            // clear the messages too!
-            clear_messages();
-
-            refresh_countdown_dialog_box(15);
-            break;
-        }
+        refresh_countdown_dialog_box(15);  // update completed.
     }
 }
+
+var software_callbacks = {
+    check: software_check_callback
+};
 
 function refresh_countdown_dialog_box(seconds) {
     $("#refresh-page-dialog").dialog({
@@ -66,12 +25,12 @@ function refresh_countdown_dialog_box(seconds) {
     var millisec = seconds * 1000;
     var decrement = 1000;
     var dialog_text = "";
-    dialog_text = sprintf("Installation finished! Refreshing the page in %(sec)s seconds", {sec: seconds});
+    dialog_text = sprintf(gettext("Installation finished! Refreshing the page in %(sec)s seconds"), {sec: seconds});
     $("#dialog-content").html(dialog_text);
     setInterval(function() {
         if (millisec > 0) {
             var seconds = Math.floor(millisec / 1000);
-            dialog_text = sprintf("Installation finished! Refreshing the page in %(sec)s seconds", {sec: seconds});
+            dialog_text = sprintf(gettext("Installation finished! Refreshing the page in %(sec)s seconds"), {sec: seconds});
             $("#dialog-content").html(dialog_text);
             millisec -= decrement;
         } else {
@@ -80,10 +39,6 @@ function refresh_countdown_dialog_box(seconds) {
     }, decrement);
 }
 
-var software_callbacks = {
-    start: software_start_callback,
-    check: software_check_callback
-};
 
 function version_callback(data) {
     // Check to see if the remote software matches the local software version.
@@ -106,14 +61,14 @@ function version_callback(data) {
         //$("#new_features").text("");
         for (version in version_info) {  // loop through all features of all uninstalled versions
             if (! version_info[version]["new_features"]) {
-                $("#new_features").append("<li>(None)</li>");
+                $("#new_features").append(sprintf("<li>(%s)</li>", gettext("None")));
             } else {
                 for (fi in version_info[version]["new_features"]) {
                     $("#new_features").append("<li>" + version_info[version]["new_features"][fi] + "</li>");
                 }
             }
             if (! version_info[version]["bugs_fixed"]) {
-                $("#bugs_fixed").append("<li>(None)</li>");
+                $("#bugs_fixed").append(gettext("<li>(%s)</li>", gettext("None")));
             } else {
                 for (fi in version_info[version]["bugs_fixed"]) {
                     $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fi] + "</li>");
@@ -125,12 +80,10 @@ function version_callback(data) {
 
 function download_urls_callback(data) {
     locale = "en";//{{ current_locale }}"
-    $("#software_available").append("<option value='" + data[locale].url + "'>" + locale + " (" + data[locale].size + "MB)</option>");
+    $("#software_available").append(sprintf("<option value='%s'>%s (%s MB)</option>", data[locale].url, locale, data[locale].size));
 }
 
 $(function() {
-    updatesStart("update", 1000, software_callbacks);
-
     // hide the installation complete dialog box
     $("#refresh-page-dialog").hide();
 
@@ -141,7 +94,7 @@ $(function() {
             //
             // Best to assume offline, as online check returns much faster than offline check.
             if(false && (!status || !status["online"])){
-                show_message("error", gettext("Your installation is offline, and therefore cannot access updates."), " id_offline_message");
+                show_message("error", gettext("Your installation is offline, and therefore cannot access updates."));
             } else {
                 $("#software_available").removeAttr("disabled");
                 $("#download-update-kalite").removeAttr("disabled");
@@ -192,15 +145,31 @@ $(function() {
 });
 
 
+function update_server_status() {
+    with_online_status("server", function(server_is_online) {
+        // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+        // Best to assume offline, as online check returns much faster than offline check.
+        if(server_is_online){
+            updatesStart("update", 1000, software_callbacks);
+        } else {
+            clear_messages();
+            show_message("error", gettext("The server does not have internet access; software cannot be updated at this time."));
+        }
+    });
+}
 
  $(function() {
     doRequest(CENTRAL_KALITE_VERSION_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             version_callback(data);
-         });
+            update_server_status();
+         })
+         .fail( update_server_status );
 
     doRequest(CENTRAL_KALITE_DOWNLOAD_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             download_urls_callback(data);
-        });
+            update_server_status();
+        })
+        .fail( update_server_status );
  });
