@@ -32,6 +32,6 @@
 
         {{ form.as_p }}
 
-        <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}" />
+        <input type="submit" class="submit" value="{% if group_id == 'new' %}{% trans 'Create group' %}{% else %}{% trans 'Update group' %}{% endif %}" />
     </form>
 {% endblock content %}

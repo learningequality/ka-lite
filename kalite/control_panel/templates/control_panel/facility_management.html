@@ -244,6 +244,11 @@
                                         {{ group.name }}
                                         <!--span class="icon-pencil">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span-->
                                     </a>
+                                    {% if group.id %}
+                                    <a class="btn btn-warning" href="{% url group_edit group_id=group.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">{% trans 'Edit group' %}
+                                        <span class="icon-pencil icon-medium" title="{% trans 'Edit group' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    </a>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {% if group.id %}
