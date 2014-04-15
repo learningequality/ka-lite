@@ -4,9 +4,11 @@ Basic tests of coach reports, inside the browser
 import sys
 import time
 from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
+from selenium.webdriver.support.ui import Select, WebDriverWait
+
 
 from django.utils import unittest
 
@@ -69,7 +71,6 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text.strip(), "Test Group", "Does not report user in group.")
 
 
-    @unittest.skipIf(sys.version_info < (2,7), "Test is unexplainably failing on python version 2.6")
     def test_groups_two_groups_one_user_in_group_no_ungrouped_group_selected_move(self):
         facility = self.facility
         params = {
@@ -94,6 +95,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertNotEqual(alert, None, "Does not produce alert of group movement.")
         self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
         alert.accept()
-        self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("#groups table").is_displayed()), "Closing modal doesn't cause page to change")
+        WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "students")))
+        #self.assertTrue(WebDriverWait(self.browser, 5).until(lambda s: s.find_element_by_css_selector("body")), "Closing modal doesn't cause page to change")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")
