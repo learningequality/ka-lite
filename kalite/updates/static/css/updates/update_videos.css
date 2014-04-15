@@ -19,10 +19,6 @@ ul.dynatree-container li, .ui-widget-content {
     width: 45%;
 }
 
-.subtitles-download {
-    width: 500px;
-}
-
 #download-legend-selected, #download-videos, #delete-videos {
     display: none;
 }

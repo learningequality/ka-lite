@@ -291,7 +291,7 @@ class Command(UpdatesStaticCommand):
         chunk_size = int(lines.pop(0))
         if not central_server:
             logging.warn("No central server device object found; trusting zip file because you asked me to...")
-        elif central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+        elif central_server.key and central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
             logging.info("Verified file!")
         else:
             raise Exception("Failed to verify inner zip file.")
