@@ -1,7 +1,13 @@
 {% extends base_template %}
 {% load i18n %}
 
-{% block title %}{% trans "Add Group" %}{{ block.super }}{% endblock title %}
+{% block headcss %}{{ block.super }}
+    <style>
+        #id_facility {
+            display: none;
+        }
+    </style>
+{% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script>
@@ -9,26 +15,23 @@
             $('#facility_group').change(function(){
                 window.location.href = $("#facility_group option:selected").val();
             });
+
+            {# Hide facility info #}
+            {% if not singlefacility %}
+            $("#id_facility").parent().show()
+            {% endif %}
         });
     </script>
 {% endblock headjs %}
 
 {% block content %}
-    <h1>{% trans "Add a new group" %}</h1>
+    <h1>{{ title }}</h1>
 
     <form method="post" class="basic-form">
         {% csrf_token %}
 
-        {% if not singlefacility %}
-        <p>
-            <label>{% trans "Facility" %}:</label>
-            {{ facility }}
-            <a href="?facility=select"> {% trans "(Select a different facility)" %}</a>
-        </p>
-        {% endif %}
-
         {{ form.as_p }}
-        {% trans "Create group" as create_group %}
-        <input type="submit" value="{{ create_group }}" class="submit"/>
+
+        <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}" />
     </form>
 {% endblock content %}

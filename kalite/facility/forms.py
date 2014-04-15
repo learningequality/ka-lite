@@ -151,6 +151,7 @@ class FacilityGroupForm(forms.ModelForm):
         # Across POST and GET requests
         self.fields["zone_fallback"].initial = facility.get_zone()
         self.fields["facility"].initial = facility
+        self.fields["facility"].queryset = Facility.objects.by_zone(facility.get_zone())
 
     class Meta:
         model = FacilityGroup

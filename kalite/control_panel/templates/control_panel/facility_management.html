@@ -200,7 +200,7 @@
             {# "Second block is a list of all available groups, in table form." %}{% endcomment #}
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Student Groups" %}</span>
-                <a title="{% trans 'Add a new group.' %}" href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
+                <a title="{% trans 'Add a new group.' %}" href="{% url add_group %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                     <span class="icon-add icon-medium">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>
@@ -277,7 +277,7 @@
         <div class="students" id="students">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Students" %}</span>
-                <a  title="{% trans 'Add a new student.' %}" href="{% url add_facility_student %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.path }}">
+                <a  title="{% trans 'Add a new student.' %}" href="{% url add_facility_student %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
                     <span class="icon-add icon-medium">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>

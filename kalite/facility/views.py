@@ -167,8 +167,6 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 @facility_required
 @render_to("facility/facility_group.html")
 def add_group(request, facility):
-    groups = FacilityGroup.objects.all()
-
     if request.method != 'POST':
         form = FacilityGroupForm(facility)
 
@@ -186,8 +184,8 @@ def add_group(request, facility):
     return {
         "form": form,
         "facility": facility,
-        "groups": groups,
         "singlefacility": request.session["facility_count"] == 1,
+        "title": _("Add a new group"),
     }
 
 
