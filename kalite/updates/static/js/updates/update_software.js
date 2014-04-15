@@ -129,7 +129,6 @@ function download_urls_callback(data) {
 }
 
 $(function() {
-    updatesStart("update", 1000, software_callbacks);
 
     // hide the installation complete dialog box
     $("#refresh-page-dialog").hide();
@@ -213,6 +212,7 @@ function update_server_status() {
     doRequest(CENTRAL_KALITE_DOWNLOAD_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             download_urls_callback(data);
+            updatesStart("update", 1000, software_callbacks);
         })
         .fail( update_server_status );
  });
