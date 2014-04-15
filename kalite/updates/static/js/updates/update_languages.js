@@ -227,6 +227,11 @@ $(function() {
     // basic flow: check with central server what we can install
     // if that's successful, check with local server of what we have installed
     // then dont show languages in dropdown box if already installed
-    get_available_languages();
-    get_installed_languages();
+    get_available_languages()
+        .success( update_server_status )
+        .fail( update_server_status );
+    get_installed_languages()
+        .success( update_server_status )
+        .fail( update_server_status );
+
 });
