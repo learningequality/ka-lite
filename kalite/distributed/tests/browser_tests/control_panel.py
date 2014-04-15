@@ -46,7 +46,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         group.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text, "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text, "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text, "0", "Does not report zero users for empty group.")
 
 
@@ -65,7 +65,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text.strip(), "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text.strip(), "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text.strip(), "1", "Does not report one user for group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr[1]/td[1]").text.strip(), "test_user", "Does not show user in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text.strip(), "Test Group", "Does not report user in group.")

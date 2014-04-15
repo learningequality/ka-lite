@@ -34,7 +34,7 @@ from securesync.devices.views import *
 
 
 @require_authorized_admin
-@render_to("facility/facility_edit.html")
+@render_to("facility/facility.html")
 def facility_edit(request, id=None, zone_id=None):
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
     if facil:
@@ -165,17 +165,18 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
 @require_authorized_admin
 @facility_required
-@render_to("facility/add_group.html")
-def add_group(request, facility):
-    groups = FacilityGroup.objects.all()
+@render_to("facility/facility_group.html")
+def group_edit(request, facility, group_id):
+    group = get_object_or_None(FacilityGroup, id=group_id)
+    facility = facility or (group and group.facility)
 
     if request.method != 'POST':
-        form = FacilityGroupForm(facility)
+        form = FacilityGroupForm(facility, instance=group)
 
     else:
-        form = FacilityGroupForm(facility, data=request.POST)
+        form = FacilityGroupForm(facility, data=request.POST, instance=group)
         if not form.is_valid():
-            messages.error(request, _("Failed to save the facility; please review errors below."))
+            messages.error(request, _("Failed to save the group; please review errors below."))
         else:
             form.save()
 
@@ -185,9 +186,10 @@ def add_group(request, facility):
 
     return {
         "form": form,
+        "group_id": group_id,
         "facility": facility,
-        "groups": groups,
         "singlefacility": request.session["facility_count"] == 1,
+        "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
 

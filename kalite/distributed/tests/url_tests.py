@@ -9,6 +9,7 @@ import os
 
 from django.conf import settings
 from django.core.management import call_command
+from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.utils import unittest
 
@@ -30,8 +31,8 @@ class UrlTestCases(KALiteTestCase):
         settings.DEBUG=False
         self.validate_url('/')
         self.validate_url('/exercisedashboard/')
-        self.validate_url('/securesync/login/')
-        self.validate_url('/securesync/add/student/', status_code=302)
+        self.validate_url(reverse('login'))
+        self.validate_url(reverse('add_facility_student'), status_code=302)
         self.validate_url('/math/')
         self.validate_url('/content/', status_code=404)
         self.validate_url('/accounts/login/', status_code=404)

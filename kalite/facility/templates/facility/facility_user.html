@@ -3,6 +3,14 @@
 
 {% block users_active %}active{% endblock %}
 
+{% block headcss %}{{ block.super }}
+    <style>
+        #id_facility {
+            display: none;
+        }
+    </style>
+{% endblock headcss %}
+
 {% block headjs %}{{ block.super }}
     <script>
         var DEFAULT_LANGUAGE = "{{ default_language }}";
@@ -28,8 +36,8 @@
         {% endif %}
 
         {# Hide facility info #}
-        {% if singlefacility %}
-        $("#id_facility").parent().hide()
+        {% if not singlefacility %}
+        $("#id_facility").parent().show()
         {% endif %}
         });
     </script>
@@ -43,10 +51,6 @@
 
         {{ form.as_p }}
 
-        {% if user_id == "new" %}
-        <input type="submit" value="{% trans 'Create user' %}" class="submit"/>
-        {% else %}
-        <input type="submit" value="{% trans 'Update user' %}" class="submit"/>
-        {% endif %}
+        <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
     </form>
 {% endblock content %}
