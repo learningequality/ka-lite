@@ -50,9 +50,6 @@ function video_check_callback(progress_log, resp) {
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
                 updatesReset(progress_log.process_name);
-                if ($(".subtitle-section:visible").length == 0) {
-                    $("#cancel-download").hide();
-                }
                 return;
 
             } else if (lastKey != currentKey) {
@@ -75,7 +72,6 @@ function video_check_callback(progress_log, resp) {
         lastKey = currentKey;
 
     } else { // check failed.
-        clearInterval(window.download_subtitle_check_interval);
         $("#download-videos").removeAttr("disabled");
     }
 }
