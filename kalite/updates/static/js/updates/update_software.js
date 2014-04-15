@@ -1,3 +1,19 @@
+function software_check_callback(progress_log, resp) {
+
+    if (!progress_log && resp.status != 403) {
+        // server got brought down, we wait X seconds now and then
+        // inform the user that their software may be up now
+
+        // clear the messages too!
+        clear_messages();
+
+        refresh_countdown_dialog_box(15);  // update completed.
+    }
+}
+
+var software_callbacks = {
+    check: software_check_callback
+};
 
 function refresh_countdown_dialog_box(seconds) {
     $("#refresh-page-dialog").dialog({
