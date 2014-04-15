@@ -133,7 +133,9 @@ function update_server_status() {
     with_online_status("server", function(server_is_online) {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
-        if(!server_is_online){
+        if(server_is_online){
+            updatesStart("update", 1000, software_callbacks);
+        } else {
             clear_messages();
             show_message("error", gettext("The server does not have internet access; software cannot be updated at this time."));
         }
@@ -144,13 +146,14 @@ function update_server_status() {
     doRequest(CENTRAL_KALITE_VERSION_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             version_callback(data);
+            update_server_status();
          })
          .fail( update_server_status );
 
     doRequest(CENTRAL_KALITE_DOWNLOAD_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             download_urls_callback(data);
-            updatesStart("update", 1000, software_callbacks);
+            update_server_status();
         })
         .fail( update_server_status );
  });
