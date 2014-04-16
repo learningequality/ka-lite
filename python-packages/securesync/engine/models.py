@@ -338,7 +338,7 @@ class SyncedModel(ExtendedModel):
             if _get_own_device().is_trusted() and self.zone_fallback:
                 zone = self.zone_fallback
             else:
-                zone = _get_own_device.get_zone()
+                zone = _get_own_device().get_zone()
 
         # otherwise, try getting the zone of the device that signed it
         if not zone and self.signed_by:
