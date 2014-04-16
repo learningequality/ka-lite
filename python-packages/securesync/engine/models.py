@@ -334,7 +334,11 @@ class SyncedModel(ExtendedModel):
 
         # Otherwise, if it's not yet synced, then get the zone from the local machine
         if not zone and not self.signed_by:
-            zone = _get_own_device().get_zone()
+            # trusted machines can set zone arbitrarily; non-trusted cannot
+            if _get_own_device().is_trusted() and self.zone_fallback:
+                zone = self.zone_fallback
+            else:
+                zone = _get_own_device.get_zone()
 
         # otherwise, try getting the zone of the device that signed it
         if not zone and self.signed_by:
