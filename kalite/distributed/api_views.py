@@ -70,7 +70,7 @@ def time_set(request):
 
     now = datetime.datetime.now().isoformat(" ").split(".")[0]
 
-    return JsonResponseMessage(_("System time was reset successfully.")
+    return JsonResponseMessage(_("System time was reset successfully."))
 
 
 # Functions below here focused on users
