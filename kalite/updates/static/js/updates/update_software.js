@@ -98,7 +98,7 @@ $(function() {
             } else {
                 $("#software_available").removeAttr("disabled");
                 $("#download-update-kalite").removeAttr("disabled");
-                $("#upload-update-kalite").removeAttr("disabled");
+                $("#git-update-kalite").removeAttr("disabled");
                 clear_messages("id_offline_message");
             }
         });
