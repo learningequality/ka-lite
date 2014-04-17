@@ -83,6 +83,46 @@ function download_urls_callback(data) {
     $("#software_available").append(sprintf("<option value='%s'>%s (%s MB)</option>", data[locale].url, locale, data[locale].size));
 }
 
+// returns an appropriate callback for a download button
+function download_initiate_callback_generator(button_id) {
+    return function() {
+
+        // we have to define the modal dialog buttons
+        // here rather than inline because having
+        // gettext("Yes") in a definition of a dictionary
+        // is a syntax error.
+        var button_behaviors = {};
+        button_behaviors[gettext("Yes")] = function() {
+            // Start the download and updating process
+            // Update the UI to reflect that we're waiting to start
+            doRequest(
+                UPDATE_SOFTWARE_URL,
+                { mechanism: $(button_id).attr("mechanism") }
+            ).success(function() {
+                updatesStart_callback("update");
+            }).fail(function(response) {
+                show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
+            });
+            // remove the dialog box
+            $(this).remove();
+        };
+        button_behaviors[gettext("No")] = function() {
+            $(this).remove();
+        };
+
+        $("<div></div>").appendTo("body")
+            .html("<div>" + gettext("Are you sure you want to update your installation of KA Lite? This process is irreversible!") + "</div>")
+            .dialog({
+                modal: true,
+                title: gettext("Confirm update"),
+                width: "auto",
+                resizable: false,
+                buttons: button_behaviors
+            });
+        //updatesStart("update", 1000, software_callbacks)
+    };
+}
+
 $(function() {
     // hide the installation complete dialog box
     $("#refresh-page-dialog").hide();
@@ -105,42 +145,8 @@ $(function() {
 
     }, 200);
 
-    $("#download-update-kalite").click(function() {
-
-        // we have to define the modal dialog buttons
-        // here rather than inline because having
-        // gettext("Yes") in a definition of a dictionary
-        // is a syntax error.
-        var button_behaviors = {};
-        button_behaviors[gettext("Yes")] = function() {
-            // Start the download and updating process
-            // Update the UI to reflect that we're waiting to start
-            doRequest(
-                UPDATE_SOFTWARE_URL,
-                { mechanism: $("#download-update-kalite").attr("mechanism") }
-            ).success(function() {
-                updatesStart_callback("update");
-            }).fail(function(response) {
-                show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
-            });
-            // remove the dialog box
-            $(this).remove();
-        };
-        button_behaviors[gettext("No")] = function() {
-            $(this).remove();
-        };
-
-        $("<div></div>").appendTo("body")
-        .html("<div>" + gettext("Are you sure you want to update your installation of KA Lite? This process is irreversible!") + "</div>")
-        .dialog({
-            modal: true,
-            title: gettext("Confirm update"),
-            width: "auto",
-            resizable: false,
-            buttons: button_behaviors
-        });
-        //updatesStart("update", 1000, software_callbacks)
-    });
+    $("#download-update-kalite").click(download_initiate_callback_generator("#download-update-kalite"));
+    $("#git-update-kalite").click(download_initiate_callback_generator("#git-update-kalite"));
     // onload
 });
 
