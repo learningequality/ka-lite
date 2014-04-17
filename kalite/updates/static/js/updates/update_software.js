@@ -55,7 +55,9 @@ function version_callback(data) {
 
         //alert("update available! " + current_version + " < " + remote_version);
         $("#remote_version").text(remote_version);
-        $("#remote_release_date").text(version_info[remote_version].release_date);
+        if (version_info.hasOwnProperty(remote_version)) {
+            $("#remote_release_date").text(version_info[remote_version].release_date);
+        }
 
         // Update feature list
         //$("#new_features").text("");
