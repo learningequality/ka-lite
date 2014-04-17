@@ -1,5 +1,6 @@
 """
 """
+import datetime
 import git
 import glob
 import os
@@ -143,6 +144,10 @@ class Command(UpdatesStaticCommand):
 
         # Step 2b: fetch the update remote
         remote.fetch()
+
+        # Step 2c: stash any changes we have
+        now = datetime.datetime.now().isoformat()
+        repo.git.stash("save", "Stash from update initiated at %s" % now)
 
         # Step 2c: checkout the remote branch
         remote_name_branch = '%s/%s' % (remote_name, remote_branch)
