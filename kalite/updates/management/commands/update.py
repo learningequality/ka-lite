@@ -138,7 +138,7 @@ class Command(UpdatesStaticCommand):
         # Step 2a: add the remote first
         try:
             remote = repo.create_remote(remote_name, remote_url)
-        except git.exc.CommandError: # remote already exists
+        except git.exc.GitCommandError: # remote already exists
             remote = repo.remote(remote_name)
 
         # Step 2b: fetch the update remote
