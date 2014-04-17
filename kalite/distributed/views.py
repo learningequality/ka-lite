@@ -47,7 +47,7 @@ def check_setup_status(handler):
     NOTE that this decorator must appear before the backend_cache_page decorator,
     so that it is run even when there is a cache hit.
     """
-    def wrapper_fn(request, *args, **kwargs):
+    def check_setup_status_wrapper_fn(request, *args, **kwargs):
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
             if not request.session["registered"] and BaseClient().test_connection() == "success":
@@ -73,7 +73,7 @@ def check_setup_status(handler):
                     to complete the setup." % (reverse("login"), redirect_url)))
 
         return handler(request, *args, **kwargs)
-    return wrapper_fn
+    return check_setup_status_wrapper_fn
 
 
 def refresh_topic_cache(handler, force=False):

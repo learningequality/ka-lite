@@ -65,15 +65,15 @@ def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=setti
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
         @cache_control(no_cache=True)  # must appear before @cache_page
         @cache_page(cache_time, cache=cache_name)
-        def wrapper_fn(request, *args, **kwargs):
+        def backend_cache_page_wrapper_fn(request, *args, **kwargs):
             return handler(request, *args, **kwargs)
 
     else:
         # Would happen if caching was disabled
-        def wrapper_fn(request, *args, **kwargs):
+        def backend_cache_page_wrapper_fn(request, *args, **kwargs):
             return handler(request, *args, **kwargs)
 
-    return wrapper_fn
+    return backend_cache_page_wrapper_fn
 
 
 # Importable functions
