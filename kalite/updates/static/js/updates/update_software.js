@@ -1,6 +1,6 @@
 function software_check_callback(progress_log, resp) {
 
-    if (!progress_log && resp.status != 403) {
+    if (!progress_log && resp.status == 403) {
         // server got brought down, we wait X seconds now and then
         // inform the user that their software may be up now
 
