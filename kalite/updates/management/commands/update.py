@@ -672,7 +672,8 @@ class Command(UpdatesStaticCommand):
         self._print_message("Starting the server")
 
         # Start the server to validate
-        manage_py_dir = os.path.join(self.dest_dir, 'kalite')
+        target_dir = getattr(self, "dest_dir", os.path.join(settings.PROJECT_PATH, '..'))
+        manage_py_dir = os.path.join(target_dir, 'kalite')
         # shift to an existing directory first to remove the reference to a deleted directory
         os.chdir(tempfile.gettempdir())
         # now go back to the working directory
