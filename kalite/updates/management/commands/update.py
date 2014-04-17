@@ -162,7 +162,7 @@ class Command(UpdatesStaticCommand):
         #  to guarantee all the new code is begin used.
         self.next_stage("Update the database [please wait; no interactive output]")
         # should be interactive=False, but this method is a total hack
-        (out, err, rc) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
+        (out, err, rc, p) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
         sys.stderr.write(out)
         if rc:
             sys.stderr.write(err)
