@@ -33,7 +33,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
     if not handler:
         handler = lambda request, facility, *args, **kwargs: facility
 
-    def wrapper_fn(request, *args, **kwargs):
+    def facility_from_request_wrapper_fn(request, *args, **kwargs):
         facility = None
 
         if kwargs.get("facility_id", None):  # avoid using blank
@@ -77,8 +77,11 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
         if "set_default" in request.GET and request.is_admin and facility:
             Settings.set("default_facility", facility.id)
 
-        return handler(request, *args, facility=facility, **kwargs)
-    return wrapper_fn if not request else wrapper_fn(request=request, *args, **kwargs)
+        if facility or "facility" not in kwargs:  # this syntax allows passed in facility param to work.
+            kwargs["facility"] = facility
+        return handler(request, *args, **kwargs)
+
+    return facility_from_request_wrapper_fn if not request else facility_from_request_wrapper_fn(request=request, *args, **kwargs)
 
 
 def facility_required(handler):
@@ -128,5 +131,4 @@ def facility_required(handler):
                 }
             return facility_selection(request)
 
-    return inner_fn
-
+    return facility_required_inner_fn
