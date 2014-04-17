@@ -683,6 +683,7 @@ class Command(UpdatesStaticCommand):
             wait=False,
             manage_py_dir=manage_py_dir,
             output_to_stdin=True,
+            production=True,
         )
 
         self._wait_for_server_to_be_up()
