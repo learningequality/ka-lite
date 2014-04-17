@@ -573,7 +573,8 @@ class Command(UpdatesStaticCommand):
                 subprocess.check_call(["taskkill", "/pid", old_pid, "/f"])
         else:
             self.update_stage(stage_percent=0.5, notes="Stopping server.")
-            stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
+            current_dir = getattr(self, "current_dir", os.path.join(settings.PROJECT_PATH, '..'))
+            stop_cmd = self.get_shell_script("serverstop*", location=current_dir)
             try:
                 p = subprocess.check_call(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             except subprocess.CalledProcessError as e:
