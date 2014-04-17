@@ -361,7 +361,7 @@
                             <td>
                                 <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url edit_facility_user id=student.id %}?facility={{ facility_id }}">
                                     {{ student|format_name:"last_first" }}
-                                    {% trans "(add)" %}
+                                    {% trans "(edit)" %}
                                 </a>
                             </td>
 
