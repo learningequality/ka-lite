@@ -8,6 +8,10 @@
 
 {% block title %}{{ facility.name }} - {% trans "Facility Management" %}{{ block.super }}{% endblock title %}
 
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/ui-datepicker.css' %}" />
+{% endblock headcss %}
+
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery.sparkline.min.js' %}"></script>
     <script type="text/javascript">
