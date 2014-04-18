@@ -113,7 +113,7 @@
                 <a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <span class="not-super-user-only"><a href="{% url 'account_management' %}" id="logged-in-name" class="logged-in-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a></span>
+                <a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url 'help' %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a>
@@ -158,6 +158,7 @@
                 {% endblock sitewide_navigation %}
             </span></nav></div>
             <div class="clear"></div>
+
 
             <div id="logo">
                 <a id="logo-image-small" href="/" title="{% trans 'KA Lite Home' %}">
