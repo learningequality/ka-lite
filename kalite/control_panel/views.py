@@ -439,7 +439,8 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
 
     if len(group_data) == 1 and group_data.has_key(None):
-        del group_data[None]
+        if not group_data[None]["total_users"]:
+            del group_data[None]
 
     return (user_data, group_data)
 
