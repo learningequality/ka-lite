@@ -12,7 +12,7 @@ function setActionButtonState() {
         $(".action button").removeAttr("disabled")
     } else {
         $(".action button").attr("disabled", "disabled")
-    };
+    }
 }
 
 $(function() {
