@@ -125,7 +125,7 @@ class Command(UpdatesStaticCommand):
 
         # step 0: check that we are in a git repo first!
         try:
-            repo = git.Repo()
+            repo = git.Repo(os.path.dirname(__file__))
         except git.exc.InvalidGitRepositoryError:
             raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
 
