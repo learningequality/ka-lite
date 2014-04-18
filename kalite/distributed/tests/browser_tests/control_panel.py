@@ -31,8 +31,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.assertEqual(self.browser.find_element_by_css_selector('div#coaches p.no-data').text, "You currently have no coaches for this facility.", "Does not report no coaches with no coaches.")
-        # TODO: Will be addressed in issue learning-equality/ka-lite#1837
-        # self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "No Groups at this Facility", "Does not report no groups with no groups.")
+        self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "You currently have no group data available.", "Does not report no groups with no groups.")
         self.assertEqual(self.browser.find_element_by_css_selector('div#students p.no-data').text, "You currently have no student data available.", "Does not report no users with no users.")
 
     def test_groups_one_group_no_user_in_group_no_ungrouped_no_group_selected(self):

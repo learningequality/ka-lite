@@ -213,7 +213,7 @@
                 </span>
             </div>
             {% if not groups %}
-                <p class="no-data">{% trans "You currently have no data available." %}</p>
+                <p class="no-data">{% trans "You currently have no group data available." %}</p>
 
             {% else %}
                 <table class="simple-table">
@@ -328,7 +328,7 @@
                         {% trans "Action" %}:
                         {% if groups %}
                         <span class="dotted">
-                            <button class="movegroup" value="#students">{% trans "Change Student Groups" %}</button>
+                            <button class="movegroup" disabled="disabled" value="#students">{% trans "Change Student Groups" %}</button>
                             <select class="movegrouplist" value="#students">
                                     <option selected>----</option>
                                     {% for group in groups %}
