@@ -1,7 +1,7 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 
-# Note that these patterns are all under /api/, 
+# Note that these patterns are all under /api/,
 # due to the way they've been included into main/urls.py
 urlpatterns = patterns('securesync.engine.api_views',
     url(r'^session/create$', 'create_session', {}, 'create_session'),
