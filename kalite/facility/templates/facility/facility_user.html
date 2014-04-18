@@ -24,7 +24,7 @@
         {# Allow admins to add a new group #}
         {% if request.is_admin %}
             {% trans "Add a new group" as add_new_group %}
-            $('#id_group').parent().find(".helptext").html('(<a href="{% url add_group %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
+            $('#id_group').parent().find(".helptext").html('(<a href="{% url 'add_group' %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
         {% elif num_groups == 0 %}
             $('#id_group').parent().hide();
         {% endif %}

@@ -9,7 +9,7 @@
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
-            window.location = "{% url load_test %}";
+            window.location = "{% url 'load_test' %}";
         }
     </script>
     {% endif %}
@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-sm-5 col-sm-offset-1 vertical-shadow suggested-action">
-                <a href="{% url exercise_dashboard %}">
+                <a href="{% url 'exercise_dashboard' %}">
                     <h3 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h3>
                     <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
                     <div class="suggested-action-image-link"></div>
@@ -51,7 +51,6 @@
             </div>
 
         </div>
-
     </div>
 
 {% endblock content %}

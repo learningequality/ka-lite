@@ -1,8 +1,8 @@
 from optparse import make_option
-import sys
 import traceback
 
 from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import NoArgsCommand
 from django.core.management.color import no_style
 from django.core.management.sql import custom_sql_for_model, emit_post_sync_signal
@@ -15,6 +15,8 @@ class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list + (
         make_option('--noinput', action='store_false', dest='interactive', default=True,
             help='Tells Django to NOT prompt the user for input of any kind.'),
+        make_option('--no-initial-data', action='store_false', dest='load_initial_data', default=True,
+            help='Tells Django not to load any initial data after database synchronization.'),
         make_option('--database', action='store', dest='database',
             default=DEFAULT_DB_ALIAS, help='Nominates a database to synchronize. '
                 'Defaults to the "default" database.'),
@@ -26,10 +28,7 @@ class Command(NoArgsCommand):
         verbosity = int(options.get('verbosity'))
         interactive = options.get('interactive')
         show_traceback = options.get('traceback')
-
-        # Stealth option -- 'load_initial_data' is used by the testing setup
-        # process to disable initial fixture loading.
-        load_initial_data = options.get('load_initial_data', True)
+        load_initial_data = options.get('load_initial_data')
 
         self.style = no_style()
 
@@ -38,7 +37,7 @@ class Command(NoArgsCommand):
         for app_name in settings.INSTALLED_APPS:
             try:
                 import_module('.management', app_name)
-            except ImportError, exc:
+            except ImportError as exc:
                 # This is slightly hackish. We want to ignore ImportErrors
                 # if the "management" module itself is missing -- but we don't
                 # want to ignore the exception if the management module exists
@@ -69,6 +68,7 @@ class Command(NoArgsCommand):
                 if router.allow_syncdb(db, m)])
             for app in models.get_apps()
         ]
+
         def model_installed(model):
             opts = model._meta
             converter = connection.introspection.table_name_converter
@@ -76,18 +76,18 @@ class Command(NoArgsCommand):
                 (opts.auto_created and converter(opts.auto_created._meta.db_table) in tables))
 
         manifest = SortedDict(
-            (app_name, filter(model_installed, model_list))
+            (app_name, list(filter(model_installed, model_list)))
             for app_name, model_list in all_models
         )
 
         # Create the tables for each model
         if verbosity >= 1:
-            print "Creating tables ..."
+            self.stdout.write("Creating tables ...\n")
         for app_name, model_list in manifest.items():
             for model in model_list:
                 # Create the model's database table, if it doesn't already exist.
                 if verbosity >= 3:
-                    print "Processing %s.%s model" % (app_name, model._meta.object_name)
+                    self.stdout.write("Processing %s.%s model\n" % (app_name, model._meta.object_name))
                 sql, references = connection.creation.sql_create_model(model, self.style, seen_models)
                 seen_models.add(model)
                 created_models.add(model)
@@ -97,11 +97,10 @@ class Command(NoArgsCommand):
                         sql.extend(connection.creation.sql_for_pending_references(refto, self.style, pending_references))
                 sql.extend(connection.creation.sql_for_pending_references(model, self.style, pending_references))
                 if verbosity >= 1 and sql:
-                    print "Creating table %s" % model._meta.db_table
+                    self.stdout.write("Creating table %s\n" % model._meta.db_table)
                 for statement in sql:
                     cursor.execute(statement)
                 tables.append(connection.introspection.table_name_converter(model._meta.db_table))
-
 
         transaction.commit_unless_managed(using=db)
 
@@ -115,19 +114,19 @@ class Command(NoArgsCommand):
         # Install custom SQL for the app (but only if this
         # is a model we've just created)
         if verbosity >= 1:
-            print "Installing custom SQL ..."
+            self.stdout.write("Installing custom SQL ...\n")
         for app_name, model_list in manifest.items():
             for model in model_list:
                 if model in created_models:
                     custom_sql = custom_sql_for_model(model, self.style, connection)
                     if custom_sql:
                         if verbosity >= 2:
-                            print "Installing custom SQL for %s.%s model" % (app_name, model._meta.object_name)
+                            self.stdout.write("Installing custom SQL for %s.%s model\n" % (app_name, model._meta.object_name))
                         try:
                             for sql in custom_sql:
                                 cursor.execute(sql)
-                        except Exception, e:
-                            sys.stderr.write("Failed to install custom SQL for %s.%s model: %s\n" % \
+                        except Exception as e:
+                            self.stderr.write("Failed to install custom SQL for %s.%s model: %s\n" % \
                                                 (app_name, model._meta.object_name, e))
                             if show_traceback:
                                 traceback.print_exc()
@@ -136,10 +135,10 @@ class Command(NoArgsCommand):
                             transaction.commit_unless_managed(using=db)
                     else:
                         if verbosity >= 3:
-                            print "No custom SQL for %s.%s model" % (app_name, model._meta.object_name)
+                            self.stdout.write("No custom SQL for %s.%s model\n" % (app_name, model._meta.object_name))
 
         if verbosity >= 1:
-            print "Installing indexes ..."
+            self.stdout.write("Installing indexes ...\n")
         # Install SQL indices for all newly created models
         for app_name, model_list in manifest.items():
             for model in model_list:
@@ -147,12 +146,12 @@ class Command(NoArgsCommand):
                     index_sql = connection.creation.sql_indexes_for_model(model, self.style)
                     if index_sql:
                         if verbosity >= 2:
-                            print "Installing index for %s.%s model" % (app_name, model._meta.object_name)
+                            self.stdout.write("Installing index for %s.%s model\n" % (app_name, model._meta.object_name))
                         try:
                             for sql in index_sql:
                                 cursor.execute(sql)
-                        except Exception, e:
-                            sys.stderr.write("Failed to install index for %s.%s model: %s\n" % \
+                        except Exception as e:
+                            self.stderr.write("Failed to install index for %s.%s model: %s\n" % \
                                                 (app_name, model._meta.object_name, e))
                             transaction.rollback_unless_managed(using=db)
                         else:
@@ -160,5 +159,5 @@ class Command(NoArgsCommand):
 
         # Load initial_data fixtures (unless that has been disabled)
         if load_initial_data:
-            from django.core.management import call_command
-            call_command('loaddata', 'initial_data', verbosity=verbosity, database=db)
+            call_command('loaddata', 'initial_data', verbosity=verbosity,
+                         database=db, skip_validation=True)

@@ -24,15 +24,13 @@ class SpatiaLiteCreation(DatabaseCreation):
             test_db_repr = ''
             if verbosity >= 2:
                 test_db_repr = " ('%s')" % test_database_name
-            print "Creating test database for alias '%s'%s..." % (self.connection.alias, test_db_repr)
+            print("Creating test database for alias '%s'%s..." % (self.connection.alias, test_db_repr))
 
         self._create_test_db(verbosity, autoclobber)
 
         self.connection.close()
         self.connection.settings_dict["NAME"] = test_database_name
-
-        # Confirm the feature set of the test database
-        self.connection.features.confirm()
+        self.connection.ops.confirm_spatial_components_versions()
 
         # Need to load the SpatiaLite initialization SQL before running `syncdb`.
         self.load_spatialite_sql()
@@ -102,14 +100,14 @@ class SpatiaLiteCreation(DatabaseCreation):
         """
         This routine loads up the SpatiaLite SQL file.
         """
-        if self.connection.ops.spatial_version[:2] >= (3, 0):
-            # Spatialite >= 3.0.x -- No need to load any SQL file, calling
+        if self.connection.ops.spatial_version[:2] >= (2, 4):
+            # Spatialite >= 2.4 -- No need to load any SQL file, calling
             # InitSpatialMetaData() transparently creates the spatial metadata
             # tables
             cur = self.connection._cursor()
             cur.execute("SELECT InitSpatialMetaData()")
         else:
-            # Spatialite < 3.0.x -- Load the initial SQL
+            # Spatialite < 2.4 -- Load the initial SQL
 
             # Getting the location of the SpatiaLite SQL file, and confirming
             # it exists.
@@ -120,12 +118,9 @@ class SpatiaLiteCreation(DatabaseCreation):
 
             # Opening up the SpatiaLite SQL initialization file and executing
             # as a script.
-            sql_fh = open(spatialite_sql, 'r')
-            try:
+            with open(spatialite_sql, 'r') as sql_fh:
                 cur = self.connection._cursor()
                 cur.executescript(sql_fh.read())
-            finally:
-                sql_fh.close()
 
     def spatialite_init_file(self):
         # SPATIALITE_SQL may be placed in settings to tell GeoDjango

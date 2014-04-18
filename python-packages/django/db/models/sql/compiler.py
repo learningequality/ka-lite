@@ -1,14 +1,17 @@
-from itertools import izip
+from django.utils.six.moves import zip
 
 from django.core.exceptions import FieldError
 from django.db import transaction
 from django.db.backends.util import truncate_name
+from django.db.models.constants import LOOKUP_SEP
 from django.db.models.query_utils import select_related_descend
-from django.db.models.sql.constants import *
+from django.db.models.sql.constants import (SINGLE, MULTI, ORDER_DIR,
+        GET_ITERATOR_CHUNK_SIZE)
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.db.models.sql.expressions import SQLEvaluator
 from django.db.models.sql.query import get_order_dir, Query
 from django.db.utils import DatabaseError
+from django.utils import six
 
 
 class SQLCompiler(object):
@@ -82,7 +85,7 @@ class SQLCompiler(object):
         where, w_params = self.query.where.as_sql(qn=qn, connection=self.connection)
         having, h_params = self.query.having.as_sql(qn=qn, connection=self.connection)
         params = []
-        for val in self.query.extra_select.itervalues():
+        for val in six.itervalues(self.query.extra_select):
             params.extend(val[1])
 
         result = ['SELECT']
@@ -100,21 +103,12 @@ class SQLCompiler(object):
             result.append('WHERE %s' % where)
             params.extend(w_params)
 
-        grouping, gb_params = self.get_grouping()
+        grouping, gb_params = self.get_grouping(ordering_group_by)
         if grouping:
             if distinct_fields:
                 raise NotImplementedError(
                     "annotate() + distinct(fields) not implemented.")
-            if ordering:
-                # If the backend can't group by PK (i.e., any database
-                # other than MySQL), then any fields mentioned in the
-                # ordering clause needs to be in the group by clause.
-                if not self.connection.features.allows_group_by_pk:
-                    for col, col_params in ordering_group_by:
-                        if col not in grouping:
-                            grouping.append(str(col))
-                            gb_params.extend(col_params)
-            else:
+            if not ordering:
                 ordering = self.connection.ops.force_no_ordering()
             result.append('GROUP BY %s' % ', '.join(grouping))
             params.extend(gb_params)
@@ -177,7 +171,7 @@ class SQLCompiler(object):
         """
         qn = self.quote_name_unless_alias
         qn2 = self.connection.ops.quote_name
-        result = ['(%s) AS %s' % (col[0], qn2(alias)) for alias, col in self.query.extra_select.iteritems()]
+        result = ['(%s) AS %s' % (col[0], qn2(alias)) for alias, col in six.iteritems(self.query.extra_select)]
         aliases = set(self.query.extra_select.keys())
         if with_aliases:
             col_aliases = aliases.copy()
@@ -188,7 +182,7 @@ class SQLCompiler(object):
             for col in self.query.select:
                 if isinstance(col, (list, tuple)):
                     alias, column = col
-                    table = self.query.alias_map[alias][TABLE_NAME]
+                    table = self.query.alias_map[alias].table_name
                     if table in only_load and column not in only_load[table]:
                         continue
                     r = '%s.%s' % (qn(alias), qn(column))
@@ -265,31 +259,30 @@ class SQLCompiler(object):
         qn2 = self.connection.ops.quote_name
         aliases = set()
         only_load = self.deferred_to_columns()
-        # Skip all proxy to the root proxied model
-        proxied_model = opts.concrete_model
 
         if start_alias:
             seen = {None: start_alias}
         for field, model in opts.get_fields_with_model():
+            # For local fields (even if through proxy) the model should
+            # be None.
+            if model == opts.concrete_model:
+                model = None
             if local_only and model is not None:
                 continue
             if start_alias:
                 try:
                     alias = seen[model]
                 except KeyError:
-                    if model is proxied_model:
-                        alias = start_alias
-                    else:
-                        link_field = opts.get_ancestor_link(model)
-                        alias = self.query.join((start_alias, model._meta.db_table,
-                                link_field.column, model._meta.pk.column))
+                    link_field = opts.get_ancestor_link(model)
+                    alias = self.query.join((start_alias, model._meta.db_table,
+                            link_field.column, model._meta.pk.column))
                     seen[model] = alias
             else:
                 # If we're starting from the base model of the queryset, the
                 # aliases will have already been set up in pre_sql_setup(), so
                 # we can save time here.
                 alias = self.query.included_inherited_models[model]
-            table = self.query.alias_map[alias][TABLE_NAME]
+            table = self.query.alias_map[alias].table_name
             if table in only_load and field.column not in only_load[table]:
                 continue
             if as_pairs:
@@ -378,7 +371,7 @@ class SQLCompiler(object):
                 else:
                     order = asc
                 result.append('%s %s' % (field, order))
-                group_by.append((field, []))
+                group_by.append((str(field), []))
                 continue
             col, order = get_order_dir(field, asc)
             if col in self.query.aggregate_select:
@@ -432,7 +425,7 @@ class SQLCompiler(object):
             # Firstly, avoid infinite loops.
             if not already_seen:
                 already_seen = set()
-            join_tuple = tuple([self.query.alias_map[j][TABLE_NAME] for j in joins])
+            join_tuple = tuple([self.query.alias_map[j].table_name for j in joins])
             if join_tuple in already_seen:
                 raise FieldError('Infinite loop caused by ordering.')
             already_seen.add(join_tuple)
@@ -458,6 +451,9 @@ class SQLCompiler(object):
             alias = self.query.get_initial_alias()
         field, target, opts, joins, _, _ = self.query.setup_joins(pieces,
                 opts, alias, False)
+        # We will later on need to promote those joins that were added to the
+        # query afresh above.
+        joins_to_promote = [j for j in joins if self.query.alias_refcount[j] < 2]
         alias = joins[-1]
         col = target.column
         if not field.rel:
@@ -469,8 +465,7 @@ class SQLCompiler(object):
         # Must use left outer joins for nullable fields and their relations.
         # Ordering or distinct must not affect the returned set, and INNER
         # JOINS for nullable fields could do this.
-        self.query.promote_alias_chain(joins,
-            self.query.alias_map[joins[0]][JOIN_TYPE] == self.query.LOUTER)
+        self.query.promote_joins(joins_to_promote)
         return field, col, alias, joins, opts
 
     def _final_join_removal(self, col, alias):
@@ -485,11 +480,11 @@ class SQLCompiler(object):
         if alias:
             while 1:
                 join = self.query.alias_map[alias]
-                if col != join[RHS_JOIN_COL]:
+                if col != join.rhs_join_col:
                     break
                 self.query.unref_alias(alias)
-                alias = join[LHS_ALIAS]
-                col = join[LHS_JOIN_COL]
+                alias = join.lhs_alias
+                col = join.lhs_join_col
         return col, alias
 
     def get_from_clause(self):
@@ -536,38 +531,50 @@ class SQLCompiler(object):
                 first = False
         return result, []
 
-    def get_grouping(self):
+    def get_grouping(self, ordering_group_by):
         """
         Returns a tuple representing the SQL elements in the "group by" clause.
         """
         qn = self.quote_name_unless_alias
         result, params = [], []
         if self.query.group_by is not None:
-            if (len(self.query.model._meta.fields) == len(self.query.select) and
-                self.connection.features.allows_group_by_pk):
+            select_cols = self.query.select + self.query.related_select_cols
+            if (len(self.query.model._meta.fields) == len(self.query.select)
+                    and self.connection.features.allows_group_by_pk):
                 self.query.group_by = [
                     (self.query.model._meta.db_table, self.query.model._meta.pk.column)
                 ]
-
-            group_by = self.query.group_by or []
-
-            extra_selects = []
-            for extra_select, extra_params in self.query.extra_select.itervalues():
-                extra_selects.append(extra_select)
-                params.extend(extra_params)
-            cols = (group_by + self.query.select +
-                self.query.related_select_cols + extra_selects)
+                select_cols = []
             seen = set()
+            cols = self.query.group_by + select_cols
             for col in cols:
-                if col in seen:
-                    continue
-                seen.add(col)
                 if isinstance(col, (list, tuple)):
-                    result.append('%s.%s' % (qn(col[0]), qn(col[1])))
+                    sql = '%s.%s' % (qn(col[0]), qn(col[1]))
                 elif hasattr(col, 'as_sql'):
-                    result.append(col.as_sql(qn, self.connection))
+                    sql = col.as_sql(qn, self.connection)
                 else:
-                    result.append('(%s)' % str(col))
+                    sql = '(%s)' % str(col)
+                if sql not in seen:
+                    result.append(sql)
+                    seen.add(sql)
+
+            # Still, we need to add all stuff in ordering (except if the backend can
+            # group by just by PK).
+            if ordering_group_by and not self.connection.features.allows_group_by_pk:
+                for order, order_params in ordering_group_by:
+                    # Even if we have seen the same SQL string, it might have
+                    # different params, so, we add same SQL in "has params" case.
+                    if order not in seen or params:
+                        result.append(order)
+                        params.extend(order_params)
+                        seen.add(order)
+
+            # Unconditionally add the extra_select items.
+            for extra_select, extra_params in self.query.extra_select.values():
+                sql = '(%s)' % str(extra_select)
+                result.append(sql)
+                params.extend(extra_params)
+
         return result, params
 
     def fill_related_selections(self, opts=None, root_alias=None, cur_depth=1,
@@ -595,6 +602,7 @@ class SQLCompiler(object):
         if avoid_set is None:
             avoid_set = set()
         orig_dupe_set = dupe_set
+        only_load = self.query.get_loaded_field_names()
 
         # Setup for the case when only particular related fields should be
         # included in the related selection.
@@ -606,7 +614,12 @@ class SQLCompiler(object):
                 restricted = False
 
         for f, model in opts.get_fields_with_model():
-            if not select_related_descend(f, restricted, requested):
+            # The get_fields_with_model() returns None for fields that live
+            # in the field's local model. So, for those fields we want to use
+            # the f.model - that is the field's local model.
+            field_model = model or f.model
+            if not select_related_descend(f, restricted, requested,
+                                          only_load.get(field_model)):
                 continue
             # The "avoid" set is aliases we want to avoid just for this
             # particular branch of the recursion. They aren't permanently
@@ -641,8 +654,6 @@ class SQLCompiler(object):
                     alias_chain.append(alias)
                     for (dupe_opts, dupe_col) in dupe_set:
                         self.query.update_dupe_avoidance(dupe_opts, dupe_col, alias)
-                if self.query.alias_map[root_alias][JOIN_TYPE] == self.query.LOUTER:
-                    self.query.promote_alias_chain(alias_chain, True)
             else:
                 alias = root_alias
 
@@ -659,8 +670,6 @@ class SQLCompiler(object):
             columns, aliases = self.get_default_columns(start_alias=alias,
                     opts=f.rel.to._meta, as_pairs=True)
             self.query.related_select_cols.extend(columns)
-            if self.query.alias_map[alias][JOIN_TYPE] == self.query.LOUTER:
-                self.query.promote_alias_chain(aliases, True)
             self.query.related_select_fields.extend(f.rel.to._meta.fields)
             if restricted:
                 next = requested.get(f.name, {})
@@ -679,7 +688,8 @@ class SQLCompiler(object):
                 if o.field.unique
             ]
             for f, model in related_fields:
-                if not select_related_descend(f, restricted, requested, reverse=True):
+                if not select_related_descend(f, restricted, requested,
+                                              only_load.get(model), reverse=True):
                     continue
                 # The "avoid" set is aliases we want to avoid just for this
                 # particular branch of the recursion. They aren't permanently
@@ -733,7 +743,9 @@ class SQLCompiler(object):
                 self.query.related_select_fields.extend(model._meta.fields)
 
                 next = requested.get(f.related_query_name(), {})
-                new_nullable = f.null or None
+                # Use True here because we are looking at the _reverse_ side of
+                # the relation, which is always nullable.
+                new_nullable = True
 
                 self.fill_related_selections(model._meta, table, cur_depth+1,
                     used, next, restricted, new_nullable)
@@ -767,10 +779,20 @@ class SQLCompiler(object):
                         # We only set this up here because
                         # related_select_fields isn't populated until
                         # execute_sql() has been called.
+
+                        # We also include types of fields of related models that
+                        # will be included via select_related() for the benefit
+                        # of MySQL/MySQLdb when boolean fields are involved
+                        # (#15040).
+
+                        # This code duplicates the logic for the order of fields
+                        # found in get_columns(). It would be nice to clean this up.
                         if self.query.select_fields:
-                            fields = self.query.select_fields + self.query.related_select_fields
+                            fields = self.query.select_fields
                         else:
                             fields = self.query.model._meta.fields
+                        fields = fields + self.query.related_select_fields
+
                         # If the field was deferred, exclude it from being passed
                         # into `resolve_columns` because it wasn't selected.
                         only_load = self.deferred_to_columns()
@@ -781,7 +803,7 @@ class SQLCompiler(object):
                     row = self.resolve_columns(row, fields)
 
                 if has_aggregate_select:
-                    aggregate_start = len(self.query.extra_select.keys()) + len(self.query.select)
+                    aggregate_start = len(self.query.extra_select) + len(self.query.select)
                     aggregate_end = aggregate_start + len(self.query.aggregate_select)
                     row = tuple(row[:aggregate_start]) + tuple([
                         self.query.resolve_aggregate(value, aggregate, self.connection)
@@ -810,7 +832,7 @@ class SQLCompiler(object):
                 raise EmptyResultSet
         except EmptyResultSet:
             if result_type == MULTI:
-                return empty_iter()
+                return iter([])
             else:
                 return
 
@@ -882,16 +904,21 @@ class SQLInsertCompiler(SQLCompiler):
             placeholders = [["%s"] * len(fields)]
         else:
             placeholders = [
-                [self.placeholder(field, v) for field, v in izip(fields, val)]
+                [self.placeholder(field, v) for field, v in zip(fields, val)]
                 for val in values
             ]
+            # Oracle Spatial needs to remove some values due to #10888
+            params = self.connection.ops.modify_insert_params(placeholders, params)
         if self.return_id and self.connection.features.can_return_id_from_insert:
             params = params[0]
             col = "%s.%s" % (qn(opts.db_table), qn(opts.pk.column))
             result.append("VALUES (%s)" % ", ".join(placeholders[0]))
             r_fmt, r_params = self.connection.ops.return_insert_id()
-            result.append(r_fmt % col)
-            params += r_params
+            # Skip empty r_fmt to allow subclasses to customize behaviour for
+            # 3rd party backends. Refs #19096.
+            if r_fmt:
+                result.append(r_fmt % col)
+                params += r_params
             return [(" ".join(result), tuple(params))]
         if can_bulk:
             result.append(self.connection.ops.bulk_insert_sql(fields, len(values)))
@@ -899,7 +926,7 @@ class SQLInsertCompiler(SQLCompiler):
         else:
             return [
                 (" ".join(result + ["VALUES (%s)" % ", ".join(p)]), vals)
-                for p, vals in izip(placeholders, params)
+                for p, vals in zip(placeholders, params)
             ]
 
     def execute_sql(self, return_id=False):
@@ -927,7 +954,8 @@ class SQLDeleteCompiler(SQLCompiler):
         qn = self.quote_name_unless_alias
         result = ['DELETE FROM %s' % qn(self.query.tables[0])]
         where, params = self.query.where.as_sql(qn=qn, connection=self.connection)
-        result.append('WHERE %s' % where)
+        if where:
+            result.append('WHERE %s' % where)
         return ' '.join(result), tuple(params)
 
 class SQLUpdateCompiler(SQLCompiler):
@@ -1018,6 +1046,12 @@ class SQLUpdateCompiler(SQLCompiler):
         query.extra = {}
         query.select = []
         query.add_fields([query.model._meta.pk.name])
+        # Recheck the count - it is possible that fiddling with the select
+        # fields above removes tables from the query. Refs #18304.
+        count = query.count_active_tables()
+        if not self.query.related_updates and count == 1:
+            return
+
         must_pre_select = count > 1 and not self.connection.features.update_can_self_select
 
         # Now we adjust the current query: reset the where clause and get rid
@@ -1079,13 +1113,6 @@ class SQLDateCompiler(SQLCompiler):
                 elif needs_string_cast:
                     date = typecast_timestamp(str(date))
                 yield date
-
-
-def empty_iter():
-    """
-    Returns an iterator containing no results.
-    """
-    yield iter([]).next()
 
 
 def order_modified_iter(cursor, trim, sentinel):

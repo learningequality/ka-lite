@@ -14,6 +14,8 @@ from django.core import urlresolvers
 from django.contrib.admindocs import utils
 from django.contrib.sites.models import Site
 from django.utils.importlib import import_module
+from django.utils._os import upath
+from django.utils import six
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 
@@ -37,7 +39,7 @@ def bookmarklets(request):
     admin_root = urlresolvers.reverse('admin:index')
     return render_to_response('admin_doc/bookmarklets.html', {
         'root_path': admin_root,
-        'admin_url': mark_safe("%s://%s%s" % (request.is_secure() and 'https' or 'http', request.get_host(), admin_root)),
+        'admin_url': "%s://%s%s" % (request.is_secure() and 'https' or 'http', request.get_host(), admin_root),
     }, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -48,7 +50,7 @@ def template_tag_index(request):
     load_all_installed_template_libraries()
 
     tags = []
-    app_libs = template.libraries.items()
+    app_libs = list(six.iteritems(template.libraries))
     builtin_libs = [(None, lib) for lib in template.builtins]
     for module_name, library in builtin_libs + app_libs:
         for tag_name, tag_func in library.tags.items():
@@ -60,7 +62,7 @@ def template_tag_index(request):
             for key in metadata:
                 metadata[key] = utils.parse_rst(metadata[key], 'tag', _('tag:') + tag_name)
             if library in template.builtins:
-                tag_library = None
+                tag_library = ''
             else:
                 tag_library = module_name.split('.')[-1]
             tags.append({
@@ -83,7 +85,7 @@ def template_filter_index(request):
     load_all_installed_template_libraries()
 
     filters = []
-    app_libs = template.libraries.items()
+    app_libs = list(six.iteritems(template.libraries))
     builtin_libs = [(None, lib) for lib in template.builtins]
     for module_name, library in builtin_libs + app_libs:
         for filter_name, filter_func in library.filters.items():
@@ -95,7 +97,7 @@ def template_filter_index(request):
             for key in metadata:
                 metadata[key] = utils.parse_rst(metadata[key], 'filter', _('filter:') + filter_name)
             if library in template.builtins:
-                tag_library = None
+                tag_library = ''
             else:
                 tag_library = module_name.split('.')[-1]
             filters.append({
@@ -310,7 +312,7 @@ def load_all_installed_template_libraries():
         try:
             libraries = [
                 os.path.splitext(p)[0]
-                for p in os.listdir(os.path.dirname(mod.__file__))
+                for p in os.listdir(os.path.dirname(upath(mod.__file__)))
                 if p.endswith('.py') and p[0].isalpha()
             ]
         except OSError:
@@ -318,7 +320,7 @@ def load_all_installed_template_libraries():
         for library_name in libraries:
             try:
                 lib = template.get_library(library_name)
-            except template.InvalidTemplateLibrary, e:
+            except template.InvalidTemplateLibrary:
                 pass
 
 def get_return_data_type(func_name):

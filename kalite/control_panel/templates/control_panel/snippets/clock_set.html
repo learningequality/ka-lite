@@ -9,7 +9,7 @@
 {% block headjs %}
     <script type="text/javascript" src="{% static 'js/bootstrap-timepicker.min.js' %}"></script>
     <script type="text/javascript">
-        var TIME_SET_URL = "{% url time_set %}";
+        var TIME_SET_URL = "{% url 'time_set' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/clock_set.js' %}"></script>
 {% endblock headjs %}
