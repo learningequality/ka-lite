@@ -12,10 +12,10 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
-        var start_languagepackdownload_url = "{% url start_languagepack_download %}";
-        var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}"
+        var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
+        var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
         var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
-        var DELETE_LANGUAGEPACK_URL = "{% url delete_language_pack %}";
+        var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
         var defaultLanguage = "{{ default_language }}";
     </script>
     <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>

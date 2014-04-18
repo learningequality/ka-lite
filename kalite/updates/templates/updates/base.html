@@ -8,8 +8,8 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
-        var GET_SERVER_INFO_URL = "{% url get_server_info %}";
-        var UPDATE_SOFTWARE_URL = "{% url start_update_kalite %}"
+        var GET_SERVER_INFO_URL = "{% url 'get_server_info' %}";
+        var UPDATE_SOFTWARE_URL = "{% url 'start_update_kalite' %}"
     </script>
     <script type="text/javascript" src="{% static 'js/updates/base.js' %}"></script>
 

@@ -59,7 +59,7 @@
     <div class="facilities">
         <div class="title-div">
             <span class="title" style="float: left">{% trans "Facilities" %}</span>
-            <a href="{% url add_facility zone_id=zone_id %}">
+            <a href="{% url 'add_facility' zone_id=zone_id %}">
                 <span class="icon-add icon-medium" title="{% trans 'Add a new facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </a>
         </div>
@@ -87,33 +87,33 @@
             {% for id,facility in facilities.items %}
                 <tr>
                     <td nowrap>
-                         <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
+                         <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             {{ facility.name }}
                         </a>|
-                        <a class="btn btn-warning" href="{% url facility_edit id=facility.id %}">{% trans 'Edit facility' %}
+                        <a class="btn btn-warning" href="{% url 'facility_edit' id=facility.id %}">{% trans 'Edit facility' %}
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% if facility.is_deletable %}
                         <a class="facility-delete-link" href="#">
-                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}"  value="{% url facility_delete facility_id=facility.id %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}"  value="{% url 'facility_delete' facility_id=facility.id %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% endif %}
                     </td>
                     <td nowrap>
                         {{ facility.num_users }}
-                        <!--a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
+                        <!--a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-add icon-medium" title="{% trans 'Add users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a-->
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
+                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                     </td>
                     <td nowrap>
                         {{ facility.num_groups }}
-                        <!--a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
+                        <!--a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-add icon-medium" title="{% trans 'Add groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a-->
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">
+                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                     </td>
@@ -166,7 +166,7 @@
                 {% for id,device in devices.items %}
                     <tr class="{% if not device.is_registered %}unregistered {% endif %}{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
-                            {% if device.num_times_synced != None %}<a href="{% url device_management zone_id=zone_id device_id=id %}">{% endif %}
+                            {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
                                 {{ device.name }}
                                 {% if device.is_demo_device %}[Demo data]{% endif %}
                             {% if device.num_times_synced != None %}</a>{% endif %}
@@ -199,7 +199,7 @@
                         <td nowrap>
                             {% if device.is_own_device %}
                             <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
-                            <a class="btn btn-success not-registered-only" href="{% url register_public_key %}">{% trans "Register device" %}</a>
+                            <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
                             {% if clock_set %}
                             /
                             <a onclick="$('#clock_set').show()">set clock</a>

@@ -3,7 +3,7 @@ from django.db import models
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect, Http404
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
