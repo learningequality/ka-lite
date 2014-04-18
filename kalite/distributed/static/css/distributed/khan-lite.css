@@ -1,88 +1,21 @@
-body {
+/*body {
     min-width: 600px;
-}
+}*/
 
-#outer-wrapper {
-    background: url(/static/images/distributed/light-page-bg.png) repeat-x;
-}
-
-#page-container-inner {
-    background: transparent url(/static/images/distributed/content-border.1.png) no-repeat;
-    background-position: right 60px;
-}
-#page-container {
-    background: none;
-}
-#container {
-    background: transparent url(/static/images/distributed/content-border.1.png) no-repeat;
-    background-position: 0px 0px;
-}
-
-#page-container {
-    background-position: 0 50px;
-    min-width: 600px;
-    max-width: 1100px;
-}
-
-article {
+/*article {
     padding: 20px;
-}
+}*/
 
-footer {
-    background: url(/static/images/distributed/footer-bg.png) repeat-x 0 0; /*! data-uri(/images/footer-bg.png) */
-    min-width: 570px;
-}
-footer.short {
-    color: #555;
-    background: url(/static/images/distributed/light-page-bg.png) repeat-x 0 -30px;
-    border-top: 1px solid #C6D1AD;
-    z-index: 10;
-}
-footer #leaves {
-    background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-    background-position: 319px -908px;
-    height: 188px;
-}
-footer #creative-commons-link {
-    background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-    margin-right: 15px;
-}
-footer.short .inner {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-a:link:focus,
+/*a:link:focus,
 a:hover {
     color: #2F92A5;
-}
-
-#language_selector {
-    width:75px;
-    position: relative;
-    top: -1px;
-    float: right;
-}
+}*/
 
 #top-header {
     height: 60px;
     position: relative;
     top: 0px;
 }
-
-footer.short {
-    margin-top: 32px;
-    height: 39px;
-    padding: 2px 0px 3px 0px;
-}
-
-#fle-logo {
-    height:18px;
-    margin-right: 5px;
-    margin-left:10px;
-    margin-top: 5px;
-}
-
 
 #top-header #logo {
     position: absolute;
@@ -106,71 +39,34 @@ footer.short {
     height: 50px;
 }
 
-nav {
+/*nav {
     display: block;
     clear: both;
     width: 100%;
     margin: 0;
     padding: 3px 0;
     white-space: nowrap;
-    /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
+     Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border 
     height: 30px;
     z-index: 50;
     position: relative;
     right: 10px;
     top: 22px;
-}
-
-.nav-subheader {
-    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
-    font-weight: normal;
-    font-size: 16px;
-    letter-spacing: -1px;
-    text-transform: uppercase;
-    margin-bottom: 0;
-    height: 30px;
-    color: #fff;
-}
-
-.nav-subheader a {
-    color: #263500;
-    height: 20px;
-    display: block;
-}
-
-.nav-subheader a:hover {
-    color: #2F92A5;
-}
-
-.nav-subheader > a, .nav-subheader > span {
-    margin-left: 20px;
-    display: block;
-    float: right;
-}
-
-.nav-subheader a.active:after {
-    content: url(/static/images/distributed/nav-selector.gif);
-    position: relative;
-    top: -7px;
-    display: block;
-    left: 50%;
-    margin-left: -5px;
-    width: 15px;
-}
+}*/
 
 #nav_registerdevice {
     color: darkRed;
 }
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
+/*#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
     display: none;
 }
-
+*/
 /********** End of Top Navigation bar ***********/
 
-h2 {
+/*h2 {
     margin-bottom: 10px;
-}
+}*/
 
 .title-header .long-description {
     color: #666;
@@ -397,14 +293,14 @@ li .progress-circle {
     -moz-border-radius: 5px;
 }
 
-.vidprev {
+/*.vidprev {
     float: left;
 }
 
 .vidnext {
     float: right;
     padding-right: 4px;
-}
+}*/
 
 #sitepoints {
     font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
@@ -466,7 +362,8 @@ a:active.topic-unavailable,
 a:hover.topic-unavailable,
 a:link.topic-unavailable,
 a:visited.topic-unavailable {
-    color: #bbb;
+    color: #ACBDD1;
+    font-weight: normal;
     text-decoration: none;
 }
 
@@ -492,29 +389,4 @@ a.green_button:hover,input.green_button:hover{
 }
 a.disabled {
     background-color: #C0C0C0;
-}
-
-#search-box {
-    float: right;
-}
-
-#search-box input {
-    position: relative;
-    top: -1px;
-    float: right;
-}
-
-#search-button {
-    top: 1px;
-    position: relative;
-    padding: 3px 8px 2px 8px;
-    height: 14px;
-    line-height: 14px;
-    float: right;
-    margin-left: 1px;
-    min-width: 5px;
-}
-
-input#search {
-    width: 150px;
 }

@@ -20,7 +20,7 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
     if not callback:
         return None
     percent_range_size = end_percent - start_percent
-    def inner_fn(numblocks, blocksize, filesize, *args, **kwargs):
+    def callback_percent_proxy_inner_fn(numblocks, blocksize, filesize, *args, **kwargs):
         if filesize <= 0:
             filesize = blocksize
         try:
@@ -28,7 +28,7 @@ def callback_percent_proxy(callback, start_percent=0, end_percent=100):
         except:
             fraction = 1.0
         callback(start_percent + int(fraction * percent_range_size))
-    return inner_fn
+    return callback_percent_proxy_inner_fn
 
 def _reporthook(numblocks, blocksize, filesize, url=None):
     base = os.path.basename(url)
