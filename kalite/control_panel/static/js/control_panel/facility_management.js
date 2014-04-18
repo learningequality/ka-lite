@@ -25,12 +25,14 @@ $(function() {
 
     $(".all").click(function(event){
         // Select all users within local table
-        $(event.target.value).find("tr").addClass("selected")
+        $(event.target.value).find("tr").addClass("selected");
+        setActionButtonState();
     })
 
     $(".none").click(function(event){
         // Unselect all users within local table
-        $(event.target.value).find("tr").removeClass("selected")
+        $(event.target.value).find("tr").removeClass("selected");
+        setActionButtonState();
     })
 
     $(".movegroup").click(function(event) {
