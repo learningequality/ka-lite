@@ -32,10 +32,10 @@ class KALiteClient(Client):
         return self.post(path or reverse(url_name), data=data, content_type="application/json")
 
     def delete_videos(self, youtube_ids):
-        return self.post_json(url_name="kalite.updates.api_views.delete_videos", data={ "youtube_ids": youtube_ids })
+        return self.post_json(url_name="delete_videos", data={ "youtube_ids": youtube_ids })
 
     def save_video_log(self, **kwargs):
-        return self.post_json(url_name="kalite.main.api_views.save_video_log", data=kwargs)
+        return self.post_json(url_name="save_video_log", data=kwargs)
 
     def save_exercise_log(self, **kwargs):
-        return self.post_json(url_name="kalite.main.api_views.save_exercise_log", data=kwargs)
+        return self.post_json(url_name="save_exercise_log", data=kwargs)

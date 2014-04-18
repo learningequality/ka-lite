@@ -26,7 +26,6 @@ from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from fle_utils.server import server_restart as server_restart_util
 from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
 from kalite.main.topic_tools import get_topic_tree
 from kalite.shared.decorators import require_admin
@@ -270,7 +269,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 
         return {
             "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node["description"]) or ""),
+            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
             "isFolder": True,
             "key": node["id"],
             "children": children,
@@ -329,27 +328,12 @@ Software updates
 
 @require_admin
 def start_update_kalite(request):
-    data = json.loads(request.raw_post_data)
+    try:
+        data = json.loads(request.raw_post_data)
+        mechanism = data['mechanism']
+    except KeyError:
+        raise KeyError(_("You did not select a valid choice for an update mechanism."))
 
-    if request.META.get("CONTENT_TYPE", "") == "application/json" and "url" in data:
-        # Got a download url
-        call_command_async("update", url=data["url"], in_proc=False, manage_py_dir=settings.PROJECT_PATH)
-
-    elif request.META.get("CONTENT_TYPE", "") == "application/zip":
-        # Streamed a file; save and call
-        fp, tempfile = tempfile.mkstmp()
-        with fp:
-            write(request.content)
-        call_command_async("update", zip_file=tempfile, in_proc=False, manage_py_dir=settings.PROJECT_PATH)
+    call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
-
-
-@require_admin
-@api_handle_error_with_json
-def server_restart(request):
-    try:
-        server_restart_util(request)
-        return JsonResponseMessageSuccess(_("Launched software restart process successfully."))
-    except Exception as e:
-        return JsonResponseMessageError(_("Unable to restart the server; please restart manually.  Error: %(error_info)s") % {"error_info": e})

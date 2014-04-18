@@ -9,29 +9,20 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.webdriver.firefox.webdriver import WebDriver
 
-from django.conf import settings
-from django.conf.settings import package_selected, LOG as logging
+from django.conf import settings; logging = settings.LOG
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
 from django.utils.translation import ugettext as _
 
 from fle_utils.django_utils import call_command_with_output
-from fle_utils.general import isnumeric
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.i18n import get_installed_language_packs
-from kalite.main.models import ExerciseLog
-from kalite.main.topic_tools import get_exercise_paths, get_node_cache
 from kalite.testing.browser import BrowserTestCase
-
-from securesync.models import Zone, DeviceZone , Device
-from fle_utils.config.models import Settings
-from updates import delete_language
-from django.core.management import call_command
 
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
-    """Base class for main server test cases.
+    """Base class for distributed server test cases.
     They will have different functions in here, for sure.
     """
 
@@ -85,7 +76,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(last_name) # last name
         self.browser_form_fill(password) #password
         self.browser_form_fill(password) #password (again)
-        self.browser_send_keys(Keys.RETURN)
+        self.browser.find_element_by_id("id_username").submit()
 
         # Make sure that the page changed to the admin homepage
         if expect_success:
@@ -101,7 +92,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         login_url = self.reverse("login")
         self.browse_to(login_url) # Load page
-        self.assertIn(_("Log in"), self.browser.title, "Login page title")
+        # self.assertIn(_("Log in"), self.browser.title, "Login page title")
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
@@ -130,7 +121,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         self.browser_login_user(username=username, password=password, expect_success=expect_success)
         if expect_success:
-            self.assertIn(reverse("zone_management", kwargs={zone_id: "None"}), self.browser.current_url, "Login browses to zone_management page" )
+            self.assertIn(reverse("zone_management", kwargs={"zone_id": "None"}), self.browser.current_url, "Login browses to zone_management page" )
 
     def browser_login_teacher(self, username, password, facility_name=None, expect_success=True):
         self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
@@ -189,60 +180,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 assert username_text == "", "Impossible for anybody to be logged in."
 
 
+class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):
+    """
+    Same thing, but do the setup steps to register a facility.
+    """
+    facility_name = 'middle of nowhere'
 
-class LanguagePackTest(KALiteDistributedBrowserTestCase):
+    def setUp(self):
+        """Add a facility, so users can begin registering / logging in immediately."""
+        super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
+        self.facility = self.create_facility(facility_name=self.facility_name)
 
-    def register_device(self):
-        z = Zone.objects.create(name='test_zone')
-        DeviceZone.objects.create(zone=z, device=Device.get_own_device())
-        Settings.set("registered", True)
-
-    def is_language_installed(self,lang_code):
-        flag = False	# flag to check language de is installed or not
-        installed_languages= get_installed_language_packs()
-        for lang in installed_languages:
-            if lang == lang_code:
-                flag = True
-                break
-        return flag
-
-    # def test_add_language_pack(self):
-    #     # Login as admin
-    #     self.browser_login_admin()
-
-    #     # Add the language pack
-    #     if self.is_language_installed("de"):
-    #         # what we want to test is if adding a language pack works.
-    #         # So we uninstall "de" to be able to test it
-    #         delete_language("de")
-
-    #     self.register_device()
-    #     language_url = self.reverse("update_languages")
-    #     self.browse_to(language_url)
-    #     time.sleep(3)
-    #     select = self.browser.find_element_by_id("language-packs")
-    #     for option in select.find_elements_by_tag_name('option'):
-    #         if option.text == "German (de)":
-    #             option.click()
-    #     time.sleep(1)
-    #     self.browser.find_element_by_css_selector("#get-language-button").click()
-    #     time.sleep(5)
-
-    #     self.assertTrue(self.is_language_installed("de"))
-
-    def test_delete_language_pack(self):
-        ''' Test to check whether a language pack is deleted successfully or not '''
-        # Login as admin
-        self.browser_login_admin()
-
-        # Delete the language pack
-        if not self.is_language_installed("de"):
-            call_command("languagepackdownload", lang_code="de")
-
-        self.register_device()
-        language_url = self.reverse("update_languages")
-        self.browse_to(language_url)
-        time.sleep(1)
-        self.browser.find_element_by_css_selector(".delete-language-button > button[value='de']").click()
-
-        self.assertFalse(self.is_language_installed("de"))

@@ -17,4 +17,4 @@ CONTENT_URL    = getattr(local_settings, "CONTENT_URL", "/content/")
 BACKUP_VIDEO_SOURCE = getattr(local_settings, "BACKUP_VIDEO_SOURCE", None)
 BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", None)
 
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
+UPDATES_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

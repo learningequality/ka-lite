@@ -28,7 +28,7 @@ from kalite.version import VERSION
 
 CACHE_VARS = []
 
-DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.DATA_PATH, "i18n", "dubbed_video_mappings.json")
+DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
 class LanguageNotFoundError(Exception):
@@ -49,6 +49,11 @@ def get_locale_path(lang_code=None):
         return LOCALE_ROOT
     else:
         return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
+
+def get_po_filepath(lang_code, filename=None):
+    """Return the LC_MESSAGES directory for the language code, with an optional filename appended."""
+    base_dirpath = os.path.join(get_locale_path(lang_code=lang_code), "LC_MESSAGES")
+    return (filename and os.path.join(base_dirpath, filename)) or base_dirpath
 
 
 DUBBED_VIDEO_MAP_RAW = None
@@ -145,8 +150,12 @@ def get_id2oklang_map(video_id, force=False):
 
 
 def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
-    """Accepts lang_code in ietf format"""
-    if not lang_code:  # looking for the base/default youtube_id
+    """Given a video ID, return the youtube ID for the given language.
+    If lang_code is None, return the base / default youtube_id for the given video_id.
+    If youtube_id for the given lang_code is not found, function returns None.
+    Accepts lang_code in ietf format
+    """
+    if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
         return video_id
     return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
 
@@ -167,12 +176,9 @@ def get_file2lang_map(force=False):
         YT2LANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
             for dubbed_youtube_id in dic.values():
-                if dubbed_youtube_id in YT2LANG_MAP:
+                if dubbed_youtube_id in YT2LANG_MAP and YT2LANG_MAP[dubbed_youtube_id] != lang_code:
                     # Sanity check, but must be failsafe, since we don't control these data
-                    if YT2LANG_MAP[dubbed_youtube_id] == lang_code:
-                        logging.warn("Duplicate entry found in %s language map for dubbed video %s" % (lang_code, dubbed_youtube_id))
-                    else:
-                        logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
+                    logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
                 YT2LANG_MAP[dubbed_youtube_id] = lang_code
     return YT2LANG_MAP
 
@@ -216,9 +222,9 @@ def get_code2lang_map(lang_code=None, force=False):
 
         CODE2LANG_MAP = {}
         for lc, entry in lmap.iteritems():
-            CODE2LANG_MAP[lcode_to_ietf(lc)] = entry
+            CODE2LANG_MAP[lcode_to_ietf(lc)] = entry  # key entries by ieft format
 
-    return CODE2LANG_MAP.get(lang_code) if lang_code else CODE2LANG_MAP
+    return CODE2LANG_MAP.get(lcode_to_ietf(lang_code)) if lang_code else CODE2LANG_MAP
 
 
 def get_language_name(lang_code, native=None, error_on_missing=False):

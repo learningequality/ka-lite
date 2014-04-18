@@ -9,21 +9,23 @@ import tempfile
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
-# This is necessary for this script to run before KA Lite has ever been installed.
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
 
-sys.path = [
-    os.path.join(BASE_DIR, "python-packages"),
-    os.path.join(BASE_DIR, "kalite")
-] + sys.path
-os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
+# This is necessary for this script to run before KA Lite has ever been installed.
+if not os.environ.get("DJANGO_SETTINGS_MODULE"):
+    sys.path = [
+        os.path.join(BASE_DIR, "python-packages"),
+        os.path.join(BASE_DIR, "kalite")
+    ] + sys.path
+    os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+import kalite
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
@@ -57,16 +59,16 @@ def raw_input_password():
     return password
 
 
-def find_owner(file):
-    return getpass.getuser()
-
 def validate_username(username):
     return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
+
+def get_clean_default_username():
+    return (getpass.getuser() or "").replace("-", "_")
 
 def get_username(username):
     while not validate_username(username):
 
-        username = raw_input("Username (leave blank to use '%s'): " % getpass.getuser()) or getpass.getuser()
+        username = raw_input("Username (leave blank to use '%s'): " % get_clean_default_username()) or get_clean_default_username()
         if not validate_username(username):
             sys.stderr.write("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
 
@@ -103,6 +105,11 @@ class Command(BaseCommand):
             dest='username',
             default=None,
             help='Superuser username'),
+        make_option('-e', '--email',
+            action='store',
+            dest='email',
+            default="dummy@learningequality.org",
+            help='Superuser email address (optional)'),
         make_option('-p', '--password',
             action='store',
             dest='password',
@@ -129,9 +136,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not options["interactive"]:
-            options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or getpass.getuser()
+            options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or get_clean_default_username()
             options["hostname"] = options["hostname"] or get_host_name()
 
+        sys.stdout.write("                                  \n")  # blank allows ansible scripts to dump errors cleanly.
         sys.stdout.write("  _   __  ___    _     _ _        \n")
         sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
         sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
@@ -170,19 +178,14 @@ class Command(BaseCommand):
                 sys.stdout.write("\n")
 
         # Check to see if the current user is the owner of the install directory
-        current_owner = find_owner(BASE_DIR)
-        current_user = getpass.getuser()
-        if current_owner != current_user:
-            raise CommandError("""You are not the owner of this directory!
-    Please copy all files to a directory that you own and then
-    re-run this script.""")
-
         if not os.access(BASE_DIR, os.W_OK):
             raise CommandError("You do not have permission to write to this directory!")
 
-        database_file = settings.DATABASES["default"]["NAME"]
-        install_clean = True
-        if os.path.exists(database_file):
+        install_clean = not kalite.is_installed()
+        database_kind = settings.DATABASES["default"]["ENGINE"]
+        database_file = ("sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
+
+        if database_file and os.path.exists(database_file):
             # We found an existing database file.  By default,
             #   we will upgrade it; users really need to work hard
             #   to delete the file (but it's possible, which is nice).
@@ -195,11 +198,14 @@ class Command(BaseCommand):
                or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                 install_clean = False
                 sys.stdout.write("Upgrading database to KA Lite version %s\n" % VERSION)
-
-            if install_clean:
-                # After all, don't delete--just move.
+            else:
+                install_clean = True
                 sys.stdout.write("OK.  We will run a clean install; \n")
-                sys.stdout.write("the database file will be moved to a deletable location.\n")
+                sys.stdout.write("the database file will be moved to a deletable location.\n")  # After all, don't delete--just move.
+
+        if not install_clean and not database_file and not kalite.is_installed():
+            # Make sure that, for non-sqlite installs, the database exists.
+            raise Exception("For databases not using SQLIte, you must set up your database before running setup.")
 
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
@@ -210,10 +216,12 @@ class Command(BaseCommand):
                 sys.stdout.write("\tto enter it to administer this installation of KA Lite.\n")
                 sys.stdout.write("\n")
             (username, password) = get_username_password(options["username"], options["password"])
+            email = options["email"]
             (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
         else:
             username = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None)
             password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
+            email = options["email"]  # default is non-empty
             hostname = options["hostname"]
             description = options["description"]
 
@@ -226,7 +234,7 @@ class Command(BaseCommand):
         ########################
 
         # Move database file (if exists)
-        if install_clean and os.path.exists(database_file):
+        if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
             sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
@@ -262,7 +270,7 @@ class Command(BaseCommand):
         if password:  # blank password (non-interactive) means don't create a superuser
             admin = get_object_or_None(User, username=username)
             if not admin:
-                call_command("createsuperuser", username=username, email="dummy@learningequality.org", interactive=False, verbosity=options.get("verbosity"))
+                call_command("createsuperuser", username=username, email=email, interactive=False, verbosity=options.get("verbosity"))
                 admin = User.objects.get(username=username)
             admin.set_password(password)
             admin.save()

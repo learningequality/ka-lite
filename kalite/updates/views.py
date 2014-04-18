@@ -43,12 +43,6 @@ def update_context(request):
 
 
 @require_admin
-@render_to("updates/landing_page.html")
-def update(request):
-    context = update_context(request)
-    return context
-
-@require_admin
 @require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):

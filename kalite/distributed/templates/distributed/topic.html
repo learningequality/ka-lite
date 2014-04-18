@@ -1,6 +1,7 @@
 {% extends base_template %}
 {% load i18n %}
 {% load my_filters %}
+{% load i18n_filters %}
 
 {% block watch_active %}active{% endblock watch_active %}
 
@@ -81,19 +82,19 @@
             </a>
 
             {# dubbed videos #}
-            {% for lang, avail in video.availability.iteritems %}
+            {% for lang_code, avail in video.availability.iteritems %}
                 {% if avail.on_disk %}
                 <span class="dubbedvideo-indicator">
-                    <a href="{{ video.path }}?lang={{ lang }}">
-                        {{ lang }}
+                    <a href="{{ video.path }}?lang={{ lang_code }}" title="{% blocktrans with lang_name=lang_code|get_language_name %}Dubbed video available in {{ lang_name }}{% endblocktrans %}">
+                        {{ lang_code }}
                     </a></span>
                 {% endif %}
             {% endfor %}
 
             {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
-            {% for lang in video.availability.en.subtitles.keys %}
-                <span class="subtitle-indicator">
-                    {{ lang }}
+            {% for lang_code in video.availability.en.subtitles.keys %}
+                <span class="subtitle-indicator" title="{% blocktrans with lang_name=lang_code|get_language_name %}Subtitle available in {{ lang_name }}{% endblocktrans %}">
+                    {{ lang_code }}
                 </span>
             {% endfor %}
         </li>

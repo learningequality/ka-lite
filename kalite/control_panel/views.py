@@ -1,6 +1,8 @@
 """
 """
+import copy
 import datetime
+import re
 import os
 from annoying.decorators import render_to, wraps
 from annoying.functions import get_object_or_None
@@ -18,8 +20,9 @@ from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.internet import CsvResponse, render_to_csv
-from fle_utils.django_utils.paginate import paginate_users, pages_to_show
+from fle_utils.django_utils.paginate import paginate_data, pages_to_show
 from kalite.coachreports.views import student_view_context
+from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
@@ -44,8 +47,8 @@ def sync_now_context(request):
 @require_authorized_admin
 @render_to("control_panel/zone_form.html")
 def zone_form(request, zone_id):
-    context = process_zone_form
-    if request.method == "POST" and context["form"].is_valid:
+    context = process_zone_form(request, zone_id)
+    if request.method == "POST" and context["form"].is_valid():
         return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
     else:
         return context
@@ -66,7 +69,6 @@ def process_zone_form(request, zone_id):
             form.instance.save()
             if zone_id == "new":
                 zone_id = form.instance.pk
-            return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
 
     context.update({"form": form})
     return context
@@ -80,6 +82,12 @@ def zone_management(request, zone_id="None"):
 
     if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
         raise Http404()  # on distributed server, we can make due if they're not registered.
+
+    # Denote the zone as headless or not
+    if context["zone"]:
+        is_headless_zone = re.search(r'Zone for public key ', context["zone"].name)
+    else:
+        is_headless_zone = False
 
     # Accumulate device data
     device_data = OrderedDict()
@@ -129,6 +137,7 @@ def zone_management(request, zone_id="None"):
         }
 
     context.update({
+        "is_headless_zone": is_headless_zone,
         "facilities": facility_data,
         "devices": device_data,
         "upload_form": UploadFileForm(),
@@ -136,17 +145,6 @@ def zone_management(request, zone_id="None"):
     })
     context.update(set_clock_context(request))
     return context
-
-
-@require_authorized_admin
-def delete_zone(request, zone_id):
-    zone = get_object_or_404(Zone, id=zone_id)
-    if not zone.has_dependencies(passable_classes=["Organization"]):
-        zone.delete()
-        messages.success(request, _("You have successfully deleted ") + zone.name + ".")
-    else:
-        messages.warning(request, _("You cannot delete this zone because it is syncing data with with %d device(s)") % zone.devicezone_set.count())
-    return HttpResponseRedirect(reverse("org_management"))
 
 
 @require_authorized_admin
@@ -211,9 +209,50 @@ def group_report(request, facility, group_id=None, zone_id=None):
 
 @facility_required
 @require_authorized_admin
+@render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
+def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
+    """NOTE: THIS IS NOT A VIEW FUNCTION"""
+    assert request.method == "POST", "facility_management_csv must be accessed via POST"
+
+    # Search form for errors.
+    form = DateRangeForm(data=request.POST)
+    if not form.is_valid():
+        raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
+
+    frequency = frequency or request.GET.get("frequency", "months")
+    period_start = period_start or form.data["period_start"]
+    period_end = period_end or form.data["period_end"]
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
+
+
+    # Basic data
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
+    group = group_id and get_object_or_None(FacilityGroup, id=group_id)
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
+    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
+    students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
+
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+
+    context.update({
+        "students": student_data,  # raw data
+        "coaches": coach_data,  # raw data
+    })
+    return context
+
+
+@facility_required
+@require_authorized_admin
 @render_to("control_panel/facility_management.html")
-@render_to_csv(["students", "teachers"], key_label="user_id", order="stacked")
-def facility_management(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None, per_page=25):
+def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
+
+    if request.method == "POST" and request.GET.get("format") == "csv":
+        try:
+            return facility_management_csv(request, facility=facility, group_id=group_id, zone_id=zone_id)
+        except Exception as e:
+            messages.error(request, e)
+
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
     #Get pagination details
@@ -222,75 +261,37 @@ def facility_management(request, facility, group_id=None, zone_id=None, frequenc
     student_page = request.REQUEST.get("students_page", "1")
     student_per_page = request.REQUEST.get("students_per_page", "25" if group_id else "10")
 
-    # This could be moved into a function shared across files, if necessary.
-    #   For now, moving into function, as outside if function it looks more
-    #   general-purpose than it's being used / tested now.
-
-    def get_users_from_group(user_type, group_id, facility=None):
-        if user_type == "coaches":
-            user_list = FacilityUser.objects \
-                .filter(is_teacher=True) \
-                .filter(facility=facility)
-        elif _(group_id) == _("Ungrouped"):
-            user_list = FacilityUser.objects \
-                .filter(is_teacher=False) \
-                .filter(facility=facility, group__isnull=True)
-        elif group_id:
-            user_list = FacilityUser.objects \
-                .filter(facility=facility, group=group_id, is_teacher=False)
-        else:
-            user_list = FacilityUser.objects \
-                .filter(facility=facility, is_teacher=False)
-
-        user_list = user_list \
-            .order_by("last_name", "first_name", "username") \
-            .prefetch_related("group")
-
-        return user_list
-
-
     # Basic data
-    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
     group = group_id and get_object_or_None(FacilityGroup, id=group_id)
+    groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
     coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
-    if request.method != "POST":
-        form = DateRangeForm()
+    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id)
+    (coach_data, coach_group_data) = _get_user_usage_data(coaches)
 
-    else:  # POST request
-        form = DateRangeForm(data=request.POST)
+    coach_pages, coach_urls = paginate_data(request, coach_data.values(), data_type="coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_data(request, student_data.values(), data_type="students", page=student_page, per_page=student_per_page)
 
-        if not form.is_valid():
-            messages.error(request, _("Unexpected error parsing date range; please review and re-submit."))
-            period_start = None
-            period_end = None
-        else:
-            frequency = frequency or request.GET.get("frequency", "months")
-            period_start = period_start or form.data["period_start"]
-            period_end = period_end or form.data["period_end"]
-            (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-
-    (student_data, group_data) = _get_user_usage_data(students, groups, period_start=period_start, period_end=period_end, group_id=group_id)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end, group_id=group_id)
-
-    coach_data, coach_urls = paginate_users(request, coach_data, "coaches", page=coach_page, per_page=coach_per_page)
-    student_data, student_urls = paginate_users(request, student_data, "students", page=student_page, per_page=student_per_page)
-
-    page_urls = {
-        "coaches": coach_urls,
-        "students": student_urls,
-    }
+    # Now prep the CSV form (even though we won't process it)
+    form = DateRangeForm(data=request.POST) if request.method == "POST" else DateRangeForm()
+    frequency = request.GET.get("frequency", "months")
+    period_start = form.data.get("period_start")
+    period_end = form.data.get("period_end")
+    (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
     context.update({
         "form": form,
+        "date_range": [str(period_start), str(period_end)],
         "group": group,
-        "date_range": [period_start, period_end],
         "group_id": group_id,
-        "page_urls": page_urls,
-        "groups": group_data,
-        "students": student_data,
-        "coaches": coach_data,
+        "groups": group_data.values(),
+        "student_pages": student_pages,  # paginated data
+        "coach_pages": coach_pages,  # paginated data
+        "page_urls": {
+            "coaches": coach_urls,
+            "students": student_urls,
+        },
     })
     return context
 
@@ -437,7 +438,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
 
-    return (user_data.values(), group_data.values())
+    return (user_data, group_data)
 
 
 # context functions

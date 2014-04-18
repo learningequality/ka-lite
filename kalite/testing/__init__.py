@@ -1,5 +1,3 @@
-import os
-
 from django.conf import settings
 
 from fle_utils.importing import import_all_child_modules

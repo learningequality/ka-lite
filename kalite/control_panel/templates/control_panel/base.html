@@ -21,7 +21,9 @@
                 <li>
                     {% if org %}&gt;{% endif %}
                     {% if facility or device %}<a href="{%url zone_management zone_id=zone_id %}">{% endif %}
-                        {% if zone %}
+                        {% if is_headless_zone %}
+                            {% trans "Local KA Lite Installation" %}
+                        {% elif zone %}
                             {{ zone.name|truncatechars:35 }}
                         {% elif not zone %}
                             {% if is_central %}

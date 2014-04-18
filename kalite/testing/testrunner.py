@@ -9,6 +9,7 @@ import sys
 from django.conf import settings; logging = settings.LOG
 from django.core import management
 from django.test.simple import DjangoTestSuiteRunner
+from django.test.utils import override_settings
 
 
 def auto_pdb(*exceptions):
@@ -37,7 +38,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         Dependent on how Django works here.
         """
 
-        self.failfast = kwargs.get("failfast")  # overload
+        self.failfast = kwargs.get("failfast", False)  # overload
         self.verbosity = int(kwargs.get("verbosity")) # verbosity level, default 1
 
         # If no liveserver specified, set some default.
@@ -56,13 +57,15 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
         logging.info("Purging pyc files")
+        import logging as orig_logging
+        orig_logging.getLogger('django.request').setLevel('CRITICAL')
+        orig_logging.getLogger('kalite').setLevel('INFO')
         management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
-        if not test_labels:  # by default, come in as empty list
-            test_labels = set(['main', 'securesync'])
-
-        return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
-
+        @override_settings(DEBUG=settings.DEBUG or self.failfast)
+        def run_tests_wrapper_fn():
+            return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
+        return run_tests_wrapper_fn()
 
     def build_suite(self, *args, **kwargs):
         """

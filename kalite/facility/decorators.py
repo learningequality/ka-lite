@@ -92,7 +92,7 @@ def facility_required(handler):
         for whatever action hey were doing.
     """
     @facility_from_request
-    def inner_fn(request, facility, *args, **kwargs):
+    def facility_required_inner_fn(request, facility, *args, **kwargs):
         if facility:
             return handler(request, facility, *args, **kwargs)
 
@@ -103,7 +103,8 @@ def facility_required(handler):
             else:
                 messages.warning(request,
                     _("You must first have the administrator of this server log in below to add a facility."))
-            return HttpResponseRedirect(reverse("add_facility"))
+            zone_id = getattr(Device.get_own_device().get_zone(), "id", "None")
+            return HttpResponseRedirect(reverse("add_facility", kwargs={"zone_id": zone_id}))
 
         else:
             @render_to("facility/facility_selection.html")

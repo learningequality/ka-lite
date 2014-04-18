@@ -17,7 +17,7 @@
 
 
 {% block content %}
-{{ path_template }}
+    {{ path_template }}
     <div id="facility_list_container">
         <div style="margin-bottom: 20px">
             <span class="title">{% trans "Please select a facility" %}</span><br/>
@@ -50,9 +50,6 @@
                     {% else %}
                         <li>{% trans "There are currently no facilities available, please ask an administrator or teacher to set one up." %}</li>
                     {% endif %}
-                {% endif %}
-                {% if request.is_admin %}
-                    <p><a href="{% url zone_redirect %}">{% trans "Administer Facilities" %}</a></p>
                 {% endif %}
             </ul>
         </div>

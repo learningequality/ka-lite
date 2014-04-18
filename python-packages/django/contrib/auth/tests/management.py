@@ -2,7 +2,9 @@ from StringIO import StringIO
 
 from django.contrib.auth import models, management
 from django.contrib.auth.management.commands import changepassword
+from django.core.management.base import CommandError
 from django.test import TestCase
+
 
 
 class GetDefaultUsernameTestCase(TestCase):
@@ -53,6 +55,7 @@ class ChangepasswordManagementCommandTestCase(TestCase):
         self.assertEquals(command_output, "Changing password for user 'joe'\nPassword changed successfully for user 'joe'")
         self.assertTrue(models.User.objects.get(username="joe").check_password("not qwerty"))
 
+
     def test_that_max_tries_exits_1(self):
         """
         A CommandError should be thrown by handle() if the user enters in
@@ -63,7 +66,7 @@ class ChangepasswordManagementCommandTestCase(TestCase):
         command._get_pass = lambda *args: args or 'foo'
 
         self.assertRaises(
-            SystemExit,
+            CommandError,
             command.execute,
             "joe",
             stdout=self.stdout,

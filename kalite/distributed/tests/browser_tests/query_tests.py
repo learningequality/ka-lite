@@ -7,9 +7,25 @@ import string
 from django.conf import settings
 from django.utils import unittest
 
-from .browser_tests import KALiteDistributedWithFacilityBrowserTestCase
+from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
+
+
+#To test range of query numbers.
+#TODO: Put in more general location.
+class FuzzyInt(int):
+    def __new__(cls, lowest, highest):
+        obj = super(FuzzyInt, cls).__new__(cls, highest)
+        obj.lowest = lowest
+        obj.highest = highest
+        return obj
+
+    def __eq__(self, other):
+        return other >= self.lowest and other <= self.highest
+
+    def __repr__(self):
+        return "[%d..%d]" % (self.lowest, self.highest)
 
 
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
@@ -25,7 +41,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
-        with self.assertNumQueries(38 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(39 + 0*UserLog.is_enabled()):
             self.browser_login_admin()
 
     def test_query_login_teacher(self):
@@ -35,7 +51,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(39 + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(26 + 3*UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
@@ -45,20 +61,20 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         student.set_password(passwd)
         student.save()
 
-        with self.assertNumQueries(39 + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(23 + 3*UserLog.is_enabled()):
             self.browser_login_student("s1", passwd, self.facility)
 
 
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(FuzzyInt(6,9)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(FuzzyInt(4,6)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_student(self):
@@ -71,19 +87,19 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(17 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(7 + 0*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(16 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(6 + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(14 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(4 + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
 
@@ -91,7 +107,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         """Check the # of queries when browsing to the "Math" topic page"""
 
         # Without login
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(4):
             self.browse_to(self.live_server_url + "/math/")
 
     def test_query_goto_math_logged_in(self):

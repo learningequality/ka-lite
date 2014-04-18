@@ -65,7 +65,7 @@
 
 {% block content %}
     <div class="container">
-        
+
         <div class="exercises-header">
 
             {% if prev %}
@@ -82,9 +82,9 @@
                 <span class="practice-exercise-topic-context">{% trans "Practicing" %}</span> {% trans title %}
                 {% if exercise.description %}<br/><span class="practice-exercise-description">{% trans exercise.description %}</span>{% endif %}
             </h3>
-            
+
         </div>
-        
+
         <div class="row exercises-body">
             <div class="exercises-card current-card">
                 <div class="current-card-container card-type-problem">
@@ -136,12 +136,12 @@
                                                 <div id="related-video-list">
                                                     <ul class="related-video-list">
                                                     {% for video in related_videos %}
-                                                    {% if forloop.first %}
+                                                    {% if forloop.first and video.availability.en.thumbnail %}
                                                         <li>
                                                             <div class="thumbnail_vid">
                                                                 <a class="related-video" href="{{ video.path }}" title="{% trans video.title %}" target="_blank">
                                                                     <div class="thumb">{# TODO(bcipolli): don't hard-code english here. probably simplify what's sent to this template #}
-                                                                        <img class="thumbimage" {% if video.availability.en.thumbnail %}src="{{ video.availability.en.thumbnail }}{% endif %}"/>
+                                                                        <img class="thumbimage" src="{{ video.availability.en.thumbnail }}"/>
                                                                         <div class="thumbnail_label" style="margin-top: 68px; ">
                                                                             <div class="thumbnail_desc">
                                                                                 <span class="progress-circle" data-video-id="{{ video.id }}"></span>

@@ -5,8 +5,8 @@
 
 {% block home_active %}active{% endblock home_active %}
 
-{% block headjs %}
-    {% if settings.AUTO_LOAD_TEST %}
+{% block headjs %}{{ block.super }}
+    {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
             window.location = "{% url load_test %}";
@@ -25,7 +25,7 @@
         </div>
 
         <div class="row">
-            
+
             <div class="col-sm-6 vertical-shadow suggested-action">
                 <h3 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h3>
                 <p class="topic-list">
@@ -49,7 +49,7 @@
             <div class="row col-sm-12">
                 <p class="homepage-p">{% trans "KA Lite is a lightweight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
             </div>
- 
+
         </div>
 
     </div>

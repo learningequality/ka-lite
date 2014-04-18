@@ -1,11 +1,10 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 
 
 urlpatterns = patterns(__package__ + '.views',
     # Zone
     url(r'zone/(?P<zone_id>\w+)/$', 'zone_management', {}, 'zone_management'),
     url(r'zone/(?P<zone_id>\w+)/edit$', 'zone_form', {}, 'zone_form'),
-    url(r'zone/(?P<zone_id>\w+)/delete$', 'delete_zone', {}, 'delete_zone'),
 
     # Device
     url(r'zone/(?P<zone_id>\w+)/device/(?P<device_id>\w+)/$', 'device_management', {}, 'device_management'),

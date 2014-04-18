@@ -38,7 +38,7 @@ from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes
 from kalite.shared.decorators import require_admin
 from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
-from securesync.models import Device, SyncSession
+from securesync.models import Device, SyncSession, Zone
 
 
 def check_setup_status(handler):
@@ -54,17 +54,19 @@ def check_setup_status(handler):
                 # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
-                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility")))
+                zone_id = (Zone.objects.all() and Zone.objects.all()[0].id) or "None"
+                messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility", kwargs={"zone_id": zone_id})))
 
         elif not request.is_logged_in:
             if not request.session["registered"] and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 redirect_url = reverse("register_public_key")
             elif not request.session["facility_exists"]:
-                redirect_url = reverse("add_facility")
+                zone = Device.get_own_device().get_zone()
+                zone_id = "None" if not zone else zone.id
+                redirect_url = reverse("add_facility", kwargs={"zone_id": zone_id})
             else:
                 redirect_url = None
-
             if redirect_url:
                 messages.warning(request, mark_safe(
                     "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \

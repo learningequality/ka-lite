@@ -31,7 +31,9 @@
 {% endblock headcss %}
 
 {% block headjs %}
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+    <script type="text/javascript">
+        window.__admin_media_prefix__ = "{% filter escapejs %}{% static 'admin/' %}{% endfilter %}";
+    </script>
 {% endblock headjs %}
 
 {% block bodyclass %}{% if is_popup %}popup {% endif %}{% endblock %}

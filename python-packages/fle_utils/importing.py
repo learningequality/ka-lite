@@ -21,9 +21,10 @@ def import_all_from(path, locals, globals, pattern="*"):
     Import * from all the .py files in a particular directory whose names match a particular pattern.
     """
     # load the names of all the modules in the directory
-    module_names = [os.path.basename(f)[:-3] for f in glob.glob("%s/%s.py" % (path, pattern))]
-    base_module_name=os.path.basename(path)
-    # print ("Importing into %s" % base_module_name)
+    py_modules = [os.path.basename(f)[:-3] for f in glob.glob("%s/%s.py" % (path, pattern))]
+    dir_modules = [os.path.basename(f) for f in glob.glob("%s/%s" % (path, pattern)) if os.path.isdir(f) and os.path.exists(os.path.join(f, '__init__.py'))]
+    module_names = py_modules + dir_modules
+
     # effectively do a `from <module> import *` for all the modules
     for module_name in module_names:
 
@@ -34,11 +35,9 @@ def import_all_from(path, locals, globals, pattern="*"):
         # import the module by name, passing globals so it can make use of Django stuff
         # http://www.diveintopython.net/functional_programming/dynamic_import.html
         module = __import__(module_name, globals=globals)
-        # print ("\tImporting from internal module:%s" % (module_name))
 
         # bring all the contents of the module into the original namespace (ala `from ... import *`)
         for name in dir(module):
             if name.startswith("_"):
                 continue
-            # print ("\t\tBringing %s into %s" % (name, base_module_name))
             locals[name] = getattr(module, name)

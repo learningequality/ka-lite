@@ -9,4 +9,4 @@ IF EXIST "%KALITE_DIR%\runcherrypyserver.pid" (
 )
 
 echo.
-start /b python.exe "%KALITE_DIR%\manage.py" kaserve host=0.0.0.0 daemonize=True pidfile="%KALITE_DIR%\runcherrypyserver.pid"
+start /b python.exe "%KALITE_DIR%\manage.py" kaserve host=0.0.0.0 daemonize=True production=True pidfile="%KALITE_DIR%\runcherrypyserver.pid"

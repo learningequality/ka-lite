@@ -17,7 +17,7 @@ from securesync import VERSION
 
 _syncing_models = []  # all models we want to sync
 
-def add_syncing_models(models):
+def add_syncing_models(models, dependency_check=True):
     """When sync is run, these models will be sync'd"""
 
     get_foreign_key_classes = lambda m: set([field.rel.to for field in m._meta.fields if isinstance(field, ForeignKey)])
@@ -43,7 +43,7 @@ def add_syncing_models(models):
 
         # Before inserting, make sure that any models referencing *THIS* model
         # appear after this model.
-        if [True for synmod in _syncing_models[0:insert_after_idx-1] if model in get_foreign_key_classes(synmod)]:
+        if dependency_check and [True for synmod in _syncing_models[0:insert_after_idx-1] if model in get_foreign_key_classes(synmod)]:
             raise Exception("Dependency loop detected in syncing models; cannot proceed.")
 
         # Now we're ready to insert.
@@ -257,7 +257,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
                 model._state.adding = False
 
                 # verify that all fields are valid, and that foreign keys can be resolved
-                model.full_clean()
+                model.full_clean(imported=True)
 
                 # save the imported model (checking that the signature is valid in the process)
                 model.save(imported=True, increment_counters=increment_counters)

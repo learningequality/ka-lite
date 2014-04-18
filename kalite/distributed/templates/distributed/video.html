@@ -5,7 +5,7 @@
 {% load i18n_filters %}
 {% block watch_active %}active{% endblock watch_active %}
 
-{% block headcss %}
+{% block headcss %}{{ block.super }}
     <style>
         .not-client-online-only {
             display:none;
@@ -34,7 +34,7 @@
     <!-- <![endif]-->
 {% endblock headcss %}
 
-{% block headjs %}
+{% block headjs %}{{ block.super }}
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
     <script>
@@ -122,8 +122,10 @@
 
         <h2 id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
             <a href="" id="launch_mplayer">
+                {% if video_urls.thumbnail %}
                 <img class="video-thumb" src="{{ video_urls.thumbnail }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
                 <br/><br/>
+                {% endif %}
                 {% trans "Launch video player!" %}
             </a>
         </h2>

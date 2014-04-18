@@ -1,12 +1,3 @@
-
-function server_restart() {
-    doRequest(URL_SERVER_RESTART, null, {cache: false})
-        .success(function(installed) {
-            show_message("success", gettext("Initiated server restart."));
-        });
-}
-
-
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information
@@ -15,18 +6,6 @@ var process_interval_handles = {};
 var process_callbacks = {};
 
 $(function() {
-    setTimeout(function() {
-        with_online_status("server", function(server_is_online) {
-            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
-            // Best to assume offline, as online check returns much faster than offline check.
-            if(!server_is_online){
-                show_message("error", gettext("The server does not have internet access; new content cannot be downloaded at this time."));
-            } else {
-                $(".enable-when-server-online").removeAttr("disabled");
-            }
-        });},
-        200);
-
     $(".progressbar-overall").progressbar({
         value: 0,
         max: 100

@@ -1,4 +1,11 @@
 """
+Downloads a language pack, unzips the contents, then moves files accordingly:
+
+* Move 'LC_MESSAGES' and [lang_code]_metadata.json to ka-lite/locale/[lang_code]/
+* Move 'subtitles' directory to ka-lite/kalite/static/srt/[lang_code]/subtitles/
+* Move 'exercises` directory to ka-lite/kalite/static/khan-exercises/exercises/[lang_code]/
+* Move 'dubbed_videos/dubbed_video_mappings.json' to ka-lite/kalite/i18n/data/
+* Move `video_file_sizes.json' to ka-lite/kalite/updates/data/
 """
 import glob
 import json
@@ -22,7 +29,7 @@ from fle_utils.general import ensure_dir
 from fle_utils.internet import callback_percent_proxy, download_file
 from kalite.distributed import caching
 from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from kalite.i18n import get_localized_exercise_dirpath, get_srt_path
+from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import VERSION
 
@@ -117,10 +124,10 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     lang_code = lcode_to_django_dir(lang_code)
 
     logging.info("Unpacking new translations")
-    ensure_dir(os.path.join(LOCALE_ROOT, lang_code, "LC_MESSAGES"))
+    ensure_dir(get_po_filepath(lang_code=lang_code))
 
     ## Unpack into temp dir
-    z = zipfile.ZipFile(zip_fp or (StringIO(zip_data) if zip_data else open(zip_filepath, "rb")))
+    z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
     z.extractall(os.path.join(LOCALE_ROOT, lang_code))
 
 def move_dubbed_video_map(lang_code):

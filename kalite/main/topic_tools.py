@@ -31,7 +31,7 @@ from fle_utils.general import softload_json
 from kalite import i18n
 from kalite import khanload  # should be removed ASAP, to make more generic and separate apps.
 
-TOPICS_FILEPATH = os.path.join(settings.DATA_PATH, "content", "topics.json")
+TOPICS_FILEPATH = os.path.join(settings.MAIN_DATA_PATH, "topics.json")
 
 CACHE_VARS = []
 
@@ -42,7 +42,7 @@ CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
     global TOPICS, TOPICS_FILEPATH
     if TOPICS is None or force:
-        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug)
+        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=True)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
 
         # Limit the memory footprint by unloading particular values
