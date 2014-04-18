@@ -1,10 +1,5 @@
-# Django serializers, for robustness when client/server/model versions are different
-python-packages/django/core/serializers/base.py
-    * django.core.serializers.base.py: added version_diff function, code to Serialize to skip serializing fields with a version greater than the client version
-python-packages/django/core/serializers/python.py: added code to Deserialize to ignore errors in deserializing fields when the remote server has a newer version than the local server
-
 python-packages/django/templates/base.py
-    Purpose of the change: to enable "repeatblock", 
+    Purpose of the change: to enable "repeatblock",
     a template tag with the ability to repeat a block multiple times on a page.
     --- a/python-packages/django/template/base.py
     +++ b/python-packages/django/template/base.py
@@ -13,7 +8,7 @@ python-packages/django/templates/base.py
              for lib in builtins:
                  self.add_library(lib)
     +        self.root_nodelist = []
- 
+
          def parse(self, parse_until=None):
              if parse_until is None:
                  parse_until = []
@@ -32,22 +27,22 @@ python-packages/django/contrib/auth/models.py: 232
     +        help_text=_('Required. 75 characters or fewer. Letters, numbers and '
 
 
-python-packages/django/utils/cache.py:168 
+python-packages/django/utils/cache.py:168
 requires package additions:
 import logging
 from django.utils.translation import get_language_from_request
         # DJANGO_CHANGE(bcipolli)
-        # The existing django logic here is completely different than the 
+        # The existing django logic here is completely different than the
         #   django translations pathway, which uses the more nuanced
         #   get_language_from_request.  For consistency and good interaction,
-        #   cache should be using THAT.  
+        #   cache should be using THAT.
         cache_key += '.%s' % get_language_from_request(request)
 
 
 python-packages/django/utils/translation/trans_real.py:430
     # DJANGO_CHANGE(bcipolli):
     # run settings.LANGUAGE_CODE through same gauntlet as above
-    # Otherwise, if we try to default to a sub-language (en-us), but only 
+    # Otherwise, if we try to default to a sub-language (en-us), but only
     # the base language is installed (en), we'll get different behavior
     # based on client (some of which hit this fallback) IF the sub-language
     # is not installed.
@@ -64,4 +59,3 @@ python-packages/django/utils/translation/trans_real.py:430
     else:
         raise Exception("No language code could be determined; even fall-back on settings.LANGUAGE_CODE (%s) failed!" % settings.LANGUAGE_CODE)
 
- 
