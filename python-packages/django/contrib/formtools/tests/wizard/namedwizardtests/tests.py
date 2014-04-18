@@ -1,8 +1,11 @@
+from __future__ import unicode_literals
+
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import TestCase
 
 from django.contrib.auth.models import User
+from django.contrib.auth.tests.utils import skipIfCustomUser
 
 from django.contrib.formtools.wizard.views import (NamedUrlSessionWizardView,
                                                    NamedUrlCookieWizardView)
@@ -51,8 +54,8 @@ class NamedWizardTests(object):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['wizard']['steps'].current, 'form1')
         self.assertEqual(response.context['wizard']['form'].errors,
-                         {'name': [u'This field is required.'],
-                          'user': [u'This field is required.']})
+                         {'name': ['This field is required.'],
+                          'user': ['This field is required.']})
 
     def test_form_post_success(self):
         response = self.client.post(
@@ -120,7 +123,8 @@ class NamedWizardTests(object):
         self.assertEqual(response.context['wizard']['steps'].current, 'form2')
 
         post_data = self.wizard_step_data[1]
-        post_data['form2-file1'] = open(__file__)
+        post_data['form2-file1'].close()
+        post_data['form2-file1'] = open(__file__, 'rb')
         response = self.client.post(
             reverse(self.wizard_urlname,
                     kwargs={'step': response.context['wizard']['steps'].current}),
@@ -147,13 +151,15 @@ class NamedWizardTests(object):
         self.assertEqual(response.status_code, 200)
 
         all_data = response.context['form_list']
-        self.assertEqual(all_data[1]['file1'].read(), open(__file__).read())
+        with open(__file__, 'rb') as f:
+            self.assertEqual(all_data[1]['file1'].read(), f.read())
+        all_data[1]['file1'].close()
         del all_data[1]['file1']
         self.assertEqual(all_data, [
-            {'name': u'Pony', 'thirsty': True, 'user': self.testuser},
-            {'address1': u'123 Main St', 'address2': u'Djangoland'},
-            {'random_crap': u'blah blah'},
-            [{'random_crap': u'blah blah'}, {'random_crap': u'blah blah'}]])
+            {'name': 'Pony', 'thirsty': True, 'user': self.testuser},
+            {'address1': '123 Main St', 'address2': 'Djangoland'},
+            {'random_crap': 'blah blah'},
+            [{'random_crap': 'blah blah'}, {'random_crap': 'blah blah'}]])
 
     def test_cleaned_data(self):
         response = self.client.get(
@@ -168,7 +174,7 @@ class NamedWizardTests(object):
         self.assertEqual(response.status_code, 200)
 
         post_data = self.wizard_step_data[1]
-        post_data['form2-file1'] = open(__file__)
+        post_data['form2-file1'] = open(__file__, 'rb')
         response = self.client.post(
             reverse(self.wizard_urlname,
                     kwargs={'step': response.context['wizard']['steps'].current}),
@@ -180,7 +186,10 @@ class NamedWizardTests(object):
         response = self.client.get(step2_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['wizard']['steps'].current, 'form2')
-        self.assertEqual(response.context['wizard']['form'].files['form2-file1'].read(), open(__file__).read())
+        with open(__file__, 'rb') as f:
+            self.assertEqual(
+                response.context['wizard']['form'].files['form2-file1'].read(),
+                f.read())
 
         response = self.client.post(
             reverse(self.wizard_urlname,
@@ -197,15 +206,17 @@ class NamedWizardTests(object):
         self.assertEqual(response.status_code, 200)
 
         all_data = response.context['all_cleaned_data']
-        self.assertEqual(all_data['file1'].read(), open(__file__).read())
+        with open(__file__, 'rb') as f:
+            self.assertEqual(all_data['file1'].read(), f.read())
+        all_data['file1'].close()
         del all_data['file1']
         self.assertEqual(
             all_data,
-            {'name': u'Pony', 'thirsty': True, 'user': self.testuser,
-             'address1': u'123 Main St', 'address2': u'Djangoland',
-             'random_crap': u'blah blah', 'formset-form4': [
-                 {'random_crap': u'blah blah'},
-                 {'random_crap': u'blah blah'}
+            {'name': 'Pony', 'thirsty': True, 'user': self.testuser,
+             'address1': '123 Main St', 'address2': 'Djangoland',
+             'random_crap': 'blah blah', 'formset-form4': [
+                 {'random_crap': 'blah blah'},
+                 {'random_crap': 'blah blah'}
              ]})
 
     def test_manipulated_data(self):
@@ -221,7 +232,8 @@ class NamedWizardTests(object):
         self.assertEqual(response.status_code, 200)
 
         post_data = self.wizard_step_data[1]
-        post_data['form2-file1'] = open(__file__)
+        post_data['form2-file1'].close()
+        post_data['form2-file1'] = open(__file__, 'rb')
         response = self.client.post(
             reverse(self.wizard_urlname,
                     kwargs={'step': response.context['wizard']['steps'].current}),
@@ -265,6 +277,7 @@ class NamedWizardTests(object):
         self.assertEqual(response.context['wizard']['steps'].current, 'form1')
 
 
+@skipIfCustomUser
 class NamedSessionWizardTests(NamedWizardTests, TestCase):
     wizard_urlname = 'nwiz_session'
     wizard_step_1_data = {
@@ -296,6 +309,7 @@ class NamedSessionWizardTests(NamedWizardTests, TestCase):
     )
 
 
+@skipIfCustomUser
 class NamedCookieWizardTests(NamedWizardTests, TestCase):
     wizard_urlname = 'nwiz_cookie'
     wizard_step_1_data = {
@@ -356,11 +370,13 @@ class TestNamedUrlCookieWizardView(NamedUrlCookieWizardView):
         return response, self
 
 
+@skipIfCustomUser
 class NamedSessionFormTests(NamedFormTests, TestCase):
     formwizard_class = TestNamedUrlSessionWizardView
     wizard_urlname = 'nwiz_session'
 
 
+@skipIfCustomUser
 class NamedCookieFormTests(NamedFormTests, TestCase):
     formwizard_class = TestNamedUrlCookieWizardView
     wizard_urlname = 'nwiz_cookie'
