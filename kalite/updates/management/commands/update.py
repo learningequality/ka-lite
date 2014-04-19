@@ -1,5 +1,6 @@
 """
 """
+import datetime
 import git
 import glob
 import os
@@ -104,19 +105,28 @@ class Command(UpdatesStaticCommand):
         assert self.ended(), "Subroutines should complete() if they start()!"
 
 
-    def update_via_git(self, branch=None, *args, **kwargs):
+    def update_via_git(self, *args, **kwargs):
         """
         Full update via git
         """
         self.stages = [
             "clean_pyc",
-            "git",
+            "gitpull",
             "download",
             "syncdb",
+            "stop_server",
+            "start_server",
         ]
 
-        # TODO: use the git package to detect if we're in a git repo
-        if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
+        remote_name = settings.GIT_UPDATE_REMOTE_NAME
+        remote_branch = settings.GIT_UPDATE_BRANCH
+        remote_url = settings.GIT_UPDATE_REPO_URL
+
+
+        # step 0: check that we are in a git repo first!
+        try:
+            repo = git.Repo(os.path.dirname(__file__))
+        except git.exc.InvalidGitRepositoryError:
             raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
 
         # step 1: clean_pyc (has to be first)
@@ -124,26 +134,25 @@ class Command(UpdatesStaticCommand):
         self.start(notes="Clean up pyc files")
 
         # Step 2: update via git
-        self.next_stage(notes="Updating via git%s" % (" to branch %s" % branch if branch else ""))
-        repo = git.Repo()
+        self.next_stage(notes="Updating via git branch %s in remote %s" % (remote_branch, remote_name))
 
+        # Step 2a: add the remote first
         try:
-            if not branch:
-                # old behavior--assume you're pulling to remote
-                self.stdout.write(repo.git.pull() + "\n")
-            elif "/" not in branch:
-                self.stdout.write(repo.git.fetch() + "\n")  # update all branches across all repos, to make sure all branches exist
-                self.stdout.write(repo.git.checkout(branch) + "\n")
-            else:
-                self.stdout.write(repo.git.fetch("--all", "-p"), "\n")  # update all branches across all repos, to make sure all branches exist
-                self.stdout.write(repo.git.checkout("-t", branch) + "\n")
+            remote = repo.create_remote(remote_name, remote_url)
+        except git.exc.GitCommandError: # remote already exists
+            repo.git.remote('set-url', remote_name, remote_url) # update it in case we change the remote url
+            remote = repo.remote(remote_name)
 
-        except git.errors.GitCommandError as gce:
-            if not (branch and "There is no tracking information for the current branch" in gce.stderr):
-                # pull failed because the branch is local only. this is OK when you specify a branch (switch), but not when you don't (has to be a remote pull)
-                self.stderr.write("Error running %s\n" % gce.command)
-                self.stderr.write("%s\n" % gce.stderr)
-                exit(1)
+        # Step 2b: fetch the update remote
+        remote.fetch()
+
+        # Step 2c: stash any changes we have
+        now = datetime.datetime.now().isoformat()
+        repo.git.stash("save", "Stash from update initiated at %s" % now)
+
+        # Step 2c: checkout the remote branch
+        remote_name_branch = '%s/%s' % (remote_name, remote_branch)
+        repo.git.checkout(remote_name_branch)
 
         # step 3: get other remote resources
         self.next_stage("Download remote resources")
@@ -154,10 +163,16 @@ class Command(UpdatesStaticCommand):
         #  to guarantee all the new code is begin used.
         self.next_stage("Update the database [please wait; no interactive output]")
         # should be interactive=False, but this method is a total hack
-        (out, err, rc) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
+        (out, err, rc, p) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
         sys.stderr.write(out)
         if rc:
             sys.stderr.write(err)
+
+        # step 5: stop the server
+        self.stop_server()
+
+        # step 6: start the server
+        self.start_server()
 
         # Done!
         self.complete()
@@ -559,7 +574,8 @@ class Command(UpdatesStaticCommand):
                 subprocess.check_call(["taskkill", "/pid", old_pid, "/f"])
         else:
             self.update_stage(stage_percent=0.5, notes="Stopping server.")
-            stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
+            current_dir = getattr(self, "current_dir", os.path.join(settings.PROJECT_PATH, '..'))
+            stop_cmd = self.get_shell_script("serverstop*", location=current_dir)
             try:
                 p = subprocess.check_call(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             except subprocess.CalledProcessError as e:
@@ -657,7 +673,8 @@ class Command(UpdatesStaticCommand):
         self._print_message("Starting the server")
 
         # Start the server to validate
-        manage_py_dir = os.path.join(self.dest_dir, 'kalite')
+        target_dir = getattr(self, "dest_dir", os.path.join(settings.PROJECT_PATH, '..'))
+        manage_py_dir = os.path.join(target_dir, 'kalite')
         # shift to an existing directory first to remove the reference to a deleted directory
         os.chdir(tempfile.gettempdir())
         # now go back to the working directory
@@ -667,6 +684,7 @@ class Command(UpdatesStaticCommand):
             wait=False,
             manage_py_dir=manage_py_dir,
             output_to_stdin=True,
+            production=True,
         )
 
         self._wait_for_server_to_be_up()
