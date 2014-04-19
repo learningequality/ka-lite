@@ -2,6 +2,7 @@ import os
 import socket
 import subprocess
 import tempfile
+import time
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
@@ -39,6 +40,8 @@ class Command(BaseCommand):
                 errcount += 1
                 if errcount > 5:
                     raise CommandError(_("Can't connect to %s at port %s." % (server, port)))
+                else:
+                    time.sleep(5)
 
 
     def checklockfile(func):
