@@ -140,6 +140,7 @@ class Command(UpdatesStaticCommand):
         try:
             remote = repo.create_remote(remote_name, remote_url)
         except git.exc.GitCommandError: # remote already exists
+            repo.git.remote('set-url', remote_name, remote_url) # update it in case we change the remote url
             remote = repo.remote(remote_name)
 
         # Step 2b: fetch the update remote
