@@ -1,6 +1,7 @@
 import os
 import socket
 import subprocess
+import tempfile
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
@@ -15,7 +16,7 @@ class Command(BaseCommand):
     password = "dummy"
     sshport = 6060
     server = "troy.learningequality.org"
-    lockfile = os.path.join(os.path.dirname(__file__), 'tunnel.lock')
+    lockfile = os.path.join(tempfile.gettempdir(), 'tunnel.lock')
 
     option_list = BaseCommand.option_list + tuple()
 
