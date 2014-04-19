@@ -77,17 +77,22 @@ input#search.ui-autocomplete-input {
     border-right: 1px solid #ccc;
 }
 #language_selector {
-    margin: 0 15px 0 15px;
+    margin: 15px 15px 0;
     /*width: 75px;*/
 }
 /* == Logged in only ============== */
     #sitepoints {
         font-size: 0.85em;
         opacity: 0.7;
+        position: absolute;
+        right: 10px;
+        top: 2px;
     }
     #sitepoints-xs {
         font-size: 12px;
         margin-top: -12px;
+        margin-left: 100px;
+        position: absolute;
     }
 
 /* ===================================
@@ -112,7 +117,7 @@ input#search.ui-autocomplete-input {
     box-shadow: 0 1px 3px #ccc;
 }
 .suggested-action {
-    background: #f8f8f8;
+    background: #f8f8f8;   
     border-radius: 6px;
     margin-bottom: 10px;
     min-height: 256px;

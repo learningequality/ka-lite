@@ -19,6 +19,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}?{{ BUILD_ID }}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}?{{ BUILD_ID }}">
+        <!-- <link rel="stylesheet/less" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.less' %}?{{ BUILD_ID }}"> -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' %}?{{ BUILD_ID }}">
@@ -74,6 +75,7 @@
          var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
          var CURRENT_LANGUAGE = "{{ current_language }}";
         </script>
+        <script type="text/javascript" src="{% static 'js/less.js"></script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
@@ -89,16 +91,17 @@
 
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
+
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+
                 <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
                     <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="KA Lite logo">
                     <div class="pull-right visible-xs" id="sitepoints-xs"></div>
                 </a>
-
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {% block sitewide_navigation %}
@@ -118,14 +121,6 @@
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a></li>
 
-                        {% if not restricted %}
-                            {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                            <li><a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a></li>
-                        {% endif %}
-
-                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a></li>
-
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url zone_redirect %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a></li>
 
@@ -142,17 +137,24 @@
                         <li><a href="{% url coach_reports %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url help %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
+                        <li><a href="{% url help %}" id="nav_help" class="{% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li class="not-super-user-only><a {% block username_active %}{% endblock username_active %}" href="{% url account_management %}" id="logged-in-name" class="logged-in-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a></li>
+                        <li class="not-super-user-only {% block username_active %}{% endblock username_active %}"><a href="{% url account_management %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a></li>
+
+                        {% if not restricted %}
+                            {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                            <li><a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a></li>
+                        {% endif %}
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a></li>
+                        <li><a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a></li>
+
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">{% trans "Logout" %}</a></li>
 
                         {% block lang_choices %}
-                        <li><div class="hidden-xs" id="sitepoints"></div>
-                            <span class="not-admin-only">
+                        <li><span class="not-logged-in-only">
                         {% if num_language_choices > 1 %}
                         <select id="language_selector">
                         {% for lang_code, lang_meta in language_choices.iteritems %}
@@ -167,6 +169,8 @@
 
                         {% endblock sitewide_navigation %}
                         </span>
+
+                        <div class="hidden-xs" id="sitepoints"></div>
                     </ul>
                 </div>
             </div>
