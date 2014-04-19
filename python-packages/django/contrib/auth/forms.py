@@ -1,16 +1,21 @@
+from __future__ import unicode_literals
+
 from django import forms
 from django.forms.util import flatatt
 from django.template import loader
-from django.utils.encoding import smart_str
+from django.utils.datastructures import SortedDict
+from django.utils.html import format_html, format_html_join
 from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
+from django.utils.text import capfirst
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import UNUSABLE_PASSWORD, is_password_usable, get_hasher
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD, identify_hasher
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
+
 
 UNMASKED_DIGITS_TO_SHOW = 6
 
@@ -20,29 +25,24 @@ mask_password = lambda p: "%s%s" % (p[:UNMASKED_DIGITS_TO_SHOW], "*" * max(len(p
 class ReadOnlyPasswordHashWidget(forms.Widget):
     def render(self, name, value, attrs):
         encoded = value
-
-        if not is_password_usable(encoded):
-            return "None"
-
         final_attrs = self.build_attrs(attrs)
 
-        encoded = smart_str(encoded)
-
-        if len(encoded) == 32 and '$' not in encoded:
-            algorithm = 'unsalted_md5'
+        if not encoded or encoded == UNUSABLE_PASSWORD:
+            summary = mark_safe("<strong>%s</strong>" % ugettext("No password set."))
         else:
-            algorithm = encoded.split('$', 1)[0]
+            try:
+                hasher = identify_hasher(encoded)
+            except ValueError:
+                summary = mark_safe("<strong>%s</strong>" % ugettext(
+                    "Invalid password format or unknown hashing algorithm."))
+            else:
+                summary = format_html_join('',
+                                           "<strong>{0}</strong>: {1} ",
+                                           ((ugettext(key), value)
+                                            for key, value in hasher.safe_summary(encoded).items())
+                                           )
 
-        try:
-            hasher = get_hasher(algorithm)
-        except ValueError:
-            summary = "<strong>Invalid password format or unknown hashing algorithm.</strong>"
-        else:
-            summary = ""
-            for key, value in hasher.safe_summary(encoded).iteritems():
-                summary += "<strong>%(key)s</strong>: %(value)s " % {"key": ugettext(key), "value": value}
-
-        return mark_safe("<div%(attrs)s>%(summary)s</div>" % {"attrs": flatatt(final_attrs), "summary": summary})
+        return format_html("<div{0}>{1}</div>", flatatt(final_attrs), summary)
 
 
 class ReadOnlyPasswordHashField(forms.Field):
@@ -51,6 +51,11 @@ class ReadOnlyPasswordHashField(forms.Field):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("required", False)
         super(ReadOnlyPasswordHashField, self).__init__(*args, **kwargs)
+
+    def bound_data(self, data, initial):
+        # Always return initial because the widget doesn't
+        # render an input field.
+        return initial
 
 
 class UserCreationForm(forms.ModelForm):
@@ -62,18 +67,19 @@ class UserCreationForm(forms.ModelForm):
         'duplicate_username': _("A user with that username already exists."),
         'password_mismatch': _("The two password fields didn't match."),
     }
-    username = forms.RegexField(label=_("Username"), max_length=30,
+    #Changed to modify username length from 30 to 75 (matching email addresses)
+    username = forms.RegexField(label=_("Username"), max_length=75,  # KA-LITE-MOD (using email addr for username)
         regex=r'^[\w.@+-]+$',
-        help_text = _("Required. 30 characters or fewer. Letters, digits and "
+        help_text=_("Required. 30 characters or fewer. Letters, digits and "
                       "@/./+/-/_ only."),
-        error_messages = {
+        error_messages={
             'invalid': _("This value may contain only letters, numbers and "
                          "@/./+/-/_ characters.")})
     password1 = forms.CharField(label=_("Password"),
         widget=forms.PasswordInput)
     password2 = forms.CharField(label=_("Password confirmation"),
         widget=forms.PasswordInput,
-        help_text = _("Enter the same password as above, for verification."))
+        help_text=_("Enter the same password as above, for verification."))
 
     class Meta:
         model = User
@@ -84,15 +90,15 @@ class UserCreationForm(forms.ModelForm):
         # but it sets a nicer error message than the ORM. See #13147.
         username = self.cleaned_data["username"]
         try:
-            User.objects.get(username=username)
+            User._default_manager.get(username=username)
         except User.DoesNotExist:
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
     def clean_password2(self):
-        password1 = self.cleaned_data.get("password1", "")
-        password2 = self.cleaned_data["password2"]
-        if password1 != password2:
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
             raise forms.ValidationError(
                 self.error_messages['password_mismatch'])
         return password2
@@ -108,18 +114,15 @@ class UserCreationForm(forms.ModelForm):
 class UserChangeForm(forms.ModelForm):
     username = forms.RegexField(
         label=_("Username"), max_length=30, regex=r"^[\w.@+-]+$",
-        help_text = _("Required. 30 characters or fewer. Letters, digits and "
+        help_text=_("Required. 30 characters or fewer. Letters, digits and "
                       "@/./+/-/_ only."),
-        error_messages = {
+        error_messages={
             'invalid': _("This value may contain only letters, numbers and "
                          "@/./+/-/_ characters.")})
     password = ReadOnlyPasswordHashField(label=_("Password"),
         help_text=_("Raw passwords are not stored, so there is no way to see "
                     "this user's password, but you can change the password "
                     "using <a href=\"password/\">this form</a>."))
-
-    def clean_password(self):
-        return self.initial["password"]
 
     class Meta:
         model = User
@@ -130,18 +133,24 @@ class UserChangeForm(forms.ModelForm):
         if f is not None:
             f.queryset = f.queryset.select_related('content_type')
 
+    def clean_password(self):
+        # Regardless of what the user provides, return the initial value.
+        # This is done here, rather than on the field, because the
+        # field does not have access to the initial value
+        return self.initial["password"]
+
 
 class AuthenticationForm(forms.Form):
     """
     Base class for authenticating users. Extend this to get a form that accepts
     username/password logins.
     """
-    username = forms.CharField(label=_("Username"), max_length=75) # tweaked for KA Lite (using email addr for username)
+    username = forms.CharField(max_length=254)
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
 
     error_messages = {
-        'invalid_login': _("Please enter a correct username and password. "
-                           "Note that both fields are case-sensitive."),
+        'invalid_login': _("Please enter a correct %(username)s and password. "
+                           "Note that both fields may be case-sensitive."),
         'no_cookies': _("Your Web browser doesn't appear to have cookies "
                         "enabled. Cookies are required for logging in."),
         'inactive': _("This account is inactive."),
@@ -158,6 +167,12 @@ class AuthenticationForm(forms.Form):
         self.user_cache = None
         super(AuthenticationForm, self).__init__(*args, **kwargs)
 
+        # Set the label for the "username" field.
+        UserModel = get_user_model()
+        self.username_field = UserModel._meta.get_field(UserModel.USERNAME_FIELD)
+        if not self.fields['username'].label:
+            self.fields['username'].label = capfirst(self.username_field.verbose_name)
+
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
@@ -167,7 +182,9 @@ class AuthenticationForm(forms.Form):
                                            password=password)
             if self.user_cache is None:
                 raise forms.ValidationError(
-                    self.error_messages['invalid_login'])
+                    self.error_messages['invalid_login'] % {
+                        'username': self.username_field.verbose_name
+                    })
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(self.error_messages['inactive'])
         self.check_for_test_cookie()
@@ -188,21 +205,24 @@ class AuthenticationForm(forms.Form):
 
 class PasswordResetForm(forms.Form):
     error_messages = {
-        'unknown': _("That e-mail address doesn't have an associated "
+        'unknown': _("That email address doesn't have an associated "
                      "user account. Are you sure you've registered?"),
-        'unusable': _("The user account associated with this e-mail "
+        'unusable': _("The user account associated with this email "
                       "address cannot reset the password."),
     }
-    email = forms.EmailField(label=_("E-mail"), max_length=75)
+    email = forms.EmailField(label=_("Email"), max_length=254)
 
     def clean_email(self):
         """
         Validates that an active user exists with the given email address.
         """
+        UserModel = get_user_model()
         email = self.cleaned_data["email"]
-        self.users_cache = User.objects.filter(email__iexact=email,
-                                               is_active=True)
+        self.users_cache = UserModel._default_manager.filter(email__iexact=email)
         if not len(self.users_cache):
+            raise forms.ValidationError(self.error_messages['unknown'])
+        if not any(user.is_active for user in self.users_cache):
+            # none of the filtered users are active
             raise forms.ValidationError(self.error_messages['unknown'])
         if any((user.password == UNUSABLE_PASSWORD)
                for user in self.users_cache):
@@ -230,7 +250,7 @@ class PasswordResetForm(forms.Form):
                 'email': user.email,
                 'domain': domain,
                 'site_name': site_name,
-                'uid': int_to_base36(user.id),
+                'uid': int_to_base36(user.pk),
                 'user': user,
                 'token': token_generator.make_token(user),
                 'protocol': use_https and 'https' or 'http',
@@ -296,8 +316,11 @@ class PasswordChangeForm(SetPasswordForm):
             raise forms.ValidationError(
                 self.error_messages['password_incorrect'])
         return old_password
-PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1',
-                                           'new_password2']
+
+PasswordChangeForm.base_fields = SortedDict([
+    (k, PasswordChangeForm.base_fields[k])
+    for k in ['old_password', 'new_password1', 'new_password2']
+])
 
 
 class AdminPasswordChangeForm(forms.Form):

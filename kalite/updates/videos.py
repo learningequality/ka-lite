@@ -11,7 +11,7 @@ from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtub
 from kalite.main.topic_tools import get_topic_tree, get_videos
 
 
-REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.DATA_PATH, "content", "video_file_sizes.json")
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.UPDATES_DATA_PATH, "video_file_sizes.json")
 AVERAGE_VIDEO_SIZE = 14000000
 
 REMOTE_VIDEO_SIZES = None
@@ -101,24 +101,33 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     def compute_video_metadata(youtube_id, format):
         return {"stream_type": "video/%s" % format}
 
-    def compute_video_urls(youtube_id, format, lang_code, on_disk=None, thumb_format="png", videos_path=videos_path):
+    def compute_video_urls(youtube_id, format, lang_code, on_disk=None, thumb_formats=["png", "jpg"], videos_path=videos_path):
         if on_disk is None:
             on_disk = is_video_on_disk(youtube_id, format, videos_path=videos_path)
 
         if on_disk:
             video_base_url = settings.CONTENT_URL + youtube_id
             stream_url = video_base_url + ".%s" % format
-            thumbnail_url = video_base_url + ".png"
+            thumbnail_url = None  # default to None now, so we know when no thumbnail is available.
+
+            for thumb_format in thumb_formats:  # find the thumbnail on disk
+                thumb_filename = '%s.%s' % (youtube_id, thumb_format)
+                thumb_filepath = os.path.join(videos_path, thumb_filename)
+                if os.path.exists(thumb_filepath):
+                    thumbnail_url = video_base_url + "." + thumb_format  # default
+                    break
+
         elif settings.BACKUP_VIDEO_SOURCE and lang_code == "en":
-            dict_vals = {"youtube_id": youtube_id, "video_format": format, "thumb_format": thumb_format }
+            dict_vals = {"youtube_id": youtube_id, "video_format": format, "thumb_format": thumb_formats[0] }
             stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
             thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
+
         else:
             return {}  # no URLs
         return {"stream": stream_url, "thumbnail": thumbnail_url}
 
     video_availability = video.get("availability", {}) if not force else {}
-    en_youtube_id = get_youtube_id(video["id"], None)
+    en_youtube_id = get_youtube_id(video["id"], lang_code=None)  # get base ID
     video_map = get_id2oklang_map(video["id"]) or {}
 
     if not "on_disk" in video_availability:

@@ -5,7 +5,7 @@ Note that most times, these patterns are all under /api/, due to the way
 they're imported into the project's urls.py file.
 """
 from django.conf import settings
-from django.conf.urls.defaults import include, patterns, url
+from django.conf.urls import include, patterns, url
 from django.http import HttpResponseServerError
 
 import kalite.khanload.api_urls

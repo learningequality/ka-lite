@@ -3,7 +3,7 @@ var installed_languages = [];
 var downloading = false;
 
 function get_available_languages() {
-    doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
+    return doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
@@ -16,7 +16,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    doRequest(INSTALLED_LANGUAGES_URL, null, {
+    return doRequest(INSTALLED_LANGUAGES_URL, null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -104,7 +104,7 @@ function delete_languagepack(lang_code) {
 $(function () {
     $(".delete-language-button").children('button').click(function(event) {
         var lang_code = $(this).val();
-        ConfirmDialog(sprintf(gettext("'Are you sure you want to delete language pack '%(lang_code)s'"), {lang_code: lang_code}));
+        ConfirmDialog(sprintf(gettext("Are you sure you want to delete language pack '%(lang_code)s'"), {lang_code: lang_code}));
 
         function ConfirmDialog(message){
             $('<div></div>').appendTo('body')
@@ -122,7 +122,7 @@ $(function () {
                     }
                 }
             });
-        };
+        }
 
         jQuery("button.ui-dialog-titlebar-close").hide();
 
@@ -223,10 +223,25 @@ var languagepack_callbacks = {
 };
 
 
+function update_server_status() {
+    with_online_status("server", function(server_is_online) {
+        // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+        // Best to assume offline, as online check returns much faster than offline check.
+        if(!server_is_online){
+            show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
+        }
+    });
+}
+
 $(function() {
     // basic flow: check with central server what we can install
     // if that's successful, check with local server of what we have installed
     // then dont show languages in dropdown box if already installed
-    get_available_languages();
-    get_installed_languages();
+    get_available_languages()
+        .success( update_server_status )
+        .fail( update_server_status );
+    get_installed_languages()
+        .success( update_server_status )
+        .fail( update_server_status );
+
 });

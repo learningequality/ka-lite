@@ -325,7 +325,7 @@ def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
 
         return {
             "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node["description"] or "")),
+            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
             "isFolder": True,
             "key": node["path"],
             "children": topic_children,
@@ -352,7 +352,13 @@ def api_data(request, xaxis="", yaxis=""):
     """
 
     # Get the request form
-    form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    try:
+        form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    except Exception as e:
+        # In investigating #1509: we can catch SQL errors here and communicate clearer error
+        #   messages with the user here.  For now, we have no such error to catch, so just
+        #   pass the errors on to the user (via the @api_handle_error_with_json decorator).
+        raise e
 
     # Query out the data: who?
     if form.data.get("user"):
@@ -376,9 +382,20 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: what?
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+
+    # Quickly add back in exercise meta-data (could potentially be used in future for other data too!)
+    ex_nodes = get_node_cache()["Exercise"]
+    exercises = []
+    for e in computed_data["exercises"]:
+        exercises.append({
+            "slug": e,
+            "full_name": ex_nodes[e][0]["display_name"],
+            "url": ex_nodes[e][0]["path"],
+        })  
+
     json_data = {
         "data": computed_data["data"],
-        "exercises": computed_data["exercises"],
+        "exercises": exercises,
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
                           ["%s, %s" % (u.last_name, u.first_name) for u in users]

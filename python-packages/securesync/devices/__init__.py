@@ -17,8 +17,8 @@ def require_registration(resource_name):
     """
     Gets ID of requested user (not necessarily the user logged in)
     """
-    def real_decorator(handler):
-        def wrapper_fn(request, *args, **kwargs):
+    def real_decorator_wrapper(handler):
+        def real_decorator_wrapper_fn(request, *args, **kwargs):
             if Device.get_own_device().is_registered():
                 return handler(request, *args, **kwargs)
             else:
@@ -26,5 +26,5 @@ def require_registration(resource_name):
                 return HttpResponseRedirect(
                     set_query_params(reverse('register_public_key'), {'next': request.path})
                 );
-        return wrapper_fn
-    return real_decorator
+        return real_decorator_wrapper_fn
+    return real_decorator_wrapper

@@ -11,31 +11,28 @@
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery.sparkline.min.js' %}"></script>
     <script type="text/javascript">
-        var end_date = new Date({{ date_range.1 }})
-        var start_date = new Date({{ date_range.0 }})
+        var end_date = new Date("{{ date_range.1 }}");
+        var start_date = new Date("{{ date_range.0 }}");
 
         if (start_date >= end_date) {
             start_date.setDate(end_date.getDate() - 30)
         }
 
-        var TEMPLATE_GROUP_URL = "{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}";
+        var TEMPLATE_GROUP_URL = "{% url 'facility_management' zone_id=zone_id facility_id=facility.id group_id='None' %}";
 
-        $(document).ready(function(){
+        $(function() {
 
-            $(function() {
+            $('#start_date_select').datepicker({
+                dateFormat: "d MM yy",
+                altField: "#start_standard_date",
+                altFormat: "yy-mm-dd",
+                autoclose: true,
+            });
 
-                $('#start_date_select').datepicker({
-                    dateFormat: "d MM yy",
-                    altField: "#start_standard_date",
-                    altFormat: "yy-mm-dd",
-                    autoclose: true,
-                });
-
-                $('#end_date_select').datepicker({
-                    dateFormat: "d MM yy",
-                    altField: "#end_standard_date",
-                    altFormat: "yy-mm-dd"
-                });
+            $('#end_date_select').datepicker({
+                dateFormat: "d MM yy",
+                altField: "#end_standard_date",
+                altFormat: "yy-mm-dd"
             });
         });
 
@@ -54,7 +51,16 @@
             });
 
             $("#CSV_EXPORT").click(function() {
-                $("#top_export_button_id").click();
+                $("#top_export_button_id").click(); // hides the form on submit
+
+                start_date = $("#start_date_select").datepicker('getDate');
+                end_date = $("#end_date_select").datepicker('getDate');
+
+                // Format the dates as needed by the back-end.
+                $("#start_date_select").val($.datepicker.formatDate('yy-mm-dd', start_date));
+                $("#end_date_select").val($.datepicker.formatDate('yy-mm-dd', end_date));
+
+                $("#date_picker_form").submit()
             });
 
             $('.sparklines').sparkline('html', { enableTagOptions: true, disableInteraction: true });
@@ -70,11 +76,11 @@
     </li>
     <li>
         <div id="export_csv_div_id" class="export_csv_div">
-            <form method="post" action="?format=csv">
+            <form method="post" action="?format=csv" id="date_picker_form">
                 {% csrf_token %}
-                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" id="start_date_select" type="text"></input>
-                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" id="end_date_select" type="text"></input>
-                <input type="submit" class="btn-large" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
+                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" name="period_start" id="start_date_select" type="text" value=""></input>
+                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" name="period_end" id="end_date_select" type="text" value=""></input>
+                <input type="button" class="btn-large" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
@@ -87,7 +93,7 @@
         <div class="coaches" id="coaches">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Coaches" %}</span>
-                <a title="{% trans 'Add a new coach.' %}" href="{% url add_facility_teacher %}?facility={{ facility_id }}">
+                <a title="{% trans 'Add a new coach.' %}" href="{% url 'add_facility_teacher' %}?facility={{ facility_id }}">
                     <span class="icon-add icon-medium">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>
@@ -98,26 +104,26 @@
             </div>
 
             <div class="users">
-            {% if not coaches %}
+            {% if not coach_pages %}
                 <p class="no-data">{% trans "You currently have no coaches for this facility." %}</p>
 
             {% else %}
             {% block coaches_table %}
-                {% if coaches.num_listed_pages > 1 %}
+                {% if coach_pages.num_listed_pages > 1 %}
                 <div class="pagination">
-                        <a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coaches.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&lt&lt</a>
-                        {% for listed_page in coaches.listed_pages %}
+                        <a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coach_pages.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&lt&lt</a>
+                        {% for listed_page in coach_pages.listed_pages %}
                             {% if listed_page == -1 %}
                                 <span class="disabled">&hellip;</span>
-                            {% elif listed_page == coaches.number %}
+                            {% elif listed_page == coach_pages.number %}
                                 <span class="current">
-                                   {{ coaches.number }}
+                                   {{ coach_pages.number }}
                                 </span>
                             {% else %}
                                 <a title="{% blocktrans %}Browse to page # {{ listed_page }} of coaches.{% endblocktrans %}" href="{{ page_urls.coaches|get_item:listed_page }}#coaches">{{ listed_page }}</a>
                             {% endif %}
                         {% endfor %}
-                        <a title="{% trans 'Browse to the next page of coaches.' %}" {% if coaches.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&gt&gt</a>
+                        <a title="{% trans 'Browse to the next page of coaches.' %}" {% if coach_pages.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&gt&gt</a>
                 </div>
                 <div class="clear"></div>
                 {% endif %}
@@ -133,7 +139,7 @@
                         <div class="action">
                         <h4>{% trans "Action" %}:
 
-                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button> 
+                        <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
                         </h4>
                     </div>
                 </div>-->
@@ -148,10 +154,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for coach in coaches %}
-                        <tr value="{{ coach.username }}">
+                        {% for coach in coach_pages %}
+                        <tr value="{{ coach.id }}">
                             <td>
-                                <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url edit_facility_user id=coach.id %}?facility={{ facility_id }}">
+                                <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' id=coach.id %}?facility={{ facility_id }}">
                                     {{ coach|format_name:"last_first" }}
                                     <span class="icon-pencil">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 </a>
@@ -186,7 +192,7 @@
             <dt>{% trans "Exercises Completed" %}</dt>
             <dd>{{ groupdata.total_exercises }}</dd>
             <dt>{% trans "Mastery " %}</dt>
-            <dd>{{ groupdata.pct_mastery|percent:1 }}</dd>
+            <dd>{{ groupdata.pct_mastery }}</dd>
             </dl>
             {% endwith %}
 
@@ -194,7 +200,7 @@
             {# "Second block is a list of all available groups, in table form." %}{% endcomment #}
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Student Groups" %}</span>
-                <a title="{% trans 'Add a new group.' %}" href="{% url add_group %}?facility={{ facility_id }}&next={{ request.path }}">
+                <a title="{% trans 'Add a new group.' %}" href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                     <span class="icon-add icon-medium">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>
@@ -231,18 +237,23 @@
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
                                     <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
                                         {% if group.id %}
-                                        href="{% url facility_management zone_id=zone_id facility_id=facility_id group_id=group.id %}">
+                                        href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
                                         {% else %}
-                                        href="{% url facility_management zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
+                                        href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
                                         {% endif %}
                                         {{ group.name }}
                                         <!--span class="icon-pencil">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span-->
                                     </a>
+                                    {% if group.id %}
+                                    <a class="btn btn-warning" href="{% url 'group_edit' group_id=group.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">{% trans 'Edit group' %}
+                                        <span class="icon-pencil icon-medium" title="{% trans 'Edit group' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    </a>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {% if group.id %}
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                    <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url coach_reports %}?facility={{ facility_id }}&group={{ group.id }}">
+                                    <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}">
                                     <div class="sparklines" sparkType="bar" sparkBarColor="green">
                                     <!--
                                         {{ group.total_logins }},
@@ -271,7 +282,7 @@
         <div class="students" id="students">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Students" %}</span>
-                <a  title="{% trans 'Add a new student.' %}" href="{% url add_facility_student %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.path }}">
+                <a  title="{% trans 'Add a new student.' %}" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
                     <span class="icon-add icon-medium">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </a>
             </div>
@@ -282,25 +293,25 @@
                 </span>
             </div>
 
-            {% if not students %}
+            {% if not student_pages %}
                 <p class="no-data">{% trans "You currently have no student data available." %}</p>
 
             {% else %}
-                {% if students.num_listed_pages > 1 %}
+                {% if student_pages.num_listed_pages > 1 %}
             <div class="pagination">
-                    <a title="{% trans 'Browse to the previous page of students.' %}" {% if students.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&lt&lt</a>
-                    {% for listed_page in students.listed_pages %}
+                    <a title="{% trans 'Browse to the previous page of students.' %}" {% if student_pages.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&lt&lt</a>
+                    {% for listed_page in student_pages.listed_pages %}
                         {% if listed_page == -1 %}
                             <span class="disabled">&hellip;</span>
-                        {% elif listed_page == students.number %}
+                        {% elif listed_page == student_pages.number %}
                             <span class="current">
-                                {{ students.number }}
+                                {{ student_pages.number }}
                             </span>
                         {% else %}
                             <a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a>
                         {% endif %}
                     {% endfor %}
-                    <a title="{% trans 'Browse to the next page of students.' %}" {% if students.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&gt&gt</a>
+                    <a title="{% trans 'Browse to the next page of students.' %}" {% if student_pages.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&gt&gt</a>
             </div>
             <div class="clear"></div>
             {% endif %}
@@ -350,17 +361,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for student in students %}
-                        <tr value="{{ student.username }}">
+                    {% for student in student_pages %}
+                        <tr value="{{ student.id }}">
                             <td>
-                                <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url edit_facility_user id=student.id %}?facility={{ facility_id }}">
+                                <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' id=student.id %}?facility={{ facility_id }}">
                                     {{ student|format_name:"last_first" }}
                                     <span class="icon-pencil">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 </a>
                             </td>
 
                             <td>
-                                <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url student_view %}?user={{ student.id }}">
+                                <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
                                 <div class="sparklines" sparkType="bar" sparkBarColor="green">
                                 <!--
                                     {{ student.total_logins }},
@@ -372,9 +383,9 @@
                             <td>
                                 {% if student.group %}
                                     {% if group_id %}
-                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url coach_reports %}?facility={{ facility.id }}&group={{ student.group.id }}">
+                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
                                     {% else %}
-                                    <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url facility_management zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
+                                    <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
                                     {% endif %}
                                     {{ student.group.name }}
                                     </a>

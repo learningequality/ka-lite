@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{{ device.name }}{% trans "Device Syncing History" %}{{ block.super }}{% endblock title %}
+{% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
 {% endblock headcss %}
@@ -11,7 +11,7 @@
     {% if is_own_device %}
         <div class="server-online-only">
             <a class="registered-only green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
-            <a class="not-registered-only green_button" href="{% url register_public_key %}">{% trans "Register" %}</a>
+            <a class="not-registered-only green_button" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
         </div>
     {% endif %}
 {% endblock buttons %}

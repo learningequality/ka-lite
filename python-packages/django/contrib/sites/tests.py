@@ -1,8 +1,11 @@
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.contrib.sites.models import Site, RequestSite, get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.test import TestCase
+from django.test.utils import override_settings
 
 
 class SitesFrameworkTests(TestCase):
@@ -32,13 +35,14 @@ class SitesFrameworkTests(TestCase):
         # After updating a Site object (e.g. via the admin), we shouldn't return a
         # bogus value from the SITE_CACHE.
         site = Site.objects.get_current()
-        self.assertEqual(u"example.com", site.name)
+        self.assertEqual("example.com", site.name)
         s2 = Site.objects.get(id=settings.SITE_ID)
         s2.name = "Example site"
         s2.save()
         site = Site.objects.get_current()
-        self.assertEqual(u"Example site", site.name)
+        self.assertEqual("Example site", site.name)
 
+    @override_settings(ALLOWED_HOSTS=['example.com'])
     def test_get_current_site(self):
         # Test that the correct Site object is returned
         request = HttpRequest()
@@ -59,4 +63,4 @@ class SitesFrameworkTests(TestCase):
         Site._meta.installed = False
         site = get_current_site(request)
         self.assertTrue(isinstance(site, RequestSite))
-        self.assertEqual(site.name, u"example.com")
+        self.assertEqual(site.name, "example.com")

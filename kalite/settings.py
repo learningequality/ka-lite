@@ -50,8 +50,6 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Not really a Django setting, but we treat it like one--it's eeeeverywhere.
 PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
-DATA_PATH = os.path.realpath(getattr(local_settings, "DATA_PATH", os.path.join(PROJECT_PATH, "..", "data"))) + "/"
-
 
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
@@ -95,8 +93,8 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 
 LANGUAGE_COOKIE_NAME    = "django_language"
 
-ROOT_URLCONF = "distributed.urls"
-INSTALLED_APPS = ("distributed",)
+ROOT_URLCONF = "kalite.distributed.urls"
+INSTALLED_APPS = ("kalite.distributed",)
 MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static'),)  # libraries common to all apps

@@ -67,7 +67,7 @@ class BrowserTestCase(KALiteTestCase):
     clients and logging in profiles.
     """
 
-    persistent_browser = True
+    persistent_browser = False #not bool(os.environ.get("TRAVIS"))  # only use persistent browser when local.
 
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "button", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
 
@@ -172,7 +172,7 @@ class BrowserTestCase(KALiteTestCase):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        time.sleep(0.50) # wait for the message to get created via AJAX
+        time.sleep(2) # wait for the message to get created via AJAX
 
         # Get messages (and limit by type)
         messages = self.browser.find_elements_by_class_name("alert")
@@ -198,6 +198,7 @@ class BrowserTestCase(KALiteTestCase):
         """
 
         # Move to the next actable element.
+        cur_element = self.browser.switch_to_active_element()
         self.browser_send_keys(Keys.TAB)
         num_tabs = 1
 
@@ -208,7 +209,7 @@ class BrowserTestCase(KALiteTestCase):
             self.browser_send_keys(Keys.TAB)
             num_tabs += 1
 
-        self.assertLessEqual(num_tabs, max_tabs, "# of tabs exceeded max # of tabs.")
+        self.assertLessEqual(num_tabs, max_tabs, "# of tabs exceeded max # of tabs (orig element: tag '%s' text '%s')." % (cur_element.tag_name, cur_element.text))
 
         if num_expected_links is not None:
             self.assertEqual(num_links, num_expected_links, "Num links: actual (%d) != expected (%d)" % (num_links, num_expected_links))

@@ -10,7 +10,7 @@ except Exception as e:
     pass
 import gc
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
@@ -36,10 +36,10 @@ class CronThread(Thread):
         prof_string = "" if not self.do_profile else "[%8.2f MB] " % memory_profiler.memory_usage()[0]
 
         if jobs:
-            logger.info("%sRunning %d due jobs... (%s)" % (prof_string, jobs.count(), ", ".join(['"%s"' % job.name for job in jobs])))
+            logging.info("%sRunning %d due jobs... (%s)" % (prof_string, jobs.count(), ", ".join(['"%s"' % job.name for job in jobs])))
             call_command('cron')
         else:
-            logger.debug("%sNo jobs due to run." % prof_string)
+            logging.debug("%sNo jobs due to run." % prof_string)
 
         if self.do_gc:
             gc.collect()
@@ -82,5 +82,5 @@ class Command(BaseCommand):
                 thread.start()
                 sleep(time_wait)
         except KeyboardInterrupt:
-            logger.info("Exiting...\n")
+            logging.info("Exiting...\n")
             sys.exit()

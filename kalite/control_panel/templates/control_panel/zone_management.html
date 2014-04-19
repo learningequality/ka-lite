@@ -40,26 +40,7 @@
     {% if clock_set %}
         {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
     {% endif %}
-    <script>
-        $(function () {
-            $("#form_data").hide()
-            $("#upload_form").submit(function() {
-            // Disable until we get to this stage of the IDOC deployment.
-            /*
-                // First press: show file entry
-                if ($('#form_data').filter(":visible").length==0) {
-                    $('#form_data').show();
-                    return false;
-                }
-                // Second press: submit form (default)
-            */
-                return false;
-            });
-            $("#force-sync").click(function(){
-                force_sync();
-            })
-        })
-    </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/zone_management.js' %}"></script>
 {% endblock headjs %}
 
 {% block buttons %}
@@ -71,17 +52,6 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
-            <li>
-                <ul id="zone-management-options">
-                    {% if not facilities and not devices %}{# can only happen on the central server #}
-                        <li>
-                            <a class="zone-delete-link" href="{% url delete_zone zone_id=zone_id %}" onclick="return confirm(gettext('Are you sure you want to delete') + ' {{zone.name}}?');">
-                                <i class="icon-trash" title="{% trans 'Delete this sharing network.' %}"></i>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </li>
 {% endblock buttons %}
 
 {% block control_panel_content %}
@@ -89,7 +59,7 @@
     <div class="facilities">
         <div class="title-div">
             <span class="title" style="float: left">{% trans "Facilities" %}</span>
-            <a href="{% url facility_edit id='new' %}">
+            <a href="{% url 'add_facility' zone_id=zone_id %}">
                 <span class="icon-add icon-medium" title="{% trans 'Add a new facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </a>
         </div>
@@ -112,39 +82,38 @@
                 <th width="120px">{% trans "# Users" %}</th>
                 <th width="120px">{% trans "# Groups" %}</th>
                 <th width="200px">{% trans "Last Usage" %}</th>
-                <th width="200px">{% trans "Available Actions" %}</th>
             </tr>
 
             {% for id,facility in facilities.items %}
                 <tr>
                     <td nowrap>
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                         <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             {{ facility.name }}
-                        </a>
-                        <a href="{% url facility_edit id=facility.id %}">
+                        </a>|
+                        <a class="btn btn-warning" href="{% url 'facility_edit' id=facility.id %}">{% trans 'Edit facility' %}
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% if facility.is_deletable %}
-                        <a href="{% url facility_delete facility_id=facility.id %}">
-                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <a class="facility-delete-link" href="#">
+                            <span class="icon-trash icon-medium" title="{% trans 'Delete facility' %}"  value="{% url 'facility_delete' facility_id=facility.id %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                         {% endif %}
                     </td>
                     <td nowrap>
                         {{ facility.num_users }}
-                        <!--a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <!--a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-add icon-medium" title="{% trans 'Add users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a-->
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit users' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                     </td>
                     <td nowrap>
                         {{ facility.num_groups }}
-                        <!--a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <!--a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-add icon-medium" title="{% trans 'Add groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a-->
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id group_id='None' %}">
+                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="icon-pencil icon-medium" title="{% trans 'Edit groups' %}">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         </a>
                     </td>
@@ -157,9 +126,6 @@
                         {% else %}
                             {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
                         {% endif %}
-                    </td>
-                    <td nowrap>
-                        <a href="{% url facility_management zone_id=zone_id facility_id=facility.id %}">{% trans "Manage Users and View Usage" %}</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -200,7 +166,7 @@
                 {% for id,device in devices.items %}
                     <tr class="{% if not device.is_registered %}unregistered {% endif %}{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
                         <td nowrap>
-                            {% if device.num_times_synced != None %}<a href="{% url device_management zone_id=zone_id device_id=id %}">{% endif %}
+                            {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
                                 {{ device.name }}
                                 {% if device.is_demo_device %}[Demo data]{% endif %}
                             {% if device.num_times_synced != None %}</a>{% endif %}
@@ -233,7 +199,7 @@
                         <td nowrap>
                             {% if device.is_own_device %}
                             <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
-                            <a class="btn btn-success not-registered-only" href="{% url register_public_key %}">{% trans "Register device" %}</a>
+                            <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
                             {% if clock_set %}
                             /
                             <a onclick="$('#clock_set').show()">set clock</a>

@@ -12,6 +12,11 @@ DEBUG = getattr(local_settings, "DEBUG", False)
 # Set module settings
 #######################
 
+MIDDLEWARE_CLASSES = (
+    "securesync.middleware.RegisteredCheck",
+    "securesync.middleware.DBCheck",
+)
+
 SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https" if not DEBUG else "http")
 
 SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", None)  # default: don't throttle syncing

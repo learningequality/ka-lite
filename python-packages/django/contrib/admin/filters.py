@@ -9,7 +9,7 @@ import datetime
 
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured, ValidationError
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text, force_text
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.contrib.admin.util import (get_model_from_relation,
@@ -102,7 +102,7 @@ class SimpleListFilter(ListFilter):
         }
         for lookup, title in self.lookup_choices:
             yield {
-                'selected': self.value() == lookup,
+                'selected': self.value() == force_text(lookup),
                 'query_string': cl.get_query_string({
                     self.parameter_name: lookup,
                 }, []),
@@ -131,7 +131,7 @@ class FieldListFilter(ListFilter):
     def queryset(self, request, queryset):
         try:
             return queryset.filter(**self.used_parameters)
-        except ValidationError, e:
+        except ValidationError as e:
             raise IncorrectLookupParameters(e)
 
     @classmethod
@@ -198,7 +198,7 @@ class RelatedFieldListFilter(FieldListFilter):
         }
         for pk_val, val in self.lookup_choices:
             yield {
-                'selected': self.lookup_val == smart_unicode(pk_val),
+                'selected': self.lookup_val == smart_text(pk_val),
                 'query_string': cl.get_query_string({
                     self.lookup_kwarg: pk_val,
                 }, [self.lookup_kwarg_isnull]),
@@ -275,7 +275,7 @@ class ChoicesFieldListFilter(FieldListFilter):
         }
         for lookup, title in self.field.flatchoices:
             yield {
-                'selected': smart_unicode(lookup) == self.lookup_val,
+                'selected': smart_text(lookup) == self.lookup_val,
                 'query_string': cl.get_query_string({
                                     self.lookup_kwarg: lookup}),
                 'display': title,
@@ -293,12 +293,8 @@ class DateFieldListFilter(FieldListFilter):
         now = timezone.now()
         # When time zone support is enabled, convert "now" to the user's time
         # zone so Django's definition of "Today" matches what the user expects.
-        if now.tzinfo is not None:
-            current_tz = timezone.get_current_timezone()
-            now = now.astimezone(current_tz)
-            if hasattr(current_tz, 'normalize'):
-                # available for pytz time zones
-                now = current_tz.normalize(now)
+        if timezone.is_aware(now):
+            now = timezone.localtime(now)
 
         if isinstance(field, models.DateTimeField):
             today = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -388,7 +384,7 @@ class AllValuesFieldListFilter(FieldListFilter):
             if val is None:
                 include_none = True
                 continue
-            val = smart_unicode(val)
+            val = smart_text(val)
             yield {
                 'selected': self.lookup_val == val,
                 'query_string': cl.get_query_string({

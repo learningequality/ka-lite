@@ -29,7 +29,7 @@ function csrfSafeMethod(method) {
 
 function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
-    if ($.url().param("lang") === undefined) {
+    if ($.url(url).param("lang") === undefined) {
         url = setGetParam(url, "lang", CURRENT_LANGUAGE);
     }
 
@@ -60,6 +60,109 @@ function doRequest(url, data, opts) {
         .fail(function(resp) {
             handleFailedAPI(resp, error_prefix);
         });
+}
+
+function handleSuccessAPI(obj) {
+
+    var messages = null;
+    var msg_types = ["success", "info", "warning", "error"];  // in case we need to dig for messages
+
+
+    if (!obj) {
+        return;
+
+    } else if (obj.hasOwnProperty("responseText")) {
+        // Got a HTTP response object; parse it.
+        try {
+            if (obj.responseText) {  // No point in trying to parse empty response (which is common)
+                messages = $.parseJSON(obj.responseText);
+            }
+        } catch (e) {
+            // Many reasons this could fail, some valid; others not.
+            console.log(e);
+        }
+    } else if (obj.hasOwnProperty("messages")) {
+        // Got messages embedded in the object
+        messages = {}
+        for (idx in obj.messages) {
+            messages = obj.messages[idx];
+        }
+    } else {
+        // Got messages at the top level of the object; grab them.
+        messages = {};
+        for (idx in msg_types) {
+            var msg_type = msg_types[idx];
+            if (msg_type in obj) {
+                messages[msg_type] = obj[msg_type];
+                console.log(messages[msg_type]);
+            }
+        }
+    }
+
+    clear_messages("error");
+    if (messages) {
+        show_api_messages(messages);
+    }
+}
+
+function handleFailedAPI(resp, error_prefix) {
+    // Two ways for this function to be called:
+    // 1. With an API response (resp) containing a JSON error.
+    // 2. With an explicit error_prefix
+
+    // Parse the messages.
+    var messages = {};
+    switch (resp.status) {
+        case 0:
+            messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
+            break;
+
+        case 200:  // return JSON messages
+        case 500:  // also currently return JSON messages
+            try {
+                messages = $.parseJSON(resp.responseText);
+            } catch (e) {
+                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
+                messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
+                console.log("Response text: " + resp.responseText);
+                console.log(e);
+            }
+            break;
+        case 403:
+            messages = {error: gettext("You are not authorized to complete the request.  Please <a href='/securesync/login/' target='_blank'>login</a> as an administrator, then retry.")};
+            break;
+
+        default:
+            console.log(resp);
+            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
+            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
+    }
+
+    clear_messages();  // Clear all messages before showing the new (error) message.
+    show_api_messages(messages);
+}
+
+function show_api_messages(messages) {
+    // When receiving an error response object,
+    //   show errors reported in that object
+    if (!messages) {
+        return;
+    }
+    switch (typeof messages) {
+        case "object":
+            for (msg_type in messages) {
+                show_message(msg_type, messages[msg_type]);
+            }
+            break;
+        case "string":
+            // Should throw an exception, but try to handle gracefully
+            show_message("info", messages);
+            break;
+        default:
+            // Programming error; this should not happen
+            // NOTE: DO NOT WRAP THIS STRING.
+            throw "do not call show_api_messages object of type " + (typeof messages);
+    }
 }
 
 // Generates a unique ID for each message - No duplicates.
@@ -119,7 +222,7 @@ function get_message(msg_id) {
 function setGetParam(href, name, val) {
     // Generic function for changing a querystring parameter in a url
     var vars = {};
-    var base = href.replace(/([?].*)$/gi, ""); // no querystring
+    var base = href.replace(/([#?].*)$/gi, ""); // no querystring, nor bookmark
     var parts = href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
         vars[key] = value;
     });

@@ -33,6 +33,7 @@ writeup/
 /data/subtitles
 /kalite/*.jpg
 /kalite/*.mp4.part
+/kalite/i18n/data/dubbed_video_mappings.json
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media

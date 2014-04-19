@@ -50,7 +50,7 @@ def invalidate_on_video_update(sender, **kwargs):
     if just_now_available:
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
-        logging.debug("Invalidating cache on save for %s" % kwargs["instance"])
+        logging.debug("Invalidating cache on VideoFile save for %s" % kwargs["instance"])
         invalidate_all_caches()
 
 @receiver(pre_delete, sender=VideoFile)
@@ -60,7 +60,7 @@ def invalidate_on_video_delete(sender, **kwargs):
     """
     was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
     if was_available:
-        logging.debug("Invalidating cache on delete for %s" % kwargs["instance"])
+        logging.debug("Invalidating cache on VideoFile delete for %s" % kwargs["instance"])
         invalidate_all_caches()
 
 
@@ -80,6 +80,25 @@ def invalidate_all_pages_related_to_video(video_id=None):
             expire_page(path=path)
 
 
+def create_cache_entry(path=None, url_name=None, cache=None, force=False):
+    """Create a cache entry"""
+
+    assert (path or url_name) and not (path and url_name), "Must have path or url_name parameter, but not both"
+    if not cache:
+        cache = get_web_cache()
+
+    if not path:
+        path = reverse(url_name)
+    if force and has_cache_key(path=path, cache=cache):
+        expire_page(path=path)
+        assert not has_cache_key(path=path, cache=cache)
+    if not has_cache_key(path=path, cache=cache):
+        Client().get(path)
+
+    if not has_cache_key(path=path, cache=cache):
+        logging.warn("Did not create cache entry for %s" % path)
+
+
 def regenerate_all_pages_related_to_videos(video_ids):
     """Regenerate all webpages related to a specific list of videos.  This is good for increasing new server performance."""
     paths_to_regenerate = set() # unique set
@@ -92,7 +111,7 @@ def regenerate_all_pages_related_to_videos(video_ids):
 
     # Now, regenerate any page.
     for path in paths_to_regenerate:
-        create_cache(path=path, force=True)
+        create_cache_entry(path=path, force=True)
 
     return paths_to_regenerate
 
@@ -118,7 +137,7 @@ def invalidate_all_caches():
     Basic entry-point for clearing necessary caches.  Most functions can
     call in here.
     """
+    invalidate_inmemory_caches()
     if caching_is_enabled():
-        invalidate_inmemory_caches()
         invalidate_web_cache()
-        logging.debug("Great success emptying all caches.")
+    logging.debug("Great success emptying all caches.")

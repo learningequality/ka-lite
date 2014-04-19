@@ -10,6 +10,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-fileupload.min.css' %}" />
 
     <style>
+        #file_update {
+            display: none;
+        }
         .vertical-shadow {
             margin-left: 5px;
             margin-bottom: 10px;
@@ -43,158 +46,15 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery-ui/bootstrap-fileupload.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap-fileupload.min.js' %}"></script>
     <script type="text/javascript">
-    // Callback functions
-
-    function software_start_callback(progress_log, resp) {
-        if (!progress_log) {
-            clear_messages()
-            show_message("error", resp.status_code + resp.responseText);
-        }
-    }
-
-    function software_check_callback(progress_log, resp) {
-        // When video status is checked
-        if (progress_log) { // check succeeded
-
-            if (progress_log.stage_percent == 1.) {
-                // 100% done with the video
-                setNodeClass(currentKey, "complete");
-                if (progress_log.process_percent == 1.) {
-                    // 100% done with ALL videos.
-                    $(".progress-section, #cancel-download").hide();
-                    updatesReset(progress_log.process_name);
-                    if ($(".subtitle-section:visible").length == 0) {
-                        $("#cancel-download").hide();
-                    }
-                    return;
-                }
-
-            } else if (progress_log.completed) {
-                // Completed without 100% done means there was a problem.
-                $("#retry-video-download").show();
-                $("#cancel-download").hide();
-            } else {
-                // Everything's good for now!
-                $("#retry-video-download").hide();
-                $("#cancel-download").show();
-            }
-            $("#cancel-download").show();
-        } else { // check failed.
-            switch (resp.status) {
-                case 403:
-                    window.location.reload()  // Only happens if we were remotely logged out.
-                    break;
-                default:
-                    show_message("error", "Error downloading videos: " + resp.responseText);
-                    clearInterval(window.download_subtitle_check_interval)
-                    break;
-            }
-        }
-    }
-
-    var software_callbacks = {
-        start: software_start_callback,
-        check: software_check_callback,
-    };
+        var CENTRAL_KALITE_VERSION_URL = "{% central_server_api path='/api/version' %}?current_version={{ software_version }}"
+        var CENTRAL_KALITE_DOWNLOAD_URL = "{% central_server_api path='/api/download/kalite/' %}";
     </script>
-
-    <script type="text/javascript">
-    function version_callback(data) {
-        // Check to see if the remote software matches the local software version.
-        //   If not, alert the user!
-        var current_version = "{{ software_version }}";
-        var remote_version = data.version;
-        if (! remote_version ) {
-            show_message("error", "Remote version information unavailable.");
-        } else if (current_version != remote_version) {
-            $("#update_info").show();  // show the related div
-            $("#internet_update").show();
-
-            version_info = data["version_info"];
-
-            //alert("update available! " + current_version + " < " + remote_version);
-            $("#remote_version").text(remote_version);
-            $("#remote_release_date").text(version_info[remote_version].release_date);
-
-            // Update feature list
-            //$("#new_features").text("");
-            for (version in version_info) {  // loop through all features of all uninstalled versions
-                if (! version_info[version]["new_features"]) {
-                    $("#new_features").append("<li>(None)</li>");
-                } else {
-                    for (fi in version_info[version]["new_features"]) {
-                        $("#new_features").append("<li>" + version_info[version]["new_features"][fi] + "</li>");
-                    }
-                }
-                if (! version_info[version]["bugs_fixed"]) {
-                    $("#bugs_fixed").append("<li>(None)</li>");
-                } else {
-                    for (fi in version_info[version]["bugs_fixed"]) {
-                        $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fi] + "</li>");
-                    }
-                }
-            }
-        }
-    }
-
-    function download_urls_callback(data) {
-        locale = "en";//{{ current_locale }}"
-       $("#software_available").append("<option value='" + data[locale].url + "'>" + locale + " (" + data[locale].size + "MB)</option>");
-    }
-    </script>
-
-    <script type="text/javascript">
-        $(function() {
-            updatesStart("update", 1000, software_callbacks)
-
-            setTimeout(function() {
-                get_server_status({path: "{% url get_server_info %}"}, ["online"], function(status){
-                    // We assume the distributed server is offline.
-                    //   if it's online, then we show all tools only usable when online.
-                    //
-                    // Best to assume offline, as online check returns much faster than offline check.
-                    if(false && (!status || !status["online"])){
-                        show_message("error", "{% trans 'Your installation is offline, and therefore cannot access updates.' %}")
-                    } else {
-                        $("#software_available").removeAttr("disabled");
-                        $("#download-update-kalite").removeAttr("disabled");
-                        $("#upload-update-kalite").removeAttr("disabled");
-                        clear_messages();
-                    }
-                });
-
-            }, 200);
-
-            $("#download-update-kalite").click(function() {
-                // Get all videos to download
-                //updatesStart("update", 1000, software_callbacks)
-
-                // Start the download and updating process
-                doRequest("{% url start_update_kalite %}", { "url": $("#software_available option:selected")[0].value })
-                    .success(function() {
-                        updatesStart_callback("update")
-                    }).fail(function(response) {
-                        show_message("error", "Error starting update process (" + response.status + "): " + response.responseText);
-                    });
-
-                // Update the UI to reflect that we're waiting to start
-                $("#cancel-update").show();
-            });
-            // onload
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'js/updates/update_software.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
-<!---Breadcrumb -->
-    <ul class="breadcrumb">
-      <li><a href="{% url homepage %}">{% trans "Home" %}</a> <span class="divider">/</span></li>
-      <li><a href="{% url update %}">{% trans "Update" %}</a> <span class="divider">/</span></li>
-      <li class="active">{% trans "System Update" %}</li>
-    </ul>
 
     <!---Current System status -->
     <div>
@@ -240,7 +100,7 @@
                     <div id="internet_update" style="display:none">
                         {# Translators: this text specifies where admins can get an update from #}
                         <h4>{% trans "From the internet" %}:</h4>
-                        <button type="button" class="btn" id="download-update-kalite" disabled>{% trans "Download and update" %}</button>
+                        <button type="button" class="btn" id="download-update-kalite" mechanism="internet" disabled>{% trans "Download and update" %}</button>
                         <select class="span1" id="software_available" style="display:none"></select>
                         <!---File Upload Button -->
                     </div>
@@ -252,8 +112,7 @@
                             <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
                         </div>
                     </div>
-    <div class="text-right"><button type="button" class="btn btn-danger" id="cancel-update-kalite">{% trans "Cancel update" %}</button></div>
-    <div style="clear: both;"></div>
+                    <div style="clear: both;"></div>
                 </div>
 
             </div>
@@ -265,8 +124,7 @@
         {% include "updates/progress-bar.html" %}
     </div>
 
-
-    <!-- fake way to do JSONP -->
-    <script type="text/javascript" src="{% central_server_api path='/api/version' %}?callback=version_callback&current_version={{ software_version }}"></script>
-    <script type="text/javascript" src="{% central_server_api path='/api/download/kalite/' %}?callback=download_urls_callback"></script>
+    <div id="refresh-page-dialog" title="refresh page dialog">
+      <p id="dialog-content">The JS of this page isn't working properly!</p>
+    </div>
 {% endblock content %}
