@@ -40,4 +40,3 @@ writeup/
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static
-/kalite/remoteadmin/management/commands/tunnel.lock
