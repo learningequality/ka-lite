@@ -1,5 +1,6 @@
 import copy
 import datetime
+import git
 import json
 import os
 import re
@@ -33,11 +34,16 @@ from securesync.devices import require_registration
 def update_context(request):
     device = Device.get_own_device()
     zone = device.get_zone()
+    try:
+        is_git_repo = True if git.Repo(os.path.dirname(__file__)) else None
+    except git.exc.InvalidGitRepositoryError:
+        is_git_repo = False
 
     context = {
         "registered": Device.get_own_device().is_registered(),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
+        "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
     }
     return context
 

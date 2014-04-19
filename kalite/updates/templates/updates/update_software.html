@@ -99,10 +99,13 @@
                 <div class="span4 offset2">
                     <div id="internet_update" style="display:none">
                         {# Translators: this text specifies where admins can get an update from #}
-                        <h4>{% trans "Through Git" %}:</h4>
-                        <button type="button" class="btn" id="git-update-kalite" mechanism="git" disabled>{% trans "Fetch through Git" %}</button>
-                        <h4>{% trans "From the internet" %}:</h4>
-                        <button type="button" class="btn" id="download-update-kalite" mechanism="internet" disabled>{% trans "Download and update" %}</button>
+                        {% if is_git_repo %}
+                            <h4>{% trans "Through Git" %}:</h4>
+                            <button type="button" class="btn" id="git-update-kalite" mechanism="git" disabled>{% trans "Fetch through Git" %}</button>
+                        {% else %}
+                            <h4>{% trans "From the internet" %}:</h4>
+                            <button type="button" class="btn" id="download-update-kalite" mechanism="internet" disabled>{% trans "Download and update" %}</button>
+                        {% endif %}
                         <select class="span1" id="software_available" style="display:none"></select>
                         <!---File Upload Button -->
                     </div>
