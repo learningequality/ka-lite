@@ -144,7 +144,10 @@ class Command(UpdatesStaticCommand):
             remote = repo.remote(remote_name)
 
         # Step 2b: fetch the update remote
-        remote.fetch()
+        try:
+            remote.fetch()
+        except AssertionError as e: # sometimes we get this, but the fetch is successful anyway, so continue on!
+            pass
 
         # Step 2c: stash any changes we have
         now = datetime.datetime.now().isoformat()
