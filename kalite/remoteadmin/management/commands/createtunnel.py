@@ -1,6 +1,8 @@
 import os
+import signal
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 
@@ -56,13 +58,30 @@ class Command(BaseCommand):
                 except:
                     raise
                 finally:
-                    os.remove(self.lockfile)
+                    if os.path.exists(self.lockfile):
+                        os.remove(self.lockfile)
         return checklockfile_wrapper_fn
+
+
+    def on_exit_delete_lock_file(self):
+        def on_exit_callback(*args):
+            print "killed ungracefully; deleting lockfile"
+            os.remove(self.lockfile)
+            sys.exit()
+        signals = ["SIGTERM", "SIGKILL", "SIGSTOP", "SIGHUP"]
+        for sig in signals:
+            signum = getattr(signal, sig)
+            try:
+                signal.signal(signum, on_exit_callback)
+            except:
+                print "Skipping handling of %s" % sig
 
 
     @checklockfile
     def handle(self, *args, **options):
         remote_port_mapping = self._initial_port_mapping()
+
+        self.on_exit_delete_lock_file()
 
         # check first if we have an internet connection
         while True:
