@@ -67,6 +67,7 @@ class Command(BaseCommand):
         # check first if we have an internet connection
         while True:
             self._check_internet_connection()
+            print 'trying to open port %s' % remote_port_mapping
             p = subprocess.Popen([
                 'ssh',
                 '-p', '6060', # remote ssh port
