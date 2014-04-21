@@ -1,35 +1,40 @@
+"""
+"""
 import git
-import os
 import glob
+import os
 import platform
 import requests
 import shutil
-import sys
+import signal
 import subprocess
+import sys
 import tempfile
+import time
 import urllib
 import zipfile
 from functools import partial
 from optparse import make_option
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
+from django.core.urlresolvers import reverse
 
-import settings
+from .classes import UpdatesStaticCommand
+from fle_utils import crypto
+from fle_utils.django_utils import call_outside_command_with_output, call_command_async
+from fle_utils.general import ensure_dir
+from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
+from kalite.i18n import get_dubbed_video_map
 from securesync.models import Device
-from settings import LOG as logging
-from updates.management.commands.classes import UpdatesStaticCommand
-from utils import crypto
-from utils.django_utils import call_outside_command_with_output
-from utils.general import ensure_dir
-from utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 
 
 class Command(UpdatesStaticCommand):
     help = "Create a zip file with all code, that can be unpacked anywhere."
 
-    option_list = BaseCommand.option_list + (
+    option_list = UpdatesStaticCommand.option_list + (
         make_option('-b', '--branch',
             action='store',
             dest='branch',
@@ -59,6 +64,12 @@ class Command(UpdatesStaticCommand):
             dest="interactive",
             default=False,
             help="Display interactive prompts"),
+        make_option(
+            '--oldserverpid',
+            action='store',
+            default=None,
+            dest='old_server_pid',
+            help='The PID of the currently running server'),
         )
 
     signature_filename = "zip_signature.txt"
@@ -71,56 +82,23 @@ class Command(UpdatesStaticCommand):
             sys.stdout.write("Success!\n")
             exit(0)
 
+        self.old_server_pid = options['old_server_pid']
+
         try:
-            if options.get("branch", None):
-                # Specified a repo
+            if not args:
+                raise CommandError("Too few arguments. Please specify how you would like to update KA Lite. Choices: [git, internet, localzip]")
+            elif args[0] == 'git':
                 self.update_via_git(**options)
-
-            elif options.get("zip_file", None):
-                # Specified a file
-                if not os.path.exists(options.get("zip_file")):
-                    raise CommandError("Specified zip file does not exist: %s" % options.get("zip_file"))
+            elif args[0] == 'internet':
                 self.update_via_zip(**options)
-
-            elif options.get("url", None):
+            elif args[0] == 'localzip':
                 self.update_via_zip(**options)
-
-            elif os.path.exists(settings.PROJECT_PATH + "/../.git"):
-                # If we detect a git repo, try git
-                if len(args) == 1 and not options["branch"]:
-                    options["branch"] = args[0]
-                elif len(args) != 0:
-                    raise CommandError("Specified too many command-line arguments")
-                self.update_via_git(**options)
-
-            elif len(args) > 1:
-                raise CommandError("Too many command-line arguments.")
-
-            elif len(args) == 1:
-                # Specify zip via first command-line arg
-                if options['zip_file'] is not None:
-                    raise CommandError("Cannot specify a zipfile as unnamed and named command-line arguments at the same time.")
-                options['zip_file'] = args[0]
-                self.update_via_zip(**options)
-
             else:
-                # No params, no git repo: try to get a file online.
-                zip_file = tempfile.mkstemp()[1]
-                for url in ["http://%s/api/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")]:
-                    logging.info("Downloading repo snapshot from %s to %s" % (url, zip_file))
-                    try:
-                        urllib.urlretrieve(url, zip_file)
-                        sys.stdout.write("success @ %s\n" % url)
-                        break;
-                    except Exception as e:
-                        logging.debug("Failed to get zipfile from %s: %s" % (url, e))
-                        continue
-                options["zip_file"] = zip_file
-                self.update_via_zip(**options)
+                raise CommandError("Enter one of [git, internet, localzip]")
 
         except Exception as e:
             if self.started() and not not self.ended():
-                self.cancel(notes=str(e))
+                self.cancel(stage_status="error", notes=unicode(e))
             raise
 
         assert self.ended(), "Subroutines should complete() if they start()!"
@@ -133,11 +111,16 @@ class Command(UpdatesStaticCommand):
         self.stages = [
             "clean_pyc",
             "git",
+            "download",
             "syncdb",
         ]
 
+        # TODO: use the git package to detect if we're in a git repo
+        if not os.path.exists(os.path.join(settings.PROJECT_PATH, "..", ".git")):
+            raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
+
         # step 1: clean_pyc (has to be first)
-        call_command("clean_pyc")
+        call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
         self.start(notes="Clean up pyc files")
 
         # Step 2: update via git
@@ -162,9 +145,19 @@ class Command(UpdatesStaticCommand):
                 self.stderr.write("%s\n" % gce.stderr)
                 exit(1)
 
-        # step 3: syncdb
-        self.next_stage("Update the database")
-        call_command("setup", interactive=False)
+        # step 3: get other remote resources
+        self.next_stage("Download remote resources")
+        get_dubbed_video_map(force=True)  # force a remote download
+
+        # step 4: syncdb / migrate, via setup
+        #  NOTE: this MUST be done via an external process,
+        #  to guarantee all the new code is begin used.
+        self.next_stage("Update the database [please wait; no interactive output]")
+        # should be interactive=False, but this method is a total hack
+        (out, err, rc) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
+        sys.stderr.write(out)
+        if rc:
+            sys.stderr.write(err)
 
         # Done!
         self.complete()
@@ -173,7 +166,13 @@ class Command(UpdatesStaticCommand):
     def update_via_zip(self, zip_file=None, url=None, interactive=True, test_port=8008, *args, **kwargs):
         """
         """
-        assert (zip_file or url) and not (zip_file and url)
+
+        # No URL or zip file given; default is to download from central server
+        if not url and not zip_file:
+            url = "http://%s/download/kalite/latest/%s/%s/" % (settings.CENTRAL_SERVER_HOST, platform.system().lower(), "en")
+
+        if zip_file and not os.path.exists(zip_file):
+            raise CommandError("Specified zip file does not exist: %s" % zip_file)
 
         if not self.kalite_is_installed():
             raise CommandError("KA Lite not yet installed; cannot update.  Please install KA Lite first, then update.\n")
@@ -187,6 +186,7 @@ class Command(UpdatesStaticCommand):
             "update_local_settings",
             "move_files",
             "test_server",
+            "stop_server",
             "move_to_final",
             "start_server",
         ]
@@ -235,10 +235,13 @@ class Command(UpdatesStaticCommand):
 
         #raise CommandError("Don't replace--I need this code!")
 
+        self.next_stage("Stopping the server")
+        self.stop_server()
+
         self.next_stage("Replacing the current server with the updated server")
         self.move_to_final(interactive)
 
-        self.next_stage("Starting the updated server")
+        self.next_stage("Starting the server")
         self.start_server()
 
         self.print_footer()
@@ -247,12 +250,20 @@ class Command(UpdatesStaticCommand):
 
 
     def download_zip(self, url):
-        response = requests.get(url)
-        zip_file = tempfile.mkstemp()[1]
-        with open(zip_file,"wb") as fp:
-            fp.write(response.content)
-        self.validate_zip(zip_file)
-        return zip_file
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            if response.status_code == 404:
+                raise CommandError("No zip file found in %s" % url)
+            else:
+                raise
+        else:
+            zip_file = tempfile.mkstemp()[1]
+            with open(zip_file,"wb") as fp:
+                fp.write(response.content)
+            self.validate_zip(zip_file)
+            return zip_file
 
 
     def validate_zip(self, zip_file):
@@ -279,8 +290,8 @@ class Command(UpdatesStaticCommand):
         lines = open(self.signature_file, "r").read().split("\n")
         chunk_size = int(lines.pop(0))
         if not central_server:
-            logging.warn("No central server device object found; trusting zip file because you asked me to...") 
-        elif central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
+            logging.warn("No central server device object found; trusting zip file because you asked me to...")
+        elif central_server.key and central_server.key.verify_large_file(self.inner_zip_file, signature=lines, chunk_size=chunk_size):
             logging.info("Verified file!")
         else:
             raise Exception("Failed to verify inner zip file.")
@@ -516,7 +527,7 @@ class Command(UpdatesStaticCommand):
         # Start the server to validate
         start_cmd = self.get_shell_script("serverstart*", location=self.working_dir + "/kalite/")
         try:
-            p = subprocess.Popen([start_cmd, str(test_port)], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen([start_cmd, unicode(test_port)], shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out = p.communicate()
             if out[1]:
                 raise CommandError(out[1])
@@ -535,17 +546,32 @@ class Command(UpdatesStaticCommand):
                 sys.stdout.write("Warning: failed stopping the new server: %s\n" % e)
 
 
+    def stop_server(self):
+        '''Stop the server running on $CWD/runcherrypyserver.pid'''
+
+        sys.stdout.write("* Stopping the currently running server\n")
+
+        if getattr(self, "old_server_pid", None):
+            old_pid = self.old_server_pid
+            if os.name == 'posix':
+                os.kill(old_pid, signal.SIGTERM)
+            elif os.name == 'nt':
+                subprocess.check_call(["taskkill", "/pid", old_pid, "/f"])
+        else:
+            self.update_stage(stage_percent=0.5, notes="Stopping server.")
+            stop_cmd = self.get_shell_script("serverstop*", location=self.current_dir)
+            try:
+                p = subprocess.check_call(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                if  "No such process" not in out[1]:
+                    raise CommandError(out[1])
+
+
+        self._wait_for_server_to_be_down()
+
+
     def move_to_final(self, interactive=True):
         """Confirm the move to the new location"""
-
-        # Shut down the old server
-        self.update_stage(stage_percent=0.5, notes="Stopping server.")
-        stop_cmd = self.get_shell_script("stop*", location=self.current_dir)
-        p = subprocess.Popen(stop_cmd, shell=False, cwd=os.path.split(stop_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out = p.communicate()
-        if out[1]:
-            if  "No such process" not in out[1]:
-                raise CommandError(out[1])
 
         # Make sure we know if the current_dir will be changed during process running
         in_place_move = (self.dest_dir == self.current_dir)
@@ -581,7 +607,7 @@ class Command(UpdatesStaticCommand):
 
 
             except Exception as e:
-                if str(e) == "Windows sucks.":
+                if unicode(e) == "Windows sucks.":
                     # We expect this error for Windows (sometimes, see above).
                     sys.stdout.write("Copying contents from temp directory to original directory.\n")
                 else:
@@ -628,19 +654,51 @@ class Command(UpdatesStaticCommand):
 
         Assumes the web server is shut down.
         """
-        sys.stdout.write("* Starting the server\n")
+        self._print_message("Starting the server")
 
         # Start the server to validate
-        start_cmd = self.get_shell_script("start*", location=self.dest_dir)
-        full_cmd = [start_cmd] if not port else [start_cmd, port]
-        p = subprocess.Popen(full_cmd, shell=False, cwd=os.path.split(start_cmd)[0], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #out = p.communicate()
-        #if out[1]:
-        #    raise CommandError(out[1])
+        manage_py_dir = os.path.join(self.dest_dir, 'kalite')
+        # shift to an existing directory first to remove the reference to a deleted directory
+        os.chdir(tempfile.gettempdir())
+        # now go back to the working directory
+        os.chdir(manage_py_dir)
+        stdout, stderr, exit_code, proc = call_outside_command_with_output(
+            'kaserve',
+            wait=False,
+            manage_py_dir=manage_py_dir,
+            output_to_stdin=True,
+        )
 
-        #running_port = out[0].split(" ")[-1]
-        #sys.stdout.write("* Server accessible @ port %s.\n" % running_port)
-        sys.stdout.write("* Server should be accessible @ port %s.\n" % (port or settings.user_facing_port()))
+        self._wait_for_server_to_be_up()
+
+        self._print_message("Server should be accessible @ port %s.\n" % (port or settings.USER_FACING_PORT()))
+
+
+    def _wait_for_server_to_be_up(self):
+        self._print_message("Waiting for the server to go up")
+        while True:
+            try:
+                requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
+                break
+            except requests.exceptions.ConnectionError:
+                time.sleep(1)
+        self._print_message("Server is up!")
+
+
+    def _wait_for_server_to_be_down(self):
+        self._print_message("Waiting for server to go down")
+        while True:
+            try:
+                requests.get('http://localhost:%s' % settings.USER_FACING_PORT())
+                time.sleep(1)
+            except requests.exceptions.ConnectionError:
+                break
+        self._print_message("Server is down!")
+
+
+    @staticmethod
+    def _print_message(msg):
+        sys.stdout.write("* %s\n" % msg)
 
 
     def print_footer(self):
@@ -662,7 +720,7 @@ class Command(UpdatesStaticCommand):
         cmd_glob += system_script_extension()
 
         # Find the command
-        cmd = glob.glob(location + "/" + cmd_glob)
+        cmd = glob.glob(os.path.join(location, "scripts", cmd_glob))
         if len(cmd) > 1:
             raise CommandError("Multiple commands found (%s)?  Should choose based on platform, but ... how to do in Python?  Contact us to implement this!" % cmd_glob)
         elif len(cmd)==1:

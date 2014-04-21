@@ -15,16 +15,18 @@ import glob
 import re
 import os
 import shutil
+import sys
 from optparse import make_option
 
-from django.core import management
+from django.conf import settings; logging = settings.LOG
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-import settings
-from settings import LOG as logging
-from shared.i18n import update_jsi18n_file
-from utils.django_utils import call_command_with_output
-from utils.general import ensure_dir
+from ... import get_po_filepath, lcode_to_django_dir, update_jsi18n_file
+from fle_utils.django_utils import call_command_with_output
+from fle_utils.general import ensure_dir
+
+POT_PATH = os.path.join(settings.I18N_DATA_PATH, "pot")
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -33,7 +35,7 @@ class Command(BaseCommand):
             '-t',
             dest='test_wrappings',
             action="store_true",
-            default=False,
+            default=not settings.CENTRAL_SERVER,
             help='Running with -t will fill in current po files msgstrs with asterisks. This will allow you to quickly identify unwrapped strings in the codebase and wrap them in translation tags! Remember to delete after your finished testing.',
         ),
     )
@@ -44,7 +46,7 @@ class Command(BaseCommand):
             raise CommandError("Wrappings should be run on the central server, and downloaded through languagepackdownload to the distributed server.")
 
         # All commands must be run from project root
-        move_to_project_root()
+        change_dir_to_project_root()
 
         # (safety measure) prevent any english or test translations from being uploaded
         delete_current_templates()
@@ -60,40 +62,53 @@ class Command(BaseCommand):
             update_templates()
 
 
-def move_to_project_root():
+def change_dir_to_project_root():
     """Change into the project root directory to run i18n commands"""
-    logging.info("Moving to project root directory")
+    logging.debug("Moving to project root directory")
     project_root = os.path.join(settings.PROJECT_PATH, "../")
     os.chdir(project_root)
     ensure_dir(os.path.join(project_root, "locale/"))
 
 
 def delete_current_templates():
-    """Delete existing en po files"""
-    logging.info("Deleting English language locale directory")
-    english_path = os.path.join(settings.LOCALE_PATHS[0], "en")
-    if os.path.exists(english_path):
-        shutil.rmtree(english_path)
+    """Delete existing en po/pot files"""
+    logging.info("Deleting English language po files")
+    for locale_path in settings.LOCALE_PATHS:
+        english_path = get_po_filepath("en")
+        if os.path.exists(english_path):
+            shutil.rmtree(english_path)
+
+    logging.info("Deleting English language pot files")
+    if os.path.exists(POT_PATH):
+        shutil.rmtree(POT_PATH)
+
+    logging.info("Deleting old English language pot files")
+    old_pot_path = os.path.join(settings.STATIC_ROOT, "pot")
+    if os.path.exists(old_pot_path):
+        shutil.rmtree(old_pot_path)
 
 def run_makemessages():
     """Run makemessages command for english po files"""
     logging.info("Executing makemessages command")
     # Generate english po file
-    ignore_pattern = ['python-packages/*']
-    management.call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    ignore_pattern = ['ka-lite/python-packages/*', 'centralserver*']
+    sys.stdout.write("Compiling .py / .html files... ")
+    call_command('makemessages', locale='en', ignore_patterns=ignore_pattern, extension='html,py', no_obsolete=True)
+
     # Generate english po file for javascript
-    ignore_pattern = ['kalite/static/admin/js/*', 'python-packages/*', 'kalite/static/js/i18n/*']
-    management.call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, no_obsolete=True)
+    ignore_pattern += ['ka-lite/kalite/static/*', 'ka-lite/static/admin/js/*', 'ka-lite/static/js/i18n/*', 'ka-lite/kalite/distributed/static/khan-exercises/*']
+    sys.stdout.write("Compiling .js files... ")
+    call_command('makemessages', domain='djangojs', locale='en', ignore_patterns=ignore_pattern, extension='html,js', no_obsolete=True)
 
 
 def update_templates():
     """Update template po files"""
-    logging.info("Posting template po files to static/pot/")
-    ## post them to exposed URL
-    static_path = os.path.join(settings.STATIC_ROOT, "pot/")
-    ensure_dir(static_path)
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/django.po"), os.path.join(static_path, "kalite.pot"))
-    shutil.copy(os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/djangojs.po"), os.path.join(static_path, "kalitejs.pot"))
+    logging.info("Copying english po files to %s" % POT_PATH)
+
+    #  post them to exposed URL
+    ensure_dir(POT_PATH)
+    shutil.copy(get_po_filepath(lang_code="en", filename="django.po"), os.path.join(POT_PATH, "kalite.pot"))
+    shutil.copy(get_po_filepath(lang_code="en", filename="djangojs.po"), os.path.join(POT_PATH, "kalitejs.pot"))
 
 
 def generate_test_files():
@@ -101,8 +116,7 @@ def generate_test_files():
 
     # Open them up and insert asterisks for all empty msgstrs
     logging.info("Generating test po files")
-    en_po_dir = os.path.join(settings.LOCALE_PATHS[0], "en/LC_MESSAGES/")
-    for po_file in glob.glob(os.path.join(en_po_dir, "*.po")):
+    for po_file in glob.glob(get_po_filepath(lang_code="en"), "*.po"):
 
         msgid_pattern = re.compile(r'msgid \"(.*)\"\nmsgstr', re.S | re.M)
 
@@ -125,20 +139,25 @@ def generate_test_files():
         # Once done replacing, rename temp file to overwrite original
         os.rename(os.path.join(en_po_dir, "tmp.po"), os.path.join(en_po_dir, po_file))
 
-        (out, err, rc) = compile_po_files(lang_code="en")
+        (out, err, rc) = compile_po_files("en")
         if err:
             logging.debug("Error executing compilemessages: %s" % err)
 
 
-def compile_po_files(lang_code="all", failure_ok=True):
-    """Compile all po files in locale directory"""
-    # before running compilemessages, ensure in correct directory
-    move_to_project_root()
+def compile_po_files(lang_codes=None, failure_ok=True):
+    """
+    Compile all po files in locale directory.
 
-    if not lang_code or lang_code == "all":
+    First argument (lang_codes) can be None (means all), a list/tuple, or even a string (shh...)
+    """
+    # before running compilemessages, ensure in correct directory
+    change_dir_to_project_root()
+
+    if not lang_codes or len(lang_codes) > 1:
         (out, err, rc) = call_command_with_output('compilemessages')
     else:
-        (out, err, rc) = call_command_with_output('compilemessages', locale=lang_code)
+        lang_code = lang_codes if isinstance(lang_codes, basestring) else lang_codes[0]
+        (out, err, rc) = call_command_with_output('compilemessages', locale=lcode_to_django_dir(lang_code))
 
     if err and not failure_ok:
         raise CommandError("Failure compiling po files: %s" % err)

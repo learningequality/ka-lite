@@ -65,7 +65,7 @@ When you're using borders, transparency and gradients, look at `less/bootstrap/m
 
 ### Production with Grunt.js
 
-[Grunt.js](http://gruntjs.com/) is a front-end tool to compile to run task on the terminal. The current tasks include compiling the less files to css and compressing them. 
+[Grunt.js](http://gruntjs.com/) is a tool to run tasks on the terminal. The current default task includes compiling the less files to css and compressing them. 
 
 #### How to install
 
@@ -75,9 +75,8 @@ First, install the [Node.js package manager (npm)](http://nodejs.org/download/).
 Then, you have to run these commands in the directory where package.json is.
 
 ```
-npm install grunt --save-dev
 npm install
-sudo npm install -g grunt-cli
+npm install -g grunt-cli
 ```
 
 #### Compile with grunt

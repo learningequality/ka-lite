@@ -1,17 +1,19 @@
+"""
+"""
 import datetime
 import re
 import json
 import sys
-import logging
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -19,24 +21,21 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
-from config.models import Settings
-from main import topicdata
-from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
-from securesync.views import facility_required
-from settings import LOG as logging
-from shared.decorators import allow_api_profiling
-from shared.topic_tools import get_topic_by_path
-from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
+from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
+from fle_utils.testing.decorators import allow_api_profiling
+from kalite.facility.decorators import facility_required
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
+from kalite.main.topic_tools import get_topic_by_path, get_node_cache
 
 
 # Global variable of all the known stats, their internal and external names,
 #    and their "datatype" (which is a value that Google Visualizations uses)
 stats_dict = [
-    {"key": "pct_mastery",        "name": _("% Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)"), "timeline": True},
-    {"key": "effort",             "name": _("% Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
-    {"key": "ex:attempts",        "name": _("Average attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
-    {"key": "ex:streak_progress", "name": _("Average streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
+    {"key": "pct_mastery",        "name": _("Mastery"),          "type": "number", "description": _("Percent of exercises mastered (at least 10 consecutive correct answers)"), "timeline": True},
+    {"key": "effort",             "name": _("Effort"),           "type": "number", "description": _("Combination of attempts on exercises and videos watched.")},
+    {"key": "ex:attempts",        "name": _("Attempts"),   "type": "number", "description": _("Number of times submitting an answer to an exercise.")},
+    {"key": "ex:streak_progress", "name": _("Streak"),     "type": "number", "description": _("Maximum number of consecutive correct answers on an exercise.")},
     {"key": "ex:points",          "name": _("Exercise points"),    "type": "number", "description": _("[Pointless at the moment; tracks mastery linearly]")},
     { "key": "ex:completion_timestamp", "name": _("Time exercise completed"),"type": "datetime", "description": _("Day/time the exercise was completed.") },
     {"key": "vid:points",          "name": _("Video points"),      "type": "number", "description": _("Points earned while watching a video (750 max / video).")},
@@ -206,9 +205,9 @@ def compute_data(data_types, who, where):
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, topicdata.NODE_CACHE['Topic'].values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, topicdata.NODE_CACHE['Exercise'].values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, topicdata.NODE_CACHE['Video'].values())], sf=search_fun_multi_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, get_node_cache('Exercise').values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -297,35 +296,48 @@ def compute_data(data_types, who, where):
     }
 
 
-def convert_topic_tree_for_dynatree(node, level=0):
-    """Converts topic tree from standard dictionary nodes
-    to dictionary nodes usable by the dynatree app"""
-
-    if node["kind"] == "Topic":
-        if "Exercise" not in node["contains"]:
-            return None
-        children = []
-        for child_node in node["children"]:
-            child = convert_topic_tree_for_dynatree(child_node, level=level + 1)
-            if child:
-                children.append(child)
-
-        return {
-            "title": node["title"],
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["path"],
-            "children": children,
-            "expand": level < 1,
-        }
-    return None
-
-
 # view endpoints #######
 
 @api_handle_error_with_json
-def get_topic_tree(request, topic_path):
-    return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
+def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
+    """Given a root path, returns all topic nodes that contain the requested kind(s).
+    Topic nodes without those kinds are removed.
+    """
+
+    def convert_topic_tree_for_dynatree(node, kinds_to_query):
+        """Converts topic tree from standard dictionary nodes
+        to dictionary nodes usable by the dynatree app"""
+
+        if node["kind"] != "Topic":
+            # Should never happen, but only run this function for topic nodes.
+            return None
+
+        elif not set(kinds_to_query).intersection(set(node["contains"])):
+            # Eliminate topics that don't contain the requested kinds
+            return None
+
+        topic_children = []
+        for child_node in node["children"]:
+            child_dict = convert_topic_tree_for_dynatree(child_node, kinds_to_query)
+            if child_dict:
+                # Only keep children that themselves have the requsted kind
+                topic_children.append(child_dict)
+
+        return {
+            "title": _(node["title"]),
+            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
+            "isFolder": True,
+            "key": node["path"],
+            "children": topic_children,
+            "expand": False,  # top level
+        }
+
+    kinds_to_query = kinds_to_query or request.GET.get("kinds", "Exercise").split(",")
+    topic_node = get_topic_by_path(topic_path)
+    if not topic_node:
+        raise Http404
+
+    return JsonResponse(convert_topic_tree_for_dynatree(topic_node, kinds_to_query));
 
 
 @csrf_exempt
@@ -340,7 +352,13 @@ def api_data(request, xaxis="", yaxis=""):
     """
 
     # Get the request form
-    form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    try:
+        form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    except Exception as e:
+        # In investigating #1509: we can catch SQL errors here and communicate clearer error
+        #   messages with the user here.  For now, we have no such error to catch, so just
+        #   pass the errors on to the user (via the @api_handle_error_with_json decorator).
+        raise e
 
     # Query out the data: who?
     if form.data.get("user"):
@@ -364,9 +382,20 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: what?
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+
+    # Quickly add back in exercise meta-data (could potentially be used in future for other data too!)
+    ex_nodes = get_node_cache()["Exercise"]
+    exercises = []
+    for e in computed_data["exercises"]:
+        exercises.append({
+            "slug": e,
+            "full_name": ex_nodes[e][0]["display_name"],
+            "url": ex_nodes[e][0]["path"],
+        })  
+
     json_data = {
         "data": computed_data["data"],
-        "exercises": computed_data["exercises"],
+        "exercises": exercises,
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
                           ["%s, %s" % (u.last_name, u.first_name) for u in users]

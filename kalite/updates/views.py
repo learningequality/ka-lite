@@ -7,33 +7,27 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
-from django.contrib import messages
+from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseServerError
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 
-import settings
-import version
 from .models import VideoFile
-from config.models import Settings
-from control_panel.views import local_device_context, user_management_context
-from i18n.models import LanguagePack
-from main import topicdata
-from securesync.models import Facility, FacilityUser, FacilityGroup, Device
-from securesync.views import require_admin, facility_required
-from shared import topic_tools
-from shared.decorators import require_admin
-from shared.jobs import force_job
-from utils.internet import am_i_online, JsonResponse
+from fle_utils.chronograph import force_job
+from fle_utils.internet import am_i_online, JsonResponse
+from kalite.control_panel.views import local_device_context
+from kalite.i18n import get_installed_language_packs, get_language_name
+from kalite.main import topic_tools
+from kalite.shared.decorators import require_admin
+from securesync.models import Device
+from securesync.devices import require_registration
 
 
 def update_context(request):
@@ -41,7 +35,7 @@ def update_context(request):
     zone = device.get_zone()
 
     context = {
-        "registered": Settings.get("registered"),
+        "registered": Device.get_own_device().is_registered(),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
     }
@@ -49,17 +43,9 @@ def update_context(request):
 
 
 @require_admin
-@render_to("updates/landing_page.html")
-def update(request):
-    context = update_context(request)
-    return context
-
-@require_admin
+@require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
-def update_videos(request):
-    call_command("videoscan")  # Could potentially be very slow, blocking request.
-    force_job("videodownload", _("Download Videos"))  # async request
-
+def update_videos(request, max_to_show=4):
     context = update_context(request)
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
@@ -67,23 +53,18 @@ def update_videos(request):
     return context
 
 
-def get_installed_language_packs():
-    language_packs = LanguagePack.objects \
-        .order_by("name") \
-        .values("name", "subtitle_count", "percent_translated", "language_pack_version", "code")
-    return language_packs
-
 @require_admin
+@require_registration(ugettext_lazy("language packs"))
 @render_to("updates/update_languages.html")
 def update_languages(request):
+    # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
+    installed_languages = get_installed_language_packs(force=True)
+
     # here we want to reference the language meta data we've loaded into memory
     context = update_context(request)
-
     context.update({
-        "installed_languages": list(get_installed_language_packs()),
-        "default_language": settings.LANGUAGE_CODE,
+        "installed_languages": installed_languages.values(),
     })
-
     return context
 
 

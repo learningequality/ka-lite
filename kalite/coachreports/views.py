@@ -2,30 +2,27 @@ import json
 import requests
 import datetime
 import re
-import settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from main.topicdata import NODE_CACHE
-from main.models import VideoLog, ExerciseLog, UserLog
-from securesync.models import Facility, FacilityUser, FacilityGroup, DeviceZone, Device
-from securesync.views import facility_required
-from settings import LOG as logging
-from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from shared.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics
-from utils.general import max_none
-from utils.internet import StatusException
+from fle_utils.general import max_none
+from fle_utils.internet import StatusException
+from kalite.facility.decorators import facility_required
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import VideoLog, ExerciseLog, UserLog
+from kalite.main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
+from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 
 
 def get_accessible_objects_from_logged_in_user(request, facility):
@@ -87,7 +84,15 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, facility, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context["title"] = _("Timeline plot")
+    try:
+        context["title"] = _(u"%(yaxis_name)s over time") % {
+            "yaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == yaxis][0],
+        }
+    except:
+        pass
+    return context
 
 
 @require_authorized_admin
@@ -95,7 +100,16 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, facility, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    return plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    context["title"] = _("Scatter plot")
+    try:
+        context["title"] = _(u"%(yaxis_name)s versus %(xaxis_name)s") % {
+            "xaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == xaxis][0],
+            "yaxis_name": [stat["name"] for stat in stats_dict if stat["key"] == yaxis][0],
+        }
+    except:
+        pass
+    return context
 
 
 @require_authorized_access_to_student_data
@@ -116,10 +130,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     """
     user = get_user_from_request(request=request)
     if not user:
-        raise Http404
+        raise Http404("User not found.")
 
-    topic_ids = [t["id"] for t in get_knowledgemap_topics()]
-    topics = [NODE_CACHE["Topic"][id][0] for id in topic_ids]
+    node_cache = get_node_cache()
+    topic_ids = get_knowledgemap_topics()
+    topic_ids += [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
+    topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -138,38 +154,38 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
-        if not elog["exercise_id"] in NODE_CACHE["Exercise"]:
+        if not elog["exercise_id"] in node_cache["Exercise"]:
             # Sometimes KA updates their topic tree and eliminates exercises;
             #   we also want to support 3rd party switching of trees arbitrarily.
             logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
             continue
 
-        parent_ids = [topic for ex in NODE_CACHE["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
+        parent_ids = [topic for ex in node_cache["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
             logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
-            topic_exercises[topic] = get_topic_exercises(path=NODE_CACHE["Topic"][topic][0]["path"])
+            topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
-        if not vlog["video_id"] in NODE_CACHE["Video"]:
+        if not vlog["video_id"] in node_cache["Video"]:
             # Sometimes KA updates their topic tree and eliminates videos;
             #   we also want to support 3rd party switching of trees arbitrarily.
             logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
             continue
 
-        parent_ids = [topic for vid in NODE_CACHE["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
+        parent_ids = [topic for vid in node_cache["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
         if not topic:
             logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
-            topic_videos[topic] = get_topic_videos(path=NODE_CACHE["Topic"][topic][0]["path"])
+            topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
 
 
@@ -185,8 +201,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
-         # total streak currently a pct, but expressed in max 100; convert to
-         # proportion (like other percentages here)
+        # total streak currently a pct, but expressed in max 100; convert to
+        # proportion (like other percentages here)
         stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
@@ -251,13 +267,14 @@ def tabular_view(request, facility, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = get_knowledgemap_topics()
+    topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
-        "report_types": ("exercise", "video"),
+        # For translators: the following two translations are nouns
+        "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
-        "topics": topics,
+        "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
     })
 
     # get querystring info

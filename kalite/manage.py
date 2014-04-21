@@ -1,31 +1,59 @@
 #!/usr/bin/env python
-import os, sys, warnings
+import glob
+import logging
+import os
+import sys
+import warnings
 
-# We are overriding a few packages (like Django) from the system path.
-#   Suppress those warnings
-warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
+if __name__ == "__main__":
+    import warnings
 
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
+    # We are overriding a few packages (like Django) from the system path.
+    #   Suppress those warnings
+    warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
 
-sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(PROJECT_PATH, "../python-packages/")] + sys.path
+    # Now build the paths that point to all of the project pieces
+    PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
+    PROJECT_PYTHON_PATHS = [
+        os.path.join(PROJECT_PATH, "..", "python-packages"),
+        os.path.join(PROJECT_PATH, ".."),
+    ]
+    sys.path = PROJECT_PYTHON_PATHS + sys.path
 
-from django.core.management import execute_manager
-import settings
 
+    ########################
+    # kaserve
+    ########################
 
-
-########################
-# ZERO CONFIG
-########################
-
-if settings.ZERO_CONFIG:
     # Force all commands to run through our own serve command, which does auto-config if necessary
     # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
     if "runserver" in sys.argv:
+        logging.info("You requested to run runserver; instead, we're funneling you through our 'kaserve' command.")
         sys.argv[sys.argv.index("runserver")] = "kaserve"
-    elif "runcherrypyserver" in sys.argv:
+
+    elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
+        logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
         sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
 
 
-if __name__ == "__main__":
-    execute_manager(settings)
+    ########################
+    # manual clean_pyc
+    ########################
+
+    # Manually clean all pyc files before entering any real codepath
+    for root, dirs, files in os.walk(os.path.join(PROJECT_PATH, "..")):
+        for pyc_file in glob.glob(os.path.join(root, "*.pyc")):
+            try:
+                os.remove(pyc_file)
+            except:
+                pass
+
+
+    ########################
+    # Run it.
+    ########################
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
+
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(sys.argv)

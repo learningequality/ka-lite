@@ -1,0 +1,40 @@
+{% extends base_template %}
+{% load i18n %}
+{% load my_filters %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        h3 {
+            margin:20px 0px 5px 0px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block content %}
+    {% if query_error %}
+        <h2 class="errorlist">{{ query_error }}</h2>
+
+    {% else %}
+        <h2>{{ title }}</h2>
+
+        {% for category, subresults in results.iteritems %}
+            <h3>{{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}</h3>
+            <ul>
+            {% for node in subresults %}
+                <li>
+                {% if node.kind == 'Topic' %}
+                    <a href="{{ node.path }}" class="topic-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
+                {% elif node.kind == 'Video' %}
+                    <a {% if node.available %}href="{{ node.path }}" {% endif %}class="video-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
+                {% else %}
+                    <a href="{{ node.path }}">{% trans node.title %}</a>
+                {% endif %}
+                </li>
+            {% endfor %}
+            {% if hit_max|get_item:category %}
+                <li>...</li>
+            {% endif %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

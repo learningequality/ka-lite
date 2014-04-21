@@ -1,3 +1,8 @@
+"""
+All models associated with user learning / usage, including:
+* Exercise/Video progress
+* Login stats
+"""
 import random
 import uuid
 from annoying.functions import get_object_or_None
@@ -5,6 +10,7 @@ from math import ceil
 from datetime import datetime
 from dateutil import relativedelta
 
+from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -12,24 +18,23 @@ from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-import settings
+from fle_utils.django_utils import ExtendedModel
+from fle_utils.general import datediff, isnumeric
+from kalite import i18n
+from kalite.facility.models import FacilityUser
 from securesync import engine
-from securesync.models import DeferredCountSyncedModel, SyncedModel, FacilityUser, Device
-from settings import LOG as logging
-from shared import i18n
-from utils.django_utils import ExtendedModel
-from utils.general import datediff, isnumeric
+from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 
 
 class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.11.1"
+    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
     youtube_id = models.CharField(max_length=20)
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
@@ -55,7 +60,7 @@ class VideoLog(DeferredCountSyncedModel):
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
             self.video_id = i18n.get_video_id(self.youtube_id) or self.youtube_id  # for unknown videos, default to the youtube_id
-        
+
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -81,8 +86,8 @@ class VideoLog(DeferredCountSyncedModel):
 
         namespace = uuid.UUID(self.user.id)
         # can be video_id because that's set to the english youtube_id, to match past code.
-        return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex  
-        
+        return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex
+
 
     @staticmethod
     def get_points_for_user(user):
@@ -122,7 +127,7 @@ class ExerciseLog(DeferredCountSyncedModel):
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
     attempts_before_completion = models.IntegerField(blank=True, null=True)
@@ -197,7 +202,7 @@ class UserLogSummary(DeferredCountSyncedModel):
     end_datetime = models.DateTimeField(blank=True, null=True)
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
-    last_activity_datetime = models.DateTimeField(blank=True, null=True); last_activity_datetime.minversion = "0.11.1"
+    last_activity_datetime = models.DateTimeField(blank=True, null=True); last_activity_datetime.minversion = "0.10.3"
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -310,7 +315,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     start_datetime = models.DateTimeField(blank=False, null=False)
     last_active_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
@@ -318,7 +323,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     @staticmethod
     def is_enabled():
-        return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
+        return getattr(settings, "USER_LOG_MAX_RECORDS_PER_USER", 0) != 0
 
     def __unicode__(self):
         if self.end_datetime:
@@ -401,7 +406,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return cur_log
 
     @classmethod
-    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=language, suppress_save=False):
+    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=None, suppress_save=False):
         """Helper function to update an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -486,7 +491,7 @@ class AttemptLog(ExtendedModel):
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
     assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
-    
+
     instance = kwargs["instance"]
 
     if not instance.start_datetime:

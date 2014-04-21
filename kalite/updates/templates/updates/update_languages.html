@@ -1,0 +1,64 @@
+{% extends "updates/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block languages_active %}active{% endblock languages_active %}
+
+{% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_languages.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var start_languagepackdownload_url = "{% url start_languagepack_download %}";
+        var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}"
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+        var DELETE_LANGUAGEPACK_URL = "{% url delete_language_pack %}";
+        var defaultLanguage = "{{ default_language }}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+    <div class="download-actions get-language vertical-shadow">
+        <h2 class="button_text">{% trans "Download or Update Language Packs" %}</h2>
+
+        <span>
+            {% trans "Language packs contain all available translations for the interface and video subtitles." %}
+        </span>
+        <br/>
+
+        <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
+            Assume we are getting something like:
+            [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
+        -->
+        <div id="langpacks">
+            <span class= "button_style">
+                <select id="language-packs"></select>
+            </span>
+
+            <button id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
+        </div>
+        <div id="langpack-details">
+            <span id="lp-num-srts"></span><label> {% trans "subtitle(s)" %}</label>
+            <span id="lp-pct-trans"></span><label> {% trans "translated" %}</label>
+            <span id="lp-down-size"></span><label> ({% trans "to download" %})</label>
+            <span id="lp-disk-size"></span><label> ({% trans "on disk" %})</label>
+            <span id="lp-num-exers"></span><label> {% trans "exercise(s)" %}</label>
+        </div>
+    </div>
+    <div class="clear"></div>
+
+    <div id="languagepackdownload-progressbar">
+        {% include "updates/progress-bar.html" %}
+    </div>
+    <div class="clear"></div>
+
+    <div>
+        <h2>{% trans "Installed Languages" %}</h2>
+        <div class="installed-languages">
+        </div>
+    </div>
+{% endblock content %}

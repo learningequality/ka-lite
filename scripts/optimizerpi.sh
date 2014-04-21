@@ -1,18 +1,18 @@
 #!/bin/bash
 
-current_dir=`dirname "${BASH_SOURCE[0]}"`
+SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
 if [ -e "$current_dir/python.sh" ]; then
-    KALITE_DIR=$current_dir/../kalite
+    KALITE_DIR=$SCRIPT_DIR/../kalite
 else
-    KALITE_DIR=$current_dir/kalite
+    KALITE_DIR=$SCRIPT_DIR/kalite
 fi
 
-we_are_rpi=`"$current_dir/get_setting.sh" package_selected\(\"RPi\"\)`
-if [ $we_are_rpi != "True" ]; then
-    echo "Error: we aren't configured as a Raspberry Pi, cannot continue"
-    read WAITING
-    exit
-fi
+#we_are_rpi=`"$current_dir/get_setting.sh" package_selected\(\"RPi\"\)`
+#if [ $we_are_rpi != "True" ]; then
+#    echo "Error: we aren't configured as a Raspberry Pi, cannot continue"
+#    read WAITING
+#    exit
+#fi
 
 echo "Step 1 - Installing M2Crypto, psutil and nginx"
 
@@ -62,14 +62,14 @@ fi
 echo "Step 2 - Configure or reconfigure nginx to work with KA Lite"
 
 if [ -f /etc/nginx/sites-enabled/default ]; then
-    sudo rm /etc/nginx/sites-enabled/default 
+    sudo rm /etc/nginx/sites-enabled/default
 fi
 if [ -f /etc/nginx/sites-enabled/kalite ]; then
     sudo rm /etc/nginx/sites-enabled/kalite
 fi
 
-sudo touch /etc/nginx/sites-available/kalite 
-sudo sh -c "$KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-available/kalite" 
+sudo touch /etc/nginx/sites-available/kalite
+sudo sh -c "$KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-available/kalite"
 sudo ln -s /etc/nginx/sites-available/kalite /etc/nginx/sites-enabled/kalite
 
 echo "Step 3 - Optimize nginx configuration"
@@ -91,7 +91,7 @@ events {
     worker_connections 1536;
 
     ###
-    # Activate the optimised polling for linux 
+    # Activate the optimised polling for linux
     use epoll;
 
     ###
@@ -124,8 +124,8 @@ http {
 
     ##
     # Gzip Settings
-    gzip on;
-    gzip_disable "msie6";
+    # We are CPU limited, not bandwidth limited, so don't gzip
+    gzip off;
 
     ##
     # Virtual Host Configs

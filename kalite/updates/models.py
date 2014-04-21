@@ -1,11 +1,13 @@
+"""
+"""
 import datetime
 
+from django.conf import settings; logging = settings.LOG
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from settings import LOG as logging
-from utils.django_utils import ExtendedModel
+from fle_utils.django_utils import ExtendedModel
 
 
 class UpdateProgressLog(ExtendedModel):
@@ -17,6 +19,7 @@ class UpdateProgressLog(ExtendedModel):
     stage_name = models.CharField(verbose_name=_("stage name"), max_length=100, null=True)
     stage_percent = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], default=0)
     current_stage = models.IntegerField(blank=True, null=True)
+    stage_status = models.CharField(max_length=16, null=True)
     total_stages = models.IntegerField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     start_time = models.DateTimeField(auto_now_add=True)
@@ -51,19 +54,22 @@ class UpdateProgressLog(ExtendedModel):
         self.completed = False
         self.save()
 
-    def update_stage(self, stage_name, stage_percent, notes=None):
+    def update_stage(self, stage_name, stage_percent, stage_status=None, notes=None):
         """
         Update a stage with it's percent, and process accordingly.
 
         stage_percent should be between 0 and 1
         """
-        assert 0. <= stage_percent <= 1., "stage percent must be between 0 and 1."
+        assert 0. <= stage_percent <= 1. or stage_percent is None, "stage percent must be between 0 and 1."
         assert self.end_time is None and self.completed == False, "Cannot update processes that have been ended."
 
         # When the stage name ends, then make sure to add a percent
         #   for whatever wasn't reported in finishing the previous stage,
         #   before adding in a percent for what's done for the current stage.
-        if self.stage_name != stage_name:
+        #
+        # Note that an empty stage_name means this is a pure update to
+        #   the current stage, and so all this can be skipped.
+        if stage_name and self.stage_name != stage_name:
             if self.stage_name:  # moving to the next stage
                 self.notes = None  # reset notes after each stage
                 self.current_stage += 1
@@ -71,22 +77,24 @@ class UpdateProgressLog(ExtendedModel):
                 self.current_stage = 1
             self.stage_name = stage_name
 
+        self.stage_percent = stage_percent if stage_percent is not None else self.stage_percent  # must be set before computing the process percent.
         self.process_percent = self._compute_process_percent()
-        self.stage_percent = stage_percent
+        self.stage_status = stage_status
         self.notes = notes or self.notes
         self.save()
 
 
-    def cancel_current_stage(self, notes=None):
+    def cancel_current_stage(self, stage_status=None, notes=None):
         """
         Delete the current stage--it's reported progress, and contribution to the total # of stages
         """
         logging.info("Cancelling stage %s of process %s" % (self.stage_name, self.process_name))
 
         self.stage_percent = 0.
-        self.update_total_stages(self.total_stages - 1)
         self.stage_name = None
+        self.stage_status = stage_status or "cancelled"
         self.notes = notes
+        self.process_percent = self._compute_process_percent()
         self.save()
 
 
@@ -113,21 +121,23 @@ class UpdateProgressLog(ExtendedModel):
         self.save()
 
     def _compute_process_percent(self):
+        assert self.total_stages, "Must have set total_stages by now."
         return (self.stage_percent + (self.current_stage or 1) - 1) / float(self.total_stages)
 
-    def cancel_progress(self, notes=None):
+    def cancel_progress(self, stage_status=None, notes=None):
         """
         Stamps end time.
         """
         logging.info("Cancelling process %s" % (self.process_name))
 
+        self.stage_status = stage_status or "cancelled"
         self.end_time = datetime.datetime.now()
         self.completed=False
         self.notes = notes
         self.save()
 
 
-    def mark_as_completed(self, notes=None):
+    def mark_as_completed(self, stage_status=None, notes=None):
         """
         Completes stage and process percents, stamps end time.
         """
@@ -137,6 +147,7 @@ class UpdateProgressLog(ExtendedModel):
         self.process_percent = 1.
         self.current_stage = self.total_stages
         self.end_time = datetime.datetime.now()
+        self.stage_status = stage_status or self.stage_status  # don't change this to None by default, so that users can be aware of any faults.
         self.completed = True
         self.notes = notes
         self.save()
@@ -181,6 +192,7 @@ class VideoFile(ExtendedModel):
     priority = models.IntegerField(default=0)
     percent_complete = models.IntegerField(default=0)
     cancel_download = models.BooleanField(default=False)
+    language=models.CharField(max_length=8, default=settings.LANGUAGE_CODE)
 
     class Meta:
         ordering = ["priority", "youtube_id"]

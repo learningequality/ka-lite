@@ -1,0 +1,41 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load my_filters %}
+{% load include_block %}
+
+{% block control_panel_active %}{% endblock control_panel_active %}
+{% block account_management_active %}active{% endblock account_management_active %}
+
+{% block title %}{{ student.get_name }} - {% trans "User Management" %}{{ block.super }}{% endblock title%}
+
+{% block headcss %}{% comment %}Don't insert block.super here, because block.super is WEIRD and isn't the super for student_view IN student view, but instead THIS super.{% endcomment %}
+    {% include_block "coachreports/student_view.html" "headcss" %}
+{% endblock headcss %}
+
+
+{% block titlebar_title %}
+    <li>
+        {% blocktrans with student_name=student.get_name %}Account management page for {{ student_name }}{% endblocktrans %}
+    </li>
+{% endblock titlebar_title %}
+
+{% block buttons %}
+    {% if not is_central %}
+        {% if not restricted %}
+        <li>
+            <a class="green_button" href="{% url edit_facility_user id=student.id %}?next={{ request.path }}">{% trans "Change password" %}</a>
+        </li>
+        {% endif %}
+        <li class="client-online-only">
+            <a class="server-online-only green_button" href="{% url update_all_distributed %}">{% trans "Download data from Khan Academy" %}</a>
+        </li>
+    {% endif %}
+{% endblock buttons %}
+
+{% block content %}
+    {% block titlebar %}{{ block.super }}
+    {% endblock titlebar %}
+
+    {% include_block "coachreports/student_view.html" "student_report" %}
+{% endblock content %}

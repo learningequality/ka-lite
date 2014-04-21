@@ -1,0 +1,37 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        #id_facility {
+            display: none;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        $(function () {
+            $('#facility_group').change(function(){
+                window.location.href = $("#facility_group option:selected").val();
+            });
+
+            {# Hide facility info #}
+            {% if not singlefacility %}
+            $("#id_facility").parent().show()
+            {% endif %}
+        });
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    <form method="post" class="basic-form">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <input type="submit" class="submit" value="{% if group_id == 'new' %}{% trans 'Create group' %}{% else %}{% trans 'Update group' %}{% endif %}" />
+    </form>
+{% endblock content %}

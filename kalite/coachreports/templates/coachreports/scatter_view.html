@@ -1,0 +1,41 @@
+{% extends "coachreports/base_d3_visualization.html" %}
+{% load i18n %}
+{% load repeatblock %}
+{% load my_filters %}
+{% load staticfiles %}
+
+{% block title %}{{ title }}{{ block.super }}{% endblock title %}
+{% block report_title %}{{ title }}{% endblock report_title %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
+    <script>
+        setTimeout( function() {
+            $("#xaxis").change(   function() { plotTopics(null); });
+            $("#yaxis").change(   function() { plotTopics(null); });
+        }, 200);
+    </script>
+{% endblock headjs %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}?{{ BUILD_ID }}" />
+{% endblock headcss %}
+
+{% block axis_dropdown %}
+    {% trans "X-Axis" %}:
+    <select id="xaxis" name="xaxis">
+        {% block data_options %}
+            <option value="">----</option>
+                {% for stat in stats %}
+                    {% if stat.type == "number" and not stat.noscatter %}
+                        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
+                    {% endif %}
+                {% endfor %}
+        {% endblock %}
+    </select>
+    {% trans "Y-Axis" %}:
+    <select id="yaxis" name="yaxis">
+        {% repeatblock data_options %}
+    </select>
+{% endblock axis_dropdown %}
