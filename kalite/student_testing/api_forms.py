@@ -1,6 +1,6 @@
 from django import forms
 
-from main.topicdata import NODE_CACHE
+from kalite.main.topic_tools import get_node_cache
 
 from models import Test
 
@@ -19,5 +19,5 @@ class TestAttemptLogForm(forms.Form):
         """
         Make sure the exercise ID is found.
         """
-        if not self.cleaned_data.get("exercise_id", "") in NODE_CACHE['Exercise']:
+        if not self.cleaned_data.get("exercise_id", "") in get_node_cache()['Exercise']:
             raise forms.ValidationError(_("Exercise ID not recognized"))

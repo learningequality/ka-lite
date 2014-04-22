@@ -469,7 +469,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log.save()  # total-seconds will be computed here.
         return cur_log
 
-class AttemptLog(ExtendedModel):
+class AttemptLog(DeferredCountSyncedModel):
     """Detailed instances of user exercise engagement.
     Currently not sync'd (only used for local detail reports).
     """

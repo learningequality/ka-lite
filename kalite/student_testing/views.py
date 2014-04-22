@@ -1,6 +1,6 @@
 from annoying.decorators import render_to
 
-from shared.topic_tools import get_topic_exercises
+from kalite.main.topic_tools import get_topic_exercises
 
 from models import Test, TestLog
 

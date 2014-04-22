@@ -8,7 +8,7 @@ from models import Test, TestLog, TestAttemptLog
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 
-from utils.internet import api_handle_error_with_json, JsonResponse
+from fle_utils.internet import api_handle_error_with_json, JsonResponse
 
 @student_log_api(logged_out_message=_("Exercise progress not saved."))
 def save_attempt_log(request):

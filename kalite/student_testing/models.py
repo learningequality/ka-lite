@@ -1,7 +1,7 @@
 from django.db import models
 
-from utils.django_utils import ExtendedModel
-from securesync.models import FacilityUser
+from fle_utils.django_utils import ExtendedModel
+from kalite.facility.models import FacilityUser
 
 from main.models import AttemptLog
 
