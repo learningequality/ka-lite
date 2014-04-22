@@ -140,18 +140,8 @@ a.edit-link {
     min-width: 13px;
     min-height: 13px;
 }
-.icon-trash {
-    background-image:url(../../images/control_panel/icon-trash.png);
-}
-.icon-add {
-    background-image:url(../../images/control_panel/icon-plus-sign.png);
-    background-size: 15px 15px;
-    min-width: 20px; min-height: 20px;
-    margin-left: 2px;
-}
-.icon-pencil {
-    background-image:url(../../images/control_panel/icon-edit.png);
-    position: relative;
+.glyphicon {
+    color: #333;
 }
 .export_csv_div {
     float: right;
