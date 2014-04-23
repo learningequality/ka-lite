@@ -18,8 +18,7 @@ from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
 from kalite import i18n
 from kalite.distributed import caching
-from kalite.main.topic_tools import get_video_by_youtube_id
-
+from kalite.main import topic_tools
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -39,15 +38,11 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
         yt_dl.add_progress_hook(callback)
     yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
 
-"""
-def scrape_thumbnail(youtube_id, format="png", force=False):
-    _, thumbnail_url = get_outside_video_urls(youtube_id)
-    try:
-        resp = requests.get(thumbnail_url)
-        with open(
-    except Exception as e:
-        logging.error("Failed to download %s: %s" % (thumbnail_url, e))
-"""
+
+def get_video_node_by_youtube_id(youtube_id):
+    """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
+    video_id = i18n.get_video_id(youtube_id=youtube_id)
+    return topic_tools.get_node_cache("Video").get(video_id, [None])[0]
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -99,8 +94,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     self.video.save()
 
                 # update progress data
-                video_node = get_video_by_youtube_id(self.video.youtube_id)
-                video_title = _(video_node["title"]) if video_node else self.video.youtube_id
+                video_node = get_video_node_by_youtube_id(self.video.youtube_id)
+                video_title = (video_node and _(video_node["title"])) or self.video.youtube_id
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
                 self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
