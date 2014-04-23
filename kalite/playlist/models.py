@@ -13,7 +13,7 @@ class Playlist(ExtendedModel):
         return "%(title)s:%(desc)s" % {'title': self.title, 'desc': self.description}
 
 
-class PlaylistEntity(ExtendedModel):
+class PlaylistEntry(ExtendedModel):
     ENTITY_KINDS = (
         ('video', 'Video'),
         ('exercise', 'Exercise'),
