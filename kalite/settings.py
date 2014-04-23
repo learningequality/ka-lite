@@ -97,7 +97,7 @@ ROOT_URLCONF = "kalite.distributed.urls"
 INSTALLED_APPS = ("kalite.distributed",)
 MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
-STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static'),)  # libraries common to all apps
+STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static-libraries'),)  # libraries common to all apps
 
 DEFAULT_ENCODING = 'utf-8'
 
