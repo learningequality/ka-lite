@@ -29,8 +29,8 @@ class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
-    youtube_id = models.CharField(max_length=20)
+    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
+    youtube_id = models.CharField(max_length=20) # metadata only
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
@@ -81,7 +81,7 @@ class VideoLog(DeferredCountSyncedModel):
 
     def get_uuid(self, *args, **kwargs):
         assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
-        assert self.youtube_id is not None, "Youtube ID required for get_uuid"
+        assert self.video_id is not None, "video_id is required for get_uuid"
 
         namespace = uuid.UUID(self.user.id)
         # can be video_id because that's set to the english youtube_id, to match past code.
