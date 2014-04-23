@@ -23,23 +23,19 @@ class PlaylistTests(TestCase):
         )
 
     def test_can_create_valid_empty_playlist(self):
-        self.assertIsNone(self.p.full_clean()) # doesnt raise any error or anything
-
+        self.assertIsNone(self.p.full_clean())  # doesnt raise any error or anything
 
     def test_can_add_playlist_entry(self):
         self.p.add_entry(entity_kind='Video')
-
 
     def test_add_first_entry_sort_order_is_zero(self):
         entry = self.p.add_entry(entity_kind='Video')
         self.assertEquals(entry.sort_order, 0)
 
-
     def test_add_new_entry_sort_order_incremented(self):
         self.p.add_entry(entity_kind='Video')
         new_entry = self.p.add_entry(entity_kind='Video')
         self.assertEquals(new_entry.sort_order, 1)
-
 
     def test_add_new_entry_explicit_sort_order_other_entries_moved(self):
         entries = []
