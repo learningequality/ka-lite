@@ -50,7 +50,7 @@ INSTALLED_APPS = (
     "kalite.khanload",  # khan academy interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
-    "kalite.playlist"
+    "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
     "kalite.caching",
