@@ -139,9 +139,6 @@
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'help' %}" id="nav_help" class="{% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
 
-                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a></li>
-
                         {% if not restricted %}
                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                             <li><a href="{% url 'add_facility_student' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a></li>
@@ -149,6 +146,9 @@
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a></li>
+
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">{% trans "Logout" %}</a></li>
