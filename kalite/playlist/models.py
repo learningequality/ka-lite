@@ -2,6 +2,8 @@ from django.db import models
 
 from fle_utils.django_utils import ExtendedModel
 
+from kalite.facility.models import FacilityUser
+
 # Create your models here.
 
 
