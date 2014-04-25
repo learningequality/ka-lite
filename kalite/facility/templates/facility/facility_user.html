@@ -3,14 +3,6 @@
 
 {% block users_active %}active{% endblock %}
 
-{% block headcss %}{{ block.super }}
-    <style>
-        #id_facility {
-            display: none;
-        }
-    </style>
-{% endblock headcss %}
-
 {% block headjs %}{{ block.super }}
     <script>
         var DEFAULT_LANGUAGE = "{{ default_language }}";
@@ -44,7 +36,7 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+    <h2>{{ title }}</h2>
 
     <form method="post" class="basic-form">
         {% csrf_token %}

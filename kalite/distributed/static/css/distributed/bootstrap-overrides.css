@@ -98,13 +98,6 @@ input#search.ui-autocomplete-input {
 /* ===================================
 	Home Page
 =================================== */
-/*.jumbotron {
-	background: #d1d7b1;
-    padding-bottom: 40px;
-    padding-top: 40px;
-	text-align: center;
-	width: 100%;
-}*/
 .main-headline {
     text-align: center;
     margin-bottom: 30px;
@@ -189,6 +182,9 @@ input#search.ui-autocomplete-input {
 /* ===================================
     Sign Up Page
 =================================== */
+#id_facility {
+    display: none;
+}
 #id_default_language {
     margin-top: 10px;
     margin-bottom: 10px;
