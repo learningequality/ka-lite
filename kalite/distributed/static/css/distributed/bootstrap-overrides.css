@@ -69,7 +69,7 @@ input#search.ui-autocomplete-input {
 	margin-left: -3px;
 }
 #search-button:hover, #search-button:focus {
-    background: #6dc96d !important;
+    background: #4cae4c !important;
 }
 .active {
     background: #dcdcdc;
@@ -182,8 +182,11 @@ input#search.ui-autocomplete-input {
 /* ===================================
     Sign Up Page
 =================================== */
-#id_facility {
-    display: none;
+section#facility_list {
+    margin-bottom: 20px;
+}
+.facility_title a {
+    font-size: 1.25em;
 }
 #id_default_language {
     margin-top: 10px;
