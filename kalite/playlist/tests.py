@@ -51,5 +51,6 @@ class PlaylistTests(TestCase):
 
         self.p.add_entry(entity_kind='Video', sort_order=1)
 
+        self.assertEqual(entries[0].reload().sort_order, 0)
         self.assertEqual(entries[1].reload().sort_order, 2)
         self.assertEqual(entries[2].reload().sort_order, 3)
