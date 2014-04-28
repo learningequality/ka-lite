@@ -16,6 +16,13 @@ class Playlist(ExtendedModel):
 
 
     def add_entry(self, *args, **kwargs):
+        '''
+        Add a playlist entry to the playlist. Automatically inserts the
+        right sort order number, and moves other playlist entries if
+        inserting an entry in the middle, aka adding an entry with an
+        already existing sort order.
+
+        '''
         if 'sort_order' not in kwargs: # by default, append entry to the playlist
             try:
                 last_entry = self.entries.order_by('-sort_order').all()[0]
