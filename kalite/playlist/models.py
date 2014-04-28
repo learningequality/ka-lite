@@ -22,6 +22,13 @@ class Playlist(ExtendedModel):
                 kwargs['sort_order'] = last_entry.sort_order + 1
             except IndexError:  # no entries yet
                 kwargs['sort_order'] = 0
+        else:
+            num_entries = self.entries.count()
+            entries_to_move = self.entries.filter(
+                sort_order__gte=kwargs['sort_order']
+            )
+            if num_entries > 0 and entries_to_move.exists():
+                entries_to_move.update(sort_order=models.F('sort_order') + 1)
 
         return self.entries.create(*args, **kwargs)
 

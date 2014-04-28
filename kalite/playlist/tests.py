@@ -42,4 +42,14 @@ class PlaylistTests(TestCase):
 
 
     def test_add_new_entry_explicit_sort_order_other_entries_moved(self):
-        raise NotImplementedError
+        entries = []
+        for order in range(3):
+            entries.append(self.p.add_entry(
+                entity_kind='Video',
+                sort_order=order
+            ))
+
+        self.p.add_entry(entity_kind='Video', sort_order=1)
+
+        self.assertEqual(entries[1].reload().sort_order, 2)
+        self.assertEqual(entries[2].reload().sort_order, 3)
