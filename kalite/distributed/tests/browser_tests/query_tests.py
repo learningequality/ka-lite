@@ -66,20 +66,20 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         student.set_password(passwd)
         student.save()
 
-        with self.assertNumQueries(FuzzyInt(22, 24) + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(22, 25) + 3*UserLog.is_enabled()):
             self.browser_login_student("s1", passwd, self.facility)
 
 
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(FuzzyInt(6,9)):
+        with self.assertNumQueries(FuzzyInt(6, 9)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(FuzzyInt(4,6)):
+        with self.assertNumQueries(FuzzyInt(3, 6)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_student(self):
@@ -92,19 +92,19 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(7 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(6, 7) + 0*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(6 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(6, 11) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(4 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(4, 11) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
 
