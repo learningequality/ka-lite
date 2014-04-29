@@ -16,7 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
@@ -391,7 +391,7 @@ def api_data(request, xaxis="", yaxis=""):
             "slug": e,
             "full_name": ex_nodes[e][0]["display_name"],
             "url": ex_nodes[e][0]["path"],
-        })  
+        })
 
     json_data = {
         "data": computed_data["data"],

@@ -6,6 +6,31 @@ except ImportError:
     local_settings = object()
 
 
+########################
+# Django dependencies
+########################
+
+INSTALLED_APPS = (
+    "django.contrib.auth",  # only admins can access api views
+    "django.contrib.staticfiles",
+    "django_extensions", # needed for clean_pyc (used by software update)
+    "south",
+    "fle_utils.chronograph",  # updates uses chronograph for commands
+    "fle_utils.django_utils",  # templatetags
+    "kalite.i18n",  # language pack updates
+    "kalite.main",  # topic tools
+    "kalite.testing",
+)
+
+MIDDLEWARE_CLASSES = (
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",  # used by distributed to authenticate admin (django) user
+)
+
+
 #######################
 # Set module settings
 #######################

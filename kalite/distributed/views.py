@@ -347,7 +347,6 @@ def help(request):
 def help_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
-        "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.USER_FACING_PORT(),
     }

@@ -36,63 +36,42 @@ def USER_FACING_PORT():
 LOGIN_URL = "/securesync/login/"
 LOGOUT_URL = "/securesync/logout/"
 
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.request",
-    __package__ + ".custom_context_processors.custom",
-)
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    "django.template.loaders.filesystem.Loader",
-    "django.template.loaders.app_directories.Loader",
-)
-
-MIDDLEWARE_CLASSES = getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
-MIDDLEWARE_CLASSES = (
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "fle_utils.django_utils.middleware.GetNextParam",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "kalite.facility.middleware.AuthFlags",  # for dependency reasons, this one needs to be early.
-    __package__ + ".middleware.LockdownCheck",
-) + MIDDLEWARE_CLASSES  # append local_settings middleware, in case of dependencies
-
-INSTALLED_APPS = getattr(local_settings, 'INSTALLED_APPS', tuple())
 INSTALLED_APPS = (
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.admin",
-    "django.contrib.humanize",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_extensions", # needed for clean_pyc (testing)
-    "south",
     "fle_utils.config",
     "fle_utils.chronograph",
     "fle_utils.django_utils",  # templatetags
+    "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
     "kalite.django_cherrypy_wsgiserver",
-    "kalite.facility",
     "kalite.i18n",  #
     "kalite.khanload",  # khan academy interactions
     "kalite.main", # in order for securesync to work, this needs to be here.
     "kalite.testing",
     "kalite.updates",  #
-    "securesync",
-) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
+    "kalite.remoteadmin",  # needed for remote connection
+)
+
+MIDDLEWARE_CLASSES = (
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",  # a bunch of shortcuts used by distributed
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    __package__ + ".middleware.LockdownCheck",
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.request",  # expose request object within templates
+    __package__ + ".custom_context_processors.custom",  #
+)
+
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 
 if DEBUG:
     INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
+    TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.debug",)  # used in conjunction with toolbar to show query information
 
 
 ##############################

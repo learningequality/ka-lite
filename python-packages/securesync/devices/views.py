@@ -8,7 +8,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -41,6 +40,7 @@ def initialize_registration():
 @login_required
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
+    request.session.pop("registered", None)  # remove if exists, to clear caching
 
     own_device = Device.get_own_device()
     if own_device.is_registered():

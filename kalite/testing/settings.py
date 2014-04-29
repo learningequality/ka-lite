@@ -6,9 +6,18 @@ except ImportError:
     local_settings = object()
 
 
+########################
+# Django dependencies
+########################
+
 # Django debug_toolbar config
 INSTALLED_APPS = tuple()
 MIDDLEWARE_CLASSES = tuple()
+
+
+#######################
+# Set module settings
+#######################
 
 USE_DEBUG_TOOLBAR = getattr(local_settings, "USE_DEBUG_TOOLBAR", False)
 
@@ -41,7 +50,7 @@ if getattr(local_settings, "DEBUG", False):
 if os.path.exists(os.path.join(os.path.dirname(__file__), "loadtesting")):
     INSTALLED_APPS += (__package__ + ".loadtesting",)
 
-TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
+KALITE_TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
 
 RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
 

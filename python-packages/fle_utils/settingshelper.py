@@ -41,7 +41,19 @@ def import_installed_app_settings(installed_apps, global_vars):
                 continue
             elif isinstance(var_val, tuple):
                 # combine the above tuple variables
-                global_vars.update({var: global_vars.get(var, tuple()) + var_val})
+                cur_val = global_vars.get(var, tuple())
+                # The next line is critical, so best to walk through the logic.
+                # This captures dependencies in the following way:
+                #   * An app should declare dependencies in order (within a tuple).
+                #   * Any INSTALLED_APP is a more base dependency, so its dependencies should appear first,
+                #        followed by any dependencies defined within this app not already declared above.
+                #
+                # This means that:
+                #   * We always preserve the order of cur_val and var_val
+                #   * We use the order of var_val (the INSTALLED_APP), and then fill in the remaining
+                #       (ordered) dependencies from the current app.
+                new_val = var_val + tuple([v for v in cur_val if v not in var_val])
+                global_vars.update({var: new_val})
             elif isinstance(var_val, dict):
                 # combine the above dict variables
                 global_vars[var] = global_vars.get(var, {})
@@ -56,7 +68,7 @@ def import_installed_app_settings(installed_apps, global_vars):
         # Now if INSTALLED_APPS exist, go do those.
         if "INSTALLED_APPS" in app_settings:
                 # Combine the variable values, then import
-                import_installed_app_settings(app_settings["INSTALLED_APPS"], global_vars)
+                import_installed_app_settings(set(app_settings["INSTALLED_APPS"]) - set(installed_apps), global_vars)
 
     global_vars.update({"__file__": this_filepath})  # Set __file__ back to the project settings file
 

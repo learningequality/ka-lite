@@ -6,6 +6,21 @@ except ImportError:
     local_settings = object()
 
 
+########################
+# Django dependencies
+########################
+
+INSTALLED_APPS = (
+    "django.contrib.staticfiles",
+    "south",
+    "fle_utils.django_utils",  # templatetags
+    "kalite.facility",  # must come first, all other apps depend on this one.
+    "kalite.i18n",  # get_video_id
+    "kalite.khanload",  # needed for URL parsing
+    "kalite.testing",
+    "securesync",
+)
+
 #######################
 # Set module settings
 #######################

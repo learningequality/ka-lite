@@ -28,7 +28,6 @@ import sys
 import time
 
 from django.conf import settings; logging = settings.LOG
-from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
