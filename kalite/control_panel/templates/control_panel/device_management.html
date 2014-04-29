@@ -1,6 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load my_filters %}
 
 {% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
@@ -43,9 +44,9 @@
             {% else %}
                 <!---Remote system status -->
                 <dt>{% trans "Version" %}:</dt>
-                <dd>{{ shown_sessions.0.client_version }}</dd>
+                <dd>{{ device_version }}</dd>
                 <dt>{% trans "Operating System" %}:</dt>
-                <dd>{{ shown_sessions.0.client_os }}</dd>
+                <dd>{{ device_os }}</dd>
             {% endif %}
             </dl>
         </div>
@@ -55,14 +56,29 @@
                 <h2>{% trans "Sync Sessions" %}</h2>
             </div>
 
-            {% if not shown_sessions %}
+            {% if not session_pages %}
                 <p class="registered-only">{% trans "This device has never synced with the central server." %}</p>
                 <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
             {% else %}
-                {% with shown_sessions|length as shown_count %}
-                {# Translators: shown_count and total_sessions are integer variables; do not translate them! #}
-                <span>({% blocktrans %}showing {{ shown_count }} of {{ total_sessions }}{% endblocktrans %})</span>
-                {% endwith %}
+                {% if session_pages.num_listed_pages > 1 %}
+                <div class="pagination">
+                        <a title="{% trans 'Browse to the previous page of sync sessions.' %}" {% if session_pages.has_previous %}href="{{ page_urls.prev_page }}"{% endif %}>&lt&lt</a>
+                        {% for listed_page in session_pages.listed_pages %}
+                            {% if listed_page == -1 %}
+                                <span class="disabled">&hellip;</span>
+                            {% elif listed_page == session_pages.number %}
+                                <span class="current">
+                                   {{ session_pages.number }}
+                                </span>
+                            {% else %}
+                                <a title="{% blocktrans %}Browse to page # {{ listed_page }} of sessions.{% endblocktrans %}" href="{{ page_urls|get_item:listed_page }}">{{ listed_page }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        <a title="{% trans 'Browse to the next page of sessions.' %}" {% if session_pages.has_next %}href="{{ page_urls.next_page }}"{% endif %}>&gt&gt</a>
+                </div>
+                <div class="clear"></div>
+                {% endif %}
+
                 <table class="simple-table">
                     <tr>
                         <th width="250px">{% trans "Sync Date" %}</th>
@@ -71,7 +87,7 @@
                         <th width="200px">{% trans "# Models Downloaded" %}</th>
                         <th width="200px">{% trans "# Errors" %}</th>
                     </tr>
-                    {% for sync_session in shown_sessions %}
+                    {% for sync_session in session_pages %}
                         <tr>
                             <td>{{ sync_session.timestamp }}</td>
                             <td>{{ sync_session.ip }}</td>
