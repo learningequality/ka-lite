@@ -33,7 +33,7 @@
                             {% endif %}
                         {% endif %}
                     {% if facility or device %}</a>
-                    {% elif own_device_is_trusted %} <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">(edit)</a>
+                    {% elif own_device_is_trusted %} <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">{% trans "(edit)" %}</a>
                     {% endif %}
                 </li>
                 <li>
@@ -47,7 +47,7 @@
                     &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
-                    <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">(edit)</a>
+                    <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">{% trans "(edit)" %}</a>
                     {% endif %}
                 </li>
                 {% endif %}

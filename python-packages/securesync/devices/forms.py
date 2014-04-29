@@ -41,11 +41,11 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
         """
         zone_id = self.cleaned_data["zone"]
         if zone_id not in [tup[0] for tup in self.fields["zone"].choices]:
-            raise forms.ValidationError(_("You must select a zone from the given choices."))
+            raise forms.ValidationError(_("You must select a sharing network from the given choices."))
         try:
             zone = Zone.objects.get(id=zone_id)
         except:
-            raise forms.ValidationError(_("You must select a valid Zone."))
+            raise forms.ValidationError(_("You must select a valid sharing network."))
         return zone
 
     def clean_public_key(self):

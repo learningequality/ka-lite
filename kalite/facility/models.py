@@ -61,6 +61,7 @@ class Facility(DeferredCountSyncedModel):
             facilities_with_same_name = list(self.__class__.objects.filter(name=self.name) \
                 .filter(Q(signed_by__devicezone__zone=self.get_zone()) | Q(zone_fallback=self.get_zone())))
             if self not in facilities_with_same_name and len(facilities_with_same_name) > 0:
+                assert facilities_with_same_name[0].get_zone() == self.get_zone(), "Make sure that the queries to match zone worked."
                 # Don't raise for facilities already with duplicate names, just for changes.
                 raise ValidationError({"name": [_("There is already a facility with this name.")]})
 
