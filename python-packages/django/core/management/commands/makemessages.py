@@ -214,7 +214,9 @@ def write_po_file(pofile, potfile, domain, locale, verbosity, stdout,
                                     (wrap, location, potfile))
     if errors:
         if status != STATUS_OK:
-            os.unlink(potfile)
+            # KA-LITE-MOD
+            # Don't delete pot file on error; otherwise, how would we debug?
+            #os.unlink(potfile)
             raise CommandError(
                 "errors happened while running msguniq\n%s" % errors)
         elif verbosity > 0:
