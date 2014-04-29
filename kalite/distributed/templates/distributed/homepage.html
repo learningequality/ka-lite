@@ -23,27 +23,31 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-6 vertical-shadow suggested-action">
-                <h3 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h3>
-                <p class="topic-list">
-                    {% for subtopic in topics %}
-                        <a href="{{ subtopic.path }}" class="topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
-                            {% trans subtopic.title %}
-                        </a>
-                    <br />
-                    {% endfor %}
-                </p>
+            <div class="col-sm-6" id="suggested-action-div">
+                <div class="vertical-shadow suggested-action">
+                    <h3 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h3>
+                    <p class="topic-list">
+                        {% for subtopic in topics %}
+                            <a href="{{ subtopic.path }}" class="topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
+                                {% trans subtopic.title %}
+                            </a>
+                        <br />
+                        {% endfor %}
+                    </p>
+                </div>
             </div>
 
-            <div class="col-sm-5 col-sm-offset-1 vertical-shadow suggested-action">
-                <a href="{% url 'exercise_dashboard' %}">
-                    <h3 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h3>
-                    <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-                    <div class="suggested-action-image-link"></div>
-                </a>
+            <div class="col-sm-6">
+                <div class="vertical-shadow suggested-action">
+                    <a href="{% url 'exercise_dashboard' %}">
+                        <h3 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h3>
+                        <p id="suggested-action-p">{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
+                        <div id="suggested-action-image-link-homepage"></div>
+                    </a>
+                </div>
             </div>
 
-            <div class="row col-sm-12">
+            <div class="row col-sm-12" id="homepage-p-div">
                 <p class="homepage-p">{% trans "KA Lite is a lightweight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
             </div>
         </div>
