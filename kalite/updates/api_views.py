@@ -214,7 +214,7 @@ def start_languagepack_download(request):
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
 
-    return JsonResponseMessageSuccess(_("Started language pack download for %s successfully.") % lang_code)
+    return JsonResponseMessageSuccess(_("Started language pack download for language %(lang_code)s successfully.") % {"lang_code": lang_code})
 
 
 @require_admin
@@ -227,7 +227,7 @@ def delete_language_pack(request):
     lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
     delete_language(lang_code)
 
-    return JsonResponse({"success": _("Deleted language pack %s successfully.") % lang_code})
+    return JsonResponse({"success": _("Deleted language pack for language %(lang_code)s successfully.") % {"lang_code": lang_code}})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
