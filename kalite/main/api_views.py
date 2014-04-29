@@ -24,7 +24,7 @@ from django.utils.translation import ugettext_lazy
 from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
-from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
+from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.mplayer_launcher import play_video_in_new_thread
@@ -201,6 +201,11 @@ def _update_video_log_with_points(seconds_watched, video_id, video_length, youtu
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
+
+@api_handle_error_with_json
+@backend_cache_page
+def exercise(request, exercise_id):
+    return JsonResponse(get_exercise_data(request,exercise_id))
 
 
 @api_handle_error_with_json
