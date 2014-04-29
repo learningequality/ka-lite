@@ -25,7 +25,7 @@ from securesync.devices.models import *  # inter-dependence
 
 def require_sync_session(handler):
     @api_handle_error_with_json
-    def wrapper_fn(request):
+    def require_sync_session_wrapper_fn(request):
         if request.raw_post_data:
             data = simplejson.loads(request.raw_post_data)
         else:
@@ -43,7 +43,7 @@ def require_sync_session(handler):
         response = handler(data, session)
         session.save()
         return response
-    return wrapper_fn
+    return require_sync_session_wrapper_fn
 
 
 @csrf_exempt

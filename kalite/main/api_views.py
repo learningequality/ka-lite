@@ -42,7 +42,7 @@ class student_log_api(object):
 
     def __call__(self, handler):
         @api_handle_error_with_json
-        def wrapper_fn(request, *args, **kwargs):
+        def student_log_api_wrapper_fn(request, *args, **kwargs):
             # TODO(bcipolli): send user info in the post data,
             #   allowing cross-checking of user information
             #   and better error reporting
@@ -50,7 +50,7 @@ class student_log_api(object):
                 return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
             else:
                 return handler(request)
-        return wrapper_fn
+        return student_log_api_wrapper_fn
 
 
 @student_log_api(logged_out_message=ugettext_lazy("Video progress not saved."))
