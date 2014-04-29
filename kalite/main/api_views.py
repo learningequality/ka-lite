@@ -61,7 +61,7 @@ def save_video_log(request):
     """
 
     # Form does all the data validation, including the video_id
-    form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
+    form = VideoLogForm(data=simplejson.loads(request.body))
     if not form.is_valid():
         raise ValidationError(form.errors)
     data = form.data
@@ -96,7 +96,7 @@ def save_exercise_log(request):
     """
 
     # Form does all data validation, including of the exercise_id
-    form = ExerciseLogForm(data=simplejson.loads(request.raw_post_data))
+    form = ExerciseLogForm(data=simplejson.loads(request.body))
     if not form.is_valid():
         raise Exception(form.errors)
     data = form.data
@@ -143,7 +143,7 @@ def get_video_logs(request):
     """
     Given a list of video_ids, retrieve a list of video logs for this user.
     """
-    data = simplejson.loads(request.raw_post_data or "[]")
+    data = simplejson.loads(request.body or "[]")
     if not isinstance(data, list):
         return JsonResponseMessageError(_("Could not load VideoLog objects: Unrecognized input data format."))
 
@@ -161,7 +161,7 @@ def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.
     """
-    data = simplejson.loads(request.raw_post_data or "[]")
+    data = simplejson.loads(request.body or "[]")
     if not isinstance(data, list):
         return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
 

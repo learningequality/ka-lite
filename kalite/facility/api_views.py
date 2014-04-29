@@ -16,8 +16,8 @@ from kalite.shared.decorators import require_authorized_admin
 @require_authorized_admin
 @api_response_causes_reload
 def move_to_group(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
-    group_id = simplejson.loads(request.raw_post_data or "{}").get("group", "")
+    users = simplejson.loads(request.body or "{}").get("users", [])
+    group_id = simplejson.loads(request.body or "{}").get("group", "")
     group_update = get_object_or_None(FacilityGroup, id=group_id)
     users_to_move = FacilityUser.objects.filter(id__in=users)
     for user in users_to_move:  # can't do update for syncedmodel
@@ -36,7 +36,7 @@ def move_to_group(request):
 @require_authorized_admin
 @api_response_causes_reload
 def delete_users(request):
-    users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
+    users = simplejson.loads(request.body or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(id__in=users)
     users_to_delete.delete()
     return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": users_to_delete.count()})
@@ -48,7 +48,7 @@ def facility_delete(request, facility_id=None):
     if not request.is_django_user:
         raise PermissionDenied("Teachers cannot delete facilities.")
 
-    facility_id = facility_id or simplejson.loads(request.raw_post_data or "{}").get("facility_id")
+    facility_id = facility_id or simplejson.loads(request.body or "{}").get("facility_id")
     fac = get_object_or_404(Facility, id=facility_id)
     if not fac.is_deletable():
         return JsonResponseMessageError(_("Facility %(facility_name)s is not deletable.") % {"facility_name": fac.name})

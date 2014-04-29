@@ -26,8 +26,8 @@ from securesync.devices.models import *  # inter-dependence
 def require_sync_session(handler):
     @api_handle_error_with_json
     def require_sync_session_wrapper_fn(request):
-        if request.raw_post_data:
-            data = simplejson.loads(request.raw_post_data)
+        if request.body:
+            data = simplejson.loads(request.body)
         else:
             data = request.GET
         try:
@@ -49,7 +49,7 @@ def require_sync_session(handler):
 @csrf_exempt
 @api_handle_error_with_json
 def create_session(request):
-    data = simplejson.loads(request.raw_post_data or "{}")
+    data = simplejson.loads(request.body or "{}")
     if "client_nonce" not in data:
         return JsonResponseMessageError("Client nonce must be specified.")
     if len(data["client_nonce"]) != 32 or re.match("[^0-9a-fA-F]", data["client_nonce"]):
