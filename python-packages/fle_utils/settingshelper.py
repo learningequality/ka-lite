@@ -4,7 +4,7 @@ import sys
 ########################
 # Import settings from INSTALLED_APPS
 ########################
-def import_installed_app_settings(installed_apps, global_vars):
+def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__", processed_apps=set([])):
     """
     Loop over all installed_apps, and search for their
       settings.py in the path.  Then load the settings.py
@@ -16,6 +16,8 @@ def import_installed_app_settings(installed_apps, global_vars):
     this_filepath = global_vars.get("__file__")  # this would be the project settings file
 
     for app in installed_apps:
+        if app in processed_apps:
+            import pdb; pdb.set_trace()
         app_settings = None
         try:
             for path in sys.path:
@@ -36,7 +38,7 @@ def import_installed_app_settings(installed_apps, global_vars):
         # We found the app's settings.py and loaded it into app_settings;
         #   now set those variables in the global space here.
         for var, var_val in app_settings.iteritems():
-            if var.startswith("_") or var == "local_settings":
+            if var.startswith("_") or var.upper() != var:# == "local_settings":
                 # Don't combine / overwrite global variables or local_settings
                 continue
             elif isinstance(var_val, tuple):
@@ -65,10 +67,22 @@ def import_installed_app_settings(installed_apps, global_vars):
                 # Unknown variables that do exist must have the same value--otherwise, conflict!
                 raise Exception("(%s) %s is already set; resetting can cause confusion." % (app, var))
 
+        print "\n%s" % processed_apps
+        processed_apps = processed_apps.union(set([app]))
+        print processed_apps
         # Now if INSTALLED_APPS exist, go do those.
         if "INSTALLED_APPS" in app_settings:
                 # Combine the variable values, then import
-                import_installed_app_settings(set(app_settings["INSTALLED_APPS"]) - set(installed_apps), global_vars)
+                remaining_apps = set(app_settings["INSTALLED_APPS"]) - processed_apps
+                print "%s: %s" % (app, remaining_apps)
+                if app == "kalite.khanload":
+                    import pdb; pdb.set_trace()
+                if remaining_apps:
+                    import_installed_app_settings(
+                        installed_apps=remaining_apps,
+                        global_vars=global_vars,
+                        cur_app=app,
+                        processed_apps=processed_apps)
 
     global_vars.update({"__file__": this_filepath})  # Set __file__ back to the project settings file
 
