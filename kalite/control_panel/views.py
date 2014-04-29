@@ -94,7 +94,7 @@ def zone_management(request, zone_id="None"):
     if context["zone"]:
         devices = Device.objects.filter(devicezone__zone=context["zone"])
     else:
-        devices = Device.objects.filter(devicemetadata__is_trusted=False)
+        devices = Device.objects.filter(devicemetadata__is_own_device=True)
 
     for device in list(devices.order_by("devicemetadata__is_demo_device", "name")):
 
