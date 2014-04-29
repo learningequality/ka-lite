@@ -41,7 +41,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
-        with self.assertNumQueries(39 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(38, 39) + 0*UserLog.is_enabled()):
             self.browser_login_admin()
 
     def test_query_login_teacher(self):
@@ -51,7 +51,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(26 + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(26, 27) + 3*UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
