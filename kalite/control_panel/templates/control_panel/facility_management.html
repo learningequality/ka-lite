@@ -22,7 +22,7 @@
             start_date.setDate(end_date.getDate() - 30)
         }
 
-        var TEMPLATE_GROUP_URL = "{% url 'facility_management' zone_id=zone_id facility_id=facility.id group_id='None' %}";
+        var TEMPLATE_GROUP_URL = "{% url 'group_management' zone_id=zone_id facility_id=facility.id group_id='None' %}";
 
         $(function() {
 
@@ -241,9 +241,9 @@
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
                                     <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
                                         {% if group.id %}
-                                        href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
+                                        href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
                                         {% else %}
-                                        href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
+                                        href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
                                         {% endif %}
                                         {{ group.name }}
                                     </a>
@@ -387,7 +387,7 @@
                                     {% if group_id %}
                                     <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
                                     {% else %}
-                                    <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
+                                    <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
                                     {% endif %}
                                     {{ student.group.name }}
                                     </a>

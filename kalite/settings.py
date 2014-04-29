@@ -65,6 +65,7 @@ DATABASES      = getattr(local_settings, "DATABASES", {
 })
 
 INTERNAL_IPS   = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
+ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -97,7 +98,7 @@ ROOT_URLCONF = "kalite.distributed.urls"
 INSTALLED_APPS = ("kalite.distributed", "kalite.remoteadmin")
 MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
-STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static'),)  # libraries common to all apps
+STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static-libraries'),)  # libraries common to all apps
 
 DEFAULT_ENCODING = 'utf-8'
 

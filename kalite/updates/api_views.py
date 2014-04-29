@@ -209,7 +209,7 @@ def start_languagepack_download(request):
     if not request.POST:
         raise Exception(_("Must call API endpoint with POST verb."));
 
-    data = json.loads(request.body)  # Django has some weird post processing into request.POST, so use raw_post_data
+    data = json.loads(request.body)  # Django has some weird post processing into request.POST, so use .body
     lang_code = lcode_to_ietf(data['lang'])
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)

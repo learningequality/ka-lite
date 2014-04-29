@@ -351,10 +351,6 @@ def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
             related_videos.append(video)
     return related_videos
 
-def get_video_by_youtube_id(youtube_id):
-    # TODO(bcipolli): will need to change for dubbed videos
-    video_id = i18n.get_video_id(youtube_id=youtube_id)
-    return get_node_cache("Video").get(video_id, [None])[0]
 
 def get_related_videos(exercise, limit_to_available=True):
     """

@@ -82,7 +82,7 @@ def update_all_distributed_callback(request):
             continue
 
         try:
-            (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id, youtube_id=youtube_id)
+            (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id)  # has to be that video_id, could be any youtube_id
             for key,val in video.iteritems():
                 setattr(vl, key, val)
             logging.debug("Saving video log for %s: %s" % (video_id, vl))

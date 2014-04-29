@@ -19,7 +19,7 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.http import Http404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy, string_concat
 
 from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
@@ -47,7 +47,7 @@ class student_log_api(object):
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
+                return JsonResponseMessageWarning(string_concat(self.logged_out_message, "  ", ugettext_lazy("You must be logged in as a student or teacher to view/save progress.")))
             else:
                 return handler(request)
         return student_log_api_wrapper_fn
@@ -113,7 +113,7 @@ def save_exercise_log(request):
 
     try:
         exerciselog.full_clean()
-        exerciselog.save()
+        exerciselog.save(update_userlog=True)
     except ValidationError as e:
         return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
 
