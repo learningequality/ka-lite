@@ -1,4 +1,4 @@
-{% load admin_static %}{% load url from future %}<!DOCTYPE html>
+{% load admin_static %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
 <title>{% block title %}{% endblock %}</title>
@@ -26,13 +26,15 @@
         {% if user.is_active and user.is_staff %}
         <div id="user-tools">
             {% trans 'Welcome,' %}
-            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
+            <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username %}{% endfilter %}</strong>.
             {% block userlinks %}
                 {% url 'django-admindocs-docroot' as docsroot %}
                 {% if docsroot %}
                     <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
                 {% endif %}
+                {% if user.has_usable_password %}
                 <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+                {% endif %}
                 <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
             {% endblock %}
         </div>

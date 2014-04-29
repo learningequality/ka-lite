@@ -19,7 +19,7 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.http import Http404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy, string_concat
 
 from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
@@ -42,15 +42,15 @@ class student_log_api(object):
 
     def __call__(self, handler):
         @api_handle_error_with_json
-        def wrapper_fn(request, *args, **kwargs):
+        def student_log_api_wrapper_fn(request, *args, **kwargs):
             # TODO(bcipolli): send user info in the post data,
             #   allowing cross-checking of user information
             #   and better error reporting
             if "facility_user" not in request.session:
-                return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
+                return JsonResponseMessageWarning(string_concat(self.logged_out_message, "  ", ugettext_lazy("You must be logged in as a student or teacher to view/save progress.")))
             else:
                 return handler(request)
-        return wrapper_fn
+        return student_log_api_wrapper_fn
 
 
 @student_log_api(logged_out_message=ugettext_lazy("Video progress not saved."))
@@ -61,7 +61,7 @@ def save_video_log(request):
     """
 
     # Form does all the data validation, including the video_id
-    form = VideoLogForm(data=simplejson.loads(request.raw_post_data))
+    form = VideoLogForm(data=simplejson.loads(request.body))
     if not form.is_valid():
         raise ValidationError(form.errors)
     data = form.data
@@ -96,7 +96,7 @@ def save_exercise_log(request):
     """
 
     # Form does all data validation, including of the exercise_id
-    form = ExerciseLogForm(data=simplejson.loads(request.raw_post_data))
+    form = ExerciseLogForm(data=simplejson.loads(request.body))
     if not form.is_valid():
         raise Exception(form.errors)
     data = form.data
@@ -143,7 +143,7 @@ def get_video_logs(request):
     """
     Given a list of video_ids, retrieve a list of video logs for this user.
     """
-    data = simplejson.loads(request.raw_post_data or "[]")
+    data = simplejson.loads(request.body or "[]")
     if not isinstance(data, list):
         return JsonResponseMessageError(_("Could not load VideoLog objects: Unrecognized input data format."))
 
@@ -161,7 +161,7 @@ def get_exercise_logs(request):
     """
     Given a list of exercise_ids, retrieve a list of video logs for this user.
     """
-    data = simplejson.loads(request.raw_post_data or "[]")
+    data = simplejson.loads(request.body or "[]")
     if not isinstance(data, list):
         return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
 

@@ -56,7 +56,7 @@ def time_set(request):
 
     # Form does all the data validation - including ensuring that the data passed is a proper date time.
     # This is necessary to prevent arbitrary code being run on the system.
-    form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
+    form = DateTimeForm(data=simplejson.loads(request.body))
     if not form.is_valid():
         return JsonResponseMessageError(_("Could not read date and time: Unrecognized input data format."))
 

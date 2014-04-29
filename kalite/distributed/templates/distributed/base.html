@@ -63,16 +63,18 @@
          // the following variables are used by functions in distributed-server.js,
          //    khan-lite.js, and search_autocomplete.js.
          // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
-         var INSTALLED_LANGUAGES_URL = "{% url installed_language_packs %}";
-         var SEARCH_TOPICS_URL = "{% url flat_topic_tree lang_code=current_language%}";
-         var STATUS_URL = "{% url status %}";
-         var FORCE_SYNC_URL = "{% url api_force_sync %}";
-         var GET_VIDEO_LOGS_URL = "{% url get_video_logs %}";
-         var GET_VIDEO_LOGS_URL = "{% url get_exercise_logs %}";
-         var LOCAL_DEVICE_MANAGEMENT_URL = "{% url device_redirect %}";
-         var USER_LOGIN_URL = "{% url login %}";
+         var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}";
+         var SEARCH_TOPICS_URL = "{% url 'flat_topic_tree' lang_code=current_language%}";
+         var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}";
+         var SEARCH_TOPICS_URL = "{% url 'flat_topic_tree' lang_code=current_language%}";
+         var STATUS_URL = "{% url 'status' %}";
+         var FORCE_SYNC_URL = "{% url 'api_force_sync' %}";
+         var GET_VIDEO_LOGS_URL = "{% url 'get_video_logs' %}";
+         var GET_VIDEO_LOGS_URL = "{% url 'get_exercise_logs' %}";
+         var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
+         var USER_LOGIN_URL = "{% url 'login' %}";
 
-         var SERVER_INFO_PATH    = "{% url get_server_info %}";
+         var SERVER_INFO_PATH    = "{% url 'get_server_info' %}";
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
          var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
          var CURRENT_LANGUAGE = "{{ current_language }}";
@@ -116,47 +118,47 @@
                 {# Note that the following links are listed in the opposite order to how they will be displayed, as they are float:right #}
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url logout %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a>
+                <a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <span class="not-super-user-only"><a href="{% url account_management %}" id="logged-in-name" class="logged-in-only {% block account_management_active %}{% endblock account_management_active %}">&nbsp;</a></span>
+                <a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url help %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a>
+                <a href="{% url 'help' %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url login %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a>
+                <a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a>
 
                 {% if not restricted %}
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <a href="{% url add_facility_student %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
+                    <a href="{% url 'add_facility_student' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
                 {% endif %}
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url coach_reports %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a>
+                <a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url update_languages %}" id="nav_languages" class="admin-only {% block languages_active %}{% endblock languages_active %}" title="{% trans 'Update this server with new languages' %}">{% trans "Languages" %}</a>
+                <a href="{% url 'update_languages' %}" id="nav_languages" class="admin-only {% block languages_active %}{% endblock languages_active %}" title="{% trans 'Update this server with new languages' %}">{% trans "Languages" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url update_videos %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a>
+                <a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url facility_management zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a>
+                <a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url zone_redirect %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a>
+                <a href="{% url 'zone_redirect' %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url exercise_dashboard %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a>
+                <a href="{% url 'exercise_dashboard' %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url watch_home %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
+                <a href="{% url 'watch_home' %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url homepage %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Home" %}</a>
+                <a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Home" %}</a>
 
-                <form action="{% url search %}" method="GET" id="search-box">
+                <form action="{% url 'search' %}" method="GET" id="search-box">
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                     <a class="green_button" id="search-button" href="#" />{% trans 'Search' %}</a>
                     <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
@@ -164,6 +166,7 @@
                 {% endblock sitewide_navigation %}
             </span></nav></div>
             <div class="clear"></div>
+
 
             <div id="logo">
                 <a id="logo-image-small" href="/" title="{% trans 'KA Lite Home' %}">

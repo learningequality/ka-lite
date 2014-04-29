@@ -80,7 +80,7 @@ def zone_management(request, zone_id="None"):
     context = control_panel_context(request, zone_id=zone_id)
     own_device = Device.get_own_device()
 
-    if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
+    if not context["zone"] and (zone_id != "None" or own_device.get_zone() or settings.CENTRAL_SERVER):
         raise Http404()  # on distributed server, we can make due if they're not registered.
 
     # Denote the zone as headless or not
@@ -94,7 +94,7 @@ def zone_management(request, zone_id="None"):
     if context["zone"]:
         devices = Device.objects.filter(devicezone__zone=context["zone"])
     else:
-        devices = Device.objects.filter(devicemetadata__is_trusted=False)
+        devices = Device.objects.filter(devicemetadata__is_own_device=True)
 
     for device in list(devices.order_by("devicemetadata__is_demo_device", "name")):
 
@@ -436,6 +436,10 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
+
+    if len(group_data) == 1 and group_data.has_key(None):
+        if not group_data[None]["total_users"]:
+            del group_data[None]
 
     return (user_data, group_data)
 

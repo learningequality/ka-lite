@@ -4,7 +4,7 @@ KALITE_DIR="$SCRIPT_DIR/../kalite"
 
 pyexec=`"$SCRIPT_DIR/python.sh"`
 
-PIDFILE = "$KALITE_DIR/runcherrypyserver.pid"
+PIDFILE="$KALITE_DIR/runcherrypyserver.pid"
 if [ -f $PIDFILE ];
 then
     echo "----------------------------------------------------------------"
