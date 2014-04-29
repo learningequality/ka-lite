@@ -23,9 +23,9 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "fle_utils.django_utils.middleware.GetNextParam",  # adds request.next parameter
     __package__ + ".middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
     __package__ + ".middleware.FacilityCheck",

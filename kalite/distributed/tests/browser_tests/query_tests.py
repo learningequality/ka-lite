@@ -27,6 +27,11 @@ class FuzzyInt(int):
     def __repr__(self):
         return "[%d..%d]" % (self.lowest, self.highest)
 
+    def __add__(self, x):
+        self.lowest += x
+        self.highest += x
+        return self
+
 
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     """"""
@@ -41,7 +46,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
-        with self.assertNumQueries(FuzzyInt(37, 39)):
+        with self.assertNumQueries(FuzzyInt(35, 39)):
             self.browser_login_admin()
 
     def test_query_login_teacher(self):
@@ -61,7 +66,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         student.set_password(passwd)
         student.save()
 
-        with self.assertNumQueries(23 + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(22, 24) + 3*UserLog.is_enabled()):
             self.browser_login_student("s1", passwd, self.facility)
 
 
