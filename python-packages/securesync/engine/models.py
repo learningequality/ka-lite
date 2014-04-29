@@ -190,7 +190,7 @@ class SyncedModel(ExtendedModel):
     def delete(self):
         self.deleted = True  # mark self as deleted
 
-        for related_model in (self._meta.get_all_related_objects() + self._meta.get_all_related_many_to_many_objects()):
+        for related_model in (self._meta.get_all_related_objects()):
             manager = getattr(self, related_model.get_accessor_name())
             related_objects = manager.all()
             for obj in related_objects:
