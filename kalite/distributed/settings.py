@@ -88,6 +88,7 @@ INSTALLED_APPS = (
     "kalite.main", # in order for securesync to work, this needs to be here.
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.student_testing",
     "securesync",
 ) + INSTALLED_APPS  # append local_settings installed_apps, in case of dependencies
 
