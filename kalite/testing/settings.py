@@ -42,8 +42,20 @@ if USE_DEBUG_TOOLBAR:
     }
 
 if getattr(local_settings, "DEBUG", False):
+    INSTALLED_APPS += (
+        "django.contrib.admin",  # this and the following are needed to enable django admin.
+    )
+
     # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
+    MIDDLEWARE_CLASSES += (
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        'django_snippets.profiling_middleware.ProfileMiddleware',
+    )
+
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        "django.contrib.auth.context_processors.auth",
+    )
 
 
 
