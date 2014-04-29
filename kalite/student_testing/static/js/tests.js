@@ -1,46 +1,62 @@
 function nextQuestion() {
-        exercise = exercises[i]
+    problem = test_sequence[index];
+    exercise_id = problem[0];
+    seed = problem[1];
+    loadExercise(exercise_id, function(exercise) {
         exerciseData = {
-        "basepoints": exercise.basepoints ,
-        "description": exercise.description,
-        "title": exercise.display_name,
-        "exerciseModel": {
-            "displayName": exercise.display_name,
-            "name": exercise.name,
-            "secondsPerFastProblem": exercise.seconds_per_fast_problem,
-            "authorName": exercise.author_name,
-            "relatedVideos": [],
-            "fileName": exercise.name + ".html"
-        },
-        "readOnly": false,
-        "percentCompleted": 0,
-        "points": 0,
-        "starting_points": 0,
-        "attempts": 0,
-        "exerciseProgress": {
-            "level": ""
-        },
-        "lastCountHints": 0,
-        "seed": seed + j
-    }
+            "basepoints": exercise.basepoints ,
+            "description": exercise.description,
+            "title": exercise.display_name,
+            "lang": exercise.lang,
+            "exerciseModel": {
+                "displayName": exercise.display_name,
+                "name": exercise.name,
+                "secondsPerFastProblem": exercise.seconds_per_fast_problem,
+                "authorName": exercise.author_name,
+                "relatedVideos": [],
+                "fileName": exercise.template
+            },
+            "readOnly": false,
+            "percentCompleted": 0,
+            "points": 0,
+            "starting_points": 0,
+            "attempts": 0,
+            "exerciseProgress": {
+                "level": ""
+            },
+            "lastCountHints": 0,
+            "seed": seed
+        }
+        $(Exercises).trigger("problemTemplateRendered");
+        $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
+    });
 }
 
+function loadExercise(exercise_id, callback) {
+        doRequest("/api/exercise/" + exercise_id)
+            .success(function(data) {
+                callback(data);
+            })
+            .fail(function(resp) {
+                communicate_api_failure(resp, "id_student_logs");
+            });
+    }
+
+
 function endTest() {
-    window.location.href = "/research/?next=test"
+    window.location.href = "/"
 }
 
 function saveLogNextQuestion(correct) {
 
-    complete = (i == exercises.length-1 && j == repeats)
+    complete = (index == test_sequence.length-1)
 
     var data = {
         exercise_id: exerciseData.exerciseModel.name,
         correct: correct,
         random_seed: exerciseData.seed,
         test: test,
-        index: i,
-        repeat: j,
-        length: exercises.length,
+        index: index,
         complete: complete
     };
 
@@ -48,14 +64,8 @@ function saveLogNextQuestion(correct) {
         .success(function(data) {
             show_api_messages(data, "id_student_logs");
             if(!complete) {
-                if(j === repeats) {
-                    j = 0;
-                    i += 1;
-                } else {
-                    j += 1;
-                }
+                index += 1;
                 nextQuestion();
-                $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
             } else {
                 endTest();
             }
@@ -72,18 +82,7 @@ var exerciseData = {};
 var complete = false;
 
 $(function() {
-    $(Khan).bind("loaded", function() {
-        doRequest("/api/flat_topic_tree" + path + "?leaf_type=Exercise")
-            .success(function(data) {
-            exercises = data
-            nextQuestion();
-            $(Exercises).trigger("problemTemplateRendered");
-            $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
-            })
-            .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
-            });
-    });
+    $(Khan).bind("loaded", );
     $(Exercises).bind("checkAnswer", function(ev, data) {
         $("#check-answer-button").parent().stop(jumpedToEnd=true)
         saveLogNextQuestion(data.correct);

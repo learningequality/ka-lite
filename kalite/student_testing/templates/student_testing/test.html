@@ -47,13 +47,11 @@
 </script>
 <script src="{% static 'js/khan-exercises/khan-exercise.js' %}"></script>
 <script>
-    var seed = {{ test.seed }}
-    var path = "{{ test.path }}"
+    var test_sequence = {{ test_sequence }}
     var title = "{{ test.title }}"
-    var repeats = {{ test.repeats }}
     var test = {{ test.id }}
-    var i = {{ index }};
-    var j = {{ repeat }};
+    var index = {{ index }};
+    var complete = {{ complete }};
 
 </script>
 <script src="{% static 'js/student_testing/tests.js' %}"></script>
