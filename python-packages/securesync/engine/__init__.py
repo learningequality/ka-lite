@@ -117,25 +117,25 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     models = []
     remaining = limit
 
-    # loop through each of the devices of interest
-    #   Do devices first, because each device is independent.
-    #   Models within a device are highly dependent (on explicit dependencies,
-    #   as well as counter position)
-    for device_id, counter in device_counters.items():
-        device = Device.all_objects.get(pk=device_id)  # include deleted devices
-
+    # loop through all the model classes marked as syncable
+    #  (note: NEVER BREAK OUT OF THIS LOOP!  We need to ensure that
+    #    all models below the counter position selected are sent NOW,
+    #    otherwise they will be forgotten FOREVER)
+    for Model in _syncing_models:
         # We need to track the min counter position (send things above this value)
         #   and the max (we're sending up to this value, so make sure nothing
         #   below it is left behind)
         counter_min = counter + 1
         counter_max = 0
 
-        # loop through all the model classes marked as syncable
-        #  (note: NEVER BREAK OUT OF THIS LOOP!  We need to ensure that
-        #    all models below the counter position selected are sent NOW,
-        #    otherwise they will be forgotten FOREVER)
-        for Model in _syncing_models:
-            queryset = Model.all_objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))  # include deleted records
+        # loop through each of the devices of interest
+        #   Do devices first, because each device is independent.
+        #   Models within a device are highly dependent (on explicit dependencies,
+        #   as well as counter position)
+        for device_id, counter in device_counters.items():
+            device = Device.objects.get(pk=device_id)
+
+            queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):
