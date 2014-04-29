@@ -13,11 +13,11 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
     Recurse into each installed_app's INSTALLED_APPS to collect all
     necessary settings.py files.
     """
+    assert not set(processed_apps).intersection(set(installed_apps)), "Should never process the same app twice."
+
     this_filepath = global_vars.get("__file__")  # this would be the project settings file
 
     for app in installed_apps:
-        if app in processed_apps:
-            import pdb; pdb.set_trace()
         app_settings = None
         try:
             for path in sys.path:
@@ -65,18 +65,16 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
                 global_vars.update({var: var_val})
             elif global_vars.get(var) != var_val:
                 # Unknown variables that do exist must have the same value--otherwise, conflict!
-                raise Exception("(%s) %s is already set; resetting can cause confusion." % (app, var))
+                #logging.warn("(%s) %s is already set; resetting can cause confusion." % (app, var))
+                pass
 
-        print "\n%s" % processed_apps
+        #print "\n%s" % processed_apps
         processed_apps = processed_apps.union(set([app]))
-        print processed_apps
+        #print processed_apps
         # Now if INSTALLED_APPS exist, go do those.
         if "INSTALLED_APPS" in app_settings:
                 # Combine the variable values, then import
                 remaining_apps = set(app_settings["INSTALLED_APPS"]) - processed_apps
-                print "%s: %s" % (app, remaining_apps)
-                if app == "kalite.khanload":
-                    import pdb; pdb.set_trace()
                 if remaining_apps:
                     import_installed_app_settings(
                         installed_apps=remaining_apps,
