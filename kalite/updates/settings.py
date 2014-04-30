@@ -17,6 +17,7 @@ INSTALLED_APPS = (
     "south",
     "fle_utils.chronograph",  # updates uses chronograph for commands
     "fle_utils.django_utils",  # templatetags
+    "kalite.caching",  # to get local_install_context
     "kalite.control_panel",  # to get local_install_context
     "kalite.distributed",  # to access caching
     "kalite.i18n",  # language pack updates
