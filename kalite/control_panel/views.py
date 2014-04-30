@@ -173,7 +173,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     # If local (and, for security purposes, a distributed server), get device metadata
     if context["is_own_device"]:
-        context.update(local_device_context(request))
+        context.update(local_install_context(request))
 
     return context
 
@@ -479,7 +479,7 @@ def control_panel_context(request, **kwargs):
     return context
 
 
-def local_device_context(request):
+def local_install_context(request):
     database_path = settings.DATABASES["default"]["NAME"]
     current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
 

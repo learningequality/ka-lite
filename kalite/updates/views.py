@@ -23,7 +23,7 @@ from django.views.decorators.cache import cache_page
 from .models import VideoFile
 from fle_utils.chronograph import force_job
 from fle_utils.internet import am_i_online, JsonResponse
-from kalite.control_panel.views import local_device_context
+from kalite.control_panel.views import local_install_context
 from kalite.i18n import get_installed_language_packs, get_language_name
 from kalite.main import topic_tools
 from kalite.shared.decorators import require_admin
@@ -73,7 +73,7 @@ def update_languages(request):
 @render_to("updates/update_software.html")
 def update_software(request):
     context = update_context(request)
-    context.update(local_device_context(request))
+    context.update(local_install_context(request))
 
     try:
         repo = git.Repo(os.path.dirname(__file__))
