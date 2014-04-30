@@ -61,9 +61,12 @@ class FLECodeTest(unittest.TestCase):
                 for import_line in import_lines:
                     for rexp in [r'^\s*from\s+(.*)\s+import\s+(.*)\s*$', r'^\s*import\s+(.*)\s*$']:
                         matches = re.match(rexp, import_line)
-                        import_mod = (matches and '.'.join(matches.groups())) or None
-                        if import_mod and any([app for app in cls.our_apps if app in import_mod]):
-                            our_import_lines.append((import_line, import_mod))
+                        groups = matches and list(matches.groups()) or []
+                        import_mod = []
+                        for list_item in ((groups and groups[-1].split(",")) or []):
+                            cur_item = '.'.join(groups[0:-1] + [list_item])
+                            if any([app for app in cls.our_apps if app in cur_item]):
+                                our_import_lines.append((import_line, cur_item))
                 imports[filepath] = our_import_lines
         return imports
 
