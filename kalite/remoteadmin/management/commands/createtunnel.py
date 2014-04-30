@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 
 from securesync.models import Device
 
+
 class Command(BaseCommand):
     help = "Create an SSH tunnel to the SSH server."
 
