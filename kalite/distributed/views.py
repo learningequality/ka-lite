@@ -27,7 +27,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
-from .caching import backend_cache_page
 from fle_utils.django_utils import is_loopback_connection
 from fle_utils.internet import JsonResponse, JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
 from kalite.facility.models import Facility, FacilityUser,FacilityGroup

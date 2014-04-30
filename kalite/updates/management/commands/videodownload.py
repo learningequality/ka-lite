@@ -16,8 +16,7 @@ from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
-from kalite import i18n
-from kalite.distributed import caching
+from kalite import caching, i18n
 from kalite.main import topic_tools
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):

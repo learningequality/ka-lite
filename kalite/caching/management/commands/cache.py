@@ -4,7 +4,7 @@ from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from fle_utils.internet.webcache import invalidate_web_cache
 
-from kalite.distributed import caching
+from .... import caching
 from kalite.main import topic_tools
 
 
@@ -55,7 +55,7 @@ class Command(BaseCommand):
         (b) Kill and regenerate each page"""
 
         if force:
-            if caching.has_cache_key(path=path):
+            if has_cache_key(path=path):
                 caching.expire_page(path=path)
                 self.stdout.write("[Redo]\t%s\n" % path)
             else:

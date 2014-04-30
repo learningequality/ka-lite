@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     "kalite.main", # in order for securesync to work, this needs to be here.
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.caching",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
 )
