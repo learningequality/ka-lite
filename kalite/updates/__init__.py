@@ -10,6 +10,7 @@ from fle_utils.chronograph.models import Job
 
 from .models import VideoFile
 from fle_utils.internet import invalidate_web_cache
+from kalite import caching
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
 
 
