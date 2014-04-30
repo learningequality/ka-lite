@@ -3,8 +3,8 @@ Tests for securesync
 """
 from django.test import LiveServerTestCase
 
+from ..models import Device
 from fle_utils.config.models import Settings
-from securesync.models import Device
 
 
 class SecuresyncTestCase(LiveServerTestCase):

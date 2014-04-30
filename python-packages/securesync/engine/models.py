@@ -17,16 +17,16 @@ from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 from . import add_syncing_models
+from .. import ID_MAX_LENGTH, IP_MAX_LENGTH
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
-from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH
 
 
 def _get_own_device():
     """
     To allow imports to resolve... the only ugly thing of this code separation.
     """
-    from securesync.devices.models import Device
+    from ..devices.models import Device
     return Device.get_own_device()
 
 
