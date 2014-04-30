@@ -34,7 +34,11 @@ class FLECodeTest(unittest.TestCase):
             else:
                 app_settings = {'__package__': app}  # explicit setting of the __package__, to allow absolute package ref'ing
                 global_vars = copy.copy(globals())
-                global_vars.update({"__file__": settings_filepath, 'PROJECT_PATH': settings.PROJECT_PATH})  # must let the app's settings file be set to that file!
+                global_vars.update({
+                    "__file__": settings_filepath,  # must let the app's settings file be set to that file!
+                    'PROJECT_PATH': settings.PROJECT_PATH,
+                    'ROOT_DATA_PATH': getattr(settings, 'ROOT_DATA_PATH', os.path.join(settings.PROJECT_PATH, 'data')),
+                })
                 execfile(settings_filepath, global_vars, app_settings)
                 our_app_dependencies = [anapp for anapp in app_settings.get('INSTALLED_APPS', []) if anapp in cls.our_apps]
 
@@ -70,7 +74,8 @@ class FLECodeTest(unittest.TestCase):
             imports = self.__class__.get_imports(app)
             bad_imports[app] = [str((f, i[0])) for f, ins in imports.iteritems() for i in ins if not any([a for a in ([app] + app_dependencies) if a in i[1]])]
 
-        self.assertFalse(any([app for app, bi in bad_imports.iteritems() if bi]), "Found unreported app dependencies in imports: %s" % ("\n\n".join(["%s:\n%s\n%s" % (app, "\n".join(self.our_app_dependencies[app]), "\n".join(bad_imports[app])) for app in bad_imports if bad_imports[app]])))
+        bad_imports_text = "\n\n".join(["%s:\n%s\n%s" % (app, "\n".join(self.our_app_dependencies[app]), "\n".join(bad_imports[app])) for app in bad_imports if bad_imports[app]])
+        self.assertFalse(any([app for app, bi in bad_imports.iteritems() if bi]), "Found unreported app dependencies in imports:\n%s" % bad_imports_text)
 
 
     def test_url_reversals(self):
