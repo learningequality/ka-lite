@@ -122,6 +122,8 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    if 'CACHES' not in locals():
+        CACHES = {}
 
     # File-based cache
     install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
@@ -149,10 +151,6 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
 
     # The chosen cache
     CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
-    if CACHE_NAME == "file_based_cache":
-        LOG.debug("Cache location = %s" % CACHE_LOCATION)
-    else:
-        LOG.debug("Using %s caching" % CACHE_NAME)
 
 
 ########################

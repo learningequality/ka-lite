@@ -148,6 +148,12 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
+if 'CACHE_NAME' in locals():
+    if CACHE_NAME == "file_based_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+    else:
+        LOG.debug("Using %s caching" % CACHE_NAME)
+
 # Override
 KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(STATIC_ROOT, "khan-exercises"))
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)

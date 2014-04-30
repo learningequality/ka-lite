@@ -15,8 +15,8 @@ if __name__ == "__main__":
     # Now build the paths that point to all of the project pieces
     PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
     PROJECT_PYTHON_PATHS = [
-        os.path.join(PROJECT_PATH, "..", "python-packages"),
-        os.path.join(PROJECT_PATH, ".."),
+        os.path.realpath(os.path.join(PROJECT_PATH, "..", "python-packages")),
+        os.path.realpath(os.path.join(PROJECT_PATH, "..")),
     ]
     sys.path = PROJECT_PYTHON_PATHS + sys.path
 
