@@ -4,7 +4,7 @@ import importlib
 import os
 import re
 
-from django.conf import settings
+from django.conf import settings; logging = settings.LOG
 from django.utils import unittest
 
 
@@ -55,6 +55,7 @@ class FLECodeTest(unittest.TestCase):
             py_files = [f for f in files if os.path.splitext(f)[-1] == '.py']
             for py_file in py_files:
                 filepath = os.path.join(root, py_file)
+
                 lines = open(filepath, 'r').readlines()
                 import_lines = [l.strip() for l in lines if 'import' in l]
                 our_import_lines = []
@@ -64,18 +65,22 @@ class FLECodeTest(unittest.TestCase):
                         groups = matches and list(matches.groups()) or []
                         import_mod = []
                         for list_item in ((groups and groups[-1].split(",")) or []):
-                            cur_item = '.'.join(groups[0:-1] + [list_item])
-                            if any([app for app in cls.our_apps if app in cur_item]):
+                            cur_item = '.'.join([item.strip() for item in (groups[0:-1] + [list_item])])
+                            if any([a for a in cls.our_apps if a in cur_item]):
                                 our_import_lines.append((import_line, cur_item))
+                                if app in cur_item:
+                                    logging.warn("*** Please use relative imports within an app (%s: found '%s')" % (app, import_line))
+                            else:
+                                logging.debug("*** Skipping import: %s (%s)" % (import_line, cur_item))
                 imports[filepath] = our_import_lines
         return imports
 
     def test_imports(self):
         bad_imports = {}
         for app, app_dependencies in self.our_app_dependencies.iteritems():
-            if app == 'kalite': continue
             imports = self.__class__.get_imports(app)
-            bad_imports[app] = [str((f, i[0])) for f, ins in imports.iteritems() for i in ins if not any([a for a in ([app] + app_dependencies) if a in i[1]])]
+            # Don't include [app] in search; we want all such imports to be relative.
+            bad_imports[app] = [str((f, i[0])) for f, ins in imports.iteritems() for i in ins if not any([a for a in app_dependencies if a in i[1]])]
 
         bad_imports_text = "\n\n".join(["%s:\n%s\n%s" % (app, "\n".join(self.our_app_dependencies[app]), "\n".join(bad_imports[app])) for app in bad_imports if bad_imports[app]])
         self.assertFalse(any([app for app, bi in bad_imports.iteritems() if bi]), "Found unreported app dependencies in imports:\n%s" % bad_imports_text)
