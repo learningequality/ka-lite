@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     "kalite.testing",
     "kalite.updates",  #
     "kalite.remoteadmin",  # needed for remote connection
+    "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
 )
 
 MIDDLEWARE_CLASSES = (
