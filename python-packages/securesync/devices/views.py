@@ -16,8 +16,9 @@ from django.utils.translation import ugettext as _
 
 from .api_client import RegistrationClient
 from .forms import RegisteredDevicePublicKeyForm
-from .models import SyncSession, Device, Zone, RegisteredDevicePublicKey
+from .models import Device, Zone, RegisteredDevicePublicKey
 from .. import crypto
+from ..engine.models import SyncSession
 from fle_utils.chronograph import force_job
 from fle_utils.config.models import Settings
 from fle_utils.internet import JsonResponse, allow_jsonp, set_query_params
