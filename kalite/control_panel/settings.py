@@ -11,6 +11,7 @@ INSTALLED_APPS = (
     "kalite.coachreports",  # embedded into control_panel
     "kalite.main",  # for summary stats on *Log
     "kalite.testing",
+    "securesync",  # for querying objects
 )
 
 MIDDLEWARE_CLASSES = (
