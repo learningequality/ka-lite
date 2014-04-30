@@ -86,7 +86,7 @@ def update_software(request):
     context.update({
         "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
         "git_software_version": software_version,
-    })_
+    })
 
     return context
 
