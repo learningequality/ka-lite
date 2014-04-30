@@ -34,20 +34,11 @@ from securesync.devices import require_registration
 def update_context(request):
     device = Device.get_own_device()
     zone = device.get_zone()
-    try:
-        repo = git.Repo(os.path.dirname(__file__))
-        software_version = repo.git.describe()
-        is_git_repo = bool(repo)
-    except git.exc.InvalidGitRepositoryError:
-        is_git_repo = False
-        software_version = None
 
     context = {
-        "registered": Device.get_own_device().is_registered(),
+        "is_registered": device.is_registered(),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
-        "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
-        "git_software_version": software_version,
     }
     return context
 
@@ -83,4 +74,19 @@ def update_languages(request):
 def update_software(request):
     context = update_context(request)
     context.update(local_device_context(request))
+
+    try:
+        repo = git.Repo(os.path.dirname(__file__))
+        software_version = repo.git.describe()
+        is_git_repo = bool(repo)
+    except git.exc.InvalidGitRepositoryError:
+        is_git_repo = False
+        software_version = None
+
+    context.update({
+        "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
+        "git_software_version": software_version,
+    })_
+
     return context
+
