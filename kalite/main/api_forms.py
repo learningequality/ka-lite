@@ -3,7 +3,7 @@ Data validation of different types of POST responses through our api_urls/views
 """
 from django import forms
 
-from .topic_tools import get_node_cache
+from kalite.topic_tools import get_node_cache
 
 
 class ExerciseLogForm(forms.Form):

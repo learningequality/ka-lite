@@ -27,8 +27,8 @@ from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from kalite.main.topic_tools import get_node_cache
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.topic_tools import get_node_cache
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 

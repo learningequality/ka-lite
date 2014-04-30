@@ -30,8 +30,7 @@ from django.views.decorators.http import condition
 
 from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
-from kalite import i18n
-from kalite.main import topic_tools
+from kalite import i18n, topic_tools
 
 
 def invalidate_all_pages_related_to_video(video_id=None):

@@ -54,7 +54,7 @@ from . import base
 from ..browser import BrowserTestCase
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
-from kalite.main.topic_tools import get_node_cache
+from kalite.topic_tools import get_node_cache
 
 
 class HelloWorld(base.Common):

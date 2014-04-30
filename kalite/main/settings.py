@@ -16,7 +16,7 @@ INSTALLED_APPS = (
     "fle_utils.django_utils",  # templatetags
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.i18n",  # get_video_id
-    "kalite.khanload",  # needed for URL parsing
+    "kalite.topic_tools",  # For finding and validating exercises / videos
     "kalite.testing",
     "securesync",
 )
@@ -29,5 +29,3 @@ INSTALLED_APPS = (
 #   NOTE: None means no limit (infinite)
 USER_LOG_MAX_RECORDS_PER_USER = getattr(local_settings, "USER_LOG_MAX_RECORDS_PER_USER", 1)
 USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY", (1,"months"))
-
-MAIN_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

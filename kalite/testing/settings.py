@@ -14,6 +14,8 @@ except ImportError:
 INSTALLED_APPS = (
     'kalite.facility',  # Create users
     'kalite.main',  # Probing / creating Log objects, accessing topic_tools
+    'kalite.main',  # Probing / creating Log objects
+    'kalite.topic_tools',  # For benchmarking, finding random exercises
     'securesync',  # Uses securesync testing hooks
 )
 MIDDLEWARE_CLASSES = tuple()

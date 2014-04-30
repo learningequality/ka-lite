@@ -26,7 +26,7 @@ from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from kalite.main.topic_tools import get_topic_by_path, get_node_cache
+from kalite.topic_tools import get_topic_by_path, get_node_cache
 
 
 # Global variable of all the known stats, their internal and external names,

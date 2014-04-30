@@ -27,8 +27,8 @@ from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
-from kalite.main.topic_tools import get_topic_tree
 from kalite.shared.decorators import require_admin
+from kalite.topic_tools import get_topic_tree
 
 
 def divide_videos_by_language(youtube_ids):

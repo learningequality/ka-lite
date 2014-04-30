@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     "kalite.django_cherrypy_wsgiserver",
     "kalite.i18n",  #
     "kalite.khanload",  # khan academy interactions
+    "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
     "kalite.testing",
     "kalite.updates",  #

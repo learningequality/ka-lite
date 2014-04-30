@@ -21,7 +21,8 @@ INSTALLED_APPS = (
     "kalite.control_panel",  # to get local_install_context
     "kalite.distributed",  # to access caching
     "kalite.i18n",  # language pack updates
-    "kalite.main",  # topic tools
+    "kalite.main",  # TODO: remove (MainTestCase should be KALiteTestCase)
+    "kalite.topic_tools",  # topic tools
     "kalite.testing",
     "securesync",  # Needed to verify zip files (via Device key) and to limit access via registration status
 )

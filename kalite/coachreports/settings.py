@@ -7,7 +7,8 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "fle_utils.django_utils",  # templatetags
     "kalite.facility",  # must come first, all other apps depend on this one.
-    "kalite.main", # in order for securesync to work, this needs to be here.
+    "kalite.main",  # *Log object queries
+    "kalite.topic_tools",  # to organize by topic
     "kalite.testing",
 )
 

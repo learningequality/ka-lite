@@ -11,9 +11,8 @@ from django.utils import unittest
 
 from ..models import VideoFile
 from fle_utils.django_utils import call_command_with_output
-from kalite import caching
-from kalite.main import topic_tools
-from kalite.main.tests.base import MainTestCase
+from kalite import caching, topic_tools
+from kalite.main.tests.base import MainTestCase  # TODO: remove this dependency
 from kalite.testing.client import KALiteClient
 
 

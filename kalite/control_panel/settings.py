@@ -9,6 +9,7 @@ INSTALLED_APPS = (
     "fle_utils.django_utils",  # templatetags
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.coachreports",  # embedded into control_panel
+    "kalite.topic_tools",  # for counting # of exercises
     "kalite.main",  # for summary stats on *Log
     "kalite.testing",
     "securesync",  # for querying objects
