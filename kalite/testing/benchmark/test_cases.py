@@ -111,7 +111,7 @@ class OneThousandRandomReads(base.Common):
     def _setup(self, **kwargs):
         super(OneThousandRandomReads, self)._setup(**kwargs)
 
-        #give the platform a chance to cache the logs
+        # Give the platform a chance to cache the logs
         self.exercise_list = ExerciseLog.objects.get_query_set()
         self.video_list = VideoLog.objects.get_query_set()
         self.exercise_count = ExerciseLog.objects.count()

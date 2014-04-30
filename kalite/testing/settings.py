@@ -11,7 +11,11 @@ except ImportError:
 ########################
 
 # Django debug_toolbar config
-INSTALLED_APPS = tuple()
+INSTALLED_APPS = (
+    'kalite.facility',  # Create users
+    'kalite.main',  # Probing / creating Log objects, accessing topic_tools
+    'securesync',  # Uses securesync testing hooks
+)
 MIDDLEWARE_CLASSES = tuple()
 
 
