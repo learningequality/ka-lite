@@ -11,6 +11,7 @@ INSTALLED_APPS = (
     "kalite.coachreports",  # embedded into control_panel
     "kalite.topic_tools",  # for counting # of exercises
     "kalite.main",  # for summary stats on *Log
+    "kalite.khanload",  # for students to download data from their personal control panel.
     "kalite.testing",
     "securesync",  # for querying objects
 )
