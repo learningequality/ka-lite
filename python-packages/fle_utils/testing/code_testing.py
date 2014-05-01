@@ -186,22 +186,25 @@ class FLECodeTest(unittest.TestCase):
 
     @classmethod
     def get_url_modules(cls, url_name):
+        """Given a URL name, returns all INSTALLED_APPS that have that URL name defined within the app."""
+
+        # Search patterns across all known apps that are named have that name.
         found_modules = [app for app, pats in cls.app_urlpatterns.iteritems() for pat in pats if getattr(pat, "name", None) == url_name]
         return found_modules
 
 
     def test_url_reversals(self):
+        """Finds all URL reversals that aren't found within the defined INSTALLED_APPS dependencies"""
         bad_reversals = {}
 
         for app, app_dependencies in self.our_app_dependencies.iteritems():
             url_names_by_file = self.__class__.get_url_reversals(app)
-            url_names = [pat for pat_list in url_names_by_file.values() for pat in pat_list]
+            url_names = [pat for pat_list in url_names_by_file.values() for pat in pat_list]  # Flatten into list (not per-file)
 
             # Clean names
-            #url_names = [n[len('admin:'):] for n in url_names if n and n.startswith('admin:')]
-            url_names = [n for n in url_names if n and not n.startswith('admin:')]
+            url_names = [n for n in url_names if n and not n.startswith('admin:')]  # Don't deal with admin URLs.
             url_names = [n for n in url_names if n and not '.' in n]  # eliminate fully-qualified url names
-            url_names = set(url_names)
+            url_names = set(url_names)  # Eliminate duplicates
 
             # for each referenced url name, make sure this app defin
             bad_reversals[app] = []
@@ -210,6 +213,10 @@ class FLECodeTest(unittest.TestCase):
                 if not referenced_modules.intersection(set([app] + app_dependencies)):
                     bad_reversals[app].append((url_name, list(referenced_modules)))
 
-        bad_reversals_text = "\n\n".join(["%s:\n%s\n%s" % (app, "\n".join(self.our_app_dependencies[app]), "\n".join([str(t) for t in bad_reversals[app]])) for app in bad_reversals if bad_reversals[app]])
+        bad_reversals_text = "\n\n".join(["%s: unexpected dependencies found!\n\t(url_name [module that defines url_name])\n\t%s\nExpected dependencies:\n\t%s" % (
+            app,
+            "\n\t".join([str(t) for t in bad_reversals[app]]),
+            "\n\t".join(self.our_app_dependencies[app]),
+        ) for app in bad_reversals if bad_reversals[app]])
         self.assertFalse(any([app for app, bi in bad_reversals.iteritems() if bi]), "Found unreported app dependencies in URL reversals:\n%s" % bad_reversals_text)
 
