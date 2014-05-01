@@ -34,6 +34,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",  # used by distributed to authenticate admin (django) user
     "django.core.context_processors.request",  # expose request object within templates
+    __package__ + ".custom_context_processors.custom",  # for enabling a 'restricted' user mode for self-admin of user accounts
 )
 
 
