@@ -23,6 +23,7 @@ class FLECodeTest(unittest.TestCase):
         if not hasattr(self.__class__, 'our_apps'):
             self.__class__.our_apps = set([app for app in settings.INSTALLED_APPS if app in self.testable_packages or app.split('.')[0] in self.testable_packages])
             self.__class__.compute_app_dependencies()
+            self.__class__.compute_app_urlpatterns()
 
     @classmethod
     def compute_app_dependencies(cls):
@@ -117,6 +118,98 @@ class FLECodeTest(unittest.TestCase):
         self.assertFalse(any([app for app, bi in bad_imports.iteritems() if bi]), "Found unreported app dependencies in imports:\n%s" % bad_imports_text)
 
 
+    @classmethod
+    def compute_app_urlpatterns(cls):
+        """For each app in settings.INSTALLED_APPS, load that app's *urls.py to grab its
+        defined URLS.
+
+        Note: assumes cls.our_apps has already been computed.
+        """
+        cls.app_urlpatterns = {}
+
+        # Get each app's dependencies.
+        for app in cls.our_apps:
+            module = importlib.import_module(app)
+            module_dirpath = os.path.dirname(module.__file__)
+            settings_filepath = os.path.join(module_dirpath, 'settings.py')
+
+            urlpatterns = []
+            source_files = get_module_files(module_dirpath, lambda f: 'urls' in f and os.path.splitext(f)[-1] in ['.py'])
+            for filepath in source_files:
+                fq_urlconf_module = app + os.path.splitext(filepath[len(module_dirpath):])[0].replace('/', '.')
+
+                logging.info('Processing urls file: %s' % fq_urlconf_module)
+                mod = importlib.import_module(fq_urlconf_module)
+                urlpatterns += mod.urlpatterns
+
+            cls.app_urlpatterns[app] = urlpatterns
+
+
+    @classmethod
+    def get_url_reversals(cls, app):
+        """Recurses over files within an app, searches each file for KA Lite-relevant URL confs,
+        then grabs the fully-qualified module import for each import on each line.
+
+        The logic is hacky and makes assumptions (no multi-line imports, but handles comma-delimited import lists),
+        but generally works.
+
+        Returns a dict of tuples
+            key: filepath
+            value: (actual code line, reconstructed import)
+        """
+
+        module = importlib.import_module(app)
+        module_dirpath = os.path.dirname(module.__file__)
+
+        url_reversals = {}
+
+        source_files = get_module_files(module_dirpath, lambda f: os.path.splitext(f)[-1] in ['.py', '.html'])
+        for filepath in source_files:
+            mod_revs = []
+            for line in open(filepath, 'r').readlines():
+                new_revs = []
+                for rexp in [r""".*reverse\(\s*['"]([^\)\s,]+)['"].*""", r""".*\{%\s*url\s+['"]([^%\s]+)['"].*"""]: # Match 'reverse(URI)' and '{% url URI %}' syntaxes
+
+                    matches = re.match(rexp, line)
+                    groups = matches and list(matches.groups()) or []
+                    if groups:
+                        new_revs += groups
+                        logging.debug('Found: %s; %s' % (filepath, line))
+
+                if not new_revs and ('reverse(' in line or '{% url' in line):
+                    logging.debug("\tSkip: %s; %s" % (filepath, line))
+                mod_revs += new_revs
+
+            url_reversals[filepath] = mod_revs
+        return url_reversals
+
+
+    @classmethod
+    def get_url_modules(cls, url_name):
+        found_modules = [app for app, pats in cls.app_urlpatterns.iteritems() for pat in pats if getattr(pat, "name", None) == url_name]
+        return found_modules
+
+
     def test_url_reversals(self):
-        pass#import pdb; pdb.set_trace()
+        bad_reversals = {}
+
+        for app, app_dependencies in self.our_app_dependencies.iteritems():
+            url_names_by_file = self.__class__.get_url_reversals(app)
+            url_names = [pat for pat_list in url_names_by_file.values() for pat in pat_list]
+
+            # Clean names
+            #url_names = [n[len('admin:'):] for n in url_names if n and n.startswith('admin:')]
+            url_names = [n for n in url_names if n and not n.startswith('admin:')]
+            url_names = [n for n in url_names if n and not '.' in n]  # eliminate fully-qualified url names
+            url_names = set(url_names)
+
+            # for each referenced url name, make sure this app defin
+            bad_reversals[app] = []
+            for url_name in url_names:
+                referenced_modules = set(self.get_url_modules(url_name))
+                if not referenced_modules.intersection(set([app] + app_dependencies)):
+                    bad_reversals[app].append((url_name, list(referenced_modules)))
+
+        bad_reversals_text = "\n\n".join(["%s:\n%s\n%s" % (app, "\n".join(self.our_app_dependencies[app]), "\n".join([str(t) for t in bad_reversals[app]])) for app in bad_reversals if bad_reversals[app]])
+        self.assertFalse(any([app for app, bi in bad_reversals.iteritems() if bi]), "Found unreported app dependencies in URL reversals:\n%s" % bad_reversals_text)
 
