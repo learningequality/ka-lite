@@ -11,8 +11,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}?{{ BUILD_ID }}" />
 {% endblock headcss %}
 
-
-
 {% block headjs %}{{ block.super }}
     <script>
         $(function() {
@@ -73,7 +71,9 @@
 {% block content %}
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
 
-    <div id="selection-bar">
+<div class="container">
+    <!-- <div id="selection-bar"> -->
+    <div class="row">
         <div class="selection">
         {# Select the coach report type #}
         {% if report_types %}
@@ -108,18 +108,16 @@
             </select>
         {% endif %}
         </div>
-    </div>
+    <!-- </div> -->
 
-    <div id="content">
-        <div id="legend">
-            <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
-            <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+        <ul class="pull-right" id="legend">
+            <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
+            <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
             {% if request_report_type != "video" %}
-            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
             {% endif %}
-        </div>
+        </ul>
     </div>
-    <div style="clear: both;"></div>
 
     {% if not students %}
         <p><div class="subtitle error" id="error_message">
@@ -237,5 +235,6 @@
         {% endblock video_data %}
         {% endif %}
     {% endif %}
+</div>
 {% endblock content %}
 
