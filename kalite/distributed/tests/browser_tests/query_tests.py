@@ -27,7 +27,17 @@ class FuzzyInt(int):
     def __repr__(self):
         return "[%d..%d]" % (self.lowest, self.highest)
 
+    def __str__(self):
+        return self.__repr__()
+
+    def __unicode__(self):
+        return self.__repr__()
+
+    def __format__(self, formatstr):
+        return self.__repr__()
+
     def __add__(self, x):
+        val = super(FuzzyInt, self).__add__(x)
         self.lowest += x
         self.highest += x
         return self
@@ -56,7 +66,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(FuzzyInt(26, 27) + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(25, 28) + 3*UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
@@ -98,7 +108,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_logout_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(FuzzyInt(6, 11) + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(5, 11) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_student(self):
