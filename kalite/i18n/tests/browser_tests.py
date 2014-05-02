@@ -12,7 +12,7 @@ from kalite.i18n.tests.base import I18nTestCase
 
 class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCase):
 
-    TEST_LANGUAGES = ['de', 'it', 'pt-BR']
+    TEST_LANGUAGES = ['it', 'pt-BR']
 
     ADMIN_USERNAME = 'testadmin1'
     ADMIN_PASSWORD = 'testpassword'
@@ -41,7 +41,6 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
     def test_logged_out_homepage_language_switches_from_english_and_back(self):
         # response = self.client.get('/', data={'set_user_language': 'de'})
         foreign_language_text_mappings = {
-            'de': "Eine kostenlose Weltklasse Bildung für jeden und überall",
             'it': "gratuita per chiunque ovunque",
             'pt-BR': "Uma educação sem salas de aula para qualquer um em qualquer lugar",
         }
