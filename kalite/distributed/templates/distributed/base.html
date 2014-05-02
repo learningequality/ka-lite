@@ -102,13 +102,17 @@
                 {% block lang_choices %}
                 <span class="not-admin-only">
                 {% if num_language_choices > 1 %}
-                <select id="language_selector">
-                {% for lang_code, lang_meta in language_choices.iteritems %}
-                    <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                        {{ lang_code|get_language_name }}
-                    </option>
-                {% endfor %}
-                </select>
+                  <form method="post" id="language_select_form">
+                    {% csrf_token %}
+                    <input type="hidden" name="language_select" value="1">
+                    <select id="language_selector" form="language_select_form" name="set_user_language">
+                      {% for lang_code, lang_meta in language_choices.iteritems %}
+                        <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                          {{ lang_code|get_language_name }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </form>
                 {% endif %}
                 </span>
                 {% endblock lang_choices %}
@@ -210,4 +214,3 @@
 
     </body>
 </html>
-
