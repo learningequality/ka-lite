@@ -4,7 +4,7 @@ import time
 from django.contrib.auth.models import User
 from django.core.management import call_command
 
-from .. import get_installed_language_packs
+from .. import get_installed_language_packs, delete_language
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.i18n.tests.base import I18nTestCase
 
@@ -25,6 +25,13 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
         self.admin.set_password(self.ADMIN_PASSWORD)
         self.admin.save()
         super(KALiteDistributedBrowserTestCase, self).setUp()
+
+    def tearDown(self):
+        for lang in self.TEST_LANGUAGES:
+            delete_language(lang)
+
+        super(KALiteDistributedBrowserTestCase, self).tearDown()
+
 
     def test_logged_out_homepage_language_switches_from_english_and_back(self):
         # response = self.client.get('/', data={'set_user_language': 'de'})
