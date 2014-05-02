@@ -116,6 +116,7 @@ def get_language_pack(lang_code, software_version, callback):
     lang_code = lcode_to_ietf(lang_code)
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
+    logging.debug("Downloading zip from %s" % request_url)
     path, response = download_file(request_url, callback=callback_percent_proxy(callback))
     return path
 
