@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.internet import CsvResponse, render_to_csv
-from fle_utils.django_utils.paginate import paginate_data, pages_to_show
+from fle_utils.django_utils.paginate import paginate_data
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -80,7 +80,7 @@ def zone_management(request, zone_id="None"):
     context = control_panel_context(request, zone_id=zone_id)
     own_device = Device.get_own_device()
 
-    if not context["zone"] and (zone_id != "None" or Zone.objects.count() != 0 or settings.CENTRAL_SERVER):
+    if not context["zone"] and (zone_id != "None" or own_device.get_zone() or settings.CENTRAL_SERVER):
         raise Http404()  # on distributed server, we can make due if they're not registered.
 
     # Denote the zone as headless or not
@@ -94,7 +94,7 @@ def zone_management(request, zone_id="None"):
     if context["zone"]:
         devices = Device.objects.filter(devicezone__zone=context["zone"])
     else:
-        devices = Device.objects.filter(devicemetadata__is_trusted=False)
+        devices = Device.objects.filter(devicemetadata__is_own_device=True)
 
     for device in list(devices.order_by("devicemetadata__is_demo_device", "name")):
 
@@ -133,7 +133,6 @@ def zone_management(request, zone_id="None"):
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
-            "is_deletable": facility.is_deletable(),
         }
 
     context.update({
@@ -149,17 +148,26 @@ def zone_management(request, zone_id="None"):
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
-def device_management(request, device_id, zone_id=None, n_sessions=10):
+def device_management(request, device_id, zone_id=None, per_page=None, cur_page=None):
     context = control_panel_context(request, zone_id=zone_id, device_id=device_id)
+
+    #Get pagination details
+    cur_page = cur_page or request.REQUEST.get("cur_page", "1")
+    per_page = per_page or request.REQUEST.get("per_page", "10")
 
     # Retrieve sync sessions
     all_sessions = SyncSession.objects.filter(client_device=context["device"])
     total_sessions = all_sessions.count()
-    shown_sessions = list(all_sessions.order_by("-timestamp")[:n_sessions])
+    shown_sessions = list(all_sessions.order_by("-timestamp").values("timestamp", "ip", "models_uploaded", "models_downloaded", "errors"))
+
+    session_pages, page_urls = paginate_data(request, shown_sessions, page=cur_page, per_page=per_page)
 
     context.update({
-        "shown_sessions": shown_sessions,
+        "session_pages": session_pages,
+        "page_urls": page_urls,
         "total_sessions": total_sessions,
+        "device_version": total_sessions and all_sessions[0].client_version or None,
+        "device_os": total_sessions and all_sessions[0].client_os or None,
         "is_own_device": not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id,
     })
 
@@ -437,6 +445,10 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
         group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
+
+    if len(group_data) == 1 and group_data.has_key(None):
+        if not group_data[None]["total_users"]:
+            del group_data[None]
 
     return (user_data, group_data)
 

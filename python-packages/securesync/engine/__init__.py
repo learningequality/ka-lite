@@ -17,7 +17,7 @@ from securesync import VERSION
 
 _syncing_models = []  # all models we want to sync
 
-def add_syncing_models(models, dependency_check=True):
+def add_syncing_models(models, dependency_check=False):
     """When sync is run, these models will be sync'd"""
 
     get_foreign_key_classes = lambda m: set([field.rel.to for field in m._meta.fields if isinstance(field, ForeignKey)])
@@ -61,7 +61,7 @@ def get_local_device_unsynced_count():
     """
     count = 0
     for Model in _syncing_models:
-        count += Model.objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()
+        count += Model.all_objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()  # include deleted records
     return count
 
 
@@ -70,7 +70,7 @@ def get_device_counters(**kwargs):
     assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
 
     from securesync.devices.models import Device
-    devices = kwargs.get("devices") or Device.objects.by_zone(kwargs["zone"])
+    devices = kwargs.get("devices") or Device.all_objects.by_zone(kwargs["zone"])  # include deleted objects
 
     device_counters = {}
     for device in list(devices):
@@ -106,7 +106,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
     # if no devices specified, assume we're starting from zero, and include all devices in the zone
     if device_counters is None:
-        device_counters = dict((device.id, 0) for device in Device.objects.by_zone(zone))
+        device_counters = dict((device.id, 0) for device in Device.all_objects.by_zone(zone))  # include deleted devices
 
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
@@ -117,24 +117,24 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     models = []
     remaining = limit
 
-    # loop through each of the devices of interest
-    #   Do devices first, because each device is independent.
-    #   Models within a device are highly dependent (on explicit dependencies,
-    #   as well as counter position)
-    for device_id, counter in device_counters.items():
-        device = Device.objects.get(pk=device_id)
-
+    # loop through all the model classes marked as syncable
+    #  (note: NEVER BREAK OUT OF THIS LOOP!  We need to ensure that
+    #    all models below the counter position selected are sent NOW,
+    #    otherwise they will be forgotten FOREVER)
+    for Model in _syncing_models:
         # We need to track the min counter position (send things above this value)
         #   and the max (we're sending up to this value, so make sure nothing
         #   below it is left behind)
         counter_min = counter + 1
         counter_max = 0
 
-        # loop through all the model classes marked as syncable
-        #  (note: NEVER BREAK OUT OF THIS LOOP!  We need to ensure that
-        #    all models below the counter position selected are sent NOW,
-        #    otherwise they will be forgotten FOREVER)
-        for Model in _syncing_models:
+        # loop through each of the devices of interest
+        #   Do devices first, because each device is independent.
+        #   Models within a device are highly dependent (on explicit dependencies,
+        #   as well as counter position)
+        for device_id, counter in device_counters.items():
+            device = Device.objects.get(pk=device_id)
+
             queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
             # for trusted (central) device, only include models with the correct fallback zone

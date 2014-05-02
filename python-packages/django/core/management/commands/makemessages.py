@@ -136,8 +136,6 @@ def process_file(file, dirpath, potfile, domain, verbosity,
 
     from django.utils.translation import templatize
 
-    if verbosity > 1:
-        stdout.write('processing file %s in %s\n' % (file, dirpath))
     _, file_ext = os.path.splitext(file)
     if domain == 'djangojs' and file_ext in extensions:
         is_templatized = True
@@ -177,8 +175,16 @@ def process_file(file, dirpath, potfile, domain, verbosity,
             '--add-comments=Translators -o - "%s"' %
             (domain, wrap, location, work_file))
     else:
+        # KA-LITE-MOD - show when ignoring files!!
+        if verbosity > 1:
+            stdout.write('ignoring file %s in %s\n' % (file, dirpath))
         return
+
+    # KA-LITE-MOD - only show processing... when you've confirmed you're not ignoring!
+    if verbosity > 1:
+        stdout.write('processing file %s in %s\n' % (file, dirpath))
     msgs, errors, status = _popen(cmd)
+
     if errors:
         if status != STATUS_OK:
             if is_templatized:
@@ -208,7 +214,9 @@ def write_po_file(pofile, potfile, domain, locale, verbosity, stdout,
                                     (wrap, location, potfile))
     if errors:
         if status != STATUS_OK:
-            os.unlink(potfile)
+            # KA-LITE-MOD
+            # Don't delete pot file on error; otherwise, how would we debug?
+            #os.unlink(potfile)
             raise CommandError(
                 "errors happened while running msguniq\n%s" % errors)
         elif verbosity > 0:
@@ -322,7 +330,8 @@ def make_messages(locale=None, domain='django', verbosity=1, all=False,
         if os.path.exists(potfile):
             os.unlink(potfile)
 
-        for dirpath, file in find_files(".", ignore_patterns, verbosity,
+        # KA-LITE-MOD - use os.getcwd() instead of "."; otherwise, wildcards unexpectedly fail.
+        for dirpath, file in find_files(os.getcwd(), ignore_patterns, verbosity,
                 stdout, symlinks=symlinks):
             process_file(file, dirpath, potfile, domain, verbosity, extensions,
                     wrap, location, stdout)

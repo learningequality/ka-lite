@@ -8,7 +8,6 @@ from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-from kalite import i18n
 from kalite.facility.models import Facility, FacilityUser
 from kalite.main.tests.base import MainTestCase
 from kalite.main.models import VideoLog, ExerciseLog

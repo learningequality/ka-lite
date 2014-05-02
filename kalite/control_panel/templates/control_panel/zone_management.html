@@ -59,8 +59,13 @@
     <div class="facilities">
         <div class="title-div">
             <span class="title" style="float: left">{% trans "Facilities" %}</span>
+<!-- <<<<<<< HEAD
             <a href="{% url 'add_facility' zone_id=zone_id %}">
                 <span class="glyphicon glyphicon-plus-sign" title="{% trans 'Add a new facility' %}"></span>
+======= -->
+            &nbsp;<a href="{% url 'add_facility' zone_id=zone_id %}" title="{% trans 'Add a new facility' %}">
+                {% trans "(add)" %}
+<!-- >>>>>>> 973ffc35eb3ae3df158c702766f538aa659b14ac -->
             </a>
         </div>
         <div class="clear"></div>
@@ -89,26 +94,40 @@
                     <td nowrap>
                          <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             {{ facility.name }}
+<!-- <<<<<<< HEAD
                         </a>|
                         <a class="btn btn-warning" href="{% url 'facility_edit' id=facility.id %}">{% trans 'Edit facility' %}
                             <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit facility' %}"></span>
+=======
+>>>>>>> 973ffc35eb3ae3df158c702766f538aa659b14ac -->
                         </a>
-                        {% if facility.is_deletable %}
                         <a class="facility-delete-link" href="#">
+<!-- <<<<<<< HEAD
                             <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}"  value="{% url 'facility_delete' facility_id=facility.id %}"></span>
+======= -->
+                            <span title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}">{% trans "(delete)" %}</span>
+<!-- >>>>>>> 973ffc35eb3ae3df158c702766f538aa659b14ac -->
                         </a>
-                        {% endif %}
                     </td>
                     <td nowrap>
                         {{ facility.num_users }}
                         <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+<!-- <<<<<<< HEAD
                             <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit users' %}"></span>
+======= -->
+                            {% trans "(edit)" %}
+<!-- >>>>>>> 973ffc35eb3ae3df158c702766f538aa659b14ac -->
                         </a>
                     </td>
                     <td nowrap>
                         {{ facility.num_groups }}
+<!-- <<<<<<< HEAD
                         <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                             <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit groups' %}"></span>
+======= -->
+                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}" title="{% trans 'Edit Groups' %}">
+                            {% trans "(edit)" %}
+<!-- >>>>>>> 973ffc35eb3ae3df158c702766f538aa659b14ac -->
                         </a>
                     </td>
                     </td>

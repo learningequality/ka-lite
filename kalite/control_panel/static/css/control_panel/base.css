@@ -219,29 +219,27 @@ a.edit-link {
     cursor: default;
 }
 
-.action-bar {
-    display: inline;
+.action-bar h4 {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
-
-.action-bar div {
-    padding-top: 10px;
-    height: 30px;
-}
-
-.selection {
+.select {
     float: left;
 }
-
 .action {
     float: right;
 }
-
-.dotted {
-    border: dotted;
-    padding: 4px 0px;
-    border-width: 1px;
-    border-color: #444444;
-    margin-right: 3px;
+.select, .action {
+    width: 50%;
+}
+.select button, .action button, .action select {
+    height: 25px;
+}
+.select > p, .action > p {
+    top: 1px;
+}
+select.movegrouplist {
+    margin-bottom: 0px;
 }
 
 dl {

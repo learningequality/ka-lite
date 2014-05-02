@@ -27,8 +27,7 @@ from django.core.cache import get_cache
 from django.utils.encoding import iri_to_uri, force_bytes, force_text
 from django.utils.http import http_date
 from django.utils.timezone import get_current_timezone_name
-from django.utils.translation import get_language
-from django.utils.translation import get_language_from_request  # KA-LITE-MOD
+from django.utils.translation import get_language, get_language_from_request
 
 cc_delim_re = re.compile(r'\s*,\s*')
 

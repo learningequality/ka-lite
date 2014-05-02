@@ -25,7 +25,7 @@ def api_handle_error_with_json(handler):
         except Http404:
             raise
         except Exception as e:
-            return JsonResponseMessageError(_("Unexpected exception: %s") % e)
+            return JsonResponseMessageError(_("Unexpected error: %(err)s") % {"err": e})
     return api_handle_error_with_json_wrapper_fn
 
 
