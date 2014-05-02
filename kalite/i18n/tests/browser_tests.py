@@ -1,4 +1,5 @@
 # encoding: UTF-8
+import logging
 import time
 
 from django.contrib.auth.models import User
@@ -18,8 +19,10 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
     ADMIN_EMAIL = 'test@test.com'
 
     def setUp(self):
+        logging.disable(logging.ERROR) # silence langpack installation logs
         for lang in self.TEST_LANGUAGES:
             self.install_language(lang)
+        logging.disable(logging.NOTSET) # reactivate logs again
 
         self.admin = User.objects.create(username=self.ADMIN_USERNAME, password='nein')
         self.admin.set_password(self.ADMIN_PASSWORD)
@@ -27,8 +30,10 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
         super(KALiteDistributedBrowserTestCase, self).setUp()
 
     def tearDown(self):
+        logging.disable(logging.ERROR)
         for lang in self.TEST_LANGUAGES:
             delete_language(lang)
+        logging.disable(logging.NOTSET)
 
         super(KALiteDistributedBrowserTestCase, self).tearDown()
 
