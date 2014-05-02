@@ -1,26 +1,21 @@
 # encoding: UTF-8
+import time
+
 from django.contrib.auth.models import User
 from django.core.management import call_command
 
 from .. import get_installed_language_packs
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
+from kalite.i18n.tests.base import I18nTestCase
 
 
-class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase):
+class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCase):
 
     TEST_LANGUAGES = ['de', 'it', 'pt-BR']
 
     ADMIN_USERNAME = 'testadmin1'
     ADMIN_PASSWORD = 'testpassword'
     ADMIN_EMAIL = 'test@test.com'
-
-    # TODO (ARON): move useful utility to either a module or TestCase subclass
-    def is_language_installed(self, lang_code, force_reload=True):
-        return lang_code in get_installed_language_packs(force=force_reload)
-
-    def install_language(self, lang_code):
-        if not self.is_language_installed(lang_code):
-            call_command('languagepackdownload', lang_code=lang_code)
 
     def setUp(self):
         for lang in self.TEST_LANGUAGES:
