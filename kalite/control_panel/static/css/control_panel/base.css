@@ -140,8 +140,8 @@ a.edit-link {
     min-width: 13px;
     min-height: 13px;
 }
-.glyphicon {
-    color: #333;
+.icon-pencil, .icon-trash, .icon-plus-sign {
+    padding-left: 10px;
 }
 .export_csv_div {
     float: right;
