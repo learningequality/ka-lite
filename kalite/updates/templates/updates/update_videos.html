@@ -31,7 +31,7 @@
 
 {% block content %}
     <div class="download-actions vertical-shadow">
-        <h2>
+        <h3 class="videos">
             <span id="language_choice_titlebar">
             {% if num_language_choices == 1 %}
                 {% blocktrans with lang_name=current_language_name %}Videos for language {{ lang_name }}{% endblocktrans %}
@@ -46,7 +46,7 @@
                 </option>
             {% endfor %}
             </select>
-        </h2>
+        </h3>
 
         <h4 id="download-legend-unselected" class="button_text">
             {% trans "Please select videos to download (below)" %}
@@ -65,9 +65,9 @@
 
 
     <div class="download-actions vertical-shadow client-online-only">
-        <h2>
+        <h3 class="videos">
         {% trans "Help for downloading videos" %}
-        </h2>
+        </h3>
         <div id="help-info">
             <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
                 {% trans "Q: How do I bulk-download videos?" %}
@@ -90,5 +90,5 @@
     </div>
     <div style="clear: both;"></div>
 
-    <div id="content_tree"><br/><h2>{% trans "Loading topic tree... Please wait!" %}</h2></div>
+    <div id="content_tree"><br/><h3>{% trans "Loading topic tree... Please wait!" %}</h3></div>
 {% endblock content %}
