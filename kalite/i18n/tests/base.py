@@ -37,9 +37,3 @@ class I18nTestCase(TestCase):
                 self.install_language(lang)
 
             logging.disable(logging.NOTSET) # reactivate logs again
-
-
-    def setUp(self):
-        self.client = Client()
-        self.install_languages()
-        super(TestCase, self).setUp()
