@@ -442,7 +442,7 @@ def get_exercise_data(request, exercise_id=None):
     code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
 
-    exercise_lang = select_best_available_language(request.language, available_codes=available_langs)
+    exercise_lang = i18n.select_best_available_language(request.language, available_codes=available_langs)
     if exercise_lang == "en":
         exercise_template = exercise_file
     else:

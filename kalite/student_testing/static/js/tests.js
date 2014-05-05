@@ -82,7 +82,7 @@ var exerciseData = {};
 var complete = false;
 
 $(function() {
-    $(Khan).bind("loaded", );
+    $(Khan).bind("loaded", nextQuestion());
     $(Exercises).bind("checkAnswer", function(ev, data) {
         $("#check-answer-button").parent().stop(jumpedToEnd=true)
         saveLogNextQuestion(data.correct);
