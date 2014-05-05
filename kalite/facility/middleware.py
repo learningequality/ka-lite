@@ -1,5 +1,7 @@
 """
 """
+from django.conf import settings
+
 from .models import Facility
 
 
@@ -40,6 +42,6 @@ class FacilityCheck:
         Cache facility data in the session,
           while making sure anybody who can create facilities sees the real (non-cached) data
         """
-        if not "facility_exists" in request.session or request.is_admin:
+        if not "facility_exists" in request.session or request.is_admin or settings.CENTRAL_SERVER:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())
