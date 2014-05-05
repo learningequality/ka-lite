@@ -9,7 +9,7 @@ from mock import patch
 from django.core.management import call_command
 from django.test import Client, TestCase
 
-from .. import get_installed_language_packs
+from .. import get_installed_language_packs, delete_language
 
 
 class I18nTestCase(TestCase):
@@ -37,3 +37,12 @@ class I18nTestCase(TestCase):
                 self.install_language(lang)
 
             logging.disable(logging.NOTSET) # reactivate logs again
+
+
+    def uninstall_languages(self):
+        logging.disable(logging.ERROR)
+
+        for lang in self.TEST_LANGUAGES:
+            delete_language(lang)
+
+        logging.disable(logging.NOTSET)
