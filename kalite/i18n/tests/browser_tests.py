@@ -19,15 +19,11 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
     ADMIN_EMAIL = 'test@test.com'
 
     def setUp(self):
-        logging.disable(logging.ERROR) # silence langpack installation logs
-        for lang in self.TEST_LANGUAGES:
-            self.install_language(lang)
-        logging.disable(logging.NOTSET) # reactivate logs again
-
         self.admin = User.objects.create(username=self.ADMIN_USERNAME, password='nein')
         self.admin.set_password(self.ADMIN_PASSWORD)
         self.admin.save()
         super(KALiteDistributedBrowserTestCase, self).setUp()
+        self._install_languages()
 
     def tearDown(self):
         logging.disable(logging.ERROR)

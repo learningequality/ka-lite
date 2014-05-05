@@ -1,6 +1,7 @@
 """
 Base classes to help test i18n functions
 """
+import logging
 import os
 import urllib
 from mock import patch
@@ -25,6 +26,20 @@ class I18nTestCase(TestCase):
         if not self.is_language_installed(lang_code):
             call_command('languagepackdownload', lang_code=lang_code)
 
+    def install_languages(self):
+        # install TEST_LANGUAGES, if defined
+        if not self.TEST_LANGUAGES:
+            logging.debug("self.TEST_LANGUAGES not defined. Not installing any language.")
+        else:
+            logging.disable(logging.ERROR) # silence langpack installation logs
+
+            for lang in self.TEST_LANGUAGES:
+                self.install_language(lang)
+
+            logging.disable(logging.NOTSET) # reactivate logs again
+
+
     def setUp(self):
         self.client = Client()
+        self.install_languages()
         super(TestCase, self).setUp()
