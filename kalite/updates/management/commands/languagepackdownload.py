@@ -19,6 +19,7 @@ from optparse import make_option
 from StringIO import StringIO
 
 from django.conf import settings; logging = settings.LOG
+from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
@@ -64,6 +65,7 @@ class Command(UpdatesStaticCommand, CronCommand):
         "unpack_language_pack",
         "add_js18n_file",
         "move_files",
+        "collectstatic",
         "invalidate_caches",
     )
 
@@ -98,6 +100,9 @@ class Command(UpdatesStaticCommand, CronCommand):
             move_exercises(lang_code)
             move_srts(lang_code)
             move_video_sizes_file(lang_code)
+
+            self.next_stage()
+            call_command("collectstatic", interactive=False)
 
             self.next_stage(_("Invalidate caches"))
             caching.invalidate_all_caches()
