@@ -368,7 +368,7 @@ def update_jsi18n_file(code="en"):
     save to disk--it won't change until the next language pack update!
     """
     translation.activate(code)  # we switch the language of the whole thread
-    output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
+    output_dir = os.path.join(settings.PROJECT_PATH, "..", "static", "js", "i18n")
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
 
