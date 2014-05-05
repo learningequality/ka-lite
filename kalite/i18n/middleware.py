@@ -74,26 +74,21 @@ def set_language_data_from_request(request):
     Process requests to set language, redirect to the same URL to continue processing
     without leaving the "set" in the browser history.
     """
-    if "set_server_language" in request.GET:
-        # Set the current server default language, and redirect (to clean browser history)
-        if not request.is_admin:
-            raise PermissionDenied(_("You don't have permissions to set the server's default language."))
+    if request.method == 'POST' and request.POST.get('language_select'): # form data for switching languages. Continue.
+        lang_code = request.POST.get('set_server_language') or request.POST.get('set_user_language')
+        lang_code = lang_code[0] if isinstance(lang_code, list) else lang_code # sometimes we get a singleton list for values. Clean it.
 
-        set_default_language_from_request(request, lang_code=request.GET["set_server_language"], global_set=True)
+        if "set_server_language" in request.POST:
+            # Set the current server default language, and redirect (to clean browser history)
+            if not request.is_admin:
+                raise PermissionDenied(_("You don't have permissions to set the server's default language."))
 
-        # Redirect to the same URL, but without the GET param,
-        #   to remove the language setting from the browser history.
-        redirect_url = set_query_params(request.get_full_path(), {"set_server_language": None})
-        return HttpResponseRedirect(redirect_url)
+            set_default_language_from_request(request, lang_code=lang_code, global_set=True)
 
-    elif "set_user_language" in request.GET:
-        # Set the current user's session language, and redirect (to clean browser history)
-        set_default_language_from_request(request, request.GET["set_user_language"], global_set=(request.is_logged_in and not request.is_django_user))
+        elif "set_user_language" in request.POST:
+            # Set the current user's session language, and redirect (to clean browser history)
+            set_default_language_from_request(request, lang_code, global_set=(request.is_logged_in and not request.is_django_user))
 
-        # Redirect to the same URL, but without the GET param,
-        #   to remove the language setting from the browser history.
-        redirect_url = set_query_params(request.get_full_path(), {"set_user_language": None})
-        return HttpResponseRedirect(redirect_url)
 
     if not "default_language" in request.session:
         # default_language has the following priority:

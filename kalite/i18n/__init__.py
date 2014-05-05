@@ -8,6 +8,7 @@ import re
 import requests
 import shutil
 from collections_local_copy import OrderedDict, defaultdict
+from fle_utils.internet import invalidate_web_cache
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
@@ -413,3 +414,20 @@ def select_best_available_language(target_code, available_codes=None):
     if actual_code != target_code:
         logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
     return actual_code
+
+
+def delete_language(lang_code):
+
+    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+
+    for langpack_resource_path in langpack_resource_paths:
+        try:
+            shutil.rmtree(langpack_resource_path)
+            logging.info("Deleted language pack resource path: %s" % langpack_resource_path)
+        except OSError as e:
+            if e.errno != 2:    # Only ignore error: No Such File or Directory
+                raise
+            else:
+                logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
+
+    invalidate_web_cache()

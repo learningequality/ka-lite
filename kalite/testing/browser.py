@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib.sessions.models import Session
+from django.db import DatabaseError
 
 from .base import create_test_admin, KALiteTestCase
 
@@ -93,6 +94,8 @@ class BrowserTestCase(KALiteTestCase):
                 try:
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
+                except DatabaseError:
+                    raise
                 except Exception as e:
                     logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
