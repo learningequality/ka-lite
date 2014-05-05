@@ -2,8 +2,10 @@ import simplejson
 
 from main.api_views import student_log_api
 
-from api_forms import TestAttemptLogForm
-from models import Test, TestLog, TestAttemptLog
+from main.api_forms import AttemptLogForm
+from main.models import AttemptLog
+
+from models import TestLog
 
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
@@ -17,7 +19,7 @@ def save_attempt_log(request):
     saves it to the currently authorized user.
     """
     # Form does all data validation, including of the exercise_id
-    form = TestAttemptLogForm(data=simplejson.loads(request.raw_post_data))
+    form = AttemptLogForm(data=simplejson.loads(request.raw_post_data))
     if not form.is_valid():
         raise Exception(form.errors)
     data = form.data
@@ -25,7 +27,7 @@ def save_attempt_log(request):
     # More robust extraction of previous object
     user = request.session["facility_user"]
 
-    test = Test.objects.get(pk=data["test"])
+    # test = Test.objects.get(pk=data["test"])
 
     (testlog, was_created) = TestLog.get_or_initialize(user=user, test=test)
     previously_complete = testlog.complete
@@ -37,7 +39,7 @@ def save_attempt_log(request):
     try:
         testlog.full_clean()
         testlog.save()
-    	TestAttemptLog.objects.create(
+    	AttemptLog.objects.create(
     		user=user,
     		test_log=testlog,
     		exercise_id=data["exercise_id"],
