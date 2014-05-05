@@ -74,7 +74,7 @@ def set_language_data_from_request(request):
     Process requests to set language, redirect to the same URL to continue processing
     without leaving the "set" in the browser history.
     """
-    if request.POST and request.POST.get('language_select'): # form data for switching languages. Continue.
+    if request.method == 'POST' and request.POST.get('language_select'): # form data for switching languages. Continue.
         lang_code = request.POST.get('set_server_language') or request.POST.get('set_user_language')
         lang_code = lang_code[0] if isinstance(lang_code, list) else lang_code # sometimes we get a singleton list for values. Clean it.
 

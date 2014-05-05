@@ -14,7 +14,6 @@ from .. import get_installed_language_packs, delete_language
 
 class I18nTestCase(TestCase):
 
-    # TODO (ARON): move useful utility to either a module or TestCase subclass
     def is_language_installed(self, lang_code, force_reload=True):
         return lang_code in get_installed_language_packs(force=force_reload)
 
