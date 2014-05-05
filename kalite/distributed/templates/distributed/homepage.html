@@ -6,90 +6,9 @@
 {% block home_active %}active{% endblock home_active %}
 
 {% block headcss %}{{ block.super }}
-    <style>
-        .suggested-action {
-            background-color: #F7F7F7;
-            color: #444!important;
-            display: block;
-            margin-bottom: 0;
-            padding: 14px;
-            position: relative;
-            width: 370px;
-            float: left;
-            margin-right: 25px;
-            min-height: 221px;
-        }
-
-        .suggested-actions {
-            padding-top: 124px;
-        }
-
-        .suggested-action:hover {
-            border-color: #C3CA7D;
-            -webkit-box-shadow: 0 0 10px #76A005;
-            -moz-box-shadow: 0 0 10px #76a005;
-            box-shadow: 0 0 10px #76A005;
-        }
-
-        .suggested-action a:hover {
-            text-decoration: none!important;
-            color: #005987;
-        }
-        .suggested-action-image-link {
-            background-size: cover;
-            background-repeat: no-repeat;
-            border-bottom: 1px solid #DCE0B3;
-            display: block;
-            height: 130px;
-            margin: -5px -14px -15px -14px;
-        }
-
-        .suggested-action-title {
-            color: #005987;
-            text-decoration: none;
-            font-size: 21px;
-        }
-
-        .message {
-            margin-left: 7px;
-        }
-
-        .main-headline {
-            font-size: 26px;
-            margin: 10px 0 20px 0;
-            padding: 0;
-        }
-
-        .topic-list {
-            padding: 7px 0 0 0;
-            margin: 0;
-            font-size: 24px;
-            font-family: "MuseoSans500", sans-serif;
-        }
-
-        .topic a {
-            padding: 0 0 8px 40px;
-            font-size: 18px;
-            line-height: 40px;
-        }
-
-        a:hover, a:hover .suggested-action-title {
-            color: #2F92A5!important;
-        }
-
-        .front-page {
-            padding-left: 7px;
-        }
-
-        .video-unavailable,
-        .topic-unavailable,
-        a:active.topic-unavailable,
-        a:hover.topic-unavailable,
-        a:link.topic-unavailable,
-        a:visited.topic-unavailable {
-            color: #ACBDD1;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}?{{ BUILD_ID }}">
+    .css' %}?{{ BUILD_ID }}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -103,7 +22,7 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="front-page">
+    <div class="front-page" id="homepage">
 
         <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
 
@@ -133,5 +52,110 @@
     </div>
 
     <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
+
+    <table class="table table-bordered">
+      <tr>
+        <th colspan="4">
+          <div class="center-vertical">
+            <h2 class="inline">Unit 1a</h2>
+            <small class="center-target">Week1: 5/11-7, Expanded form of number and writing numbers from the expanded</small>
+          </div>
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td>
+          <div>
+            <span class="block">Write and retell multiplication talbes</span>
+            <span class="pull-left">
+              5/2
+            </span>
+            <span class="pull-right">
+              V:2 Ex:7
+            </span>
+          </div>
+        </td>
+        <td colspan="2">
+        </td>
+      </tr>
+    </table>
 
 {% endblock content %}
