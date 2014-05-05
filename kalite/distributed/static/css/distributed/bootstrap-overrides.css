@@ -31,6 +31,11 @@ input.submit {
 input.submit:hover, input.submit:focus {
     background: #c6d1ad;
 }
+ul.errorlist {
+    list-style-type: none;
+    padding-left: 0;
+}
+
 
 /* ===================================
 	Nav Bar
@@ -96,6 +101,7 @@ input#search.ui-autocomplete-input {
         position: absolute;
     }
 
+
 /* ===================================
     Home & Coach Pages
 =================================== */
@@ -123,6 +129,7 @@ input#search.ui-autocomplete-input {
     letter-spacing: 0.5px;
     text-align: center;
 }
+
 
 /* ===================================
 	Home Page
@@ -161,6 +168,7 @@ input#search.ui-autocomplete-input {
     margin: 0 auto;
 }
 
+
 /* ===================================
     Coach Page
 =================================== */
@@ -193,6 +201,7 @@ input#search.ui-autocomplete-input {
     background-image: url('../../static/images/coachreports/coach-report-timeline.png');
 }*/
 
+
 /* ===================================
     Watch Page
 =================================== */
@@ -217,19 +226,6 @@ input#search.ui-autocomplete-input {
     padding: 2px;
 }
 
-/* ===================================
-    Sign Up Page
-=================================== */
-section#facility_list {
-    margin-bottom: 20px;
-}
-.facility_title a {
-    font-size: 1.25em;
-}
-#id_default_language {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
 
 /* ===================================
 	Footer
@@ -276,6 +272,7 @@ footer ul .pull-right {
     height: 15px;
     width: 82px;
 }
+
 
 /* ===================================
 	Media Queries
