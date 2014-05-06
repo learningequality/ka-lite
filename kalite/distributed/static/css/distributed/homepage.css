@@ -104,7 +104,7 @@ th h2 {
 }
 
 .table {
-    width: 75%;
+    width: 79%;
 }
 
 .block {
@@ -116,16 +116,20 @@ td div {
 }
 
 th {
-    background-color: green;
+    background-color: #7AD222;
     color: white;
 }
 
 .cell-content {
-    color: blue;
+    color: #305884;
     margin-bottom: 20px;
 }
 
 td:hover {
-    background-color: gray;
+    background-color: #D5D5D5;
+}
+
+div+p {
+    margin-top: 10px;
 }
 
