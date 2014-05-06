@@ -40,11 +40,13 @@ class PlaylistEntry(ExtendedModel):
         ('Video', 'Video'),
         ('Exercise', 'Exercise'),
         ('Quiz', 'Quiz'),
+        ('Divider', 'Divider'),
     )
 
     entity_kind = models.CharField(max_length=10, choices=ENTITY_KINDS)
     entity_id = models.CharField(max_length=50)
     sort_order = models.IntegerField()
+    description = models.TextField()
     playlist = models.ForeignKey(Playlist, related_name='entries')
 
     class Meta:
