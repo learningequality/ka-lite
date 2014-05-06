@@ -112,5 +112,20 @@ th h2 {
 }
 
 td div {
-  text-align: center;
+    text-align: center;
 }
+
+th {
+    background-color: green;
+    color: white;
+}
+
+.cell-content {
+    color: blue;
+    margin-bottom: 20px;
+}
+
+td:hover {
+    background-color: gray;
+}
+
