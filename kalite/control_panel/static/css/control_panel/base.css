@@ -158,25 +158,6 @@ a.edit-link {
     margin: 5px;
 }
 
-.top_export_button {
-    float: right;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #91ca7f;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    color: #ffffff;
-    border:0px;
-    vertical-align: middle;
-    min-width: 80px;
-}
-
-.top_export_button:hover {
-    background-color:#C0C0C0;
-}
-
-
 .pagination a, .pagination span {
     float: left;
     color: #333;
@@ -223,54 +204,56 @@ a.edit-link {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
 .select {
     float: left;
 }
+
 .action {
     float: right;
 }
+
 .select, .action {
     width: 50%;
 }
-.select button, .action button, .action select {
-    height: 25px;
-}
+
 .select > p, .action > p {
     top: 1px;
 }
+
 select.movegrouplist {
     margin-bottom: 0px;
 }
 
 dl {
     margin-bottom:20px;
-    }
+}
 
 dt,dd {
     line-height:20px;
-    }
+}
 
 dt {
     font-weight:bold;
-    }
+}
 
 dd {
     margin-left:10px;
-    }
+}
 
 .dl-horizontal {
     *zoom:1;
-    }
+}
 
 .dl-horizontal:before,.dl-horizontal:after {
     display:table;
     line-height:0;
     content:"";
-    }
+}
 
 .dl-horizontal:after {
     clear:both;
-    }
+}
 
 .dl-horizontal dt {
     float:left;
@@ -280,8 +263,16 @@ dd {
     text-align:right;
     text-overflow:ellipsis;
     white-space:nowrap;
-    }
+}
 
 .dl-horizontal dd {
     margin-left:180px;
+}
+
+table {
+    margin-bottom: 0;
+}
+
+@media only screen and (max-width: 690px) {
+    .action { float: left; width: 100%; }
 }
