@@ -228,6 +228,17 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertEqual(elog.attempts_before_completion, None, "Student should not have a value for attempts_before_completion.")
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
+    def test_question_incorrect_button_text_changes(self):
+        """
+        Answer an exercise incorrectly, and make sure button text changes.
+        """
+        self.browser_submit_answer('this is a wrong answer')
+
+        answer_button_text = self.browser.find_element_by_id("check-answer-button").get_attribute("value")
+
+        self.assertTrue(answer_button_text=="Try Again", "Answer button did not change to 'Try Again' on incorrect answer!")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
     def test_exercise_mastery(self):
         """
         Answer an exercise 10 times correctly; verify mastery message
