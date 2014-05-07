@@ -33,6 +33,13 @@
             background-color: #CCCCCC;
             padding: 5px;
         }
+        .table_responsive {
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        table {
+            margin-bottom: 0;
+        }
     </style>
 {% endblock headcss %}
 
@@ -76,50 +83,53 @@
 
         {% else %}
 
-         <table class="simple-table">
-            <tr>
-                <th width="250px">{% trans "Facility Name" %}</th>
-                <th width="120px">{% trans "# Users" %}</th>
-                <th width="120px">{% trans "# Groups" %}</th>
-                <th width="200px">{% trans "Last Usage" %}</th>
-            </tr>
-
-            {% for id,facility in facilities.items %}
+        <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
+        called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
+             <table class="simple-table">
                 <tr>
-                    <td nowrap>
-                         <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
-                            {{ facility.name }}
-                        </a>
-                        <a class="facility-delete-link" href="#">
-                            <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></span>
-                        </a>
-                    </td>
-                    <td nowrap>
-                        {{ facility.num_users }}
-                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
-                            <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit users' %}"></span>
-                        </a>
-                    </td>
-                    <td nowrap>
-                        {{ facility.num_groups }}
-                        <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}"> 
-                            <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit groups' %}"></span>
-                        </a>
-                    </td>
-                    </td>
-                    <td nowrap>
-                        {% if not facility.last_time_used %}
-                            {% trans "Never" %}
-                        {% elif facility.last_time_used.last_activity_datetime %}
-                            {{ facility.last_time_used.last_activity_datetime }}
-                        {% else %}
-                            {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
-                        {% endif %}
-                    </td>
+                    <th width="250px">{% trans "Facility Name" %}</th>
+                    <th width="120px">{% trans "# Users" %}</th>
+                    <th width="120px">{% trans "# Groups" %}</th>
+                    <th width="200px">{% trans "Last Usage" %}</th>
                 </tr>
-            {% endfor %}
 
-        </table>
+                {% for id,facility in facilities.items %}
+                    <tr>
+                        <td nowrap>
+                             <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+                                {{ facility.name }}
+                            </a>
+                            <a class="facility-delete-link" href="#">
+                                <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></span>
+                            </a>
+                        </td>
+                        <td nowrap>
+                            {{ facility.num_users }}
+                            <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+                                <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit users' %}"></span>
+                            </a>
+                        </td>
+                        <td nowrap>
+                            {{ facility.num_groups }}
+                            <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}"> 
+                                <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit groups' %}"></span>
+                            </a>
+                        </td>
+                        </td>
+                        <td nowrap>
+                            {% if not facility.last_time_used %}
+                                {% trans "Never" %}
+                            {% elif facility.last_time_used.last_activity_datetime %}
+                                {{ facility.last_time_used.last_activity_datetime }}
+                            {% else %}
+                                {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
         {% endif %}
     </div><!-- facilities -->
 
@@ -140,6 +150,8 @@
             <p>{% trans "You currently have no devices that sync data with the central server" %}</p>
 
         {% else %}
+        <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
+        called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
             <table class="simple-table">
                 <tr>
                     <th width="250px">{% trans "Device name" %}</th>
@@ -203,6 +215,7 @@
 
                 {% endfor %}
             </table>
+        </div>
         {% endif %}
     </div><!-- devices -->
 </div><!-- zone_container -->
