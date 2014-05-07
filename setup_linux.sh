@@ -35,8 +35,7 @@ if [[ $we_are_rpi = "True" ]]; then
     done
 fi
 
-initd_available=`command -v update-rc.d`
-if [ $initd_available ]; then
+if [ -d "/etc/init.d" ]; then
     while true
     do
         echo
