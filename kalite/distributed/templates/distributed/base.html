@@ -114,11 +114,14 @@
                     <ul class="nav navbar-nav navbar-right">
                         {% block sitewide_navigation %}
 
-                        <li><form action="{% url 'search' %}" method="GET" id="search-box">
+                        <li>
+                            <form action="{% url 'search' %}" method="GET" id="search-box">
                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                            <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
-                            <a class="btn btn-success btn-xs" id="search-button" href="#" />{% trans 'Search' %}</a>
-                        </form></li>
+                                <input type="text" name="query" class="search-js" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
+                                <a class="btn btn-success btn-xs search-button-js" id="search-button" href="#" />{% trans 'Search' %}</a>
+                                <a href="#"><span class="glyphicon glyphicon-search" id="glyphicon-search-js" title="{% trans 'Search by keyword' %}"></span></a>
+                            </form>
+                        </li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Home" %}</a></li>
@@ -186,8 +189,6 @@
 
         <div class="container" id="wrapper">
             {% block outer_content %}
-            <!-- <div id="container"> -->
-                <!-- <article class="clearfix"> -->
                     {% block precontent %}
                     <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
                     {% if messages %}
@@ -197,8 +198,6 @@
                     {% endif %}
                     {% endblock precontent %}
                     {% block content %}{% endblock content %}
-                <!-- </article> -->
-            <!-- </div> -->
             {% endblock outer_content %}
             <div class="footer-clearfix"></div>
         </div>
@@ -218,5 +217,27 @@
             </div>
         </footer>
 
+    <script>
+        $(document).ready(function() {
+
+            var glyphicon_search = $('#glyphicon-search-js'); // Search glyphicon
+            var search = $('.search-js'); // Search input field
+            var search_button = $('.search-button-js'); // Search button
+
+            search.hide(); // Search input field is hidden upon page load
+            search_button.hide(); // Search button is hidden upon page load
+
+            glyphicon_search.click(function() { // When user clicks on search glyphicon,
+                if (search.is(':hidden')) { // if search input field is hidden,
+                    search.show(); // search input field is displayed,
+                    search_button.show(); // and search button is displayed;
+                } else { // if user clicks on search glyphicon and search input field is displayed,
+                    search.hide(); // search input field is hidden,
+                    search_button.hide(); // and search button is hidden.
+                }
+            });
+        
+        });
+    </script>
     </body>
 </html>
