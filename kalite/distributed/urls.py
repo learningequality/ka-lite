@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 
 from . import api_urls
 import kalite.coachreports.urls
+import kalite.playlist.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
@@ -45,6 +46,9 @@ urlpatterns += patterns('',
 urlpatterns += patterns(__package__ + '.views',
     # For teachers
     url(r'^coachreports/', include(kalite.coachreports.urls)),
+
+    # For playlists
+    url(r'^playlists/', include(kalite.playlist.urls)),
 
     # For admins
     url(r'^update/', include(kalite.updates.urls)),
