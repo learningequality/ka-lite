@@ -13,12 +13,16 @@
             height: 400px
         }
         #search-panel {
-            width: 550px;
+            width: 100%;
             z-index: 5;
             background-color: #fff;
             padding: 5px;
             margin-bottom: 10px;
             border: 1px solid #999;
+        }
+        #search-panel input {
+            font-size: 12px;
+            width: 100%;
         }
         #target {
             width: 545px;
@@ -45,6 +49,11 @@
         #id_direc_no_map {
             padding-bottom: 10px;
             font-size: 14px;
+        }
+        @media only screen and (max-width: 532px) {
+            #search-panel { border: none; padding: 0; }
+            #search-panel input { font-size: 8.5px; }
+            #id_address { width: 100%; }
         }
     </style>
 {% endblock headcss %}
