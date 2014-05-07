@@ -7,7 +7,7 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 
 # TODO: make a check to see if we're running the rpi
 we_are_rpi=""
-if [ $we_are_rpi = "True" ]; then
+if [[ $we_are_rpi = "True" ]]; then
     while true
     do
         echo
