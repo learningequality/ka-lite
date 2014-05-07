@@ -23,10 +23,13 @@ body {
 a:hover, a:focus {
     text-decoration: none;
 }
+h1, h2, .h3-no-margin-top { margin-top: 0;
+}
 input.submit {
     background: #dcdcdc;
-    color: #000;
     border-radius: 4px;
+    color: #000;
+    margin-top: 25px;
 }
 input.submit:hover, input.submit:focus {
     background: #c6d1ad;
@@ -286,6 +289,7 @@ footer ul .pull-right {
 @media only screen and (max-width: 767px) {
     .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
     form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
+    .alert-success { margin-bottom: 0; }
     .suggested-action { margin-top: 20px; }
     .suggested-action-title { font-size: 24px; padding-top: 15px; }
     .topic-list a { font-size: 1.25em; }
