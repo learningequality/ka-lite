@@ -31,8 +31,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.assertEqual(self.browser.find_element_by_css_selector('div#coaches p.no-data').text, "You currently have no coaches for this facility.", "Does not report no coaches with no coaches.")
-        # TODO: Will be addressed in issue learning-equality/ka-lite#1837
-        # self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "No Groups at this Facility", "Does not report no groups with no groups.")
+        self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "You currently have no group data available.", "Does not report no groups with no groups.")
         self.assertEqual(self.browser.find_element_by_css_selector('div#students p.no-data').text, "You currently have no student data available.", "Does not report no users with no users.")
 
     def test_groups_one_group_no_user_in_group_no_ungrouped_no_group_selected(self):
@@ -46,7 +45,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         group.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text, "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text, "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text, "0", "Does not report zero users for empty group.")
 
 
@@ -65,10 +64,10 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]").text.strip(), "Test Group", "Does not show group in list.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text.strip(), "1", "Does not report one user for group.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr[1]/td[1]").text.strip(), "test_user", "Does not show user in list.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text.strip(), "Test Group", "Does not report user in group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text.strip()[:len(group.name)], "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text.strip()[:len(group.name)], "1", "Does not report one user for group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr[1]/td[1]").text.strip()[:len(user.username)], "test_user", "Does not show user in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text.strip()[:len(user.group.name)], "Test Group", "Does not report user in group.")
 
 
     def test_groups_two_groups_one_user_in_group_no_ungrouped_group_selected_move(self):

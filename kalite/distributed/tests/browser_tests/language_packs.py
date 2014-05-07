@@ -20,9 +20,8 @@ from django.utils import unittest
 from django.utils.translation import ugettext as _
 
 from .base import KALiteDistributedBrowserTestCase
-from kalite.i18n import get_installed_language_packs
+from kalite.i18n import get_installed_language_packs, delete_language
 from kalite.main.models import ExerciseLog
-from kalite.updates import delete_language
 
 
 class LanguagePackTest(KALiteDistributedBrowserTestCase):

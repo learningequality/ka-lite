@@ -236,6 +236,16 @@ function update_server_status() {
 }
 
 
+function update_server_status() {
+    with_online_status("server", function(server_is_online) {
+        // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+        // Best to assume offline, as online check returns much faster than offline check.
+        if(!server_is_online){
+            show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
+        }
+    });
+}
+
 $(function() {
     // basic flow: check with central server what we can install
     // if that's successful, check with local server of what we have installed

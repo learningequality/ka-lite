@@ -118,19 +118,7 @@
     {% endif %}
     <div class="clear"></div>
 
-    {% if use_mplayer and video.available %}
-
-        <h2 id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
-            <a href="" id="launch_mplayer">
-                {% if video_urls.thumbnail %}
-                <img class="video-thumb" src="{{ video_urls.thumbnail }}" style="width: 100%;" title="{% trans 'Click to play!' %}">
-                <br/><br/>
-                {% endif %}
-                {% trans "Launch video player!" %}
-            </a>
-        </h2>
-
-    {% elif video.available %}
+    {% if video.available %}
         <div id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
             <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video_urls.thumbnail %}poster="{{ video_urls.thumbnail }}" {% endif %}data-setup="{}">
                 <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
@@ -140,6 +128,6 @@
             </video>
             {% if video_urls.thumbnail %}<img class="video-thumb" src="{{ video_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{% endif %}
         </div>
-
     {% endif %}
+
 {% endblock content %}

@@ -77,7 +77,7 @@ class SyncSession(ExtendedModel):
         #   distributed and central servers.
         if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
             to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
-            SyncSession.objects.filter(pk__in=to_discard).delete()
+            to_discard.delete()
 
 
 class SyncedModelManager(models.Manager):
@@ -135,6 +135,8 @@ class SyncedModel(ExtendedModel):
     objects = SyncedModelManager()
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
+    _import_excluded_validation_fields = []  # fields that should not be validated upon import
+
 
     class Meta:
         abstract = True
@@ -238,6 +240,19 @@ class SyncedModel(ExtendedModel):
 
         return "&".join(chunks)
 
+    def full_clean(self, exclude=None, imported=False):
+        """Django method for validating uniqueness contraints.
+        We can have uniqueness constraints that can't be expressed as a tuple of fields,
+        so need to override this to implement.
+
+        We can also have "soft" uniqueness constraints that may not be used when importing,
+        so we add that parameter here.
+        """
+        exclude = exclude or []
+        if imported:
+            exclude = list(set(exclude + self._import_excluded_validation_fields))
+        return super(SyncedModel, self).full_clean(exclude=exclude)
+
     def save(self, imported=False, increment_counters=True, sign=True, *args, **kwargs):
         """
         Some of the heavy lifting happens here.  There are two saving scenarios:
@@ -319,7 +334,11 @@ class SyncedModel(ExtendedModel):
 
         # Otherwise, if it's not yet synced, then get the zone from the local machine
         if not zone and not self.signed_by:
-            zone = _get_own_device().get_zone()
+            # trusted machines can set zone arbitrarily; non-trusted cannot
+            if _get_own_device().is_trusted() and self.zone_fallback:
+                zone = self.zone_fallback
+            else:
+                zone = _get_own_device().get_zone()
 
         # otherwise, try getting the zone of the device that signed it
         if not zone and self.signed_by:

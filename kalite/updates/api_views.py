@@ -18,7 +18,7 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size, delete_language
+from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
@@ -26,7 +26,7 @@ from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf
+from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf, delete_language
 from kalite.main.topic_tools import get_topic_tree
 from kalite.shared.decorators import require_admin
 
@@ -214,7 +214,7 @@ def start_languagepack_download(request):
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
 
-    return JsonResponseMessageSuccess(_("Started language pack download for %s successfully.") % lang_code)
+    return JsonResponseMessageSuccess(_("Started language pack download for language %(lang_code)s successfully.") % {"lang_code": lang_code})
 
 
 @require_admin
@@ -227,7 +227,7 @@ def delete_language_pack(request):
     lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
     delete_language(lang_code)
 
-    return JsonResponse({"success": _("Deleted language pack %s successfully.") % lang_code})
+    return JsonResponse({"success": _("Deleted language pack for language %(lang_code)s successfully.") % {"lang_code": lang_code}})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):

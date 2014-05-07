@@ -85,8 +85,8 @@ var video_callbacks = {
 
 $(function() {
 
-    setTimeout(function() {
-        doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {}).success(function(treeData) {
+    doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {})
+        .success(function(treeData) {
 
             if ($.isEmptyObject(treeData)) {
                 $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
@@ -145,11 +145,19 @@ $(function() {
                     }
                 },
                 onPostInit: function() {
-                    updatesStart("videodownload", 5000, video_callbacks);
+                    with_online_status("server", function(server_is_online) {
+                        // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+                        // Best to assume offline, as online check returns much faster than offline check.
+                        if(server_is_online){
+                            $(".enable-when-server-online").removeAttr("disabled");
+                            updatesStart("videodownload", 5000, video_callbacks);
+                        } else {
+                            show_message("error", gettext("The server does not have internet access; videos cannot be downloaded at this time."));
+                        }
+                    });
                 }
             });
         });
-    }, 200);
 
     $("#download-videos").click(function() {
         clear_messages();
@@ -269,7 +277,7 @@ $(function() {
 
 
     if ($("#download_language_selector option").length > 1) {
-        $("#toggle_language_dropdown").attr("onclick", "show_language_selector();");
+        $("#language_choice_titlebar a").attr("onclick", "show_language_selector();");
     }
 
     $("#download_language_selector").change(function() {
@@ -281,7 +289,7 @@ $(function() {
 
 function show_language_selector() {
     $("#download_language_selector").show();
-    $("#toggle_language_dropdown").hide();
+    $("#language_choice_titlebar a").hide();
 }
 
 /* script functions for doing stuff with the topic tree*/
