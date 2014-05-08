@@ -74,7 +74,7 @@
          var STATUS_URL = "{% url 'status' %}";
          var FORCE_SYNC_URL = "{% url 'api_force_sync' %}";
          var GET_VIDEO_LOGS_URL = "{% url 'get_video_logs' %}";
-         var GET_VIDEO_LOGS_URL = "{% url 'get_exercise_logs' %}";
+         var GET_EXERCISE_LOGS_URL = "{% url 'get_exercise_logs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var USER_LOGIN_URL = "{% url 'login' %}";
 
@@ -119,7 +119,7 @@
                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                                 <input type="text" name="query" class="search-js" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
                                 <a class="btn btn-success btn-xs search-button-js" id="search-button" href="#" />{% trans 'Search' %}</a>
-                                <a href="#"><span class="glyphicon glyphicon-search" id="glyphicon-search-js" title="{% trans 'Search by keyword' %}"></span></a>
+                                <span class="glyphicon glyphicon-search" id="glyphicon-search-js" title="{% trans 'Search by keyword' %}"></span>
                             </form>
                         </li>
 

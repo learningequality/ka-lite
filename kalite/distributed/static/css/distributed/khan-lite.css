@@ -361,27 +361,6 @@ a:hover.video-unavailable {
 a:hover.topic-unavailable {
     color: #ddd;
 }
-
-.green_button{
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #81ba6f;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    color: #ffffff;
-    padding: 10px 20px;
-    border:0px;
-    vertical-align: middle;
-}
-
-a.green_button, a.green_button:hover,input.green_button, input.green_button:hover {
-    color: white !important;
-    text-decoration: none;
-}
-a.green_button:hover,input.green_button:hover{
-    background-color:#318a3f;
-}
 a.disabled {
     background-color: #C0C0C0;
 }
