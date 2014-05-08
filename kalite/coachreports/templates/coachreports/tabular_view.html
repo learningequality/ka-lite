@@ -74,7 +74,7 @@
 <div class="container">
     <!-- <div id="selection-bar"> -->
     <div class="row">
-        <div class="selection">
+        <div class="selection selection-coach-page">
         {# Select the coach report type #}
         {% if report_types %}
             <div class="subtitle">{% trans "Select Report" %}</div>
@@ -89,7 +89,7 @@
         {% endif %}
         </div>
 
-        <div class="selection">
+        <div class="selection selection-coach-page">
         {% if users and request_report_type == "student" %}
             <div class="subtitle">{% trans "Select Student" %}</div>
             <select id="student">

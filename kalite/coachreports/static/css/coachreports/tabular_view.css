@@ -136,8 +136,24 @@ th.headrowuser {
     float:right;
 }
 
+.selection-coach-page:first-child, .selection-coach-page:nth-child(2) {
+    padding: 0;
+}
+
+.selection-coach-page:first-child {
+    margin-left: 20px;
+}
+
+.selection-coach-page:nth-child(2) {
+    margin-left: 16px;
+}
+
 @media only screen and (max-width: 1199px) {
-    #legend { float: left !important; }
+    #legend { float: left !important; margin-left: 20px; margin-top: 15px; }
+}
+
+@media only screen and (max-width: 655px) {
+    .selection-coach-page:nth-child(2) { margin-left: 20px; } 
 }
 
 @media only screen and (max-width: 400px) {
