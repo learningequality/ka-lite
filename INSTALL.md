@@ -44,6 +44,12 @@ To start the server, run the `start.sh` script in the `ka-lite` directory.
 
 You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the setup script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory.
 
+Wait for the script to show the following:
+
+    To access KA Lite from another connected computer, try the following address(es):
+        http://<ip address of the computer>:8008/
+        http://127.0.0.1:8008/
+
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
 
 
@@ -52,13 +58,13 @@ Installing on Windows
 
 ### 1. Install Python
 
-Install Python (version 2.6 or 2.7), if not already installed ([download Python 2.7](http://www.python.org/download/releases/2.7.3/)). On 32-bit Windows, use the [x86 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi), and on 64-bit Windows, use the [X86-64 MSI Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3.amd64.msi).
+Install Python (version 2.6 or 2.7), if not already installed ([download Python 2.7](https://www.python.org/download/releases/2.7.6/)). On 32-bit Windows, use the [x86 MSI Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6.msi), and on 64-bit Windows, use the [X86-64 MSI Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi).
 
-You will need Python to be on your system PATH, so that it can be run from the command prompt (cmd.exe); see this video about [adding Python to the PATH](http://www.youtube.com/watch?v=ndNlFy-5GKA&hd=1#t=243s) (note that this is for version 2.7; just adapt the paths for older versions). It may be good to add `;C:\Python27\;C:\Python27\Scripts` to your path, instead of just `;C:\Python27\` as recommended in the video.
+You will need Python to be on your system PATH, so that it can be run from the command prompt (cmd.exe); see this video about [adding Python to the PATH](http://www.youtube.com/watch?v=ndNlFy-5GKA&hd=1#t=243s) (note that this is for version 2.7; just adapt the paths for older versions). It may be good to add `;C:\Python27\;C:\Python27\Tools\Scripts` to your path, instead of just `;C:\Python27\` as recommended in the video.
 
 ### 2. Install git
 
-Install the latest version of [git for Windows](http://code.google.com/p/msysgit/downloads/list?q=full+installer+official+git), using all the default options EXCEPT be sure to choose the "Run Git from the Windows Command Prompt" (middle) option on the "Adjusting your PATH environment" page (KA Lite needs to have git accessible on the PATH for updating purposes).
+Install the latest version of [git for Windows](http://git-scm.com/download/win), using all the default options EXCEPT be sure to choose the "Use Git from the Windows Command Prompt" (middle) option on the "Adjusting your PATH environment" page (KA Lite needs to have git accessible on the PATH for updating purposes).
 
 ### 3. Download KA Lite
 
@@ -84,7 +90,15 @@ You may want to have this script run automatically when you start the computer, 
 
 If at any point you see a "Windows Security Alert" [warning about Windows Firewall blocking Python](kalite/static/images/windows-python-network-permissions.png), be sure to check both checkboxes (as seen in the picture) and click "Allow access", to ensure that the server will be accessible.
 
+Wait for the script to show the following:
+
+    To access KA Lite from another connected computer, try the following address(es):
+        http://<ip address of the computer>:8008/
+        http://127.0.0.1:8008/
+
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
+
+If the website is not accessible, make sure you have allowed access for the `﻿C:\python27\python.exe` process at `Control Panel > System and Security > Windows Firewall > Allow a program or feature through Windows Firewall` (this is specific to Windows 7 but there should be a similar Control Panel setting for newer Windows versions or on your preferred firewall app).
 
 
 Installing on Mac OS X
@@ -92,12 +106,12 @@ Installing on Mac OS X
 
 ### 1. Install Python
 
-Python comes pre-installed on Mac OS X, but due to Apple's release cycle, it's often one or even two years old. To check that you have got a usable version, run `python -V` from the command line (in Terminal from Applications/Utilities), and ensure that the version number starts with 2.6, or 2.7. If it is not a usable version ([download Python 2.7](http://www.python.org/download/releases/2.7.3/)). On 32-bit or 64-bit non PPC Mac OS X 10.6 or higher, use the [64-bit/32-bit x86-64/i386 Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3-macosx10.6.dmg), and on PPC or 32-bit i386 Mac OS X 10.3-10.6, use the [32-bit i386/PPC Installer](http://www.python.org/ftp/python/2.7.3/python-2.7.3-macosx10.3.dmg).
+Python comes pre-installed on Mac OS X, but due to Apple's release cycle, it's often one or even two years old. To check that you have got a usable version, run `python -V` from the command line (in Terminal from Applications/Utilities), and ensure that the version number starts with 2.6, or 2.7. If it is not a usable version ([download Python 2.7](https://www.python.org/download/releases/2.7.6/)). On 32-bit or 64-bit non PPC Mac OS X 10.6 or higher, use the [64-bit/32-bit x86-64/i386 Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.6.dmg), and on PPC or 32-bit i386 Mac OS X 10.3-10.6, use the [32-bit i386/PPC Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.3.dmg).
 
 
 ### 2. Install git
 
-Install the latest version of [Git for OS X](http://code.google.com/p/git-osx-installer/downloads/list?can=3&q=&sort=-uploaded).
+Install the latest version of [Git for OS X](http://git-scm.com/download/mac).
 
 ### 3. Download KA Lite
 
@@ -115,7 +129,11 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
-To start the server, double-click the `start.command` script in the `ka-lite` directory.
+To start the server, double-click the `start.command` script in the `ka-lite` directory.  Wait for the script to show the following:
+
+    To access KA Lite from another connected computer, try the following address(es):
+        http://<ip address of the computer>:8008/
+        http://127.0.0.1:8008/
 
 The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
 
