@@ -58,7 +58,7 @@ def register_device(request):
     try:
         zone = register_self_registered_device(client_device, models, data)
     except Exception as e:
-        if e.message == "Client not yet on zone.":
+        if e.args[0] == "Client not yet on zone.":
             zone = None
         else:
             # Client not on zone: allow fall-through via "old route"

@@ -204,7 +204,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                     # If a connection error, we should retry.
                     if isinstance(e, DownloadError):
-                        connection_error = "[Errno 8]" in e.message
+                        connection_error = "[Errno 8]" in e.args[0]
                     elif isinstance(e, IOError) and hasattr(e, "strerror"):
                         connection_error = e.strerror[0] == 8
                     else:
