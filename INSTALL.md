@@ -28,7 +28,7 @@ Install git by running `sudo apt-get install git-core` or the equivalent command
 
 Clone the repository into a directory of your choice. Use `cd` to navigate into the target directory, and then run the command below (the files will be put into a subdirectory of your current directory named `ka-lite`):
 
-`git clone --recursive https://github.com/jamalex/ka-lite.git`
+`git clone --recursive https://github.com/learningequality/ka-lite.git`
 
 (The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
 
@@ -64,7 +64,7 @@ Install the latest version of [git for Windows](http://code.google.com/p/msysgit
 
 Clone the repository into a folder of your choice. Load `cmd.exe`, and use `cd` to navigate into the target folder (e.g. to put the files in a folder called `ka-lite` on your Desktop, type `cd Desktop`), and then run:
 
-`git clone --recursive https://github.com/jamalex/ka-lite.git`
+`git clone --recursive https://github.com/learningequality/ka-lite.git`
 
 If you get the message `'git' is not recognized as an internal or external command, operable program or batch file.`, this means git was not added to your PATH. In this case, you can either uninstall git and then re-follow the [git installation instructions above](#2-install-git-1), or [add the git bin folder to your PATH](http://stackoverflow.com/a/4493004/527280) -- use `C:\Program Files\git\bin` (or maybe `C:\Program Files (x86)\git\bin`) as the path.
 
@@ -103,7 +103,7 @@ Install the latest version of [Git for OS X](http://code.google.com/p/git-osx-in
 
 Clone the repository into a directory of your choice. Use `cd` to navigate into the target directory (the files will be put into a subdirectory of your current directory named `ka-lite`), and then run:
 
-`git clone --recursive https://github.com/jamalex/ka-lite.git`
+`git clone --recursive https://github.com/learningequality/ka-lite.git`
 
 (The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
 
