@@ -40,13 +40,15 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h2>{{ title }}</h2>
+    <div class="container">
+        <h2>{{ title }}</h2>
 
-    <form method="post" class="basic-form">
-        {% csrf_token %}
+        <form method="post" class="basic-form">
+            {% csrf_token %}
 
-        {{ form.as_p }}
+            {{ form.as_p }}
 
-        <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
-    </form>
+            <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
+        </form>
+    </div>
 {% endblock content %}
