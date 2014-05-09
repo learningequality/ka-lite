@@ -22,7 +22,7 @@ from django.http import HttpResponseRedirect
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
-from . import get_default_language, get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language, set_default_language
+from . import get_default_language, get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language, set_default_language, set_request_language
 from fle_utils.config.models import Settings
 from fle_utils.internet import set_query_params
 
@@ -55,41 +55,12 @@ def set_default_language_from_request(request, lang_code, global_set=False):
     set_request_language(request, lang_code)
 
 
-def set_request_language(request, lang_code):
-    # each request can get the language from the querystring, or from the currently set session language
-
-    lang_code = select_best_available_language(lang_code)  # output is in django_lang format
-
-    if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
-        logging.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
-        # Just in case we have a db-backed session, don't write unless we have to.
-        request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
-
-    request.language = lcode_to_ietf(lang_code)
-    translation.activate(request.language)
-
 
 def set_language_data_from_request(request):
     """
     Process requests to set language, redirect to the same URL to continue processing
     without leaving the "set" in the browser history.
     """
-    if request.method == 'POST' and request.POST.get('language_select'): # form data for switching languages. Continue.
-        lang_code = request.POST.get('set_server_language') or request.POST.get('set_user_language')
-        lang_code = lang_code[0] if isinstance(lang_code, list) else lang_code # sometimes we get a singleton list for values. Clean it.
-
-        if "set_server_language" in request.POST:
-            # Set the current server default language, and redirect (to clean browser history)
-            if not request.is_admin:
-                raise PermissionDenied(_("You don't have permissions to set the server's default language."))
-
-            set_default_language_from_request(request, lang_code=lang_code, global_set=True)
-
-        elif "set_user_language" in request.POST:
-            # Set the current user's session language, and redirect (to clean browser history)
-            set_default_language_from_request(request, lang_code, global_set=(request.is_logged_in and not request.is_django_user))
-
-
     if not "default_language" in request.session:
         # default_language has the following priority:
         #   facility user's individual setting
