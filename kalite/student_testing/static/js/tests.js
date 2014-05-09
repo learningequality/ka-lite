@@ -57,7 +57,8 @@ function saveLogNextQuestion(correct) {
         random_seed: exerciseData.seed,
         test: test,
         index: index,
-        complete: complete
+        complete: complete,
+        answer: answerGiven
     };
 
     doRequest("/test/api/save_attempt_log", data)
@@ -80,8 +81,12 @@ var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a c
 var exercises = [];
 var exerciseData = {};
 var complete = false;
+var answerGiven = null;
 
 $(function() {
+    $(Khan).on("answerGiven", function (event, answer) {
+        answerGiven = answer;
+    })
     $(Khan).bind("loaded", nextQuestion());
     $(Exercises).bind("checkAnswer", function(ev, data) {
         $("#check-answer-button").parent().stop(jumpedToEnd=true)
