@@ -38,6 +38,10 @@ th, td {
     font-weight: bold;
 }
 
+.subtitle.error {
+    margin-left: 4px;
+}
+
 .status {
     height: 27px;
     background-color: #EEE;

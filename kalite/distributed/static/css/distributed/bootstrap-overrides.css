@@ -262,17 +262,18 @@ footer ul .pull-right {
 /* ===================================
 	Media Queries
 =================================== */
+@media only screen and (max-width: 1199px) {
+    .suggested-action a { font-size: 16px; }
+}
 @media only screen and (max-width: 991px) {
     .suggested-action-title { font-size: 18px; }
-    .suggested-action a { font-size: 16px; }
 }
 @media only screen and (max-width: 767px) {
     .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
     form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
-    .alert-success { margin-bottom: 0; }
     .suggested-action { margin-top: 20px; }
     .suggested-action-title { font-size: 24px; padding-top: 15px; }
-    .topic-list a { font-size: 1.25em; }
+    .suggested-action .topic-list a { font-size: 1.25em; }
     #fle-logo { margin-top: 0; }
     footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
     p.visible-xs:last-child { height: 17px; } /* Controls space below footer */
@@ -282,8 +283,7 @@ footer ul .pull-right {
     #suggested-action-p { font-size: 14px; }
 }
 @media only screen and (max-width: 439px) {
-    .alert { font-size: 0.85em; margin: 0 0 5px 10; }
-    .topic-list a { font-size: 16px; }
+    .suggested-action .topic-list a { font-size: 16px; }
 }
 @media only screen and (min-width: 470px) and (max-width: 767px) {
     h3.suggested-action-title { margin-top: 0; }

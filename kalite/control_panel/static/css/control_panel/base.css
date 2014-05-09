@@ -75,40 +75,15 @@ a.edit-link {
     font-size:11pt;
 }
 
-.btn-large {
-    color: #fff;
-    background-color: #47a447;
-    border-color: #398439;
-    padding: 10px 16px;
-    font-size: 18px;
-    line-height: 1.33;
-    border-radius: 6px;
-    display: inline-block;
-    margin-bottom: 0;
-    font-weight: normal;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    cursor: pointer;
-    background-image: none;
-    border: 1px solid transparent;
-    -webkit-user-select: none;
-    margin-left: 4.5em;
-}
-
-.btn-large:visited {
-    color: #fff;
-}
-
-.btn-large:hover {
-    background-color:#C0C0C0;
-}
-
 .date {
     display: inline !important;
     margin: 5px;
     text-align: center;
     width: 180px;
+}
+
+.date, input#start_date_select, input#end_date_select {
+    font-size: 14px;
 }
 
 #students, #groups, #coaches {
