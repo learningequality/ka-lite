@@ -43,7 +43,7 @@ function display_languages() {
         if (lang['name']) { // nonempty name
             var link_text;
             if (lang['code'] !== defaultLanguage) {
-                link_text = sprintf("<a class='set_server_language' value='%(lang)s' href='#'>(Set server default)</a>", {
+                link_text = sprintf("<a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'>(Set server default)</a>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
                 });
@@ -222,6 +222,14 @@ var languagepack_callbacks = {
     reset: languagepack_reset_callback
 };
 
+function set_server_language(lang) {
+    doRequest('/api/i18n/set_default_language/',
+              {language: lang}
+             ).success(function() {
+                 window.location.reload();
+             });
+}
+
 function update_server_status() {
     with_online_status("server", function(server_is_online) {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
@@ -230,17 +238,6 @@ function update_server_status() {
             updatesStart("update", 1000, languagepack_callbacks);
         } else {
             clear_messages();
-            show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
-        }
-    });
-}
-
-
-function update_server_status() {
-    with_online_status("server", function(server_is_online) {
-        // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
-        // Best to assume offline, as online check returns much faster than offline check.
-        if(!server_is_online){
             show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
         }
     });
