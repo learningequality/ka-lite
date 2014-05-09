@@ -459,15 +459,19 @@ li .progress-circle {
 .video-unavailable,
 .topic-unavailable,
 a:active.video-unavailable,
-a:hover.video-unavailable,
-a:link.video-unavailable,
 a:visited.video-unavailable,
 a:active.topic-unavailable,
-a:hover.topic-unavailable,
 a:link.topic-unavailable,
+a:link.video-unavailable,
 a:visited.topic-unavailable {
     color: #bbb;
     text-decoration: none;
+}
+a:hover.video-unavailable {
+    color: #ddd;
+}
+a:hover.topic-unavailable {
+    color: #ddd;
 }
 
 .green_button{

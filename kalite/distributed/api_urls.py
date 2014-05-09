@@ -17,9 +17,6 @@ urlpatterns = patterns(__package__ + '.api_views',
     # For manipulating the static webpage to show data based on user state
     url(r'^status$', 'status', {}, 'status'),
 
-    # For launching an external player (RPi)
-    url(r'^launch_mplayer$', 'launch_mplayer', {}, 'launch_mplayer'),
-
     # Setting server time (RPi)
     url(r'^time_set/$', 'time_set', {}, 'time_set'),
 

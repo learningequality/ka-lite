@@ -148,7 +148,7 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = device.get_zone()
                 if not zone:
-                    raise PermissionDenied(_("You requested device information for a device without a zone.  Only super users can do this!"))
+                    raise PermissionDenied(_("You requested device information for a device without a sharing network.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate device through zone
@@ -156,7 +156,7 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = facility.get_zone()
                 if not zone:
-                    raise PermissionDenied(_("You requested facility information for a facility with no zone.  Only super users can do this!"))
+                    raise PermissionDenied(_("You requested facility information for a facility with no sharing network.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate zone through org
@@ -174,7 +174,7 @@ def require_authorized_admin(handler):
             if not org.is_member(logged_in_user):
                 raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
             elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
-                raise PermissionDenied(_("This organization does not have permissions for this zone."))
+                raise PermissionDenied(_("This organization is not linked to the requested sharing network."))
 
         # Made it through, we're safe!
         return handler(request, *args, **kwargs)

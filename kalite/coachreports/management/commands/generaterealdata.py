@@ -300,7 +300,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         completion_timestamp=date_completed,
                     )
                     try:
-                        elog.save(update_userlog=False)
+                        elog.save()
 
                         # For now, make all attempts on an exercise into a single UserLog.
                         seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
@@ -443,7 +443,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         completion_timestamp=date_completed,
                     )
                     try:
-                        vlog.save(update_userlog=False)  # avoid userlog issues
+                        vlog.save()  # avoid userlog issues
                     except Exception as e:
                         logging.error("Error saving video log: %s" % e)
                         continue

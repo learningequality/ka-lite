@@ -285,7 +285,10 @@ class Command(BaseCommand):
                 dest_dir = os.path.join(settings.PROJECT_PATH, "..")
                 src_dir = os.path.join(dest_dir, "scripts")
                 shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+                try:
+                    shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
+                except OSError: # even if we have write permission, we might not have permission to change file mode
+                    sys.stdout.write("WARNING: Unable to set file permissions on %s! \n" % script_file)
 
             start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
 

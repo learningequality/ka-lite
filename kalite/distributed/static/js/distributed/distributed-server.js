@@ -37,9 +37,13 @@ function show_api_messages(messages) {
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
-    doRequest("/securesync/api/force_sync")
+    doRequest(FORCE_SYNC_URL)
         .success(function() {
-            show_message("success", gettext("Successfully launched data syncing job. After syncing completes, visit the <a href='/management/device/'>device management page</a> to view results."));
+            var msg = gettext("Successfully launched data syncing job.") + " ";
+            msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
+                devman_url: LOCAL_DEVICE_MANAGEMENT_URL
+            });
+            show_message("success", msg);
         });
 }
 
@@ -108,7 +112,7 @@ $(function(){
 
     // Do the AJAX request to async-load user and message data
     //$("[class$=-only]").hide();
-    doRequest("/api/status")
+    doRequest(STATUS_URL)
         .success(function(data){
 
             // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
@@ -130,7 +134,7 @@ $(function(){
     // load progress data for all videos linked on page, and render progress circles
     var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id"); });
     if (video_ids.length > 0) {
-        doRequest("/api/get_video_logs", video_ids)
+        doRequest(GET_VIDEO_LOGS_URL, video_ids)
             .success(function(data) {
                 $.each(data, function(ind, video) {
                     var newClass = video.complete ? "complete" : "partial";
@@ -142,7 +146,7 @@ $(function(){
     // load progress data for all exercises linked on page, and render progress circles
     var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id"); });
     if (exercise_ids.length > 0) {
-        doRequest("/api/get_exercise_logs", exercise_ids)
+        doRequest(GET_EXERCISE_LOGS_URL, exercise_ids)
             .success(function(data) {
                 $.each(data, function(ind, exercise) {
                     var newClass = exercise.complete ? "complete" : "partial";

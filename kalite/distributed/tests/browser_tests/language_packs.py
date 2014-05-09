@@ -1,9 +1,11 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
+import mock
 import os
 import re
 import time
+import urllib
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -29,8 +31,11 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
         return lang_code in get_installed_language_packs(force=force_reload)
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Skip tests that fail when run on Travis, but succeed locally.")
-    def test_delete_language_pack(self):
+    @mock.patch.object(urllib, 'urlretrieve')
+    def test_delete_language_pack(self, urlretrieve_method):
         ''' Test to check whether a language pack is deleted successfully or not '''
+        test_zip_filepath = os.path.join(os.path.dirname(__file__), 'de.zip')
+        urlretrieve_method.return_value = [test_zip_filepath, open(test_zip_filepath)]
         # Login as admin
         self.browser_login_admin()
 

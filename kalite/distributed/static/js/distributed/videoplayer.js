@@ -258,7 +258,7 @@ window.VideoView = Backbone.View.extend({
 
         var player_id = this.$(".video-js").attr("id");
 
-        if (player_id) { // if it's using mplayer, there won't be a player here
+        if (player_id) {
             this.player = this.model.player = _V_(player_id);
             this._beginIntervalUpdate();
             this._initializeEventListeners();
@@ -446,16 +446,5 @@ function initialize_video(video_id, youtube_id) {
 
     });
 
-    $("#launch_mplayer").click(_.throttle(function() {
-        // launch mplayer in the background to play the video
-        doRequest("/api/launch_mplayer?youtube_id=" + youtube_id);
-
-        // after mplayer closes and focus returns to the website, refresh the points from the server
-        $(window).focus(function() {
-            $(window).unbind("focus");
-            videoView.model.fetch();
-        });
-        return false;
-    }, 5000));
 
 }
