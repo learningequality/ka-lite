@@ -293,11 +293,12 @@ li .progress-circle {
     -moz-border-radius: 5px;
 }
 
-/*.vidprev {
-    float: left;
+.vidprev {
+    /*float: left;*/
+    margin-bottom: 5px;
 }
 
-.vidnext {
+/*.vidnext {
     float: right;
     padding-right: 4px;
 }*/
