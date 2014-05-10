@@ -8,7 +8,7 @@
 {% block headcss %}
     <style>
         #info_block {
-            margin-top:40px;
+            margin-top: 30px;
         }
     </style>
 {% endblock headcss %}
@@ -17,11 +17,11 @@
     <form method="post" class="basic-form">
         {% csrf_token %}
     <div class="container">
-        <h2>{% trans "Log in" %}</h2>
+        <h3>{% trans "Log in" %}</h3>
 
         {{ form.as_p }}
 
-        <input type="submit" value="{% trans 'Log in' %}" class="submit" />
+        <input type="submit" value="{% trans 'Log in' %}" class="submit btn btn-default btn-xs" />
     </form>
         <div id="info_block">
         {% if not restricted %}

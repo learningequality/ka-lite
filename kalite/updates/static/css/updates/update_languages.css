@@ -42,6 +42,10 @@
 
 #langpack-details {
     display: none;
+    font-size: 12px;
+}
+
+#langpack-details span {
     font-weight: bold;
 }
 
@@ -49,16 +53,17 @@
     margin-bottom: 25px;
 }
 
-h3.button_text, p.button_text, #language-packs, #langpack-details span {
+h4.button_text, p.button_text, #language-packs, #langpack-details span {
     margin-left: 10px;
 }
 
-h3.button_text {
+h4.button_text {
     margin-top: 10px;
 }
 
 #installed-languages-div {
     margin-left: 20px;
+    margin-top: 20px;
 }
 
 @media only screen and (max-width: 1199px) {
@@ -69,12 +74,12 @@ h3.button_text {
     .lang-data { text-align: middle; }
 }
 
-@media only screen and (max-width: 494px) {
-    #langpack-details { font-size: 10px; }
-}
-
 @media only screen and (max-width: 450px) {
     .lang-link, .lang-name, .lang-data, .upgrade-link { font-size: 10px; }
+}
+
+@media only screen and (max-width: 432px) {
+    #langpack-details { font-size: 10px; }
 }
 
 @media only screen and (max-width: 401px) {

@@ -21,12 +21,12 @@
 
 {% block content %}
     <div class="container">
-        <h2 class="title-header">
+        <h3 class="title-header">
             <div class="title">{% trans title %}</div>
             <div class="long-description">{% if description %}{% trans description %}{% endif %}</div>
-        </h2>
+        </h3>
         {% if topics %}
-        <h3>{% trans "Subtopics" %}</h3>
+        <h4>{% trans "Subtopics" %}</h4>
         <ol class="topic-list">
             {% for subtopic in topics %}
             <li>
@@ -42,7 +42,7 @@
         {% endif %}
 
         {% if videos %}
-        <h2>{% trans "Videos" %}</h2>
+        <h3>{% trans "Videos" %}</h3>
         <ol>
             {% for video in videos %}
             <li>
@@ -83,7 +83,7 @@
         {% endif %}
 
         {% if exercises %}
-        <h2>{% trans "Exercises" %}</h2>
+        <h3>{% trans "Exercises" %}</h3>
         <ol>
             {% for exercise in exercises %}
             <li>

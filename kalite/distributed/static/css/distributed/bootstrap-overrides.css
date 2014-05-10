@@ -17,20 +17,24 @@ body {
 a:hover, a:focus {
     text-decoration: none;
 }
-h1, h2, .h3-no-margin-top { margin-top: 0;
+h1, h2, .h4-no-margin-top { margin-top: 0;
 }
-input.submit {
-    background: #dcdcdc;
-    border-radius: 4px;
-    color: #000;
-    margin-top: 25px;
-}
-input.submit:hover, input.submit:focus {
-    background: #c6d1ad;
+label {
+    margin-top: 10px;
 }
 ul.errorlist {
     list-style-type: none;
     padding-left: 0;
+}
+input.submit {
+    margin-top: 30px;
+}
+.table_responsive {
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto;
+}
+table {
+    margin-bottom: 0;
 }
 
 
@@ -181,7 +185,7 @@ input#search.ui-autocomplete-input {
     height: 230px;
     margin-top: 20px;
 }
-.suggested-action h3 {
+.suggested-action h4 {
     margin-left: 0;
 }
 .suggested-action-title-coachpage {
@@ -266,20 +270,20 @@ footer ul .pull-right {
     .suggested-action a { font-size: 16px; }
 }
 @media only screen and (max-width: 991px) {
-    .suggested-action-title { font-size: 18px; }
+    h3.suggested-action-title { font-size: 18px; }
 }
 @media only screen and (max-width: 767px) {
     .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
     form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
     .suggested-action { margin-top: 20px; }
-    .suggested-action-title { font-size: 24px; padding-top: 15px; }
+    h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
     .suggested-action .topic-list a { font-size: 1.25em; }
     #fle-logo { margin-top: 0; }
     footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
     p.visible-xs:last-child { height: 17px; } /* Controls space below footer */
 }
 @media only screen and (max-width: 469px) {
-    .suggested-action-title { font-size: 18px; padding-top: 0; }
+    h3.suggested-action-title { font-size: 18px; padding-top: 0; }
     #suggested-action-p { font-size: 14px; }
 }
 @media only screen and (max-width: 439px) {

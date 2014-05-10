@@ -29,13 +29,13 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h2>{{ title }}</h2>
+    <h3>{{ title }}</h3>
 
     <form method="post" class="basic-form">
         {% csrf_token %}
 
         {{ form.as_p }}
 
-        <input type="submit" class="submit" value="{% if group_id == 'new' %}{% trans 'Create group' %}{% else %}{% trans 'Update group' %}{% endif %}" />
+        <input type="submit" class="submit btn btn-default btn-xs" value="{% if group_id == 'new' %}{% trans 'Create group' %}{% else %}{% trans 'Update group' %}{% endif %}" />
     </form>
 {% endblock content %}

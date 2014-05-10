@@ -14,29 +14,29 @@
             
             <div class="row">
                 
-                <div class="col-sm-4">
+                <div class="col-md-4">
                     <div class="vertical-shadow suggested-action">
                         <a href="{% url 'tabular_view' %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
                             <div id="suggested-action-image-link-coachpage-progress" style="background-image: url({% static 'images/coachreports/coach-report-table.png' %});"></div>
-                            <h3 class="suggested-action-title suggested-action-title-coachpage">{% trans "Progress by topic" %}</h3>
+                            <h4 class="suggested-action-title suggested-action-title-coachpage">{% trans "Progress by topic" %}</h4>
                         </a>
                     </div>
                 </div>
                 
-                <div class="col-sm-4">
+                <div class="col-md-4">
                     <div class="vertical-shadow suggested-action" id="suggested-action-coachpage-effort">
                         <a href="{% url 'scatter_view' xaxis='pct_mastery' yaxis='effort' %}?{% repeatblock topic_paths %}">
                             <div id="suggested-action-image-link-coachpage-effort" style="background-image: url({% static 'images/coachreports/coach-report-scatter.png' %});"></div>
-                            <h3 class="suggested-action-title suggested-action-title-coachpage">{% trans "Effort versus achievement" %}</h3>
+                            <h4 class="suggested-action-title suggested-action-title-coachpage">{% trans "Effort versus achievement" %}</h4>
                         </a>
                     </div>
                 </div>
                 
-                <div class="col-sm-4">
+                <div class="col-md-4">
                     <div class="vertical-shadow suggested-action">
                         <a href="{% url 'timeline_view' xaxis='ex:completed_timestamp' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">
                             <div id="suggested-action-image-link-coachpage-mastery" style="background-image: url({% static 'images/coachreports/coach-report-timeline.png' %});"></div>
-                            <h3 class="suggested-action-title suggested-action-title-coachpage">{% trans "Mastery over time" %}</h3>
+                            <h4 class="suggested-action-title suggested-action-title-coachpage">{% trans "Mastery over time" %}</h4>
                         </a>
                     </div>
                 </div>

@@ -33,13 +33,6 @@
             background-color: #CCCCCC;
             padding: 5px;
         }
-        .table_responsive {
-            border-bottom: 1px solid #ddd;
-            overflow-x: auto;
-        }
-        table {
-            margin-bottom: 0;
-        }
     </style>
 {% endblock headcss %}
 
@@ -199,7 +192,7 @@
                         </td>
                         <td nowrap>
                             {% if device.is_own_device %}
-                            <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
+                            <button id="force-sync" class="btn btn-default btn-xs registered-only">{% trans "Sync Now!" %}</button>
                             <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
                             {% if clock_set %}
                             /
