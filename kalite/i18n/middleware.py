@@ -27,35 +27,6 @@ from fle_utils.config.models import Settings
 from fle_utils.internet import set_query_params
 
 
-def set_default_language_from_request(request, lang_code, global_set=False):
-    """
-    global_set has different meanings for different users.
-    For students, it means their personal default language
-    For teachers, it means their personal default language
-    For django users, it means the server language.
-    """
-
-    # Get lang packs directly, to force reloading, as they may have changed.
-    lang_packs = get_installed_language_packs(force=True).keys()
-    lang_code = select_best_available_language(lang_code, available_codes=lang_packs)  # Make sure to reload available languages; output is in django_lang format
-
-    if lang_code != request.session.get("default_language"):
-        logging.debug("setting session language to %s" % lang_code)
-        request.session["default_language"] = lang_code
-
-    if global_set:
-        if request.is_django_user and lang_code != get_default_language():
-            logging.debug("setting server default language to %s" % lang_code)
-            set_default_language(lang_code)
-        elif not request.is_django_user and request.is_logged_in and lang_code != request.session["facility_user"].default_language:
-            logging.debug("setting user default language to %s" % lang_code)
-            request.session["facility_user"].default_language = lang_code
-            request.session["facility_user"].save()
-
-    set_request_language(request, lang_code)
-
-
-
 def set_language_data_from_request(request):
     """
     Process requests to set language, redirect to the same URL to continue processing
@@ -72,8 +43,9 @@ def set_language_data_from_request(request):
         )
 
     # Set this request's language based on the listed priority
-    cur_lang = request.GET.get("lang") \
-        or request.session.get("default_language")
+    cur_lang = (request.GET.get("lang")
+                or request.session.get(settings.LANGUAGE_COOKIE_NAME)
+                or request.session.get("default_language"))
 
     set_request_language(request, lang_code=cur_lang)
 
