@@ -129,6 +129,20 @@ td:hover {
     background-color: #D5D5D5;
 }
 
+.table td {
+    padding: 0;
+}
+
 div+p {
     margin-top: 10px;
+}
+
+li {
+    display: inline-block;
+    width: 19.6%;
+    border: 1px solid black;
+}
+
+ul {
+    margin: 0;
 }

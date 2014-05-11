@@ -12,6 +12,7 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/distributed/homepage.js' %}?{{ BUILD_ID }}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -53,7 +54,9 @@
 
     <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
 
-    <table class="table table-bordered">
+    <img src="/static/images/loading.gif" class="float-center loading"/>
+
+    <table id="playlist-table" class="table">
       <tr>
         <th colspan="5">
           <div class="center-vertical header">
@@ -64,96 +67,8 @@
       </tr>
       <tr>
         <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td>
-          <div>
-            <span class="block cell-content">Write and retell multiplication talbes</span>
-            <span class="pull-left">
-              5/2
-            </span>
-            <span class="pull-right">
-              V:2 Ex:7
-            </span>
-          </div>
-        </td>
-        <td colspan="2">
+          <ul id="playlists">
+          </ul>
         </td>
       </tr>
     </table>
