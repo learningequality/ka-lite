@@ -8,57 +8,24 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Test'
-        db.create_table('student_testing_test', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('path', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('repeats', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('seed', self.gf('django.db.models.fields.IntegerField')(default=1001)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=200)),
-        ))
-        db.send_create_signal('student_testing', ['Test'])
-
         # Adding model 'TestLog'
         db.create_table('student_testing_testlog', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'])),
-            ('test', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['student_testing.Test'])),
+            ('test', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('index', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('repeat', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('test_sequence', self.gf('django.db.models.fields.CharField')(max_length=30000, null=True, blank=True)),
             ('complete', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('student_testing', ['TestLog'])
 
-        # Adding model 'TestAttemptLog'
-        db.create_table('student_testing_testattemptlog', (
-            ('attemptlog_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['main.AttemptLog'], unique=True, primary_key=True)),
-            ('test_log', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['student_testing.TestLog'], null=True)),
-        ))
-        db.send_create_signal('student_testing', ['TestAttemptLog'])
-
 
     def backwards(self, orm):
-        # Deleting model 'Test'
-        db.delete_table('student_testing_test')
-
         # Deleting model 'TestLog'
         db.delete_table('student_testing_testlog')
 
-        # Deleting model 'TestAttemptLog'
-        db.delete_table('student_testing_testattemptlog')
-
 
     models = {
-        'main.attemptlog': {
-            'Meta': {'object_name': 'AttemptLog'},
-            'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
-            'points_awarded': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'random_seed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']"})
-        },
         'securesync.device': {
             'Meta': {'object_name': 'Device'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
@@ -109,6 +76,7 @@ class Migration(SchemaMigration):
         'securesync.facilityuser': {
             'Meta': {'unique_together': "(('facility', 'username'),)", 'object_name': 'FacilityUser'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'default_language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Facility']"}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -136,26 +104,13 @@ class Migration(SchemaMigration):
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
-        'student_testing.test': {
-            'Meta': {'object_name': 'Test'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'path': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'repeats': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'seed': ('django.db.models.fields.IntegerField', [], {'default': '1001'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '200'})
-        },
-        'student_testing.testattemptlog': {
-            'Meta': {'object_name': 'TestAttemptLog', '_ormbases': ['main.AttemptLog']},
-            'attemptlog_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['main.AttemptLog']", 'unique': 'True', 'primary_key': 'True'}),
-            'test_log': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['student_testing.TestLog']", 'null': 'True'})
-        },
         'student_testing.testlog': {
             'Meta': {'object_name': 'TestLog'},
             'complete': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'index': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'repeat': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'test': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['student_testing.Test']"}),
+            'test': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'test_sequence': ('django.db.models.fields.CharField', [], {'max_length': '30000', 'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']"})
         }
     }
