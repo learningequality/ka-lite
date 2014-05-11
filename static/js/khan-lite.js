@@ -129,7 +129,7 @@ function handleFailedAPI(resp, error_prefix) {
             }
             break;
         case 403:
-            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)'>login</a> as an authorized user, then retry the request."), {
+            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
                 login_url: USER_LOGIN_URL
             })};
             break;
