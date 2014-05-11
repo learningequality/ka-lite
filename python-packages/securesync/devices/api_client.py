@@ -44,9 +44,9 @@ class RegistrationClient(BaseClient):
             # Some of our exceptions are actually json blobs from the server.
             #   Try loading them to pass on that error info.
             try:
-                return json.loads(e.message)
+                return json.loads(e.args[0])
             except:
-                return { "code": "unexpected_exception", "error": e.message }
+                return { "code": "unexpected_exception", "error": e.args[0] }
 
         # If we got here, we've successfully registered, and
         #   have the model data necessary for completing registration!
