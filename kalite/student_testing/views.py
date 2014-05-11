@@ -5,6 +5,7 @@ from annoying.decorators import render_to
 
 from kalite.main.topic_tools import get_topic_exercises
 from kalite.student_testing.settings import STUDENT_TESTING_DATA_PATH
+from kalite.settings import LOG as logging
 
 from kalite.shared.decorators import require_login
 
@@ -28,15 +29,17 @@ def test(request, test_id):
         seeds = range(test_item["seed"], test_item["seed"] + test_item["repeats"])
         id_blocks = {}
         for exercise_id in ids:
-            id_blocks[exercise_id] = [list(zipped) for zipped in zip([exercise_id]*test_item.repeats, seeds)]
+            id_blocks[exercise_id] = [list(zipped) for zipped in zip([str(exercise_id)]*test_item["repeats"], seeds)]
             random.shuffle(id_blocks[exercise_id])
         test_sequence = [id_blocks[exercise_id][i] for i,seed in enumerate(seeds) for exercise_id in ids]
-        testlog.test_sequence = test_sequence
+        testlog.test_sequence = json.dumps(test_sequence)
         testlog.save()
-
+    item_sequence = json.dumps([item[0] for item in json.loads(testlog.test_sequence)])
+    seed_sequence = json.dumps([item[1] for item in json.loads(testlog.test_sequence)])
     context = {
-        "test_sequence": testlog.test_sequence,
-        "test": test_item,
+        "item_sequence": item_sequence,
+        "seed_sequence": seed_sequence,
+        "test": test_item["title"],
         "index": testlog.index,
         "complete": testlog.complete,
     }

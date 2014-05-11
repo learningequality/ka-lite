@@ -5,7 +5,7 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'js/khan-exercises/css/khan-exercise.css' %}"></link>
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}?{{ BUILD_ID }}"></link>
 
     <!-- Used by KA to dynamically add styling to the exercise -->
     <style id="exercise-inline-style"></style>
@@ -22,36 +22,34 @@
 
 {% block headjs %}{{ block.super }}
 <script>
-
-    var urlBaseOverride = "{% static 'js/khan-exercises/' %}";
-    // some dummy features on the Exercises object to make khan-exercises.js happy
-    Exercises = {
-        completeStack: {
-            getUid: function() { return 0; },
-            getCustomStackID: function() { return 0; }
-        },
-        currentCard: {
-            attributes: {},
-            get: function() {}
-        },
-        RelatedVideos: {
-            render: function() {}
-        },
-        getCurrentFramework: function() { return "khan-exercises"; },
-        incompleteStack: [0],
-        PerseusBridge: {
-            cleanupProblem: function() {}
-        },
-    };
-        
+        var urlBaseOverride = "{% static 'khan-exercises/' %}";
+        // some dummy features on the Exercises object to make khan-exercises.js happy
+        Exercises = {
+            completeStack: {
+                getUid: function() { return 0; },
+                getCustomStackID: function() { return 0; }
+            },
+            currentCard: {
+                attributes: {},
+                get: function() {}
+            },
+            RelatedVideos: {
+                render: function() {}
+            },
+            getCurrentFramework: function() { return "khan-exercises"; },
+            incompleteStack: [0],
+            PerseusBridge: {
+                cleanupProblem: function() {}
+            },
+        };  
 </script>
-<script src="{% static 'js/khan-exercises/khan-exercise.js' %}"></script>
+<script src="{% static 'khan-exercises/khan-exercise.js' %}?{{ BUILD_ID }}"></script>
 <script>
-    var test_sequence = {{ test_sequence }}
-    var title = "{{ test.title }}"
-    var test = {{ test.id }}
+    var item_sequence = {{ item_sequence|safe }};
+    var seed_sequence = {{ seed_sequence|safe }};
+    var title = "{{ test.title }}";
     var index = {{ index }};
-    var complete = {{ complete }};
+    var complete = {{ complete|yesno:"true,false" }};
 
 </script>
 <script src="{% static 'js/student_testing/tests.js' %}"></script>
@@ -66,6 +64,7 @@
         </h2>
     </div>
     <div class="exercises-body">
+        {{ test_sequence }}
         <div class="exercises-card current-card">
             <div class="current-card-container card-type-problem">
                 <div class="current-card-container-inner vertical-shadow">
