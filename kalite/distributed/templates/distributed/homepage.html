@@ -12,7 +12,7 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/distributed/homepage.js' %}?{{ BUILD_ID }}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' %}?{{ BUILD_ID }}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
