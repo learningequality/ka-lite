@@ -474,19 +474,21 @@ class AttemptLog(DeferredCountSyncedModel):
     Currently not sync'd (only used for local detail reports).
     """
 
-    minversion = "0.11.1"
+    minversion = "0.12.0"
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     random_seed = models.IntegerField(default=0)
+    answer_given = models.CharField(max_length=100, blank=False, null=False)
     points_awarded = models.IntegerField(blank=True, null=True)
     correct = models.BooleanField(blank=False, null=False)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.11.1"
+    question_type = models.CharField(max_length=20, blank=False, null=False)
+    type_parent_object = models.CharField(max_length=100, blank=True, null=True)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.12.0"
     timestamp = models.DateTimeField(editable=False, default=datetime.now)
 
-    @staticmethod
-    def is_enabled():
-        return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
 
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
@@ -534,4 +536,4 @@ def cull_records(sender, **kwargs):
             UserLog.objects.filter(pk__in=to_discard).delete()
 
 
-engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
+engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary, AttemptLog])

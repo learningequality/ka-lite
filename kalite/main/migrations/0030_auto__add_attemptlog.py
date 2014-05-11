@@ -10,11 +10,21 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding model 'AttemptLog'
         db.create_table('main_attemptlog', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
+            ('counter', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
+            ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True, blank=True)),
+            ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'])),
             ('exercise_id', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
             ('random_seed', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('answer_given', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('points_awarded', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('correct', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('question_type', self.gf('django.db.models.fields.CharField')(max_length=20)),
+            ('type_parent_object', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
             ('language', self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True)),
             ('timestamp', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
         ))
@@ -29,13 +39,23 @@ class Migration(SchemaMigration):
     models = {
         'main.attemptlog': {
             'Meta': {'object_name': 'AttemptLog'},
+            'answer_given': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'correct': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'points_awarded': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'question_type': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'random_seed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
+            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
+            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']"})
+            'type_parent_object': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']"}),
+            'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
         'main.exerciselog': {
             'Meta': {'object_name': 'ExerciseLog'},
@@ -157,6 +177,7 @@ class Migration(SchemaMigration):
         'securesync.facilityuser': {
             'Meta': {'unique_together': "(('facility', 'username'),)", 'object_name': 'FacilityUser'},
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
+            'default_language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.Facility']"}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
