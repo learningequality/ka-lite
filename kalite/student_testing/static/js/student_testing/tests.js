@@ -1,7 +1,6 @@
 function nextQuestion() {
-    problem = test_sequence[index];
-    exercise_id = problem[0];
-    seed = problem[1];
+    exercise_id = item_sequence[index];
+    seed = seed_sequence[index];
     loadExercise(exercise_id, function(exercise) {
         exerciseData = {
             "basepoints": exercise.basepoints ,
@@ -27,7 +26,7 @@ function nextQuestion() {
             "lastCountHints": 0,
             "seed": seed
         }
-        $(Exercises).trigger("problemTemplateRendered");
+        console.log(exerciseData);
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
 }
@@ -49,16 +48,16 @@ function endTest() {
 
 function saveLogNextQuestion(correct) {
 
-    complete = (index == test_sequence.length-1)
+    complete = (index == item_sequence.length-1)
 
     var data = {
         exercise_id: exerciseData.exerciseModel.name,
         correct: correct,
         random_seed: exerciseData.seed,
-        test: test,
+        title: title,
         index: index,
         complete: complete,
-        answer: answerGiven
+        answer_given: answerGiven
     };
 
     doRequest("/test/api/save_attempt_log", data)
@@ -87,7 +86,10 @@ $(function() {
     $(Khan).on("answerGiven", function (event, answer) {
         answerGiven = answer;
     })
-    $(Khan).bind("loaded", nextQuestion());
+    $(Khan).bind("loaded", function () {
+        $(Exercises).trigger("problemTemplateRendered");
+        nextQuestion();
+    });
     $(Exercises).bind("checkAnswer", function(ev, data) {
         $("#check-answer-button").parent().stop(jumpedToEnd=true)
         saveLogNextQuestion(data.correct);
