@@ -29,11 +29,10 @@ def save_attempt_log(request):
 
     # test = Test.objects.get(pk=data["test"])
 
-    (testlog, was_created) = TestLog.get_or_initialize(user=user, test=test)
+    (testlog, was_created) = TestLog.get_or_initialize(user=user, test=data["title"])
     previously_complete = testlog.complete
 
     testlog.index = data["index"]
-    testlog.repeat = data["repeat"]
     testlog.complete = data["complete"]
 
     try:
@@ -41,9 +40,12 @@ def save_attempt_log(request):
         testlog.save()
     	AttemptLog.objects.create(
     		user=user,
-    		test_log=testlog,
     		exercise_id=data["exercise_id"],
     		random_seed=data["random_seed"],
+            answer_given=data["answer_given"],
+            correct=data["correct"],
+            question_type="exam",
+            type_parent_object=data["title"]
     		)
     except ValidationError as e:
         return JsonResponse({"error": _("Could not save TestAttemptLog") + u": %s" % e}, status=500)
