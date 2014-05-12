@@ -437,7 +437,7 @@ def get_exercise_data(request, exercise_id=None):
     exercise_template = exercise_file
     exercise_localized_template = os.path.join(lang, exercise_file)
 
-    # Get the language codes for exercise teplates that exist
+    # Get the language codes for exercise templates that exist
     exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
     code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
