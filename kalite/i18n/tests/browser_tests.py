@@ -1,8 +1,6 @@
 # encoding: UTF-8
 import time
 
-from django.contrib.auth.models import User
-
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.i18n.tests.base import I18nTestCase
 
@@ -11,15 +9,7 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
 
     TEST_LANGUAGES = ['it', 'pt-BR']
 
-    ADMIN_USERNAME = 'testadmin1'
-    ADMIN_PASSWORD = 'testpassword'
-    ADMIN_EMAIL = 'test@test.com'
-
     def setUp(self):
-        self.admin = User.objects.create(username=self.ADMIN_USERNAME, password='nein')
-        self.admin.set_password(self.ADMIN_PASSWORD)
-        self.admin.save()
-
         self.foreign_language_homepage_text_mappings = {
             'it': "gratuita per chiunque ovunque",
             'pt-BR': "Uma educação sem salas de aula para qualquer um em qualquer lugar",
