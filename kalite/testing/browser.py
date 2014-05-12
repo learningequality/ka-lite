@@ -95,7 +95,7 @@ class BrowserTestCase(KALiteTestCase):
 
         # Must create a new browser to use
         else:
-            for browser_type in ["Chrome", "Firefox", "Chrome", "Ie", "Opera"]:
+            for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
                 try:
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
