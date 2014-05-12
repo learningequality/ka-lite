@@ -7,7 +7,7 @@ from django.conf import settings; logging = settings.LOG
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
-from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle
+from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_name
 from kalite.main.topic_tools import get_topic_tree, get_videos
 
 
@@ -151,8 +151,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
 
         # Get the (english) subtitle urls
         subtitle_lang_codes = get_langs_with_subtitle(en_youtube_id)
-        subtitles_tuple = [(lc, get_srt_url(en_youtube_id, lc)) for lc in subtitle_lang_codes if os.path.exists(get_srt_path(lc, en_youtube_id))]
-        subtitles_urls = dict(subtitles_tuple)
+        subtitles_urls = [{"code": lc, "url": get_srt_url(en_youtube_id, lc), "name": get_language_name(lc)} for lc in subtitle_lang_codes if os.path.exists(get_srt_path(lc, en_youtube_id))]
         video_availability["en"]["subtitles"] = subtitles_urls
 
     # now scrub any values that don't actually exist
