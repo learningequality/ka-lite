@@ -470,8 +470,8 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return cur_log
 
 class AttemptLog(DeferredCountSyncedModel):
-    """Detailed instances of user exercise engagement.
-    Currently not sync'd (only used for local detail reports).
+    """
+    Detailed instances of user exercise engagement.
     """
 
     minversion = "0.12.0"

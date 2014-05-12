@@ -26,7 +26,6 @@ function nextQuestion() {
             "lastCountHints": 0,
             "seed": seed
         }
-        console.log(exerciseData);
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
 }
