@@ -368,7 +368,7 @@ def update_jsi18n_file(code="en"):
     save to disk--it won't change until the next language pack update!
     """
     translation.activate(code)  # we switch the language of the whole thread
-    output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
+    output_dir = os.path.join(os.path.dirname(__file__), 'static', 'js', 'i18n')
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
 
@@ -431,3 +431,17 @@ def delete_language(lang_code):
                 logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
 
     invalidate_web_cache()
+
+
+def set_request_language(request, lang_code):
+    # each request can get the language from the querystring, or from the currently set session language
+
+    lang_code = select_best_available_language(lang_code)  # output is in django_lang format
+
+    if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
+        logging.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
+        # Just in case we have a db-backed session, don't write unless we have to.
+        request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
+
+    request.language = lcode_to_ietf(lang_code)
+    translation.activate(request.language)

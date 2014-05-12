@@ -8,17 +8,14 @@ Downloads a language pack, unzips the contents, then moves files accordingly:
 * Move `video_file_sizes.json' to ka-lite/kalite/updates/data/
 """
 import glob
-import json
 import os
-import requests
 import shutil
-import sys
 import zipfile
-from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
 from django.conf import settings; logging = settings.LOG
+from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
@@ -64,6 +61,7 @@ class Command(UpdatesStaticCommand, CronCommand):
         "unpack_language_pack",
         "add_js18n_file",
         "move_files",
+        "collectstatic",
         "invalidate_caches",
     )
 
@@ -98,6 +96,9 @@ class Command(UpdatesStaticCommand, CronCommand):
             move_exercises(lang_code)
             move_srts(lang_code)
             move_video_sizes_file(lang_code)
+
+            self.next_stage()
+            call_command("collectstatic", interactive=False)
 
             self.next_stage(_("Invalidate caches"))
             caching.invalidate_all_caches()

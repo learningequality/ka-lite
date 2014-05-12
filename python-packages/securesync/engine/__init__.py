@@ -121,6 +121,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     #  (note: NEVER BREAK OUT OF THIS LOOP!  We need to ensure that
     #    all models below the counter position selected are sent NOW,
     #    otherwise they will be forgotten FOREVER)
+    counter = 0
     for Model in _syncing_models:
         # We need to track the min counter position (send things above this value)
         #   and the max (we're sending up to this value, so make sure nothing
