@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 
 from fle_utils.internet import api_handle_error_with_json, JsonResponse
 
-@student_log_api(logged_out_message=_("Exercise progress not saved."))
+@student_log_api(logged_out_message=_("Test progress not saved."))
 def save_attempt_log(request):
     """
     Receives an exercise_id and relevant data,
