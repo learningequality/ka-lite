@@ -38,8 +38,9 @@ def move_to_group(request):
 def delete_users(request):
     users = simplejson.loads(request.raw_post_data or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(id__in=users)
+    count = users_to_delete.count()
     users_to_delete.delete()
-    return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": users_to_delete.count()})
+    return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": count})
 
 
 @require_authorized_admin
