@@ -1,11 +1,8 @@
 # encoding: UTF-8
-import logging
 import time
 
 from django.contrib.auth.models import User
-from django.core.management import call_command
 
-from .. import get_installed_language_packs
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.i18n.tests.base import I18nTestCase
 
