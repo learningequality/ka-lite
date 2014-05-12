@@ -8,13 +8,9 @@ Downloads a language pack, unzips the contents, then moves files accordingly:
 * Move `video_file_sizes.json' to ka-lite/kalite/updates/data/
 """
 import glob
-import json
 import os
-import requests
 import shutil
-import sys
 import zipfile
-from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
