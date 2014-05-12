@@ -44,7 +44,6 @@ def set_language_data_from_request(request):
 
     # Set this request's language based on the listed priority
     cur_lang = (request.GET.get("lang")
-                or request.session.get(settings.LANGUAGE_COOKIE_NAME)
                 or request.session.get("default_language"))
 
     set_request_language(request, lang_code=cur_lang)

@@ -38,7 +38,6 @@ class BrowserLanguageSwitchingTests(KALiteDistributedBrowserTestCase, I18nTestCa
 
 
     def test_logged_out_homepage_language_switches_from_english_and_back(self):
-        # response = self.client.get('/', data={'set_user_language': 'de'})
         english_text = "A free world-class education for anyone anywhere"
 
         for lang_code, expected_text in self.foreign_language_homepage_text_mappings.iteritems():

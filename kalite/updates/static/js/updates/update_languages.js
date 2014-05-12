@@ -224,7 +224,7 @@ var languagepack_callbacks = {
 
 function set_server_language(lang) {
     doRequest(SET_DEFAULT_LANGUAGE_URL,
-              {language: lang}
+              {lang: lang}
              ).success(function() {
                  window.location.reload();
              });
