@@ -4,12 +4,11 @@ import random
 from annoying.decorators import render_to
 
 from kalite.main.topic_tools import get_topic_exercises
-from kalite.student_testing.settings import STUDENT_TESTING_DATA_PATH
-from kalite.settings import LOG as logging
 
 from kalite.shared.decorators import require_login
 
-from models import TestLog#, Test
+from .settings import STUDENT_TESTING_DATA_PATH
+from .models import TestLog
 
 @require_login
 @render_to("student_testing/test.html")
@@ -53,7 +52,6 @@ def test(request, test_id):
     except NameError:
         index = 0
         complete = False
-        True
 
     item_sequence = json.dumps([item[0] for item in json.loads(test_sequence)])
     seed_sequence = json.dumps([item[1] for item in json.loads(test_sequence)])

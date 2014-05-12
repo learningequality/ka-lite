@@ -36,7 +36,7 @@ function loadExercise(exercise_id, callback) {
                 callback(data);
             })
             .fail(function(resp) {
-                communicate_api_failure(resp, "id_student_logs");
+                handleFailedAPI(resp, "id_student_logs");
             });
     }
 
@@ -70,7 +70,7 @@ function saveLogNextQuestion(correct) {
             }
         })
         .fail(function(resp) {
-            communicate_api_failure(resp, "id_student_logs");
+            handleFailedAPI(resp, "id_student_logs");
         });
 
 };

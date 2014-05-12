@@ -39,9 +39,9 @@ def save_attempt_log(request):
         testlog.full_clean()
         testlog.save()
     	AttemptLog.objects.create(
-    		user=user,
-    		exercise_id=data["exercise_id"],
-    		random_seed=data["random_seed"],
+            user=user,
+            exercise_id=data["exercise_id"],
+            random_seed=data["random_seed"],
             answer_given=data["answer_given"],
             correct=data["correct"],
             question_type="exam",
