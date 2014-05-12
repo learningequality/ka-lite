@@ -165,7 +165,7 @@ $(function(){
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
             doRequest(SET_DEFAULT_LANGUAGE_URL,
-                      {lang: lang_code, csrftoken: CSRFTOKEN}
+                      {lang: lang_code}
                      ).success(function() {
                          window.location.reload();
                      });
