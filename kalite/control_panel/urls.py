@@ -12,7 +12,7 @@ urlpatterns = patterns(__package__ + '.views',
     # Facility
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/edit$', 'facility_form', {}, 'facility_form'),
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/$', 'facility_management', {}, 'facility_management'),
-    url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/group/(?P<group_id>\w+)/$', 'facility_management', {}, 'facility_management'),
+    url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/group/(?P<group_id>\w+)/$', 'facility_management', {}, 'group_management'),
 
     url(r'account/$', 'account_management', {}, 'account_management'),
 )
