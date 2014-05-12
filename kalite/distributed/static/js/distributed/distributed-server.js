@@ -164,11 +164,11 @@ $(function(){
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
-            // sometimes session csrf is different from the one in the form. Update it.
-            var csrftoken = getCookie("csrftoken") || "";
-            $("input[name=csrfmiddlewaretoken]").val(csrftoken);
-
-            $("#language_select_form").submit();
+            doRequest(SET_DEFAULT_LANGUAGE_URL,
+                      {lang: lang_code}
+                     ).success(function() {
+                         window.location.reload();
+                     });
         }
     });
 });
