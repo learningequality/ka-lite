@@ -70,7 +70,6 @@ class FacilityUserForm(forms.ModelForm):
 
 
     def clean(self):
-
         facility = self.cleaned_data.get('facility')
         username = self.cleaned_data.get('username', '')
         zone = self.cleaned_data.get('zone_fallback')
@@ -95,17 +94,18 @@ class FacilityUserForm(forms.ModelForm):
         ## Check password
         password_first = self.cleaned_data.get('password_first', "")
         password_recheck = self.cleaned_data.get('password_recheck', "")
-        if (self.instance and not self.instance.password) or password_first:
+        if hasattr(self, "instance"): 
+            # Only perform check on a new user or a password change
+            if password_first != password_recheck:
+                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
+        
+        elif (self.instance and not self.instance.password) or password_first:
             # No password set, or password is being reset
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
                 self.set_field_error(field_name='password_first', message=ve.messages[0])
-        elif (self.instance and not self.instance.password) or password_first or password_recheck:
-            # Only perform check on a new user or a password change
-            if password_first != password_recheck:
-                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
-
+        
 
         ## Check the name combo; do it here so it's a general error.
         if not self.cleaned_data.get("warned", False):
