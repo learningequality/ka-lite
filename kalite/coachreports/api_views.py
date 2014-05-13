@@ -23,7 +23,6 @@ from django.utils.translation import ugettext as _
 from .forms import DataForm
 from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from fle_utils.testing.decorators import allow_api_profiling
-from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from kalite.topic_tools import get_topic_by_path, get_node_cache
