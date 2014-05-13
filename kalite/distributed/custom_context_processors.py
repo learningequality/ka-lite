@@ -18,5 +18,7 @@ def custom(request):
         "is_central": False,
         "settings": settings,
         "restricted": settings.DISABLE_SELF_ADMIN,
-        "VERSION": version.VERSION
+        "VERSION": version.VERSION,
+        "True": True,
+        "False": False
     }

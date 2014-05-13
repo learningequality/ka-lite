@@ -16,7 +16,7 @@ register = Library()
 
 
 @register.simple_tag
-def static_with_build(path, with_build='True'):
+def static_with_build(path, with_build=True):
     """
     We need a way for the client browser to load the newly updated static
         files because some browsers cache the static files and does not
@@ -71,12 +71,12 @@ def static_with_build(path, with_build='True'):
 
 
 @register.simple_tag
-def static(path, with_build=''):
+def static(path, with_build=False):
     """
     We use the same name as the `staticfiles` app so we don't have to modify
         the templates that are already using it.
 
     If we need to include the build/hash as a Get paramater, we provide the
-        `with_build` argument.  Note that this is a string.
+        `with_build` argument.
     """
     return static_with_build(path, with_build)
