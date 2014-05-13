@@ -188,10 +188,14 @@ def ka_lite_is_using_port(host, port):
     """
     try:
         pid = int(urlopen("http://%s:%s%s" % (host, port, reverse('getpid'))).read())
+    except:
+        try: # also try the old URL for getpid, since the running server may not be recent
+            pid = int(urlopen("http://%s:%s%s" % (host, port, "/api/getpid")).read())
+        except:
+            pass
+    if pid:
         logging.warn("Existing KA-Lite server found, PID %d" % pid)
         return pid
-    except:
-        pass
 
 
 def runcherrypyserver(argset=[], **kwargs):
