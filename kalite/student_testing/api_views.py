@@ -1,5 +1,3 @@
-import simplejson
-
 from main.api_views import student_log_api
 
 from main.api_forms import AttemptLogForm
