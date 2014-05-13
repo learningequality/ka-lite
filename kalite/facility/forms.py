@@ -94,18 +94,16 @@ class FacilityUserForm(forms.ModelForm):
         ## Check password
         password_first = self.cleaned_data.get('password_first', "")
         password_recheck = self.cleaned_data.get('password_recheck', "")
-        if hasattr(self, "instance"): 
-            # Only perform check on a new user or a password change
-            if password_first != password_recheck:
-                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
+        # If they have put anything in the new password field, it must match the password check field
+        if password_first != password_recheck:
+            self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
         
-        elif (self.instance and not self.instance.password) or password_first:
-            # No password set, or password is being reset
+        # Next, enforce length if they submitted a password
+        if password_first:
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
                 self.set_field_error(field_name='password_first', message=ve.messages[0])
-        
 
         ## Check the name combo; do it here so it's a general error.
         if not self.cleaned_data.get("warned", False):
