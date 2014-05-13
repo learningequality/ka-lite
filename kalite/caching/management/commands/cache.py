@@ -55,7 +55,7 @@ class Command(BaseCommand):
         (b) Kill and regenerate each page"""
 
         if force:
-            if has_cache_key(path=path):
+            if caching.has_cache_key(path=path):
                 caching.expire_page(path=path)
                 self.stdout.write("[Redo]\t%s\n" % path)
             else:
