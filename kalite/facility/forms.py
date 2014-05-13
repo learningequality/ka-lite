@@ -105,17 +105,18 @@ class FacilityUserForm(forms.ModelForm):
             except ValidationError as ve:
                 self.set_field_error(field_name='password_first', message=ve.messages[0])
 
-        ## Check the name combo; do it here so it's a general error.
-        if not self.cleaned_data.get("warned", False):
+        ## Warn the user during sign up or adding user if a user with this first and last name already exists in the faiclity
+        if not self.cleaned_data.get("warned", False) and (self.cleaned_data["first_name"] or self.cleaned_data["last_name"]):
             users_with_same_name = FacilityUser.objects.filter(first_name__iexact=self.cleaned_data["first_name"], last_name__iexact=self.cleaned_data["last_name"]) \
                 .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same facility
             if users_with_same_name and (not self.instance or self.instance not in users_with_same_name):
                 self.data = copy.deepcopy(self.data)
                 self.data["warned"] = self.cleaned_data["warned"] = True
-                msg = "%s %s" % (_("%(num_users)d user(s) with this name already exist(s)%(username_list)s.") % {
+                msg = "%s %s" % (_("%(num_users)d user(s) with first name '%(f_name)s' and last name '%(l_name)s' already exist(s).") % {
                     "num_users": users_with_same_name.count(),
-                    "username_list": "" if not self.admin_access else " " + str([user["username"] for user in users_with_same_name.values("username")]),
-                }, _("Please consider choosing another name, or re-submit to complete."))
+                    "f_name": self.cleaned_data["first_name"],
+                    "l_name": self.cleaned_data["last_name"],
+                }, _("If you are sure you want to create this user, you may re-submit the form to complete the process."))
                 self.set_field_error(message=msg)  # general error, not associated with a field.
 
         if self.has_errors():
