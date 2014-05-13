@@ -201,7 +201,7 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.data['username'] += '-different'
         user_form = FacilityUserForm(facility=self.facility, data=self.data)
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
-        self.assertIn('2 user(s) with this name already exist(s)', user_form.errors['__all__'][0], "Error message must contain # of users")
+        self.assertIn('2 user(s)', user_form.errors['__all__'][0], "Error message must contain # of users")
 
     def test_form_duplicate_name_list(self):
         """User list with the same name should only appear IF form has admin_access==True"""
