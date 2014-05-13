@@ -95,8 +95,24 @@ SECRET_KEY     = getattr(local_settings, "SECRET_KEY", "8qq-!fa$92i=s1gjjitd&%s@
 LANGUAGE_COOKIE_NAME    = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
-INSTALLED_APPS = ("kalite.distributed", "kalite.remoteadmin")
-MIDDLEWARE_CLASSES = tuple()  # will be filled recursively via INSTALLED_APPS
+
+INSTALLED_APPS = (
+    "django.contrib.admin",  # this and the following are needed to enable django admin.
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.messages",
+    "django.contrib.sessions",
+    "django_extensions", # needed for clean_pyc (testing)
+    "kalite.testing",
+    "kalite.distributed",
+) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+MIDDLEWARE_CLASSES = (
+    "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
+) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.messages.context_processors.messages",  # needed for django admin
+) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
+
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static-libraries'),)  # libraries common to all apps
 
@@ -132,10 +148,22 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
+if 'CACHE_NAME' in locals():
+    if CACHE_NAME == "file_based_cache":
+        LOG.debug("Cache location = %s" % CACHE_LOCATION)
+    else:
+        LOG.debug("Using %s caching" % CACHE_NAME)
+
 # Override
 KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(STATIC_ROOT, "khan-exercises"))
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
+TEST_RUNNER = KALITE_TEST_RUNNER
 
+LOG.debug("======== MIDDLEWARE ========")
+LOG.debug("\n".join(MIDDLEWARE_CLASSES))
+LOG.debug("====== INSTALLED_APPS ======")
+LOG.debug("\n".join(INSTALLED_APPS))
+LOG.debug("============================")
 
 ########################
 # IMPORTANT: Do not add new settings below this line

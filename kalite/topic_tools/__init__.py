@@ -30,8 +30,9 @@ from django.utils.translation import ugettext as _
 from fle_utils.general import softload_json
 from kalite import i18n
 from kalite import khanload  # should be removed ASAP, to make more generic and separate apps.
+                             # Required because of odd KA URL structure that makes sibling detection impossible otherwise.
 
-TOPICS_FILEPATH = os.path.join(settings.MAIN_DATA_PATH, "topics.json")
+TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
 
 CACHE_VARS = []
 

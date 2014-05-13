@@ -9,10 +9,10 @@ from django.conf import settings
 
 from . import get_serialized_models, save_serialized_models, get_device_counters, deserialize
 from .models import *
+from ..api_client import BaseClient
+from ..devices.api_client import RegistrationClient
+from ..devices.models import *
 from fle_utils.platforms import get_os_name
-from securesync.api_client import BaseClient
-from securesync.devices.api_client import RegistrationClient
-from securesync.devices.models import *
 
 
 class SyncClient(BaseClient):

@@ -11,8 +11,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
+from .. import VERSION
 from fle_utils.django_utils import serializers
-from securesync import VERSION
 
 
 _syncing_models = []  # all models we want to sync
@@ -69,7 +69,7 @@ def get_device_counters(**kwargs):
     """Get device counters, filtered by zone"""
     assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
 
-    from securesync.devices.models import Device
+    from ..devices.models import Device
     devices = kwargs.get("devices") or Device.all_objects.by_zone(kwargs["zone"])  # include deleted objects
 
     device_counters = {}
@@ -92,7 +92,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     """
     limit = limit or settings.SYNCING_MAX_RECORDS_PER_REQUEST  # must be specified
 
-    from securesync.devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from ..devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
     own_device = Device.get_own_device()
 
     # Get the current version if none was specified
@@ -190,7 +190,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
 
 def get_serialized_models(*args, **kwargs):
-    from securesync.devices.models import Device
+    from ..devices.models import Device
 
     models = get_models(*args, **kwargs)
     dest_version = kwargs.get("dest_version", Device.get_own_device().get_version())
@@ -219,7 +219,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
 
     from .models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
-    from securesync.devices.models import Device
+    from ..devices.models import Device
 
     own_device = Device.get_own_device()
     if not src_version:  # default version: our own
@@ -311,8 +311,8 @@ def serialize(models, sign=True, increment_counters=True, dest_version=VERSION, 
     This function encapsulates serialization, and ensures that any final steps needed before syncing
     (e.g. signing, incrementing counters, etc) are done.
     """
-    from securesync.devices.models import Device
     from .models import SyncedModel
+    from ..devices.models import Device
     own_device = Device.get_own_device()
 
     for model in models:

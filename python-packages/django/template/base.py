@@ -237,11 +237,13 @@ class Parser(object):
         self.filters = {}
         for lib in builtins:
             self.add_library(lib)
+        self.root_nodelist = []
 
     def parse(self, parse_until=None):
         if parse_until is None:
             parse_until = []
         nodelist = self.create_nodelist()
+        self.root_nodelist.append(nodelist)
 
         while self.tokens:
             token = self.next_token()

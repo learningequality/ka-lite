@@ -6,7 +6,6 @@ from django.utils import unittest
 
 from ..models import *
 from fle_utils.testing import UnicodeModelsTest
-from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.testing import KALiteTestCase
 
 

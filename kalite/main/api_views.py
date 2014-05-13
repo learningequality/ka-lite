@@ -21,13 +21,12 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy, string_concat
 
-from . import topic_tools
 from .api_forms import ExerciseLogForm, VideoLogForm
 from .models import VideoLog, ExerciseLog
-from .topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 
 
 class student_log_api(object):
@@ -192,7 +191,7 @@ def knowledge_map_json(request, topic_id):
     """
 
     # Try and get the requested topic, and make sure it has knowledge map data available.
-    topic = topic_tools.get_node_cache("Topic").get(topic_id)
+    topic = get_node_cache("Topic").get(topic_id)
     if not topic:
         raise Http404("Topic '%s' not found" % topic_id)
     elif not "knowledge_map" in topic[0]:
@@ -203,7 +202,7 @@ def knowledge_map_json(request, topic_id):
     kmap = topic[0]["knowledge_map"]
     nodes_out = {}
     for id, kmap_data in kmap["nodes"].iteritems():
-        cur_node = topic_tools.get_node_cache(kmap_data["kind"])[id][0]
+        cur_node = get_node_cache(kmap_data["kind"])[id][0]
         nodes_out[id] = {
             "id": cur_node["id"],
             "title": _(cur_node["title"]),

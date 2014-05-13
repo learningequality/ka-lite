@@ -20,8 +20,8 @@ from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import ExerciseLog
-from kalite.main.topic_tools import get_exercise_paths, get_node_cache
 from kalite.testing.browser import BrowserTestCase
+from kalite.topic_tools import get_exercise_paths, get_node_cache
 
 
 class TestAddFacility(KALiteDistributedBrowserTestCase):

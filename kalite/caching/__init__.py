@@ -20,8 +20,6 @@ from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
 from django.http import HttpRequest
 from django.test.client import Client
 from django.utils import translation
@@ -32,36 +30,7 @@ from django.views.decorators.http import condition
 
 from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
-from kalite import i18n
-from kalite.main import topic_tools
-from kalite.updates.models import VideoFile
-
-
-# Signals
-
-@receiver(post_save, sender=VideoFile)
-def invalidate_on_video_update(sender, **kwargs):
-    """
-    Listen in to see when videos become available.
-    """
-    # Can only do full check in Django 1.5+, but shouldn't matter--we should only save with
-    # percent_complete == 100 once.
-    just_now_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100 #and "percent_complete" in kwargs["updated_fields"]
-    if just_now_available:
-        # This event should only happen once, so don't bother checking if
-        #   this is the field that changed.
-        logging.debug("Invalidating cache on VideoFile save for %s" % kwargs["instance"])
-        invalidate_all_caches()
-
-@receiver(pre_delete, sender=VideoFile)
-def invalidate_on_video_delete(sender, **kwargs):
-    """
-    Listen in to see when available videos become unavailable.
-    """
-    was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
-    if was_available:
-        logging.debug("Invalidating cache on VideoFile delete for %s" % kwargs["instance"])
-        invalidate_all_caches()
+from kalite import i18n, topic_tools
 
 
 def invalidate_all_pages_related_to_video(video_id=None):
