@@ -91,7 +91,6 @@
 {% endblock buttons %}
 
 {% block control_panel_content %}
-    {% trans "Ungrouped" as ungrouped %}
     <div id="facility_container">
         {% if not group_id %}{# Only show coaches when no group is selected #}
         <div class="coaches" id="coaches">
@@ -241,7 +240,7 @@
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
                                     <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
                                         {% if group.id %}
-                                        href="{% url group_management zone_id=zone_id facility_id=facility_id group_id=group.id %}">
+                                        href="{% url group_management zone_id=zone_id facility_id=facility_id group_id="group.id" %}">
                                         {% else %}
                                         href="{% url group_management zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
                                         {% endif %}
