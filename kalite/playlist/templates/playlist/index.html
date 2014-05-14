@@ -7,11 +7,11 @@
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/playlists/index.css' %}?{{ BUILD_ID }}">
-    .css' %}?{{ BUILD_ID }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/index.css' %}?{{ BUILD_ID }}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/playlist/index.js' %}?{{ BUILD_ID }}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -23,14 +23,49 @@
 
 {% block content %}
     <div>
-      <table class="table bordered-table">
+      <table class="table table-hover">
         <tr>
           <th>Playlists</th>
         </tr>
-        <tr>
-          <td>Title</td>
+        <tr id="title-1">
+          <td>
+            <div>
+              <span class="pull-left">Title</span>
+              <button class="pull-right">Add Student Group</button>
+            </div>
+
+          </td>
         </tr>
-      <table>
+        <tr id="student-grps-1">
+          <td>
+            <ul>
+              <li>Student Group 1</li>
+              <li>Student Group 1</li>
+              <li>Student Group 1</li>
+              <li>Student Group 1</li>
+            </ul>
+          </td>
+        </tr>
+        <tr id="title-2">
+          <td>
+            <div>
+              <span class="pull-left">Title2</span>
+              <button class="pull-right">Add Student Group</button>
+            </div>
+
+          </td>
+        </tr>
+        <tr id="student-grps-2">
+          <td>
+            <ul>
+              <li>Student Group 1</li>
+              <li>Student Group 1</li>
+              <li>Student Group 1</li>
+              <li>Student Group 1</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
     </div>
 
 
