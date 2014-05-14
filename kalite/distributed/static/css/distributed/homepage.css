@@ -116,7 +116,7 @@ td div {
 }
 
 th {
-    background-color: #7AD222;
+    background-color: #8FC475;
     color: white;
 }
 
@@ -141,6 +141,7 @@ li {
     display: inline-block;
     width: 19.6%;
     border: 1px solid black;
+    font-family: museosans500;
 }
 
 ul {
