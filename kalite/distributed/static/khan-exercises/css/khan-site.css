@@ -5866,12 +5866,12 @@ ul.icons li [class*=" icon-"] {
   -moz-border-radius: 6px;
   border-radius: 6px;
 }
-/*.pull-right {
+.pull-right {
   float: right;
 }
 .pull-left {
   float: left;
-}*/
+}
 [class^="icon-"].pull-left,
 [class*=" icon-"].pull-left {
   margin-right: .35em;

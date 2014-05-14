@@ -102,7 +102,7 @@ $(function(){
     var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
 
     // For mobile (Bootstrap xs) view
-    var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints-xs"});
+    var totalPointViewXs = new TotalPointView({model: userModel, el: "#sitepoints-xs"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {

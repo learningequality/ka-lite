@@ -158,9 +158,11 @@ th.headrowuser {
 }
 
 @media only screen and (max-width: 655px) {
-    .selection-coach-page:nth-child(2) { margin-left: 20px; } 
+    .selection-coach-page:nth-child(2) { margin-left: 20px; }
+    /* Moves "Select Topic" slightly to the right so that it lines up with "Select Report" */
 }
 
 @media only screen and (max-width: 400px) {
     select#topic { margin-left: 0 !important; }
+    /* Moves "Select Topic" dropdown slightly to the right so that it lines up with "Select Topic" and "Select Report" */
 }
