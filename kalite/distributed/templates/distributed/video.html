@@ -76,7 +76,7 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h2 class="title-header">
+    <h3 class="title-header">
 
         {% if num_videos_available > 1 %}
             <span id="lang_display_name">
@@ -106,7 +106,7 @@
         <div class="clear"></div>
 
         <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
-    </h2>
+    </h3>
     <div class="clear"></div>
 
     {% if prev %}
@@ -114,7 +114,7 @@
     {% endif %}
 
     {% if next %}
-    <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+    <div class="vidnext pull-right"><a href="{{ next.path }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
     <div class="clear"></div>
 

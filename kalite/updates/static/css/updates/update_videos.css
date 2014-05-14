@@ -14,9 +14,9 @@ ul.dynatree-container li, .ui-widget-content {
     float: left;
     margin-right: 10px;
     margin-top: 5px;
-    height: 100px;
+    height: 120px;
     padding: 10px;
-    width: 45%;
+    width: 48.5%;
 }
 
 #download-legend-selected, #download-videos, #delete-videos {
@@ -57,6 +57,7 @@ ul.dynatree-container li, .ui-widget-content {
 #download-videos {
     display:none;
 }
+
 .progress-waiting {
     padding: 5px 0px 0px 0px;
     display: none;
@@ -64,4 +65,17 @@ ul.dynatree-container li, .ui-widget-content {
 
 #download_language_selector {
     display: none;
+}
+
+h4.videos {
+    font-size: 20px;
+    margin-top: 0;
+}
+
+#download-videos-text, #delete-videos-text {
+    font-size: 11px;
+}
+
+@media only screen and (max-width: 991px) {
+    .download-actions { display: block; float: none; width: 100%; }
 }

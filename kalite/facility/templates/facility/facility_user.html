@@ -5,8 +5,8 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        #id_facility {
-            display: none;
+        #id_group {
+            margin-bottom: 5px;
         }
     </style>
 {% endblock headcss %}
@@ -48,13 +48,15 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+    <div class="container">
+        <h3>{{ title }}</h3>
 
-    <form method="post" class="basic-form">
-        {% csrf_token %}
+        <form method="post" class="basic-form">
+            {% csrf_token %}
 
-        {{ form.as_p }}
+            {{ form.as_p }}
 
-        <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
-    </form>
+            <input type="submit" class="submit btn btn-default btn-xs" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
+        </form>
+    </div>
 {% endblock content %}

@@ -101,6 +101,9 @@ $(function(){
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
     var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
 
+    // For mobile (Bootstrap xs) view
+    var totalPointViewXs = new TotalPointView({model: userModel, el: "#sitepoints-xs"});
+
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
         show_message(
@@ -126,6 +129,8 @@ $(function(){
             toggle_state("teacher", data.is_admin && !data.is_django_user);
             toggle_state("student", !data.is_admin && !data.is_django_user && data.is_logged_in);
             toggle_state("admin", data.is_admin); // combination of teachers & super-users
+
+            $('.navbar-right').show();
         });
 });
 
@@ -298,6 +303,25 @@ $(function() {
                 toggle_state(server_or_client + "-online", is_online);
 
             });
+        }
+    });
+
+});
+
+
+// Hides/shows nav bar search input field/button when user clicks on search glyphicon
+$(function() {
+
+    var glyphicon_search = $('#glyphicon-search-js'); // Search glyphicon
+    var search = $('.search-js'); // Search input field/button
+
+    search.hide(); // Search input field/button are hidden upon page load
+
+    glyphicon_search.click(function() { // When user clicks on search glyphicon,
+        if (search.is(':hidden')) { // if search input field/button are hidden,
+            search.show(); // search input field/button are displayed;
+        } else { // if user clicks on search glyphicon and search input field/button are displayed,
+            search.hide(); // search input field/button are hidden.
         }
     });
 

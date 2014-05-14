@@ -10,26 +10,31 @@
 {% block report_title %}{% trans "User report" %}{% endblock report_title %}
 
 {% block headcss %}{{ block.super }}
-    <style>
+    <style>    
+        .client-online-only .btn-success {
+            padding-bottom: 8px;
+            padding-top: 8px;
+        } /* Makes right green button ("Download data from Khan Academy") 
+        the same height as left green button ("Edit account preferences") */
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
         .super-header {
-            background-color: #ccc;
-            font-weight: bold;
+            background-color: #f9f9f9;
         }
         th {
             color: #555;
         }
         th, td {
-            padding: 3px;
+            padding: 0.5%;
+            text-align: center;
         }
         tr.invisible {
-            display:none;
+            display: none;
         }
-        td.pct, td.float, td.int, td.date {
+/*        td.pct, td.float, td.int, td.date {
             text-align: right;
-        }
+        }*/
         td.date { border: 0px; }
         td.struggling {
             background-color: #aa0;
@@ -37,6 +42,21 @@
         }
         .table-title {
             margin-bottom: 15px;
+        }
+        @media only screen and (max-width: 991px) {
+            .titlebar__buttons {
+                float: left;
+                padding-left: 0;
+            }
+            .client-online-only .btn-success {
+                padding-top: 6px !important; /* Creates 2px of vertical space 
+                between green buttons - can't seem to figure out a better way */ 
+            }
+        }
+        @media only screen and (max-width: 470px) {
+            #account-management-page-title {
+                font-size: 16px;
+            }
         }
     </style>
 {% endblock headcss %}
@@ -68,63 +88,67 @@
             {% trans "Please return to this page after watching videos or practicing exercises." %}
         {% endif %}
     {% else %}
-    <h2 class="table-title">{% trans "Progress Report" %}</h2>
-    <table>
-        <tr>
-            <th colspan="2" class="super-header"></th>
-            <th colspan="7" class="super-header">{% trans "Exercises" %}</th><!-- everything is programmatic... except colspans here. :( -->
-            <th colspan="5" class="super-header">{% trans "Videos" %}</th>
-        </tr>
-        <tr>
-            <th colspan="2" class="" >{% trans "Topic" %}</th>
-            {% for def in stat_defs %}
-            <th>{% trans def.title %}</th>
-            {% endfor %}
-        </tr>
+    <h3 class="table-title">{% trans "Progress Report" %}</h3>
+    
+    <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
+        called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
+        <table>
+            <tr>
+                <th colspan="2" class="super-header"></th>
+                <th colspan="7" class="super-header">{% trans "Exercises" %}</th><!-- everything is programmatic... except colspans here. :( -->
+                <th colspan="5" class="super-header">{% trans "Videos" %}</th>
+            </tr>
+            <tr>
+                <th colspan="2" class="" >{% trans "Topic" %}</th>
+                {% for def in stat_defs %}
+                <th>{% trans def.title %}</th>
+                {% endfor %}
+            </tr>
 
-    {% for topic in topics %}
-        <tr class="{% if exercise_logs|get_item:topic.id or video_logs|get_item:topic.id%}visible{% else %}invisible{% endif %}">
-            <td>
-                <div class="progress-circle {% if stats|get_item:topic.id|get_item:'pct_mastery' = 1.0 %}complete{% else %}partial{% endif %}">
-                &nbsp;
-                </div>
-            </td>
-            <td>
-                <span title="{% trans topic.description %}">
-                    {% if not is_central %}
-                        <a href="{{ topic.path }}">{% trans topic.title %}</a>
-                    {% else %}
-                        {% trans topic.title %}
-                    {% endif %}
-                </span>
-            </td>
-            {% for def in stat_defs %}
-            <td class="{{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}">
-                {% if def.type == "float" %}
-                    {{ stats|get_item:topic.id|get_item:def.key|floatformat }}
-                {% elif def.type == "pct" %}
-                    {{ stats|get_item:topic.id|get_item:def.key|percent:1 }}
-                {% elif def.type == "date" %}
-                    {{ stats|get_item:topic.id|get_item:def.key|date:"SHORT_DATE_FORMAT" }}
-                {% elif def.key != "ex:total_struggling" %}
-                    {{ stats|get_item:topic.id|get_item:def.key }}
-                {% else %}
-                    {% for exercise_log in exercise_logs|get_item:topic.id %}
-                        {% if exercise_log.struggling %}
-                            {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' as letter silent %}
-                            {% for exercise in exercises|get_item:topic.id %}
-                                {% if exercise.name = exercise_log.exercise_id %}
-                                <a href="{{ exercise.path }}">{{ letter }}</a>
-                                {% endif %}
-                            {% endfor %}
+        {% for topic in topics %}
+            <tr class="{% if exercise_logs|get_item:topic.id or video_logs|get_item:topic.id%}visible{% else %}invisible{% endif %}">
+                <td>
+                    <div class="progress-circle {% if stats|get_item:topic.id|get_item:'pct_mastery' = 1.0 %}complete{% else %}partial{% endif %}">
+                    &nbsp;
+                    </div>
+                </td>
+                <td>
+                    <span title="{% trans topic.description %}">
+                        {% if not is_central %}
+                            <a href="{{ topic.path }}">{% trans topic.title %}</a>
+                        {% else %}
+                            {% trans topic.title %}
                         {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </td>
-            {% endfor %}
-        </tr>
-    {% endfor %}
-    </table>
+                    </span>
+                </td>
+                {% for def in stat_defs %}
+                <td class="{{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}">
+                    {% if def.type == "float" %}
+                        {{ stats|get_item:topic.id|get_item:def.key|floatformat }}
+                    {% elif def.type == "pct" %}
+                        {{ stats|get_item:topic.id|get_item:def.key|percent:1 }}
+                    {% elif def.type == "date" %}
+                        {{ stats|get_item:topic.id|get_item:def.key|date:"SHORT_DATE_FORMAT" }}
+                    {% elif def.key != "ex:total_struggling" %}
+                        {{ stats|get_item:topic.id|get_item:def.key }}
+                    {% else %}
+                        {% for exercise_log in exercise_logs|get_item:topic.id %}
+                            {% if exercise_log.struggling %}
+                                {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' as letter silent %}
+                                {% for exercise in exercises|get_item:topic.id %}
+                                    {% if exercise.name = exercise_log.exercise_id %}
+                                    <a href="{{ exercise.path }}">{{ letter }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
     {% endif %}
     {% endblock student_report %}
 {% endblock content %}

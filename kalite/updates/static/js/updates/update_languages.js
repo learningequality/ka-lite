@@ -56,10 +56,10 @@ function display_languages() {
             var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
 
             if ( lang_code != 'en')
-                lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
+                lang_description += sprintf("<div class='delete-language-button pull-right'> <button class='btn btn-default btn-xs' value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
             else
                 if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
+                    lang_description += sprintf("<div class='delete-language-button pull-right'> <button class='btn btn-default btn-xs' value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
                 }
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option

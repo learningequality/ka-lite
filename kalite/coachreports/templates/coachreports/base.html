@@ -13,27 +13,31 @@
             float: left;
             padding: 0 10px 10px 0;
         }
-        select {
-            margin-left: 10px;
+        select#report_type, select#topic {
+            margin-left: 5px;
         }
         .subtitle {
-            float:left;
+            float: left;
         }
         #facility, .group_select {
-            display:none;
+            display: none;
         }
-        h2 {
+/*        h2 {
             width:100%;
             margin: 0px;
             margin-top: 10px;
-        }
-        h3 {
-            margin-left: 25px;
-            margin-bottom: 0px;
+        }*/
+        h4 {
+            font-size: 20px;
+            margin-left: 18px;
+            margin-bottom: 0;
         }
         #link-box {
-            float:right;
-            margin-right:25px;
+            float: right;
+            margin-right: 25px;
+        }
+        #link-box input#url {
+            font-size: 14px;
         }
         .group_div {
             position: absolute;
@@ -58,7 +62,7 @@
         </div>
 
         {% block navbar_title %}
-        <h2>
+        <h4>
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
@@ -122,7 +126,7 @@
                 </div>
                 {% endblock navbar_makelink %}
             </div>
-        </h2>
+        </h4>
         {% endblock navbar_title %}
 
         {% block navbar_topics %}
