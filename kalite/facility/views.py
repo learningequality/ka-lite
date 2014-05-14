@@ -200,7 +200,7 @@ def login(request, facility):
     facilities = list(Facility.objects.all())
 
     #Fix for #2047: prompt user to create an admin account if none exists
-    if not User.objects.all():
+    if not User.objects.exists():
         messages.warning(request, _("No administrator account deteced. Please run 'python manage.py createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
