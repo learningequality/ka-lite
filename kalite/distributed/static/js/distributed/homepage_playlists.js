@@ -1,7 +1,7 @@
 $(function() {
   $("#playlist-table").hide();
   $.ajax({
-    url: '/playlists/sample',
+    url: 'api/playlists/sample',
     type: 'GET',
     success: function(data) {
       $("#playlist-table").show();
