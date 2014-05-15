@@ -64,11 +64,10 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         with self.assertNumQueries(23 + 3*UserLog.is_enabled()):
             self.browser_login_student("s1", passwd, self.facility)
 
-
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(FuzzyInt(6,9)):
+        with self.assertNumQueries(FuzzyInt(3, 9)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_teacher(self):
