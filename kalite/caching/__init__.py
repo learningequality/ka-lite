@@ -11,26 +11,44 @@ For any app implementing cacheable data or writing to the web cache, the app sho
     across all apps, by calling invalidate_inmemory_caches
 * Call invalidate_web_cache (from fle_utils.internet.webcache)
 """
-import datetime
-import os
-from functools import partial
-
 from django.conf import settings; logging = settings.LOG
-from django.core.cache import cache, InvalidCacheBackendError
-from django.core.cache.backends.filebased import FileBasedCache
-from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
-from django.http import HttpRequest
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 from django.test.client import Client
-from django.utils import translation
-from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
-from django.views.decorators.cache import cache_control
-from django.views.decorators.cache import cache_page
-from django.views.decorators.http import condition
 
 from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
+from kalite.distributed.templatetags import kalite_staticfiles
+from kalite.updates.models import VideoFile
+
+
+# Signals
+
+@receiver(post_save, sender=VideoFile)
+def invalidate_on_video_update(sender, **kwargs):
+    """
+    Listen in to see when videos become available.
+    """
+    # Can only do full check in Django 1.5+, but shouldn't matter--we should only save with
+    # percent_complete == 100 once.
+    just_now_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100 #and "percent_complete" in kwargs["updated_fields"]
+    if just_now_available:
+        # This event should only happen once, so don't bother checking if
+        #   this is the field that changed.
+        logging.debug("Invalidating cache on VideoFile save for %s" % kwargs["instance"])
+        invalidate_all_caches()
+
+@receiver(pre_delete, sender=VideoFile)
+def invalidate_on_video_delete(sender, **kwargs):
+    """
+    Listen in to see when available videos become unavailable.
+    """
+    was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
+    if was_available:
+        logging.debug("Invalidating cache on VideoFile delete for %s" % kwargs["instance"])
+        invalidate_all_caches()
 
 
 def invalidate_all_pages_related_to_video(video_id=None):
@@ -95,7 +113,7 @@ def invalidate_inmemory_caches():
     """
     # TODO: loop through all modules and see if a module variable exists, using getattr,
     #   rather than hard-coding.
-    for module in (i18n, topic_tools):
+    for module in (i18n, kalite_staticfiles, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)

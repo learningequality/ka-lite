@@ -339,7 +339,7 @@
                                             <option value="{{ group.id }}">{{ group.name }}</option>
                                         {% endif %}
                                     {% endfor %}
-                                    {% if group_id != ungrouped %}
+                                    {% if group_id != ungrouped_id %}
                                         <option value="">{{ ungrouped }}</option>
                                     {% endif %}
                             </select>

@@ -135,6 +135,8 @@ SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessi
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
+# disable migration framework on tests
+SOUTH_TESTS_MIGRATE = False
 
 
 ########################
