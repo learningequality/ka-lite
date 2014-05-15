@@ -11,6 +11,7 @@ install:
   - npm install -g grunt-cli
 script:
   - python python-packages/fle_utils/tests.py
+  - python kalite/manage.py syncdb --migrate --noinput --traceback # make sure database is all setup
   - python kalite/manage.py test  # run django tests
   - grunt jshint  # run jshint
 notifications:
