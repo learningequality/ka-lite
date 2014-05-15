@@ -75,7 +75,7 @@ def static_with_build(path, with_build=True):
         # try the BUILD data from `version.py`
         if not build_id:
             try:
-                build_id = version.VERSION_INFO[version.VERSION]["git_commit"][0:8]
+                build_id = BUILD_HASH_CACHE = version.VERSION_INFO[version.VERSION]["git_commit"][0:8]
             except:
                 pass
 
