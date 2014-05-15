@@ -21,12 +21,11 @@ from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
 from kalite.distributed.templatetags import kalite_staticfiles
-from kalite.updates.models import VideoFile
 
 
 # Signals
 
-@receiver(post_save, sender=VideoFile)
+@receiver(post_save, sender='kalite.updates.models.VideoFile')
 def invalidate_on_video_update(sender, **kwargs):
     """
     Listen in to see when videos become available.
@@ -40,7 +39,7 @@ def invalidate_on_video_update(sender, **kwargs):
         logging.debug("Invalidating cache on VideoFile save for %s" % kwargs["instance"])
         invalidate_all_caches()
 
-@receiver(pre_delete, sender=VideoFile)
+@receiver(pre_delete, sender='kalite.updates.models.VideoFile')
 def invalidate_on_video_delete(sender, **kwargs):
     """
     Listen in to see when available videos become unavailable.
