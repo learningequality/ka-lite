@@ -1,8 +1,8 @@
 # encoding: UTF-8
 import time
-import unittest
 
 from django.conf import settings
+from django.utils import unittest
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.i18n.tests.base import I18nTestCase
