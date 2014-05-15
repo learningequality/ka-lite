@@ -8,6 +8,7 @@ from django.conf import settings
 from django.conf.urls.defaults import include, patterns, url
 from django.http import HttpResponseServerError
 
+import kalite.i18n.api_urls
 import kalite.khanload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
@@ -38,6 +39,11 @@ urlpatterns += patterns('kalite.main.api_views',
 # Updates allows server-client interactions when downloading / updating content and software
 urlpatterns += patterns('kalite.updates.api_views',
     url(r'^', include(kalite.updates.api_urls)),
+)
+
+# i18n allows changing default languages for users
+urlpatterns += patterns('kalite.i18n.api_views',
+    url(r'^i18n/', include(kalite.i18n.api_urls)),
 )
 
 

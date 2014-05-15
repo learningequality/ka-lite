@@ -1,4 +1,4 @@
-Firstly, thank you for being willing to offer your time to contribute to the KA Lite efforts! The project is run by volunteers dedicated to helping make educational materials more accessible to those in need, and every contribution makes a difference. Feel free to follow the instructions below to start playing with the codebase, but you may want to [contact us](http://jamiealexandre.com/contact/) to figure out what would be good for you to work on, or take a look at the [GitHub issues page](https://github.com/jamalex/ka-lite/issues), and jump right in!
+Firstly, thank you for being willing to offer your time to contribute to the KA Lite efforts! The project is run by volunteers dedicated to helping make educational materials more accessible to those in need, and every contribution makes a difference. Feel free to follow the instructions below to start playing with the codebase, but you may want to [contact us](http://jamiealexandre.com/contact/) to figure out what would be good for you to work on, or take a look at the [GitHub issues page](https://github.com/learningequality/ka-lite/issues), and jump right in!
 
 ### Getting started
 
@@ -10,12 +10,12 @@ Firstly, thank you for being willing to offer your time to contribute to the KA 
 5. Run the `install.sh` (Linux/OSX) or `install.bat` script (in the `ka-lite` directory) to initialize the database. (Take a look inside the file to get a sense of what it's doing).
 6. Open two terminal/shell windows, in the `ka-lite/kalite` directory. In one, run `python manage.py runserver` (to start the Django development server), and in the other, run `python manage.py cronserver 5` (to run the background processing script, which does things like download requested videos).
 7. Load http://127.0.0.1:8000/ to view the server running in development mode.
-8. Make your changes, then commit and push them. Initiate a pull request targeting the `jamalex/ka-lite/develop` branch (by default it may have selected the `master` branch).
+8. Make your changes, then commit and push them. Initiate a pull request targeting the `learningequality/ka-lite/develop` branch (by default it may have selected the `master` branch).
 
 ### Where does communication happen?
 
 1. Any public, general development questions/announcements can go on the [KA Lite dev Google group](groups.google.com/forum/?fromgroups#!forum/ka-lite-dev). (Join it so you'll receive these messages, too.)
-2. Feature requests/bug reports can go on the [GitHub issues page](https://github.com/jamalex/ka-lite/issues).
+2. Feature requests/bug reports can go on the [GitHub issues page](https://github.com/learningequality/ka-lite/issues).
 3. We use a [Trello board for internal dev team feature prioritization and assignment/claiming](https://trello.com/board/ka-lite-programming/507303596f46cc9a38c1c94f) (a communal checklist, essentially). [Join Trello](https://trello.com/signup) and [contact Jamie](http://jamiealexandre.com/contact/) if you'd like to be added to the board.
 4. [Like the project on Facebook](https://www.facebook.com/kaliteproject) and [follow it on Twitter](https://twitter.com/ka_lite) to stay in the loop. Also, [subscribe for updates on the main project page](http://kalite.adhocsync.com/).
 
