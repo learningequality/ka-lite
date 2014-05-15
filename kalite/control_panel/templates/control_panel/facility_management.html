@@ -91,6 +91,7 @@
 {% endblock buttons %}
 
 {% block control_panel_content %}
+    {% trans "Ungrouped" as ungrouped %}
     <div id="facility_container">
         {% if not group_id %}{# Only show coaches when no group is selected #}
         <div class="coaches" id="coaches">
@@ -242,7 +243,7 @@
                                         {% if group.id %}
                                         href="{% url group_management zone_id=zone_id facility_id=facility_id group_id=group.id %}">
                                         {% else %}
-                                        href="{% url group_management zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
+                                        href="{% url group_management zone_id=zone_id facility_id=facility_id group_id=ungrouped_id %}">
                                         {% endif %}
                                         {{ group.name }}
                                     </a>
@@ -336,7 +337,7 @@
                                             <option value="{{ group.id }}">{{ group.name }}</option>
                                         {% endif %}
                                     {% endfor %}
-                                    {% if group_id != ungrouped %}
+                                    {% if group_id != ungrouped_id %}
                                         <option value="">{{ ungrouped }}</option>
                                     {% endif %}
                             </select>
