@@ -16,4 +16,4 @@ script:
 notifications:
   email:
     - aron@learningequality.org
-    - ben@learningequality.org
+    - jamie@learningequality.org

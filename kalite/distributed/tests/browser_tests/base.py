@@ -113,6 +113,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.assertTrue(self.browser_is_logged_in(username), "make sure %s is logged in." % username)
 
 
+
     def browser_login_admin(self, username=None, password=None, expect_success=True):
         if username is None:
             username = self.admin_user.username
@@ -197,4 +198,3 @@ class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestC
         """Add a facility, so users can begin registering / logging in immediately."""
         super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
         self.facility = self.create_facility(facility_name=self.facility_name)
-

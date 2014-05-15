@@ -29,8 +29,10 @@ function csrfSafeMethod(method) {
 
 function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
-    if ($.url(url).param("lang") === undefined) {
-        url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+    if ($.url(url).param("lang") === undefined && data !== null && data !== undefined) {
+        if (!data.hasOwnProperty('lang')) {
+            url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+        }
     }
 
     var request_options = {
@@ -129,7 +131,7 @@ function handleFailedAPI(resp, error_prefix) {
             }
             break;
         case 403:
-            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)'>login</a> as an authorized user, then retry the request."), {
+            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
                 login_url: USER_LOGIN_URL
             })};
             break;

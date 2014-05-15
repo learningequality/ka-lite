@@ -1,14 +1,14 @@
 {% extends "coachreports/base.html" %}
 
 {% load i18n %}
-{% load staticfiles %}
+{% load kalite_staticfiles %}
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 {% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}?{{ BUILD_ID }}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' True %}" />
 {% endblock headcss %}
 
 

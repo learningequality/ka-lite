@@ -4,8 +4,11 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
 from django.contrib.sessions.models import Session
+from django.db import DatabaseError
 
 from .base import create_test_admin, KALiteTestCase
 
@@ -19,17 +22,20 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
     global browser
 
     # Add the test user
-    admin_user = create_test_admin(username=test_user, password=test_password, email=test_email)
+    try:
+        admin_user = User.objects.get(username=test_user)
+    except ObjectDoesNotExist:
+        admin_user = create_test_admin(username=test_user, password=test_password, email=test_email)
 
     # Launch the browser
     if not persistent_browser or (persistent_browser and not browser):
-        local_browser = getattr(webdriver, browser_type)() # Get local session of firefox
-        if persistent_browser: # share browser across tests
+        local_browser = getattr(webdriver, browser_type)()  # Get local session of firefox
+        if persistent_browser:  # share browser across tests
             browser = local_browser
     else:
         local_browser = browser
 
-    return (local_browser,admin_user,test_password)
+    return (local_browser, admin_user, test_password)
 
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
@@ -93,6 +99,8 @@ class BrowserTestCase(KALiteTestCase):
                 try:
                     (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
+                except DatabaseError:
+                    raise
                 except Exception as e:
                     logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
