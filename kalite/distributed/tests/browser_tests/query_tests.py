@@ -5,7 +5,6 @@ import random
 import string
 
 from django.conf import settings
-from django.utils import unittest
 
 from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import FacilityUser
@@ -61,20 +60,20 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         student.set_password(passwd)
         student.save()
 
-        with self.assertNumQueries(25 + 3*UserLog.is_enabled()):
+        expected_num_queries = 25 + 3*UserLog.is_enabled()
+        with self.assertNumQueries(FuzzyInt(expected_num_queries - 3, expected_num_queries + 3)):
             self.browser_login_student("s1", passwd, self.facility)
-
 
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(FuzzyInt(6,9)):
+        with self.assertNumQueries(FuzzyInt(3, 9)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(FuzzyInt(4,6)):
+        with self.assertNumQueries(FuzzyInt(2, 6)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_student(self):
