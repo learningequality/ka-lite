@@ -1,15 +1,15 @@
 /* ===================================
-	Global
+    Global
 =================================== */
 html, body, #background-photo {
-	height: 100%;
+    height: 100%;
 }
 body {
-	margin: 0;
-	padding-top: 79px;
+    margin: 0;
+    padding-top: 79px;
 }
 #background-photo, .row {
-	width: 100%;
+    width: 100%;
 }
 .container {
     max-width: 1000px;
@@ -40,16 +40,16 @@ table {
 
 
 /* ===================================
-	Nav Bar
+    Nav Bar
 =================================== */
 .navbar {
-	border-bottom: 1px solid #999;
+    border-bottom: 1px solid #999;
 }
 .navbar-default {
-	background: #c6d1ad; /* Also controls footer color */
+    background: #c6d1ad; /* Also controls footer color */
 }
 .navbar-brand img { 
-	margin-top: -6px;
+    margin-top: -6px;
 }
 .navbar ul li a {
     color: #333 !important;
@@ -66,7 +66,7 @@ table {
 }
 form#search-box {
     margin-right: 15px;
-	margin-top: 14px;
+    margin-top: 14px;
 }
 input#search.ui-autocomplete-input {
     font-size: 12px;
@@ -74,8 +74,8 @@ input#search.ui-autocomplete-input {
     width: 140px;
 }
 #search-button {
-	color: #fff !important;
-	margin-left: -3px;
+    color: #fff !important;
+    margin-left: -3px;
 }
 #search-button:hover, #search-button:focus {
     background: #4cae4c !important;
@@ -135,7 +135,7 @@ input#search.ui-autocomplete-input {
 
 
 /* ===================================
-	Home Page
+    Home Page
 =================================== */
 .main-headline {
     text-align: center;
@@ -220,11 +220,11 @@ input#search.ui-autocomplete-input {
 
 
 /* ===================================
-	Footer
+    Footer
 =================================== */
 #wrapper {
-	height: auto !important;
-	height: 100%;
+    height: auto !important;
+    height: 100%;
     margin: 0 auto -78px; 
     min-height: 100%;
 }
@@ -238,8 +238,8 @@ footer a.navbar-brand {
     padding: 0;
 }
 footer {
-	border-top: 1px solid #999 !important;
-	height: 77px;
+    border-top: 1px solid #999 !important;
+    height: 77px;
 }
 footer ul li {
     margin-top: 19px;
@@ -265,7 +265,7 @@ footer ul .pull-right {
 
 
 /* ===================================
-	Media Queries
+    Media Queries
 =================================== */
 @media only screen and (max-width: 1199px) {
     .suggested-action a { font-size: 16px; }
@@ -293,5 +293,5 @@ footer ul .pull-right {
     h3.suggested-action-title { margin-top: 0; }
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {
-	.navbar-brand img { width: 69px; }
+    .navbar-brand img { width: 69px; }
 }
