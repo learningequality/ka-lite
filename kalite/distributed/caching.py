@@ -114,7 +114,7 @@ def invalidate_inmemory_caches():
     """
     # TODO: loop through all modules and see if a module variable exists, using getattr,
     #   rather than hard-coding.
-    for module in (i18n, topic_tools):
+    for module in (i18n, kalite_staticfiles, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)

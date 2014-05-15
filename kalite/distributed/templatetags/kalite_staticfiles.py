@@ -4,6 +4,8 @@ import os
 from django.conf import settings
 from django.template import Library
 
+from fle_utils.config.models import Settings
+
 if 'django.contrib.staticfiles' in settings.INSTALLED_APPS:
     from django.contrib.staticfiles.templatetags.staticfiles import static as static_lib
 else:
@@ -11,10 +13,11 @@ else:
 
 from kalite import version
 
+CACHE_VARS = ['BUILD_HASH_CACHE']
 
 # Add this as key to `fle_utils.config.models.Settings`
 BUILD_HASH = 'BUILD_HASH'
-
+BUILD_HASH_CACHE = Settings.get(BUILD_HASH, '')
 
 register = Library()
 
@@ -54,15 +57,19 @@ def static_with_build(path, with_build=True):
 
     We try all options which does not throw exception.
     """
+    global BUILD_HASH_CACHE
+
     new_path = static_lib(path)
     if with_build:
         build_id = ''
 
         # try fle_utils`s Settings
         try:
-            from fle_utils.config.models import Settings
-            build_id = Settings.get(BUILD_HASH, '')
-        except Exception as exc:
+            if BUILD_HASH_CACHE:
+                build_id = BUILD_HASH_CACHE
+            else:
+                build_id = BUILD_HASH_CACHE = Settings.get(BUILD_HASH, '')
+        except Exception:
             pass
 
         # try the BUILD data from `version.py`
@@ -86,7 +93,7 @@ def static_with_build(path, with_build=True):
                             break
                         filehash.update(data)
                     build_id = filehash.hexdigest()
-            except Exception as exc:
+            except Exception:
                 pass
 
         if build_id:
