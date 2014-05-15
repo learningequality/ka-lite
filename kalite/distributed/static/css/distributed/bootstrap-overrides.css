@@ -17,7 +17,8 @@ body {
 a:hover, a:focus {
     text-decoration: none;
 }
-h1, h2, .h4-no-margin-top { margin-top: 0;
+h1, h2, .h4-no-margin-top { 
+    margin-top: 0;
 }
 label {
     margin-top: 10px;
@@ -122,8 +123,8 @@ input#search.ui-autocomplete-input {
     padding: 0 30px;
 }
 .suggested-action:hover, .suggested-action:focus {
-    -webkit-box-shadow: 0 0 10px #76A005;
-       -moz-box-shadow: 0 0 10px #76a005;
+    -webkit-box-shadow: 0 0 30px #76A005;
+       -moz-box-shadow: 0 0 30px #76a005;
             box-shadow: 0 0 30px #76a005;
 }
 .suggested-action-title {
@@ -144,7 +145,7 @@ input#search.ui-autocomplete-input {
     color: #777;
     font-size: 1.25em;
 }
-#suggested-action-div:first-child a:hover, #suggested-action:first-child a:focus {
+#suggested-action-div:first-child a:hover, #suggested-action-div:first-child a:focus {
     color: #005987;
     font-weight: bold;
 }
@@ -275,7 +276,6 @@ footer ul .pull-right {
 @media only screen and (max-width: 767px) {
     .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
     form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
-    .suggested-action { margin-top: 20px; }
     h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
     .suggested-action .topic-list a { font-size: 1.25em; }
     #fle-logo { margin-top: 0; }
