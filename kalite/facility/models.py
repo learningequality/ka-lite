@@ -124,6 +124,16 @@ class FacilityGroup(DeferredCountSyncedModel):
 
         return rv
 
+    def get_zone(self, *args, **kwargs):
+        zone = super(FacilityUser, self).get_zone(*args, **kwargs)
+
+        # if we don't have a zone based on signed_by or zone_fallback, use zone of associated Facility
+        if not zone:
+            zone = self.facility.get_zone()
+
+        return zone
+
+
 class FacilityUser(DeferredCountSyncedModel):
     # Translators: This is a label in a form.
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
@@ -224,6 +234,15 @@ class FacilityUser(DeferredCountSyncedModel):
             return u"%s %s" % (self.first_name, self.last_name)
         else:
             return self.username
+
+    def get_zone(self, *args, **kwargs):
+        zone = super(FacilityUser, self).get_zone(*args, **kwargs)
+
+        # if we don't have a zone based on signed_by or zone_fallback, use zone of associated Facility
+        if not zone:
+            zone = self.facility.get_zone()
+
+        return zone
 
 
 class CachedPassword(models.Model):

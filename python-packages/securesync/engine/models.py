@@ -292,7 +292,9 @@ class SyncedModel(ExtendedModel):
 
             if sign:
                 assert self.counter is not None, "Only sign data where count is set"
-                # Always sign on the central server.
+                # if we are a trusted (zoneless) device, i.e. the central server, then set the zone fallback
+                if own_device.is_trusted():
+                    self.zone_fallback = self.get_zone()
                 self.sign(device=own_device)
             else:
                 self.set_id()
