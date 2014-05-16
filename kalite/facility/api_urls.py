@@ -12,5 +12,5 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^facility_delete/(?P<facility_id>\w+)$', 'facility_delete', {}, 'facility_delete'),
 
     # For group management
-    url(r'^groups/', include(FacilityGroupResource().urls)),
+    url(r'^', include(FacilityGroupResource().urls)),
 )

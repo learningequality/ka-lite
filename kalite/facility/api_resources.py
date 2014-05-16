@@ -8,4 +8,4 @@ class FacilityGroupResource(ModelResource):
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
-        authorization = FacilityUserCanWriteAuthorization
+        authorization = FacilityUserCanWriteAuthorization()
