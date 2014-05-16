@@ -1,4 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
+
+from .api_resources import FacilityGroupResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -8,5 +10,7 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     url(r'^facility_delete$', 'facility_delete', {}, 'facility_delete'),
     url(r'^facility_delete/(?P<facility_id>\w+)$', 'facility_delete', {}, 'facility_delete'),
-)
 
+    # For group management
+    url(r'^groups/', include(FacilityGroupResource().urls)),
+)
