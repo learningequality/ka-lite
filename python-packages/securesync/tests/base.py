@@ -3,7 +3,7 @@ Tests for securesync
 """
 from django.test import LiveServerTestCase
 
-from ..models import Device
+from ..models import Device, DeviceZone, Zone
 from fle_utils.config.models import Settings
 
 
@@ -29,5 +29,3 @@ class SecuresyncTestCase(LiveServerTestCase):
         """Register the local device to a zone (dummy zone if none specified)."""
         zone = zone or Zone.objects.create(name='test_zone')
         DeviceZone.objects.create(zone=zone, device=Device.get_own_device())
-        #Settings.set("registered", True)
-
