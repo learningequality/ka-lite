@@ -17,55 +17,81 @@
         if (window.parent.frames.length === 0) {
             window.location = "{% url load_test %}";
         }
+
     </script>
     {% endif %}
 {% endblock headjs %}
 
 {% block content %}
-    <div>
-      <table class="table table-hover">
-        <tr>
-          <th>Playlists</th>
-        </tr>
-        <tr id="title-1">
-          <td>
-            <div>
-              <span class="pull-left">Title</span>
-              <button class="pull-right">Add Student Group</button>
-            </div>
+    <div class="row">
+      <div class="span10">
+        <table class="table table-hover">
+          <tr>
+            <th>Playlists</th>
+          </tr>
+          <tr id="title-1"> <td> <div>
+                <span class="pull-left">Title</span>
+              </div>
 
-          </td>
-        </tr>
-        <tr id="student-grps-1">
-          <td>
-            <ul>
-              <li>Student Group 1</li>
-              <li>Student Group 1</li>
-              <li>Student Group 1</li>
-              <li>Student Group 1</li>
-            </ul>
-          </td>
-        </tr>
-        <tr id="title-2">
-          <td>
-            <div>
-              <span class="pull-left">Title2</span>
-              <button class="pull-right">Add Student Group</button>
-            </div>
+            </td>
+          </tr>
+          <tr id="student-grps-1">
+            <td>
+              <ul>
+                <li>Student Group 1</li>
+                <li>Student Group 1</li>
+                <li>Student Group 1</li>
+                <li>Student Group 1</li>
+              </ul>
+            </td>
+          </tr>
+          <tr id="title-2">
+            <td>
+              <div>
+                <span class="pull-left">Title2</span>
+              </div>
 
-          </td>
-        </tr>
-        <tr id="student-grps-2">
-          <td>
-            <ul>
-              <li>Student Group 1</li>
-              <li>Student Group 1</li>
-              <li>Student Group 1</li>
-              <li>Student Group 1</li>
-            </ul>
-          </td>
-        </tr>
-      </table>
+            </td>
+          </tr>
+          <tr id="student-grps-2">
+            <td>
+              <ul>
+                <li>Student Group 1</li>
+                <li>Student Group 1</li>
+                <li>Student Group 1</li>
+                <li>Student Group 1</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="span3">
+        <table class="table table-hover">
+          <tr>
+            <th>Student Groups</th>
+          </tr>
+          <tr>
+            <td draggable="true">
+              Student Group 1
+            </td>
+          </tr>
+          <tr>
+            <td draggable="true">
+              Student Group 2
+            </td>
+          </tr>
+          <tr>
+            <td draggable="true">
+              Student Group 3
+            </td>
+          </tr>
+          <tr>
+            <td draggable="true">
+              Student Group 4
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
 
 
