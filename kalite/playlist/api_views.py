@@ -3,7 +3,7 @@ import os
 
 from fle_utils.internet import JsonResponse, api_handle_error_with_json
 
-from .models import PlaylistsAssignedToGroup
+from .models import PlaylistToGroupMapping
 from kalite.facility.models import FacilityGroup
 
 
@@ -15,7 +15,7 @@ def sample_json(request):
 
 @api_handle_error_with_json
 def assign_group_to_playlist(request, playlist_id, group_id):
-    playlist_to_group, was_created = PlaylistsAssignedToGroup.objects.get_or_create(
+    playlist_to_group, was_created = PlaylistToGroupMapping.objects.get_or_create(
         playlist=playlist_id,
         group=FacilityGroup.objects.get(id=group_id),
     )

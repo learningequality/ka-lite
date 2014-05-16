@@ -2,6 +2,8 @@ from django.db import models
 
 from fle_utils.django_utils import ExtendedModel
 
+from kalite.facility.models import FacilityGroup
+
 
 class Playlist(ExtendedModel):
     title = models.CharField(max_length=30)
@@ -51,3 +53,8 @@ class PlaylistEntry(ExtendedModel):
 
     class Meta:
         ordering = ['playlist', 'sort_order']
+
+
+class PlaylistToGroupMapping(ExtendedModel):
+    playlist = models.IntegerField()
+    group = models.ForeignKey(FacilityGroup, related_name='playlists')
