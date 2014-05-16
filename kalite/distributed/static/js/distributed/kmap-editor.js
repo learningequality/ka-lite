@@ -110,9 +110,6 @@ var KMapEditor = {
         //  when it's width is less than the container width or set it to a constant 10px when
         // it is scrollable.
 
-        // CSS class to use for the map container.
-        var overflow = "hidden";
-
         // canvas height
         var raphaelHeight = this.raphael.height;
         if (mapHeight < raphaelHeight) {
@@ -125,9 +122,8 @@ var KMapEditor = {
         // canvas width
         var raphaelWidth = this.raphael.width;
         var marginLeft = (mapWidth - (raphaelWidth + (this.maxX * 2))) / 2;
-        if ((marginLeft < 10)) {
+        if ((marginLeft < 20)) {
             marginLeft = 10;
-            overflow = "scroll";
         } else {
             marginLeft = mapWidth / 2 - ((this.maxX - this.minX) * this.X_SPACING / 2);
         }
@@ -135,10 +131,6 @@ var KMapEditor = {
         $("#map").css({
             "margin-left": marginLeft,
             "margin-top": 30
-        });
-
-        $("#map-container").css({
-            "overflow": overflow
         });
     },
 
