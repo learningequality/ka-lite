@@ -3,13 +3,13 @@
 
 from annoying.functions import get_object_or_None
 
-from django.core.permissions import PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess, JsonResponseMessageError
+from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess
 from kalite.shared.decorators import require_authorized_admin
 
 
