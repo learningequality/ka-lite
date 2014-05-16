@@ -3,7 +3,7 @@
 
 from annoying.functions import get_object_or_None
 
-from django.http import HttpResponseForbidden
+from django.core.permissions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
@@ -53,4 +53,3 @@ def facility_delete(request, facility_id=None):
 
     fac.delete()
     return JsonResponseMessageSuccess(_("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
-
