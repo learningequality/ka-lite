@@ -56,5 +56,5 @@ class PlaylistEntry(ExtendedModel):
 
 
 class PlaylistToGroupMapping(ExtendedModel):
-    playlist = models.IntegerField()
+    playlist = models.IntegerField(db_index=True)
     group = models.ForeignKey(FacilityGroup, related_name='playlists')
