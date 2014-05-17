@@ -41,7 +41,6 @@ module.exports = function(grunt) {
 				trailing: true, // Trailing whitespace.
 
 				// Relaxing options
-				asi: true, // Missing semicolon.
 				shadow: true, // 'variable' is already defined.
 				sub: true, // ['property'] is better written in dot notation.
 

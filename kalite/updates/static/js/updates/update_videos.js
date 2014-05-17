@@ -253,7 +253,7 @@ $(function() {
                 // Update the UI
                 $("#download-videos").removeAttr("disabled");
                 $("#cancel-download").hide();
-            })
+            });
 
         // Update the UI
 

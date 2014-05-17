@@ -1,7 +1,7 @@
 $(function () {
     $("#force-sync").click(function(){
         force_sync();
-    })
+    });
 
     $(".facility-delete-link").click(function(event) {
         if (confirm(gettext("Are you sure you want to delete this facility?"))) {
@@ -12,4 +12,4 @@ $(function () {
                 });
         }
     });
-})
+});
