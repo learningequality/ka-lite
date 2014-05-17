@@ -5,7 +5,15 @@ from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import Playlist, PlaylistEntry, PlaylistToGroupMapping
+from .models import PlaylistEntry, PlaylistToGroupMapping
+
+
+class Playlist:
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id')
+        self.title = kwargs.get('title')
+        self.description = kwargs.get('description')
+        self.groups_assigned = kwargs.get('groups_assigned')
 
 
 class PlaylistResource(Resource):
@@ -17,6 +25,7 @@ class PlaylistResource(Resource):
 
     class Meta:
         resource_name = 'playlist'
+        # Use plain python object first instead of full-blown Django ORM model
         object_class = Playlist
 
     def read_playlists(self):
