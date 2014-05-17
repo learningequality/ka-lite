@@ -5,7 +5,8 @@ from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistEntry, PlaylistToGroupMapping
+from .models import PlaylistEntry
+from kalite.facility.models import FacilityGroup
 
 
 class Playlist:
@@ -38,7 +39,7 @@ class PlaylistResource(Resource):
         playlists = []
         for playlist_dict in raw_playlists:
             playlist = Playlist(title=playlist_dict['title'], description='', id=playlist_dict['id'])
-            groups_assigned = PlaylistToGroupMapping.objects.filter(playlist=playlist_dict['id']).values('group')
+            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
             playlist.groups_assigned = groups_assigned
             playlists.append(playlist)
 
