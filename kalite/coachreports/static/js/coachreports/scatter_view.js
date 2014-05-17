@@ -109,15 +109,15 @@ function user2tooltip(json, user, xaxis, yaxis) {
             for (var i in exercises) {
                 if (exercises[i]["slug"] in row) {
                     d = exercises[i]["slug"];
-                    if (parseInt(row[d]) >= 30) { // TODO: Get mastery and struggling data from API to check this more rigorously
+                    if (parseInt(row[d], 10) >= 30) { // TODO: Get mastery and struggling data from API to check this more rigorously
                         struggles[d] = {
-                            "num": parseInt(row[d]),
+                            "num": parseInt(row[d], 10),
                             "name": exercises[i]["full_name"],
                             "url": exercises[i]["url"]
                         };
                     } else {
                         attempts[d] = {
-                            "num": parseInt(row[d]),
+                            "num": parseInt(row[d], 10),
                             "name": exercises[i]["full_name"],
                             "url": exercises[i]["url"]
                         };
