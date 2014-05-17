@@ -240,7 +240,7 @@ class TestZoneFallbackSettingOnCentralSave(SecuresyncTestCase):
             user = FacilityUser(username="bobmcknob", facility=self.facility)
             user.set_password("blahblah")
             user.save()
-            assert user.get_zone() is not None, "Centrally created FacilityUser was not assigned a zone."
+            assert user.zone_fallback is not None, "Centrally created FacilityUser was not assigned a zone."
 
     def test_facility_group_save(self):
 
