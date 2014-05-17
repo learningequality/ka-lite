@@ -1,14 +1,14 @@
 // Scripts for mapping our stats into text names and Google vis types.
 function stat2name(stat) {
     var children = $("#xaxis option");
-    for (opt in children) {
+    for (var opt in children) {
         if (children[opt].value == stat) {
             return children[opt].text;
         }
     }
 
     var children = $("#yaxis option");
-    for (opt in children) {
+    for (var opt in children) {
         if (children[opt].value == stat) {
             return children[opt].text;
         }

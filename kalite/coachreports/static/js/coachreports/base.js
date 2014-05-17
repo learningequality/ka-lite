@@ -4,7 +4,7 @@ function generate_current_link() {
     // Add topic paths
     if (typeof get_topic_paths_from_tree != 'undefined') {
         var topic_paths = get_topic_paths_from_tree();
-        for (pi in topic_paths) {
+        for (var pi in topic_paths) {
             url += "&topic_path=" + topic_paths[pi];
         }
         // Add axis information

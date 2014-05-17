@@ -17,7 +17,6 @@ module.exports = function(grunt) {
 			options: {
 				"-W041": false, // Use '===' to compare with ''.
 				"-W047": false, // A trailing decimal point can be confused with a dot
-				"-W088": false, // Creating global 'for' variable.
 				"-W107": false, // Script URL.
 
 				// Enforcing options
