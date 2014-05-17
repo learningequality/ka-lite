@@ -1,3 +1,4 @@
+from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 
 from .api_authorizations import FacilityUserCanWriteAuthorization
@@ -8,4 +9,5 @@ class FacilityGroupResource(ModelResource):
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
-        authorization = FacilityUserCanWriteAuthorization()
+        # authorization = FacilityUserCanWriteAuthorization()
+        authorization = Authorization()
