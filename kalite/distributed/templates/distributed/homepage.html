@@ -19,6 +19,10 @@
         }
     </script>
     {% endif %}
+
+    <script type="text/javascript">
+     var ASSIGNED_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+    </script>
 {% endblock headjs %}
 
 {% block content %}

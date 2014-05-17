@@ -1,8 +1,9 @@
 $(function() {
   $("#playlist-table").hide();
   $.ajax({
-    url: 'api/playlists/sample',
+    url: ASSIGNED_PLAYLISTS_URL,
     type: 'GET',
+    dataType: 'json',
     success: function(data) {
       $("#playlist-table").show();
       $(".loading").hide();
