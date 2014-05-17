@@ -17,7 +17,6 @@ module.exports = function(grunt) {
 			options: {
 				"-W041": false, // Use '===' to compare with ''.
 				"-W047": false, // A trailing decimal point can be confused with a dot
-				"-W107": false, // Script URL.
 
 				// Enforcing options
 				bitwise: true, // Unexpected use of '&'.
@@ -27,7 +26,7 @@ module.exports = function(grunt) {
 				//forin: true, // The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.
 				freeze: true, // Extending prototype of native object: 'Object'.
 				immed: true, // Function declarations are not invocable. Wrap the whole function invocation in parens.
-				//latedef: 'nofunc', // 'variable' was used before it was defined.
+				latedef: 'nofunc', // 'variable' was used before it was defined.
 				noarg: true, // Avoid arguments.callee.
 				noempty: true, // Empty block.
 				nonbsp: true, // "non-breaking whitespace" character
