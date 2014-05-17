@@ -15,7 +15,6 @@ module.exports = function(grunt) {
 			],
 			// http://www.jshint.com/docs/options/
 			options: {
-				"-W038": false, // 'variable' used out of scope.
 				"-W041": false, // Use '===' to compare with ''.
 				"-W047": false, // A trailing decimal point can be confused with a dot
 				"-W065": false, // Missing radix parameter.
@@ -36,7 +35,7 @@ module.exports = function(grunt) {
 				nonbsp: true, // "non-breaking whitespace" character
 				nonew: true, // Do not use 'new' for side effects.
 				//undef: true, // 'variable' is not defined.
-				//unused: true, // 'variable' is defined but never used.
+				//unused: "vars", // 'variable' is defined but never used.
 				//strict: true, // Missing "use strict" statement.
 				trailing: true, // Trailing whitespace.
 
