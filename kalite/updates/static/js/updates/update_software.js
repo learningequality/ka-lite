@@ -63,18 +63,18 @@ function version_callback(data) {
 
         // Update feature list
         //$("#new_features").text("");
-        for (version in version_info) {  // loop through all features of all uninstalled versions
+        for (var version in version_info) {  // loop through all features of all uninstalled versions
             if (! version_info[version]["new_features"]) {
                 $("#new_features").append(sprintf("<li>(%s)</li>", gettext("None")));
             } else {
-                for (fi in version_info[version]["new_features"]) {
+                for (var fi in version_info[version]["new_features"]) {
                     $("#new_features").append("<li>" + version_info[version]["new_features"][fi] + "</li>");
                 }
             }
             if (! version_info[version]["bugs_fixed"]) {
                 $("#bugs_fixed").append(gettext("<li>(%s)</li>", gettext("None")));
             } else {
-                for (fi in version_info[version]["bugs_fixed"]) {
+                for (var fi in version_info[version]["bugs_fixed"]) {
                     $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fi] + "</li>");
                 }
             }
