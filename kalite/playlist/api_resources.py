@@ -22,6 +22,7 @@ class PlaylistResource(Resource):
     description = fields.CharField(attribute='description')
     id = fields.CharField(attribute='id')
     title = fields.CharField(attribute='title')
+    groups_assigned = fields.ListField(attribute='groups_assigned')
 
     class Meta:
         resource_name = 'playlist'
