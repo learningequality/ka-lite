@@ -50,7 +50,7 @@ function updatePercentCompleted(correct) {
         .success(function(data) {
             // update the top-right point display, now that we've saved the points successfully
             userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
-        })
+        });
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
