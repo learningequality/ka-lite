@@ -8,9 +8,9 @@ $(function() {
       $("#playlist-table").show();
       $(".loading").hide();
       var playlists = $("#playlists");
-      data.map(function(result) {
-          var format = formatPlaylist(result)
-          $("#playlists").append(format)
+      data.objects.map(function(result) {
+          var format = formatPlaylist(result);
+          $("#playlists").append(format);
       });
     }
   });
