@@ -125,7 +125,7 @@ class FacilityGroup(DeferredCountSyncedModel):
         return rv
 
     def get_zone(self, *args, **kwargs):
-        zone = super(FacilityUser, self).get_zone(*args, **kwargs)
+        zone = super(FacilityGroup, self).get_zone(*args, **kwargs)
 
         # if we don't have a zone based on signed_by or zone_fallback, use zone of associated Facility
         if not zone:
