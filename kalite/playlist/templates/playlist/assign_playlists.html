@@ -20,6 +20,10 @@
 
     </script>
     {% endif %}
+
+    <script type="text/javascript">
+     var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
+    </script>
 {% endblock headjs %}
 
 {% block content %}

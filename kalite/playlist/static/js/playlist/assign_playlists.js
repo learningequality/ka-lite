@@ -20,6 +20,15 @@ function drop(ev) {
   appendStudentGrp(id, studentGrp);
 }
 
+// get and display all groups
+$(function() {
+    doRequest(ALL_GROUPS_URL).success(function(data) {
+        data.objects.map(function(obj) {
+            $("table[id|=all-student-groups] tr:last").after(sprintf('<tr><td>%(name)s</td></tr>', obj));
+        });
+    });
+});
+
 $(function() {
     $(".span3 td").on('dragstart', drag);
     $("tr[id|=student-grps]").on('dragover', allowDrop);
@@ -34,4 +43,3 @@ $(function() {
         $("#student-grps-" + idNum).toggle();
     });
 });
-
