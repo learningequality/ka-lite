@@ -97,18 +97,13 @@ class FacilityUserForm(forms.ModelForm):
         # If they have put anything in the new password field, it must match the password check field
         if password_first != password_recheck:
             self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
-
+        
         # Next, enforce length if they submitted a password
         if password_first:
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
-                self.set_field_error(field_name='password_first', message=ve.message)
-        elif (self.instance and not self.instance.password) or password_first or password_recheck:
-            # Only perform check on a new user or a password change
-            if password_first != password_recheck:
-                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
-
+                self.set_field_error(field_name='password_first', message=ve.messages[0])
 
         ## Warn the user during sign up or adding user if a user with this first and last name already exists in the faiclity
         if not self.cleaned_data.get("warned", False) and (self.cleaned_data["first_name"] or self.cleaned_data["last_name"]):
