@@ -7,11 +7,11 @@
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/index.css' True %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' True %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/playlist/index.js' True %}"></script>
+    <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -66,7 +66,7 @@
         </table>
       </div>
       <div class="span3">
-        <table class="table table-hover">
+        <table class="table table-hover" id="all-student-groups">
           <tr>
             <th>Student Groups</th>
           </tr>
