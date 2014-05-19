@@ -105,8 +105,31 @@ var KMapEditor = {
         var mapHeight = $("#map-container").height();
         var mapWidth = $("#map-container").width();
 
+        // MUST: Make sure the map canvas is visible or scrollable based on its contents.
+        // For the width, we modify the `margin-left` attribute so we either center the map
+        //  when it's width is less than the container width or set it to a constant 10px when
+        // it is scrollable.
+
+        // canvas height
+        var raphaelHeight = this.raphael.height;
+        if (mapHeight < raphaelHeight) {
+            // add 60 to hide the vertical scrollbars due to `min-height` attribute of container
+            $("#map-container").css({
+                "height": raphaelHeight + 60
+            });
+        }
+
+        // canvas width
+        var raphaelWidth = this.raphael.width;
+        var marginLeft = (mapWidth - (raphaelWidth + (this.maxX * 2))) / 2;
+        if ((marginLeft < 20)) {
+            marginLeft = 10;
+        } else {
+            marginLeft = mapWidth / 2 - ((this.maxX - this.minX) * this.X_SPACING / 2);
+        }
+
         $("#map").css({
-            "margin-left": mapWidth / 2 - (this.maxX - this.minX) * this.X_SPACING / 2,
+            "margin-left": marginLeft,
             "margin-top": 30
         });
     },
