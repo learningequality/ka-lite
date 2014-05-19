@@ -77,11 +77,11 @@
 {% block content %}
 
     {% if prev %}
-    <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
+    <div class="vidprev"><a href="{{ prev.path }}?lang={{ video.selected_language }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
     {% endif %}
 
     {% if next %}
-    <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+    <div class="vidnext"><a href="{{ next.path }}?lang={{ video.selected_language }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
     <div class="clear"></div>
 
