@@ -469,6 +469,31 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log.save()  # total-seconds will be computed here.
         return cur_log
 
+class AttemptLog(DeferredCountSyncedModel):
+    """
+    Detailed instances of user exercise engagement.
+    """
+
+    # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
+
+    minversion = "0.12.0"
+
+    user = models.ForeignKey(FacilityUser, db_index=True)
+    exercise_id = models.CharField(max_length=100, db_index=True)
+    random_seed = models.IntegerField(default=0)
+    answer_given = models.TextField()
+    points_awarded = models.IntegerField(blank=True, null=True)
+    correct = models.BooleanField(default=False)
+    context_type = models.CharField(max_length=20, blank=False)
+    context_id = models.CharField(max_length=100, blank=True)
+    language = models.CharField(max_length=8, blank=True)
+    timestamp = models.DateTimeField(editable=False, default=datetime.now)
+    time_taken = models.IntegerField(blank=True, null=True)
+    exercise_version = models.CharField(blank=True, max_length=100)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
     assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
@@ -515,4 +540,4 @@ def cull_records(sender, **kwargs):
             UserLog.objects.filter(pk__in=to_discard).delete()
 
 
-engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
+engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary, AttemptLog])

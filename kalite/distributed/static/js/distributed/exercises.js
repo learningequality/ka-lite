@@ -61,6 +61,9 @@ $(function() {
         $(Exercises).trigger("problemTemplateRendered");
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
+    $(Khan).on("answerGiven", function (event, answer) {
+        answerGiven = answer;
+    })
     $(Exercises).bind("checkAnswer", function(ev, data) {
         updatePercentCompleted(data.correct);
 

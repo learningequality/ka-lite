@@ -79,6 +79,7 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^watch/$', 'watch_home', {}, 'watch_home'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
+    url(r'^test/', include('student_testing.urls')),
     # the following pattern is a catch-all, so keep it last:
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
