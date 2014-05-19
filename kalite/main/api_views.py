@@ -180,7 +180,7 @@ def flat_topic_tree(request, lang_code):
 @api_handle_error_with_json
 @backend_cache_page
 def exercise(request, exercise_id):
-    return JsonResponse(get_exercise_data(request,exercise_id))
+    return JsonResponse(get_exercise_data(request, exercise_id))
 
 
 @api_handle_error_with_json

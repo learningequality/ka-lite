@@ -1,3 +1,5 @@
+import json
+
 from main.api_views import student_log_api
 
 from main.api_forms import AttemptLogForm
@@ -17,7 +19,7 @@ def save_attempt_log(request):
     saves it to the currently authorized user.
     """
     # Form does all data validation, including of the exercise_id
-    form = AttemptLogForm(data=simplejson.loads(request.raw_post_data))
+    form = AttemptLogForm(data=json.loads(request.raw_post_data))
     if not form.is_valid():
         raise Exception(form.errors)
     data = form.data
@@ -36,15 +38,15 @@ def save_attempt_log(request):
     try:
         testlog.full_clean()
         testlog.save()
-    	AttemptLog.objects.create(
+        AttemptLog.objects.create(
             user=user,
             exercise_id=data["exercise_id"],
             random_seed=data["random_seed"],
             answer_given=data["answer_given"],
             correct=data["correct"],
-            question_type="exam",
-            type_parent_object=data["title"]
-    		)
+            context_type="exam",
+            context_id=data["title"]
+            )
     except ValidationError as e:
         return JsonResponse({"error": _("Could not save TestAttemptLog") + u": %s" % e}, status=500)
       

@@ -474,18 +474,22 @@ class AttemptLog(DeferredCountSyncedModel):
     Detailed instances of user exercise engagement.
     """
 
+    # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
+
     minversion = "0.12.0"
 
-    user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
+    user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     random_seed = models.IntegerField(default=0)
-    answer_given = models.CharField(max_length=100, blank=False, null=False)
+    answer_given = models.TextField()
     points_awarded = models.IntegerField(blank=True, null=True)
-    correct = models.BooleanField(blank=False, null=False)
-    question_type = models.CharField(max_length=20, blank=False, null=False)
-    type_parent_object = models.CharField(max_length=100, blank=True, null=True)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.12.0"
+    correct = models.BooleanField(default=False)
+    context_type = models.CharField(max_length=20, blank=False)
+    context_id = models.CharField(max_length=100, blank=True)
+    language = models.CharField(max_length=8, blank=True)
     timestamp = models.DateTimeField(editable=False, default=datetime.now)
+    time_taken = models.IntegerField(blank=True, null=True)
+    exercise_version = models.CharField(blank=True, max_length=100)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
