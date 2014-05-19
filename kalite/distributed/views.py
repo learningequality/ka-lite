@@ -290,17 +290,18 @@ def video_handler_backbone(request, video, format="mp4", prev=None, next=None):
     else:
         vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
 
+    # TODO(jamalex): clean this up, and move stuff into a generic video-info endpoint/function
     video["video_urls"] = video["availability"].get(vid_lang)
     video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
     video["selected_language"] = vid_lang
-    video["num_videos_available"] = len(video["availability"])
+    video["dubs_available"] = len(video["availability"]) > 1
     video["title"] = _(video["title"])
     video["description"] = _(video["description"])
+    video["video_id"] = video["id"]
 
     context = {
         "video": video,
         "title": video["title"],
-        "num_videos_available": len(video["availability"]), # delete
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),

@@ -243,23 +243,31 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
 
 
-window.VideoView = Backbone.View.extend({
+window.VideoPlayerView = Backbone.View.extend({
+
+    template: HB.template("video/video-player"),
 
     _readyDeferred: null,
 
     initialize: function() {
 
-        var that = this;
-
         _.bindAll(this);
 
         this._readyDeferred = new $.Deferred();
 
-        this._pointView = new PointView({model: this.model});
+        this.render();
 
         // listen to changes in window size and resize the video accordingly
         $(window).resize(this._onResize);
         this._onResize();
+
+    },
+
+    render: function() {
+
+        var that = this;
+
+        this.$el.html(this.template(this.model.attributes));
 
         this.$("video").bind("loadedmetadata", function() {
 
@@ -278,7 +286,6 @@ window.VideoView = Backbone.View.extend({
             that._initializePlayer(width, height);
 
         });
-
 
     },
 
@@ -420,12 +427,10 @@ window.VideoView = Backbone.View.extend({
 });
 
 
-window.PointView = Backbone.View.extend({
+window.VideoPointView = Backbone.View.extend({
     /*
     Passively display the point count to the user (and listen to changes on the model to know when to update).
     */
-
-    el: ".points-container",
 
     initialize: function() {
 
@@ -434,6 +439,8 @@ window.PointView = Backbone.View.extend({
         this.model = this.options.model || new VideoPlayerModel(this.options);
 
         this.model.whenPointsIncrease(this._updatePoints);
+
+        this._updatePoints();
 
     },
 
@@ -444,15 +451,31 @@ window.PointView = Backbone.View.extend({
 
 });
 
+window.VideoWrapperView = Backbone.View.extend({
 
-function initialize_video(video_id, youtube_id) {
+    template: HB.template("video/video-wrapper"),
 
-    window.videoView = new VideoView({
-        el: $("#video-player"),
-        model: new VideoPlayerModel({
-            video_id: video_id,
-            youtube_id: youtube_id
-        })
-    });
+    initialize: function() {
 
-}
+        this.render();
+
+    },
+
+    render: function() {
+
+        this.$el.html(this.template(this.model.attributes));
+
+        this.videoPlayerView = new VideoPlayerView({
+            el: this.$(".video-player-container"),
+            model: this.model
+        });
+
+        this.videoPointView = new VideoPointView({
+            el: this.$(".points-container"),
+            model: this.model
+        });
+
+    }
+
+});
+

@@ -35,3 +35,11 @@ Handlebars.registerHelper("ifcond", function(v1, operator, v2, options) {
             return eval(""+v1+operator+v2)?options.fn(this):options.inverse(this);
     }
 });
+
+
+Handlebars.registerHelper("_", function(i18n_key) {
+
+    // TODO(jamalex): get this doing actual translation!
+    return i18n_key;
+
+});

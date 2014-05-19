@@ -1,0 +1,35 @@
+    <div class="video-wrapper">
+
+        <h2 class="title-header">
+
+            {{#if dubs_available }}
+                <span id="lang_display_name">
+                    [<a >{{ selected_language }}</a>]
+                </span>
+                <select id="video_language_selector" onchange="selectVideoLanguage(this)" AutoPostBack="True">
+                    {{#each availability }}
+                        <option value="?lang={{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                        {{ @key }}
+                    {{/each}}
+                </select>
+            {{/if}}
+
+            <span class="title">{{ title }}</span>
+
+            <br/>
+
+            {{#if description }}
+            <span class="long-description">{{ description }}</span>
+            {{/if}}
+
+            <div class="clear"></div>
+
+            <div class="points-container" style="display: none;">{{_ "Points" }}: <span class="points">0</span></div>
+
+        </h2>
+
+        <div class="clear"></div>
+
+        <div class="video-player-container"></div>
+
+    </div>
