@@ -242,7 +242,10 @@ window.VideoPlayerModel = Backbone.Model.extend({
 });
 
 
-window.VideoView = Backbone.View.extend({
+
+window.VideoPlayerView = Backbone.View.extend({
+
+    template: HB.template("video/video-player"),
 
     _readyDeferred: null,
 
@@ -252,9 +255,41 @@ window.VideoView = Backbone.View.extend({
 
         this._readyDeferred = new $.Deferred();
 
-        this.model = new VideoPlayerModel(this.options);
+        this.render();
 
-        this._pointView = new PointView({model: this.model});
+        // listen to changes in window size and resize the video accordingly
+        $(window).resize(this._onResize);
+        this._onResize();
+
+    },
+
+    render: function() {
+
+        var that = this;
+
+        this.$el.html(this.template(this.model.attributes));
+
+        this.$("video").bind("loadedmetadata", function() {
+
+            var width = $(this).prop("videoWidth");
+            var height = $(this).prop("videoHeight");
+
+            that._initializePlayer(width, height);
+
+        });
+
+        this.$(".video-thumb").load(function() {
+
+            var width = $(".video-thumb").width();
+            var height = $(".video-thumb").height();
+
+            that._initializePlayer(width, height);
+
+        });
+
+    },
+
+    _initializePlayer: _.once(function(width, height) {
 
         var player_id = this.$(".video-js").attr("id");
 
@@ -262,8 +297,21 @@ window.VideoView = Backbone.View.extend({
             this.player = this.model.player = _V_(player_id);
             this._beginIntervalUpdate();
             this._initializeEventListeners();
+        } else {
+            console.warn("Warning: Could not find Video.JS player!");
         }
-    },
+
+        this.model.set({width: width, height: height});
+
+        this._onResize();
+
+    }),
+
+    _onResize: _.throttle(function() {
+        var available_width = $("article").width();
+        var available_height = $(window).height() * 0.9;
+        this.setContainerSize(available_width, available_height);
+    }, 500),
 
     _initializeEventListeners: function() {
 
@@ -379,12 +427,10 @@ window.VideoView = Backbone.View.extend({
 });
 
 
-window.PointView = Backbone.View.extend({
+window.VideoPointView = Backbone.View.extend({
     /*
     Passively display the point count to the user (and listen to changes on the model to know when to update).
     */
-
-    el: ".points-container",
 
     initialize: function() {
 
@@ -393,6 +439,8 @@ window.PointView = Backbone.View.extend({
         this.model = this.options.model || new VideoPlayerModel(this.options);
 
         this.model.whenPointsIncrease(this._updatePoints);
+
+        this._updatePoints();
 
     },
 
@@ -403,48 +451,43 @@ window.PointView = Backbone.View.extend({
 
 });
 
+window.VideoWrapperView = Backbone.View.extend({
 
-function initialize_video(video_id, youtube_id) {
+    template: HB.template("video/video-wrapper"),
 
-    var create_video_view = _.once(function(width, height) {
+    initialize: function() {
 
-        window.videoView = new VideoView({
-            el: $("#video-player"),
-            video_id: video_id,
-            youtube_id: youtube_id,
-            width: width,
-            height: height
+        this.render();
+
+        // this.listenTo(this.model, "change:selected_language", this.render);
+
+    },
+
+    events: {
+        "change .video-language-selector": "languageChange"
+    },
+
+    render: function() {
+
+        this.$el.html(this.template(this.model.attributes));
+
+        this.videoPlayerView = new VideoPlayerView({
+            el: this.$(".video-player-container"),
+            model: this.model
         });
 
-        var resize_video = _.throttle(function() {
-            var available_width = $("article").width();
-            var available_height = $(window).height() * 0.9;
-            videoView.setContainerSize(available_width, available_height);
-        }, 500);
+        this.videoPointView = new VideoPointView({
+            el: this.$(".points-container"),
+            model: this.model
+        });
 
-        $(window).resize(resize_video);
+    },
 
-        resize_video();
+    languageChange: function() {
+        // TODO(jamalex): allow this to be set dynamically, without reloading page?
+        // this.model.set("selected_language", this.$(".video-language-selector").val());
+        window.location = "?lang=" + this.$(".video-language-selector").val();
+    }
 
-    });
+});
 
-    $("video").bind("loadedmetadata", function() {
-
-        var width = $(this).prop("videoWidth");
-        var height = $(this).prop("videoHeight");
-
-        create_video_view(width, height);
-
-    });
-
-    $(".video-thumb").load(function() {
-
-        var width = $(".video-thumb").width();
-        var height = $(".video-thumb").height();
-
-        create_video_view(width, height);
-
-    });
-
-
-}

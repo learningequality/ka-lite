@@ -18,6 +18,8 @@ import kalite.facility.urls
 import kalite.updates.urls
 import securesync.urls
 
+import fle_utils.handlebars
+
 
 admin.autodiscover()
 
@@ -66,6 +68,11 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
         url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
     )
 
+# Handlebars
+urlpatterns += patterns('',
+    url(r'^handlebars/', include(fle_utils.handlebars.urls)),
+)
+
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
@@ -73,10 +80,10 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
     # the following pattern is a catch-all, so keep it last:
-    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
-
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+
+    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
 handler403 = __package__ + '.views.handler_403'
