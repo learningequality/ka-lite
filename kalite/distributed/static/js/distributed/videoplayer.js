@@ -42,7 +42,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
 
         var self = this;
 
-        doRequest("/api/get_video_logs", [this.get("video_id")])
+        doRequest(GET_VIDEO_LOGS_URL, [this.get("video_id")])
             .success(function(data) {
                 if (data.length === 0) {
                     return;
@@ -79,7 +79,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
             points: this.get("points")
         };
 
-        var xhr = doRequest("/api/save_video_log", data)
+        var xhr = doRequest(SAVE_VIDEO_LOG_URL, data)
             .success(function(data) {
                 self.pointsSaved = data.points;
                 self.saving = false;

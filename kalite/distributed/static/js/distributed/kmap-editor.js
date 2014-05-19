@@ -268,7 +268,7 @@ $(document).ready(function() {
 
                 var exercises = $.map(exerciseLayout.nodes, function(exercise) { return exercise; });
                 var exercise_ids = $.map(exerciseLayout.nodes, function(exercise) { return exercise.id; });
-                doRequest("/api/get_exercise_logs", exercise_ids)
+                doRequest(GET_EXERCISE_LOGS_URL, exercise_ids)
                     .success(function(data) {
                         var exercisesCompleted = {};
                         $.each(data, function(ind, status) {
