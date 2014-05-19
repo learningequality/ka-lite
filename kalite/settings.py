@@ -118,6 +118,8 @@ SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessi
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 
+# disable migration framework on tests
+SOUTH_TESTS_MIGRATE = False
 
 
 ########################
@@ -181,7 +183,7 @@ if package_selected("UserRestricted"):
 if package_selected("Demo"):
     LOG.info("Demo package selected.")
 
-    CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "adhoc.learningequality.org:7007")
+    CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "staging.learningequality.org")
     SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "http")
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")

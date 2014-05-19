@@ -38,7 +38,7 @@ VERSION_INFO = {
 
     "0.11.1": {
         "release_date": "2014/03/12",
-        "git_commit": "2af4b83493d4f1084dc3fe491a5076fdf0a8fbdb",
+        "git_commit": "a0a3a1e12ba08e0d6bf7f08739df1a8401da4bd3",
         "new_features": {
             "all": [],
             "students": ["translated interface", "dubbed video support"],

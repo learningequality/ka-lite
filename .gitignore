@@ -40,4 +40,6 @@ writeup/
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static
+/kalite/i18n/static/js/i18n
 /TAGS
+.tags

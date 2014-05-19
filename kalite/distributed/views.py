@@ -375,10 +375,8 @@ def zone_redirect(request):
     """
     device = Device.get_own_device()
     zone = device.get_zone()
-    if zone:
-        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone.pk}))
-    else:
-        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": "None"}))
+    return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": (zone and zone.pk) or "None"}))
+
 
 @require_admin
 def device_redirect(request):
@@ -388,22 +386,8 @@ def device_redirect(request):
     device = Device.get_own_device()
     zone = device.get_zone()
 
-    return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": zone.pk if zone else None, "device_id": device.pk}))
+    return HttpResponseRedirect(reverse("device_management", kwargs={"zone_id": (zone and zone.pk) or None, "device_id": device.pk}))
 
-JS_CATALOG_CACHE = {}
-def javascript_catalog_cached(request):
-    global JS_CATALOG_CACHE
-    lang = request.session['default_language']
-    if lang in JS_CATALOG_CACHE:
-        logging.debug('Using js translation catalog cache for %s' % lang)
-        src = JS_CATALOG_CACHE[lang]
-        return HttpResponse(src, 'text/javascript')
-    else:
-        logging.debug('Generating js translation catalog for %s' % lang)
-        resp = javascript_catalog(request, 'djangojs', settings.INSTALLED_APPS)
-        src = resp.content
-        JS_CATALOG_CACHE[lang] = src
-        return resp
 
 @render_to('distributed/search_page.html')
 @refresh_topic_cache

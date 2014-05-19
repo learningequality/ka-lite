@@ -30,7 +30,7 @@ if !ERRORLEVEL! EQU 1 (
 )
 
 echo Starting the cron server in the background.
-call "%SCRIPT_DIR%\cronstart.bat"
+call "%SCRIPT_DIR%\cronstart.bat" %1
 
 echo Running the web server in the background.
 call "%SCRIPT_DIR%\serverstart.bat"

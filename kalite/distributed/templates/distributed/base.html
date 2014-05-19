@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-{% load staticfiles %}
+{% load kalite_staticfiles %}
 {% load i18n %}
 {% load i18n_filters %}
 <html>
@@ -14,11 +14,11 @@
         <title>{% block title %}{% trans title %}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
-        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}?{{ BUILD_ID }}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}?{{ BUILD_ID }}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' %}?{{ BUILD_ID }}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' True %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' True %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' True %}">
 
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/distributed/favicon.ico" %}">
@@ -71,6 +71,7 @@
          var GET_EXERCISE_LOGS_URL = "{% url get_exercise_logs %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url device_redirect %}";
          var USER_LOGIN_URL = "{% url login %}";
+         var SET_DEFAULT_LANGUAGE_URL = "{% url set_default_language %}"
 
          var SERVER_INFO_PATH    = "{% url get_server_info %}";
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
@@ -80,9 +81,9 @@
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/khan-lite.js' %}?{{ BUILD_ID }}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}?{{ BUILD_ID }}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' %}?{{ BUILD_ID }}"></script>
+        <script type="text/javascript" src="{% static 'js/khan-lite.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' True %}"></script>
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
@@ -102,13 +103,13 @@
                 {% block lang_choices %}
                 <span class="not-admin-only">
                 {% if num_language_choices > 1 %}
-                <select id="language_selector">
-                {% for lang_code, lang_meta in language_choices.iteritems %}
-                    <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                  <select id="language_selector" name="set_user_language">
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
+                      <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
                         {{ lang_code|get_language_name }}
-                    </option>
-                {% endfor %}
-                </select>
+                      </option>
+                    {% endfor %}
+                  </select>
                 {% endif %}
                 </span>
                 {% endblock lang_choices %}
@@ -158,7 +159,7 @@
 
                 <form action="{% url search %}" method="GET" id="search-box">
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <a class="green_button" id="search-button" href="#" />{% trans 'Search' %}</a>
+                    <a class="green_button" id="search-button" href="#">{% trans 'Search' %}</a>
                     <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
                 </form>
                 {% endblock sitewide_navigation %}
@@ -196,7 +197,7 @@
                 <div class="inner">
                     <div style="float:left;margin-top: 5px;" class="tiny">
                         {% block footerleft %}
-                        <div style="float:left"><img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}"></img></div>
+                        <div style="float:left"><img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}"/></div>
                         <div style="float:left; margin-top:4px;">creators of KA Lite &copy; 2014</div>
                         {% endblock footerleft %}
                     </div>
@@ -210,4 +211,3 @@
 
     </body>
 </html>
-
