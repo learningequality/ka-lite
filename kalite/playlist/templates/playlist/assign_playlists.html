@@ -23,49 +23,16 @@
 
     <script type="text/javascript">
      var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
+     var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
     </script>
 {% endblock headjs %}
 
 {% block content %}
     <div class="row">
       <div class="span10">
-        <table class="table table-hover">
+        <table class="table table-hover" id="playlist-table">
           <tr>
             <th>Playlists</th>
-          </tr>
-          <tr id="title-1"> <td> <div>
-                <span class="pull-left">Title</span>
-              </div>
-
-            </td>
-          </tr>
-          <tr id="student-grps-1">
-            <td>
-              <ul>
-                <li>Student Group 1</li>
-                <li>Student Group 1</li>
-                <li>Student Group 1</li>
-                <li>Student Group 1</li>
-              </ul>
-            </td>
-          </tr>
-          <tr id="title-2">
-            <td>
-              <div>
-                <span class="pull-left">Title2</span>
-              </div>
-
-            </td>
-          </tr>
-          <tr id="student-grps-2">
-            <td>
-              <ul>
-                <li>Student Group 1</li>
-                <li>Student Group 1</li>
-                <li>Student Group 1</li>
-                <li>Student Group 1</li>
-              </ul>
-            </td>
           </tr>
         </table>
       </div>

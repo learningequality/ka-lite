@@ -29,6 +29,20 @@ $(function() {
     });
 });
 
+// get and display all playlists and their assigned groups
+$(function() {
+    doRequest(ALL_PLAYLISTS_URL).success(function(data) {
+        data.objects.map(function(playlist) {
+            $("table[id|=playlist-table] tr:last").after(sprintf("<tr class='playlist-title' playlist_id='%(id)s'><td>%(title)s</td></tr>", playlist));
+            $("tr[class|=playlist-title]:last").after("<tr class='playlist-groups-assigned'><td><ul></ul></td></tr>");
+
+            playlist.groups_assigned.map(function(group) {
+                $("tr[class|=playlist-groups-assigned]:last ul").append(sprintf("<li group_id='%(id)s'>%(name)s</li>", group));
+            });
+        });
+    });
+});
+
 $(function() {
     $(".span3 td").on('dragstart', drag);
     $("tr[id|=student-grps]").on('dragover', allowDrop);
