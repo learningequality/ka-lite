@@ -49,7 +49,7 @@ $(function() {
         } else if(!confirm(gettext("You are about to move selected users to another group."))) {
             return;
         } else {
-            doRequest("/securesync/api/move_to_group", {users: users, group: group})
+            doRequest(MOVE_TO_GROUP_URL, {users: users, group: group})
                 .success(function() {
                     location.reload();
                 })
@@ -66,7 +66,7 @@ $(function() {
         } else if (!confirm(gettext("You are about to delete selected users, they will be permanently deleted."))) {
             return;
         } else {
-            doRequest("/securesync/api/delete_users", {users: users})
+            doRequest(DELETE_USERS_URL, {users: users})
                 .success(function() {
                     location.reload();
                 });
