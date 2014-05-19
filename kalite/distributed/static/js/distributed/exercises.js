@@ -42,8 +42,10 @@ function updatePercentCompleted(correct) {
         exercise_id: exerciseData.exerciseModel.name,
         streak_progress: exerciseData.percentCompleted,
         points: exerciseData.points,
+        random_seed: exerciseData.seed,
         correct: correct,
-        attempts: exerciseData.attempts
+        attempts: exerciseData.attempts,
+        answer_given: answerGiven
     };
 
     doRequest("/api/save_exercise_log", data)
@@ -54,10 +56,12 @@ function updatePercentCompleted(correct) {
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
+var answerGiven = null;
 
 $(function() {
 
     $(Khan).bind("loaded", function() {
+        exerciseData.seed = Math.floor(Math.random() * 1000);
         $(Exercises).trigger("problemTemplateRendered");
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
@@ -89,7 +93,7 @@ $(function() {
         _.defer(function() {
             updateQuestionPoints(false);
             exerciseData.hintUsed = false;
-            exerciseData.seed = Math.floor(Math.random() * 500);
+            exerciseData.seed = Math.floor(Math.random() * 1000);
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
