@@ -83,6 +83,7 @@
     {% if next %}
     <div class="vidnext"><a href="{{ next.path }}?lang={{ video.selected_language }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
+
     <div class="clear"></div>
 
     {% if video.related_exercise %}
