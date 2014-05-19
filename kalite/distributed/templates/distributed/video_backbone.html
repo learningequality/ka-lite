@@ -8,14 +8,9 @@
 {% block headcss %}{{ block.super }}
     <style>
 
-        #video_language_selector {
-            display: none;
+        .video-language-selector {
             position: relative;
             top: -2px;
-        }
-
-        #lang_display_name a {
-            cursor: pointer;
         }
 
         .vidprev, .vidnext {
@@ -27,6 +22,7 @@
             float: right;
             margin-top: 5px;
         }
+
     </style>
     <!--[if IE]>
     <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
@@ -75,19 +71,6 @@
         _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
     </script>
     <!-- <![endif]-->
-
-    <script type="text/javascript">
-        function selectVideoLanguage(obj){
-            var selectedVideoURL = obj.options[obj.selectedIndex].value;
-            window.location = selectedVideoURL;
-        }
-        $(function() {
-            $('#lang_display_name a').click(function() {
-                $('#video_language_selector').show();
-                $('#lang_display_name').hide();
-            });
-        });
-    </script>
 
 {% endblock headjs %}
 

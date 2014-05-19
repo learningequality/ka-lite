@@ -1,5 +1,5 @@
 <div id="video-player"{{#unless video_urls.on_disk }} class="client-online-only"{{/unless}}>
-    <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {{#if video_urls.thumbnail }}poster="{{ video_urls.thumbnail }}" {{/if}}data-setup="{}">
+    <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {{#if video_urls.thumbnail }}poster="{{ video_urls.thumbnail }}" {{/if}}data-setup="{}">
         <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
         {{#each subtitle_urls }}
         <track kind="captions" src="{{ url }}" srclang="{{ code }}" label="{{ name }}" {{#ifcond code "==" ../selected_language }}{{#ifcond ../code "!=" "en" }}default="True"{{/ifcond}}{{/ifcond}}/>

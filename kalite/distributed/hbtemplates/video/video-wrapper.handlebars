@@ -3,13 +3,11 @@
         <h2 class="title-header">
 
             {{#if dubs_available }}
-                <span id="lang_display_name">
-                    [<a >{{ selected_language }}</a>]
-                </span>
-                <select id="video_language_selector" onchange="selectVideoLanguage(this)" AutoPostBack="True">
+                <select class="video-language-selector">
                     {{#each availability }}
-                        <option value="?lang={{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
-                        {{ @key }}
+                    <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                        {{ language_name }}
+                    </option>
                     {{/each}}
                 </select>
             {{/if}}

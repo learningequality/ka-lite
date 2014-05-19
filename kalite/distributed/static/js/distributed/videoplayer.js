@@ -459,6 +459,12 @@ window.VideoWrapperView = Backbone.View.extend({
 
         this.render();
 
+        // this.listenTo(this.model, "change:selected_language", this.render);
+
+    },
+
+    events: {
+        "change .video-language-selector": "languageChange"
     },
 
     render: function() {
@@ -475,6 +481,12 @@ window.VideoWrapperView = Backbone.View.extend({
             model: this.model
         });
 
+    },
+
+    languageChange: function() {
+        // TODO(jamalex): allow this to be set dynamically, without reloading page?
+        // this.model.set("selected_language", this.$(".video-language-selector").val());
+        window.location = "?lang=" + this.$(".video-language-selector").val();
     }
 
 });

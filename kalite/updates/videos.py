@@ -148,6 +148,7 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
                 # Only add properties if anything is available.
                 video_availability[lang_code].update(urls)
                 video_availability[lang_code].update(compute_video_metadata(youtube_id, format))
+                video_availability[lang_code]["language_name"] = get_language_name(lang_code)
 
         # Get the (english) subtitle urls
         subtitle_lang_codes = get_langs_with_subtitle(en_youtube_id)

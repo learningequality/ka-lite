@@ -291,6 +291,7 @@ def video_handler_backbone(request, video, format="mp4", prev=None, next=None):
         vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
 
     # TODO(jamalex): clean this up, and move stuff into a generic video-info endpoint/function
+    video = video.copy()
     video["video_urls"] = video["availability"].get(vid_lang)
     video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
     video["selected_language"] = vid_lang
