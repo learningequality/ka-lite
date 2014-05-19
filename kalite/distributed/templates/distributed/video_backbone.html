@@ -7,19 +7,25 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .not-client-online-only {
-            display:none;
-        }
 
         #video_language_selector {
-
-            display:none;
+            display: none;
             position: relative;
             top: -2px;
         }
 
         #lang_display_name a {
             cursor: pointer;
+        }
+
+        .vidprev, .vidnext {
+            padding-bottom: 10px;
+            margin-top: -5px;
+        }
+
+        .related-exercise-button {
+            float: right;
+            margin-top: 5px;
         }
     </style>
     <!--[if IE]>
@@ -51,7 +57,7 @@
 
         window.videoWrapperView = new VideoWrapperView({
             model: new VideoPlayerModel({{ video|jsonify }}),
-            el: $("#video-player-wrapper")
+            el: $(".video-player")
         });
 
     });
@@ -71,10 +77,8 @@
     </script>
     <!-- <![endif]-->
 
-
     <script type="text/javascript">
         function selectVideoLanguage(obj){
-            //
             var selectedVideoURL = obj.options[obj.selectedIndex].value;
             window.location = selectedVideoURL;
         }
@@ -89,38 +93,6 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h2 class="title-header">
-
-        {% if num_videos_available > 1 %}
-            <span id="lang_display_name">
-                [<a >{{ selected_language|get_language_name }}</a>]
-            </span>
-            <select id="video_language_selector" onchange="selectVideoLanguage(this)" AutoPostBack="True">
-                {% for lang_code, avail in video.availability.iteritems %}
-                    <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == selected_language %}selected{% endif %}>
-                    {{ lang_code|get_language_name }}
-                {% endfor %}
-            </select>
-        {% endif %}
-
-        <span class="title">{% trans video.title %}</span>
-        <br/>
-        {% if video.description %}
-        <span class="long-description">{% trans video.description %}</span>
-        {% endif %}
-        {% if video.related_exercise %}
-        <span style="float:right; margin-top: -17px; font-size: 14px;">
-            <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
-            {# Translators: Example usage=> Exercise: Name of Exercise #}
-            {% trans "Exercise" as exercise %}
-            <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
-        </span>
-        {% endif %}
-        <div class="clear"></div>
-
-        <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
-    </h2>
-    <div class="clear"></div>
 
     {% if prev %}
     <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
@@ -131,8 +103,49 @@
     {% endif %}
     <div class="clear"></div>
 
-    {% if video.available %}
-        <div id="video-player-wrapper"></div>
+    {% if video.related_exercise %}
+    <span class="related-exercise-button">
+        <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
+        {# Translators: Example usage=> Exercise: Name of Exercise #}
+        {% trans "Exercise" as exercise %}
+        <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
+    </span>
     {% endif %}
+
+    <div class="video-wrapper">
+
+        <h2 class="title-header">
+
+            {% if num_videos_available > 1 %}
+                <span id="lang_display_name">
+                    [<a >{{ selected_language|get_language_name }}</a>]
+                </span>
+                <select id="video_language_selector" onchange="selectVideoLanguage(this)" AutoPostBack="True">
+                    {% for lang_code, avail in video.availability.iteritems %}
+                        <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == selected_language %}selected{% endif %}>
+                        {{ lang_code|get_language_name }}
+                    {% endfor %}
+                </select>
+            {% endif %}
+
+            <span class="title">{% trans video.title %}</span>
+            <br/>
+            {% if video.description %}
+            <span class="long-description">{% trans video.description %}</span>
+            {% endif %}
+
+            <div class="clear"></div>
+
+            <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
+
+        </h2>
+
+        <div class="clear"></div>
+
+        {% if video.available %}
+            <div class="video-player"></div>
+        {% endif %}
+
+    </div>
 
 {% endblock content %}

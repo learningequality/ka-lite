@@ -171,7 +171,7 @@ def splat_handler(request, splat):
         prev, next = get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
 
         # TEMP: until we switch this over to the default
-        if request.GET.get("backbone", False):
+        if bool(int(request.GET.get("backbone", 1))):
             return video_handler_backbone(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
 
         return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
@@ -293,11 +293,14 @@ def video_handler_backbone(request, video, format="mp4", prev=None, next=None):
     video["video_urls"] = video["availability"].get(vid_lang)
     video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
     video["selected_language"] = vid_lang
+    video["num_videos_available"] = len(video["availability"])
+    video["title"] = _(video["title"])
+    video["description"] = _(video["description"])
 
     context = {
         "video": video,
         "title": video["title"],
-        "num_videos_available": len(video["availability"]),
+        "num_videos_available": len(video["availability"]), # delete
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),

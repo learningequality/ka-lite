@@ -7,13 +7,9 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .not-client-online-only {
-            display:none;
-        }
 
         #video_language_selector {
-
-            display:none;
+            display: none;
             position: relative;
             top: -2px;
         }
@@ -21,6 +17,7 @@
         #lang_display_name a {
             cursor: pointer;
         }
+
     </style>
     <!--[if IE]>
     <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">

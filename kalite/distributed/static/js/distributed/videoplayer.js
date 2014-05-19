@@ -242,19 +242,47 @@ window.VideoPlayerModel = Backbone.Model.extend({
 });
 
 
+
 window.VideoView = Backbone.View.extend({
 
     _readyDeferred: null,
 
     initialize: function() {
 
+        var that = this;
+
         _.bindAll(this);
 
         this._readyDeferred = new $.Deferred();
 
-        this.model = new VideoPlayerModel(this.options);
-
         this._pointView = new PointView({model: this.model});
+
+        // listen to changes in window size and resize the video accordingly
+        $(window).resize(this._onResize);
+        this._onResize();
+
+        this.$("video").bind("loadedmetadata", function() {
+
+            var width = $(this).prop("videoWidth");
+            var height = $(this).prop("videoHeight");
+
+            that._initializePlayer(width, height);
+
+        });
+
+        this.$(".video-thumb").load(function() {
+
+            var width = $(".video-thumb").width();
+            var height = $(".video-thumb").height();
+
+            that._initializePlayer(width, height);
+
+        });
+
+
+    },
+
+    _initializePlayer: _.once(function(width, height) {
 
         var player_id = this.$(".video-js").attr("id");
 
@@ -262,8 +290,21 @@ window.VideoView = Backbone.View.extend({
             this.player = this.model.player = _V_(player_id);
             this._beginIntervalUpdate();
             this._initializeEventListeners();
+        } else {
+            console.warn("Warning: Could not find Video.JS player!");
         }
-    },
+
+        this.model.set({width: width, height: height});
+
+        this._onResize();
+
+    }),
+
+    _onResize: _.throttle(function() {
+        var available_width = $("article").width();
+        var available_height = $(window).height() * 0.9;
+        this.setContainerSize(available_width, available_height);
+    }, 500),
 
     _initializeEventListeners: function() {
 
@@ -406,45 +447,12 @@ window.PointView = Backbone.View.extend({
 
 function initialize_video(video_id, youtube_id) {
 
-    var create_video_view = _.once(function(width, height) {
-
-        window.videoView = new VideoView({
-            el: $("#video-player"),
+    window.videoView = new VideoView({
+        el: $("#video-player"),
+        model: new VideoPlayerModel({
             video_id: video_id,
-            youtube_id: youtube_id,
-            width: width,
-            height: height
-        });
-
-        var resize_video = _.throttle(function() {
-            var available_width = $("article").width();
-            var available_height = $(window).height() * 0.9;
-            videoView.setContainerSize(available_width, available_height);
-        }, 500);
-
-        $(window).resize(resize_video);
-
-        resize_video();
-
+            youtube_id: youtube_id
+        })
     });
-
-    $("video").bind("loadedmetadata", function() {
-
-        var width = $(this).prop("videoWidth");
-        var height = $(this).prop("videoHeight");
-
-        create_video_view(width, height);
-
-    });
-
-    $(".video-thumb").load(function() {
-
-        var width = $(".video-thumb").width();
-        var height = $(".video-thumb").height();
-
-        create_video_view(width, height);
-
-    });
-
 
 }
