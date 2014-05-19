@@ -22,7 +22,7 @@
             // navigation event in order to produce the new report.
 
             $("#report_type").change(function(){
-                window.location.href="{% url tabular_view %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+                window.location.href="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
             });
 
             $("#student").change(function(){
@@ -152,7 +152,7 @@
                             <tr>
                                 <th class="username">
                                     <span title="{{ student.name }} ({{ student.username }})">
-                                        <div class="student-name"><a href="{% url student_view %}?user={{ student.id }}">{{ student.name }}</a></div>
+                                        <div class="student-name"><a href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a></div>
                                     </span>
                                 </th>
                             </tr>

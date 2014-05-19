@@ -1,4 +1,5 @@
 """Default tags used by the template system, available to all templates."""
+from __future__ import unicode_literals
 
 import sys
 import re
@@ -6,15 +7,17 @@ from datetime import datetime
 from itertools import groupby, cycle as itertools_cycle
 
 from django.conf import settings
-from django.template.base import (Node, NodeList, Template, Library,
+from django.template.base import (Node, NodeList, Template, Context, Library,
     TemplateSyntaxError, VariableDoesNotExist, InvalidTemplateLibrary,
     BLOCK_TAG_START, BLOCK_TAG_END, VARIABLE_TAG_START, VARIABLE_TAG_END,
     SINGLE_BRACE_START, SINGLE_BRACE_END, COMMENT_TAG_START, COMMENT_TAG_END,
     VARIABLE_ATTRIBUTE_SEPARATOR, get_library, token_kwargs, kwarg_re)
 from django.template.smartif import IfParser, Literal
 from django.template.defaultfilters import date
-from django.utils.encoding import smart_str, smart_unicode
+from django.utils.encoding import smart_text
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html
+from django.utils import six
 from django.utils import timezone
 
 register = Library()
@@ -43,9 +46,9 @@ class CsrfTokenNode(Node):
         csrf_token = context.get('csrf_token', None)
         if csrf_token:
             if csrf_token == 'NOTPROVIDED':
-                return mark_safe(u"")
+                return format_html("")
             else:
-                return mark_safe(u"<div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='%s' /></div>" % csrf_token)
+                return format_html("<input type='hidden' name='csrfmiddlewaretoken' value='{0}' />", csrf_token)
         else:
             # It's very probable that the token is missing because of
             # misconfiguration, so we raise a warning
@@ -53,7 +56,7 @@ class CsrfTokenNode(Node):
             if settings.DEBUG:
                 import warnings
                 warnings.warn("A {% csrf_token %} was used in a template, but the context did not provide the value.  This is usually caused by not using RequestContext.")
-            return u''
+            return ''
 
 class CycleNode(Node):
     def __init__(self, cyclevars, variable_name=None, silent=False):
@@ -66,7 +69,7 @@ class CycleNode(Node):
             # First time the node is rendered in template
             context.render_context[self] = itertools_cycle(self.cyclevars)
         cycle_iter = context.render_context[self]
-        value = cycle_iter.next().resolve(context)
+        value = next(cycle_iter).resolve(context)
         if self.variable_name:
             context[self.variable_name] = value
         if self.silent:
@@ -101,8 +104,8 @@ class FirstOfNode(Node):
         for var in self.vars:
             value = var.resolve(context, True)
             if value:
-                return smart_unicode(value)
-        return u''
+                return smart_text(value)
+        return ''
 
 class ForNode(Node):
     child_nodelists = ('nodelist_loop', 'nodelist_empty')
@@ -183,7 +186,7 @@ class ForNode(Node):
                 for node in self.nodelist_loop:
                     try:
                         nodelist.append(node.render(context))
-                    except Exception, e:
+                    except Exception as e:
                         if not hasattr(e, 'django_template_source'):
                             e.django_template_source = node.source
                         raise
@@ -315,15 +318,12 @@ def include_is_allowed(filepath):
     return False
 
 class SsiNode(Node):
-    def __init__(self, filepath, parsed, legacy_filepath=True):
+    def __init__(self, filepath, parsed):
         self.filepath = filepath
         self.parsed = parsed
-        self.legacy_filepath = legacy_filepath
 
     def render(self, context):
-        filepath = self.filepath
-        if not self.legacy_filepath:
-            filepath = filepath.resolve(context)
+        filepath = self.filepath.resolve(context)
 
         if not include_is_allowed(filepath):
             if settings.DEBUG:
@@ -331,16 +331,15 @@ class SsiNode(Node):
             else:
                 return '' # Fail silently for invalid includes.
         try:
-            fp = open(filepath, 'r')
-            output = fp.read()
-            fp.close()
+            with open(filepath, 'r') as fp:
+                output = fp.read()
         except IOError:
             output = ''
         if self.parsed:
             try:
                 t = Template(output, name=filepath)
                 return t.render(context)
-            except TemplateSyntaxError, e:
+            except TemplateSyntaxError as e:
                 if settings.DEBUG:
                     return "[Included template had syntax error: %s]" % e
                 else:
@@ -385,9 +384,8 @@ class TemplateTagNode(Node):
         return self.mapping.get(self.tagtype, '')
 
 class URLNode(Node):
-    def __init__(self, view_name, args, kwargs, asvar, legacy_view_name=True):
+    def __init__(self, view_name, args, kwargs, asvar):
         self.view_name = view_name
-        self.legacy_view_name = legacy_view_name
         self.args = args
         self.kwargs = kwargs
         self.asvar = asvar
@@ -395,21 +393,23 @@ class URLNode(Node):
     def render(self, context):
         from django.core.urlresolvers import reverse, NoReverseMatch
         args = [arg.resolve(context) for arg in self.args]
-        kwargs = dict([(smart_str(k, 'ascii'), v.resolve(context))
+        kwargs = dict([(smart_text(k, 'ascii'), v.resolve(context))
                        for k, v in self.kwargs.items()])
 
-        view_name = self.view_name
-        if not self.legacy_view_name:
-            view_name = view_name.resolve(context)
+        view_name = self.view_name.resolve(context)
+
+        if not view_name:
+            raise NoReverseMatch("'url' requires a non-empty first argument. "
+                "The syntax changed in Django 1.5, see the docs.")
 
         # Try to look up the URL twice: once given the view name, and again
         # relative to what we guess is the "main" app. If they both fail,
         # re-raise the NoReverseMatch unless we're using the
-        # {% url ... as var %} construct in which cause return nothing.
+        # {% url ... as var %} construct in which case return nothing.
         url = ''
         try:
             url = reverse(view_name, args=args, kwargs=kwargs, current_app=context.current_app)
-        except NoReverseMatch, e:
+        except NoReverseMatch as e:
             if settings.SETTINGS_MODULE:
                 project_name = settings.SETTINGS_MODULE.split('.')[0]
                 try:
@@ -432,6 +432,13 @@ class URLNode(Node):
         else:
             return url
 
+class VerbatimNode(Node):
+    def __init__(self, content):
+        self.content = content
+
+    def render(self, context):
+        return self.content
+
 class WidthRatioNode(Node):
     def __init__(self, val_expr, max_expr, max_width):
         self.val_expr = val_expr
@@ -445,7 +452,7 @@ class WidthRatioNode(Node):
             max_width = int(self.max_width.resolve(context))
         except VariableDoesNotExist:
             return ''
-        except ValueError:
+        except (ValueError, TypeError):
             raise TemplateSyntaxError("widthratio final argument must be an number")
         try:
             value = float(value)
@@ -453,7 +460,7 @@ class WidthRatioNode(Node):
             ratio = (value / max_value) * max_width
         except ZeroDivisionError:
             return '0'
-        except ValueError:
+        except (ValueError, TypeError):
             return ''
         return str(int(round(ratio)))
 
@@ -471,7 +478,7 @@ class WithNode(Node):
 
     def render(self, context):
         values = dict([(key, val.resolve(context)) for key, val in
-                       self.extra_context.iteritems()])
+                       six.iteritems(self.extra_context)])
         context.update(values)
         output = self.nodelist.render(context)
         context.pop()
@@ -486,7 +493,7 @@ def autoescape(parser, token):
     if len(args) != 2:
         raise TemplateSyntaxError("'autoescape' tag requires exactly one argument.")
     arg = args[1]
-    if arg not in (u'on', u'off'):
+    if arg not in ('on', 'off'):
         raise TemplateSyntaxError("'autoescape' argument should be 'on' or 'off'")
     nodelist = parser.parse(('endautoescape',))
     parser.delete_first_token()
@@ -528,11 +535,9 @@ def cycle(parser, token):
     The optional flag "silent" can be used to prevent the cycle declaration
     from returning any value::
 
-        {% cycle 'row1' 'row2' as rowcolors silent %}{# no value here #}
         {% for o in some_list %}
-            <tr class="{% cycle rowcolors %}">{# first value will be "row1" #}
-                ...
-            </tr>
+            {% cycle 'row1' 'row2' as rowcolors silent %}
+            <tr class="{{ rowcolors }}">{% include "subtemplate.html " %}</tr>
         {% endfor %}
 
     """
@@ -969,19 +974,14 @@ def ssi(parser, token):
     of another file -- which must be specified using an absolute path --
     in the current page::
 
-        {% ssi /home/html/ljworld.com/includes/right_generic.html %}
+        {% ssi "/home/html/ljworld.com/includes/right_generic.html" %}
 
     If the optional "parsed" parameter is given, the contents of the included
     file are evaluated as template code, with the current context::
 
-        {% ssi /home/html/ljworld.com/includes/right_generic.html parsed %}
+        {% ssi "/home/html/ljworld.com/includes/right_generic.html" parsed %}
     """
-
-    import warnings
-    warnings.warn('The syntax for the ssi template tag is changing. Load the `ssi` tag from the `future` tag library to start using the new behavior.',
-                  category=DeprecationWarning)
-
-    bits = token.contents.split()
+    bits = token.split_contents()
     parsed = False
     if len(bits) not in (2, 3):
         raise TemplateSyntaxError("'ssi' tag takes one argument: the path to"
@@ -992,7 +992,8 @@ def ssi(parser, token):
         else:
             raise TemplateSyntaxError("Second (optional) argument to %s tag"
                                       " must be 'parsed'" % bits[0])
-    return SsiNode(bits[1], parsed, legacy_filepath=True)
+    filepath = parser.compile_filter(bits[1])
+    return SsiNode(filepath, parsed)
 
 @register.tag
 def load(parser, token):
@@ -1015,7 +1016,7 @@ def load(parser, token):
         try:
             taglib = bits[-1]
             lib = get_library(taglib)
-        except InvalidTemplateLibrary, e:
+        except InvalidTemplateLibrary as e:
             raise TemplateSyntaxError("'%s' is not a valid tag library: %s" %
                                       (taglib, e))
         else:
@@ -1038,7 +1039,7 @@ def load(parser, token):
             try:
                 lib = get_library(taglib)
                 parser.add_library(lib)
-            except InvalidTemplateLibrary, e:
+            except InvalidTemplateLibrary as e:
                 raise TemplateSyntaxError("'%s' is not a valid tag library: %s" %
                                           (taglib, e))
     return LoadNode()
@@ -1190,7 +1191,7 @@ def templatetag(parser, token):
     if tag not in TemplateTagNode.mapping:
         raise TemplateSyntaxError("Invalid templatetag argument: '%s'."
                                   " Must be one of: %s" %
-                                  (tag, TemplateTagNode.mapping.keys()))
+                                  (tag, list(TemplateTagNode.mapping)))
     return TemplateTagNode(tag)
 
 @register.tag
@@ -1201,17 +1202,21 @@ def url(parser, token):
     This is a way to define links that aren't tied to a particular URL
     configuration::
 
-        {% url path.to.some_view arg1 arg2 %}
+        {% url "path.to.some_view" arg1 arg2 %}
 
         or
 
-        {% url path.to.some_view name1=value1 name2=value2 %}
+        {% url "path.to.some_view" name1=value1 name2=value2 %}
 
-    The first argument is a path to a view. It can be an absolute python path
+    The first argument is a path to a view. It can be an absolute Python path
     or just ``app_name.view_name`` without the project name if the view is
-    located inside the project.  Other arguments are comma-separated values
-    that will be filled in place of positional and keyword arguments in the
-    URL. All arguments for the URL should be present.
+    located inside the project.
+
+    Other arguments are space-separated values that will be filled in place of
+    positional and keyword arguments in the URL. Don't mix positional and
+    keyword arguments.
+
+    All arguments for the URL should be present.
 
     For example if you have a view ``app_name.client`` taking client's id and
     the corresponding line in a URLconf looks like this::
@@ -1225,20 +1230,44 @@ def url(parser, token):
 
     then in a template you can create a link for a certain client like this::
 
-        {% url app_name.client client.id %}
+        {% url "app_name.client" client.id %}
 
     The URL will look like ``/clients/client/123/``.
+
+    The first argument can also be a named URL instead of the Python path to
+    the view callable. For example if the URLconf entry looks like this::
+
+        url('^client/(\d+)/$', name='client-detail-view')
+
+    then in the template you can use::
+
+        {% url "client-detail-view" client.id %}
+
+    There is even another possible value type for the first argument. It can be
+    the name of a template variable that will be evaluated to obtain the view
+    name or the URL name, e.g.::
+
+        {% with view_path="app_name.client" %}
+        {% url view_path client.id %}
+        {% endwith %}
+
+        or,
+
+        {% with url_name="client-detail-view" %}
+        {% url url_name client.id %}
+        {% endwith %}
+
     """
-
-    import warnings
-    warnings.warn('The syntax for the url template tag is changing. Load the `url` tag from the `future` tag library to start using the new behavior.',
-                  category=DeprecationWarning)
-
     bits = token.split_contents()
     if len(bits) < 2:
         raise TemplateSyntaxError("'%s' takes at least one argument"
                                   " (path to a view)" % bits[0])
-    viewname = bits[1]
+    try:
+        viewname = parser.compile_filter(bits[1])
+    except TemplateSyntaxError as exc:
+        exc.args = (exc.args[0] + ". "
+                "The syntax of 'url' changed in Django 1.5, see the docs."),
+        raise
     args = []
     kwargs = {}
     asvar = None
@@ -1247,38 +1276,6 @@ def url(parser, token):
         asvar = bits[-1]
         bits = bits[:-2]
 
-    # Backwards compatibility: check for the old comma separated format
-    # {% url urlname arg1,arg2 %}
-    # Initial check - that the first space separated bit has a comma in it
-    if bits and ',' in bits[0]:
-        check_old_format = True
-        # In order to *really* be old format, there must be a comma
-        # in *every* space separated bit, except the last.
-        for bit in bits[1:-1]:
-            if ',' not in bit:
-                # No comma in this bit. Either the comma we found
-                # in bit 1 was a false positive (e.g., comma in a string),
-                # or there is a syntax problem with missing commas
-                check_old_format = False
-                break
-    else:
-        # No comma found - must be new format.
-        check_old_format = False
-
-    if check_old_format:
-        # Confirm that this is old format by trying to parse the first
-        # argument. An exception will be raised if the comma is
-        # unexpected (i.e. outside of a static string).
-        match = kwarg_re.match(bits[0])
-        if match:
-            value = match.groups()[1]
-            try:
-                parser.compile_filter(value)
-            except TemplateSyntaxError:
-                bits = ''.join(bits).split(',')
-
-    # Now all the bits are parsed into new format,
-    # process them as template vars
     if len(bits):
         for bit in bits:
             match = kwarg_re.match(bit)
@@ -1290,7 +1287,29 @@ def url(parser, token):
             else:
                 args.append(parser.compile_filter(value))
 
-    return URLNode(viewname, args, kwargs, asvar, legacy_view_name=True)
+    return URLNode(viewname, args, kwargs, asvar)
+
+@register.tag
+def verbatim(parser, token):
+    """
+    Stops the template engine from rendering the contents of this block tag.
+
+    Usage::
+
+        {% verbatim %}
+            {% don't process this %}
+        {% endverbatim %}
+
+    You can also designate a specific closing tag block (allowing the
+    unrendered use of ``{% endverbatim %}``)::
+
+        {% verbatim myblock %}
+            ...
+        {% endverbatim myblock %}
+    """
+    nodelist = parser.parse(('endverbatim',))
+    parser.delete_first_token()
+    return VerbatimNode(nodelist.render(Context()))
 
 @register.tag
 def widthratio(parser, token):
@@ -1300,11 +1319,11 @@ def widthratio(parser, token):
 
     For example::
 
-        <img src='bar.gif' height='10' width='{% widthratio this_value max_value 100 %}' />
+        <img src='bar.gif' height='10' width='{% widthratio this_value max_value max_width %}' />
 
-    Above, if ``this_value`` is 175 and ``max_value`` is 200, the image in
-    the above example will be 88 pixels wide (because 175/200 = .875;
-    .875 * 100 = 87.5 which is rounded up to 88).
+    If ``this_value`` is 175, ``max_value`` is 200, and ``max_width`` is 100,
+    the image in the above example will be 88 pixels wide
+    (because 175/200 = .875; .875 * 100 = 87.5 which is rounded up to 88).
     """
     bits = token.contents.split()
     if len(bits) != 4:

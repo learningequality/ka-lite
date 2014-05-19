@@ -1,10 +1,12 @@
+import json
+
 from django.contrib.messages import constants
 from django.contrib.messages.tests.base import BaseTest
 from django.contrib.messages.storage.cookie import (CookieStorage,
     MessageEncoder, MessageDecoder)
 from django.contrib.messages.storage.base import Message
 from django.test.utils import override_settings
-from django.utils import simplejson as json
+from django.utils.safestring import SafeData, mark_safe
 
 
 def set_cookie_data(storage, messages, invalid=False, encode_empty=False):
@@ -38,6 +40,7 @@ def stored_cookie_messages_count(storage, response):
     return len(data)
 
 
+@override_settings(SESSION_COOKIE_DOMAIN='.example.com')
 class CookieTest(BaseTest):
     storage_class = CookieStorage
 
@@ -63,7 +66,7 @@ class CookieTest(BaseTest):
         storage.add(constants.INFO, 'test')
         storage.update(response)
         self.assertTrue('test' in response.cookies['messages'].value)
-        self.assertEqual(response.cookies['messages']['domain'], '.lawrence.com')
+        self.assertEqual(response.cookies['messages']['domain'], '.example.com')
         self.assertEqual(response.cookies['messages']['expires'], '')
 
         # Test after the messages have been consumed
@@ -74,7 +77,7 @@ class CookieTest(BaseTest):
             pass # Iterate through the storage to simulate consumption of messages.
         storage.update(response)
         self.assertEqual(response.cookies['messages'].value, '')
-        self.assertEqual(response.cookies['messages']['domain'], '.lawrence.com')
+        self.assertEqual(response.cookies['messages']['domain'], '.example.com')
         self.assertEqual(response.cookies['messages']['expires'], 'Thu, 01-Jan-1970 00:00:00 GMT')
 
     def test_get_bad_cookie(self):
@@ -121,7 +124,7 @@ class CookieTest(BaseTest):
             {
                 'message': Message(constants.INFO, 'Test message'),
                 'message_list': [Message(constants.INFO, 'message %s') \
-                                 for x in xrange(5)] + [{'another-message': \
+                                 for x in range(5)] + [{'another-message': \
                                  Message(constants.ERROR, 'error')}],
             },
             Message(constants.INFO, 'message %s'),
@@ -131,5 +134,20 @@ class CookieTest(BaseTest):
         decoded_messages = json.loads(value, cls=MessageDecoder)
         self.assertEqual(messages, decoded_messages)
 
-CookieTest = override_settings(
-        SESSION_COOKIE_DOMAIN='.lawrence.com')(CookieTest)
+    def test_safedata(self):
+        """
+        Tests that a message containing SafeData is keeping its safe status when
+        retrieved from the message storage.
+        """
+        def encode_decode(data):
+            message = Message(constants.DEBUG, data)
+            encoded = storage._encode(message)
+            decoded = storage._decode(encoded)
+            return decoded.message
+
+        storage = self.get_storage()
+
+        self.assertIsInstance(
+            encode_decode(mark_safe("<b>Hello Django!</b>")), SafeData)
+        self.assertNotIsInstance(
+            encode_decode("<b>Hello Django!</b>"), SafeData)

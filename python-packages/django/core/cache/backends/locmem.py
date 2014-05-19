@@ -1,10 +1,8 @@
 "Thread-safe in-memory cache backend."
 
-from __future__ import with_statement
-
 import time
 try:
-    import cPickle as pickle
+    from django.utils.six.moves import cPickle as pickle
 except ImportError:
     import pickle
 

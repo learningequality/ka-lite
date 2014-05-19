@@ -1,14 +1,15 @@
 from django.core.exceptions import FieldError
+from django.db.models.constants import LOOKUP_SEP
 from django.db.models.fields import FieldDoesNotExist
-from django.db.models.sql.constants import LOOKUP_SEP
 
 class SQLEvaluator(object):
-    def __init__(self, expression, query, allow_joins=True):
+    def __init__(self, expression, query, allow_joins=True, reuse=None):
         self.expression = expression
         self.opts = query.get_meta()
-        self.cols = {}
+        self.cols = []
 
         self.contains_aggregate = False
+        self.reuse = reuse
         self.expression.prepare(self, query, allow_joins)
 
     def prepare(self):
@@ -18,11 +19,15 @@ class SQLEvaluator(object):
         return self.expression.evaluate(self, qn, connection)
 
     def relabel_aliases(self, change_map):
-        for node, col in self.cols.items():
+        new_cols = []
+        for node, col in self.cols:
             if hasattr(col, "relabel_aliases"):
                 col.relabel_aliases(change_map)
+                new_cols.append((node, col))
             else:
-                self.cols[node] = (change_map.get(col[0], col[0]), col[1])
+                new_cols.append((node,
+                                (change_map.get(col[0], col[0]), col[1])))
+        self.cols = new_cols
 
     #####################################################
     # Vistor methods for initial expression preparation #
@@ -41,15 +46,17 @@ class SQLEvaluator(object):
         if (len(field_list) == 1 and
             node.name in query.aggregate_select.keys()):
             self.contains_aggregate = True
-            self.cols[node] = query.aggregate_select[node.name]
+            self.cols.append((node, query.aggregate_select[node.name]))
         else:
             try:
+                dupe_multis = False if self.reuse is None else True
                 field, source, opts, join_list, last, _ = query.setup_joins(
-                    field_list, query.get_meta(),
-                    query.get_initial_alias(), False)
+                    field_list, query.get_meta(), query.get_initial_alias(),
+                    dupe_multis, can_reuse=self.reuse)
                 col, _, join_list = query.trim_joins(source, join_list, last, False)
-
-                self.cols[node] = (join_list[-1], col)
+                if self.reuse is not None:
+                    self.reuse.update(join_list)
+                self.cols.append((node, (join_list[-1], col)))
             except FieldDoesNotExist:
                 raise FieldError("Cannot resolve keyword %r into field. "
                                  "Choices are: %s" % (self.name,
@@ -80,7 +87,13 @@ class SQLEvaluator(object):
         return connection.ops.combine_expression(node.connector, expressions), expression_params
 
     def evaluate_leaf(self, node, qn, connection):
-        col = self.cols[node]
+        col = None
+        for n, c in self.cols:
+            if n is node:
+                col = c
+                break
+        if col is None:
+            raise ValueError("Given node not found")
         if hasattr(col, 'as_sql'):
             return col.as_sql(qn, connection), ()
         else:

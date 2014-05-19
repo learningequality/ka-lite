@@ -26,6 +26,21 @@ class FuzzyInt(int):
     def __repr__(self):
         return "[%d..%d]" % (self.lowest, self.highest)
 
+    def __str__(self):
+        return self.__repr__()
+
+    def __unicode__(self):
+        return self.__repr__()
+
+    def __format__(self, formatstr):
+        return self.__repr__()
+
+    def __add__(self, x):
+        val = super(FuzzyInt, self).__add__(x)
+        self.lowest += x
+        self.highest += x
+        return self
+
 
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     """"""
@@ -40,7 +55,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
-        with self.assertNumQueries(41 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(35, 41)):
             self.browser_login_admin()
 
     def test_query_login_teacher(self):
@@ -50,7 +65,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(28 + 3*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(25, 28) + 3 * UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
@@ -86,19 +101,19 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(7 + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(6, 7) + 0*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(6 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(5, 11) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(4 + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(4, 11) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
 

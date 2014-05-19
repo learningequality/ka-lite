@@ -18,7 +18,10 @@ class BaseContext(object):
         self._reset_dicts(dict_)
 
     def _reset_dicts(self, value=None):
-        self.dicts = [value or {}]
+        builtins = {'True': True, 'False': False, 'None': None}
+        self.dicts = [builtins]
+        if value is not None:
+            self.dicts.append(value)
 
     def __copy__(self):
         duplicate = copy(super(BaseContext, self))
@@ -147,7 +150,7 @@ def get_standard_processors():
             module, attr = path[:i], path[i+1:]
             try:
                 mod = import_module(module)
-            except ImportError, e:
+            except ImportError as e:
                 raise ImproperlyConfigured('Error importing request processor module %s: "%s"' % (module, e))
             try:
                 func = getattr(mod, attr)
