@@ -48,7 +48,7 @@ def save_attempt_log(request):
             context_id=data["title"]
             )
     except ValidationError as e:
-        return JsonResponse({"error": _("Could not save TestAttemptLog") + u": %s" % e}, status=500)
+        return JsonResponse({"error": _("Could not save AttemptLog") + u": %s" % e}, status=500)
       
     # Special message if you've just completed.
     #   NOTE: it's important to check this AFTER calling save() above.
