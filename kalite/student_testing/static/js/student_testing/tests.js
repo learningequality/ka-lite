@@ -112,9 +112,4 @@ $(function(){
             adjust_scratchpad_margin();
         });
     });
-
-    $(".return-link").click(function() {
-        window.history.go(-1);
-        return false;
-    });
 });
