@@ -1,17 +1,17 @@
 import os
 import json
-
 from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistEntry
+from .models import PlaylistEntry, PlaylistToGroupMapping
 from kalite.facility.models import FacilityGroup
+from kalite.shared.contextmanagers.db import inside_transaction
 
 
 class Playlist:
     def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
+        self.pk = self.id = kwargs.get('id')
         self.title = kwargs.get('title')
         self.description = kwargs.get('description')
         self.groups_assigned = kwargs.get('groups_assigned')
@@ -73,8 +73,20 @@ class PlaylistResource(Resource):
     def obj_create(self, request):
         raise NotImplemented("Operation not implemented yet for playlists.")
 
-    def obj_update(self, request):
-        raise NotImplemented("Operation not implemented yet for playlists.")
+    def obj_update(self, bundle, **kwargs):
+        new_group_ids = set([group['id'] for group in bundle.data['groups_assigned']])
+        playlist = bundle.obj
+
+        # hack because playlist isn't a model yet: clear the
+        # playlist's groups, then read each one according to what was
+        # given in the request. The proper way is to just change the
+        # many-to-many relation in the ORM.
+        with inside_transaction():
+            PlaylistToGroupMapping.objects.filter(playlist=playlist.id).delete()
+            new_mappings = ([PlaylistToGroupMapping(group_id=group_id, playlist=playlist.id) for group_id in new_group_ids])
+            PlaylistToGroupMapping.objects.bulk_create(new_mappings)
+
+        return bundle
 
     def obj_delete_list(self, request):
         raise NotImplemented("Operation not implemented yet for playlists.")
