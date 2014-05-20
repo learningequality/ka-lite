@@ -124,6 +124,7 @@ def save_exercise_log(request):
             exercise_id=attempt_data["exercise_id"],
             random_seed=attempt_data["random_seed"],
             answer_given=attempt_data["answer_given"],
+            points_awarded=attempt_data["points"],
             correct=attempt_data["correct"],
             context_type="exercise",
             )
@@ -172,7 +173,7 @@ def get_video_logs(request):
 @student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_exercise_logs(request):
     """
-    Given a list of exercise_ids, retrieve a list of video logs for this user.
+    Given a list of exercise_ids, retrieve a list of exercise logs for this user.
     """
     data = simplejson.loads(request.raw_post_data or "[]")
     if not isinstance(data, list):
@@ -182,6 +183,23 @@ def get_exercise_logs(request):
     logs = ExerciseLog.objects \
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts")
+    return JsonResponse(list(logs))
+
+
+@allow_api_profiling
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
+def get_exercise_attempt_logs(request):
+    """
+    Given a list of exercise_ids, retrieve a list of attempt logs for this user.
+    """
+    data = simplejson.loads(request.raw_post_data or "[]")
+    if not isinstance(data, list):
+        return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
+
+    user = request.session["facility_user"]
+    logs = AttemptLog.objects \
+            .filter(user=user, exercise_id__in=data, context_type="exercise") \
+            .values("exercise_id", "correct", "context_type", "timestamp")
     return JsonResponse(list(logs))
 
 

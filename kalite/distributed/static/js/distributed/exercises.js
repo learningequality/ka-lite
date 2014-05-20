@@ -108,6 +108,13 @@ $(function() {
 
             updateStreakBar();
         });
+    doRequest("/api/get_exercise_attempt_logs", [exerciseData.exerciseModel.name])
+        .success(function(data) {
+            if (data.length === 0) {
+                return;
+            }
+            console.log(data);
+        });
 });
 
 function adjust_scratchpad_margin(){
