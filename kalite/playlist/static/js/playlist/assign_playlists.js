@@ -20,6 +20,25 @@ function drop(ev) {
   appendStudentGrp(id, studentGrp);
 }
 
+// modify the groups assigned to a playlist
+function api_modify_groups(playlist_id, group_ids_assigned) {
+  var PLAYLIST_DETAIL_URL = ALL_PLAYLISTS_URL + playlist_id + "/"; // note: cleanup to something more readable
+  var groups_assigned = group_ids_assigned.map(function (id) { return {"id": id}; });
+  doRequest(PLAYLIST_DETAIL_URL,
+            {"groups_assigned": groups_assigned},
+            {"dataType": "text", // use text so jquery doesn't do the error callback since the server returns an empty response body
+             "type": "PATCH"}).success(function() {
+               clear_messages();
+              show_message("success", gettext("Successfully updated playlist groups."));
+            }).error(function(e) {
+              if (e.status === 404) {
+                clear_messages();
+                show_message("error", gettext("That playlist cannot be found."));
+              }
+            });
+}
+
+
 // get and display all groups
 $(function() {
     doRequest(ALL_GROUPS_URL).success(function(data) {
