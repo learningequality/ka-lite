@@ -22,11 +22,15 @@ function drop(ev) {
   var dataTransfer = ev.originalEvent.dataTransfer;
   ev.preventDefault();
   var studentGrp = dataTransfer.getData('student-grp');
+  var studentGrpId = dataTransfer.getData('student-grp-id');
+  var ids = [studentGrpId];
   appendStudentGrp(playlistId, studentGrp);
+
+  assignStudentGroups(playlistId, ids);
 }
 
 // modify the groups assigned to a playlist
-function api_modify_groups(playlist_id, group_ids_assigned) {
+function assignStudentGroups(playlist_id, group_ids_assigned) {
   console.log(ALL_PLAYLISTS_URL);
   var PLAYLIST_DETAIL_URL = ALL_PLAYLISTS_URL + playlist_id + "/"; // note: cleanup to something more readable
   var groups_assigned = group_ids_assigned.map(function (id) { return {"id": id}; });
