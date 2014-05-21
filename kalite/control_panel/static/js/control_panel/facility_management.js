@@ -9,9 +9,9 @@ function getSelectedUsers(select) {
 
 function setActionButtonState() {
     if($("tr.selected").length) {
-        $(".action button").removeAttr("disabled")
+        $(".action button").removeAttr("disabled");
     } else {
-        $(".action button").attr("disabled", "disabled")
+        $(".action button").attr("disabled", "disabled");
     }
 }
 
@@ -27,13 +27,13 @@ $(function() {
         // Select all users within local table
         $(event.target.value).find("tr").addClass("selected");
         setActionButtonState();
-    })
+    });
 
     $(".none").click(function(event){
         // Unselect all users within local table
         $(event.target.value).find("tr").removeClass("selected");
         setActionButtonState();
-    })
+    });
 
     $(".movegroup").click(function(event) {
         // Move users to the selected group
@@ -52,7 +52,7 @@ $(function() {
             doRequest("/securesync/api/move_to_group", {users: users, group: group})
                 .success(function() {
                     location.reload();
-                })
+                });
         }
     });
 
@@ -97,7 +97,7 @@ $(function() {
     // This means that moving the mouse out and then back in with the button depressed will not select.
     $(".selectable-table").mouseleave(function(){
         $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
-    })
+    });
 
     // Prevent propagation of click events on links to limit confusing behaviour
     // of rows being selected when links clicked.

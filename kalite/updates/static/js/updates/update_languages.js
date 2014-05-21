@@ -157,6 +157,9 @@ $(function () {
 // Messy UI stuff incoming
 //
 
+var languagepack_callbacks = {
+    reset: languagepack_reset_callback
+};
 
 function start_languagepack_download(lang_code) {
     clear_messages();  // get rid of any lingering messages before starting download
@@ -218,9 +221,6 @@ function languagepack_reset_callback(progress, resp) {
     downloading = false;
 }
 
-var languagepack_callbacks = {
-    reset: languagepack_reset_callback
-};
 
 function update_server_status() {
     with_online_status("server", function(server_is_online) {

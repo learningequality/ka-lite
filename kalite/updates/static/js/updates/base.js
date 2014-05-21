@@ -206,7 +206,7 @@ function updatesReset(process_name) {
 
     // With no args, reset all
     if (!process_name) {
-        for (pn in process_names) {
+        for (var pn in process_names) {
             updatesReset(pn);
         }
         return;

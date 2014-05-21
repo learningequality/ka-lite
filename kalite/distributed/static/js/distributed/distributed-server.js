@@ -18,7 +18,7 @@ function show_api_messages(messages) {
     }
     switch (typeof messages) {
         case "object":
-            for (msg_type in messages) {
+            for (var msg_type in messages) {
                 show_message(msg_type, messages[msg_type]);
             }
             break;

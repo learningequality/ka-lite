@@ -4,7 +4,7 @@ function generate_current_link() {
     // Add topic paths
     if (typeof get_topic_paths_from_tree != 'undefined') {
         var topic_paths = get_topic_paths_from_tree();
-        for (pi in topic_paths) {
+        for (var pi in topic_paths) {
             url += "&topic_path=" + topic_paths[pi];
         }
         // Add axis information
@@ -36,7 +36,7 @@ function changeData(type) {
     var opt = $("#" + type + " option:selected");
     $("#" + type + "_editable").text(opt.text());
     // Check to see if the item being passed is a group item - regex match against group in the item.
-    var linktype = /group/i.test(type) ? "group" : type
+    var linktype = /group/i.test(type) ? "group" : type;
     $(".changeable-link").each(function () {
         this.href = setGetParam(this.href, linktype, opt.val());
     });
@@ -46,7 +46,7 @@ function changeData(type) {
         // Show the appropriate group selection for a particular facility when the facility is changed.
         $(".group_div").hide();
         $("#" + $("#facility").val()).show();
-        changeData($("#facility").val() + "_group_select")
+        changeData($("#facility").val() + "_group_select");
     }
 }
 function make_editable(type) {

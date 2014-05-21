@@ -69,56 +69,56 @@ function d3_scatter(data, options, appendtohtml) {
 
   // Create four different rectangles to highlight and label the different quadrants of the graph.
   // Each rectangle is a group with a coloured (fill) rectangle, and a text label.
-  var struggling = svg.append("g")
+  var struggling = svg.append("g");
   struggling.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", 0)
     .attr("y", 0)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#FF0000")
+    .attr("fill", "#FF0000");
   struggling.append("text")
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", height/4)
     .text(gettext("Struggling"));
 
-  var bored = svg.append("g")
+  var bored = svg.append("g");
   bored.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", width/2)
     .attr("y", height/2)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#000000")
+    .attr("fill", "#000000");
   bored.append("text")
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
     .attr("y", 3*height/4)
     .text(gettext("Bored"));
 
-  var disengaged = svg.append("g")
+  var disengaged = svg.append("g");
   disengaged.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", 0)
     .attr("y", height/2)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#FFFF00")
+    .attr("fill", "#FFFF00");
   disengaged.append("text")
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", 3*height/4)
     .text(gettext("Disengaged"));
 
-  var ontarget = svg.append("g")
+  var ontarget = svg.append("g");
   ontarget.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", width/2)
     .attr("y", 0)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#00FF00")
+    .attr("fill", "#00FF00");
   ontarget.append("text")
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)

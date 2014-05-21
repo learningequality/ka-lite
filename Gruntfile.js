@@ -15,12 +15,8 @@ module.exports = function(grunt) {
 			],
 			// http://www.jshint.com/docs/options/
 			options: {
-				"-W038": false, // 'variable' used out of scope.
 				"-W041": false, // Use '===' to compare with ''.
 				"-W047": false, // A trailing decimal point can be confused with a dot
-				"-W065": false, // Missing radix parameter.
-				"-W088": false, // Creating global 'for' variable.
-				"-W107": false, // Script URL.
 
 				// Enforcing options
 				bitwise: true, // Unexpected use of '&'.
@@ -30,18 +26,17 @@ module.exports = function(grunt) {
 				//forin: true, // The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.
 				freeze: true, // Extending prototype of native object: 'Object'.
 				immed: true, // Function declarations are not invocable. Wrap the whole function invocation in parens.
-				//latedef: 'nofunc', // 'variable' was used before it was defined.
+				latedef: 'nofunc', // 'variable' was used before it was defined.
 				noarg: true, // Avoid arguments.callee.
 				noempty: true, // Empty block.
 				nonbsp: true, // "non-breaking whitespace" character
 				nonew: true, // Do not use 'new' for side effects.
 				//undef: true, // 'variable' is not defined.
-				//unused: true, // 'variable' is defined but never used.
+				//unused: "vars", // 'variable' is defined but never used.
 				//strict: true, // Missing "use strict" statement.
 				trailing: true, // Trailing whitespace.
 
 				// Relaxing options
-				asi: true, // Missing semicolon.
 				shadow: true, // 'variable' is already defined.
 				sub: true, // ['property'] is better written in dot notation.
 

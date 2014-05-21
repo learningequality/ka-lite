@@ -49,7 +49,7 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
 
         var values = [];
         
-        for (ri=0; ri<good_xdata.length; ++ri) {
+        for (var ri=0; ri<good_xdata.length; ++ri) {
 
             values.push({
                 date: good_xdata[ri], data_point: multiplier*good_ydata[ri]
