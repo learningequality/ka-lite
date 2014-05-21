@@ -159,7 +159,7 @@ class FacilityGroupForm(forms.ModelForm):
 
     class Meta:
         model = FacilityGroup
-        fields = ("name", "facility", "zone_fallback", )
+        fields = ("name", "description", "facility", "zone_fallback", )
         widgets = {
             "facility": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(),
