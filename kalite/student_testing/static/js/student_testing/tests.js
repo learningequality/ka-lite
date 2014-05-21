@@ -36,7 +36,7 @@ function loadExercise(exercise_id, callback) {
                 callback(data);
             })
             .fail(function(resp) {
-                handleFailedAPI(resp, "id_student_logs");
+                handleFailedAPI(resp, "exercise_data");
             });
     }
 

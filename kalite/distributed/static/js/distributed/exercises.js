@@ -1,3 +1,40 @@
+window.ExerciseModel = Backbone.Model.Extend({
+    defaults: {
+        basepoints: 0,
+        description: "",
+        title: "",
+        name: "",
+        secondsPerFastProblem: 0,
+        authorName: "",
+        relatedVideos: [],
+        fileName: ""
+    },
+
+    fetch: function() {
+
+        var self = this;
+
+        doRequest("/api/exercise/" + this.get("exercise_id"))
+            .success(function(data) {
+                if (data.length === 0) {
+                    return;
+                }
+                self.set({
+                    "basepoints": data.basepoints ,
+                    "description": data.description,
+                    "title": data.display_name,
+                    "lang": data.lang,
+                    "name": data.name,
+                    "secondsPerFastProblem": data.seconds_per_fast_problem,
+                    "authorName": data.author_name,
+                    "fileName": data.template
+                })
+            })
+    },
+})
+
+
+
 function updateStreakBar() {
     // update the streak bar UI
     $("#streakbar .progress-bar").css("width", exerciseData.percentCompleted + "%");
