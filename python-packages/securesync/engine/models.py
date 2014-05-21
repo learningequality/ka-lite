@@ -187,14 +187,14 @@ class SyncedModel(ExtendedModel):
         app_label = "securesync"
 
     @transaction.commit_on_success
-    def delete(self):
+    def soft_delete(self):
         self.deleted = True  # mark self as deleted
 
         for related_model in (self._meta.get_all_related_objects()):
             manager = getattr(self, related_model.get_accessor_name())
             related_objects = manager.all()
             for obj in related_objects:
-                obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+                obj.soft_delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
         self.save()
 
     def full_clean(self, exclude=[]):
