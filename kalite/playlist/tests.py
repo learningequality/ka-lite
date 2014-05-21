@@ -5,11 +5,14 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from django.test import TestCase
+from django.core.urlresolvers import reverse
+from django.test import Client, TestCase
 
 from facility.models import FacilityUser
 
 from .models import Playlist
+from .api_resources import Playlist as PlaylistObject
+from kalite.testing.mixins import CreateAdminMixin
 
 
 class PlaylistTests(TestCase):
@@ -50,3 +53,28 @@ class PlaylistTests(TestCase):
         self.assertEqual(entries[0].reload().sort_order, 0)
         self.assertEqual(entries[1].reload().sort_order, 2)
         self.assertEqual(entries[2].reload().sort_order, 3)
+
+
+class PlaylistAPITests(CreateAdminMixin, TestCase):
+    def _playlist_url(self, playlist_id=None):
+        '''
+        If no playlist_id is given, returns a url that gets all
+        playlists. If playlist_id is given, returns a detail url for that playlist
+        '''
+        if not playlist_id:
+            return reverse("api_dispatch_list", kwargs={'resource_name': 'playlist'})
+        else:
+            return reverse("api_dispatch_detail", kwargs={'resource_name': 'playlist', 'pk': playlist_id})
+
+    def setUp(self):
+        self.admin = self.create_admin()
+        self.client = Client()
+        self.client.login(username='admin', password='admin')
+
+    def test_playlist_list_url_exists(self):
+        resp = self.client.get(self._playlist_url())
+        self.assertEquals(resp.status_code, 200)
+
+    def test_playlist_detail_url_exists(self):
+        resp = self.client.get(self._playlist_url(0))
+        self.assertEquals(resp.status_code, 200)
