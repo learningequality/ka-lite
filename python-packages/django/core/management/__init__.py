@@ -5,9 +5,12 @@ from optparse import OptionParser, NO_DEFAULT
 import imp
 import warnings
 
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand, CommandError, handle_default_options
 from django.core.management.color import color_style
 from django.utils.importlib import import_module
+from django.utils._os import upath
+from django.utils import six
 
 # For backwards compatibility: get_version() used to be in this module.
 from django import get_version
@@ -50,14 +53,19 @@ def find_management_module(app_name):
     # module, we need look for the case where the project name is part
     # of the app_name but the project directory itself isn't on the path.
     try:
-        f, path, descr = imp.find_module(part,path)
-    except ImportError,e:
+        f, path, descr = imp.find_module(part, path)
+    except ImportError as e:
         if os.path.basename(os.getcwd()) != part:
             raise e
+    else:
+        if f:
+            f.close()
 
     while parts:
         part = parts.pop()
         f, path, descr = imp.find_module(part, path and [path] or None)
+        if f:
+            f.close()
     return path
 
 def load_command_class(app_name, name):
@@ -96,10 +104,12 @@ def get_commands():
         _commands = dict([(name, 'django.core') for name in find_commands(__path__[0])])
 
         # Find the installed apps
+        from django.conf import settings
         try:
-            from django.conf import settings
             apps = settings.INSTALLED_APPS
-        except (AttributeError, EnvironmentError, ImportError):
+        except ImproperlyConfigured:
+            # Still useful for commands that do not require functional settings,
+            # like startproject or help
             apps = []
 
         # Find and load the management module for each installed app.
@@ -127,13 +137,14 @@ def call_command(name, *args, **options):
     # Load the command object.
     try:
         app_name = get_commands()[name]
-        if isinstance(app_name, BaseCommand):
-            # If the command is already loaded, use it directly.
-            klass = app_name
-        else:
-            klass = load_command_class(app_name, name)
     except KeyError:
         raise CommandError("Unknown command: %r" % name)
+
+    if isinstance(app_name, BaseCommand):
+        # If the command is already loaded, use it directly.
+        klass = app_name
+    else:
+        klass = load_command_class(app_name, name)
 
     # Grab out a list of defaults from the options. optparse does this for us
     # when the script runs from the command line, but since call_command can
@@ -228,7 +239,7 @@ class ManagementUtility(object):
                 "Available subcommands:",
             ]
             commands_dict = collections.defaultdict(lambda: [])
-            for name, app in get_commands().iteritems():
+            for name, app in six.iteritems(get_commands()):
                 if app == 'django.core':
                     app = 'django'
                 else:
@@ -294,12 +305,12 @@ class ManagementUtility(object):
         except IndexError:
             curr = ''
 
-        subcommands = get_commands().keys() + ['help']
+        subcommands = list(get_commands()) + ['help']
         options = [('--help', None)]
 
         # subcommand
         if cword == 1:
-            print ' '.join(sorted(filter(lambda x: x.startswith(curr), subcommands)))
+            print(' '.join(sorted(filter(lambda x: x.startswith(curr), subcommands))))
         # subcommand options
         # special case: the 'help' subcommand has no options
         elif cwords[0] in subcommands and cwords[0] != 'help':
@@ -310,9 +321,8 @@ class ManagementUtility(object):
                 from django.core.servers.fastcgi import FASTCGI_OPTIONS
                 options += [(k, 1) for k in FASTCGI_OPTIONS]
             # special case: add the names of installed apps to options
-            elif cwords[0] in ('dumpdata', 'reset', 'sql', 'sqlall',
-                               'sqlclear', 'sqlcustom', 'sqlindexes',
-                               'sqlreset', 'sqlsequencereset', 'test'):
+            elif cwords[0] in ('dumpdata', 'sql', 'sqlall', 'sqlclear',
+                    'sqlcustom', 'sqlindexes', 'sqlsequencereset', 'test'):
                 try:
                     from django.conf import settings
                     # Get the last part of the dotted path as the app name.
@@ -325,7 +335,7 @@ class ManagementUtility(object):
                         subcommand_cls.option_list]
             # filter out previously specified options from available options
             prev_opts = [x.split('=')[0] for x in cwords[1:cword-1]]
-            options = filter(lambda (x, v): x not in prev_opts, options)
+            options = [opt for opt in options if opt[0] not in prev_opts]
 
             # filter options by current input
             options = sorted([(k, v) for k, v in options if k.startswith(curr)])
@@ -334,7 +344,7 @@ class ManagementUtility(object):
                 # append '=' to options which require args
                 if option[1]:
                     opt_label += '='
-                print opt_label
+                print(opt_label)
         sys.exit(1)
 
     def execute(self):
@@ -396,15 +406,15 @@ def setup_environ(settings_mod, original_settings_path=None):
         "you likely need to update your 'manage.py'; "
         "please see the Django 1.4 release notes "
         "(https://docs.djangoproject.com/en/dev/releases/1.4/).",
-        PendingDeprecationWarning)
+        DeprecationWarning)
 
     # Add this project to sys.path so that it's importable in the conventional
     # way. For example, if this file (manage.py) lives in a directory
     # "myproject", this code would add "/path/to/myproject" to sys.path.
-    if '__init__.py' in settings_mod.__file__:
-        p = os.path.dirname(settings_mod.__file__)
+    if '__init__.py' in upath(settings_mod.__file__):
+        p = os.path.dirname(upath(settings_mod.__file__))
     else:
-        p = settings_mod.__file__
+        p = upath(settings_mod.__file__)
     project_directory, settings_filename = os.path.split(p)
     if project_directory == os.curdir or not project_directory:
         project_directory = os.getcwd()
@@ -452,7 +462,7 @@ def execute_manager(settings_mod, argv=None):
         "you likely need to update your 'manage.py'; "
         "please see the Django 1.4 release notes "
         "(https://docs.djangoproject.com/en/dev/releases/1.4/).",
-        PendingDeprecationWarning)
+        DeprecationWarning)
 
     setup_environ(settings_mod)
     utility = ManagementUtility(argv)

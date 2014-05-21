@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 
 from securesync.models import Device
 
+
 class Command(BaseCommand):
     help = "Create an SSH tunnel to the SSH server."
 
@@ -41,7 +42,7 @@ class Command(BaseCommand):
             except socket.error as e:
                 errcount += 1
                 if errcount > 5:
-                    raise CommandError(_("Can't connect to %s at port %s." % (server, port)))
+                    raise CommandError(_("Can't connect to %(server)s at port %(port)s." % {"server": server, "port": port}))
                 else:
                     time.sleep(5)
 
@@ -103,4 +104,4 @@ class Command(BaseCommand):
                     remote_port_mapping += 1
                     continue
                 else:
-                    raise CommandError(_("Connection refused by %s. Stdout: %s" % (self.server, stdout)))
+                    raise CommandError(_("Connection refused by %(server)s. Stdout: %(stdout)s" % {"server": self.server, "stdout": stdout}))

@@ -27,8 +27,8 @@ from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from kalite.main.topic_tools import get_node_cache
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.topic_tools import get_node_cache
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 
@@ -133,7 +133,6 @@ def zone_management(request, zone_id="None"):
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
-            "is_deletable": facility.is_deletable(),
         }
 
     context.update({
@@ -174,7 +173,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     # If local (and, for security purposes, a distributed server), get device metadata
     if context["is_own_device"]:
-        context.update(local_device_context(request))
+        context.update(local_install_context(request))
 
     return context
 
@@ -301,6 +300,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
             "coaches": coach_urls,
             "students": student_urls,
         },
+        "ungrouped_id": _("Ungrouped").split(" ")[0]
     })
     return context
 
@@ -421,7 +421,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or _(group_id)==_("Ungrouped")):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None]*(group_id==None or group_id==_("Ungrouped").split(" ")[0]):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
         group_data[group_pk] = {
@@ -480,7 +480,7 @@ def control_panel_context(request, **kwargs):
     return context
 
 
-def local_device_context(request):
+def local_install_context(request):
     database_path = settings.DATABASES["default"]["NAME"]
     current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
 

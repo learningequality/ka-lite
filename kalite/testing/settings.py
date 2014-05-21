@@ -6,9 +6,24 @@ except ImportError:
     local_settings = object()
 
 
+########################
+# Django dependencies
+########################
+
 # Django debug_toolbar config
-INSTALLED_APPS = tuple()
+INSTALLED_APPS = (
+    'kalite.facility',  # Create users
+    'kalite.main',  # Probing / creating Log objects, accessing topic_tools
+    'kalite.main',  # Probing / creating Log objects
+    'kalite.topic_tools',  # For benchmarking, finding random exercises
+    'securesync',  # Uses securesync testing hooks
+)
 MIDDLEWARE_CLASSES = tuple()
+
+
+#######################
+# Set module settings
+#######################
 
 USE_DEBUG_TOOLBAR = getattr(local_settings, "USE_DEBUG_TOOLBAR", False)
 
@@ -33,15 +48,27 @@ if USE_DEBUG_TOOLBAR:
     }
 
 if getattr(local_settings, "DEBUG", False):
+    INSTALLED_APPS += (
+        "django.contrib.admin",  # this and the following are needed to enable django admin.
+    )
+
     # add ?prof to URL, to see performance stats
-    MIDDLEWARE_CLASSES += ('django_snippets.profiling_middleware.ProfileMiddleware',)
+    MIDDLEWARE_CLASSES += (
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        'django_snippets.profiling_middleware.ProfileMiddleware',
+    )
+
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        "django.contrib.auth.context_processors.auth",
+    )
 
 
 
 if os.path.exists(os.path.join(os.path.dirname(__file__), "loadtesting")):
     INSTALLED_APPS += (__package__ + ".loadtesting",)
 
-TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
+KALITE_TEST_RUNNER = __package__ + ".testrunner.KALiteTestRunner"
 
 RUNNING_IN_TRAVIS = bool(os.environ.get("TRAVIS"))
 

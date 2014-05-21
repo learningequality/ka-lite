@@ -8,8 +8,8 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+from ...engine.api_client import SyncClient
 from fle_utils import set_process_priority
-from securesync.engine.api_client import SyncClient
 
 
 class Command(BaseCommand):

@@ -1,17 +1,20 @@
+from __future__ import unicode_literals
+
 import codecs
 import os
 import sys
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+from django.utils._os import npath
 
 def has_bom(fn):
-    f = open(fn, 'r')
-    sample = f.read(4)
-    return sample[:3] == '\xef\xbb\xbf' or \
+    with open(fn, 'rb') as f:
+        sample = f.read(4)
+    return sample[:3] == b'\xef\xbb\xbf' or \
             sample.startswith(codecs.BOM_UTF16_LE) or \
             sample.startswith(codecs.BOM_UTF16_BE)
 
-def compile_messages(stdout, stderr, locale=None):
+def compile_messages(stderr, locale=None):
     basedirs = [os.path.join('conf', 'locale'), 'locale']
     if os.environ.get('DJANGO_SETTINGS_MODULE'):
         from django.conf import settings
@@ -21,7 +24,7 @@ def compile_messages(stdout, stderr, locale=None):
     basedirs = set(map(os.path.abspath, filter(os.path.isdir, basedirs)))
 
     if not basedirs:
-        raise CommandError("This script should be run from the Django SVN tree or your project or app tree, or with the settings module specified.")
+        raise CommandError("This script should be run from the Django Git checkout or your project or app tree, or with the settings module specified.")
 
     for basedir in basedirs:
         if locale:
@@ -29,7 +32,7 @@ def compile_messages(stdout, stderr, locale=None):
         for dirpath, dirnames, filenames in os.walk(basedir):
             for f in filenames:
                 if f.endswith('.po'):
-                    stdout.write('processing file %s in %s\n' % (f, dirpath))
+                    stderr.write('processing file %s in %s\n' % (f, dirpath))
                     fn = os.path.join(dirpath, f)
                     if has_bom(fn):
                         raise CommandError("The %s file has a BOM (Byte Order Mark). Django only supports .po files encoded in UTF-8 and without any BOM." % fn)
@@ -39,15 +42,14 @@ def compile_messages(stdout, stderr, locale=None):
                     # command, so that we can take advantage of shell quoting, to
                     # quote any malicious characters/escaping.
                     # See http://cyberelk.net/tim/articles/cmdline/ar01s02.html
-                    os.environ['djangocompilemo'] = pf + '.mo'
-                    os.environ['djangocompilepo'] = pf + '.po'
+                    os.environ['djangocompilemo'] = npath(pf + '.mo')
+                    os.environ['djangocompilepo'] = npath(pf + '.po')
                     if sys.platform == 'win32': # Different shell-variable syntax
                         cmd = 'msgfmt --check-format -o "%djangocompilemo%" "%djangocompilepo%"'
                     else:
                         cmd = 'msgfmt --check-format -o "$djangocompilemo" "$djangocompilepo"'
-                    rc = os.system(cmd)
-                    if rc != 0:
-                        stderr.write("Failure for po == %s (return code = %d)\n" % (pf + ".po", rc))
+                    os.system(cmd)
+
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -61,4 +63,4 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         locale = options.get('locale')
-        compile_messages(self.stdout, self.stderr, locale=locale)
+        compile_messages(self.stderr, locale=locale)

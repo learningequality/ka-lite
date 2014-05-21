@@ -46,7 +46,7 @@ function updatePercentCompleted(correct) {
         attempts: exerciseData.attempts
     };
 
-    doRequest("/api/save_exercise_log", data)
+    doRequest(SAVE_EXERCISE_LOG_URL, data)
         .success(function(data) {
             // update the top-right point display, now that we've saved the points successfully
             userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
@@ -90,7 +90,7 @@ $(function() {
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
-    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name])
+    doRequest(GET_EXERCISE_LOGS_URL, [exerciseData.exerciseModel.name])
         .success(function(data) {
             if (data.length === 0) {
                 return;

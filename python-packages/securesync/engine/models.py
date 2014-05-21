@@ -8,22 +8,25 @@ from pbkdf2 import crypt
 from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
+from django.db.models.base import ModelBase
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 from . import add_syncing_models
+from .. import ID_MAX_LENGTH, IP_MAX_LENGTH
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
-from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH
 
 
 def _get_own_device():
     """
     To allow imports to resolve... the only ugly thing of this code separation.
     """
-    from securesync.devices.models import Device
+    from ..devices.models import Device
     return Device.get_own_device()
 
 
@@ -85,6 +88,18 @@ class SyncedModelManager(models.Manager):
     class Meta:
         app_label = "securesync"
 
+    def __init__(self, show_deleted=None, *args, **kwargs):
+        super(SyncedModelManager, self).__init__(*args, **kwargs)
+
+        self.show_deleted = show_deleted is None and getattr(settings, "SHOW_DELETED_OBJECTS", False) or show_deleted
+
+    def get_query_set(self, *args, **kwargs):
+        qset = super(SyncedModelManager, self).get_query_set(*args, **kwargs)
+
+        if not self.show_deleted:
+            qset = qset.filter(deleted=False)
+        return qset
+
     def by_zone(self, zone):
         """Get model instances that were signed by devices in the zone,
         or signed by a trusted authority that said they were for the zone,
@@ -100,6 +115,31 @@ class SyncedModelManager(models.Manager):
             condition = condition | Q(signed_by=None)
 
         return self.filter(condition)
+
+
+class SyncedModelMetaclass(ModelBase):
+    """
+    This class does the following:
+        * adds a signal listener to prevent any deletes from ever happening
+        * adds subclasses of SyncedModel to the set of syncing models
+    """
+
+    def __init__(cls, name, bases, clsdict):
+
+        if len(cls.mro()) > 4 and not cls._meta.abstract:
+
+            # Add the deletion signal listener.
+            if not hasattr(cls, "_do_not_delete_signal"):
+                @receiver(pre_delete, sender=cls)
+                def disallow_delete(sender, instance, **kwargs):
+                    if not getattr(settings, "DEBUG_ALLOW_DELETIONS", False):
+                        raise NotImplementedError("Objects of SyncedModel subclasses (like %s) cannot be deleted." % instance.__class__)
+                cls._do_not_delete_signal = disallow_delete  # don't let Python destroy this fn on __init__ completion.
+
+                # Add subclass to set of syncing models.
+                add_syncing_models([cls])
+
+        super(SyncedModelMetaclass, cls).__init__(name, bases, clsdict)
 
 
 class SyncedModel(ExtendedModel):
@@ -133,14 +173,39 @@ class SyncedModel(ExtendedModel):
     deleted = models.BooleanField(default=False)
 
     objects = SyncedModelManager()
+    all_objects = SyncedModelManager(show_deleted=True)
+
     _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
     _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
     _import_excluded_validation_fields = []  # fields that should not be validated upon import
 
 
+    __metaclass__ = SyncedModelMetaclass
+
     class Meta:
         abstract = True
         app_label = "securesync"
+
+    @transaction.commit_on_success
+    def delete(self):
+        self.deleted = True  # mark self as deleted
+
+        for related_model in (self._meta.get_all_related_objects()):
+            manager = getattr(self, related_model.get_accessor_name())
+            related_objects = manager.all()
+            for obj in related_objects:
+                obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+        self.save()
+
+    def full_clean(self, exclude=[]):
+        """
+        When I am deleted, don't validate my foreign keys anymore--they may fail.
+
+        TODO(bcipolli): get validation to really work!
+        """
+        if self.deleted:
+            exclude = exclude + [f.name for f in self._meta.fields if isinstance(f, models.ForeignKey) ]
+        super(SyncedModel, self).full_clean()
 
     def sign(self, device=None):
         """
@@ -354,17 +419,6 @@ class SyncedModel(ExtendedModel):
     def in_zone(self, zone):
         return zone == self.get_zone()
 
-    def is_deletable(self):
-        """
-        Safe to delete IF:
-            the current device is not registered
-            OR
-            object, and all its dependencies, were created after the last sync.
-
-        For now, just implement the first.
-        """
-        return self.get_zone() is None
-
     def __unicode__(self):
         pk = self.pk[0:5] if len(getattr(self, "pk", "")) >= 5 else "[unsaved]"
         signed_by_pk = self.signed_by.pk[0:5] if self.signed_by and self.signed_by.pk else "[None]"
@@ -439,5 +493,3 @@ class ImportPurgatory(ExtendedModel):
     def save(self, *args, **kwargs):
         self.counter = self.counter or _get_own_device().get_counter_position()
         super(ImportPurgatory, self).save(*args, **kwargs)
-
-add_syncing_models([SyncedLog])
