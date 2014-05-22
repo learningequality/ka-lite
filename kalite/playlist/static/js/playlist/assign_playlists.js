@@ -1,3 +1,40 @@
+var Group = Backbone.Model;
+
+var GroupList = Backbone.Collection.extend({
+
+    model: Group
+
+});
+
+var Playlist = Backbone.Model.extend({
+
+    initialize: function(attributes) {
+        var groupList = new GroupList(this.get('groups_assigned').map(function(groupdata) {
+            return new Group(groupdata);
+        }));
+        this.set({groups_assigned: groupList});
+    },
+
+    addGroup: function(group) {
+        this.save({groups_assigned: this.groups_assigned + [group]});
+    }
+
+});
+
+var PlaylistList = Backbone.Collection.extend({
+
+    model: Playlist,
+
+    url: function() { return ALL_PLAYLISTS_URL; },
+
+    // we make our own parsing mechanism since tastypie includes some metadata in its model list responses
+    parse: function(response) {
+        return response.objects;
+    }
+});
+
+var playlists = new PlaylistList;
+
 function appendStudentGrp(id, studentGrpName) {
   var selector = sprintf("tr[playlist-id|=%s] ul", id);
   $(selector).append('<li>'+studentGrpName+'</li>');
