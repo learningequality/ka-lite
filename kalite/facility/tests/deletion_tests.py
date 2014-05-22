@@ -1,0 +1,70 @@
+"""
+"""
+import string
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
+from django.test import TestCase
+
+from .base import FacilityTestCase
+from ..forms import FacilityUserForm
+from ..models import Facility, FacilityUser, FacilityGroup
+from kalite.testing import KALiteTestCase
+from securesync.models import Zone, Device, DeviceMetadata
+
+
+class UserDeletionTestCase(FacilityTestCase):
+
+    def test_deleting_user_does_not_work(self):
+        """Deletion should be disallowed"""
+        user = FacilityUser(username=self.data['username'], facility=self.facility)
+        user.set_password('insecure')
+        user.save()
+        self.assertRaises(NotImplementedError, user.delete)
+
+    def test_soft_deleting_user_does_work(self):
+        user = FacilityUser(username=self.data['username'], facility=self.facility)
+        user.set_password('insecure')
+        user.save()
+        user.soft_delete()
+        self.assertTrue(user.deleted)
+
+class FacilityDeletionTestCase(FacilityTestCase):
+
+    def test_deleting_facility_does_not_work(self):
+        """Deletion should be disallowed"""
+        self.assertRaises(NotImplementedError, self.facility.delete)
+
+    def test_soft_deleting_facility_does_work(self):
+        self.facility.soft_delete()
+        self.assertTrue(self.facility.deleted)
+
+    def test_soft_deleting_facility_soft_deletes_user(self):
+        user = FacilityUser(username=self.data['username'], facility=self.facility)
+        user.set_password('insecure')
+        user.save()
+        self.facility.soft_delete()
+        self.assertTrue(user.deleted)
+
+    def test_soft_deleting_facility_deletes_group(self):
+        self.facility.soft_delete()
+        self.assertTrue(self.group.deleted)
+
+class GroupDeletionTestCase(FacilityTestCase):
+
+    def test_deleting_group_does_not_work(self):
+        """Deletion should be disallowed"""
+        self.assertRaises(NotImplementedError, self.group.delete)
+
+    def test_soft_deleting_group_does_work(self):
+        self.group.soft_delete()
+        self.assertTrue(self.group.deleted)
+
+    def test_soft_deleting_group_removes_user_from_group(self):
+        user = FacilityUser(username=self.data['username'], facility=self.facility)
+        user.set_password('insecure')
+        user.save()
+        self.group.soft_delete()
+        self.assertIsNone(user.group)
