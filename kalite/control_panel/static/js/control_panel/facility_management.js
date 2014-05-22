@@ -8,6 +8,7 @@ function getSelectedItems(select) {
 }
 
 function setActionButtonState(select) {
+    // argument to allow conditional selection of action buttons.
     if($(select).find("tr.selected").length) {
         $(select).find(".action button").removeAttr("disabled")
     } else {
@@ -26,12 +27,14 @@ $(function() {
     $(".all").click(function(event){
         // Select all users within local table
         $(event.target.value).find("tr").addClass("selected");
+        // Only set action button state on related action buttons.
         setActionButtonState(event.target.value);
     })
 
     $(".none").click(function(event){
         // Unselect all users within local table
         $(event.target.value).find("tr").removeClass("selected");
+        // Only set action button state on related action buttons.
         setActionButtonState(event.target.value);
     })
 
@@ -94,11 +97,13 @@ $(function() {
     // When mouse is pressed over a row in the table body (not the header row), make mouseovers select.
     $(".selectable-table").find("tbody").find("tr").mousedown(function(event){
         $(this).toggleClass("selected");
+        // Only set action button state on related action buttons.
         setActionButtonState("#" + $(event.currentTarget).attr("type"));
         $(".selectable-table").find("tbody").find("tr").mouseover(function(event){
             $(this).toggleClass("selected");
             // This code is to toggle action buttons on only when items have been selected
             // Works for now as only students have action buttons
+            // Only set action button state on related action buttons.
             setActionButtonState("#" + $(event.currentTarget).attr("type"));
         });
     });
