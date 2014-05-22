@@ -96,6 +96,10 @@ class SyncedModelManager(models.Manager):
         app_label = "securesync"
 
     def __init__(self, show_deleted=None, *args, **kwargs):
+        """
+        Pass in 'show_deleted=True' to return a model manager that will also show
+        deleted objects in the queryset.
+        """
         super(SyncedModelManager, self).__init__(*args, **kwargs)
 
         self.show_deleted = show_deleted is None and getattr(settings, "SHOW_DELETED_OBJECTS", False) or show_deleted
@@ -170,6 +174,10 @@ class SyncedModel(ExtendedModel):
     For backwards compatibility reasons, signed_version must remain, and would be used
     in future designs/implementations reusing the original (elegant) design that is appropriate
     for mixed version P2P sync.
+
+    SyncedModels have a 'soft_delete' method which allows them to be flagged as deleted,
+    but not actually be deleted to preserve data. In order to access the deleted objects in queries
+    the 'all_objects' model property should be used in place of 'objects'.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=None, blank=True, null=True)
