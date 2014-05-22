@@ -1,17 +1,17 @@
-function getSelectedUsers(select) {
+function getSelectedItems(select) {
     // Retrieve a list of selected users.
-    var users = $(select).find("tr.selected").map(function () {
+    var items = $(select).find("tr.selected").map(function () {
         return $(this).attr("value");
     }).get();
 
-    return users;
+    return items;
 }
 
-function setActionButtonState() {
-    if($("tr.selected").length) {
-        $(".action button").removeAttr("disabled")
+function setActionButtonState(select) {
+    if($(select).find("tr.selected").length) {
+        $(select).find(".action button").removeAttr("disabled")
     } else {
-        $(".action button").attr("disabled", "disabled")
+        $(select).find(".action button").attr("disabled", "disabled")
     }
 }
 
@@ -26,18 +26,18 @@ $(function() {
     $(".all").click(function(event){
         // Select all users within local table
         $(event.target.value).find("tr").addClass("selected");
-        setActionButtonState();
+        setActionButtonState(event.target.value);
     })
 
     $(".none").click(function(event){
         // Unselect all users within local table
         $(event.target.value).find("tr").removeClass("selected");
-        setActionButtonState();
+        setActionButtonState(event.target.value);
     })
 
     $(".movegroup").click(function(event) {
         // Move users to the selected group
-        var users = getSelectedUsers(this.value);
+        var users = getSelectedItems(this.value);
         var group = $(this.value).find('.movegrouplist option:selected').val();
 
         console.log(group);
@@ -59,7 +59,7 @@ $(function() {
 
     $(".delete").click(function(event) {
         // Delete the selected users
-        var users = getSelectedUsers(this.value);
+        var users = getSelectedItems(this.value);
 
         if (users.length == 0) {
             alert(gettext("Please select users first."));
@@ -73,17 +73,33 @@ $(function() {
         }
     });
 
+    $(".delete-group").click(function(event) {
+        // Delete the selected users
+        var groups = getSelectedItems(this.value);
+
+        if (groups.length == 0) {
+            alert(gettext("Please select groups first."));
+        } else if (!confirm(gettext("You are about to delete selected groups, they will be permanently deleted."))) {
+            return;
+        } else {
+            doRequest(DELETE_GROUPS_URL, {groups: groups})
+                .success(function() {
+                    location.reload();
+                });
+        }
+    });
+
     // This code is to allow rows of a selectable-table class table to be clicked for selection,
     // and dragged across with mousedown for selection.
     // When mouse is pressed over a row in the table body (not the header row), make mouseovers select.
-    $(".selectable-table").find("tbody").find("tr").mousedown(function(){
+    $(".selectable-table").find("tbody").find("tr").mousedown(function(event){
         $(this).toggleClass("selected");
-        setActionButtonState();
-        $(".selectable-table").find("tbody").find("tr").mouseover(function(){
+        setActionButtonState("#" + $(event.currentTarget).attr("type"));
+        $(".selectable-table").find("tbody").find("tr").mouseover(function(event){
             $(this).toggleClass("selected");
             // This code is to toggle action buttons on only when items have been selected
             // Works for now as only students have action buttons
-            setActionButtonState();
+            setActionButtonState("#" + $(event.currentTarget).attr("type"));
         });
     });
 
