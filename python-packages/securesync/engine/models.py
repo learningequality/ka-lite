@@ -201,7 +201,13 @@ class SyncedModel(ExtendedModel):
             manager = getattr(self, related_model.get_accessor_name())
             related_objects = manager.all()
             for obj in related_objects:
-                obj.soft_delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+                # Some related objects are SyncedModels, some are not.
+                # Try to soft delete so as not to lose syncable data.
+                # Fall back to actual deletion if the model does not have a soft_delete method.
+                try:
+                    obj.soft_delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+                except AttributeError:
+                    obj.delete()
         self.save()
 
     def full_clean(self, exclude=[]):
