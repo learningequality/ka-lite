@@ -6,43 +6,50 @@
 {% block home_active %}active{% endblock home_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' True %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' True %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>
-    {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
+  <script type="text/html" id="all-groups-list-entry-template">
+    <tr>
+      <td student-grp-id="<%= id %>" draggable="true">
+        <%= name %>
+      </td>
+    </tr>
+  </script>
+
+  <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>
+  {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
-        if (window.parent.frames.length === 0) {
-            window.location = "{% url load_test %}";
-        }
+     if (window.parent.frames.length === 0) {
+         window.location = "{% url load_test %}";
+     }
 
     </script>
-    {% endif %}
+  {% endif %}
 
-    <script type="text/javascript">
-     var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
-     var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
-    </script>
+  <script type="text/javascript">
+   var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
+   var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+  </script>
 {% endblock headjs %}
 
 {% block content %}
-    <div class="row">
-      <div class="span10">
-        <table class="table table-hover" id="playlists">
-          <tr>
-            <th>Playlists</th>
-          </tr>
-        </table>
-      </div>
-      <div class="span3">
-        <table class="table table-hover" id="student-groups">
-          <tr>
-            <th>Student Groups</th>
-          </tr>
-        </table>
-      </div>
+  <div class="row">
+    <div class="span10">
+      <table class="table table-hover" id="playlists">
+        <tr>
+          <th>Playlists</th>
+        </tr>
+      </table>
     </div>
-
+    <div class="span3">
+      <table class="table table-hover" id="student-groups">
+        <tr>
+          <th>Student Groups</th>
+        </tr>
+      </table>
+    </div>
+  </div>
 {% endblock content %}

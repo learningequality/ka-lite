@@ -2,9 +2,17 @@ var Group = Backbone.Model;
 
 var GroupList = Backbone.Collection.extend({
 
-    model: Group
+    url: function() { return ALL_GROUPS_URL; },
+
+    model: Group,
+
+    parse: function(response) {
+        return response.objects;
+    }
 
 });
+
+var groups = new GroupList;
 
 var Playlist = Backbone.Model.extend({
 
@@ -34,6 +42,52 @@ var PlaylistList = Backbone.Collection.extend({
 });
 
 var playlists = new PlaylistList;
+
+
+var GroupView  = Backbone.View.extend({
+
+    tagName: "td",
+
+    template: _.template($("#all-groups-list-entry-template").html()),
+
+    className: "student-grp-row",
+
+    attributes: {draggable: true},
+
+    initialize: function(options) {
+        this.id = this.model.id;
+        this.listenTo(this.model, 'change', this.render);
+
+        playlists.fetch();
+    },
+
+    render: function() {
+        var dict = this.model.toJSON();
+        this.$el.html(this.template(dict));
+        return this;
+    }
+
+});
+
+var AppView = Backbone.View.extend({
+
+    initialize: function() {
+        this.listenTo(groups, 'add', this.addNewGroup);
+        this.listenTo(groups, 'reset', this.addAllGroups);
+
+        playlists.fetch();
+        groups.fetch();
+    },
+
+    addNewGroup: function(group) {
+        var view = new GroupView({model: group});
+        $("#student-groups").append(view.render().el);
+    },
+
+    addAllGroups: function() {
+        groups.each(this.addNewGroup);
+    }
+});
 
 function appendStudentGrp(id, studentGrpName) {
   var selector = sprintf("tr[playlist-id|=%s] ul", id);
@@ -86,15 +140,6 @@ function assignStudentGroups(playlist_id, group_ids_assigned) {
             });
 }
 
-function displayGroups() {
-    doRequest(ALL_GROUPS_URL).success(function(data) {
-        data.objects.map(function(obj) {
-            $("#student-groups").append(sprintf('<tr><td student-grp-id="%(id)s" draggable="true">%(name)s</td></tr>', obj));
-        });
-        $(".span3 td").on('dragstart', drag);
-    });
-}
-
 function appendPlaylistStudentGroupRow(playlist) {
     return sprintf('<tr class="droppable" playlist-id="%(id)s"><td><ul></ul></td></tr>', playlist);
 }
@@ -119,9 +164,11 @@ function displayPlaylists() {
 }
 
 $(function() {
-    displayGroups();
+    // displayGroups();
     displayPlaylists();
 
     $("tr.title+tr").hide();
+
+    var app = new AppView;
 
 });
