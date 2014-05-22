@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.base import ModelBase
+from django.db.models.query import QuerySet
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.utils.text import compress_string
@@ -83,6 +84,12 @@ class SyncSession(ExtendedModel):
             to_discard.delete()
 
 
+class SyncedModelQuerySet(QuerySet):
+
+    def soft_delete(self):
+        for model in self:
+            model.soft_delete()
+
 class SyncedModelManager(models.Manager):
 
     class Meta:
@@ -93,8 +100,8 @@ class SyncedModelManager(models.Manager):
 
         self.show_deleted = show_deleted is None and getattr(settings, "SHOW_DELETED_OBJECTS", False) or show_deleted
 
-    def get_query_set(self, *args, **kwargs):
-        qset = super(SyncedModelManager, self).get_query_set(*args, **kwargs)
+    def get_query_set(self):
+        qset = SyncedModelQuerySet(self.model, using=self._db)
 
         if not self.show_deleted:
             qset = qset.filter(deleted=False)
