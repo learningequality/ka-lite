@@ -46,19 +46,17 @@ var playlists = new PlaylistList;
 
 var GroupView  = Backbone.View.extend({
 
-    tagName: "td",
-
-    template: _.template($("#all-groups-list-entry-template").html()),
+    tagName: "tr",
 
     className: "student-grp-row",
 
     attributes: {draggable: true},
 
+    template: _.template($("#all-groups-list-entry-template").html()),
+
     initialize: function(options) {
         this.id = this.model.id;
         this.listenTo(this.model, 'change', this.render);
-
-        playlists.fetch();
     },
 
     render: function() {
@@ -69,11 +67,29 @@ var GroupView  = Backbone.View.extend({
 
 });
 
+var PlaylistView = Backbone.View.extend({
+
+    tagName: "tr",
+
+    className: "droppable title",
+
+    template: _.template($("#playlist-entry-template").html()),
+
+    render: function() {
+        var dict = this.model.toJSON();
+        this.$el.html(this.template(dict));
+        return this;
+    }
+});
+
 var AppView = Backbone.View.extend({
 
     initialize: function() {
         this.listenTo(groups, 'add', this.addNewGroup);
         this.listenTo(groups, 'reset', this.addAllGroups);
+
+        this.listenTo(playlists, 'add', this.addNewPlaylist);
+        this.listenTo(playlists, 'reset', this.addAllPlaylists);
 
         playlists.fetch();
         groups.fetch();
@@ -86,8 +102,47 @@ var AppView = Backbone.View.extend({
 
     addAllGroups: function() {
         groups.each(this.addNewGroup);
+    },
+
+    addNewPlaylist: function(playlist) {
+        var view = new PlaylistView({model: playlist});
+        $("#playlists").append(view.render().el);
+    },
+
+    addAllPlaylists: function() {
+        playlists.each(this.addNewPlaylist);
     }
 });
+
+// function displayPlaylists() {
+//     doRequest(ALL_PLAYLISTS_URL).success(function(data) {
+//         data.objects.map(function(playlist) {
+//             var playlistTitleRow = sprintf("<tr class='droppable title' playlist-id='%(id)s'><td>%(title)s</td></tr>", playlist);
+//             var playlistStudentGroupsRow = appendPlaylistStudentGroupRow(playlist);
+//             $("#playlists").append(playlistTitleRow + playlistStudentGroupsRow);
+//             $("tr.title").click(function(e) {
+//                 $(e.currentTarget.nextSibling).toggle();
+//             });
+
+//             playlist.groups_assigned.map(function(group) {
+//                 appendStudentGrp(group.id, group.name);
+//             });
+//             $(".droppable").on('dragover', allowDrop);
+//             $(".droppable").on('drop', drop);
+//         });
+//     });
+// }
+
+
+// function displayGroups() {
+//     doRequest(ALL_GROUPS_URL).success(function(data) {
+//         data.objects.map(function(obj) {
+//             $("#student-groups").append(sprintf('<tr><td student-grp-id="%(id)s" draggable="true">%(name)s</td></tr>', obj));
+//         });
+//         $(".span3 td").on('dragstart', drag);
+//     });
+// }
+
 
 function appendStudentGrp(id, studentGrpName) {
   var selector = sprintf("tr[playlist-id|=%s] ul", id);
@@ -144,28 +199,9 @@ function appendPlaylistStudentGroupRow(playlist) {
     return sprintf('<tr class="droppable" playlist-id="%(id)s"><td><ul></ul></td></tr>', playlist);
 }
 
-function displayPlaylists() {
-    doRequest(ALL_PLAYLISTS_URL).success(function(data) {
-        data.objects.map(function(playlist) {
-            var playlistTitleRow = sprintf("<tr class='droppable title' playlist-id='%(id)s'><td>%(title)s</td></tr>", playlist);
-            var playlistStudentGroupsRow = appendPlaylistStudentGroupRow(playlist);
-            $("#playlists").append(playlistTitleRow + playlistStudentGroupsRow);
-            $("tr.title").click(function(e) {
-                $(e.currentTarget.nextSibling).toggle();
-            });
-
-            playlist.groups_assigned.map(function(group) {
-                appendStudentGrp(group.id, group.name);
-            });
-            $(".droppable").on('dragover', allowDrop);
-            $(".droppable").on('drop', drop);
-        });
-    });
-}
-
 $(function() {
     // displayGroups();
-    displayPlaylists();
+    // displayPlaylists();
 
     $("tr.title+tr").hide();
 
