@@ -8,9 +8,8 @@
 * **Mobile school "vans"**, which transport a server and multiple laptops/tablets between a number of schools (or orphanages, community centers, etc) in remote communities on a rotating basis, and syncing up with a central database (to download new content and upload analytics) when in an area with internet connectivity.
 
 #### We would love for you to get involved!
-* **Install KA Lite** on Linux, OSX, or Windows by viewing the [installation guide](http://kalitewiki.learningequality.org/installation).
-* **Report bugs** by opening them on the [GitHub issue tracker](https://github.com/learningequality/ka-lite/issues).
-* **Contribute to the project** by visiting our [development wiki](http://kalitewiki.learningequality.org/development/coding/getting-started).
+* **Learn how you can contribute code on our [KA Lite GitHub Wiki](https://github.com/learningequality/ka-lite/wiki)** 
+* **Report bugs by [creating issues](https://github.com/learningequality/ka-lite/wiki/Report-Bugs-by-Creating-Issues)**
 * **Read more about the project's motivation** at ["Introducing KA Lite, an offline version of Khan Academy"](http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/).
 
 
