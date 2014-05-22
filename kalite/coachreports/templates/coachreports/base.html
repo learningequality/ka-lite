@@ -22,11 +22,6 @@
         #facility, .group_select {
             display: none;
         }
-/*        h2 {
-            width:100%;
-            margin: 0px;
-            margin-top: 10px;
-        }*/
         h4 {
             font-size: 20px;
             margin-left: 18px;
@@ -34,14 +29,17 @@
         }
         #link-box {
             float: right;
-            margin-right: 25px;
         }
         #link-box input#url {
             font-size: 14px;
         }
         .group_div {
-            position: absolute;
             margin-left: 20px;
+        }
+        @media only screen and (max-width: 744px) {
+            h4 { margin-top: 0; }
+            .selection { padding-bottom: 0; }
+            #link-box { float: left; padding-bottom: 10px; }
         }
     </style>
 {% endblock headcss %}
