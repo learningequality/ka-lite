@@ -55,3 +55,12 @@ def facility_delete(request, facility_id=None):
     fac.soft_delete()
     return JsonResponseMessageSuccess(_("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
 
+
+@require_authorized_admin
+@api_response_causes_reload
+def group_delete(request, group_id=None):
+    groups = [group_id] if group_id else simplejson.loads(request.body or "{}").get("groups", [])
+    groups_to_delete = FacilityGroup.objects.filter(id__in=groups)
+    count = groups_to_delete.count()
+    groups_to_delete.soft_delete()
+    return JsonResponseMessageSuccess(_("Deleted group %(num_groups)d successfully.") % {"num_groups": count})
