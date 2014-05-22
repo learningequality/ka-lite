@@ -39,7 +39,7 @@ def delete_users(request):
     users = simplejson.loads(request.body or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(id__in=users)
     count = users_to_delete.count()
-    users_to_delete.delete()
+    users_to_delete.soft_delete()
     return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": count})
 
 
@@ -52,6 +52,6 @@ def facility_delete(request, facility_id=None):
     facility_id = facility_id or simplejson.loads(request.body or "{}").get("facility_id")
     fac = get_object_or_404(Facility, id=facility_id)
 
-    fac.delete()
+    fac.soft_delete()
     return JsonResponseMessageSuccess(_("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
 
