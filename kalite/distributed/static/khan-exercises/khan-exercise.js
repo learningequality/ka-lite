@@ -612,8 +612,7 @@ var Khan = (function() {
         },
 
         scoreInput: function() {
-            // Note this is an FLE addition to Khan Exercises in order to make the answer given
-            // accessible outside of a locally scoped function in the Khan object.
+            // KA-LITE-MOD: make the given answer accessible outside of a locally scoped function in the Khan object
             $(Khan).trigger("answerGiven", [getAnswer()]);
             // End additional code.
             return validator(getAnswer());

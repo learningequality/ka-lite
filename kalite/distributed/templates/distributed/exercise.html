@@ -37,29 +37,16 @@
     </script>
     <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
     <script>
-        {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
-        var exerciseData = {
-            "basepoints": {{ exercise.basepoints }},
-            "description": "{{ exercise.description|linebreaksbr }}",
-            "title": "{{ exercise.display_name }}",
-            "exerciseModel": {
-                "displayName": "{{ exercise.display_name }}",
-                "name": "{{ exercise.name }}",
-                "secondsPerFastProblem": {{ exercise.seconds_per_fast_problem }},
-                "authorName": "{{ exercise.author_name }}",
-                "relatedVideos": [],
-                "fileName": "{{ exercise_template }}"
-            },
-            "readOnly": false,
-            "percentCompleted": 0,
-            "points": 0,
-            "starting_points": 0,
-            "attempts": 0,
-            "exerciseProgress": {
-                "level": ""
-            },
-            "lastCountHints": 0
-        };
+
+        $(function() {
+            window.exerciseWrapperView = new ExerciseWrapperView({
+                el: $(".exercise-wrapper"),
+                model: new ExerciseDataModel({
+                    exercise_id: "{{ exercise.name }}"
+                })
+            });
+        });
+
     </script>
 
     <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>

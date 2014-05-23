@@ -1,4 +1,8 @@
 window.ExerciseDataModel = Backbone.Model.extend({
+    /*
+    Contains data about an exercise itself, with no user data.
+    */
+
     defaults: {
         basepoints: 0,
         description: "",
@@ -13,7 +17,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
     initialize: function() {
         _.bindAll(this);
 
-        this.listenTo(this, 'change', this.updateExerciseData);
+        this.listenTo(this, 'change', this.update_exercise_data);
 
         this.fetch();
     },
@@ -22,25 +26,31 @@ window.ExerciseDataModel = Backbone.Model.extend({
         return "/api/exercise/" + this.get("exercise_id");
     },
 
-    updateExerciseData: function () {
-        exerciseData = {
-            "basepoints": this.basepoints ,
-            "description": this.description,
-            "title": this.display_name,
+    update_exercise_data: function () {
+        window.exerciseData = $.extend(window.exerciseData, {
+            "basepoints": this.get("basepoints"),
+            "description": this.get("description"),
+            "title": this.get("display_name"),
             "exerciseModel": {
-                "displayName": this.display_name,
-                "name": this.name,
-                "secondsPerFastProblem": this.seconds_per_fast_problem ,
-                "authorName": this.author_name,
-                "relatedVideos": this.related_videos,
-                "fileName": this.file_name
+                "displayName": this.get("display_name"),
+                "name": this.get("name"),
+                "secondsPerFastProblem": this.get("seconds_per_fast_problem"),
+                "authorName": this.get("author_name"),
+                "relatedVideos": this.get("related_videos"),
+                "fileName": this.get("file_name")
+            },
+            "exerciseProgress": {
+                "level": "" // needed to keep khan-exercises from blowing up
             }
-        };
+        });
     }
 
 })
 
 window.ExerciseLogModel = Backbone.Model.extend({
+    /*
+    Contains summary data about the user's interaction with the current exercise.
+    */
 
     init: function() {
         _.bindAll(this);
@@ -86,6 +96,9 @@ window.ExerciseLogModel = Backbone.Model.extend({
 })
 
 window.AttemptLogModel = Backbone.Model.extend({
+    /*
+    Contains data about the user's response to a particular exercise instance.
+    */
 
     url: function() {
         return "/api/attempt_log/" + this.get("exercise_id");
@@ -116,7 +129,7 @@ function updatePercentCompleted(correct) {
         if (exerciseData.percentCompleted < 101) {
             bumpprob = Math.floor(Math.random()*100);
             bump = (bumpprob < 90) ? 1 : (bumpprob < 99 ? 1.5 : 2);
-            inc = Math.ceil(basepoints*bump);
+            inc = Math.ceil(exerciseData.basepoints*bump);
             exerciseData.points += inc;
             updateQuestionPoints(inc);
         }
@@ -161,7 +174,6 @@ window.ExerciseProgressView = Backbone.View.extend({
             this.$("#hint-remainder").hide();
         }
     }
-
 
 });
 
@@ -240,7 +252,6 @@ window.ExerciseWrapperView = Backbone.View.extend({
     },
 
     next_question_clicked: function() {
-        alert("woo")
         updateQuestionPoints(false);
         exerciseData.hintUsed = false;
         exerciseData.seed = Math.floor(Math.random() * 1000);
@@ -256,16 +267,3 @@ window.ExerciseWrapperView = Backbone.View.extend({
     }
 
 });
-
-
-$(function() {
-
-    window.exerciseWrapperView = new ExerciseWrapperView({
-        el: $(".exercise-wrapper"),
-        model: new Backbone.Model // temp
-    });
-
-    basepoints = exerciseData.basepoints;
-
-});
-
