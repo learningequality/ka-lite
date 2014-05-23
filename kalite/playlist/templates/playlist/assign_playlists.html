@@ -15,8 +15,12 @@
       <td student-grp-id="<%= id %>" draggable="true"> <%= name %> </td>
   </script>
 
-  <script type="text/html" id="playlist-entry-template">
-      <td playlist-id="<%= id %>"> <%= title %> </td>
+  <script type="text/html" id="playlist-template">
+    <td playlist-id="<%= id %>"> <%= title %> <table class="playlist-groups"></table></td>
+  </script>
+
+  <script type="text/html" id="playlist-group-template">
+    <td playlist-group-id="<%= id%>"> <%= name %> </td>
   </script>
 
   <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>

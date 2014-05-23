@@ -64,7 +64,6 @@ var GroupView  = Backbone.View.extend({
         this.$el.html(this.template(dict));
         return this;
     }
-
 });
 
 var PlaylistView = Backbone.View.extend({
@@ -73,11 +72,33 @@ var PlaylistView = Backbone.View.extend({
 
     className: "droppable title",
 
-    template: _.template($("#playlist-entry-template").html()),
+    template: _.template($("#playlist-template").html()),
+
+    render: function() {
+        var playlist = this;
+        var dict = this.model.toJSON();
+        this.$el.html(this.template(dict));
+
+
+        this.model.get('groups_assigned').map(function(group) {
+            var view = new PlaylistGroupView({model: group});
+            playlist.$('.playlist-groups').append(view.render().el);
+        });
+
+        return this;
+    }
+});
+
+var PlaylistGroupView = Backbone.View.extend({
+
+    tagName: "tr",
+
+    template: _.template($("#playlist-group-template").html()),
 
     render: function() {
         var dict = this.model.toJSON();
         this.$el.html(this.template(dict));
+
         return this;
     }
 });
@@ -200,8 +221,6 @@ function appendPlaylistStudentGroupRow(playlist) {
 }
 
 $(function() {
-    // displayGroups();
-    // displayPlaylists();
 
     $("tr.title+tr").hide();
 
