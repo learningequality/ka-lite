@@ -16,6 +16,7 @@ urlpatterns = patterns(__package__ + '.api_views',
     # For returning video / exercise progress for a given level within the topic tree
     url(r'^get_video_logs$', 'get_video_logs', {}, 'get_video_logs'),
     url(r'^get_exercise_logs$', 'get_exercise_logs', {}, 'get_exercise_logs'),
+    url(r'^get_exercise_attempt_logs$', 'get_exercise_attempt_logs', {}, 'get_exercise_attempt_logs'),
 
     # Data used by the client (browser) for doing search
     url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),

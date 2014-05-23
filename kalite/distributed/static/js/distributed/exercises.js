@@ -1,3 +1,93 @@
+window.ExerciseDataModel = Backbone.Model.Extend({
+    defaults: {
+        basepoints: 0,
+        description: "",
+        title: "",
+        name: "",
+        secondsPerFastProblem: 0,
+        authorName: "",
+        relatedVideos: [],
+        fileName: ""
+    },
+
+    initialize: function() {
+        _.bindAll(this);
+
+        this.fetch();
+
+    },
+
+    fetch: function() {
+
+        var self = this;
+
+        doRequest("/api/exercise/" + this.get("exercise_id"))
+            .success(function(data) {
+                if (data.length === 0) {
+                    return;
+                }
+                self.set({
+                    "basepoints": data.basepoints ,
+                    "description": data.description,
+                    "title": data.display_name,
+                    "lang": data.lang,
+                    "name": data.name,
+                    "secondsPerFastProblem": data.seconds_per_fast_problem,
+                    "authorName": data.author_name,
+                    "fileName": data.template
+                })
+            })
+    },
+})
+
+window.ExerciseLogModel = Backbone.Model.Extend({
+
+    this.exerciseModel = null
+
+    save: function() {
+
+        var already_complete = this.complete;
+
+        if (this.attempts > 20 && !this.complete) {
+          this.struggling = True;
+        }
+
+        this.complete = this.streak_progress >= 100;
+
+        if (!already_complete && this.complete) {
+          this.struggling = False;
+          this.completion_timestamp = userModel.get_server_time().toJSON();
+          this.attempts_before_completion = this.attempts;
+        }
+
+        var data = {
+            exercise_id: this.exerciseModel.name,
+            streak_progress: this.percentCompleted,
+            points: this.points,
+            random_seed: this.exerciseModel.seed,
+            correct: this.correct,
+            attempts: this.attempts,
+            answer_given: answerGiven
+        };
+
+        doRequest("/api/save_exercise_log", data)
+            .success(function(data) {
+                // update the top-right point display, now that we've saved the points successfully
+                userModel.set("newpoints", this.points - this.starting_points);
+            })
+    },
+
+    fetch: function() {
+        doRequest("/api/get_exercise_logs", [this.exerciseModel.name])
+            .success(function(data) {
+                if (data.length === 0) {
+                    return;
+                }
+                this.set(data);
+                this.starting_points = data[0].points;
+            });
+    }
+
 function updateStreakBar() {
     // update the streak bar UI
     $("#streakbar .progress-bar").css("width", exerciseData.percentCompleted + "%");
@@ -42,8 +132,10 @@ function updatePercentCompleted(correct) {
         exercise_id: exerciseData.exerciseModel.name,
         streak_progress: exerciseData.percentCompleted,
         points: exerciseData.points,
+        random_seed: exerciseData.seed,
         correct: correct,
-        attempts: exerciseData.attempts
+        attempts: exerciseData.attempts,
+        answer_given: answerGiven
     };
 
     doRequest("/api/save_exercise_log", data)
@@ -54,6 +146,7 @@ function updatePercentCompleted(correct) {
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
+var answerGiven = null;
 
 window.ExerciseWrapperView = Backbone.View.extend({
 
@@ -100,6 +193,7 @@ $(function() {
     });
 
     $(Khan).bind("loaded", function() {
+        exerciseData.seed = Math.floor(Math.random() * 1000);
         $(Exercises).trigger("problemTemplateRendered");
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
@@ -137,7 +231,7 @@ $(function() {
         _.defer(function() {
             updateQuestionPoints(false);
             exerciseData.hintUsed = false;
-            exerciseData.seed = Math.floor(Math.random() * 500);
+            exerciseData.seed = Math.floor(Math.random() * 1000);
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
@@ -152,6 +246,14 @@ $(function() {
             exerciseData.attempts = data[0].attempts;
 
             updateStreakBar();
+        });
+
+    doRequest("/api/get_exercise_attempt_logs", [exerciseData.exerciseModel.name])
+        .success(function(data) {
+            if (data.length === 0) {
+                return;
+            }
+            console.log(data);
         });
 
     adjust_scratchpad_margin();
@@ -171,6 +273,3 @@ function adjust_scratchpad_margin(){
         $(".current-card-contents #problemarea").css("margin-top", "10px");
     }
 }
-
-
-
