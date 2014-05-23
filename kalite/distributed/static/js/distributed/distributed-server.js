@@ -56,7 +56,7 @@ var UserModel = Backbone.Model.extend({
         points: 0,
         newpoints: 0,
         client_server_time_diff: 0
-    }
+    },
 
     get_server_time: function () {
         // Function to return time corrected to server clock based on status update.

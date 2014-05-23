@@ -1,4 +1,4 @@
-window.ExerciseDataModel = Backbone.Model.Extend({
+window.ExerciseDataModel = Backbone.Model.extend({
     defaults: {
         basepoints: 0,
         description: "",
@@ -40,7 +40,7 @@ window.ExerciseDataModel = Backbone.Model.Extend({
     },
 })
 
-window.ExerciseLogModel = Backbone.Model.Extend({
+window.ExerciseLogModel = Backbone.Model.extend({
 
     exerciseModel: null,
 
@@ -87,6 +87,7 @@ window.ExerciseLogModel = Backbone.Model.Extend({
                 this.starting_points = data[0].points;
             });
     }
+})
 
 function updateStreakBar() {
     // update the streak bar UI
