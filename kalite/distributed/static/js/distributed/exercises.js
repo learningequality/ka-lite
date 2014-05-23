@@ -42,7 +42,7 @@ window.ExerciseDataModel = Backbone.Model.Extend({
 
 window.ExerciseLogModel = Backbone.Model.Extend({
 
-    this.exerciseModel = null
+    exerciseModel: null
 
     save: function() {
 
