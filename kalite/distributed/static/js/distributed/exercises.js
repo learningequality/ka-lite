@@ -55,15 +55,59 @@ function updatePercentCompleted(correct) {
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
 
+window.ExerciseWrapperView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-wrapper"),
+
+    initialize: function() {
+
+        this.render();
+
+    },
+
+    events: {
+        // "change .video-language-selector": "languageChange"
+    },
+
+    render: function() {
+
+        this.$el.html(this.template(this.model.attributes));
+
+        // this.videoPlayerView = new VideoPlayerView({
+        //     el: this.$(".video-player-container"),
+        //     model: this.model
+        // });
+
+        // this.videoPointView = new VideoPointView({
+        //     el: this.$(".points-container"),
+        //     model: this.model
+        // });
+
+    },
+
+    initialize_khan_exercises_listeners: function() {
+
+    }
+
+});
+
+
 $(function() {
+
+    window.exerciseWrapperView = new ExerciseWrapperView({
+        el: $(".exercise-wrapper"),
+        model: new Backbone.Model // temp
+    });
 
     $(Khan).bind("loaded", function() {
         $(Exercises).trigger("problemTemplateRendered");
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     });
+
     $(Khan).on("answerGiven", function (event, answer) {
         answerGiven = answer;
-    })
+    });
+
     $(Exercises).bind("checkAnswer", function(ev, data) {
         updatePercentCompleted(data.correct);
 
@@ -72,11 +116,13 @@ $(function() {
         hintsResetPoints = !data.correct;
         $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
     });
+
     $(Exercises).bind("gotoNextProblem", function(ev, data) {
         // When ready for the next problem, hints matter again!
         hintsResetPoints = true;
         $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
     });
+
     $(Exercises).bind("hintUsed", function(ev, data) {
         if (exerciseData.hintUsed || !hintsResetPoints) { // only register the first hint used on a question
             return;
@@ -84,7 +130,9 @@ $(function() {
         exerciseData.hintUsed = true;
         updatePercentCompleted(false);
     });
+
     basepoints = exerciseData.basepoints;
+
     $("#next-question-button").click(function() {
         _.defer(function() {
             updateQuestionPoints(false);
@@ -93,6 +141,7 @@ $(function() {
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
+
     doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name])
         .success(function(data) {
             if (data.length === 0) {
@@ -104,17 +153,6 @@ $(function() {
 
             updateStreakBar();
         });
-});
-
-function adjust_scratchpad_margin(){
-    if (Khan.scratchpad.isVisible()) {
-        $(".current-card-contents #problemarea").css("margin-top","50px");
-    } else {
-        $(".current-card-contents #problemarea").css("margin-top","10px");
-    }
-}
-
-$(function(){
 
     adjust_scratchpad_margin();
 
@@ -124,8 +162,15 @@ $(function(){
         });
     });
 
-    $(".return-link").click(function() {
-        window.history.go(-1);
-        return false;
-    });
 });
+
+function adjust_scratchpad_margin(){
+    if (Khan.scratchpad.isVisible()) {
+        $(".current-card-contents #problemarea").css("margin-top", "50px");
+    } else {
+        $(".current-card-contents #problemarea").css("margin-top", "10px");
+    }
+}
+
+
+
