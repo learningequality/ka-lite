@@ -4,47 +4,57 @@ window.ExerciseDataModel = Backbone.Model.extend({
         description: "",
         title: "",
         name: "",
-        secondsPerFastProblem: 0,
-        authorName: "",
-        relatedVideos: [],
-        fileName: ""
+        seconds_per_fast_problem: 0,
+        author_name: "",
+        related_videos: [],
+        file_name: ""
     },
 
     initialize: function() {
         _.bindAll(this);
 
+        this.listenTo(this, 'change', this.updateExerciseData);
+
         this.fetch();
-
     },
 
-    fetch: function() {
-
-        var self = this;
-
-        doRequest("/api/exercise/" + this.get("exercise_id"))
-            .success(function(data) {
-                if (data.length === 0) {
-                    return;
-                }
-                self.set({
-                    "basepoints": data.basepoints ,
-                    "description": data.description,
-                    "title": data.display_name,
-                    "lang": data.lang,
-                    "name": data.name,
-                    "secondsPerFastProblem": data.seconds_per_fast_problem,
-                    "authorName": data.author_name,
-                    "fileName": data.template
-                })
-            })
+    url: function () {
+        return "/api/exercise/" + this.get("exercise_id");
     },
+
+    updateExerciseData: function () {
+        exerciseData = {
+            "basepoints": this.basepoints ,
+            "description": this.description,
+            "title": this.display_name,
+            "exerciseModel": {
+                "displayName": this.display_name,
+                "name": this.name,
+                "secondsPerFastProblem": this.seconds_per_fast_problem ,
+                "authorName": this.author_name,
+                "relatedVideos": this.related_videos,
+                "fileName": this.file_name
+            }
+        };
+    }
+
 })
 
 window.ExerciseLogModel = Backbone.Model.extend({
 
-    exerciseModel: null,
+    init: function() {
+        _.bindAll(this);
+
+        var self = this;
+
+        this.fetch().success(function(data){
+            self.starting_points = self.get("points");
+        });
+    },
 
     save: function() {
+
+        var self = this;
 
         var already_complete = this.complete;
 
@@ -60,33 +70,37 @@ window.ExerciseLogModel = Backbone.Model.extend({
           this.attempts_before_completion = this.attempts;
         }
 
-        var data = {
-            exercise_id: this.exerciseModel.name,
-            streak_progress: this.percentCompleted,
-            points: this.points,
-            random_seed: this.exerciseModel.seed,
-            correct: this.correct,
-            attempts: this.attempts,
-            answer_given: answerGiven
-        };
 
-        doRequest("/api/save_exercise_log", data)
+
+        Backbone.Model.prototype.save.call(this)
             .success(function(data) {
                 // update the top-right point display, now that we've saved the points successfully
-                userModel.set("newpoints", this.points - this.starting_points);
+                userModel.set("newpoints", self.get("points") - self.starting_points);
             })
     },
 
-    fetch: function() {
-        doRequest("/api/get_exercise_logs", [this.exerciseModel.name])
-            .success(function(data) {
-                if (data.length === 0) {
-                    return;
-                }
-                this.set(data);
-                this.starting_points = data[0].points;
-            });
+    url: function () {
+        return "/api/exercise_log" + this.get("exercise_id");
     }
+
+})
+
+window.AttemptLogModel = Backbone.Model.extend({
+
+    url: function() {
+        return "/api/attempt_log/" + this.get("exercise_id");
+    }
+
+})
+
+window.AttemptLogCollection = Backbone.Collection.extend({
+
+    model: AttemptLogModel,
+
+    url: function() {
+        return "/api/attempt_log/" + this.options.exercise_id
+    }
+
 })
 
 function updateQuestionPoints(points) {
@@ -117,21 +131,6 @@ function updatePercentCompleted(correct) {
     // Increment the # of attempts
     exerciseData.attempts++;
 
-    var data = {
-        exercise_id: exerciseData.exerciseModel.name,
-        streak_progress: exerciseData.percentCompleted,
-        points: exerciseData.points,
-        random_seed: exerciseData.seed,
-        correct: correct,
-        attempts: exerciseData.attempts,
-        answer_given: answerGiven // TODO(jamalex): refactor me!
-    };
-
-    doRequest("/api/save_exercise_log", data)
-        .success(function(data) {
-            // update the top-right point display, now that we've saved the points successfully
-            userModel.set("newpoints", exerciseData.points - exerciseData.starting_points);
-        })
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
@@ -143,7 +142,7 @@ window.ExerciseProgressView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this.listenTo(model, "change", this.render);
+        this.listenTo(this.model, "change", this.render);
 
         this.render();
 
