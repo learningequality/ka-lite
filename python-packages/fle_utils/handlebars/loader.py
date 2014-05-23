@@ -58,7 +58,7 @@ def load_template_sources(module_name):
             with open(filepath) as f:
                 templates.append({
                     "name": "%s/%s" % (module_name, template_name),
-                    "raw": f.read().replace("\n", " ").encode("string_escape"),
+                    "raw": f.read().replace("\n", " "),
                 })
         except IOError:
             pass
