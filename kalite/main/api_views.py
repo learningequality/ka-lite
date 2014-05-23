@@ -151,6 +151,41 @@ def save_exercise_log(request):
     return JsonResponse({})
 
 
+@student_log_api(logged_out_message=ugettext_lazy("Attempt log not saved."))
+def save_attempt_log(request):
+    """
+    RESTful API endpoint for AttemptLogs.
+    """
+
+    form = AttemptLogForm(data=json.loads(request.raw_post_data))
+    if not form.is_valid():
+        raise Exception(form.errors)
+    data = form.data
+
+    # More robust extraction of previous object
+    user = request.session["facility_user"]
+
+    try:
+        exerciselog.full_clean()
+        exerciselog.save()
+        AttemptLog.objects.create(
+            user=user,
+            exercise_id=data["exercise_id"],
+            random_seed=data["random_seed"],
+            answer_given=data["answer_given"],
+            points_awarded=data["points"],
+            correct=data["correct"],
+            context_type=data["context_type"],
+            language=data.get("language") or request.language,
+            )
+    except ValidationError as e:
+        return JsonResponseMessageError(_("Could not save AttemptLog") + u": %s" % e)
+
+    # Return no message in release mode; "data saved" message in debug mode.
+    return JsonResponse({})
+
+
+
 @allow_api_profiling
 @student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
 def get_video_logs(request):
