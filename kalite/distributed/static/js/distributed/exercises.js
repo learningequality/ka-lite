@@ -89,16 +89,6 @@ window.ExerciseLogModel = Backbone.Model.extend({
     }
 })
 
-function updateStreakBar() {
-    // update the streak bar UI
-    $("#streakbar .progress-bar").css("width", exerciseData.percentCompleted + "%");
-    $("#totalpoints").html(exerciseData.points > 0 ? (exerciseData.points) : "");
-    if (exerciseData.percentCompleted >= 100) {
-        $("#streakbar .progress-bar").addClass("completed");
-        $("#hint-remainder").hide();
-    }
-}
-
 function updateQuestionPoints(points) {
     // show points for correct question, or none if not answered yet.
     $("#questionpoints").html(points ? (sprintf(gettext("%(points)d points!"), { points : points })) : "");
@@ -127,8 +117,6 @@ function updatePercentCompleted(correct) {
     // Increment the # of attempts
     exerciseData.attempts++;
 
-    updateStreakBar();
-
     var data = {
         exercise_id: exerciseData.exerciseModel.name,
         streak_progress: exerciseData.percentCompleted,
@@ -136,7 +124,7 @@ function updatePercentCompleted(correct) {
         random_seed: exerciseData.seed,
         correct: correct,
         attempts: exerciseData.attempts,
-        answer_given: answerGiven
+        answer_given: answerGiven // TODO(jamalex): refactor me!
     };
 
     doRequest("/api/save_exercise_log", data)
@@ -149,38 +137,123 @@ function updatePercentCompleted(correct) {
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
 var answerGiven = null;
 
+window.ExerciseProgressView = Backbone.View.extend({
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.listenTo(model, "change", this.render);
+
+        this.render();
+
+    },
+
+    render: function() {
+        this.update_streak_bar();
+    },
+
+    update_streak_bar: function() {
+        // update the streak bar UI
+        this.$("#streakbar .progress-bar").css("width", this.model.get("streak_progress") + "%");
+        this.$("#totalpoints").html(this.model.get("points") > 0 ? this.model.get("points") : "");
+        if (this.model.get("streak_progress") >= 100) {
+            this.$("#streakbar .progress-bar").addClass("completed");
+            this.$("#hint-remainder").hide();
+        }
+    }
+
+
+});
+
 window.ExerciseWrapperView = Backbone.View.extend({
 
     template: HB.template("exercise/exercise-wrapper"),
 
     initialize: function() {
 
+        _.bindAll(this);
+
         this.render();
+
+        this.exercise_progress_view = new ExerciseProgressView({
+            el: this.$(".exercise-progress-wrapper"),
+            model: this.model
+        });
+
+        this.initialize_khan_exercises_listeners();
+
+        // this.adjust_scratchpad_margin();
 
     },
 
     events: {
-        // "change .video-language-selector": "languageChange"
+        "click #scratchpad-show": "adjust_scratchpad_margin"
     },
 
     render: function() {
 
         this.$el.html(this.template(this.model.attributes));
 
-        // this.videoPlayerView = new VideoPlayerView({
-        //     el: this.$(".video-player-container"),
-        //     model: this.model
-        // });
+        this.initialize_listeners();
 
-        // this.videoPointView = new VideoPointView({
-        //     el: this.$(".points-container"),
-        //     model: this.model
-        // });
+    },
 
+    initialize_listeners: function() {
+        this.$("#next-question-button").click(this.next_question_clicked); // needs to be explicit (not in "events")
     },
 
     initialize_khan_exercises_listeners: function() {
 
+        $(Khan).bind("loaded", function() {
+            exerciseData.seed = Math.floor(Math.random() * 1000);
+            $(Exercises).trigger("problemTemplateRendered");
+            $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
+        });
+
+        $(Khan).on("answerGiven", function (event, answer) {
+            answerGiven = answer;
+        });
+
+        $(Exercises).bind("checkAnswer", function(ev, data) {
+            updatePercentCompleted(data.correct);
+
+            // after giving a correct answer, no penalty for viewing a hint.
+            // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
+            hintsResetPoints = !data.correct;
+            $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
+        });
+
+        $(Exercises).bind("gotoNextProblem", function(ev, data) {
+            // When ready for the next problem, hints matter again!
+            hintsResetPoints = true;
+            $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
+        });
+
+        $(Exercises).bind("hintUsed", function(ev, data) {
+            if (exerciseData.hintUsed || !hintsResetPoints) { // only register the first hint used on a question
+                return;
+            }
+            exerciseData.hintUsed = true;
+            updatePercentCompleted(false);
+        });
+
+    },
+
+    next_question_clicked: function() {
+        alert("woo")
+        updateQuestionPoints(false);
+        exerciseData.hintUsed = false;
+        exerciseData.seed = Math.floor(Math.random() * 1000);
+        $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
+    },
+
+    adjust_scratchpad_margin: function() {
+        if (Khan.scratchpad.isVisible()) {
+            this.$(".current-card-contents #problemarea").css("margin-top", "50px");
+        } else {
+            this.$(".current-card-contents #problemarea").css("margin-top", "10px");
+        }
     }
 
 });
@@ -193,84 +266,7 @@ $(function() {
         model: new Backbone.Model // temp
     });
 
-    $(Khan).bind("loaded", function() {
-        exerciseData.seed = Math.floor(Math.random() * 1000);
-        $(Exercises).trigger("problemTemplateRendered");
-        $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
-    });
-
-    $(Khan).on("answerGiven", function (event, answer) {
-        answerGiven = answer;
-    });
-
-    $(Exercises).bind("checkAnswer", function(ev, data) {
-        updatePercentCompleted(data.correct);
-
-        // after giving a correct answer, no penalty for viewing a hint.
-        // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
-        hintsResetPoints = !data.correct;
-        $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
-    });
-
-    $(Exercises).bind("gotoNextProblem", function(ev, data) {
-        // When ready for the next problem, hints matter again!
-        hintsResetPoints = true;
-        $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
-    });
-
-    $(Exercises).bind("hintUsed", function(ev, data) {
-        if (exerciseData.hintUsed || !hintsResetPoints) { // only register the first hint used on a question
-            return;
-        }
-        exerciseData.hintUsed = true;
-        updatePercentCompleted(false);
-    });
-
     basepoints = exerciseData.basepoints;
-
-    $("#next-question-button").click(function() {
-        _.defer(function() {
-            updateQuestionPoints(false);
-            exerciseData.hintUsed = false;
-            exerciseData.seed = Math.floor(Math.random() * 1000);
-            $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
-        });
-    });
-
-    doRequest("/api/get_exercise_logs", [exerciseData.exerciseModel.name])
-        .success(function(data) {
-            if (data.length === 0) {
-                return;
-            }
-            exerciseData.percentCompleted = data[0].streak_progress;
-            exerciseData.points = exerciseData.starting_points = data[0].points;
-            exerciseData.attempts = data[0].attempts;
-
-            updateStreakBar();
-        });
-
-    doRequest("/api/get_exercise_attempt_logs", [exerciseData.exerciseModel.name])
-        .success(function(data) {
-            if (data.length === 0) {
-                return;
-            }
-            console.log(data);
-        });
-
-    adjust_scratchpad_margin();
-
-    $("#scratchpad-show").click(function(){
-        _.defer(function() {
-            adjust_scratchpad_margin();
-        });
-    });
 
 });
 
-function adjust_scratchpad_margin(){
-    if (Khan.scratchpad.isVisible()) {
-        $(".current-card-contents #problemarea").css("margin-top", "50px");
-    } else {
-        $(".current-card-contents #problemarea").css("margin-top", "10px");
-    }
-}

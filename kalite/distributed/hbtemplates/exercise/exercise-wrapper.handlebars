@@ -16,9 +16,11 @@
                         </div>
                         <div id="answer_area_wrap"><div id="answer_area">
                             <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
-                                <div id="streakbar" class="info-box" title="{{_ "Your progress streak bar for this exercise" }}">
-                                    <div class="streak">
-                                        <div class="progress-bar"><div id="totalpoints"></div></div>
+                                <div class="exercise-progress-wrapper">
+                                    <div id="streakbar" class="info-box" title="{{_ "Your progress streak bar for this exercise" }}">
+                                        <div class="streak">
+                                            <div class="progress-bar"><div id="totalpoints"></div></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
