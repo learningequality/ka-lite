@@ -212,8 +212,9 @@ def attempt_log(request):
         user = request.session["facility_user"]
         logs = AttemptLog.objects \
                 .filter(user=user, exercise_id=exercise_id, context_type="exercise") \
-                .values("exercise_id", "correct", "context_type", "timestamp", "time_taken", "answer_given", "points_awarded")
-        return JsonResponse(list(logs))
+                .order_by("-timestamp") \
+                .values("exercise_id", "correct", "context_type", "timestamp", "time_taken", "answer_given", "points_awarded")[:10]
+        return JsonResponse(list(reversed(logs)))
 
 
 
