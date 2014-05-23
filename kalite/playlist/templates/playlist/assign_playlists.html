@@ -20,14 +20,6 @@
   </script>
 
   <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>
-  {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
-    <script>
-     if (window.parent.frames.length === 0) {
-         window.location = "{% url load_test %}";
-     }
-
-    </script>
-  {% endif %}
 
   <script type="text/javascript">
    var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
