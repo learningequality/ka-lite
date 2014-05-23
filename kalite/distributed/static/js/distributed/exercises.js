@@ -1,4 +1,4 @@
-window.ExerciseModel = Backbone.Model.Extend({
+window.ExerciseDataModel = Backbone.Model.Extend({
     defaults: {
         basepoints: 0,
         description: "",
@@ -8,6 +8,13 @@ window.ExerciseModel = Backbone.Model.Extend({
         authorName: "",
         relatedVideos: [],
         fileName: ""
+    },
+
+    initialize: function() {
+        _.bindAll(this);
+
+        this.fetch();
+
     },
 
     fetch: function() {
@@ -33,7 +40,53 @@ window.ExerciseModel = Backbone.Model.Extend({
     },
 })
 
+window.ExerciseLogModel = Backbone.Model.Extend({
 
+    this.exerciseModel = null
+
+    save: function() {
+
+        var already_complete = this.complete;
+
+        if (this.attempts > 20 && !this.complete) {
+          this.struggling = True;
+        } 
+
+        this.complete = this.streak_progress >= 100;
+
+        if (!already_complete && this.complete) {
+          this.struggling = False;
+          this.completion_timestamp = userModel.get_server_time().toJSON();
+          this.attempts_before_completion = this.attempts;
+        }
+
+        var data = {
+            exercise_id: this.exerciseModel.name,
+            streak_progress: this.percentCompleted,
+            points: this.points,
+            random_seed: this.exerciseModel.seed,
+            correct: this.correct,
+            attempts: this.attempts,
+            answer_given: answerGiven
+        };
+
+        doRequest("/api/save_exercise_log", data)
+            .success(function(data) {
+                // update the top-right point display, now that we've saved the points successfully
+                userModel.set("newpoints", this.points - this.starting_points);
+            })
+    },
+
+    fetch: function() {
+        doRequest("/api/get_exercise_logs", [this.exerciseModel.name])
+            .success(function(data) {
+                if (data.length === 0) {
+                    return;
+                }
+                this.set(data);
+                this.starting_points = data[0].points;
+            });
+    }
 
 function updateStreakBar() {
     // update the streak bar UI
