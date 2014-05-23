@@ -124,6 +124,7 @@ def status(request):
         "points": 0,
         "current_language": request.session[settings.LANGUAGE_COOKIE_NAME],
         "messages": message_dicts,
+        "status_timestamp": datetime.now(),
     }
     # Override properties using facility data
     if "facility_user" in request.session:  # Facility user

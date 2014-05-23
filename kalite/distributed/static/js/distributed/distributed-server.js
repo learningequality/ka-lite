@@ -54,7 +54,13 @@ function force_sync() {
 var UserModel = Backbone.Model.extend({
     defaults: {
         points: 0,
-        newpoints: 0
+        newpoints: 0,
+        client_server_time_diff: 0
+    }
+
+    get_server_time: function () {
+        // Function to return time corrected to server clock based on status update.
+        return new Date(new Date() - client_server_time_diff)
     }
 });
 
@@ -108,7 +114,9 @@ $(function(){
     //$("[class$=-only]").hide();
     doRequest(STATUS_URL)
         .success(function(data){
-
+            // Add field to userModel that quantifies the time differential between client and server.
+            // This is the amount that needs to be taken away from client time to give server time.
+            data["client_server_time_diff"] = new Date() - new Date(data["status_timestamp"])
             // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
             // TODO(jamalex): not all of the data returned by "status" is specific to the user, so we should re-do the endpoint to
             // separate data out by type, and have multiple client-side Backbone models to store these various types of state.
