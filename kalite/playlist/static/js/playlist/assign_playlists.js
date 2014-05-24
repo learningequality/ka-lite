@@ -16,6 +16,8 @@ var groups = new GroupList;
 
 var Playlist = Backbone.Model.extend({
 
+    urlRoot: function() { return sprintf("%(root)s", {root: ALL_PLAYLISTS_URL}); },
+
     initialize: function(attributes) {
         var groupList = new GroupList(this.get('groups_assigned').map(function(groupdata) {
             return new Group(groupdata);
@@ -125,6 +127,7 @@ var PlaylistView = Backbone.View.extend({
         var group = groups.get(groupID);
 
         this.model.get('groups_assigned').add(group);
+        this.model.save();
     },
 
     allowDrop: function(ev) {
