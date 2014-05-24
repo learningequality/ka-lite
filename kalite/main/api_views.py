@@ -49,7 +49,7 @@ class student_log_api(object):
             if "facility_user" not in request.session:
                 return JsonResponseMessageWarning(self.logged_out_message + "  " + _("You must be logged in as a student or teacher to view/save progress."))
             else:
-                return handler(request)
+                return handler(request, *args, **kwargs)
         return student_log_api_wrapper_fn
 
 
