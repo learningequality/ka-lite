@@ -1,6 +1,6 @@
 window.ExerciseDataModel = Backbone.Model.extend({
     /*
-    Contains data about an exercise itself, with no user data.
+    Contains data about an exercise itself, with no user-specific data.
     */
 
     defaults: {
@@ -15,19 +15,20 @@ window.ExerciseDataModel = Backbone.Model.extend({
     },
 
     initialize: function() {
+
         _.bindAll(this);
 
         this.listenTo(this, 'change', this.update_exercise_data);
 
-        this.fetch();
     },
 
     url: function () {
         return "/api/exercise/" + this.get("exercise_id");
     },
 
+    // update the global "exerciseData" structure needed by khan-exercises
     update_exercise_data: function () {
-        window.exerciseData = $.extend(window.exerciseData, {
+        window.exerciseData = {
             "basepoints": this.get("basepoints"),
             "description": this.get("description"),
             "title": this.get("display_name"),
@@ -42,14 +43,13 @@ window.ExerciseDataModel = Backbone.Model.extend({
             "exerciseProgress": {
                 "level": "" // needed to keep khan-exercises from blowing up
             }
-        });
+        };
     }
-
-})
+});
 
 window.ExerciseLogModel = Backbone.Model.extend({
     /*
-    Contains summary data about the user's interaction with the current exercise.
+    Contains summary data about the user's history of interaction with the current exercise.
     */
 
     init: function() {
@@ -80,8 +80,6 @@ window.ExerciseLogModel = Backbone.Model.extend({
           this.attempts_before_completion = this.attempts;
         }
 
-
-
         Backbone.Model.prototype.save.call(this)
             .success(function(data) {
                 // update the top-right point display, now that we've saved the points successfully
@@ -104,17 +102,21 @@ window.AttemptLogModel = Backbone.Model.extend({
         return "/api/attempt_log/" + this.get("exercise_id");
     }
 
-})
+});
 
 window.AttemptLogCollection = Backbone.Collection.extend({
 
     model: AttemptLogModel,
 
+    initialize: function(options) {
+        this.exercise_id = options.exercise_id;
+    },
+
     url: function() {
-        return "/api/attempt_log/" + this.options.exercise_id
+        return "/api/attempt_log/" + this.exercise_id;
     }
 
-})
+});
 
 function updateQuestionPoints(points) {
     // show points for correct question, or none if not answered yet.
@@ -156,6 +158,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         _.bindAll(this);
 
         this.listenTo(this.model, "change", this.render);
+        // this.listenTo(this.collection, "change", this.render);
 
         this.render();
 
@@ -174,7 +177,6 @@ window.ExerciseProgressView = Backbone.View.extend({
             this.$("#hint-remainder").hide();
         }
     }
-
 });
 
 window.ExerciseWrapperView = Backbone.View.extend({
@@ -185,11 +187,24 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
         _.bindAll(this);
 
+        // load the info about the exercise itself
+        this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
+        this.data_model.fetch();
+
+        // load the data about the user's overall progress on the exercise
+        this.log_model = new ExerciseLogModel({exercise_id: this.options.exercise_id});
+        this.log_model.fetch();
+
+        // load the last 10 specific attempts the user made on this exercise
+        this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id});
+        this.attempt_collection.fetch();
+
         this.render();
 
         this.exercise_progress_view = new ExerciseProgressView({
             el: this.$(".exercise-progress-wrapper"),
-            model: this.model
+            model: this.log_model,
+            collection: this.attempt_collection
         });
 
         this.initialize_khan_exercises_listeners();
@@ -204,20 +219,26 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
     render: function() {
 
-        this.$el.html(this.template(this.model.attributes));
+        this.$el.html(this.template(this.data_model.attributes));
 
         this.initialize_listeners();
 
     },
 
     initialize_listeners: function() {
+
         this.$("#next-question-button").click(this.next_question_clicked); // needs to be explicit (not in "events")
+
+        this.listenTo(this.data_model, "change:title", this.update_title);
+
     },
 
     initialize_khan_exercises_listeners: function() {
 
+        var that = this;
+
         $(Khan).bind("loaded", function() {
-            exerciseData.seed = Math.floor(Math.random() * 1000);
+            that.data_model.set("seed", Math.floor(Math.random() * 1000));
             $(Exercises).trigger("problemTemplateRendered");
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
@@ -264,6 +285,10 @@ window.ExerciseWrapperView = Backbone.View.extend({
         } else {
             this.$(".current-card-contents #problemarea").css("margin-top", "10px");
         }
+    },
+
+    update_title: function() {
+        this.$(".exercise-title").text(this.data_model.get("title"));
     }
 
 });

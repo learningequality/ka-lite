@@ -47,9 +47,7 @@
         $(function() {
             window.exerciseWrapperView = new ExerciseWrapperView({
                 el: $(".exercise-wrapper"),
-                model: new ExerciseDataModel({
-                    exercise_id: "{{ exercise_id }}"
-                })
+                exercise_id: "{{ exercise_id }}"
             });
         });
 
