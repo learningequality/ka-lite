@@ -75,7 +75,7 @@ class PlaylistResource(Resource):
 
     def obj_update(self, bundle, **kwargs):
         new_group_ids = set([group['id'] for group in bundle.data['groups_assigned']])
-        playlist = bundle.obj
+        playlist = Playlist(**bundle.data)
 
         # hack because playlist isn't a model yet: clear the
         # playlist's groups, then read each one according to what was
