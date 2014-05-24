@@ -182,26 +182,6 @@ var AppView = Backbone.View.extend({
     }
 });
 
-// modify the groups assigned to a playlist
-function assignStudentGroups(playlist_id, group_ids_assigned) {
-  console.log(ALL_PLAYLISTS_URL);
-  var PLAYLIST_DETAIL_URL = ALL_PLAYLISTS_URL + playlist_id + "/"; // note: cleanup to something more readable
-  var groups_assigned = group_ids_assigned.map(function (id) { return {"id": id}; });
-  doRequest(PLAYLIST_DETAIL_URL,
-            {"groups_assigned": groups_assigned},
-            {"dataType": "text", // use text so jquery doesn't do the error callback since the server returns an empty response body
-             "type": "PATCH"}).success(function(res) {
-               console.log(res);
-               clear_messages();
-              show_message("success", gettext("Successfully updated playlist groups."));
-            }).error(function(e) {
-              if (e.status === 404) {
-                clear_messages();
-                show_message("error", gettext("That playlist cannot be found."));
-              }
-            });
-}
-
 $(function() {
 
     $("tr.title+tr").hide();
