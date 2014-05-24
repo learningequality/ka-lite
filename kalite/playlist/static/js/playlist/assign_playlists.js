@@ -52,6 +52,10 @@ var GroupView  = Backbone.View.extend({
 
     attributes: {draggable: true},
 
+    events: {
+        'dragstart td': 'drag'
+    },
+
     template: _.template($("#all-groups-list-entry-template").html()),
 
     initialize: function(options) {
@@ -63,6 +67,13 @@ var GroupView  = Backbone.View.extend({
         var dict = this.model.toJSON();
         this.$el.html(this.template(dict));
         return this;
+    },
+
+    drag: function(ev) {
+        var target = ev.currentTarget;
+        var dataTransfer = ev.originalEvent.dataTransfer;
+        var groupID = this.model.id;
+        dataTransfer.setData('student-grp-id', groupID);
     }
 });
 
@@ -74,18 +85,51 @@ var PlaylistView = Backbone.View.extend({
 
     template: _.template($("#playlist-template").html()),
 
+    initialize: function() {
+        _.bindAll(this);        // so that 'this' would always refer to PlaylistView in all methods
+
+        this.listenTo(this.model.get('groups_assigned'), 'add', this.renderGroup);
+        this.listenTo(this.model.get('groups_assigned'), 'reset', this.renderGroups);
+    },
+
+    events: {
+        'drop': 'drop',
+        'dragover': 'allowDrop'
+    },
+
     render: function() {
         var playlist = this;
         var dict = this.model.toJSON();
         this.$el.html(this.template(dict));
 
 
-        this.model.get('groups_assigned').map(function(group) {
-            var view = new PlaylistGroupView({model: group});
-            playlist.$('.playlist-groups').append(view.render().el);
-        });
+        this.renderGroups();
 
         return this;
+    },
+
+    renderGroup: function(group) {
+        var view = new PlaylistGroupView({model: group});
+        this.$el.find('.playlist-groups').append(view.render().el);
+    },
+
+    renderGroups: function() {
+        this.model.get('groups_assigned').map(this.renderGroup);
+    },
+
+    drop: function(ev) {
+        ev.preventDefault();
+        var target = ev.currentTarget;
+        var dataTransfer = ev.originalEvent.dataTransfer;
+        var groupID = dataTransfer.getData('student-grp-id');
+        var group = groups.get(groupID);
+
+        this.model.get('groups_assigned').add(group);
+    },
+
+    allowDrop: function(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
     }
 });
 
@@ -135,67 +179,6 @@ var AppView = Backbone.View.extend({
     }
 });
 
-// function displayPlaylists() {
-//     doRequest(ALL_PLAYLISTS_URL).success(function(data) {
-//         data.objects.map(function(playlist) {
-//             var playlistTitleRow = sprintf("<tr class='droppable title' playlist-id='%(id)s'><td>%(title)s</td></tr>", playlist);
-//             var playlistStudentGroupsRow = appendPlaylistStudentGroupRow(playlist);
-//             $("#playlists").append(playlistTitleRow + playlistStudentGroupsRow);
-//             $("tr.title").click(function(e) {
-//                 $(e.currentTarget.nextSibling).toggle();
-//             });
-
-//             playlist.groups_assigned.map(function(group) {
-//                 appendStudentGrp(group.id, group.name);
-//             });
-//             $(".droppable").on('dragover', allowDrop);
-//             $(".droppable").on('drop', drop);
-//         });
-//     });
-// }
-
-
-// function displayGroups() {
-//     doRequest(ALL_GROUPS_URL).success(function(data) {
-//         data.objects.map(function(obj) {
-//             $("#student-groups").append(sprintf('<tr><td student-grp-id="%(id)s" draggable="true">%(name)s</td></tr>', obj));
-//         });
-//         $(".span3 td").on('dragstart', drag);
-//     });
-// }
-
-
-function appendStudentGrp(id, studentGrpName) {
-  var selector = sprintf("tr[playlist-id|=%s] ul", id);
-  $(selector).append('<li>'+studentGrpName+'</li>');
-}
-
-function allowDrop(ev) {
-  ev.preventDefault();
-}
-
-function drag(ev) {
-  var target = ev.currentTarget;
-  var studentGrpId = target.getAttribute('student-grp-id');
-  var studentGrp = target.innerText || target.textContent;
-  var dataTransfer = ev.originalEvent.dataTransfer;
-  dataTransfer.setData('student-grp', studentGrp);
-  dataTransfer.setData('student-grp-id', studentGrpId);
-}
-
-function drop(ev) {
-  var target = ev.currentTarget;
-  var playlistId = target.getAttribute('playlist-id');
-  var dataTransfer = ev.originalEvent.dataTransfer;
-  ev.preventDefault();
-  var studentGrp = dataTransfer.getData('student-grp');
-  var studentGrpId = dataTransfer.getData('student-grp-id');
-  var ids = [studentGrpId];
-  appendStudentGrp(playlistId, studentGrp);
-
-  assignStudentGroups(playlistId, ids);
-}
-
 // modify the groups assigned to a playlist
 function assignStudentGroups(playlist_id, group_ids_assigned) {
   console.log(ALL_PLAYLISTS_URL);
@@ -214,10 +197,6 @@ function assignStudentGroups(playlist_id, group_ids_assigned) {
                 show_message("error", gettext("That playlist cannot be found."));
               }
             });
-}
-
-function appendPlaylistStudentGroupRow(playlist) {
-    return sprintf('<tr class="droppable" playlist-id="%(id)s"><td><ul></ul></td></tr>', playlist);
 }
 
 $(function() {
