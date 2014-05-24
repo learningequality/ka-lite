@@ -90,7 +90,7 @@ window.ExerciseLogModel = Backbone.Model.extend({
     },
 
     url: function () {
-        return "/api/exercise_log" + this.get("exercise_id");
+        return "/api/exercise_log/" + this.get("exercise_id");
     }
 
 })

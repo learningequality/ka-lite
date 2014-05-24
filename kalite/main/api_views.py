@@ -173,7 +173,7 @@ def get_exercise_logs(request):
 
 @allow_api_profiling
 @student_log_api(logged_out_message=ugettext_lazy("Attempt logs not active."))
-def attempt_log(request):
+def attempt_log(request, exercise_id):
     """
     RESTful API endpoint for AttemptLogs.
     """
@@ -207,7 +207,7 @@ def attempt_log(request):
 
     if request.method == "GET":
         """
-        Given an exercise_id, retrieve a list last ten attempt logs for this user.
+        Given an exercise_id, retrieve a list of the last ten attempt logs for this user.
         """
         user = request.session["facility_user"]
         logs = AttemptLog.objects \
