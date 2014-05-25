@@ -13,6 +13,7 @@ import re
 import os
 import datetime
 
+from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError, PermissionDenied
@@ -89,7 +90,7 @@ def save_video_log(request):
 
 @allow_api_profiling
 @student_log_api(logged_out_message=ugettext_lazy("Exercise progress not logged."))
-def exercise_log(request, exercise_id=None):
+def exercise_log(request, exercise_id):
 
     if request.method == "POST":
         """
@@ -142,18 +143,12 @@ def exercise_log(request, exercise_id=None):
         """
         Given an exercise_id, retrieve an exercise log for this user.
         """
-        data = simplejson.loads(request.raw_post_data or "[]")
-        if not isinstance(data, list):
-            return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
-
         user = request.session["facility_user"]
-        logs = ExerciseLog.objects \
-                .filter(user=user, exercise_id__in=data) \
-                .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts")
-        return JsonResponse(list(logs))
+        log = get_object_or_None(ExerciseLog, user=user, exercise_id=exercise_id) or ExerciseLog()
+        return JsonResponse(log)
 
 
-# TODO (rtibbles): Refactor client side code for status rendering in knowledge map and topic pages
+# TODO(rtibbles): Refactor client side code for status rendering in knowledge map and topic pages
 # to use a more RESTful API call.
 @allow_api_profiling
 @student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
