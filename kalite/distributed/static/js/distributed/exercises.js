@@ -215,6 +215,7 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
     events: {
         "click #scratchpad-show": "adjust_scratchpad_margin"
+        "submit .answer-form": "answer_form_submitted"
     },
 
     render: function() {
@@ -285,6 +286,11 @@ window.ExerciseWrapperView = Backbone.View.extend({
         } else {
             this.$(".current-card-contents #problemarea").css("margin-top", "10px");
         }
+    },
+
+    answer_form_submitted: function(e) {
+        e.preventDefault();
+        this.$("#check-answer-button").click();
     },
 
     update_title: function() {
