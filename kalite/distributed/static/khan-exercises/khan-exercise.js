@@ -1734,6 +1734,11 @@ var Khan = (function() {
         //     $(Exercises).trigger("clearExistingProblem");
         //     makeProblem();
         // } else {
+
+            // KA-LITE-MOD: make sure the random seed is initialized to desired value now,
+            // otherwise the problem type (as output by makeProblemBag) will depend on old seed
+            randomSeed = data.userExercise.seed;
+
             loadAndRenderExercise(data.userExercise);
         // }
     }
