@@ -1,3 +1,10 @@
+/*
+
+TODO:
+    - Store an "attemptlog" (or something else) when a hint is taken? Would be good to know when it happened.
+
+*/
+
 window.ExerciseDataModel = Backbone.Model.extend({
     /*
     Contains data about an exercise itself, with no user-specific data.
@@ -18,7 +25,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
         _.bindAll(this);
 
-        this.listenTo(this, 'change', this.update_exercise_data);
+        this.listenTo(this, "change:seed", this.seed_changed);
 
     },
 
@@ -26,12 +33,26 @@ window.ExerciseDataModel = Backbone.Model.extend({
         return "/api/exercise/" + this.get("exercise_id");
     },
 
-    // update the global "exerciseData" structure needed by khan-exercises
-    update_exercise_data: function () {
-        window.exerciseData = {
+    seed_changed: function() {
+        this.seed = this.get("seed") || this.seed;
+    },
+
+    update_if_needed_then: function(callback) {
+        if (this.get("exercise_id") !== this.get("name")) {
+            this.fetch().then(callback);
+        } else {
+            _.defer(callback);
+        }
+    },
+
+    // convert this data into the structure needed by khan-exercises
+    as_user_exercise: function () {
+        // TODO(jamalex): add "seed", etc, here
+        return {
             "basepoints": this.get("basepoints"),
             "description": this.get("description"),
             "title": this.get("display_name"),
+            "seed": this.seed,
             "exerciseModel": {
                 "displayName": this.get("display_name"),
                 "name": this.get("name"),
@@ -57,34 +78,34 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
         var self = this;
 
-        this.fetch().success(function(data){
-            self.starting_points = self.get("points");
-        });
+        // keep track of how many points we started out with
+        this.listenTo(this, "change:points", _.once(function() { self.starting_points = self.get("points") }));
+
     },
 
     save: function() {
 
         var self = this;
 
-        var already_complete = this.complete;
+        var already_complete = this.get("complete");
 
-        if (this.attempts > 20 && !this.complete) {
-          this.struggling = True;
+        if (this.get("attempts") > 20 && !this.get("complete")) {
+            this.set("struggling", true);
         }
 
-        this.complete = this.streak_progress >= 100;
+        this.set("complete", this.streak_progress >= 100);
 
-        if (!already_complete && this.complete) {
-          this.struggling = False;
-          this.completion_timestamp = userModel.get_server_time().toJSON();
-          this.attempts_before_completion = this.attempts;
+        if (!already_complete && this.get("complete")) {
+            this.set("struggling", false);
+            this.set("completion_timestamp", userModel.get_server_time().toJSON());
+            this.set("attempts_before_completion", this.get("attempts"));
         }
 
         Backbone.Model.prototype.save.call(this)
             .success(function(data) {
                 // update the top-right point display, now that we've saved the points successfully
                 userModel.set("newpoints", self.get("points") - self.starting_points);
-            })
+            });
     },
 
     url: function () {
@@ -214,7 +235,7 @@ window.ExerciseWrapperView = Backbone.View.extend({
     },
 
     events: {
-        "click #scratchpad-show": "adjust_scratchpad_margin"
+        "click #scratchpad-show": "adjust_scratchpad_margin",
         "submit .answer-form": "answer_form_submitted"
     },
 
@@ -236,12 +257,11 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
     initialize_khan_exercises_listeners: function() {
 
-        var that = this;
+        var self = this;
 
         $(Khan).bind("loaded", function() {
-            that.data_model.set("seed", Math.floor(Math.random() * 1000));
             $(Exercises).trigger("problemTemplateRendered");
-            $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
+            self.load_question();
         });
 
         $(Khan).on("answerGiven", function (event, answer) {
@@ -273,10 +293,30 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
     },
 
+    load_question: function(question_data) {
+
+        var self = this;
+
+        var defaults = {
+            seed: Math.floor(Math.random() * 1000)
+        };
+
+        var question_data = $.extend(defaults, question_data);
+
+        this.data_model.set(question_data);
+
+        this.$("#workarea").html("<center>" + gettext("Loading...") + "</center>");
+
+        this.data_model.update_if_needed_then(function() {
+            $(Exercises).trigger("readyForNextProblem", {userExercise: self.data_model.as_user_exercise()});
+        });
+
+    },
+
     next_question_clicked: function() {
         updateQuestionPoints(false);
         exerciseData.hintUsed = false;
-        exerciseData.seed = Math.floor(Math.random() * 1000);
+
         $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
     },
 
