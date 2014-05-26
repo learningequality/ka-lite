@@ -17,7 +17,6 @@ def custom(request):
         "base_template": "distributed/base.html",
         "is_central": False,
         "settings": settings,
-        "restricted": settings.DISABLE_SELF_ADMIN,
         "VERSION": version.VERSION,
         "True": True,
         "False": False

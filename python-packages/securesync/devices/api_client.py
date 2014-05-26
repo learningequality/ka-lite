@@ -10,8 +10,8 @@ import urllib2
 from django.conf import settings
 
 from .models import *
-from securesync import engine
-from securesync.api_client import BaseClient
+from .. import engine
+from ..api_client import BaseClient
 
 
 class RegistrationClient(BaseClient):

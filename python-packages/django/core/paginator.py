@@ -1,5 +1,8 @@
 from math import ceil
 
+from django.utils import six
+
+
 class InvalidPage(Exception):
     pass
 
@@ -88,6 +91,8 @@ class Page(object):
         return len(self.object_list)
 
     def __getitem__(self, index):
+        if not isinstance(index, (slice,) + six.integer_types):
+            raise TypeError
         # The object_list is converted to a list so that if it was a QuerySet
         # it won't be a database hit per __getitem__.
         return list(self.object_list)[index]
@@ -132,10 +137,10 @@ class Page(object):
         return self.has_previous() or self.has_next()
 
     def next_page_number(self):
-        return self.number + 1
+        return self.paginator.validate_number(self.number + 1)
 
     def previous_page_number(self):
-        return self.number - 1
+        return self.paginator.validate_number(self.number - 1)
 
     def start_index(self):
         """
