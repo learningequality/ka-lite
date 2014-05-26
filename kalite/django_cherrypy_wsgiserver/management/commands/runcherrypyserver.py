@@ -186,6 +186,7 @@ def ka_lite_is_using_port(host, port):
     if there is a numeric response, that will be the pid of the cherrypyserver process
     This is needed in case the PID file has been deleted, but the server continues to run
     """
+    pid = None
     try:
         pid = int(urlopen("http://%s:%s%s" % (host, port, reverse('getpid'))).read())
     except:
