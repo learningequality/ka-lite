@@ -1,5 +1,5 @@
 <h2>
-    <span class="practice-exercise-topic-context">{{_ "Practicing" }}</span> {{ title }}
+    <span class="exercise-title-prefix">{{_ "Practicing" }}</span> <span class="exercise-title">{{ title }}</span>
     {{#if description }}<br/><span class="practice-exercise-description">{{ description }}</span>{{/if }}
 </h2>
 
@@ -15,10 +15,12 @@
                             <div id="hintsarea"></div>
                         </div>
                         <div id="answer_area_wrap"><div id="answer_area">
-                            <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
-                                <div id="streakbar" class="info-box" title="{{_ "Your progress streak bar for this exercise" }}">
-                                    <div class="streak">
-                                        <div class="progress-bar"><div id="totalpoints"></div></div>
+                            <form class="answer-form">
+                                <div class="exercise-progress-wrapper">
+                                    <div id="streakbar" class="info-box" title="{{_ "Your progress streak bar for this exercise" }}">
+                                        <div class="streak">
+                                            <div class="progress-bar"><div id="totalpoints"></div></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
@@ -39,7 +41,7 @@
                                     <div id="get-hint-button-container">
                                         <input id="hint" type="button" class="simple-button orange full-width" value="{{_ "I'd like a hint" }}" name="hint"/>
                                     </div>
-                                    <div id="hint-remainder">{{_ "Note: this will reset your streak and points for this exercise!" }}</div>
+                                    <div id="hint-reminder">{{_ "Note: this will reset your streak and points for this exercise!" }}</div>
                                 </div>
 
                                 {{#if related_videos }}
