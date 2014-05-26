@@ -3,7 +3,7 @@ div#map-container {
     top: 0;
     left: 0;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
     background: #000;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -13,7 +13,7 @@ div#map-container {
     user-select: none;
     line-height: 11px;
     min-height: 1100px;
-    min-width: 1000px;
+    min-width: 700px;
 }
 
 a.topic-button {
@@ -40,8 +40,6 @@ div#map {
     position: absolute;
     left: 0;
     top: 0;
-    height: 100%;
-    width: 100%;
 }
 
 div.exercise {

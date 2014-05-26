@@ -73,12 +73,23 @@ class BrowserTestCase(KALiteTestCase):
     clients and logging in profiles.
     """
 
-    persistent_browser = False #not bool(os.environ.get("TRAVIS"))  # only use persistent browser when local.
+    persistent_browser = False
 
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "button", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
 
     def __init__(self, *args, **kwargs):
         self.max_wait_time = kwargs.get("max_wait_time", 30)
+        # DJANGO_CHANGE(aron):
+        # be able to support headless tests, which run PhantomJS
+        # instead of showing running a full-blown browser.
+        # Since there's no elegant way to pass options to testcases,
+        # we pass it through the settings module, with HEADLESS
+        # essentially acting as a global variable. See:
+        # python-packages/django/core/management/commands/test.py
+        if getattr(settings, 'HEADLESS', None):
+            self.browser_list = ['PhantomJS']
+        else:
+            self.browser_list = ['Firefox', 'Chrome', 'Ie', 'Opera']
         super(BrowserTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -91,19 +102,18 @@ class BrowserTestCase(KALiteTestCase):
 
         # Can use already launched browser.
         if self.persistent_browser:
-            (self.browser,self.admin_user,self.admin_pass) = setup_test_env(persistent_browser=self.persistent_browser)
+            (self.browser, self.admin_user, self.admin_pass) = setup_test_env(persistent_browser=self.persistent_browser)
 
         # Must create a new browser to use
         else:
-            for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
+            for browser_type in self.browser_list:
                 try:
-                    (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
+                    (self.browser, self.admin_user, self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
                 except DatabaseError:
                     raise
                 except Exception as e:
                     logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
-
 
     def tearDown(self):
         if not self.persistent_browser and hasattr(self, "browser") and self.browser:
@@ -117,7 +127,6 @@ class BrowserTestCase(KALiteTestCase):
             browser.quit()
             browser = None
         return super(BrowserTestCase, cls).tearDownClass()
-
 
     def browse_to(self, *args, **kwargs):
         """

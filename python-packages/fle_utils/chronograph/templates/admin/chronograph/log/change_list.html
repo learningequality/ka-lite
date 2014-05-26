@@ -7,7 +7,7 @@
   <ul class="object-tools">
     <li style="background: transparent; line-height: 16px; margin-right: 8px;">{% now "F j, Y, g:i a" %}</li>
     <li>
-      <a href="{% url admin:chronograph_job_run request.GET.job %}" class="viewsitelink">{% trans "Run Job" %}</a>
+      <a href="{% url "admin:chronograph_job_run" request.GET.job %}" class="viewsitelink">{% trans "Run Job" %}</a>
     </li>
   </ul>
   {% endif %}

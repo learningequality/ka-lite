@@ -61,8 +61,8 @@ def run_makemessages(ignore_patterns_py=[], ignore_patterns_js=[], verbosity=0):
 
     # Besides externally requested ignores, add on a few standard ones.
     ignore_shared = ignored_packages + ['*/data/*', '*/.git/*', '*/migrations/*', '*/node_modules/*', '*/fle_utils/chronograph/*']
-    ignore_patterns_py = ignore_patterns_py + ignore_shared + ['*/static/*']
-    ignore_patterns_js = ignore_patterns_js + ignore_shared + ['*/kalite/static/*', '*/static/admin/*', '*/static/js/i18n/*', '*/kalite/distributed/static/khan-exercises/*'] + ['*jquery*', '*bootstrap*']
+    ignore_patterns_py = ignore_patterns_py + ignore_shared + ['*/static-libraries/*']
+    ignore_patterns_js = ignore_patterns_js + ignore_shared + ['*/kalite/static/*', '*/static-libraries/admin/*', '*/static-libraries/js/i18n/*', '*/kalite/distributed/static/khan-exercises/*'] + ['*jquery*', '*bootstrap*']
 
     logging.debug("Creating / validating locale root folder")
     ensure_dir(LOCALE_ROOT)

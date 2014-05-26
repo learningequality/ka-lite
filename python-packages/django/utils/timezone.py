@@ -13,6 +13,7 @@ except ImportError:
     pytz = None
 
 from django.conf import settings
+from django.utils import six
 
 __all__ = [
     'utc', 'get_default_timezone', 'get_current_timezone',
@@ -95,7 +96,6 @@ utc = pytz.utc if pytz else UTC()
 
 # In order to avoid accessing the settings at compile time,
 # wrap the expression in a function and cache the result.
-# If you change settings.TIME_ZONE in tests, reset _localtime to None.
 _localtime = None
 
 def get_default_timezone():
@@ -108,9 +108,10 @@ def get_default_timezone():
     """
     global _localtime
     if _localtime is None:
-        if isinstance(settings.TIME_ZONE, basestring) and pytz is not None:
+        if isinstance(settings.TIME_ZONE, six.string_types) and pytz is not None:
             _localtime = pytz.timezone(settings.TIME_ZONE)
         else:
+            # This relies on os.environ['TZ'] being set to settings.TIME_ZONE.
             _localtime = LocalTimezone()
     return _localtime
 
@@ -161,7 +162,7 @@ def activate(timezone):
     """
     if isinstance(timezone, tzinfo):
         _active.value = timezone
-    elif isinstance(timezone, basestring) and pytz is not None:
+    elif isinstance(timezone, six.string_types) and pytz is not None:
         _active.value = pytz.timezone(timezone)
     else:
         raise ValueError("Invalid timezone: %r" % timezone)
@@ -198,15 +199,15 @@ class override(object):
             activate(self.timezone)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        if self.old_timezone is not None:
-            _active.value = self.old_timezone
+        if self.old_timezone is None:
+            deactivate()
         else:
-            del _active.value
+            _active.value = self.old_timezone
 
 
 # Templates
 
-def localtime(value, use_tz=None):
+def template_localtime(value, use_tz=None):
     """
     Checks if value is a datetime and converts it to local time if necessary.
 
@@ -215,19 +216,29 @@ def localtime(value, use_tz=None):
 
     This function is designed for use by the template engine.
     """
-    if (isinstance(value, datetime)
+    should_convert = (isinstance(value, datetime)
         and (settings.USE_TZ if use_tz is None else use_tz)
         and not is_naive(value)
-        and getattr(value, 'convert_to_local_time', True)):
-        timezone = get_current_timezone()
-        value = value.astimezone(timezone)
-        if hasattr(timezone, 'normalize'):
-            # available for pytz time zones
-            value = timezone.normalize(value)
-    return value
+        and getattr(value, 'convert_to_local_time', True))
+    return localtime(value) if should_convert else value
 
 
 # Utilities
+
+def localtime(value, timezone=None):
+    """
+    Converts an aware datetime.datetime to local time.
+
+    Local time is defined by the current time zone, unless another time zone
+    is specified.
+    """
+    if timezone is None:
+        timezone = get_current_timezone()
+    value = value.astimezone(timezone)
+    if hasattr(timezone, 'normalize'):
+        # available for pytz time zones
+        value = timezone.normalize(value)
+    return value
 
 def now():
     """

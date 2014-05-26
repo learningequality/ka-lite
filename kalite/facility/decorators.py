@@ -94,7 +94,7 @@ def facility_required(handler):
     @facility_from_request
     def facility_required_inner_fn(request, facility, *args, **kwargs):
         if facility:
-            return handler(request, facility, *args, **kwargs)
+            return handler(request, facility=facility, *args, **kwargs)
 
         if not request.session["facility_exists"]:
             if request.is_admin:

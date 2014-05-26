@@ -12,7 +12,7 @@
     {% if is_own_device %}
         <div class="server-online-only">
             <a class="registered-only green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
-            <a class="not-registered-only green_button" href="{% url register_public_key %}">{% trans "Register" %}</a>
+            <a class="not-registered-only green_button" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
         </div>
     {% endif %}
 {% endblock buttons %}

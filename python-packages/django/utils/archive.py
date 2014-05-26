@@ -1,7 +1,7 @@
 """
 Based on "python-archive" -- http://pypi.python.org/pypi/python-archive/
 
-Copyright (c) 2010 Gary Wilson Jr. <gary.wilson@gmail.com> and contributers.
+Copyright (c) 2010 Gary Wilson Jr. <gary.wilson@gmail.com> and contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
-from __future__ import with_statement
 import os
 import shutil
-import sys
 import tarfile
 import zipfile
+
+from django.utils import six
 
 
 class ArchiveException(Exception):
@@ -46,7 +46,8 @@ def extract(path, to_path=''):
     Unpack the tar or zip file at the specified path to the directory
     specified by to_path.
     """
-    Archive(path).extract(to_path)
+    with Archive(path) as archive:
+        archive.extract(to_path)
 
 
 class Archive(object):
@@ -59,7 +60,7 @@ class Archive(object):
     @staticmethod
     def _archive_cls(file):
         cls = None
-        if isinstance(file, basestring):
+        if isinstance(file, six.string_types):
             filename = file
         else:
             try:
@@ -77,11 +78,20 @@ class Archive(object):
                 "Path not a recognized archive format: %s" % filename)
         return cls
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
     def extract(self, to_path=''):
         self._archive.extract(to_path)
 
     def list(self):
         self._archive.list()
+
+    def close(self):
+        self._archive.close()
 
 
 class BaseArchive(object):
@@ -146,11 +156,11 @@ class TarArchive(BaseArchive):
             else:
                 try:
                     extracted = self._archive.extractfile(member)
-                except (KeyError, AttributeError):
+                except (KeyError, AttributeError) as exc:
                     # Some corrupt tar files seem to produce this
                     # (specifically bad symlinks)
-                    print ("In the tar file %s the member %s is invalid: %s" %
-                           (name, member.name, sys.exc_info()[1]))
+                    print("In the tar file %s the member %s is invalid: %s" %
+                            (name, member.name, exc))
                 else:
                     dirname = os.path.dirname(filename)
                     if dirname and not os.path.exists(dirname):
@@ -160,6 +170,9 @@ class TarArchive(BaseArchive):
                 finally:
                     if extracted:
                         extracted.close()
+
+    def close(self):
+        self._archive.close()
 
 
 class ZipArchive(BaseArchive):
@@ -188,6 +201,9 @@ class ZipArchive(BaseArchive):
             else:
                 with open(filename, 'wb') as outfile:
                     outfile.write(data)
+
+    def close(self):
+        self._archive.close()
 
 extension_map = {
     '.tar': TarArchive,
