@@ -41,17 +41,20 @@ class UserRegistrationTestCase(FacilityTestCase):
 
         FacilityUser.objects.get(username=self.data['username']) # should not raise error
 
-    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Always fails occasionally")
     def test_password_length_enforced(self):
         # always make passwd shorter than passwd min length setting
-        self.data['password_first'] = self.data['password_recheck'] =  self.data['password_first'][:settings.PASSWORD_CONSTRAINTS['min_length']-1]
+        min_length = settings.PASSWORD_CONSTRAINTS['min_length']
+        d = self.data['password_first'][:min_length - 1]
+        self.data['password_first'] = self.data['password_recheck'] = d
 
         response = self.client.post(reverse('add_facility_student'), self.data)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
-        self.assertFormError(response, 'form', 'password_first', "Password should be at least %d characters." % settings.PASSWORD_CONSTRAINTS['min_length'])
+        self.assertFormError(response, 'form', 'password_first',
+                             "Password should be at least %d characters." % min_length)
 
     def test_only_ascii_letters_allowed(self):
-        self.data['password_first'] = self.data['password_recheck'] = string.whitespace.join([self.data['password_first']] * 2)
+        l = [self.data['password_first']] * 2
+        self.data['password_first'] = self.data['password_recheck'] = string.whitespace.join(l)
 
         response = self.client.post(reverse('add_facility_student'), self.data)
         self.assertNotIn("errorlist", response.content, "Must be no form errors")
