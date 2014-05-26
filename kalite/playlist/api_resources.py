@@ -18,7 +18,7 @@ class Playlist:
 
 
 class PlaylistResource(Resource):
-    playlistjson = os.path.join(os.path.dirname(__file__), 'test_playlist.json')
+    playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
 
     description = fields.CharField(attribute='description')
     id = fields.CharField(attribute='id')
