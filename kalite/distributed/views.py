@@ -246,14 +246,19 @@ def video_handler(request, video, format="mp4", prev=None, next=None):
     else:
         vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
 
+    # TODO(jamalex): clean this up, and move stuff into a generic video-info endpoint/function
+    video = video.copy()
+    video["video_urls"] = video["availability"].get(vid_lang)
+    video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
+    video["selected_language"] = vid_lang
+    video["dubs_available"] = len(video["availability"]) > 1
+    video["title"] = _(video["title"])
+    video["description"] = _(video["description"])
+    video["video_id"] = video["id"]
 
     context = {
         "video": video,
         "title": video["title"],
-        "num_videos_available": len(video["availability"]),
-        "selected_language": vid_lang,
-        "video_urls": video["availability"].get(vid_lang),
-        "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
         "prev": prev,
         "next": next,
         "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
@@ -274,7 +279,7 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     exercise_template = exercise_file
     exercise_localized_template = os.path.join(lang, exercise_file)
 
-    # Get the language codes for exercise teplates that exist
+    # Get the language codes for exercise templates that exist
     exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
     code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])

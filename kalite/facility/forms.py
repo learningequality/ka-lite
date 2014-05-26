@@ -78,8 +78,9 @@ class FacilityUserForm(forms.ModelForm):
         #
         # Change: don't allow (only through the form) the same username either in the same facility,
         #   or even in the same zone.
-        users_with_same_username = FacilityUser.objects.filter(username__iexact=username, facility=facility) \
-            or FacilityUser.objects.filter(username__iexact=username) \
+        # Change: Use 'all_objects' instead of 'objects' in order to return soft deleted users as well.
+        users_with_same_username = FacilityUser.all_objects.filter(username__iexact=username, facility=facility) \
+            or FacilityUser.all_objects.filter(username__iexact=username) \
                 .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same zone
         username_taken = users_with_same_username.count() > 0
         username_changed = not self.instance or self.instance.username != username
@@ -97,15 +98,20 @@ class FacilityUserForm(forms.ModelForm):
         # If they have put anything in the new password field, it must match the password check field
         if password_first != password_recheck:
             self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
-        
+
         # Next, enforce length if they submitted a password
         if password_first:
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
-                self.set_field_error(field_name='password_first', message=ve.messages[0])
+                self.set_field_error(field_name='password_first', message=ve.message)
+        elif (self.instance and not self.instance.password) or password_first or password_recheck:
+            # Only perform check on a new user or a password change
+            if password_first != password_recheck:
+                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
 
-        ## Warn the user during sign up or adding user if a user with this first and last name already exists in the faiclity
+
+        ## Warn the user during sign up or adding user if a user with this first and last name already exists in the facility
         if not self.cleaned_data.get("warned", False) and (self.cleaned_data["first_name"] or self.cleaned_data["last_name"]):
             users_with_same_name = FacilityUser.objects.filter(first_name__iexact=self.cleaned_data["first_name"], last_name__iexact=self.cleaned_data["last_name"]) \
                 .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same facility

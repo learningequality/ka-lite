@@ -63,17 +63,22 @@
          // the following variables are used by functions in distributed-server.js,
          //    khan-lite.js, and search_autocomplete.js.
          // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
-         var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}";
-         var SEARCH_TOPICS_URL = "{% url 'flat_topic_tree' lang_code=current_language%}";
-         var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}";
-         var SET_DEFAULT_LANGUAGE_URL = "{% url 'set_default_language' %}"
-         var SEARCH_TOPICS_URL = "{% url 'flat_topic_tree' lang_code=current_language%}";
-         var STATUS_URL = "{% url 'status' %}";
-         var FORCE_SYNC_URL = "{% url 'api_force_sync' %}";
-         var GET_VIDEO_LOGS_URL = "{% url 'get_video_logs' %}";
-         var GET_EXERCISE_LOGS_URL = "{% url 'get_exercise_logs' %}";
+         var DELETE_USERS_URL            = "{% url 'delete_users' %}";
+         var DELETE_GROUPS_URL           = "{% url 'group_delete' %}";
+         var FORCE_SYNC_URL              = "{% url 'api_force_sync' %}";
+         var GET_EXERCISE_LOGS_URL       = "{% url 'get_exercise_logs' %}";
+         var GET_VIDEO_LOGS_URL          = "{% url 'get_video_logs' %}";
+         var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
+         var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
-         var USER_LOGIN_URL = "{% url 'login' %}";
+         var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
+         var SAVE_EXERCISE_LOG_URL       = "{% url 'save_exercise_log' %}";
+         var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
+         var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
+         var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
+         var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}"
+         var STATUS_URL                  = "{% url 'status' %}";
+         var USER_LOGIN_URL              = "{% url 'login' %}";
 
          var SERVER_INFO_PATH    = "{% url 'get_server_info' %}";
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";

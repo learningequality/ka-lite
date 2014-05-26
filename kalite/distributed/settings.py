@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     "fle_utils.config",
     "fle_utils.chronograph",
     "fle_utils.django_utils",  # templatetags
+    "fle_utils.handlebars",
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
@@ -53,6 +54,7 @@ INSTALLED_APPS = (
     "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.student_testing",
     "kalite.caching",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)

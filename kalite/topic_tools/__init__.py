@@ -424,3 +424,28 @@ def get_exercise_page_paths(video_id=None):
     except Exception as e:
         logging.debug("Exception while getting exercise paths: %s" % e)
         return []
+
+def get_exercise_data(request, exercise_id=None):
+    exercise = get_node_cache()["Exercise"][exercise_id][0]
+
+    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
+    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+    exercise_file = exercise["slug"] + ".html"
+    exercise_template = exercise_file
+    exercise_localized_template = os.path.join(lang, exercise_file)
+
+    # Get the language codes for exercise templates that exist
+    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
+    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
+    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
+
+    exercise_lang = i18n.select_best_available_language(request.language, available_codes=available_langs)
+    if exercise_lang == "en":
+        exercise_template = exercise_file
+    else:
+        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
+
+    exercise["lang"] = exercise_lang
+    exercise["template"] = exercise_template
+
+    return exercise

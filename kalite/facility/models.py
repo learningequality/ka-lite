@@ -107,6 +107,25 @@ class FacilityGroup(DeferredCountSyncedModel):
     def __unicode__(self):
         return self.name
 
+    @transaction.commit_on_success
+    def soft_delete(self):
+        """
+        As FacilityGroup acts as a soft wrapper around FacilityUser entities, upon soft deletion
+        we 'evict' the FacilityUsers rather than the default behaviour of soft deleting all the
+        entities that ForeignKey onto the object. As such, we completely overwrite the super
+        soft_delete method.
+        """
+
+        self.deleted = True  # mark self as deleted
+
+        # This is not very robust, as it relies on explicitly calling the reverse relations to the model
+        # and then clearing them. If anything else Foreign Keys onto groups here, it will have to be set here.
+        self.facilityuser_set.clear()
+
+        self.save()
+
+
+
     def validate_unique(self, exclude=None):
         """Django method for validating uniqueness contraints.
         We have uniqueness constraints that can't be expressed as a tuple of fields,
