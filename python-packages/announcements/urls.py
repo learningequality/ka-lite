@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 from announcements.views import detail, dismiss
 from announcements.views import CreateAnnouncementView, UpdateAnnouncementView

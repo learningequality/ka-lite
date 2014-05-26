@@ -7,9 +7,6 @@ from optparse import make_option
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from fle_utils.config.models import Settings
-from securesync.models import Device, DeviceZone, Zone, ZoneInvitation
-
 
 class CronCommand(BaseCommand):
     """Cron commands are commands that can be called programmatically, but not from the command-line.

@@ -82,9 +82,9 @@ Examples:
 """ % FASTCGI_OPTIONS
 
 def fastcgi_help(message=None):
-    print FASTCGI_HELP
+    print(FASTCGI_HELP)
     if message:
-        print message
+        print(message)
     return False
 
 def runfastcgi(argset=[], **kwargs):
@@ -102,12 +102,12 @@ def runfastcgi(argset=[], **kwargs):
 
     try:
         import flup
-    except ImportError, e:
-        print >> sys.stderr, "ERROR: %s" % e
-        print >> sys.stderr, "  Unable to load the flup package.  In order to run django"
-        print >> sys.stderr, "  as a FastCGI application, you will need to get flup from"
-        print >> sys.stderr, "  http://www.saddi.com/software/flup/   If you've already"
-        print >> sys.stderr, "  installed flup, then make sure you have it in your PYTHONPATH."
+    except ImportError as e:
+        sys.stderr.write("ERROR: %s\n" % e)
+        sys.stderr.write("  Unable to load the flup package.  In order to run django\n")
+        sys.stderr.write("  as a FastCGI application, you will need to get flup from\n")
+        sys.stderr.write("  http://www.saddi.com/software/flup/   If you've already\n")
+        sys.stderr.write("  installed flup, then make sure you have it in your PYTHONPATH.\n")
         return False
 
     flup_module = 'server.' + options['protocol']
@@ -136,7 +136,7 @@ def runfastcgi(argset=[], **kwargs):
         module = importlib.import_module('.%s' % flup_module, 'flup')
         WSGIServer = module.WSGIServer
     except Exception:
-        print "Can't import flup." + flup_module
+        print("Can't import flup." + flup_module)
         return False
 
     # Prep up and go
@@ -176,9 +176,8 @@ def runfastcgi(argset=[], **kwargs):
         become_daemon(our_home_dir=options["workdir"], **daemon_kwargs)
 
     if options["pidfile"]:
-        fp = open(options["pidfile"], "w")
-        fp.write("%d\n" % os.getpid())
-        fp.close()
+        with open(options["pidfile"], "w") as fp:
+            fp.write("%d\n" % os.getpid())
 
     WSGIServer(get_internal_wsgi_application(), **wsgi_opts).run()
 

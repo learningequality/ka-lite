@@ -27,14 +27,12 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.i18n import javascript_catalog
 
-from .caching import backend_cache_page
 from fle_utils.django_utils import is_loopback_connection
 from fle_utils.internet import JsonResponse, JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
+from kalite import topic_tools
 from kalite.facility.models import Facility, FacilityUser,FacilityGroup
 from kalite.i18n import select_best_available_language
-from kalite.main import topic_tools
 from kalite.main.models import VideoLog, ExerciseLog
-from kalite.main.topic_tools import get_ancestor, get_parent, get_neighbor_nodes, get_topic_tree
 from kalite.shared.decorators import require_admin
 from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
@@ -83,7 +81,7 @@ def refresh_topic_cache(handler, force=False):
         Remove relevant counts from all ancestors
         """
         for ancestor_id in node.get("ancestor_ids", []):
-            ancestor = get_ancestor(node, ancestor_id)
+            ancestor = topic_tools.get_ancestor(node, ancestor_id)
             if "nvideos_local" in ancestor:
                 del ancestor["nvideos_local"]
             if "nvideos_known" in ancestor:
@@ -130,7 +128,7 @@ def refresh_topic_cache(handler, force=False):
             # Propertes not yet marked
             if node["kind"] == "Video":
                 if force or not has_computed_urls(node):
-                    recount_videos_and_invalidate_parents(get_parent(node), force=True, stamp_urls=True)
+                    recount_videos_and_invalidate_parents(topic_tools.get_parent(node), force=True, stamp_urls=True)
 
             elif node["kind"] == "Exercise":
                 for video in topic_tools.get_related_videos(exercise=node).values():
@@ -168,12 +166,12 @@ def splat_handler(request, splat):
     if current_node["kind"] == "Topic":
         return topic_handler(request, cached_nodes={"topic": current_node})
     elif current_node["kind"] == "Video":
-        prev, next = get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
+        prev, next = topic_tools.get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
         return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
     elif current_node["kind"] == "Exercise":
         cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
         cached_nodes["exercise"] = current_node
-        cached_nodes["prev"], cached_nodes["next"] = get_neighbor_nodes(current_node, neighbor_kind=current_node['kind'])
+        cached_nodes["prev"], cached_nodes["next"] = topic_tools.get_neighbor_nodes(current_node, neighbor_kind=current_node['kind'])
         return exercise_handler(request, cached_nodes=cached_nodes)
     else:
         raise Http404
@@ -304,7 +302,7 @@ def exercise_dashboard(request):
 
 def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""
-    return topic_handler(request, cached_nodes={"topic": get_topic_tree()})
+    return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
 
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
@@ -332,7 +330,6 @@ def help(request):
 def help_admin(request):
     context = {
         "wiki_url" : settings.CENTRAL_WIKI_URL,
-        "central_server_host" : settings.CENTRAL_SERVER_HOST,
         "ips": get_ip_addresses(include_loopback=False),
         "port": request.META.get("SERVER_PORT") or settings.USER_FACING_PORT(),
     }

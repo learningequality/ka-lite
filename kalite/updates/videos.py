@@ -7,8 +7,9 @@ from django.conf import settings; logging = settings.LOG
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
+
 from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_name
-from kalite.main.topic_tools import get_topic_tree, get_videos
+from kalite.topic_tools import get_topic_tree, get_videos
 
 
 REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.UPDATES_DATA_PATH, "video_file_sizes.json")

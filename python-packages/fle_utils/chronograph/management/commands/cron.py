@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from fle_utils.chronograph.models import Job
+from ...models import Job
+
 
 class Command(BaseCommand):
     help = 'Runs all jobs that are due.'
