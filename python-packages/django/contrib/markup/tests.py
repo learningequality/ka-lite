@@ -1,7 +1,9 @@
 # Quick tests for the markup templatetags (django.contrib.markup)
 import re
+import warnings
 
 from django.template import Template, Context
+from django import test
 from django.utils import unittest
 from django.utils.html import escape
 
@@ -21,7 +23,7 @@ try:
 except ImportError:
     docutils = None
 
-class Templates(unittest.TestCase):
+class Templates(test.TestCase):
 
     textile_content = """Paragraph 1
 
@@ -37,7 +39,14 @@ Paragraph 2 with a link_
 
 .. _link: http://www.example.com/"""
 
-    @unittest.skipUnless(textile, 'texttile not installed')
+    def setUp(self):
+        self.save_warnings_state()
+        warnings.filterwarnings('ignore', category=DeprecationWarning, module='django.contrib.markup')
+
+    def tearDown(self):
+        self.restore_warnings_state()
+
+    @unittest.skipUnless(textile, 'textile not installed')
     def test_textile(self):
         t = Template("{% load markup %}{{ textile_content|textile }}")
         rendered = t.render(Context({'textile_content':self.textile_content})).strip()
@@ -45,13 +54,13 @@ Paragraph 2 with a link_
 
 <p>Paragraph 2 with &#8220;quotes&#8221; and <code>code</code></p>""")
 
-    @unittest.skipIf(textile, 'texttile is installed')
+    @unittest.skipIf(textile, 'textile is installed')
     def test_no_textile(self):
         t = Template("{% load markup %}{{ textile_content|textile }}")
         rendered = t.render(Context({'textile_content':self.textile_content})).strip()
         self.assertEqual(rendered, escape(self.textile_content))
 
-    @unittest.skipUnless(markdown, 'markdown not installed')
+    @unittest.skipUnless(markdown and markdown_version >= (2,1), 'markdown >= 2.1 not installed')
     def test_markdown(self):
         t = Template("{% load markup %}{{ markdown_content|markdown }}")
         rendered = t.render(Context({'markdown_content':self.markdown_content})).strip()
@@ -87,7 +96,7 @@ Paragraph 2 with a link_
             # Docutils v0.4 and earlier
             self.assertEqual(rendered, """<p>Paragraph 1</p>
 <p>Paragraph 2 with a <a class="reference" href="http://www.example.com/">link</a></p>""")
-        except AssertionError, e:
+        except AssertionError:
             # Docutils from SVN (which will become 0.5)
             self.assertEqual(rendered, """<p>Paragraph 1</p>
 <p>Paragraph 2 with a <a class="reference external" href="http://www.example.com/">link</a></p>""")

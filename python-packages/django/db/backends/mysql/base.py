@@ -3,6 +3,7 @@ MySQL database backend for Django.
 
 Requires MySQLdb: http://sourceforge.net/projects/mysql-python
 """
+from __future__ import unicode_literals
 
 import datetime
 import re
@@ -11,15 +12,17 @@ import warnings
 
 try:
     import MySQLdb as Database
-except ImportError, e:
+except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("Error loading MySQLdb module: %s" % e)
+
+from django.utils.functional import cached_property
 
 # We want version (1, 2, 1, 'final', 2) or later. We can't just use
 # lexicographic ordering in this check because then (1, 2, 1, 'gamma')
 # inadvertently passes the version test.
 version = Database.version_info
-if (version < (1,2,1) or (version[:3] == (1, 2, 1) and
+if (version < (1, 2, 1) or (version[:3] == (1, 2, 1) and
         (len(version) < 5 or version[3] != 'final' or version[4] < 2))):
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("MySQLdb-1.2.1p2 or newer is required; you have %s" % Database.__version__)
@@ -34,7 +37,10 @@ from django.db.backends.mysql.client import DatabaseClient
 from django.db.backends.mysql.creation import DatabaseCreation
 from django.db.backends.mysql.introspection import DatabaseIntrospection
 from django.db.backends.mysql.validation import DatabaseValidation
-from django.utils.safestring import SafeString, SafeUnicode
+from django.utils.encoding import force_str
+from django.utils.functional import cached_property
+from django.utils.safestring import SafeBytes, SafeText
+from django.utils import six
 from django.utils import timezone
 
 # Raise exceptions for database warnings if DEBUG is on
@@ -59,8 +65,8 @@ def adapt_datetime_with_timezone_support(value, conv):
     # Equivalent to DateTimeField.get_db_prep_value. Used only by raw SQL.
     if settings.USE_TZ:
         if timezone.is_naive(value):
-            warnings.warn(u"SQLite received a naive datetime (%s)"
-                          u" while time zone support is active." % value,
+            warnings.warn("MySQL received a naive datetime (%s)"
+                          " while time zone support is active." % value,
                           RuntimeWarning)
             default_timezone = timezone.get_default_timezone()
             value = timezone.make_aware(value, default_timezone)
@@ -70,7 +76,7 @@ def adapt_datetime_with_timezone_support(value, conv):
 # MySQLdb-1.2.1 returns TIME columns as timedelta -- they are more like
 # timedelta in terms of actual behavior as they are signed and include days --
 # and Django expects time, so we still need to override that. We also need to
-# add special handling for SafeUnicode and SafeString as MySQLdb's type
+# add special handling for SafeText and SafeBytes as MySQLdb's type
 # checking is too tight to catch those (see Django ticket #6052).
 # Finally, MySQLdb always returns naive datetime objects. However, when
 # timezone support is active, Django expects timezone-aware datetime objects.
@@ -112,30 +118,30 @@ class CursorWrapper(object):
     def execute(self, query, args=None):
         try:
             return self.cursor.execute(query, args)
-        except Database.IntegrityError, e:
-            raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-        except Database.OperationalError, e:
+        except Database.IntegrityError as e:
+            six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])
+        except Database.OperationalError as e:
             # Map some error codes to IntegrityError, since they seem to be
             # misclassified and Django would prefer the more logical place.
             if e[0] in self.codes_for_integrityerror:
-                raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
-        except Database.DatabaseError, e:
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
+                six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])
+            six.reraise(utils.DatabaseError, utils.DatabaseError(*tuple(e.args)), sys.exc_info()[2])
+        except Database.DatabaseError as e:
+            six.reraise(utils.DatabaseError, utils.DatabaseError(*tuple(e.args)), sys.exc_info()[2])
 
     def executemany(self, query, args):
         try:
             return self.cursor.executemany(query, args)
-        except Database.IntegrityError, e:
-            raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-        except Database.OperationalError, e:
+        except Database.IntegrityError as e:
+            six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])
+        except Database.OperationalError as e:
             # Map some error codes to IntegrityError, since they seem to be
             # misclassified and Django would prefer the more logical place.
             if e[0] in self.codes_for_integrityerror:
-                raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
-        except Database.DatabaseError, e:
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
+                six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])
+            six.reraise(utils.DatabaseError, utils.DatabaseError(*tuple(e.args)), sys.exc_info()[2])
+        except Database.DatabaseError as e:
+            six.reraise(utils.DatabaseError, utils.DatabaseError(*tuple(e.args)), sys.exc_info()[2])
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
@@ -163,29 +169,29 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_timezones = False
     requires_explicit_null_ordering_when_grouping = True
     allows_primary_key_0 = False
+    uses_savepoints = True
 
     def __init__(self, connection):
         super(DatabaseFeatures, self).__init__(connection)
-        self._storage_engine = None
 
+    @cached_property
     def _mysql_storage_engine(self):
         "Internal method used in Django tests. Don't rely on this from your code"
-        if self._storage_engine is None:
-            cursor = self.connection.cursor()
-            cursor.execute('CREATE TABLE INTROSPECT_TEST (X INT)')
-            # This command is MySQL specific; the second column
-            # will tell you the default table type of the created
-            # table. Since all Django's test tables will have the same
-            # table type, that's enough to evaluate the feature.
-            cursor.execute("SHOW TABLE STATUS WHERE Name='INTROSPECT_TEST'")
-            result = cursor.fetchone()
-            cursor.execute('DROP TABLE INTROSPECT_TEST')
-            self._storage_engine = result[1]
-        return self._storage_engine
+        cursor = self.connection.cursor()
+        cursor.execute('CREATE TABLE INTROSPECT_TEST (X INT)')
+        # This command is MySQL specific; the second column
+        # will tell you the default table type of the created
+        # table. Since all Django's test tables will have the same
+        # table type, that's enough to evaluate the feature.
+        cursor.execute("SHOW TABLE STATUS WHERE Name='INTROSPECT_TEST'")
+        result = cursor.fetchone()
+        cursor.execute('DROP TABLE INTROSPECT_TEST')
+        return result[1]
 
-    def _can_introspect_foreign_keys(self):
+    @cached_property
+    def can_introspect_foreign_keys(self):
         "Confirm support for introspected foreign keys"
-        return self._mysql_storage_engine() != 'MyISAM'
+        return self._mysql_storage_engine != 'MyISAM'
 
 class DatabaseOperations(BaseDatabaseOperations):
     compiler_module = "django.db.backends.mysql.compiler"
@@ -234,11 +240,11 @@ class DatabaseOperations(BaseDatabaseOperations):
         # With MySQLdb, cursor objects have an (undocumented) "_last_executed"
         # attribute where the exact query sent to the database is saved.
         # See MySQLdb/cursors.py in the source distribution.
-        return cursor._last_executed
+        return cursor._last_executed.decode('utf-8')
 
     def no_limit_value(self):
         # 2**64 - 1, as recommended by the MySQL documentation
-        return 18446744073709551615L
+        return 18446744073709551615
 
     def quote_name(self, name):
         if name.startswith("`") and name.endswith("`"):
@@ -257,19 +263,31 @@ class DatabaseOperations(BaseDatabaseOperations):
             for table in tables:
                 sql.append('%s %s;' % (style.SQL_KEYWORD('TRUNCATE'), style.SQL_FIELD(self.quote_name(table))))
             sql.append('SET FOREIGN_KEY_CHECKS = 1;')
-
-            # 'ALTER TABLE table AUTO_INCREMENT = 1;'... style SQL statements
-            # to reset sequence indices
-            sql.extend(["%s %s %s %s %s;" % \
-                (style.SQL_KEYWORD('ALTER'),
-                 style.SQL_KEYWORD('TABLE'),
-                 style.SQL_TABLE(self.quote_name(sequence['table'])),
-                 style.SQL_KEYWORD('AUTO_INCREMENT'),
-                 style.SQL_FIELD('= 1'),
-                ) for sequence in sequences])
+            sql.extend(self.sequence_reset_by_name_sql(style, sequences))
             return sql
         else:
             return []
+
+    def sequence_reset_by_name_sql(self, style, sequences):
+        # Truncate already resets the AUTO_INCREMENT field from
+        # MySQL version 5.0.13 onwards. Refs #16961.
+        if self.connection.mysql_version < (5, 0, 13):
+            return ["%s %s %s %s %s;" % \
+                    (style.SQL_KEYWORD('ALTER'),
+                    style.SQL_KEYWORD('TABLE'),
+                    style.SQL_TABLE(self.quote_name(sequence['table'])),
+                    style.SQL_KEYWORD('AUTO_INCREMENT'),
+                    style.SQL_FIELD('= 1'),
+                    ) for sequence in sequences]
+        else:
+            return []
+
+    def validate_autopk_value(self, value):
+        # MySQLism: zero in AUTO_INCREMENT field does not work. Refs #17653.
+        if value == 0:
+            raise ValueError('The database backend does not accept 0 as a '
+                             'value for AutoField.')
+        return value
 
     def value_to_db_datetime(self, value):
         if value is None:
@@ -283,7 +301,7 @@ class DatabaseOperations(BaseDatabaseOperations):
                 raise ValueError("MySQL backend does not support timezone-aware datetimes when USE_TZ is False.")
 
         # MySQL doesn't support microseconds
-        return unicode(value.replace(microsecond=0))
+        return six.text_type(value.replace(microsecond=0))
 
     def value_to_db_time(self, value):
         if value is None:
@@ -294,7 +312,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             raise ValueError("MySQL backend does not support timezone-aware times.")
 
         # MySQL doesn't support microseconds
-        return unicode(value.replace(microsecond=0))
+        return six.text_type(value.replace(microsecond=0))
 
     def year_lookup_bounds(self, value):
         # Again, no microseconds
@@ -373,7 +391,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             if settings_dict['NAME']:
                 kwargs['db'] = settings_dict['NAME']
             if settings_dict['PASSWORD']:
-                kwargs['passwd'] = settings_dict['PASSWORD']
+                kwargs['passwd'] = force_str(settings_dict['PASSWORD'])
             if settings_dict['HOST'].startswith('/'):
                 kwargs['unix_socket'] = settings_dict['HOST']
             elif settings_dict['HOST']:
@@ -385,10 +403,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             kwargs['client_flag'] = CLIENT.FOUND_ROWS
             kwargs.update(settings_dict['OPTIONS'])
             self.connection = Database.connect(**kwargs)
-            self.connection.encoders[SafeUnicode] = self.connection.encoders[unicode]
-            self.connection.encoders[SafeString] = self.connection.encoders[str]
-            self.features.uses_savepoints = \
-                self.get_server_version() >= (5, 0, 3)
+            self.connection.encoders[SafeText] = self.connection.encoders[six.text_type]
+            self.connection.encoders[SafeBytes] = self.connection.encoders[bytes]
             connection_created.send(sender=self.__class__, connection=self)
         cursor = self.connection.cursor()
         if new_connection:
@@ -405,7 +421,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         except Database.NotSupportedError:
             pass
 
-    def get_server_version(self):
+    @cached_property
+    def mysql_version(self):
         if not self.server_version:
             new_connection = False
             if not self._valid_connection():
@@ -452,7 +469,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         """
         cursor = self.cursor()
         if table_names is None:
-            table_names = self.introspection.get_table_list(cursor)
+            table_names = self.introspection.table_names(cursor)
         for table_name in table_names:
             primary_key_column_name = self.introspection.get_primary_key_column(cursor, table_name)
             if not primary_key_column_name:

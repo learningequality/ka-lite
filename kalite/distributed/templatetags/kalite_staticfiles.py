@@ -17,7 +17,7 @@ CACHE_VARS = ['BUILD_HASH_CACHE']
 
 # Add this as key to `fle_utils.config.models.Settings`
 BUILD_HASH = 'BUILD_HASH'
-BUILD_HASH_CACHE = Settings.get(BUILD_HASH, '')
+BUILD_HASH_CACHE = None
 
 register = Library()
 

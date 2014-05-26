@@ -7,7 +7,7 @@ Notable urls include:
     node in the topic tree.
 """
 from django.conf import settings
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 

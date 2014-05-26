@@ -2,15 +2,15 @@
 Base file upload handler classes, and the built-in concrete subclasses
 """
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from __future__ import unicode_literals
+
+from io import BytesIO
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile
 from django.utils import importlib
+from django.utils.encoding import python_2_unicode_compatible
 
 __all__ = ['UploadFileException','StopUpload', 'SkipFile', 'FileUploadHandler',
            'TemporaryFileUploadHandler', 'MemoryFileUploadHandler',
@@ -22,6 +22,7 @@ class UploadFileException(Exception):
     """
     pass
 
+@python_2_unicode_compatible
 class StopUpload(UploadFileException):
     """
     This exception is raised when an upload must abort.
@@ -34,11 +35,11 @@ class StopUpload(UploadFileException):
         """
         self.connection_reset = connection_reset
 
-    def __unicode__(self):
+    def __str__(self):
         if self.connection_reset:
-            return u'StopUpload: Halt current upload.'
+            return 'StopUpload: Halt current upload.'
         else:
-            return u'StopUpload: Consume request data, then halt.'
+            return 'StopUpload: Consume request data, then halt.'
 
 class SkipFile(UploadFileException):
     """
@@ -161,12 +162,12 @@ class MemoryFileUploadHandler(FileUploadHandler):
     def new_file(self, *args, **kwargs):
         super(MemoryFileUploadHandler, self).new_file(*args, **kwargs)
         if self.activated:
-            self.file = StringIO()
+            self.file = BytesIO()
             raise StopFutureHandlers()
 
     def receive_data_chunk(self, raw_data, start):
         """
-        Add the data to the StringIO file.
+        Add the data to the BytesIO file.
         """
         if self.activated:
             self.file.write(raw_data)
@@ -204,10 +205,11 @@ def load_handler(path, *args, **kwargs):
     module, attr = path[:i], path[i+1:]
     try:
         mod = importlib.import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('Error importing upload handler module %s: "%s"' % (module, e))
-    except ValueError, e:
-        raise ImproperlyConfigured('Error importing upload handler module. Is FILE_UPLOAD_HANDLERS a correctly defined list or tuple?')
+    except ValueError:
+        raise ImproperlyConfigured('Error importing upload handler module.'
+            'Is FILE_UPLOAD_HANDLERS a correctly defined list or tuple?')
     try:
         cls = getattr(mod, attr)
     except AttributeError:

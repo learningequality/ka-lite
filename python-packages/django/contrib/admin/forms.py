@@ -1,13 +1,14 @@
+from __future__ import unicode_literals
+
 from django import forms
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy
 
-from django.utils.translation import ugettext_lazy, ugettext as _
+ERROR_MESSAGE = ugettext_lazy("Please enter the correct %(username)s and password "
+        "for a staff account. Note that both fields may be case-sensitive.")
 
-ERROR_MESSAGE = ugettext_lazy("Please enter the correct username and password "
-        "for a staff account. Note that both fields are case-sensitive.")
 
 class AdminAuthenticationForm(AuthenticationForm):
     """
@@ -25,19 +26,12 @@ class AdminAuthenticationForm(AuthenticationForm):
         if username and password:
             self.user_cache = authenticate(username=username, password=password)
             if self.user_cache is None:
-                if u'@' in username:
-                    # Mistakenly entered e-mail address instead of username? Look it up.
-                    try:
-                        user = User.objects.get(email=username)
-                    except (User.DoesNotExist, User.MultipleObjectsReturned):
-                        # Nothing to do here, moving along.
-                        pass
-                    else:
-                        if user.check_password(password):
-                            message = _("Your e-mail address is not your username."
-                                        " Try '%s' instead.") % user.username
-                raise forms.ValidationError(message)
+                raise forms.ValidationError(message % {
+                    'username': self.username_field.verbose_name
+                })
             elif not self.user_cache.is_active or not self.user_cache.is_staff:
-                raise forms.ValidationError(message)
+                raise forms.ValidationError(message % {
+                    'username': self.username_field.verbose_name
+                })
         self.check_for_test_cookie()
         return self.cleaned_data

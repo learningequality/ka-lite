@@ -20,5 +20,5 @@ class DBCheck:
 
 class RegisteredCheck:
     def process_request(self, request):
-        if not "registered" in request.session or request.is_admin:
+        if not "registered" in request.session:
             request.session["registered"] = Device.get_own_device().is_registered()

@@ -11,8 +11,7 @@ from ...api_views import divide_videos_by_language
 from ...models import VideoFile
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import break_into_chunks
-from kalite import i18n
-from kalite.distributed import caching
+from kalite import caching, i18n
 
 
 class Command(CronCommand):

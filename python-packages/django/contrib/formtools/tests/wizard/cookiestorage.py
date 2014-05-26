@@ -1,12 +1,16 @@
+import json
+
 from django.test import TestCase
 from django.core import signing
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse
 
+from django.contrib.auth.tests.utils import skipIfCustomUser
 from django.contrib.formtools.wizard.storage.cookie import CookieStorage
 from django.contrib.formtools.tests.wizard.storage import get_request, TestStorage
 
 
+@skipIfCustomUser
 class TestCookieStorage(TestStorage, TestCase):
     def get_storage(self):
         return CookieStorage
@@ -41,4 +45,5 @@ class TestCookieStorage(TestStorage, TestCase):
         storage.init_data()
         storage.update_response(response)
         unsigned_cookie_data = cookie_signer.unsign(response.cookies[storage.prefix].value)
-        self.assertEqual(unsigned_cookie_data, '{"step_files":{},"step":null,"extra_data":{},"step_data":{}}')
+        self.assertJSONEqual(unsigned_cookie_data,
+            {"step_files": {}, "step": None, "extra_data": {}, "step_data": {}})

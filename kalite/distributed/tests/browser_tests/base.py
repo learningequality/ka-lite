@@ -145,7 +145,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 self.browser.get(self.reverse("logout"))
             else:
                 self.browse_to(self.reverse("logout"))
-            self.assertIn(reverse("homepage"), self.browser.current_url, "Logout browses to homepage" )
+            self.assertIn(reverse("homepage"), self.browser.current_url, "Logout redirects to the homepage" )
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
 
     def browser_is_logged_in(self, expected_username=None):
@@ -153,13 +153,20 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # 1. Student: #logged-in-name is username
         # 2. Admin: #logout contains username
         try:
-            logged_in_name_text = self.browser.find_element_by_id("logged-in-name").text.strip()
+            sitepoints_text = self.browser.find_element_by_id("sitepoints").text.strip()
             logout_text = self.browser.find_element_by_id("nav_logout").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
             return False
 
-        username_text = logged_in_name_text or logout_text[0:-len(" (%s)" % _("Logout"))]
+        if sitepoints_text.startswith("Welcome, "):
+            logged_in_name = sitepoints_text[len("Welcome, "):sitepoints_text.index("!")].strip()
+        elif "|" in sitepoints_text:
+            logged_in_name = sitepoints_text[:sitepoints_text.index("|")].strip()
+        else:
+            logged_in_name = None
+
+        username_text = logged_in_name or logout_text[0:-len(" (%s)" % _("Logout"))]
 
         # Just checking to see if ANYBODY is logged in
         if not expected_username:

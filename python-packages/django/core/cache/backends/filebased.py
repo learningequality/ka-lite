@@ -5,11 +5,12 @@ import os
 import shutil
 import time
 try:
-    import cPickle as pickle
+    from django.utils.six.moves import cPickle as pickle
 except ImportError:
     import pickle
 
 from django.core.cache.backends.base import BaseCache
+from django.utils.encoding import force_bytes
 
 class FileBasedCache(BaseCache):
     def __init__(self, dir, params):
@@ -31,16 +32,13 @@ class FileBasedCache(BaseCache):
 
         fname = self._key_to_file(key)
         try:
-            f = open(fname, 'rb')
-            try:
+            with open(fname, 'rb') as f:
                 exp = pickle.load(f)
                 now = time.time()
                 if exp < now:
                     self._delete(fname)
                 else:
                     return pickle.load(f)
-            finally:
-                f.close()
         except (IOError, OSError, EOFError, pickle.PickleError):
             pass
         return default
@@ -61,13 +59,10 @@ class FileBasedCache(BaseCache):
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
 
-            f = open(fname, 'wb')
-            try:
+            with open(fname, 'wb') as f:
                 now = time.time()
                 pickle.dump(now + timeout, f, pickle.HIGHEST_PROTOCOL)
                 pickle.dump(value, f, pickle.HIGHEST_PROTOCOL)
-            finally:
-                f.close()
         except (IOError, OSError):
             pass
 
@@ -94,22 +89,19 @@ class FileBasedCache(BaseCache):
         self.validate_key(key)
         fname = self._key_to_file(key)
         try:
-            f = open(fname, 'rb')
-            try:
+            with open(fname, 'rb') as f:
                 exp = pickle.load(f)
-                now = time.time()
-                if exp < now:
-                    self._delete(fname)
-                    return False
-                else:
-                    return True
-            finally:
-                f.close()
+            now = time.time()
+            if exp < now:
+                self._delete(fname)
+                return False
+            else:
+                return True
         except (IOError, OSError, EOFError, pickle.PickleError):
             return False
 
     def _cull(self):
-        if int(self._num_entries) < self._max_entries or self._max_entries is None:
+        if int(self._num_entries) < self._max_entries:
             return
 
         try:
@@ -145,13 +137,11 @@ class FileBasedCache(BaseCache):
         Thus, a cache key of "foo" gets turnned into a file named
         ``{cache-dir}ac/bd/18db4cc2f85cedef654fccc4a4d8``.
         """
-        path = hashlib.md5(key).hexdigest()
+        path = hashlib.md5(force_bytes(key)).hexdigest()
         path = os.path.join(path[:2], path[2:4], path[4:])
         return os.path.join(self._dir, path)
 
     def _get_num_entries(self):
-        if self._max_entries is None:
-            return 0
         count = 0
         for _,_,files in os.walk(self._dir):
             count += len(files)
