@@ -104,11 +104,11 @@ class FacilityUserForm(forms.ModelForm):
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
-                message = ve.message
                 # MUST: The ValidationError constructor sets the error message into a list with
                 # `self.messages = [message]` so we get the first message from the list.  It
                 # should have assigned the value to `self.message = message` too but maybe on
                 # newer Django versions this is fixed.
+                message = ''
                 if hasattr(ve, 'messages') and isinstance(ve.messages, list) and ve.messages:
                     message = ve.messages[0]
                 self.set_field_error(field_name='password_first', message=message)
@@ -116,7 +116,6 @@ class FacilityUserForm(forms.ModelForm):
             # Only perform check on a new user or a password change
             if password_first != password_recheck:
                 self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
-
 
         ## Warn the user during sign up or adding user if a user with this first and last name already exists in the facility
         if not self.cleaned_data.get("warned", False) and (self.cleaned_data["first_name"] or self.cleaned_data["last_name"]):
