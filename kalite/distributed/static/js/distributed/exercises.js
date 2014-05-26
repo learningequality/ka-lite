@@ -195,7 +195,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         this.$("#totalpoints").html(this.model.get("points") > 0 ? this.model.get("points") : "");
         if (this.model.get("streak_progress") >= 100) {
             this.$("#streakbar .progress-bar").addClass("completed");
-            this.$("#hint-remainder").hide();
+            this.$("#hint-reminder").hide();
         }
     }
 });
