@@ -13,11 +13,12 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
+from .. import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
+from .. import crypto
+from ..engine.models import SyncedModel
 from fle_utils.general import get_host_name
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
-from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
-from securesync import crypto
-from securesync.engine.models import SyncedModel
+
 
 class RegisteredDevicePublicKey(ExtendedModel):
     public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")

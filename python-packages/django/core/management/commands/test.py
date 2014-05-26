@@ -26,6 +26,14 @@ class Command(BaseCommand):
             help='Overrides the default address where the live server (used '
                  'with LiveServerTestCase) is expected to run from. The '
                  'default value is localhost:8081.'),
+        # DJANGO_CHANGE(aron):
+        # be able to support headless tests, which run PhantomJS
+        # instead of showing running a full-blown browser
+        make_option('--headless',
+                    action='store_true',
+                    default=False,
+                    dest='headless',
+                    help='Whether to run the browser tests in headless mode'),
     )
     help = ('Runs the test suite for the specified applications, or the '
             'entire site if no apps are specified.')
@@ -77,6 +85,15 @@ class Command(BaseCommand):
     def handle(self, *test_labels, **options):
         from django.conf import settings
         from django.test.utils import get_runner
+
+        # DJANGO_CHANGE(aron):
+        # be able to support headless tests, which run PhantomJS
+        # instead of showing running a full-blown browser.
+        # Since there's no elegant way to pass options to testcases,
+        # we pass it through the settings module, with HEADLESS
+        # essentially acting as a global variable
+        if options.get('headless'):
+            settings.HEADLESS = True
 
         TestRunner = get_runner(settings, options.get('testrunner'))
         options['verbosity'] = int(options.get('verbosity'))

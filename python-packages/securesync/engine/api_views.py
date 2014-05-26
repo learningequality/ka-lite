@@ -17,10 +17,10 @@ from django.views.decorators.gzip import gzip_page
 
 from . import get_serialized_models, save_serialized_models, get_device_counters, serialize
 from .models import *
+from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
-from securesync.devices.models import *  # inter-dependence
 
 
 def require_sync_session(handler):
@@ -137,7 +137,7 @@ def device_upload(data, session):
         result = save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
         logging.debug("Exception uploading devices: %s" % e)
-        result = { "error": e.message, "saved_model_count": 0 }
+        result = { "error": e.args[0], "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
@@ -170,7 +170,7 @@ def model_upload(data, session):
         result = save_serialized_models(data["models"], src_version=session.client_version)
     except Exception as e:
         logging.debug("Exception uploading models: %s" % e)
-        result = { "error": e.message, "saved_model_count": 0 }
+        result = { "error": e.args[0], "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
@@ -191,7 +191,7 @@ def model_download(data, session):
         result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, dest_version=session.client_version)
     except Exception as e:
         logging.debug("Exception downloading models: %s" % e)
-        result = { "error": e.message, "count": 0 }
+        result = { "error": e.args[0], "count": 0 }
 
     session.models_downloaded += result["count"]
     session.errors += result.has_key("error")

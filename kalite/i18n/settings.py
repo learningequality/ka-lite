@@ -25,6 +25,30 @@ def allow_all_languages_alist(langlookupfile):
 
 
 ########################
+# Django dependencies
+########################
+
+INSTALLED_APPS = (
+    "django.contrib.sessions",  # default_language, language_choices, etc
+    "fle_utils.config",  # default_language
+    "fle_utils.django_utils",  # templatetags
+    "kalite.facility",  # middleware for setting user's default language.  TODO: move this code to facility, break the dependency.
+)
+
+MIDDLEWARE_CLASSES = (
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "kalite.i18n.middleware.SessionLanguage",
+    'django.middleware.locale.LocaleMiddleware',  # Must define after i18n.middleware.SessionLanguage
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.i18n",
+    __package__ + ".custom_context_processors.languages",
+)
+
+
+########################
 # (Aron): Setting the LANGUAGES configuration.
 ########################
 
@@ -43,13 +67,3 @@ else:
         LANGUAGES = set(allow_all_languages_alist(LANG_LOOKUP_FILEPATH))
     except Exception as e:
         logging.error("Error loading %s (%s); Django will use its own builtin LANGUAGES list." % (LANG_LOOKUP_FILEPATH, e))
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.core.context_processors.i18n",
-    __package__ + ".custom_context_processors.languages",
-)
-
-MIDDLEWARE_CLASSES = (
-    "kalite.i18n.middleware.SessionLanguage",
-    'django.middleware.locale.LocaleMiddleware',  # Must define after i18n.middleware.SessionLanguage
-)

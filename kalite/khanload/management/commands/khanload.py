@@ -18,7 +18,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from ... import KHANLOAD_CACHE_DIR, kind_slugs
 from fle_utils.general import datediff
-from kalite.main import topic_tools
+from kalite import topic_tools
 
 
 # get the path to an exercise file, so we can check, below, which ones exist

@@ -4,6 +4,7 @@ import types
 from django.conf import settings
 from django.utils import unittest
 
+
 def x_server_test(f, cond, msg):
     """Decorator to label test classes or instance methods as x_only,
     x = "main" or "central"

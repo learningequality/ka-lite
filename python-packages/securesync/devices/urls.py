@@ -1,6 +1,6 @@
 from django.conf.urls import include, patterns, url
 
-import api_urls
+from . import api_urls
 
 
 urlpatterns = patterns('securesync.devices.views',

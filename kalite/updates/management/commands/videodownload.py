@@ -16,9 +16,7 @@ from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import URLNotFound
-from kalite import i18n
-from kalite.distributed import caching
-from kalite.main import topic_tools
+from kalite import caching, i18n, topic_tools
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -199,7 +197,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                     # If a connection error, we should retry.
                     if isinstance(e, DownloadError):
-                        connection_error = "[Errno 8]" in e.message
+                        connection_error = "[Errno 8]" in e.args[0]
                     elif isinstance(e, IOError) and hasattr(e, "strerror"):
                         connection_error = e.strerror[0] == 8
                     else:

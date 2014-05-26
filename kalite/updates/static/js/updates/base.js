@@ -137,6 +137,7 @@ function updatesCheck(process_name, interval) {
                 //
                 if (progress_log.process_percent == 1. && !progress_log.stage_status) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
+                    clear_messages();
                     show_message("success", message);
                     updatesReset(process_name);
                 } else if (progress_log.completed && progress_log.stage_status == "cancelled") {

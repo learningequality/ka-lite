@@ -22,7 +22,6 @@ from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.chronograph import force_job
 from fle_utils.internet import set_query_params
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
@@ -198,6 +197,10 @@ def group_edit(request, facility, group_id):
 def login(request, facility):
     facility_id = (facility and facility.id) or None
     facilities = list(Facility.objects.all())
+
+    #Fix for #2047: prompt user to create an admin account if none exists
+    if not User.objects.exists():
+        messages.warning(request, _("No administrator account deteced. Please run 'python manage.py createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))

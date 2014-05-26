@@ -168,7 +168,11 @@ $(function(){
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
-            window.location = setGetParam(window.location.href, "set_user_language", lang_code);
+            doRequest(SET_DEFAULT_LANGUAGE_URL,
+                      {lang: lang_code}
+                     ).success(function() {
+                         window.location.reload();
+                     });
         }
     });
 });

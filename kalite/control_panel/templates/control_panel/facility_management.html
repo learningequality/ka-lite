@@ -132,7 +132,7 @@
                 <div class="clear"></div>
                 {% endif %}
 
-                <!--<div class="action-bar">
+                <div class="action-bar">
                     <div class="selection">
                         <h4>
                             {% trans "Select" %}:
@@ -146,7 +146,7 @@
                         <button class="delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
                         </h4>
                     </div>
-                </div>-->
+                </div>
 
                 <table class="simple-table selectable-table">
                     <thead>
@@ -159,7 +159,7 @@
                     </thead>
                     <tbody>
                         {% for coach in coach_pages %}
-                        <tr value="{{ coach.id }}">
+                        <tr value="{{ coach.id }}" type="coaches">
                             <td>
                                 {{ coach|format_name:"last_first" }}
                                 <a href="{% url 'edit_facility_user' id=coach.id %}?facility={{ facility_id }}">
@@ -220,65 +220,74 @@
                 <p class="no-data">{% trans "You currently have no group data available." %}</p>
 
             {% else %}
-                <div class="table-responsive">
-                    <table class="simple-table">
-                        <thead>
-                            <tr>
-                                <th class="headrowuser">{% trans "Group Name" %}</th>
-                                <th width="150px">{% trans "Coach" %}</th>
-                                <th class="headrowuser">{% trans "# Students" %}</th>
-                                <th class="headrowuser">{% trans "Logins" %}</th>
-                                <th class="headrowuser">{% trans "Login Time" %}</th>
-                                <th class="headrowuser">{% trans "Videos Viewed" %}</th>
-                                <th class="headrowuser">{% trans "Exercises Completed" %}</th>
-                                <th class="headrowuser">{% trans "Mastery " %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for group in groups %}
-                                {% if group.name != ungrouped or group.total_users != 0 %}
-                                <tr>
-                                    <td>
-                                        {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                        <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
-                                            {% if group.id %}
-                                            href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
-                                            {% else %}
-                                            href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
-                                            {% endif %}
-                                            {{ group.name }}
-                                        </a>
-                                        {% if group.id %}
-                                        <a href="{% url 'group_edit' group_id=group.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                            <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit group' %}">
-                                        </a>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if group.id %}
-                                        {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                        <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}">
-                                        <div class="sparklines" sparkType="bar" sparkBarColor="green">
-                                        <!--
-                                            {{ group.total_logins }},
-                                            {{ group.total_videos }},
-                                            {{ group.total_exercises }}
-                                        -->
-                                        </div></a>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ group.total_users }}</td>
-                                    <td>{{ group.total_logins }}</td>
-                                    <td>{{ group.total_hours|floatformat }}</td>
-                                    <td>{{ group.total_videos }}</td>
-                                    <td>{{ group.total_exercises }}</td>
-                                    <td>{{ group.pct_mastery|percent:1 }}</td>
-                                </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="action-bar">
+                <div class="selection">
+                    <h4>
+                        {% trans "Select" %}:
+                        <button class="all" value="#groups">{% trans "All" %}</button>
+                        <button class="none" value="#groups">{% trans "None" %}</button>
+                    </h4>
                 </div>
+                    <div class="action">
+                    <h4>{% trans "Action" %}:
+
+                    <button class="delete-group" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
+                    </h4>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="simple-table selectable-table">
+                    <thead>
+                        <tr>
+                            <th class="headrowuser">{% trans "Group Name" %}</th>
+                            <th width="150px">{% trans "Coach" %}</th>
+                            <th class="headrowuser">{% trans "# Students" %}</th>
+                            <th class="headrowuser">{% trans "Logins" %}</th>
+                            <th class="headrowuser">{% trans "Login Time" %}</th>
+                            <th class="headrowuser">{% trans "Videos Viewed" %}</th>
+                            <th class="headrowuser">{% trans "Exercises Completed" %}</th>
+                            <th class="headrowuser">{% trans "Mastery " %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                            {% if group.name != ungrouped or group.total_users != 0 %}
+                            <tr value="{{ group.id }}" type="groups">
+                                <td>
+                                    {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
+                                    <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}">
+
+                                    {% if group.id %}
+                                    <a href="{% url 'group_edit' group_id=group.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                        <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit group' %}">
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if group.id %}
+                                    {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
+                                    <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}">
+                                    <div class="sparklines" sparkType="bar" sparkBarColor="green">
+                                    <!--
+                                        {{ group.total_logins }},
+                                        {{ group.total_videos }},
+                                        {{ group.total_exercises }}
+                                    -->
+                                    </div></a>
+                                    {% endif %}
+                                </td>
+                                <td>{{ group.total_users }}</td>
+                                <td>{{ group.total_logins }}</td>
+                                <td>{{ group.total_hours|floatformat }}</td>
+                                <td>{{ group.total_videos }}</td>
+                                <td>{{ group.total_exercises }}</td>
+                                <td>{{ group.pct_mastery|percent:1 }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% endif %}
         {% endif %}
         </div><!-- groups -->
@@ -340,16 +349,17 @@
                                             <option value="{{ group.id }}">{{ group.name }}</option>
                                         {% endif %}
                                     {% endfor %}
-                                    {% if group_id != ungrouped %}
+                                    {% if group_id != ungrouped_id %}
                                         <option value="">{{ ungrouped }}</option>
                                     {% endif %}
                             </select>
                         {% endif %}
 
-                        <!-- <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button> -->
+                        <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
                     </h4>
                 </div>
             </div>
+
             <div class="table-responsive">
                 <table class="simple-table selectable-table">
                     <thead>
@@ -366,9 +376,11 @@
                     </thead>
                     <tbody>
                         {% for student in student_pages %}
-                            <tr value="{{ student.id }}">
+                            <tr value="{{ student.id }}" type="students">
                                 <td>
-                                    {{ student|format_name:"last_first" }}
+                                    <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' id=student.id %}?facility={{ facility_id }}">
+                                        {{ student|format_name:"last_first" }}
+                                    </a>
                                     <a href="{% url 'edit_facility_user' id=student.id %}?facility={{ facility_id }}">
                                         <span class="glyphicon glyphicon-pencil" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student: {{ studentname }}{% endblocktrans %}"></span>
                                     </a>
