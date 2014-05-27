@@ -35,6 +35,7 @@ from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
+from kalite import version
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
 from kalite.main.models import ExerciseLog, VideoLog
@@ -123,7 +124,9 @@ def status(request):
         "current_language": request.session[settings.LANGUAGE_COOKIE_NAME],
         "messages": message_dicts,
         "status_timestamp": datetime.datetime.now(),
+        "version": version.VERSION,
     }
+
     # Override properties using facility data
     if "facility_user" in request.session:  # Facility user
         user = request.session["facility_user"]
@@ -133,6 +136,7 @@ def status(request):
             request.session["points"] = compute_total_points(user)
         data["points"] = request.session["points"]
         data["user_id"] = user.id
+
     # Override data using django data
     if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True
