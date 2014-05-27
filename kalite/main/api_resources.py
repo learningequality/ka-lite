@@ -18,7 +18,7 @@ class UserObjectsOnlyAuthorization(Authorization):
             return object_list.filter()
         else:
             user = bundle.request.session.get("facility_user", None)
-            if user != bundle.request.GET.get("user", None):
+            if user.id != bundle.request.GET.get("user", None):
                 raise Unauthorized("Sorry, that information is restricted.")
             else:
                 return object_list.filter(user=user)
@@ -29,7 +29,7 @@ class UserObjectsOnlyAuthorization(Authorization):
             return True
         else:
             user = bundle.request.session.get("facility_user", None)
-            if user != bundle.request.GET.get("user", None):
+            if user.id != bundle.request.GET.get("user", None):
                 raise Unauthorized("Sorry, that information is restricted.")
             else:
                 return bundle.obj.user == user
@@ -43,7 +43,7 @@ class UserObjectsOnlyAuthorization(Authorization):
             return True
         else:
             user = bundle.request.session.get("facility_user", None)
-            if user != bundle.request.GET.get("user", None):
+            if user.id != bundle.request.GET.get("user", None):
                 raise Unauthorized("Sorry, that operation is restricted.")
             else:
                 return bundle.obj.user == user
@@ -65,7 +65,7 @@ class UserObjectsOnlyAuthorization(Authorization):
             return True
         else:
             user = bundle.request.session.get("facility_user", None)
-            if user != bundle.request.GET.get("user", None):
+            if user.id != bundle.request.GET.get("user", None):
                 raise Unauthorized("Sorry, that operation is restricted.")
             else:
                 return bundle.obj.user == user
