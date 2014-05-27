@@ -112,6 +112,10 @@ var TotalPointView = Backbone.View.extend({
 
 });
 
+function sanitize_string(input_string) {
+    return $('<div/>').text(input_string).html();
+}
+
 // Related to showing elements on screen
 $(function(){
 
@@ -120,11 +124,13 @@ $(function(){
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
-        show_message(
-            $.url().param('message_type') || "info",
-            $.url().param('message'),
-            $.url().param('message_id') || ""
-        );
+
+        var message_type = sanitize_string($.url().param('message_type') || "info");
+        var message = sanitize_string($.url().param('message'));
+        var message_id = sanitize_string($.url().param('message_id') || "");
+
+        show_message(message_type, message, message_id);
+
     }
 
     // Do the AJAX request to async-load user and message data
