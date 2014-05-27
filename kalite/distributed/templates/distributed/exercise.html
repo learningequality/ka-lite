@@ -45,9 +45,11 @@
     <script>
 
         $(function() {
-            window.exercisePracticeView = new ExercisePracticeView({
-                el: $(".exercise-wrapper"),
-                exercise_id: "{{ exercise_id }}"
+            statusModel.loaded.then(function() {
+                window.exercisePracticeView = new ExercisePracticeView({
+                    el: $(".exercise-wrapper"),
+                    exercise_id: "{{ exercise_id }}"
+                });
             });
         });
 
