@@ -28,7 +28,11 @@ class UserObjectsOnlyAuthorization(Authorization):
         if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
             return True
         else:
-            return bundle.obj.user == bundle.request.session.get("facility_user", None)
+            user = bundle.request.session.get("facility_user", None)
+            if user != bundle.request.GET.get("user", None):
+                raise Unauthorized("Sorry, that information is restricted.")
+            else:
+                return bundle.obj.user == user
 
     def create_list(self, object_list, bundle):
         # Assuming they're auto-assigned to ``user``.
@@ -38,7 +42,11 @@ class UserObjectsOnlyAuthorization(Authorization):
         if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
             return True
         else:
-            return bundle.obj.user == bundle.request.session.get("facility_user", None)
+            user = bundle.request.session.get("facility_user", None)
+            if user != bundle.request.GET.get("user", None):
+                raise Unauthorized("Sorry, that operation is restricted.")
+            else:
+                return bundle.obj.user == user
 
     def update_list(self, object_list, bundle):
         allowed = []
@@ -47,6 +55,8 @@ class UserObjectsOnlyAuthorization(Authorization):
         for obj in object_list:
             if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False) or bundle.obj.user == bundle.request.session.get("facility_user", None):
                 allowed.append(obj)
+            else:
+                raise Unauthorized("Sorry, that operation is restricted.")
 
         return allowed
 
@@ -54,14 +64,18 @@ class UserObjectsOnlyAuthorization(Authorization):
         if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
             return True
         else:
-            return bundle.obj.user == bundle.request.session.get("facility_user", None)
+            user = bundle.request.session.get("facility_user", None)
+            if user != bundle.request.GET.get("user", None):
+                raise Unauthorized("Sorry, that operation is restricted.")
+            else:
+                return bundle.obj.user == user
 
     def delete_list(self, object_list, bundle):
         # Sorry user, no deletes for you!
-        raise Unauthorized("Sorry, no deletes.")
+        raise Unauthorized("Sorry, that operation is restricted.")
 
     def delete_detail(self, object_list, bundle):
-        raise Unauthorized("Sorry, no deletes.")
+        raise Unauthorized("Sorry, that operation is restricted.")
 
 
 
