@@ -59,16 +59,36 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
+    url: STATUS_URL,
+
     initialize: function() {
 
+        _.bindAll(this);
+
         // save the deferred object from the fetch, so we can run stuff after this model has loaded
-        // this.loaded = this.fetch();
+        this.loaded = this.fetch();
+
+        this.loaded.then(this.after_loading);
 
     },
 
     get_server_time: function () {
         // Function to return time corrected to server clock based on status update.
         return new Date(new Date() - this.get("client_server_time_diff"));
+    },
+
+    after_loading: function() {
+
+        // Add field that quantifies the time differential between client and server.
+        // This is the amount that needs to be taken away from client time to give server time.
+        this.set("client_server_time_diff", new Date() - new Date(this.get("status_timestamp")));
+
+        toggle_state("logged-in", this.get("is_logged_in"));
+        toggle_state("registered", this.get("registered"));
+        toggle_state("super-user", this.get("is_django_user"));
+        toggle_state("teacher", this.get("is_admin") && !this.get("is_django_user"));
+        toggle_state("student", !this.get("is_admin") && !this.get("is_django_user") && this.get("is_logged_in"));
+        toggle_state("admin", this.get("is_admin")); // combination of teachers & super-users
     }
 });
 
@@ -133,25 +153,9 @@ $(function(){
 
     }
 
-    // Do the AJAX request to async-load user and message data
+    // Hide stuff with "-only" classes by default
     //$("[class$=-only]").hide();
-    doRequest(STATUS_URL)
-        .success(function(data){
-            // Add field to statusModel that quantifies the time differential between client and server.
-            // This is the amount that needs to be taken away from client time to give server time.
-            data["client_server_time_diff"] = new Date() - new Date(data["status_timestamp"])
-            // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
-            // TODO(jamalex): not all of the data returned by "status" is specific to the user, so we should re-do the endpoint to
-            // separate data out by type, and have multiple client-side Backbone models to store these various types of state.
-            window.statusModel.set(data);
 
-            toggle_state("logged-in", data.is_logged_in);
-            toggle_state("registered", data.registered);
-            toggle_state("super-user", data.is_django_user);
-            toggle_state("teacher", data.is_admin && !data.is_django_user);
-            toggle_state("student", !data.is_admin && !data.is_django_user && data.is_logged_in);
-            toggle_state("admin", data.is_admin); // combination of teachers & super-users
-        });
 });
 
 
