@@ -25,16 +25,13 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
         _.bindAll(this);
 
-        this.listenTo(this, "change:seed", this.seed_changed);
+        // store the provided seed as an object attribute, so it will be available after a fetch
+        this.listenTo(this, "change:seed", function() { this.seed = this.get("seed") || this.seed; });
 
     },
 
     url: function () {
         return "/api/exercise/" + this.get("exercise_id");
-    },
-
-    seed_changed: function() {
-        this.seed = this.get("seed") || this.seed;
     },
 
     update_if_needed_then: function(callback) {
@@ -47,7 +44,6 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
     // convert this data into the structure needed by khan-exercises
     as_user_exercise: function () {
-        // TODO(jamalex): add "seed", etc, here
         return {
             "basepoints": this.get("basepoints"),
             "description": this.get("description"),
@@ -74,12 +70,13 @@ window.ExerciseLogModel = Backbone.Model.extend({
     */
 
     init: function() {
+
         _.bindAll(this);
 
         var self = this;
 
         // keep track of how many points we started out with
-        this.listenTo(this, "change:points", _.once(function() { self.starting_points = self.get("points") }));
+        this.listenToOnce(this, "change:points", function() { self.starting_points = self.get("points") });
 
     },
 
@@ -170,23 +167,47 @@ function updatePercentCompleted(correct) {
 }
 
 var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
-var answerGiven = null;
 
-window.ExerciseProgressView = Backbone.View.extend({
+window.ExerciseHintView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-hint"),
 
     initialize: function() {
 
         _.bindAll(this);
 
-        this.listenTo(this.model, "change", this.render);
-        // this.listenTo(this.collection, "change", this.render);
-
         this.render();
+
+        // this.listenTo(this.model, "change", this.render);
 
     },
 
     render: function() {
-        this.update_streak_bar();
+        // this.$el.html(this.template(this.data_model.attributes));
+        this.$el.html(this.template());
+    }
+
+});
+
+
+window.ExerciseProgressView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-progress"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.render();
+
+        this.listenTo(this.model, "change", this.update_streak_bar);
+        // this.listenTo(this.collection, "change", this.render);
+
+    },
+
+    render: function() {
+        // this.$el.html(this.template(this.data_model.attributes));
+        this.$el.html(this.template());
     },
 
     update_streak_bar: function() {
@@ -195,14 +216,14 @@ window.ExerciseProgressView = Backbone.View.extend({
         this.$("#totalpoints").html(this.model.get("points") > 0 ? this.model.get("points") : "");
         if (this.model.get("streak_progress") >= 100) {
             this.$("#streakbar .progress-bar").addClass("completed");
-            this.$("#hint-reminder").hide();
+            this.$(".hint-reminder").hide();
         }
     }
 });
 
-window.ExerciseWrapperView = Backbone.View.extend({
+window.ExerciseView = Backbone.View.extend({
 
-    template: HB.template("exercise/exercise-wrapper"),
+    template: HB.template("exercise/exercise"),
 
     initialize: function() {
 
@@ -212,21 +233,7 @@ window.ExerciseWrapperView = Backbone.View.extend({
         this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
         this.data_model.fetch();
 
-        // load the data about the user's overall progress on the exercise
-        this.log_model = new ExerciseLogModel({exercise_id: this.options.exercise_id});
-        this.log_model.fetch();
-
-        // load the last 10 specific attempts the user made on this exercise
-        this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id});
-        this.attempt_collection.fetch();
-
         this.render();
-
-        this.exercise_progress_view = new ExerciseProgressView({
-            el: this.$(".exercise-progress-wrapper"),
-            model: this.log_model,
-            collection: this.attempt_collection
-        });
 
         this.initialize_khan_exercises_listeners();
 
@@ -249,7 +256,8 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
     initialize_listeners: function() {
 
-        this.$("#next-question-button").click(this.next_question_clicked); // needs to be explicit (not in "events")
+        // Catch the "next question" button click event -- needs to be explicit (not in "events")
+        this.$("#next-question-button").click(this.next_question_clicked);
 
         this.listenTo(this.data_model, "change:title", this.update_title);
 
@@ -259,37 +267,13 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
         var self = this;
 
-        $(Khan).bind("loaded", function() {
-            $(Exercises).trigger("problemTemplateRendered");
-            self.load_question();
-        });
+        $(Khan).bind("loaded", this.khan_loaded);
 
-        $(Khan).on("answerGiven", function (event, answer) {
-            answerGiven = answer;
-        });
+        $(Exercises).bind("checkAnswer", function() { self.trigger("check_answer", Khan.scoreInput()); });
 
-        $(Exercises).bind("checkAnswer", function(ev, data) {
-            updatePercentCompleted(data.correct);
+        $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
 
-            // after giving a correct answer, no penalty for viewing a hint.
-            // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
-            hintsResetPoints = !data.correct;
-            $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
-        });
-
-        $(Exercises).bind("gotoNextProblem", function(ev, data) {
-            // When ready for the next problem, hints matter again!
-            hintsResetPoints = true;
-            $("#hint-remainder").toggle(hintsResetPoints); // hide/show message about hints
-        });
-
-        $(Exercises).bind("hintUsed", function(ev, data) {
-            if (exerciseData.hintUsed || !hintsResetPoints) { // only register the first hint used on a question
-                return;
-            }
-            exerciseData.hintUsed = true;
-            updatePercentCompleted(false);
-        });
+        $(Exercises).bind("hintUsed", this.hint_used);
 
     },
 
@@ -308,16 +292,20 @@ window.ExerciseWrapperView = Backbone.View.extend({
         this.$("#workarea").html("<center>" + gettext("Loading...") + "</center>");
 
         this.data_model.update_if_needed_then(function() {
-            $(Exercises).trigger("readyForNextProblem", {userExercise: self.data_model.as_user_exercise()});
+            var userExercise = self.data_model.as_user_exercise();
+            $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
         });
 
     },
 
     next_question_clicked: function() {
-        updateQuestionPoints(false);
-        exerciseData.hintUsed = false;
 
-        $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
+        this.trigger("next_question_requested");
+
+        // TODO
+        // updateQuestionPoints(false);
+        // this.attempt_model.set("hint_used", false);
+
     },
 
     adjust_scratchpad_margin: function() {
@@ -335,6 +323,105 @@ window.ExerciseWrapperView = Backbone.View.extend({
 
     update_title: function() {
         this.$(".exercise-title").text(this.data_model.get("title"));
+    },
+
+    hint_used: function() {
+        if (this.log_model.get("hintUsed") || !hintsResetPoints) { // only register the first hint used on a question
+            return;
+        }
+        this.log_model.set("hintUsed", true);
+        this.update_streak_progress(false);
+    },
+
+    goto_next_problem: function() {
+        // When ready for the next problem, hints matter again!
+        hintsResetPoints = true;
+        this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
+    },
+
+    khan_loaded: function() {
+        $(Exercises).trigger("problemTemplateRendered");
+        this.load_question(); // TODO: move this to parent views
+    }
+
+});
+
+
+window.ExercisePracticeView = Backbone.View.extend({
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        // load the data about the user's overall progress on the exercise
+        this.log_model = new ExerciseLogModel({exercise_id: this.options.exercise_id});
+        this.log_model.fetch();
+
+        // load the last 10 specific attempts the user made on this exercise
+        this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id});
+        this.attempt_collection.fetch();
+
+        this.exercise_view = new ExerciseView({
+            el: this.el,
+            exercise_id: this.options.exercise_id
+        });
+
+        this.progress_view = new ExerciseProgressView({
+            el: this.$(".exercise-progress-wrapper"),
+            model: this.log_model,
+            collection: this.attempt_collection
+        });
+
+        this.hint_view = new ExerciseHintView({
+            el: this.$(".exercise-hint-wrapper"),
+            model: this.log_model
+        });
+
+        this.exercise_view.on("check_answer", this.check_answer);
+        this.exercise_view.on("next_question_requested", this.next_question_requested);
+
+    },
+
+    check_answer: function(data) {
+
+        // data.guess
+
+        updatePercentCompleted(data.correct);
+
+        // after giving a correct answer, no penalty for viewing a hint.
+        // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
+        hintsResetPoints = !data.correct;
+        this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
+
+    },
+
+    next_question_requested: function() {
+        this.exercise_view.load_question();
+    }
+
+});
+
+
+window.ExerciseTestView = Backbone.View.extend({
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.exercise_view = new ExerciseView({
+            el: this.el,
+            exercise_id: this.options.exercise_id
+        });
+
+        this.exercise_view.on("check_answer", this.check_answer);
+
+    },
+
+    check_answer: function(data) {
+
+        // prevent the "check answer" button from shaking on incorrect answers
+        this.$("#check-answer-button").parent().stop(jumpedToEnd=true);
+
     }
 
 });

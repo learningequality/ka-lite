@@ -236,6 +236,7 @@ def get_video_logs(request):
 def flat_topic_tree(request, lang_code):
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
 
+
 @api_handle_error_with_json
 @backend_cache_page
 def exercise(request, exercise_id):

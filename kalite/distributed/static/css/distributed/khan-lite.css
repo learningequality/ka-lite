@@ -362,9 +362,10 @@ li .progress-circle {
 }
 
 
-#hint-reminder {
+.hint-reminder {
     line-height: 18px;
     padding-top: 10px;
+    color: #777;
 }
 
 #totalpoints {

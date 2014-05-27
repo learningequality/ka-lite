@@ -612,9 +612,6 @@ var Khan = (function() {
         },
 
         scoreInput: function() {
-            // KA-LITE-MOD: make the given answer accessible outside of a locally scoped function in the Khan object
-            $(Khan).trigger("answerGiven", [getAnswer()]);
-            // End additional code.
             return validator(getAnswer());
         },
 
