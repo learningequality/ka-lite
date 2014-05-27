@@ -300,7 +300,7 @@
         <div class="students" id="students">
             <div class="title-div">
                 <span class="title" style="float: left">{% trans "Students" %}</span>
-                <a  title="{% trans 'Add a new student.' %}" href="{% url add_facility_student %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
+                <a  title="{% trans 'Add a new student.' %}" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
                     {% trans "(add)" %}
                 </a>
             </div>
