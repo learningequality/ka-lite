@@ -132,6 +132,7 @@ def status(request):
         if "points" not in request.session:
             request.session["points"] = compute_total_points(user)
         data["points"] = request.session["points"]
+        data["user_id"] = user.id
     # Override data using django data
     if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True
