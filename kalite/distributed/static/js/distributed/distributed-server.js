@@ -47,14 +47,23 @@ function force_sync() {
         });
 }
 
+
 /**
-* Model that holds state about a user (username, points, admin status, etc)
+* Model that holds overall information about the server state or the current user.
 */
-var UserModel = Backbone.Model.extend({
+var StatusModel = Backbone.Model.extend({
+
     defaults: {
         points: 0,
         newpoints: 0,
         client_server_time_diff: 0
+    },
+
+    initialize: function() {
+
+        // save the deferred object from the fetch, so we can run stuff after this model has loaded
+        // this.loaded = this.fetch();
+
     },
 
     get_server_time: function () {
@@ -62,6 +71,10 @@ var UserModel = Backbone.Model.extend({
         return new Date(new Date() - this.get("client_server_time_diff"));
     }
 });
+
+
+// create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
+window.statusModel = new StatusModel();
 
 
 /**
@@ -101,11 +114,9 @@ var TotalPointView = Backbone.View.extend({
 
 // Related to showing elements on screen
 $(function(){
-    // global Backbone model instance to store state related to the user (username, points, admin status, etc)
-    window.userModel = new UserModel({el: "#sitepoints"});
 
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-    var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
+    var totalPointView = new TotalPointView({model: statusModel, el: "#sitepoints"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
@@ -120,13 +131,13 @@ $(function(){
     //$("[class$=-only]").hide();
     doRequest(STATUS_URL)
         .success(function(data){
-            // Add field to userModel that quantifies the time differential between client and server.
+            // Add field to statusModel that quantifies the time differential between client and server.
             // This is the amount that needs to be taken away from client time to give server time.
             data["client_server_time_diff"] = new Date() - new Date(data["status_timestamp"])
             // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
             // TODO(jamalex): not all of the data returned by "status" is specific to the user, so we should re-do the endpoint to
             // separate data out by type, and have multiple client-side Backbone models to store these various types of state.
-            window.userModel.set(data);
+            window.statusModel.set(data);
 
             toggle_state("logged-in", data.is_logged_in);
             toggle_state("registered", data.registered);
@@ -137,8 +148,10 @@ $(function(){
         });
 });
 
+
 // Related to student log progress
-$(function(){
+$(function() {
+
     // load progress data for all videos linked on page, and render progress circles
     var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id"); });
     if (video_ids.length > 0) {
@@ -166,7 +179,8 @@ $(function(){
 });
 
 // Related to language bar function
-$(function(){
+$(function() {
+
     // If new language is selected, redirect after adding django_language session key
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();

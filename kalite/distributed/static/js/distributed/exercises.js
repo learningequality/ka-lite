@@ -94,21 +94,21 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
         if (!already_complete && this.get("complete")) {
             this.set("struggling", false);
-            this.set("completion_timestamp", userModel.get_server_time().toJSON());
+            this.set("completion_timestamp", statusModel.get_server_time().toJSON());
             this.set("attempts_before_completion", this.get("attempts"));
         }
 
         Backbone.Model.prototype.save.call(this)
             .success(function(data) {
                 // update the top-right point display, now that we've saved the points successfully
-                userModel.set("newpoints", self.get("points") - self.starting_points);
+                statusModel.set("newpoints", self.get("points") - self.starting_points);
             });
     },
 
     url: function () {
-        return setGetParamDict("/api/exerciselog/",{
+        return setGetParamDict("/api/exerciselog/", {
             "exercise_id": this.get("exercise_id"),
-            "user": window.userModel.get("user_id")
+            "user": window.statusModel.get("user_id")
         });
     }
 
@@ -136,7 +136,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     url: function() {
         return setGetParamDict("/api/attemptlog/",{
             "exercise_id": this.exercise_id,
-            "user": window.userModel.get("user_id")
+            "user": window.statusModel.get("user_id")
         });
     }
 

@@ -85,7 +85,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.saving = false;
 
                 // update the top-right points display to show the newly earned points
-                userModel.set("newpoints", data.points - self.get("starting_points"));
+                statusModel.set("newpoints", data.points - self.get("starting_points"));
             })
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
