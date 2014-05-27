@@ -64,6 +64,17 @@ function doRequest(url, data, opts) {
         });
 }
 
+// Customize the Backbone.js ajax method to call our success and fail handlers for error display
+Backbone.ajax = function() {
+    return Backbone.$.ajax.apply(Backbone.$, arguments)
+        .success(function(resp) {
+            handleSuccessAPI(resp);
+        })
+        .fail(function(resp) {
+            handleFailedAPI(resp);
+        });
+};
+
 function handleSuccessAPI(obj) {
 
     var messages = null;
@@ -111,6 +122,8 @@ function handleFailedAPI(resp, error_prefix) {
     // Two ways for this function to be called:
     // 1. With an API response (resp) containing a JSON error.
     // 2. With an explicit error_prefix
+
+    // TODO(jamalex): simplify this crud; "error_prefix" doesn't even seem to get used at all?
 
     // Parse the messages.
     var messages = {};
