@@ -3,7 +3,7 @@ import random
 
 from annoying.decorators import render_to
 
-from kalite.main.topic_tools import get_topic_exercises
+from kalite.topic_tools import get_topic_exercises
 
 from kalite.shared.decorators import require_login
 

@@ -40,7 +40,7 @@ class JsonResponseMessage(JsonResponse):
     def __init__(self, message, level="success", code=None, data={}, *args, **kwargs):
 
         # Set the content dictionary
-        content = {level: message}
+        content = {level: unicode(message)}
         if code:
             data["code"] = code
         content.update(data)

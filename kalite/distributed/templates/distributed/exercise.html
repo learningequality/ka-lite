@@ -56,7 +56,7 @@
     <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>
     <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
     <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
-    <script src="{% url handlebars_templates module_name='exercise' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
 
     <script src="{% static 'js/distributed/exercises.js' %}"></script>
 {% endblock headjs %}
@@ -72,7 +72,6 @@
         <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
         {% endif %}
         <div class="clear"></div>
-
     </div>
 
     <div class="exercise-wrapper"></div>

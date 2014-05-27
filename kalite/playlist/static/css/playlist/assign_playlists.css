@@ -1,0 +1,7 @@
+.span3 td {
+    border-top-width: 0px !important;
+}
+
+.span3 th {
+  border-bottom: 1px solid #ddd;
+}

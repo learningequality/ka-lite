@@ -24,7 +24,7 @@ from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import callback_percent_proxy, download_file
-from kalite.distributed import caching
+from kalite import caching
 from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file

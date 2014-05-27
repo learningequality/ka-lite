@@ -21,7 +21,6 @@ from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
@@ -31,7 +30,6 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 from .api_forms import DateTimeForm
-from .caching import backend_cache_page
 from fle_utils.config.models import Settings
 from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
@@ -56,7 +54,7 @@ def time_set(request):
 
     # Form does all the data validation - including ensuring that the data passed is a proper date time.
     # This is necessary to prevent arbitrary code being run on the system.
-    form = DateTimeForm(data=simplejson.loads(request.raw_post_data))
+    form = DateTimeForm(data=simplejson.loads(request.body))
     if not form.is_valid():
         return JsonResponseMessageError(_("Could not read date and time: Unrecognized input data format."))
 
@@ -134,19 +132,10 @@ def status(request):
         if "points" not in request.session:
             request.session["points"] = compute_total_points(user)
         data["points"] = request.session["points"]
+        data["user_id"] = user.id
     # Override data using django data
     if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True
         data["username"] = request.user.username
 
     return JsonResponse(data)
-
-
-def getpid(request):
-    """
-    who am I?  return the PID; used to kill the webserver process if the PID file is missing.
-    """
-    try:
-        return HttpResponse(os.getpid())
-    except:
-        return HttpResponse("")

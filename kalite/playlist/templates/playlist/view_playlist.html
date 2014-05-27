@@ -1,0 +1,123 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block headcss %}{{ block.super }}
+  <link rel="stylesheet" src="{% static 'css/sidr.dark.css'%}">
+  <link rel="stylesheet" href="{% static 'css/playlist/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/playlist/utility.css' %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+  <script src="{% static 'js/modernizr.js' %}"></script>
+  <script src="{% static 'js/sidr.js'%}"></script>
+
+  <script src="{% static 'js/bootstrap/affix.js' %}"></script>
+  <script src="{% static 'js/bootstrap/alert.js' %}"></script>
+  <script src="{% static 'js/bootstrap/button.js' %}"></script>
+  <script src="{% static 'js/bootstrap/carousel.js' %}"></script>
+  <script src="{% static 'js/bootstrap/collapse.js' %}"></script>
+  <script src="{% static 'js/bootstrap/dropdown.js' %}"></script>
+  <script src="{% static 'js/bootstrap/modal.js' %}"></script>
+  <script src="{% static 'js/bootstrap/popover.js' %}"></script>
+  <script src="{% static 'js/bootstrap/scrollspy.js' %}"></script>
+  <script src="{% static 'js/bootstrap/tab.js' %}"></script>
+  <script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
+  <script src="{% static 'js/bootstrap/transition.js' %}"></script>
+
+  <script src="{% static 'js/playlist/sidebar.js' %}"></script>
+
+{% endblock headjs %}
+
+{% block content %}
+  <div id="sidr-nav" style="display: none;">
+    <div class="col-sm-4">
+      <div class="st-menu st-effect-1" id="menu-1">
+        <h2 class="icon icon-lab">Playlist Title</h2>
+        <div id="list">
+          <div class="item">
+            <a class="active icon icon-location font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i> <span>  Basic regrouping when subtracting three digit numbers</span></a>
+          </div>
+          <div class="item "><a class="icon icon-location font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i>  Regrouping when subtracting three digit numbers</a></div>
+          <div class="item"><a class="icon icon-study font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i>  Regrouping twice when subtracting three digit numbers</a></div>
+          <div class="item"><a class="icon icon-photo font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i>  Regrouping from 0 when subtracting three digit numbers</a></div>
+          <div class="item"><a class="icon icon-photo font14" href="#"><i class="fa fa-pencil-square-o"></i>  MASTERY</a></div>
+
+
+          <div class="item"><a class="icon icon-wallet" href="#">NEXT PLAYLIST</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="dContent" class="hidden-xs" runat="server">
+    <div id="navTab" class="sbhint" onclick="javascript: toggleNav();">PLAYLIST</div>
+    <!-- Content Stuff -->
+  </div>
+
+
+  <div class="use-sidebar sidebar-at-left" id="main">
+    <div id="dContent" class="visible-xs" runat="server">
+      <div id="navTab" class="sbhint-mobile" onclick="javascript: toggleNav();">PLAYLIST</div>
+      <!-- Content Stuff -->
+    </div>
+
+
+
+
+    <div class="">
+      <div class="playlist-box">
+        <div class="container">
+          <h1 class="font20 white">Basic regrouping when subtracting three digit numbers</h1>
+          <p class="padding-left20">Understanding how numbers are subtracted. Introduction to Subtraction</p>
+        </div>
+      </div>
+
+
+      <div class="playlist-nav">
+        <div class="container">
+          <div class="row padding-top10">
+            <div class="col-sm-6">
+              <i class="fa fa-caret-square-o-left"><a href="#">Previous Title</a></i>
+            </div>
+            <div class="col-sm-6">
+              <i class="fa fa-caret-square-o-right pull-right"><a href="#">Next Title</a></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="col-sm-12 col-xs-12 text-center">
+        <div class="vendor"><iframe src="//www.youtube.com/embed/9T3AAn-Cw3g" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <br>
+
+
+
+  <div class="clearer">&nbsp;</div>
+{% endblock content %}
+
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>KALitePlaylist</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.tmp) styles/main.css -->
+
+  </head>
+  <body>
+    <!--[if lt IE 10]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+  </body>
+</html>

@@ -6,6 +6,37 @@ except ImportError:
     local_settings = object()
 
 
+########################
+# Django dependencies
+########################
+
+INSTALLED_APPS = (
+    "django.contrib.auth",  # only admins can access api views
+    "django.contrib.staticfiles",
+    "django_extensions", # needed for clean_pyc (used by software update)
+    "south",
+    "fle_utils.chronograph",  # updates uses chronograph for commands
+    "fle_utils.django_utils",  # templatetags
+    "kalite.caching",  # to get local_install_context
+    "kalite.control_panel",  # to get local_install_context
+    "kalite.distributed",  # to access caching
+    "kalite.i18n",  # language pack updates
+    "kalite.main",  # TODO: remove (MainTestCase should be KALiteTestCase)
+    "kalite.topic_tools",  # topic tools
+    "kalite.testing",
+    "securesync",  # Needed to verify zip files (via Device key) and to limit access via registration status
+)
+
+MIDDLEWARE_CLASSES = (
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",  # used by distributed to authenticate admin (django) user
+)
+
+
 #######################
 # Set module settings
 #######################

@@ -106,7 +106,10 @@ window.ExerciseLogModel = Backbone.Model.extend({
     },
 
     url: function () {
-        return "/api/exercise_log/" + this.get("exercise_id");
+        return setGetParamDict("/api/exerciselog/",{
+            "exercise_id": this.get("exercise_id"),
+            "user": window.userModel.get("user_id")
+        });
     }
 
 })
@@ -131,7 +134,10 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return "/api/attempt_log/" + this.exercise_id;
+        return setGetParamDict("/api/attemptlog/",{
+            "exercise_id": this.exercise_id,
+            "user": window.userModel.get("user_id")
+        });
     }
 
 });
