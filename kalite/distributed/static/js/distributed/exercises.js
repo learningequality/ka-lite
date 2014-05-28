@@ -64,6 +64,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
     }
 });
 
+
 window.ExerciseLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current exercise.
@@ -105,25 +106,50 @@ window.ExerciseLogModel = Backbone.Model.extend({
             });
     },
 
-    url: function () {
-        return setGetParamDict("/api/exerciselog/", {
-            "exercise_id": this.get("exercise_id"),
+    urlRoot: "/api/exerciselog/"
+
+});
+
+window.ExerciseLogCollection = Backbone.Collection.extend({
+
+    model: ExerciseLogModel,
+
+    initialize: function(options) {
+        this.exercise_id = options.exercise_id;
+    },
+
+    url: function() {
+        return "/api/exerciselog/?" + $.param({
+            "exercise_id": this.exercise_id,
             "user": window.statusModel.get("user_id")
         });
     }
 
-})
+});
+
 
 window.AttemptLogModel = Backbone.Model.extend({
     /*
     Contains data about the user's response to a particular exercise instance.
     */
 
+    defaults: {
+        complete: false,
+        points: 0,
+        context_type: "",
+        context_id: ""
+    },
+
+    initialize: function(options) {
+
+    },
+
     url: function() {
         return "/api/attempt_log/" + this.get("exercise_id");
     }
 
 });
+
 
 window.AttemptLogCollection = Backbone.Collection.extend({
 
@@ -142,10 +168,12 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
 });
 
+
 function updateQuestionPoints(points) {
     // show points for correct question, or none if not answered yet.
     $("#questionpoints").html(points ? (sprintf(gettext("%(points)d points!"), { points : points })) : "");
 }
+
 
 function updatePercentCompleted(correct) {
 
@@ -239,6 +267,7 @@ window.ExerciseView = Backbone.View.extend({
         this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
         this.data_model.fetch();
 
+
         this.render();
 
         this.initialize_khan_exercises_listeners();
@@ -280,6 +309,18 @@ window.ExerciseView = Backbone.View.extend({
         $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
 
         $(Exercises).bind("hintUsed", this.hint_used);
+
+    },
+
+    initialize_new_attempt_model: function(data) {
+
+        var defaults = {
+            user: window.statusModel.get("user"),
+            exercise_id: this.data_model.get("exercise_id"),
+            points: 0,
+        };
+
+        this.attempt_model = new AttemptLogModel();
 
     },
 
@@ -392,12 +433,14 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // data.guess
 
-        updatePercentCompleted(data.correct);
+        // updatePercentCompleted(data.correct);
 
         // after giving a correct answer, no penalty for viewing a hint.
         // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
-        hintsResetPoints = !data.correct;
-        this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
+        // hintsResetPoints = !data.correct;
+        // this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
+
+
 
     },
 
