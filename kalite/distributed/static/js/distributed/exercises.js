@@ -391,6 +391,14 @@ window.ExerciseView = Backbone.View.extend({
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
         this.load_question(); // TODO: move this to parent views
+    disable_answer_button: function() {
+        this.$(".answer-buttons-enabled").hide();
+        this.$(".answer-buttons-disabled").show();
+    },
+
+    enable_answer_button: function() {
+        this.$(".answer-buttons-disabled").hide();
+        this.$(".answer-buttons-enabled").show();
     }
 
 });
@@ -404,22 +412,19 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // load the data about the user's overall progress on the exercise
         this.log_model = new ExerciseLogModel({exercise_id: this.options.exercise_id});
-        this.log_model.fetch();
+        var log_model_deferred = this.log_model.fetch();
 
         // load the last 10 specific attempts the user made on this exercise
         this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id, status_model: window.statusModel});
-        this.attempt_collection.fetch();
+        var attempt_collection_deferred = this.attempt_collection.fetch();
 
         this.exercise_view = new ExerciseView({
             el: this.el,
             exercise_id: this.options.exercise_id
         });
 
-        this.progress_view = new ExerciseProgressView({
-            el: this.$(".exercise-progress-wrapper"),
-            model: this.log_model,
-            collection: this.attempt_collection
-        });
+        // disable the answer button for now; it will be re-enabled once we have the user data
+        this.exercise_view.disable_answer_button();
 
         this.hint_view = new ExerciseHintView({
             el: this.$(".exercise-hint-wrapper"),
@@ -428,6 +433,20 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         this.exercise_view.on("check_answer", this.check_answer);
         this.exercise_view.on("next_question_requested", this.next_question_requested);
+
+        $.when([log_model_deferred, attempt_collection_deferred]).then(this.user_data_loaded);
+
+    },
+
+    user_data_loaded: function() {
+
+        this.progress_view = new ExerciseProgressView({
+            el: this.$(".exercise-progress-wrapper"),
+            model: this.log_model,
+            collection: this.attempt_collection
+        });
+
+        this.exercise_view.enable_answer_button();
 
     },
 

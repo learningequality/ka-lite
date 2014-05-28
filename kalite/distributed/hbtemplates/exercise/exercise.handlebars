@@ -25,9 +25,14 @@
                                     <div id="questionpoints"></div>
                                     <div id="solutionarea" class="fancy-scrollbar"></div>
                                     <div class="answer-buttons">
-                                    <input type="button" class="simple-button green" id="check-answer-button" value="{{_ "Check Answer" }}"/>
-                                    <input type="button" class="simple-button green" id="next-question-button" style="display: none;" name="correctnextbutton" value="{{_ "Correct! Next Question..." }}"/>
-                                    <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
+                                        <div class="answer-buttons-enabled">
+                                            <input type="button" class="simple-button green" id="check-answer-button" value="{{_ "Check Answer" }}"/>
+                                            <input type="button" class="simple-button green" id="next-question-button" style="display: none;" name="correctnextbutton" value="{{_ "Correct! Next Question..." }}"/>
+                                            <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
+                                        </div>
+                                        <div class="answer-buttons-disabled">
+                                            {{_ "Loading..." }}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="exercise-hint-wrapper"></div>
