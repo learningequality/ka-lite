@@ -11,64 +11,115 @@ from .models import VideoLog, ExerciseLog, AttemptLog
 
 from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data
 
+
 class UserObjectsOnlyAuthorization(Authorization):
-    def read_list(self, object_list, bundle):
-        # This assumes a ``QuerySet`` from ``ModelResource``
-        if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
-            return object_list.filter()
-        else:
-            user = bundle.request.session.get("facility_user", None)
-            if user.id != bundle.request.GET.get("user", None):
-                raise Unauthorized("Sorry, that information is restricted.")
-            else:
-                return object_list.filter(user=user)
 
-    def read_detail(self, object_list, bundle):
-        # Is the requested object owned by the user?
-        if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
+    def _get_user(self, bundle):
+        """Convenience method to extract current user from bundle."""
+
+        return bundle.request.session.get("facility_user", None)
+
+    def _user_is_admin(self, bundle):
+        """Returns True if and only if the currently logged in user is an admin/teacher."""
+
+        # allow central server superusers to do whatever they want
+        if settings.CENTRAL_SERVER and bundle.request.user.is_superuser:
             return True
-        else:
-            user = bundle.request.session.get("facility_user", None)
-            if user.id != bundle.request.GET.get("user", None):
-                raise Unauthorized("Sorry, that information is restricted.")
-            else:
-                return bundle.obj.user == user
 
-    def create_list(self, object_list, bundle):
-        # Assuming they're auto-assigned to ``user``.
-        return object_list
-
-    def create_detail(self, object_list, bundle):
-        if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
+        # allow local admins (teachers or administrators) to do anything too
+        if getattr(bundle.request, "is_admin", False):
             return True
-        else:
-            user = bundle.request.session.get("facility_user", None)
-            if user.id != bundle.request.GET.get("user", None):
-                raise Unauthorized("Sorry, that operation is restricted.")
-            else:
-                return bundle.obj.user == user
 
-    def update_list(self, object_list, bundle):
-        allowed = []
+    def _user_matches_query(self, bundle):
+        """Returns True if and only if the user id in the query is the id of the currently logged in user."""
+
+        user_actual = self._get_user(bundle)
+
+        if not user_actual:
+            return False
+
+        user_queried = bundle.request.GET.get("user", None)
+
+        if not user_queried:
+            return False
+
+        return user_actual.id == user_queried
+
+    def _all_objects_belong_to_user(self, object_list, bundle):
+        """Helper function that checks whether every object "belongs" to current user."""
+
+        user = self._get_user(bundle)
 
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
-            if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False) or bundle.obj.user == bundle.request.session.get("facility_user", None):
-                allowed.append(obj)
-            else:
-                raise Unauthorized("Sorry, that operation is restricted.")
+            if obj.user != user:
+                return False
 
-        return allowed
+        return True
+
+    def read_list(self, object_list, bundle):
+
+        if self._user_is_admin(bundle):
+            return object_list
+
+        if not self._user_matches_query(bundle):
+            raise Unauthorized("Sorry, that information is restricted.")
+
+        return object_list.filter(user=self._get_user(bundle))
+
+    def read_detail(self, object_list, bundle):
+
+        if self._user_is_admin(bundle):
+            return True
+
+        if not self._user_matches_query(bundle):
+            raise Unauthorized("Sorry, that information is restricted.")
+
+        return bundle.obj.user == self._get_user(bundle)
+
+    def create_list(self, object_list, bundle):
+
+        if self._user_is_admin(bundle):
+            return object_list
+
+        if not self._all_objects_belong_to_user(object_list, bundle):
+            raise Unauthorized("Sorry, that operation is restricted.")
+
+        return object_list
+
+    def create_detail(self, object_list, bundle):
+
+        if self._user_is_admin(bundle):
+            return True
+
+        if not self._user_matches_query(bundle):
+            raise Unauthorized("Sorry, that operation is restricted.")
+
+        return bundle.obj.user == self._get_user(bundle)
+
+    def update_list(self, object_list, bundle):
+
+        if self._user_is_admin(bundle):
+            return object_list
+
+        if not self._all_objects_belong_to_user(object_list, bundle):
+            raise Unauthorized("Sorry, that operation is restricted.")
+
+        return object_list
 
     def update_detail(self, object_list, bundle):
-        if (settings.CENTRAL_SERVER and bundle.request.user.is_authenticated()) or getattr(bundle.request, "is_admin", False):
+
+        if self._user_is_admin(bundle):
             return True
-        else:
-            user = bundle.request.session.get("facility_user", None)
-            if user.id != bundle.request.GET.get("user", None):
-                raise Unauthorized("Sorry, that operation is restricted.")
-            else:
-                return bundle.obj.user == user
+
+        if not self._user_matches_query(bundle):
+            raise Unauthorized("Sorry, that operation is restricted.")
+
+        if bundle.obj.user == self._get_user(bundle):
+            return True
+
+        raise Unauthorized("Sorry, that operation is restricted.")
+
 
     def delete_list(self, object_list, bundle):
         # Sorry user, no deletes for you!
@@ -76,7 +127,6 @@ class UserObjectsOnlyAuthorization(Authorization):
 
     def delete_detail(self, object_list, bundle):
         raise Unauthorized("Sorry, that operation is restricted.")
-
 
 
 class ExerciseLogResource(ModelResource):
