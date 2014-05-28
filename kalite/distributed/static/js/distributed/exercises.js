@@ -1,7 +1,7 @@
 /*
 
 TODO:
-    - Store an "attemptlog" (or something else) when a hint is taken? Would be good to know when it happened.
+    - Fire an event when question has been loaded and displayed (to be used for marking start time on log.)
 
 */
 
@@ -349,7 +349,7 @@ window.ExerciseView = Backbone.View.extend({
 
     next_question_clicked: function() {
 
-        this.trigger("next_question_requested");
+        this.trigger("ready_for_next_question");
 
         // TODO
         // updateQuestionPoints(false);
@@ -390,7 +390,9 @@ window.ExerciseView = Backbone.View.extend({
 
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
-        this.load_question(); // TODO: move this to parent views
+        this.trigger("ready_for_next_question");
+    },
+
     disable_answer_button: function() {
         this.$(".answer-buttons-enabled").hide();
         this.$(".answer-buttons-disabled").show();
@@ -432,7 +434,7 @@ window.ExercisePracticeView = Backbone.View.extend({
         });
 
         this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("next_question_requested", this.next_question_requested);
+        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
 
         $.when([log_model_deferred, attempt_collection_deferred]).then(this.user_data_loaded);
 
@@ -465,7 +467,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     },
 
-    next_question_requested: function() {
+    ready_for_next_question: function() {
         this.exercise_view.load_question();
     }
 
