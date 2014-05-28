@@ -26,11 +26,11 @@
                                     <div id="solutionarea" class="fancy-scrollbar"></div>
                                     <div class="answer-buttons">
                                         <div class="answer-buttons-enabled">
-                                            <input type="button" class="simple-button green" id="check-answer-button" value="{{_ "Check Answer" }}"/>
-                                            <input type="button" class="simple-button green" id="next-question-button" style="display: none;" name="correctnextbutton" value="{{_ "Correct! Next Question..." }}"/>
+                                            <input type="button" class="simple-button green" disabled id="check-answer-button" value="{{_ "Check Answer" }}"/>
+                                            <input type="button" class="simple-button green" id="next-question-button" style="display: none;" value="{{_ "Correct! Next Question..." }}"/>
                                             <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
                                         </div>
-                                        <div class="answer-buttons-disabled">
+                                        <div class="answer-buttons-disabled" style="display: none;">
                                             {{_ "Loading..." }}
                                         </div>
                                     </div>

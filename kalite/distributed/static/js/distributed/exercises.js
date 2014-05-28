@@ -70,6 +70,11 @@ window.ExerciseLogModel = Backbone.Model.extend({
     Contains summary data about the user's history of interaction with the current exercise.
     */
 
+    defaults: {
+        points: 0,
+        streak_progress: 0
+    },
+
     init: function() {
 
         _.bindAll(this);
@@ -114,7 +119,7 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
 
     model: ExerciseLogModel,
 
-    initialize: function(options) {
+    initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
         this.status_model = options.status_model;
     },
@@ -124,6 +129,17 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
             "exercise_id": this.exercise_id,
             "user": this.status_model.get("user_id")
         });
+    },
+
+    get_first_log_or_new_log: function() {
+        if (this.length > 0) {
+            return this.at(0);
+        } else { // create a new exercise log if none existed
+            return new ExerciseLogModel({
+                "exercise_id": this.exercise_id,
+                "user": this.status_model.get("user_id")
+            });
+        }
     }
 
 });
@@ -145,9 +161,7 @@ window.AttemptLogModel = Backbone.Model.extend({
 
     },
 
-    url: function() {
-        return "/api/attempt_log/" + this.get("exercise_id");
-    }
+    urlRoot: "/api/attemptlog/"
 
 });
 
@@ -156,15 +170,19 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     model: AttemptLogModel,
 
-    initialize: function(options) {
+    STREAK_WINDOW: 10,
+    STREAK_CORRECT_NEEDED: 8,
+
+    initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
         this.status_model = options.status_model;
     },
 
     url: function() {
-        return setGetParamDict("/api/attemptlog/",{
+        return setGetParamDict("/api/attemptlog/", {
             "exercise_id": this.exercise_id,
-            "user": this.status_model.get("user_id")
+            "user": this.status_model.get("user_id"),
+            "limit": this.STREAK_WINDOW
         });
     }
 
@@ -237,13 +255,15 @@ window.ExerciseProgressView = Backbone.View.extend({
         this.render();
 
         this.listenTo(this.model, "change", this.update_streak_bar);
-        // this.listenTo(this.collection, "change", this.render);
+        this.listenTo(this.collection, "change", this.update_attempt_display);
 
     },
 
     render: function() {
         // this.$el.html(this.template(this.data_model.attributes));
         this.$el.html(this.template());
+        this.update_streak_bar();
+        this.update_attempt_display();
     },
 
     update_streak_bar: function() {
@@ -254,6 +274,17 @@ window.ExerciseProgressView = Backbone.View.extend({
             this.$("#streakbar .progress-bar").addClass("completed");
             this.$(".hint-reminder").hide();
         }
+    },
+
+    update_attempt_display: function() {
+
+        var attempt_text = "";
+
+        this.collection.each(function(ind, el) {
+            attempt_text += el.get("correct") ? "O" : "X";
+        });
+
+        this.$(".attempts").text(attempt_text);
     }
 });
 
@@ -306,7 +337,7 @@ window.ExerciseView = Backbone.View.extend({
 
         $(Khan).bind("loaded", this.khan_loaded);
 
-        $(Exercises).bind("checkAnswer", function() { self.trigger("check_answer", Khan.scoreInput()); });
+        $(Exercises).bind("checkAnswer", this.check_answer);
 
         $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
 
@@ -344,6 +375,14 @@ window.ExerciseView = Backbone.View.extend({
             var userExercise = self.data_model.as_user_exercise();
             $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
         });
+
+    },
+
+    check_answer: function() {
+
+        var data = Khan.scoreInput();
+
+        self.trigger("check_answer", data);
 
     },
 
@@ -412,35 +451,46 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        // load the data about the user's overall progress on the exercise
-        this.log_model = new ExerciseLogModel({exercise_id: this.options.exercise_id});
-        var log_model_deferred = this.log_model.fetch();
-
-        // load the last 10 specific attempts the user made on this exercise
-        this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id, status_model: window.statusModel});
-        var attempt_collection_deferred = this.attempt_collection.fetch();
-
         this.exercise_view = new ExerciseView({
             el: this.el,
             exercise_id: this.options.exercise_id
         });
 
-        // disable the answer button for now; it will be re-enabled once we have the user data
-        this.exercise_view.disable_answer_button();
-
-        this.hint_view = new ExerciseHintView({
-            el: this.$(".exercise-hint-wrapper"),
-            model: this.log_model
-        });
-
-        this.exercise_view.on("check_answer", this.check_answer);
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
 
-        $.when([log_model_deferred, attempt_collection_deferred]).then(this.user_data_loaded);
+        this.hint_view = new ExerciseHintView({
+            el: this.$(".exercise-hint-wrapper")
+        });
+
+        if (window.statusModel.get("is_logged_in")) {
+
+            this.exercise_view.on("check_answer", this.check_answer);
+
+            // disable the answer button for now; it will be re-enabled once we have the user data
+            this.exercise_view.disable_answer_button();
+
+            // load the data about the user's overall progress on the exercise
+            this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
+            var log_collection_deferred = this.log_collection.fetch();
+
+            // load the last 10 (or however many) specific attempts the user made on this exercise
+            this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
+            var attempt_collection_deferred = this.attempt_collection.fetch();
+
+            $.when(log_collection_deferred, attempt_collection_deferred).then(this.user_data_loaded);
+
+        }
 
     },
 
     user_data_loaded: function() {
+
+        // get the exercise log model from the queried collection
+        this.log_model = this.log_collection.get_first_log_or_new_log();
+
+        // add some dummy attempt logs if needed, to match it up with the exercise log
+        // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
+
 
         this.progress_view = new ExerciseProgressView({
             el: this.$(".exercise-progress-wrapper"),
