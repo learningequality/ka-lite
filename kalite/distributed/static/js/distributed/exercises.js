@@ -116,12 +116,13 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
 
     initialize: function(options) {
         this.exercise_id = options.exercise_id;
+        this.status_model = options.status_model;
     },
 
     url: function() {
         return "/api/exerciselog/?" + $.param({
             "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id")
+            "user": this.status_model.get("user_id")
         });
     }
 
@@ -157,12 +158,13 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     initialize: function(options) {
         this.exercise_id = options.exercise_id;
+        this.status_model = options.status_model;
     },
 
     url: function() {
         return setGetParamDict("/api/attemptlog/",{
             "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id")
+            "user": this.status_model.get("user_id")
         });
     }
 
@@ -405,7 +407,7 @@ window.ExercisePracticeView = Backbone.View.extend({
         this.log_model.fetch();
 
         // load the last 10 specific attempts the user made on this exercise
-        this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id});
+        this.attempt_collection = new AttemptLogCollection({exercise_id: this.options.exercise_id, status_model: window.statusModel});
         this.attempt_collection.fetch();
 
         this.exercise_view = new ExerciseView({
