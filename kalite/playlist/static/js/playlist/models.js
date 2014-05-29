@@ -16,17 +16,17 @@ var Playlist = Backbone.Model.extend({
 
     urlRoot: function() { return sprintf("%(root)s", {root: ALL_PLAYLISTS_URL}); },
 
-    initialize: function(attributes) {
-        var groupList = new GroupList(this.get('groups_assigned').map(function(groupdata) {
+    parse: function(response) {
+        var groupList = new GroupList(response.groups_assigned.map(function(groupdata) {
             return new Group(groupdata);
         }));
-        this.set({groups_assigned: groupList});
+        response.groups_assigned = groupList;
+        return response;
     },
 
     addGroup: function(group) {
         this.save({groups_assigned: this.groups_assigned + [group]});
     }
-
 });
 
 var PlaylistList = Backbone.Collection.extend({
