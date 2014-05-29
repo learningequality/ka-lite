@@ -154,7 +154,9 @@ window.AttemptLogModel = Backbone.Model.extend({
         complete: false,
         points: 0,
         context_type: "",
-        context_id: ""
+        context_id: "",
+        response_count: 0,
+        response_log: "[]"
     },
 
     initialize: function(options) {
@@ -179,11 +181,26 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return setGetParamDict("/api/attemptlog/", {
+        return "/api/attemptlog/?" + $.param({
             "exercise_id": this.exercise_id,
             "user": this.status_model.get("user_id"),
             "limit": this.STREAK_WINDOW
         });
+    },
+
+    add_new: function(attemptlog) {
+        if (this.length == this.STREAK_WINDOW) {
+            this.pop();
+        }
+        this.unshift(attemptlog);
+    },
+
+    get_streak_progress: function() {
+        var count = 0;
+        this.forEach(function(model) {
+            count += model.get("correct") ? 1 : 0;
+        });
+        return count;
     }
 
 });
@@ -255,7 +272,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         this.render();
 
         this.listenTo(this.model, "change", this.update_streak_bar);
-        this.listenTo(this.collection, "change", this.update_attempt_display);
+        this.listenTo(this.collection, "add", this.update_attempt_display);
 
     },
 
@@ -280,11 +297,11 @@ window.ExerciseProgressView = Backbone.View.extend({
 
         var attempt_text = "";
 
-        this.collection.each(function(ind, el) {
-            attempt_text += el.get("correct") ? "O" : "X";
+        this.collection.forEach(function(model) {
+            attempt_text = (model.get("correct") ? "<b>&#10003;</b> " : "&#10007; ") + attempt_text;
         });
 
-        this.$(".attempts").text(attempt_text);
+        this.$(".attempts").html(attempt_text);
     }
 });
 
@@ -345,18 +362,6 @@ window.ExerciseView = Backbone.View.extend({
 
     },
 
-    initialize_new_attempt_model: function(data) {
-
-        var defaults = {
-            user: window.statusModel.get("user"),
-            exercise_id: this.data_model.get("exercise_id"),
-            points: 0,
-        };
-
-        this.attempt_model = new AttemptLogModel();
-
-    },
-
     load_question: function(question_data) {
 
         var self = this;
@@ -382,7 +387,7 @@ window.ExerciseView = Backbone.View.extend({
 
         var data = Khan.scoreInput();
 
-        self.trigger("check_answer", data);
+        this.trigger("check_answer", data);
 
     },
 
@@ -477,7 +482,8 @@ window.ExercisePracticeView = Backbone.View.extend({
             this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
             var attempt_collection_deferred = this.attempt_collection.fetch();
 
-            $.when(log_collection_deferred, attempt_collection_deferred).then(this.user_data_loaded);
+            this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+            this.user_data_loaded_deferred.then(this.user_data_loaded);
 
         }
 
@@ -490,7 +496,16 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // add some dummy attempt logs if needed, to match it up with the exercise log
         // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
+        var exercise_log_streak_progress = this.log_model.get("streak_progress") / 10;
+        var attempt_log_streak_progress = this.attempt_collection.get_streak_progress();
+        for (var i = attempt_log_streak_progress; i < exercise_log_streak_progress; i++) {
+            // this.attempt_collection.add({correct: true, complete: true});
+        }
 
+        // if the previous attempt was not yet complete, load it up again as the current attempt log model
+        if (this.attempt_collection.length > 0 && !this.attempt_collection.at(0).get("completed")) {
+            this.current_attempt_log = this.attempt_collection.at(0);
+        }
 
         this.progress_view = new ExerciseProgressView({
             el: this.$(".exercise-progress-wrapper"),
@@ -502,7 +517,53 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     },
 
+    initialize_new_attempt_log: function(data) {
+
+        var defaults = {
+            exercise_id: this.options.exercise_id,
+            user: {id: window.statusModel.get("user_id")},
+            context_type: this.options.context_type || "",
+            context_id: this.options.context_id || "",
+            language: "", // TODO(jamalex): get the current exercise language
+            timestamp: new Date(), // TODO(jamalex): set this timestamp later, when exercise is loaded, instead
+            version: window.statusModel.get("version")
+        };
+
+        var data = $.extend(defaults, data);
+
+        this.current_attempt_log = new AttemptLogModel(data);
+
+        return this.current_attempt_log;
+
+    },
+
     check_answer: function(data) {
+
+
+
+        // if current attempt log has not been saved, then this is the user's first response to the question
+        if (this.current_attempt_log.isNew()) {
+            this.current_attempt_log.set({
+                correct: data.correct,
+                answer_given: data.guess
+            });
+            this.attempt_collection.add_new(this.current_attempt_log);
+        }
+
+        // if a correct answer was given, then mark the attempt log as complete
+        if (data.correct) {
+            this.current_attempt_log.set({
+                complete: true
+            });
+        }
+
+        // increment the response count
+        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+
+        // TODO(jamalex): add response_log stuff here
+
+        // this.current_attempt_log.set("id", "qqq")
+        this.current_attempt_log.save();
 
         // data.guess
 
@@ -518,7 +579,23 @@ window.ExercisePracticeView = Backbone.View.extend({
     },
 
     ready_for_next_question: function() {
-        this.exercise_view.load_question();
+
+        var self = this;
+
+        this.user_data_loaded_deferred.then(function() {
+
+            // if this is the first attempt, or the previous attempt was complete, start a new attempt log
+            if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
+                self.exercise_view.load_question(); // will generate a new random seed to use
+                self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+            } else { // use the seed already established for this attempt
+                self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
+            }
+
+            console.log("Seed:", self.exercise_view.data_model.get("seed")); // TEMP
+
+        });
+
     }
 
 });

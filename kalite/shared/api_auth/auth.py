@@ -4,7 +4,6 @@ from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.authorization import Authorization
 
 
-
 class UserObjectsOnlyAuthorization(Authorization):
 
     def _get_user(self, bundle):
@@ -65,9 +64,6 @@ class UserObjectsOnlyAuthorization(Authorization):
         if self._user_is_admin(bundle):
             return True
 
-        if not self._user_matches_query(bundle):
-            raise Unauthorized("Sorry, that information is restricted.")
-
         return bundle.obj.user == self._get_user(bundle)
 
     def create_list(self, object_list, bundle):
@@ -85,9 +81,6 @@ class UserObjectsOnlyAuthorization(Authorization):
         if self._user_is_admin(bundle):
             return True
 
-        if not self._user_matches_query(bundle):
-            raise Unauthorized("Sorry, that operation is restricted.")
-
         return bundle.obj.user == self._get_user(bundle)
 
     def update_list(self, object_list, bundle):
@@ -104,9 +97,6 @@ class UserObjectsOnlyAuthorization(Authorization):
 
         if self._user_is_admin(bundle):
             return True
-
-        if not self._user_matches_query(bundle):
-            raise Unauthorized("Sorry, that operation is restricted.")
 
         if bundle.obj.user == self._get_user(bundle):
             return True
