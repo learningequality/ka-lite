@@ -424,9 +424,11 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     for group in list(groups) + [None]*(group_id==None or group_id==_("Ungrouped").split(" ")[0]):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
+        group_title = getattr(group, "title", _("Ungrouped"))
         group_data[group_pk] = {
             "id": group_pk,
             "name": group_name,
+            "title": group_title,
             "total_logins": 0,
             "total_hours": 0,
             "total_users": 0,
