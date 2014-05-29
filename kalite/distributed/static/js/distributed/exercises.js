@@ -49,6 +49,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
             "description": this.get("description"),
             "title": this.get("display_name"),
             "seed": this.seed,
+            "lastCountHints": 0, // TODO: could store and pass down number of hints used
             "exerciseModel": {
                 "displayName": this.get("display_name"),
                 "name": this.get("name"),
@@ -81,8 +82,12 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
         var self = this;
 
+        this.starting_points = 0;
+
         // keep track of how many points we started out with
-        this.listenToOnce(this, "change:points", function() { self.starting_points = self.get("points") });
+        this.listenToOnce(this, "change:points", function() {
+            self.starting_points = self.get("points")
+        });
 
     },
 
@@ -100,14 +105,14 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
         if (!already_complete && this.get("complete")) {
             this.set("struggling", false);
-            this.set("completion_timestamp", statusModel.get_server_time().toJSON());
+            this.set("completion_timestamp", window.statusModel.get_server_time());
             this.set("attempts_before_completion", this.get("attempts"));
         }
 
         Backbone.Model.prototype.save.call(this)
-            .success(function(data) {
+            .then(function(data) {
                 // update the top-right point display, now that we've saved the points successfully
-                statusModel.set("newpoints", self.get("points") - self.starting_points);
+                window.statusModel.set("newpoints", self.get("points") - self.starting_points);
             });
     },
 
@@ -149,6 +154,8 @@ window.AttemptLogModel = Backbone.Model.extend({
     Contains data about the user's response to a particular exercise instance.
     */
 
+    urlRoot: "/api/attemptlog/",
+
     defaults: {
         complete: false,
         points: 0,
@@ -162,7 +169,23 @@ window.AttemptLogModel = Backbone.Model.extend({
 
     },
 
-    urlRoot: "/api/attemptlog/"
+    add_response_log_event: function(ev) {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        // set the timestamp to the current time
+        ev.timestamp = window.statusModel.get_server_time();
+
+        // add the event to the response log list
+        this._response_log_cache.push(ev);
+
+        // deflate the response log list so it will be saved along with the model later
+        this.set("response_log", JSON.stringify(this._response_log_cache));
+
+    }
 
 });
 
@@ -240,7 +263,6 @@ function updatePercentCompleted(correct) {
 
 }
 
-var hintsResetPoints = true; // Sometimes it's OK to view hints (like, after a correct answer)
 
 window.ExerciseHintView = Backbone.View.extend({
 
@@ -307,6 +329,7 @@ window.ExerciseProgressView = Backbone.View.extend({
     }
 });
 
+
 window.ExerciseView = Backbone.View.extend({
 
     template: HB.template("exercise/exercise"),
@@ -318,7 +341,6 @@ window.ExerciseView = Backbone.View.extend({
         // load the info about the exercise itself
         this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
         this.data_model.fetch();
-
 
         this.render();
 
@@ -421,11 +443,7 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     hint_used: function() {
-        if (this.log_model.get("hintUsed") || !hintsResetPoints) { // only register the first hint used on a question
-            return;
-        }
-        this.log_model.set("hintUsed", true);
-        this.update_streak_progress(false);
+        this.trigger("hint_used");
     },
 
     goto_next_problem: function() {
@@ -464,6 +482,7 @@ window.ExercisePracticeView = Backbone.View.extend({
         });
 
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+        this.exercise_view.on("hint_used", this.hint_used);
 
         this.hint_view = new ExerciseHintView({
             el: this.$(".exercise-hint-wrapper")
@@ -528,7 +547,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             context_type: this.options.context_type || "",
             context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
-            timestamp: statusModel.get_server_time(), // TODO(jamalex): set this timestamp later, when exercise is loaded, instead
+            timestamp: window.statusModel.get_server_time(), // TODO(jamalex): set this timestamp later, when exercise is loaded, instead
             version: window.statusModel.get("version")
         };
 
@@ -541,6 +560,30 @@ window.ExercisePracticeView = Backbone.View.extend({
     },
 
     check_answer: function(data) {
+
+        // increment the response count
+        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+
+        this.current_attempt_log.add_response_log_event({
+            type: "answer",
+            answer: data.guess,
+            correct: data.correct
+        });
+
+        // update and save the exercise and attempt logs
+        this.update_and_save_log_models("answer_given", data);
+    },
+
+    hint_used: function() {
+
+        this.current_attempt_log.add_response_log_event({
+            type: "hint"
+        });
+
+        this.update_and_save_log_models("hint_used", {correct: false, guess: ""});
+    },
+
+    update_and_save_log_models: function(event_type, data) {
 
         // if current attempt log has not been saved, then this is the user's first response to the question
         if (this.current_attempt_log.isNew()) {
@@ -560,6 +603,8 @@ window.ExercisePracticeView = Backbone.View.extend({
 
             this.log_model.save();
 
+            this.$(".hint-reminder").hide(); // hide message about hints
+
         }
 
         // if a correct answer was given, then mark the attempt log as complete
@@ -569,18 +614,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             });
         }
 
-        // increment the response count
-        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
-
-        // TODO(jamalex): add response_log stuff here
-
-        // this.current_attempt_log.set("id", "qqq")
         this.current_attempt_log.save();
-
-        // after giving a correct answer, no penalty for viewing a hint.
-        // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
-        // hintsResetPoints = !data.correct;
-        // this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
 
     },
 
@@ -598,7 +632,7 @@ window.ExercisePracticeView = Backbone.View.extend({
                 self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
             }
 
-            console.log("Seed:", self.exercise_view.data_model.get("seed")); // TEMP
+            self.$(".hint-reminder").show(); // show message about hints
 
         });
 

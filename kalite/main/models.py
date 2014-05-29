@@ -478,7 +478,7 @@ class AttemptLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
     seed = models.IntegerField(default=0)
-    answer_given = models.TextField() # first answer given to the question
+    answer_given = models.TextField(blank=True) # first answer given to the question
     points = models.IntegerField(default=0)
     correct = models.BooleanField(default=False) # indicates that the first answer given was correct
     complete = models.BooleanField(default=False) # indicates that the question was eventually answered correctly
