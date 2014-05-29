@@ -74,7 +74,7 @@ var StatusModel = Backbone.Model.extend({
 
     get_server_time: function () {
         // Function to return time corrected to server clock based on status update.
-        return new Date(new Date() - this.get("client_server_time_diff"));
+        return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
     },
 
     after_loading: function() {
