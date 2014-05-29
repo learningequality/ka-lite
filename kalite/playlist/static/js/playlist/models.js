@@ -12,15 +12,30 @@ var GroupList = Backbone.Collection.extend({
 
 });
 
+var PlaylistEntry = Backbone.Model;
+
+var PlaylistEntryList = Backbone.Collection.extend({
+
+    model: PlaylistEntry
+});
+
 var Playlist = Backbone.Model.extend({
 
     urlRoot: function() { return sprintf("%(root)s", {root: ALL_PLAYLISTS_URL}); },
 
     parse: function(response) {
+        // initialize the assigned groups list
         var groupList = new GroupList(response.groups_assigned.map(function(groupdata) {
             return new Group(groupdata);
         }));
         response.groups_assigned = groupList;
+
+        // initialize the playlists's entries list
+        var playlistEntryList = new PlaylistEntryList(response.entries.map(function(entrydata) {
+            return new PlaylistEntry(entrydata);
+        }));
+        response.entries = playlistEntryList;
+
         return response;
     },
 
