@@ -121,13 +121,12 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
-        this.status_model = options.status_model;
     },
 
     url: function() {
         return "/api/exerciselog/?" + $.param({
             "exercise_id": this.exercise_id,
-            "user": this.status_model.get("user_id")
+            "user": window.statusModel.get("user_id")
         });
     },
 
@@ -137,7 +136,7 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
         } else { // create a new exercise log if none existed
             return new ExerciseLogModel({
                 "exercise_id": this.exercise_id,
-                "user": {id: this.status_model.get("user_id")}
+                "user": window.statusModel.get("user_uri")
             });
         }
     }
@@ -177,13 +176,12 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
-        this.status_model = options.status_model;
     },
 
     url: function() {
         return "/api/attemptlog/?" + $.param({
             "exercise_id": this.exercise_id,
-            "user": this.status_model.get("user_id"),
+            "user": window.statusModel.get("user_id"),
             "limit": this.STREAK_WINDOW
         });
     },
@@ -479,11 +477,11 @@ window.ExercisePracticeView = Backbone.View.extend({
             this.exercise_view.disable_answer_button();
 
             // load the data about the user's overall progress on the exercise
-            this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
+            this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
             var log_collection_deferred = this.log_collection.fetch();
 
             // load the last 10 (or however many) specific attempts the user made on this exercise
-            this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
+            this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id});
             var attempt_collection_deferred = this.attempt_collection.fetch();
 
             this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
@@ -526,7 +524,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         var defaults = {
             exercise_id: this.options.exercise_id,
-            user: {id: window.statusModel.get("user_id")},
+            user: window.statusModel.get("user_uri"),
             context_type: this.options.context_type || "",
             context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
