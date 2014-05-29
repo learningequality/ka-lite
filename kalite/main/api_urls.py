@@ -30,5 +30,5 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
 
     # Retrieve exercise data to render a front-end exercise
-    url(r'^exercise/(?P<exercise_id>\w+)$', 'exercise', {}, 'exercise')
+    url(r'^exercise/(?P<exercise_id>[^/]+)$', 'exercise', {}, 'exercise')
 )
