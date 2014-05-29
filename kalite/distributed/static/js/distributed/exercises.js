@@ -96,7 +96,7 @@ window.ExerciseLogModel = Backbone.Model.extend({
             this.set("struggling", true);
         }
 
-        this.set("complete", this.streak_progress >= 100);
+        this.set("complete", this.get("streak_progress") >= 100);
 
         if (!already_complete && this.get("complete")) {
             this.set("struggling", false);
@@ -137,7 +137,7 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
         } else { // create a new exercise log if none existed
             return new ExerciseLogModel({
                 "exercise_id": this.exercise_id,
-                "user": this.status_model.get("user_id")
+                "user": {id: this.status_model.get("user_id")}
             });
         }
     }
@@ -201,6 +201,11 @@ window.AttemptLogCollection = Backbone.Collection.extend({
             count += model.get("correct") ? 1 : 0;
         });
         return count;
+    },
+
+    get_streak_progress_percent: function() {
+        var streak_progress = this.get_streak_progress();
+        return Math.min((streak_progress / this.STREAK_CORRECT_NEEDED) * 100, 100);
     }
 
 });
@@ -285,12 +290,10 @@ window.ExerciseProgressView = Backbone.View.extend({
 
     update_streak_bar: function() {
         // update the streak bar UI
-        this.$("#streakbar .progress-bar").css("width", this.model.get("streak_progress") + "%");
-        this.$("#totalpoints").html(this.model.get("points") > 0 ? this.model.get("points") : "");
-        if (this.model.get("streak_progress") >= 100) {
-            this.$("#streakbar .progress-bar").addClass("completed");
-            this.$(".hint-reminder").hide();
-        }
+        this.$(".progress-bar")
+            .css("width", this.model.get("streak_progress") + "%")
+            .toggleClass("completed", this.model.get("complete"));
+        // this.$("#totalpoints").html(this.model.get("points") > 0 ? this.model.get("points") : "");
     },
 
     update_attempt_display: function() {
@@ -298,10 +301,11 @@ window.ExerciseProgressView = Backbone.View.extend({
         var attempt_text = "";
 
         this.collection.forEach(function(model) {
-            attempt_text = (model.get("correct") ? "<b>&#10003;</b> " : "&#10007; ") + attempt_text;
+            attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
         });
 
         this.$(".attempts").html(attempt_text);
+        this.$(".attempts span:last").css("font-size", "1.1em");
     }
 });
 
@@ -496,10 +500,11 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // add some dummy attempt logs if needed, to match it up with the exercise log
         // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
-        var exercise_log_streak_progress = this.log_model.get("streak_progress") / 10;
-        var attempt_log_streak_progress = this.attempt_collection.get_streak_progress();
-        for (var i = attempt_log_streak_progress; i < exercise_log_streak_progress; i++) {
-            // this.attempt_collection.add({correct: true, complete: true});
+        if (this.attempt_collection.length < this.attempt_collection.STREAK_WINDOW) {
+            var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
+            while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
+                this.attempt_collection.add({correct: true, complete: true});
+            }
         }
 
         // if the previous attempt was not yet complete, load it up again as the current attempt log model
@@ -525,7 +530,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             context_type: this.options.context_type || "",
             context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
-            timestamp: new Date(), // TODO(jamalex): set this timestamp later, when exercise is loaded, instead
+            timestamp: statusModel.get_server_time(), // TODO(jamalex): set this timestamp later, when exercise is loaded, instead
             version: window.statusModel.get("version")
         };
 
@@ -539,15 +544,24 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-
-
         // if current attempt log has not been saved, then this is the user's first response to the question
         if (this.current_attempt_log.isNew()) {
+
             this.current_attempt_log.set({
                 correct: data.correct,
                 answer_given: data.guess
             });
             this.attempt_collection.add_new(this.current_attempt_log);
+
+            // only change the streak progress if we're not already complete
+            if (!this.log_model.get("complete")) {
+                this.log_model.set({streak_progress: this.attempt_collection.get_streak_progress_percent()});
+            }
+
+            this.log_model.set({attempts: this.log_model.get("attempts") + 1});
+
+            this.log_model.save();
+
         }
 
         // if a correct answer was given, then mark the attempt log as complete
@@ -565,16 +579,10 @@ window.ExercisePracticeView = Backbone.View.extend({
         // this.current_attempt_log.set("id", "qqq")
         this.current_attempt_log.save();
 
-        // data.guess
-
-        // updatePercentCompleted(data.correct);
-
         // after giving a correct answer, no penalty for viewing a hint.
         // after giving an incorrect answer, penalty for giving a hint (as a correct answer will give you points)
         // hintsResetPoints = !data.correct;
         // this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
-
-
 
     },
 
