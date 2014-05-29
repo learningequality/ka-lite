@@ -79,19 +79,22 @@ var StatusModel = Backbone.Model.extend({
 
     after_loading: function() {
 
+        var self = this;
+
         // Add field that quantifies the time differential between client and server.
         // This is the amount that needs to be taken away from client time to give server time.
         this.set("client_server_time_diff", new Date() - new Date(this.get("status_timestamp")));
 
-        toggle_state("logged-in", this.get("is_logged_in"));
-        toggle_state("registered", this.get("registered"));
-        toggle_state("super-user", this.get("is_django_user"));
-        toggle_state("teacher", this.get("is_admin") && !this.get("is_django_user"));
-        toggle_state("student", !this.get("is_admin") && !this.get("is_django_user") && this.get("is_logged_in"));
-        toggle_state("admin", this.get("is_admin")); // combination of teachers & super-users
+        $(function() {
+            toggle_state("logged-in", self.get("is_logged_in"));
+            toggle_state("registered", self.get("registered"));
+            toggle_state("super-user", self.get("is_django_user"));
+            toggle_state("teacher", self.get("is_admin") && !self.get("is_django_user"));
+            toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
+            toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
+        });
     }
 });
-
 
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
 window.statusModel = new StatusModel();
