@@ -117,9 +117,7 @@ class PlaylistResource(Resource):
 
             # instantiate the playlist entries
             raw_entries = playlist_dict['entries']
-            video_dict = self._construct_video_dict()
             entries = [self._clean_playlist_entry_id(entry) for entry in raw_entries]
-            entries = [self._add_full_title_from_topic_tree(entry, video_dict) for entry in entries]
             playlist.entries = entries
 
             playlists.append(playlist)
@@ -147,6 +145,8 @@ class PlaylistResource(Resource):
         pk = kwargs['pk']
         for playlist in playlists:
             if str(playlist.id) == pk:
+                video_dict = self._construct_video_dict()
+                playlist.entries = [self._add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
                 return playlist
         else:
             raise NotFound('Playlist with pk %s not found' % pk)
