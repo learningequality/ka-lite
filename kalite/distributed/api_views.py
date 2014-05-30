@@ -20,6 +20,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
@@ -136,6 +137,7 @@ def status(request):
             request.session["points"] = compute_total_points(user)
         data["points"] = request.session["points"]
         data["user_id"] = user.id
+        data["user_uri"] = reverse("api_dispatch_detail", kwargs={"resource_name": "user", "pk": user.id})
 
     # Override data using django data
     if request.user.is_authenticated():  # Django user
