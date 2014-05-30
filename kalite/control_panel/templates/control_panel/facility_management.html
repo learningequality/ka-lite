@@ -269,7 +269,7 @@
                     <a title="{% trans 'Add a new student.' %}" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}"><span class="glyphicon glyphicon-plus"></span>
                     </a></br>{% trans "This report contains information about recent student activity." %}</small></h2>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12" id="students">
                 {% if not student_pages %}
                     <p class="no-data">{% trans "You currently have no student data available." %}</p>
                 {% else %}
@@ -290,8 +290,6 @@
                         {% endif %}
                         <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
                     {% endif %}
-            </div>
-            <div class="col-md-12" id="students">
                 <div class="table-responsive">
                     <table class="table selectable-table">
                          <thead>
@@ -355,21 +353,17 @@
             </div>
             <div class="col-md-12">
                 {% if student_pages.num_listed_pages > 1 %}
-                    <div class="pagination pagination-sm">
-                        <a title="{% trans 'Browse to the previous page of students.' %}" {% if student_pages.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&lt&lt</a>
+                    <ul class="pagination pagination-sm">
+                        <li><a title="{% trans 'Browse to the previous page of students.' %}" {% if student_pages.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&laquo;</a></li>
                         {% for listed_page in student_pages.listed_pages %}
-                            {% if listed_page == -1 %}
-                                <span class="disabled">&hellip;</span>
-                            {% elif listed_page == student_pages.number %}
-                                <span class="current">
-                                    {{ student_pages.number }}
-                                </span>
-                            {% else %}
-                                <a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a>
-                            {% endif %}
+                            <li {% if listed_page == student_pages.number %} class="active"><a disabled="disabled">{{student_pages.number}}</a>
+                                {% else %}>
+                                    <a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a>
+                                {% endif %}
+                            </li>
                         {% endfor %}
-                        <a title="{% trans 'Browse to the next page of students.' %}" {% if student_pages.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&gt&gt</a>
-                    </div>
+                        <li><a title="{% trans 'Browse to the next page of students.' %}" {% if student_pages.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&raquo;</a></li>                            
+                    </ul>
                 {% endif %}
             </div>
 

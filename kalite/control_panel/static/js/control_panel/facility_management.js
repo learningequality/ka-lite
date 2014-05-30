@@ -27,26 +27,10 @@ $(function() {
         window.location.href = setGetParamDict(window.location.href, GetParams);
     });
 
-    // Code for checkboxes
-    $(".select-all").click(function(event){
-        // Select all checkbxes within local table
-        var el = $(event.target.value);
-        if(this.checked) {
-            el.find("input").prop("checked", true);
-        } else {
-            el.find("input").prop("checked", false);
-        }
-    })
-
-    $("input:checkbox").click(function(event){
-        // Only set action button state on related action buttons.
-        setActionButtonState(event.target.value);
-    })
-
     $(".movegroup").click(function(event) {
         // Move users to the selected group
         var users = getSelectedItems(this.value);
-        var group = $(this.value).find('.movegrouplist option:selected').val();
+        var group = $(this.value).find('select[value="'+this.value+'"] option:selected').val();
 
         if (group==="----") {
             alert(gettext("Please choose a group to move users to."));
@@ -62,6 +46,21 @@ $(function() {
         }
     });
 
+    // Code for checkboxes
+    $(".select-all").click(function(event){
+        // Select all checkbxes within local table
+        var el = $(event.target.value);
+        if(this.checked) {
+            el.find("input").prop("checked", true);
+        } else {
+            el.find("input").prop("checked", false);
+        }
+    })
+
+    $("input:checkbox").click(function(event){
+        // Only set action button state on related action buttons.
+        setActionButtonState(event.target.value);
+    })
 
     $(".delete").click(function(event) {
         // Delete the selected users
