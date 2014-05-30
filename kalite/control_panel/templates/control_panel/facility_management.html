@@ -159,24 +159,22 @@
         <div class="row"> 
             {% trans "Ungrouped" as ungrouped %}
             <div class="col-md-12" id="groups">
-                {% if group_id %}
+                {% if group_id and groups %}
                     {# comment "First block is a group summary page for a single group's display" #}
-                    {% with groups|first as groupdata %}
                     <dl class="dl-horizontal">
                     <dt>{% trans "# Students" %}</dt>
-                    <dd>{{ groupdata.total_users }}</dd>
+                    <dd>{{ groups.total_users }}</dd>
                     <dt>{% trans "Logins" %}</dt>
-                    <dd>{{ groupdata.total_logins }}</dd>
+                    <dd>{{ groups.total_logins }}</dd>
                     <dt>{% trans "Login Time" %}</dt>
-                    <dd>{{ groupdata.total_hours|floatformat }}</dd>
+                    <dd>{{ groups.total_hours|floatformat }}</dd>
                     <dt>{% trans "Videos Viewed" %}</dt>
-                    <dd>{{ groupdata.total_videos }}</dd>
+                    <dd>{{ groups.total_videos }}</dd>
                     <dt>{% trans "Exercises Completed" %}</dt>
-                    <dd>{{ groupdata.total_exercises }}</dd>
+                    <dd>{{ groups.total_exercises }}</dd>
                     <dt>{% trans "Mastery " %}</dt>
-                    <dd>{{ groupdata.pct_mastery }}</dd>
+                    <dd>{{ groups.pct_mastery }}</dd>
                     </dl>
-                    {% endwith %}
 
                 {% else %}
                     <h2>{% trans "Student Groups" %}&nbsp;<small><a title="{% trans 'Add a new group.' %}" href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "A 'group' is set of students, such as a classroom of students or all students in one grade." %}
