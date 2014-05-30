@@ -8,6 +8,7 @@ from tastypie.resources import Resource
 from .models import PlaylistToGroupMapping
 from kalite.facility.models import FacilityGroup
 from kalite.shared.contextmanagers.db import inside_transaction
+from kalite.topic_tools import get_flat_topic_tree
 
 
 class Playlist:
@@ -46,10 +47,56 @@ class PlaylistResource(Resource):
 
     @staticmethod
     def _clean_playlist_entry_id(entry):
-        regex = re.compile('/[ve]/(?P<entity_id>.+)/')
-        matches = re.match(regex, entry['entity_id'])
-        if matches:
-            entry['entity_id'] = matches.groupdict(entry)['entity_id']
+        name = entry['entity_id']
+        # strip any trailing whitespace
+        name = name.strip()
+
+        # try to extract only the actual entity id
+        name_breakdown = name.split('/')
+        name_breakdown = [
+            component for component
+            in name.split('/')
+            if component  # make sure component has something in it
+        ]
+        name = name_breakdown[-1]
+
+        entry['old_entity_id'] = entry['entity_id']
+        entry['entity_id'] = name
+        return entry
+
+    @staticmethod
+    def _construct_video_dict():
+        topictree = get_flat_topic_tree()
+
+        # since videos in the flat topic tree are indexed by youtube
+        # number, we have to construct another dict with the id
+        # instead as the key
+        video_title_dict = {}
+        video_id_regex = re.compile('.*/v/(?P<entity_id>.*)/')
+        for video_node in topictree['Video'].itervalues():
+            video_id_matches = re.match(video_id_regex, video_node['path'])
+            if video_id_matches:
+                video_key = video_id_matches.groupdict()['entity_id']
+                video_title_dict[video_key] = video_node
+
+        return video_title_dict
+
+    @classmethod
+    def _add_full_title_from_topic_tree(cls, entry):
+        # TODO (aron): Add i18n by varying the language of the topic tree here
+        topictree = get_flat_topic_tree()
+        video_title_dict = cls._construct_video_dict()
+
+        entry_kind = entry['entity_kind']
+        entry_name = entry['entity_id']
+
+        try:
+            if entry_kind == 'Exercise':
+                entry['description'] = topictree['Exercise'][entry_name]['title']
+            if entry_kind == 'Video':
+                entry['description'] = video_title_dict[entry_name]['title']
+        except KeyError:
+            pass
 
         return entry
 
@@ -69,8 +116,8 @@ class PlaylistResource(Resource):
 
             # instantiate the playlist entries
             raw_entries = playlist_dict['entries']
-            # entries = [PlaylistEntry(**entry_attrs) for entry_attrs in raw_entries]
             entries = [self._clean_playlist_entry_id(entry) for entry in raw_entries]
+            entries = [self._add_full_title_from_topic_tree(entry) for entry in entries]
             playlist.entries = entries
 
             playlists.append(playlist)
