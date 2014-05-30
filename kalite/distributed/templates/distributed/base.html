@@ -56,6 +56,7 @@
         {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static 'js/underscore-min.js' True %}"></script>
         <script type="text/javascript" src="{% static 'js/backbone-min.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone-tastypie.js' True %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
@@ -72,7 +73,6 @@
          var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
-         var SAVE_EXERCISE_LOG_URL       = "{% url 'save_exercise_log' %}";
          var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";

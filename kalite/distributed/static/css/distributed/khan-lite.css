@@ -361,10 +361,10 @@ li .progress-circle {
     color: red;
 }
 
-
-#hint-remainder {
+.hint-reminder {
     line-height: 18px;
     padding-top: 10px;
+    color: #777;
 }
 
 #totalpoints {
@@ -420,7 +420,7 @@ li .progress-circle {
 }
 
 .current-card-contents #workarea {
-    margin-top: 50px;
+    margin-top: 10px;
     margin-right: 30px;
 }
 
