@@ -13,5 +13,8 @@ def assign_playlists(request):
 
 
 @render_to("playlist/view_playlist.html")
-def view_playlist(request):
-    return {}
+def view_playlist(request, playlist_id):
+    context = {
+        'playlist_id': playlist_id
+    }
+    return context
