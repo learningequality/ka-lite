@@ -179,7 +179,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return setGetParamDict("/api/attemptlog/", {
+        return "/api/attemptlog/?" + $.param({
             "exercise_id": this.exercise_id,
             "user": this.status_model.get("user_id"),
             "limit": this.STREAK_WINDOW
@@ -187,6 +187,19 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     }
 
 });
+
+window.TestDataModel = Backbone.Model.extend({
+    /*
+    Contains data about a particular student test.
+    */
+    initialize: function(options) {
+        this.test_title = options.test_title;
+    },
+
+    url: function() {
+        return "test/api/test/" + this.test_title
+    }
+})
 
 
 function updateQuestionPoints(points) {
@@ -530,12 +543,35 @@ window.ExerciseTestView = Backbone.View.extend({
 
         _.bindAll(this);
 
+        this.test_model = new TestDataModel({
+            test_title: this.options.test_title
+        })
+
+        this.test_model.fetch()
+
         this.exercise_view = new ExerciseView({
             el: this.el,
             exercise_id: this.options.exercise_id
         });
 
-        this.exercise_view.on("check_answer", this.check_answer);
+        if (window.statusModel.get("is_logged_in")) {
+
+            this.exercise_view.on("check_answer", this.check_answer);
+
+            // disable the answer button for now; it will be re-enabled once we have the user data
+            this.exercise_view.disable_answer_button();
+
+            // load the data about the user's overall progress on the exercise
+            this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
+            var log_collection_deferred = this.log_collection.fetch();
+
+            // load the last 10 (or however many) specific attempts the user made on this exercise
+            this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, status_model: window.statusModel});
+            var attempt_collection_deferred = this.attempt_collection.fetch();
+
+            $.when(log_collection_deferred, attempt_collection_deferred).then(this.user_data_loaded);
+
+        }
 
     },
 
