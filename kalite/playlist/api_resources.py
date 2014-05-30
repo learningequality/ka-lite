@@ -143,9 +143,9 @@ class PlaylistResource(Resource):
     def obj_get(self, bundle, **kwargs):
         playlists = self.read_playlists()
         pk = kwargs['pk']
+        video_dict = self._construct_video_dict()
         for playlist in playlists:
             if str(playlist.id) == pk:
-                video_dict = self._construct_video_dict()
                 playlist.entries = [self._add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
                 return playlist
         else:
