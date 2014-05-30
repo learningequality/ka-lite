@@ -12,11 +12,11 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
 
+from ... import engine
+from ...models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
+from ...views import initialize_registration
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
-from securesync import engine
-from securesync.models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
-from securesync.views import initialize_registration
 
 
 @transaction.commit_on_success  # because the objects may not be in order, do in a single transaction

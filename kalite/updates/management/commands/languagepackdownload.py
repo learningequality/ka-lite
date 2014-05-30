@@ -8,17 +8,14 @@ Downloads a language pack, unzips the contents, then moves files accordingly:
 * Move `video_file_sizes.json' to ka-lite/kalite/updates/data/
 """
 import glob
-import json
 import os
-import requests
 import shutil
-import sys
 import zipfile
-from annoying.functions import get_object_or_None
 from optparse import make_option
 from StringIO import StringIO
 
 from django.conf import settings; logging = settings.LOG
+from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
@@ -27,7 +24,7 @@ from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet import callback_percent_proxy, download_file
-from kalite.distributed import caching
+from kalite import caching
 from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
@@ -64,6 +61,7 @@ class Command(UpdatesStaticCommand, CronCommand):
         "unpack_language_pack",
         "add_js18n_file",
         "move_files",
+        "collectstatic",
         "invalidate_caches",
     )
 
@@ -99,6 +97,9 @@ class Command(UpdatesStaticCommand, CronCommand):
             move_srts(lang_code)
             move_video_sizes_file(lang_code)
 
+            self.next_stage()
+            call_command("collectstatic", interactive=False)
+
             self.next_stage(_("Invalidate caches"))
             caching.invalidate_all_caches()
 
@@ -116,6 +117,7 @@ def get_language_pack(lang_code, software_version, callback):
     lang_code = lcode_to_ietf(lang_code)
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
+    logging.debug("Downloading zip from %s" % request_url)
     path, response = download_file(request_url, callback=callback_percent_proxy(callback))
     return path
 

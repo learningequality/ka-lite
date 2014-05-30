@@ -21,7 +21,6 @@ from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponse, Http404
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
 from django.utils.translation import ugettext as _
@@ -31,7 +30,6 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 from .api_forms import DateTimeForm
-from .caching import backend_cache_page
 from fle_utils.config.models import Settings
 from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
@@ -139,13 +137,3 @@ def status(request):
         data["username"] = request.user.username
 
     return JsonResponse(data)
-
-
-def getpid(request):
-    """
-    who am I?  return the PID; used to kill the webserver process if the PID file is missing.
-    """
-    try:
-        return HttpResponse(os.getpid())
-    except:
-        return HttpResponse("")

@@ -16,17 +16,16 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
 from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
 from fle_utils.testing.decorators import allow_api_profiling
-from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from kalite.main.topic_tools import get_topic_by_path, get_node_cache
+from kalite.topic_tools import get_topic_by_path, get_node_cache
 
 
 # Global variable of all the known stats, their internal and external names,
@@ -391,7 +390,7 @@ def api_data(request, xaxis="", yaxis=""):
             "slug": e,
             "full_name": ex_nodes[e][0]["display_name"],
             "url": ex_nodes[e][0]["path"],
-        })  
+        })
 
     json_data = {
         "data": computed_data["data"],

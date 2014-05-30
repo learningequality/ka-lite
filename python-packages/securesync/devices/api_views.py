@@ -18,9 +18,9 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 from .models import *
+from .. import engine
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
-from securesync import engine
 
 
 @csrf_exempt
@@ -58,7 +58,7 @@ def register_device(request):
     try:
         zone = register_self_registered_device(client_device, models, data)
     except Exception as e:
-        if e.message == "Client not yet on zone.":
+        if e.args[0] == "Client not yet on zone.":
             zone = None
         else:
             # Client not on zone: allow fall-through via "old route"

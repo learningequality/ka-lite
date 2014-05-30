@@ -239,7 +239,6 @@ class Parser(object):
             self.add_library(lib)
         self.root_nodelist = []  # KA-LITE-MOD
 
-
     def parse(self, parse_until=None):
         if parse_until is None:
             parse_until = []

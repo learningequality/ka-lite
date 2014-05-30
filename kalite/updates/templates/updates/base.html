@@ -22,7 +22,7 @@
 
         ga("create", "UA-36937407-3", {"cookieDomain": "none"});
 
-        ga("set", "dimension1", "{% if registered %}Registered{% else %}Unregistered{% endif %}");
+        ga("set", "dimension1", "{% if is_registered %}Registered{% else %}Unregistered{% endif %}");
         ga("set", "dimension2", "{% if zone_id %}{{ zone_id }}{% endif %}");
         ga("set", "dimension3", "{{ device_id }}");
 

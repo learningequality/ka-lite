@@ -12,8 +12,8 @@ from django.utils import unittest
 
 from .. import caching
 from fle_utils.django_utils import call_command_with_output
-from kalite.main.topic_tools import get_node_cache
 from kalite.testing.base import KALiteTestCase
+from kalite.topic_tools import get_node_cache
 
 
 class CachingTest(KALiteTestCase):

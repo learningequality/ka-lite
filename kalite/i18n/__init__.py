@@ -8,6 +8,7 @@ import re
 import requests
 import shutil
 from collections_local_copy import OrderedDict, defaultdict
+from fle_utils.internet import invalidate_web_cache
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
@@ -367,7 +368,7 @@ def update_jsi18n_file(code="en"):
     save to disk--it won't change until the next language pack update!
     """
     translation.activate(code)  # we switch the language of the whole thread
-    output_dir = os.path.join(settings.STATIC_ROOT, "js", "i18n")
+    output_dir = os.path.join(os.path.dirname(__file__), 'static', 'js', 'i18n')
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
 
@@ -413,3 +414,34 @@ def select_best_available_language(target_code, available_codes=None):
     if actual_code != target_code:
         logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
     return actual_code
+
+
+def delete_language(lang_code):
+
+    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+
+    for langpack_resource_path in langpack_resource_paths:
+        try:
+            shutil.rmtree(langpack_resource_path)
+            logging.info("Deleted language pack resource path: %s" % langpack_resource_path)
+        except OSError as e:
+            if e.errno != 2:    # Only ignore error: No Such File or Directory
+                raise
+            else:
+                logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
+
+    invalidate_web_cache()
+
+
+def set_request_language(request, lang_code):
+    # each request can get the language from the querystring, or from the currently set session language
+
+    lang_code = select_best_available_language(lang_code)  # output is in django_lang format
+
+    if lang_code != request.session.get(settings.LANGUAGE_COOKIE_NAME):
+        logging.debug("setting request language to %s (session language %s), from %s" % (lang_code, request.session.get("default_language"), request.session.get(settings.LANGUAGE_COOKIE_NAME)))
+        # Just in case we have a db-backed session, don't write unless we have to.
+        request.session[settings.LANGUAGE_COOKIE_NAME] = lang_code
+
+    request.language = lcode_to_ietf(lang_code)
+    translation.activate(request.language)

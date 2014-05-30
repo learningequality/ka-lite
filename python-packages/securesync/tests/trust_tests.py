@@ -10,10 +10,10 @@ from django.utils import unittest
 
 from .base import SecuresyncTestCase
 from .decorators import distributed_server_test, central_server_test
+from .. import VERSION
+from ..models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
 from fle_utils.crypto import Key
 from fle_utils.general import version_diff
-from securesync import VERSION
-from securesync.models import Device, Zone, DeviceZone, ZoneInvitation, ChainOfTrust
 
 
 class TestChainOfTrust(SecuresyncTestCase):

@@ -191,7 +191,8 @@ class _AssertNumQueriesContext(object):
         executed = final_queries - self.starting_queries
 
         self.test_case.assertEqual(
-            executed, self.num, "%d queries executed, %d expected" % (
+            # KA-LITE-MOD This is necessary for FuzzyInt to print a meaningful error message.
+            executed, self.num, "%s queries executed, %s expected" % (
                 executed, self.num
             )
         )

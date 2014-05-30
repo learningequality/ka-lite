@@ -27,6 +27,9 @@ class Serializer(object):
     # internal Django use.
     internal_use_only = False
 
+    def __init__(self):
+        self.first = True
+
     def serialize(self, queryset, **options):
         """
         Serialize a queryset.

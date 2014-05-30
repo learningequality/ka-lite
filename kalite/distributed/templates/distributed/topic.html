@@ -66,19 +66,19 @@
                     <span class="dubbedvideo-indicator">
                         <a href="{{ video.path }}?lang={{ lang_code }}" title="{% blocktrans with lang_name=lang_code|get_language_name %}Dubbed video available in {{ lang_name }}{% endblocktrans %}">
                         {{ lang_code }}
-                        </a></span>
+                        </a>
+                    </span>
                     {% endif %}
                 {% endfor %}
 
                 {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
-                {% for lang_code in video.availability.en.subtitles.keys %}
-                    <span class="subtitle-indicator" title="{% blocktrans with lang_name=lang_code|get_language_name %}Subtitle available in {{ lang_name }}{% endblocktrans %}">
-                    {{ lang_code }}
+                {% for lang in video.availability.en.subtitles %}
+                    <span class="subtitle-indicator" title="{% blocktrans with lang_name=lang.name %}Subtitle available in {{ lang_name }}{% endblocktrans %}">
+                        {{ lang.code }}
                     </span>
                 {% endfor %}
             </li>
             {% endfor %}
-            <br/>
         </ol>
         {% endif %}
 
