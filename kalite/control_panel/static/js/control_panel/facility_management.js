@@ -82,7 +82,7 @@ $(function() {
 
         if (groups.length == 0) {
             alert(gettext("Please select groups first."));
-        } else if (!confirm(gettext("You are about to delete selected groups, they will be permanently deleted."))) {
+        } else if (!confirm(gettext("You are about to permanently delete the selected group(s). Note that any students currently in this group will now be characterized as 'Ungrouped' but their profiles will not be deleted."))) {
             return;
         } else {
             doRequest(DELETE_GROUPS_URL, {groups: groups})
