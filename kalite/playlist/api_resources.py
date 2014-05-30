@@ -1,8 +1,9 @@
 import os
 import json
+import re
 from tastypie import fields
 from tastypie.exceptions import NotFound
-from tastypie.resources import ModelResource, Resource
+from tastypie.resources import Resource
 
 from .models import PlaylistToGroupMapping
 from kalite.facility.models import FacilityGroup
@@ -43,6 +44,15 @@ class PlaylistResource(Resource):
         # Use plain python object first instead of full-blown Django ORM model
         object_class = Playlist
 
+    @staticmethod
+    def _clean_playlist_entry_id(entry):
+        regex = re.compile('/[ve]/(?P<entity_id>.+)/')
+        matches = re.match(regex, entry['entity_id'])
+        if matches:
+            entry['entity_id'] = matches.groupdict(entry)['entity_id']
+
+        return entry
+
     def read_playlists(self):
         with open(self.playlistjson) as f:
             raw_playlists = json.load(f)
@@ -60,7 +70,7 @@ class PlaylistResource(Resource):
             # instantiate the playlist entries
             raw_entries = playlist_dict['entries']
             # entries = [PlaylistEntry(**entry_attrs) for entry_attrs in raw_entries]
-            entries = raw_entries
+            entries = [self._clean_playlist_entry_id(entry) for entry in raw_entries]
             playlist.entries = entries
 
             playlists.append(playlist)
