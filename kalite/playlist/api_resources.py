@@ -66,6 +66,7 @@ class PlaylistResource(Resource):
 
     @staticmethod
     def _construct_video_dict():
+        # TODO (aron): Add i18n by varying the language of the topic tree here
         topictree = get_flat_topic_tree()
 
         # since videos in the flat topic tree are indexed by youtube
@@ -82,10 +83,9 @@ class PlaylistResource(Resource):
         return video_title_dict
 
     @classmethod
-    def _add_full_title_from_topic_tree(cls, entry):
+    def _add_full_title_from_topic_tree(cls, entry, video_title_dict):
         # TODO (aron): Add i18n by varying the language of the topic tree here
         topictree = get_flat_topic_tree()
-        video_title_dict = cls._construct_video_dict()
 
         entry_kind = entry['entity_kind']
         entry_name = entry['entity_id']
@@ -96,7 +96,8 @@ class PlaylistResource(Resource):
             if entry_kind == 'Video':
                 entry['description'] = video_title_dict[entry_name]['title']
         except KeyError:
-            pass
+            # TODO: edit once we get the properly labeled entity ids from Nalanda
+            entry['description'] = entry['entity_id']
 
         return entry
 
@@ -116,8 +117,9 @@ class PlaylistResource(Resource):
 
             # instantiate the playlist entries
             raw_entries = playlist_dict['entries']
+            video_dict = self._construct_video_dict()
             entries = [self._clean_playlist_entry_id(entry) for entry in raw_entries]
-            entries = [self._add_full_title_from_topic_tree(entry) for entry in entries]
+            entries = [self._add_full_title_from_topic_tree(entry, video_dict) for entry in entries]
             playlist.entries = entries
 
             playlists.append(playlist)
