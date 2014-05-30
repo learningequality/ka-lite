@@ -11,6 +11,17 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+  <script type="text/javascript">
+   var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
+   var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+   var CURRENT_PLAYLIST_ID = "{{ playlist_id }}"
+  </script>
+
+  <!-- templates for the backbone views in view_playlist.js -->
+  <script type="text/html" id="playlist-sidebar-entry-template">
+    <h2 class="playlist-title"><%= entity_id %></h2>
+  </script>
+
   <script src="{% static 'js/modernizr.js' %}"></script>
   <script src="{% static 'js/sidr.js'%}"></script>
 
@@ -29,27 +40,28 @@
 
   <script src="{% static 'js/playlist/sidebar.js' %}"></script>
 
+  <script src="{% static 'js/playlist/models.js' %}"></script>
+  <script src="{% static 'js/playlist/view_playlist.js' %}"></script>
+
 {% endblock headjs %}
 
 {% block content %}
   <div id="sidr-nav" style="display: none;">
     <div class="col-sm-4">
       <div class="st-menu st-effect-1" id="menu-1">
-        <h2 class="">Playlist Title</h2>
-        <ul>
-          <li>
-            <a class="active font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i> <span>  Basic regrouping when subtracting three digit numbers</span></a>
-          </li>
-          <li>
-            <a class="font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i> <span>  Basic regrouping when subtracting three digit numbers</span></a>
-          </li>
-          <li>
-            <a class="font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i> <span>  Basic regrouping when subtracting three digit numbers</span></a>
-          </li>
-          <li>
-            <a class="font14" href="#"><i class="fa fa-play-circle-o fa-2x"></i> <span>  Basic regrouping when subtracting three digit numbers</span></a>
-          </li>
-        </ul>
+        <div id="playlist-items">
+          <div id="playlist-item">
+            <h2 class="playlist-title">Playlist Title</h2>
+            <ul>
+              <li>
+                <a class="active font14" href="#">
+                  <i class="fa fa-play-circle-o fa-2x"></i>
+                  <span>Basic regrouping when subtracting three digit numbers</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
 
 
           <div class="item"><a class="icon icon-wallet" href="#">NEXT PLAYLIST</a></div>
