@@ -83,7 +83,10 @@ var StatusModel = Backbone.Model.extend({
 
         // Add field that quantifies the time differential between client and server.
         // This is the amount that needs to be taken away from client time to give server time.
-        this.set("client_server_time_diff", new Date() - new Date(this.get("status_timestamp")));
+        // As the server sends its timestamp without a timezone (and we can't rely on timezones
+        // being set correctly, we need to do some finagling with the offset to get it to work out.
+        var time_stamp = new Date(this.get("status_timestamp"));
+        this.set("client_server_time_diff", new Date() - time_stamp.getTime());
 
         $(function() {
             toggle_state("logged-in", self.get("is_logged_in"));
