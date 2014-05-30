@@ -10,17 +10,21 @@ from tastypie.resources import ModelResource, Resource
 from .models import TestLog
 from .settings import STUDENT_TESTING_DATA_PATH
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.facility.api_resources import FacilityUserResource
 
 
 class Test():
     def __init__(self, **kwargs):
         self.title = kwargs.get('title')
-        self.ids = kwargs.get('ids')
+        self.ids = json.dumps(kwargs.get('ids'))
         self.playlist_ids = kwargs.get('playlist_ids')
         self.seed = kwargs.get('seed')
         self.repeats = kwargs.get('repeats')
 
 class TestLogResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
     class Meta:
         queryset = TestLog.objects.all()
         resource_name = 'testlog'
