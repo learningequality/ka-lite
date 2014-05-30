@@ -227,6 +227,24 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     get_streak_progress_percent: function() {
         var streak_progress = this.get_streak_progress();
         return Math.min((streak_progress / this.STREAK_CORRECT_NEEDED) * 100, 100);
+    },
+
+    get_streak_points: function() {
+        // only include attempts that were correct (others won't have points)
+        var filtered_attempts = this.filter(function(attempt) { return attempt.get("correct"); });
+        // add up and return the total number of points represented by these attempts
+        // (only include the latest STREAK_CORRECT_NEEDED attempts, so the user doesn't get too many points)
+        var total = 0;
+        for (var i = 0; i < Math.min(this.STREAK_CORRECT_NEEDED, filtered_attempts.length); i++) {
+            total += filtered_attempts[i].get("points");
+        }
+        return total;
+    },
+
+    calculate_points_per_question: function(basepoints) {
+        // for comparability with the original algorithm (when a streak of 10 was needed),
+        // we calibrate the points awarded for each question (note that there are no random bonuses now)
+        return Math.round((basepoints * 10) / this.STREAK_CORRECT_NEEDED);
     }
 
 });
@@ -364,12 +382,6 @@ window.TestLogCollection = Backbone.Collection.extend({
 });
 
 
-function updateQuestionPoints(points) {
-    // show points for correct question, or none if not answered yet.
-    $("#questionpoints").html(points ? (sprintf(gettext("%(points)d points!"), { points : points })) : "");
-}
-
-
 function updatePercentCompleted(correct) {
 
     // update the streak; increment by 10 if correct, otherwise reset to 0
@@ -445,7 +457,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         this.$(".progress-bar")
             .css("width", this.model.get("streak_progress") + "%")
             .toggleClass("completed", this.model.get("complete"));
-        // this.$("#totalpoints").html(this.model.get("points") > 0 ? this.model.get("points") : "");
+        this.$(".progress-points").html(this.model.get("points") > 0 ? "(" + this.model.get("points") + " " + gettext("points") + ")" : "");
     },
 
     update_attempt_display: function() {
@@ -635,6 +647,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id});
             var attempt_collection_deferred = this.attempt_collection.fetch();
 
+            // wait until both the exercise and attempt logs have been loaded before continuing
             this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
             this.user_data_loaded_deferred.then(this.user_data_loaded);
 
@@ -652,7 +665,7 @@ window.ExercisePracticeView = Backbone.View.extend({
         if (this.attempt_collection.length < this.attempt_collection.STREAK_WINDOW) {
             var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
             while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
-                this.attempt_collection.add({correct: true, complete: true});
+                this.attempt_collection.add({correct: true, complete: true, points: this.get_points_per_question()});
             }
         }
 
@@ -715,6 +728,10 @@ window.ExercisePracticeView = Backbone.View.extend({
         this.update_and_save_log_models("hint_used", {correct: false, guess: ""});
     },
 
+    get_points_per_question: function() {
+        return this.attempt_collection.calculate_points_per_question(this.exercise_view.data_model.get("basepoints"));
+    },
+
     update_and_save_log_models: function(event_type, data) {
 
         // if current attempt log has not been saved, then this is the user's first response to the question
@@ -722,16 +739,22 @@ window.ExercisePracticeView = Backbone.View.extend({
 
             this.current_attempt_log.set({
                 correct: data.correct,
-                answer_given: data.guess
+                answer_given: data.guess,
+                points: data.correct ? this.get_points_per_question() : 0
             });
             this.attempt_collection.add_new(this.current_attempt_log);
 
-            // only change the streak progress if we're not already complete
+            // only change the streak progress and points if we're not already complete
             if (!this.log_model.get("complete")) {
-                this.log_model.set({streak_progress: this.attempt_collection.get_streak_progress_percent()});
+                this.log_model.set({
+                    streak_progress: this.attempt_collection.get_streak_progress_percent(),
+                    points: this.attempt_collection.get_streak_points()
+                });
             }
 
-            this.log_model.set({attempts: this.log_model.get("attempts") + 1});
+            this.log_model.set({
+                attempts: this.log_model.get("attempts") + 1
+            });
 
             this.log_model.save();
 
