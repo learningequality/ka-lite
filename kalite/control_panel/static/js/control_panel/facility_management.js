@@ -27,7 +27,6 @@ $(function() {
     $(".all").click(function(event){
         // Select all users within local table
         $(event.target.value).find("tr").addClass("selected");
-
         // Only set action button state on related action buttons.
         setActionButtonState(event.target.value);
     });

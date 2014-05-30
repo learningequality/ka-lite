@@ -214,13 +214,11 @@ $(function () {
     });
 });
 
-
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
     downloading = false;
 }
-
 
 function set_server_language(lang) {
     doRequest(SET_DEFAULT_LANGUAGE_URL,
