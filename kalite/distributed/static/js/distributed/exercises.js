@@ -396,6 +396,8 @@ window.ExerciseView = Backbone.View.extend({
 
         $(Exercises).bind("hintUsed", this.hint_used);
 
+        $(Exercises).bind("newProblem", this.problem_loaded);
+
     },
 
     load_question: function(question_data) {
@@ -431,10 +433,10 @@ window.ExerciseView = Backbone.View.extend({
 
         this.trigger("ready_for_next_question");
 
-        // TODO
-        // updateQuestionPoints(false);
-        // this.attempt_model.set("hint_used", false);
+    },
 
+    problem_loaded: function(ev, data) {
+        this.trigger("problem_loaded", data);
     },
 
     adjust_scratchpad_margin: function() {
@@ -467,16 +469,6 @@ window.ExerciseView = Backbone.View.extend({
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
         this.trigger("ready_for_next_question");
-    },
-
-    disable_answer_button: function() {
-        this.$(".answer-buttons-enabled").hide();
-        this.$(".answer-buttons-disabled").show();
-    },
-
-    enable_answer_button: function() {
-        this.$(".answer-buttons-disabled").hide();
-        this.$(".answer-buttons-enabled").show();
     }
 
 });
@@ -495,6 +487,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
         this.exercise_view.on("hint_used", this.hint_used);
+        this.exercise_view.on("problem_loaded", this.problem_loaded);
 
         this.hint_view = new ExerciseHintView({
             el: this.$(".exercise-hint-wrapper")
@@ -503,9 +496,6 @@ window.ExercisePracticeView = Backbone.View.extend({
         if (window.statusModel.get("is_logged_in")) {
 
             this.exercise_view.on("check_answer", this.check_answer);
-
-            // disable the answer button for now; it will be re-enabled once we have the user data
-            this.exercise_view.disable_answer_button();
 
             // load the data about the user's overall progress on the exercise
             this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
@@ -548,7 +538,16 @@ window.ExercisePracticeView = Backbone.View.extend({
             collection: this.attempt_collection
         });
 
-        this.exercise_view.enable_answer_button();
+    },
+
+    problem_loaded: function(data) {
+        this.current_attempt_log.add_response_log_event({
+            type: "loaded"
+        });
+        // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
+        if (this.current_attempt_log.isNew()) {
+            this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
+        }
 
     },
 
@@ -560,7 +559,6 @@ window.ExercisePracticeView = Backbone.View.extend({
             context_type: this.options.context_type || "",
             context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
-            timestamp: window.statusModel.get_server_time(), // TODO(jamalex): set this timestamp later, when exercise is loaded, instead
             version: window.statusModel.get("version")
         };
 
@@ -608,7 +606,8 @@ window.ExercisePracticeView = Backbone.View.extend({
             this.current_attempt_log.set({
                 correct: data.correct,
                 answer_given: data.guess,
-                points: data.correct ? this.get_points_per_question() : 0
+                points: data.correct ? this.get_points_per_question() : 0,
+                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp"))
             });
             this.attempt_collection.add_new(this.current_attempt_log);
 
