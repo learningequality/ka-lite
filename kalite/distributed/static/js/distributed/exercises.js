@@ -236,6 +236,148 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
 });
 
+window.TestDataModel = Backbone.Model.extend({
+    /*
+    Contains data about a particular student test.
+    */
+
+    url: function() {
+        return "/test/api/test/" + this.get("title") + "/"
+    }
+})
+
+window.TestLogModel = Backbone.Model.extend({
+    /*
+    Contains summary data about the user's history of interaction with the current test.
+    */
+
+    defaults: {
+        index: 0,
+        complete: false
+    },
+
+    init: function(options) {
+
+        _.bindAll(this);
+
+        var self = this;
+
+    },
+
+    get_item_data: function(test_data_model) {
+        /*
+        This function is designed to give a deterministic test sequence for an individual, based
+        on their userModel URI. As such, each individual will always have the same generated test
+        sequence, but it is, for all intents and purposes, randomized across individuals.
+        */
+
+        /*
+        Seed random generator here so that it increments all seed randomization blocks.
+        If seeded inside each call to the function, then the blocks of seeds for each user
+        would be identically shuffled.
+        */
+        if(typeof(test_data_model)==="object"){
+
+            var random = new Math.seedrandom(this.get("user"));
+
+            var items = $.parseJSON(test_data_model.get("ids"));
+
+            var initial_seed = test_data_model.get("seed");
+
+            var repeats = test_data_model.get("repeats");
+
+            var block_seeds = [];
+
+            // Create list of seeds incremented from initial_seed, one for every repeat.
+            for(i=0; i < repeats; i++){
+                block_seeds.push(initial_seed + i);
+            }
+
+            // Cache random shuffling of block seeds for each exercise_id.
+            var shuffled_block_seeds_gen = {}
+
+            // Final seed and item sequences.
+            this.seed_sequence = []
+
+            this.item_sequence = []
+
+            /*
+            Loop over every repeat, adding each exercise_id in turn to item_sequence.
+            On first loop, create shuffled copy of block_seeds for each exercise_id.
+            Add seed from shuffled block_seeds copy to seed_sequence.
+            This will have the net effect of a fixed sequence of exercise_ids, repeating
+            'repeats' times, with each exercise_id having a shuffled sequence of seeds across blocks.
+            */
+            for(j=0; j < repeats; j++){
+                for(i=0; i < items.length; i++){
+                    if(j==0){
+                        shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
+                    }
+                    this.item_sequence.push(items[i]);
+                    this.seed_sequence.push(shuffled_block_seeds_gen[i][j]);
+                }
+            }
+        }
+        return {
+            seed: this.seed_sequence[this.get("index")],
+            exercise_id: this.item_sequence[this.get("index")]
+        };
+    },
+
+    get_item_test_data: function() {
+
+    },
+
+    save: function() {
+
+        var self = this;
+
+        var already_complete = this.get("complete");
+
+        if((this.get("index") == this.item_sequence.length) && !already_complete){
+            this.set({
+                complete: true
+            })
+            this.trigger("complete");
+        }
+
+        Backbone.Model.prototype.save.call(this)
+    },
+
+    urlRoot: "/test/api/testlog/"
+
+});
+
+window.TestLogCollection = Backbone.Collection.extend({
+
+    model: TestLogModel,
+
+    initialize: function(models, options) {
+        this.title = options.title;
+    },
+
+    url: function() {
+        return "/test/api/testlog/?" + $.param({
+            "title": this.title,
+            "user": window.statusModel.get("user_id")
+        });
+    },
+
+    get_first_log_or_new_log: function() {
+        if (this.length > 0) {
+            return this.at(0);
+        } else { // create a new exercise log if none existed
+            return new TestLogModel({
+                "user": window.statusModel.get("user_uri")
+            },
+            {
+                "test_data_model": this.test_data_model
+            });
+        }
+    }
+
+});
+
 
 window.ExerciseHintView = Backbone.View.extend({
 
@@ -625,20 +767,143 @@ window.ExerciseTestView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this.exercise_view = new ExerciseView({
-            el: this.el,
-            exercise_id: this.options.exercise_id
-        });
+        if (window.statusModel.get("is_logged_in")) {
+
+            // load the data about this particular test
+            this.test_model = new TestDataModel({title: this.options.title})
+            var test_model_deferred = this.test_model.fetch()
+
+            // load the data about the user's overall progress on the test
+            this.log_collection = new TestLogCollection([], {title: this.options.title});
+            var log_collection_deferred = this.log_collection.fetch();
+
+            this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
+
+        }
+
+    },
+
+    user_data_loaded: function() {
+
+        // get the test log model from the queried collection
+        this.log_model = this.log_collection.get_first_log_or_new_log();
+
+        var question_data = this.log_model.get_item_data(this.test_model);
+
+        var data = $.extend({el: this.el}, question_data)
+
+        this.initialize_new_attempt_log(question_data);
+
+        this.exercise_view = new ExerciseView(data);
 
         this.exercise_view.on("check_answer", this.check_answer);
+        this.exercise_view.on("problem_loaded", this.problem_loaded);
+        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+
+    },
+
+    problem_loaded: function(data) {
+        this.current_attempt_log.add_response_log_event({
+            type: "loaded"
+        });
+        // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
+        if (this.current_attempt_log.isNew()) {
+            this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
+        }
+        console.log(this.current_attempt_log);
+
+    },
+
+    initialize_new_attempt_log: function(data) {
+
+        var defaults = {
+            exercise_id: this.options.exercise_id,
+            user: window.statusModel.get("user_uri"),
+            context_type: "test" || "",
+            context_id: this.options.title || "",
+            language: "", // TODO(jamalex): get the current exercise language
+            version: window.statusModel.get("version")
+        };
+
+        var data = $.extend(defaults, data);
+
+        this.current_attempt_log = new AttemptLogModel(data);
+
+        return this.current_attempt_log;
 
     },
 
     check_answer: function(data) {
 
-        // prevent the "check answer" button from shaking on incorrect answers
-        this.$("#check-answer-button").parent().stop(jumpedToEnd=true);
+        // increment the response count
+        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+
+        this.current_attempt_log.add_response_log_event({
+            type: "answer",
+            answer: data.guess,
+            correct: data.correct
+        });
+
+        // update and save the exercise and attempt logs
+        this.update_and_save_log_models("answer_given", data);
+    },
+
+    update_and_save_log_models: function(event_type, data) {
+
+        // if current attempt log has not been saved, then this is the user's first response to the question
+        if (this.current_attempt_log.isNew()) {
+
+            this.current_attempt_log.set({
+                correct: data.correct,
+                answer_given: data.guess,
+                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp")),
+                complete: true
+            });
+
+            this.log_model.set({
+                index: this.log_model.get("index") + 1
+            });
+
+            this.log_model.save();
+
+        }
+
+        this.current_attempt_log.save();
+
+        this.ready_for_next_question();
+
+    },
+
+    ready_for_next_question: function() {
+
+        var self = this;
+
+        this.user_data_loaded_deferred.then(function() {
+
+            self.exercise_view.load_question(self.log_model.get_item_data());
+            self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+
+        });
 
     }
 
 });
+
+function seeded_shuffle(source_array, random) {
+    var array = source_array.slice(0)
+    var m = array.length, t, i;
+
+    // While there remain elements to shuffle…
+    while (m) {
+
+        // Pick a remaining element…
+        i = Math.floor(random() * m--);
+
+        // And swap it with the current element.
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+
+    return array;
+}
