@@ -65,13 +65,16 @@
             {% else %}
                 <div class="table-responsive">
                     <table class="table">
-                        <tr class="success">
-                            <th>{% trans "Facility Name" %}</th>
-                            <th>{% trans "# Users" %}</th>
-                            <th>{% trans "# Groups" %}</th>
-                            <th>{% trans "Last Usage" %}</th>
-                            <th>{% trans "Delete" %}</th>
-                        </tr>
+                        <thead>
+                            <tr class="success">
+                                <th>{% trans "Facility Name" %}</th>
+                                <th>{% trans "# Users" %}</th>
+                                <th>{% trans "# Groups" %}</th>
+                                <th>{% trans "Last Usage" %}</th>
+                                <th>{% trans "Delete" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         {% for id,facility in facilities.items %}
                             <tr>
                                 <td>
@@ -97,6 +100,7 @@
                                 </td>
                             </tr>
                         {% endfor %}
+                        </tbody>
                     </table>
                 </div>
             {% endif %}
@@ -113,13 +117,16 @@
             {% else %}
                 <div class="table-responsive">
                     <table class="table">
-                        <tr class="success">
-                            <th>{% trans "Device name" %}</th>
-                            <th>{% trans "# Times Synced" %}</th>
-                            <th>{% trans "Last Sync" %}</th>
-                            <th>{% trans "Last Usage" %}</th>
-                            <th>{% trans "Available Actions" %}</th>
-                        </tr>
+                        <thead>
+                            <tr class="success">
+                                <th>{% trans "Device name" %}</th>
+                                <th>{% trans "# Times Synced" %}</th>
+                                <th>{% trans "Last Sync" %}</th>
+                                <th>{% trans "Last Usage" %}</th>
+                                <th>{% trans "Available Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         {% for id,device in devices.items %}
                             <tr class="{% if not device.is_registered %}warning {% endif %}{% if device.is_demo_device %}active{% endif %}">
                                 <td>
@@ -168,6 +175,7 @@
                                 </td>
                             </tr>
                         {% endfor %}
+                        </tbody>
                     </table>
                 </div>
             {% endif %}
