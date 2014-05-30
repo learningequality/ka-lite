@@ -500,12 +500,9 @@ window.ExerciseView = Backbone.View.extend({
 
         this.initialize_khan_exercises_listeners();
 
-        // this.adjust_scratchpad_margin();
-
     },
 
     events: {
-        "click #scratchpad-show": "adjust_scratchpad_margin",
         "submit .answer-form": "answer_form_submitted"
     },
 
@@ -579,14 +576,6 @@ window.ExerciseView = Backbone.View.extend({
 
     problem_loaded: function(ev, data) {
         this.trigger("problem_loaded", data);
-    },
-
-    adjust_scratchpad_margin: function() {
-        if (Khan.scratchpad.isVisible()) {
-            this.$(".current-card-contents #problemarea").css("margin-top", "50px");
-        } else {
-            this.$(".current-card-contents #problemarea").css("margin-top", "10px");
-        }
     },
 
     answer_form_submitted: function(e) {
