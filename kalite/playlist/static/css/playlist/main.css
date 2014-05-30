@@ -81,11 +81,14 @@ body,
   top: 0;
   left: 0;
   z-index: 100;
-  width: 300px;
   height: 100%;
   background: #48a770;
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
+}
+
+.st-menu h2 {
+  display: block;
 }
 
 .st-menu::after {
@@ -282,6 +285,23 @@ body,
 .playlist-nav {
   background-color: #d4d4d4;
   height: 40px;
+  text-align: middle;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.playlist-nav i:nth-child(2) {
+  text-align: right;
+}
+
+.vertical-center {
+  display: table;
+}
+
+.vertical-center .vertical-center-target {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 progress {

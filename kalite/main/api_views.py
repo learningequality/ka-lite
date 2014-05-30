@@ -24,12 +24,10 @@ from django.utils.translation import ugettext_lazy, string_concat
 
 from .api_forms import ExerciseLogForm, VideoLogForm, AttemptLogForm
 from .models import VideoLog, ExerciseLog, AttemptLog
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data
-
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
-
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data
 
 
 class student_log_api(object):

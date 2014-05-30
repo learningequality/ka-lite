@@ -38,8 +38,9 @@ def move_to_group(request):
 def delete_users(request):
     users = simplejson.loads(request.body or "{}").get("users", [])
     users_to_delete = FacilityUser.objects.filter(id__in=users)
-    users_to_delete.delete()
-    return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": users_to_delete.count()})
+    count = users_to_delete.count()
+    users_to_delete.soft_delete()
+    return JsonResponseMessageSuccess(_("Deleted %(num_users)d users successfully.") % {"num_users": count})
 
 
 @require_authorized_admin
@@ -51,5 +52,15 @@ def facility_delete(request, facility_id=None):
     facility_id = facility_id or simplejson.loads(request.body or "{}").get("facility_id")
     fac = get_object_or_404(Facility, id=facility_id)
 
-    fac.delete()
+    fac.soft_delete()
     return JsonResponseMessageSuccess(_("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
+
+
+@require_authorized_admin
+@api_response_causes_reload
+def group_delete(request, group_id=None):
+    groups = [group_id] if group_id else simplejson.loads(request.body or "{}").get("groups", [])
+    groups_to_delete = FacilityGroup.objects.filter(id__in=groups)
+    count = groups_to_delete.count()
+    groups_to_delete.soft_delete()
+    return JsonResponseMessageSuccess(_("Deleted group %(num_groups)d successfully.") % {"num_groups": count})

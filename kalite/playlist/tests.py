@@ -11,14 +11,14 @@ from django.test import Client, TestCase
 from facility.models import FacilityUser
 
 from .models import Playlist
-from .api_resources import Playlist as PlaylistObject
-from kalite.testing.mixins import CreateAdminMixin
+from kalite.testing.mixins import CreateAdminMixin, CreateGroupMixin, CreateStudentMixin
 
 
-class PlaylistTests(TestCase):
-    fixtures = ['single_student_testdata.json']
+class PlaylistTests(CreateStudentMixin, TestCase):
+    # fixtures = ['single_student_testdata.json']
 
     def setUp(self):
+        self.create_student()
         self.test_student = FacilityUser.objects.get(username='teststudent1')
         self.p = Playlist.objects.create(
             title="test playlist",
@@ -55,7 +55,7 @@ class PlaylistTests(TestCase):
         self.assertEqual(entries[2].reload().sort_order, 3)
 
 
-class PlaylistAPITests(CreateAdminMixin, TestCase):
+class PlaylistAPITests(CreateGroupMixin, CreateAdminMixin, TestCase):
     def _playlist_url(self, playlist_id=None):
         '''
         If no playlist_id is given, returns a url that gets all
@@ -68,6 +68,7 @@ class PlaylistAPITests(CreateAdminMixin, TestCase):
 
     def setUp(self):
         self.admin = self.create_admin()
+        self.group = self.create_group()
         self.client = Client()
         self.client.login(username='admin', password='admin')
 
