@@ -9,7 +9,7 @@ function getSelectedItems(select) {
 
 function setActionButtonState(select) {
     // argument to allow conditional selection of action buttons.
-    if($(select).find("tr.selected").length) {
+    if($(select).find("input:checked").length) {
         $(select).find(".action button").removeAttr("disabled")
     } else {
         $(select).find(".action button").attr("disabled", "disabled")
@@ -24,16 +24,14 @@ $(function() {
         window.location.href = setGetParamDict(window.location.href, GetParams);
     });
 
-    $(".all").click(function(event){
+    $(".select-all").click(function(event){
         // Select all users within local table
-        $(event.target.value).find("tr").addClass("selected");
-        // Only set action button state on related action buttons.
-        setActionButtonState(event.target.value);
-    })
-
-    $(".none").click(function(event){
-        // Unselect all users within local table
-        $(event.target.value).find("tr").removeClass("selected");
+        if(this.checked) {
+            $(event.target.value).find("input").prop("checked", true);
+        } else {
+            $(event.target.value).find("input").prop("checked", false);
+        }
+        
         // Only set action button state on related action buttons.
         setActionButtonState(event.target.value);
     })
