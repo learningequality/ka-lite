@@ -67,6 +67,8 @@
     <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
     <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
 
+    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
+    <script src="{% static 'js/seedrandom.min.js' %}"></script>
     <script src="{% static 'js/distributed/exercises.js' %}"></script>
 {% endblock headjs %}
 
