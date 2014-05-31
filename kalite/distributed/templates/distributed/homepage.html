@@ -13,8 +13,9 @@
 {% block headjs %}{{ block.super }}
     <!-- import handlebars templates here -->
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
-    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' True %}"></script>
+    <script type="text/javascript" src="{% static 'js/playlist/models.js' True %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/jquery.dotdotdot.min.js' True %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' True %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -24,7 +25,7 @@
     {% endif %}
 
     <script type="text/javascript">
-     var ASSIGNED_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+     var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
     </script>
 {% endblock headjs %}
 
