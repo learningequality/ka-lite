@@ -127,9 +127,9 @@ class PlaylistResource(Resource):
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
         if isinstance(bundle_or_obj, Playlist):
-            kwargs['id'] = bundle_or_obj.id
+            kwargs['pk'] = bundle_or_obj.id
         else:
-            kwargs['id'] = bundle_or_obj.obj.id
+            kwargs['pk'] = bundle_or_obj.obj.id
 
         return kwargs
 
