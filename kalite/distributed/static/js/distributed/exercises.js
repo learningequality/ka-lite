@@ -266,7 +266,8 @@ window.TestLogModel = Backbone.Model.extend({
 
     defaults: {
         index: 0,
-        complete: false
+        complete: false,
+        started: false
     },
 
     init: function(options) {
@@ -796,6 +797,10 @@ window.ExercisePracticeView = Backbone.View.extend({
 
 window.ExerciseTestView = Backbone.View.extend({
 
+    start_template: HB.template("exercise/test-start"),
+
+    stop_template: HB.template("exercise/test-stop"),
+
     initialize: function() {
 
         _.bindAll(this);
@@ -821,6 +826,22 @@ window.ExerciseTestView = Backbone.View.extend({
         // get the test log model from the queried collection
         this.log_model = this.log_collection.get_first_log_or_new_log();
 
+        if(this.log_model.get("complete")){
+            this.$el.html(this.stop_template())
+
+            $("#stop-test").click(function(){window.location.href = "/"})
+
+            return true;
+        }
+
+        if(!this.log_model.get("started")){
+            this.$el.html(this.start_template())
+
+            $("#start-test").click(this.start_test())
+
+            return true;
+        }
+
         var question_data = this.log_model.get_item_data(this.test_model);
 
         var data = $.extend({el: this.el}, question_data)
@@ -835,6 +856,12 @@ window.ExerciseTestView = Backbone.View.extend({
 
     },
 
+    start_test: function() {
+        this.testlog.set({"started": true})
+        this.testlog.save()
+        this.user_data_loaded()
+    },
+
     problem_loaded: function(data) {
         this.current_attempt_log.add_response_log_event({
             type: "loaded"
@@ -843,7 +870,6 @@ window.ExerciseTestView = Backbone.View.extend({
         if (this.current_attempt_log.isNew()) {
             this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
         }
-        console.log(this.current_attempt_log);
 
     },
 
