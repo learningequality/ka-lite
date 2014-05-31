@@ -1,7 +1,7 @@
 {% extends base_template %}
 
 {% load i18n %}
-{% load staticfiles %}
+{% load kalite_staticfiles %}
 
 {% block home_active %}active{% endblock home_active %}
 
@@ -11,8 +11,10 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' %}?{{ BUILD_ID }}"></script>
-    <script type="text/javascript" src="{% static 'js/distributed/jquery.dotdotdot.min.js' %}?{{ BUILD_ID }}"></script>
+    <!-- import handlebars templates here -->
+    <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' True %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/jquery.dotdotdot.min.js' True %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {

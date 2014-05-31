@@ -26,9 +26,10 @@ $(function() {
 });
 
 function formatPlaylist(data) {
-    var format =
-      "<li class=\"pull-left\"><div><span class=\"block cell-content\">" + data.title +"</span><span class=\"pull-left\">5/2</span><span class=\"pull-right\">V:2 Ex:7</span></div></li>";
-    return format;
+    data.numVideos = data.entries.filter(function(e) { return e.entity_kind == 'Video'; }).length;
+    data.numExercises = data.entries.filter(function(e) { return e.entity_kind == 'Exercise'; }).length;
+    var format = HB.template("playlists/homepage-playlists-table-cell");
+    return format(data);
 
 
 }
