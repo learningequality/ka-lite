@@ -135,7 +135,27 @@ class PlaylistResource(Resource):
 
     def get_object_list(self, request):
         '''Get the list of playlists based from a request'''
-        return self.read_playlists()
+        playlists = None
+
+        # here, we limit the returned playlists depending on the logged in user's privileges
+
+        if not request.is_logged_in:
+            # not logged in, allow no playlists for them
+            playlists = []
+
+        elif request.is_logged_in and request.is_admin:  # either actual admin, or a teacher
+            # allow access to all playlists
+            playlists = self.read_playlists()
+
+        elif request.is_logged_in and not request.is_admin:  # user is a student
+            # only allow them to access playlists that they're assigned to
+            playlists = self.read_playlists()
+            group = request.session['facility_user'].group
+            playlist_mappings_for_user_group = PlaylistToGroupMapping.objects.filter(group=group).values('playlist').values()
+            playlist_ids_assigned = [mapping['playlist'] for mapping in playlist_mappings_for_user_group]
+            playlists = [pl for pl in playlists if pl.id in playlist_ids_assigned]
+
+        return playlists
 
     def obj_get_list(self, bundle, **kwargs):
         return self.get_object_list(bundle.request)
