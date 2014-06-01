@@ -17,7 +17,7 @@ body {
 a:hover, a:focus {
     text-decoration: none;
 }
-h1, h2, .h4-no-margin-top { 
+h2, .h3-no-margin-top, .h4-no-margin-top { 
     margin-top: 0;
 }
 label {
@@ -36,6 +36,9 @@ input.submit {
 }
 table {
     margin-bottom: 0;
+}
+input[type="submit"] {
+    margin-bottom: 15px;
 }
 
 

@@ -17,11 +17,11 @@
     <form method="post" class="basic-form">
         {% csrf_token %}
     <div class="container">
-        <h3>{% trans "Log in" %}</h3>
+        <h3 class="h3-no-margin-top">{% trans "Log in" %}</h3>
 
         {{ form.as_p }}
 
-        <input type="submit" value="{% trans 'Log in' %}" class="submit btn btn-default btn-xs" />
+        <input type="submit" value="{% trans 'Log in' %}" class="submit btn btn-default btn-sm" />
     </form>
         <div id="info_block">
         {% if not restricted %}
