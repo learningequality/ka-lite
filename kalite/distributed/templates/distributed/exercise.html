@@ -64,7 +64,8 @@
             statusModel.loaded.then(function() {
                 window.exercisePracticeView = new ExercisePracticeView({
                     el: $(".exercise-wrapper"),
-                    exercise_id: "{{ exercise_id }}"
+                    exercise_id: "{{ exercise_id }}",
+                    context_type: "exercise",
                 });
             });
         });
