@@ -3,8 +3,6 @@ import random
 
 from annoying.decorators import render_to
 
-from kalite.topic_tools import get_topic_exercises
-
 from kalite.shared.decorators import require_login
 
 from .settings import STUDENT_TESTING_DATA_PATH

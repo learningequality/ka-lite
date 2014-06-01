@@ -123,6 +123,7 @@ th {
 .cell-content {
     color: #305884;
     margin-bottom: 20px;
+    height: 60px;
 }
 
 li:hover {
@@ -142,6 +143,7 @@ li {
     width: 19.6%;
     border: 1px solid black;
     font-family: museosans500;
+    height: 100px;
 }
 
 ul {

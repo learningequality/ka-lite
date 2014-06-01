@@ -72,22 +72,12 @@ window.ExerciseLogModel = Backbone.Model.extend({
     */
 
     defaults: {
-        points: 0,
         streak_progress: 0
     },
 
-    init: function() {
+    initialize: function() {
 
         _.bindAll(this);
-
-        var self = this;
-
-        this.starting_points = 0;
-
-        // keep track of how many points we started out with
-        this.listenToOnce(this, "change:points", function() {
-            self.starting_points = self.get("points")
-        });
 
     },
 
@@ -109,11 +99,8 @@ window.ExerciseLogModel = Backbone.Model.extend({
             this.set("attempts_before_completion", this.get("attempts"));
         }
 
-        Backbone.Model.prototype.save.call(this)
-            .then(function(data) {
-                // update the top-right point display, now that we've saved the points successfully
-                window.statusModel.set("newpoints", self.get("points") - self.starting_points);
-            });
+        // call the super method that will actually do the saving
+        return Backbone.Model.prototype.save.call(this);
     },
 
     urlRoot: "/api/exerciselog/"
@@ -393,32 +380,6 @@ window.TestLogCollection = Backbone.Collection.extend({
 });
 
 
-function updatePercentCompleted(correct) {
-
-    // update the streak; increment by 10 if correct, otherwise reset to 0
-    if (correct && !exerciseData.hintUsed) {
-        exerciseData.percentCompleted += 10;
-        if (exerciseData.percentCompleted < 101) {
-            bumpprob = Math.floor(Math.random()*100);
-            bump = (bumpprob < 90) ? 1 : (bumpprob < 99 ? 1.5 : 2);
-            inc = Math.ceil(exerciseData.basepoints*bump);
-            exerciseData.points += inc;
-            updateQuestionPoints(inc);
-        }
-    } else if (exerciseData.percentCompleted < 100) {
-        exerciseData.percentCompleted = 0;
-        exerciseData.points = 0;
-    }
-
-    // max out at the percentage completed at 100%
-    exerciseData.percentCompleted = Math.min(exerciseData.percentCompleted, 100);
-
-    // Increment the # of attempts
-    exerciseData.attempts++;
-
-}
-
-
 window.ExerciseHintView = Backbone.View.extend({
 
     template: HB.template("exercise/exercise-hint"),
@@ -429,12 +390,9 @@ window.ExerciseHintView = Backbone.View.extend({
 
         this.render();
 
-        // this.listenTo(this.model, "change", this.render);
-
     },
 
     render: function() {
-        // this.$el.html(this.template(this.data_model.attributes));
         this.$el.html(this.template());
     }
 
@@ -461,6 +419,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         this.$el.html(this.template());
         this.update_streak_bar();
         this.update_attempt_display();
+
     },
 
     update_streak_bar: function() {
@@ -593,9 +552,7 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     goto_next_problem: function() {
-        // When ready for the next problem, hints matter again!
-        hintsResetPoints = true;
-        this.$(".hint-reminder").toggle(hintsResetPoints); // hide/show message about hints
+
     },
 
     khan_loaded: function() {
@@ -663,6 +620,10 @@ window.ExercisePracticeView = Backbone.View.extend({
         if (this.attempt_collection.length > 0 && !this.attempt_collection.at(0).get("completed")) {
             this.current_attempt_log = this.attempt_collection.at(0);
         }
+
+        // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
+        // once it changes, for updating the "total points" in the nav bar display
+        this.starting_points = this.log_model.get("points");
 
         this.progress_view = new ExerciseProgressView({
             el: this.$(".exercise-progress-wrapper"),
@@ -732,6 +693,8 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     update_and_save_log_models: function(event_type, data) {
 
+        var self = this;
+
         // if current attempt log has not been saved, then this is the user's first response to the question
         if (this.current_attempt_log.isNew()) {
 
@@ -755,7 +718,11 @@ window.ExercisePracticeView = Backbone.View.extend({
                 attempts: this.log_model.get("attempts") + 1
             });
 
-            this.log_model.save();
+            this.log_model.save()
+                .then(function(data) {
+                    // update the top-right point display, now that we've saved the points successfully
+                    window.statusModel.set("newpoints", self.log_model.get("points") - self.starting_points);
+                });
 
             this.$(".hint-reminder").hide(); // hide message about hints
 
