@@ -21,14 +21,13 @@ ul, li {
     width: 100%;
 }
 .titlebar__title {
-    padding: 10px 0px 15px 0px;
+    padding: 0 0 15px 0;
     border-bottom: 1px #E7E7E7 solid;
     margin-bottom: 5px;
 }
 .titlebar__title li{
     display: inline;
     font-size: 20px;
-    padding-top: 5px;
 }
 
 .titlebar__buttons{
@@ -188,10 +187,6 @@ a.edit-link {
     float: right;
 }
 
-.select, .action {
-    width: 50%;
-}
-
 .select > p, .action > p {
     top: 1px;
 }
@@ -248,6 +243,10 @@ table {
     margin-bottom: 0;
 }
 
-@media only screen and (max-width: 690px) {
-    .action { float: left; width: 100%; }
+@media only screen and (max-width: 702px) {
+    .action-students { float: left; width: 100%; }
+}
+
+@media only screen and (max-width: 534px) {
+    .movegrouplist { margin-top: 5px; }
 }

@@ -133,17 +133,17 @@
                 {% endif %}
 
                 <div class="action-bar">
-                    <div class="selection">
+                    <div class="select selection">
                         <h4>
                             {% trans "Select" %}:
-                            <button class="btn all" value="#coaches">{% trans "All" %}</button>
-                            <button class="btn none" value="#coaches">{% trans "None" %}</button>
+                            <button class="btn btn-default btn-sm all" value="#coaches">{% trans "All" %}</button>
+                            <button class="btn btn-default btn-sm none" value="#coaches">{% trans "None" %}</button>
                         </h4>
                     </div>
-                        <div class="action">
-                        <h4>{% trans "Action" %}:
-
-                        <button class="btn delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                    <div class="action">
+                        <h4>
+                            {% trans "Action" %}:
+                            <button class="btn btn-default btn-sm delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
                         </h4>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
 
             <div>
                 <span class="definition">
-                    {% trans "A 'group' is set of students, such as a classroom of students or all students in one grade." %}
+                    {% trans "A 'group' is a set of students, such as a classroom of students or all students in one grade." %}
                     {% trans "Add students by selecting a group." %}
                 </span>
             </div>
@@ -221,17 +221,17 @@
 
             {% else %}
             <div class="action-bar">
-                <div class="selection">
+                <div class="select selection">
                     <h4>
                         {% trans "Select" %}:
-                        <button class="btn all" value="#groups">{% trans "All" %}</button>
-                        <button class="btn none" value="#groups">{% trans "None" %}</button>
+                        <button class="btn btn-default btn-sm all" value="#groups">{% trans "All" %}</button>
+                        <button class="btn btn-default btn-sm none" value="#groups">{% trans "None" %}</button>
                     </h4>
                 </div>
-                    <div class="action">
-                    <h4>{% trans "Action" %}:
-
-                    <button class="btn btn delete-group" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
+                <div class="action">
+                    <h4>
+                        {% trans "Action" %}:
+                        <button class="btn btn-default btn-sm delete-group" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
                     </h4>
                 </div>
             </div>
@@ -344,12 +344,12 @@
                         <button class="btn btn-default btn-sm none" value="#students">{% trans "None" %}</button>
                     </h4>
                 </div>
-                <div class="action">
+                <div class="action action-students">
                     <h4>
                         {% trans "Action" %}:
-                        <button class="btn delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                        <button class="btn btn-default btn-sm delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
                         {% if groups %}
-                            <button class="btn btn-sm movegroup" disabled="disabled" value="#students">{% trans "Change Student Groups" %}:</button>
+                            <button class="btn btn-default btn-sm movegroup" disabled="disabled" value="#students">{% trans "Change Student Groups" %}:</button>
                             <select class="movegrouplist" value="#students">
                                     <option selected>----</option>
                                     {% for group in groups %}
