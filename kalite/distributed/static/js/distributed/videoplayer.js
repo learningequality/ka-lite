@@ -289,7 +289,13 @@ window.VideoPlayerView = Backbone.View.extend({
 
     },
 
-    _initializePlayer: _.once(function(width, height) {
+    _initializePlayer: function(width, height) {
+
+        // avoid initializing more than once
+        if (this._loaded) {
+            return;
+        }
+        this._loaded = true;
 
         var player_id = this.$(".video-js").attr("id");
 
@@ -305,7 +311,7 @@ window.VideoPlayerView = Backbone.View.extend({
 
         this._onResize();
 
-    }),
+    },
 
     _onResize: _.throttle(function() {
         var available_width = $("article").width();
@@ -456,6 +462,8 @@ window.VideoWrapperView = Backbone.View.extend({
     template: HB.template("video/video-wrapper"),
 
     initialize: function() {
+
+        _.bindAll(this);
 
         this.render();
 
