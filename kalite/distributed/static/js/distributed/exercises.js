@@ -871,6 +871,8 @@ window.ExerciseTestView = Backbone.View.extend({
 
     check_answer: function(data) {
 
+        $("#check-answer-button").val("Next Question").show()
+
         $("#check-answer-button").parent().stop(jumpedToEnd=true)
 
         // increment the response count
@@ -920,6 +922,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
             self.exercise_view.load_question(self.log_model.get_item_data());
             self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+            $("#next-question-button").remove()
 
         });
 
