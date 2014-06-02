@@ -1,16 +1,15 @@
 {{#ifcond entity_kind "==" "Divider"}}
-<b>{{ entity_id }}</b>
+<span class="playlist-sidebar-entry playlist-sidebar-divider">{{ entity_id }}</span>
 {{else}}
-<a class="playlist-sidebar-entry-link {{#if active }}active{{/if}}" href="#">
+<a class="playlist-sidebar-entry playlist-sidebar-entry-link {{#if active }}active{{/if}}" href="#">
     <span class="icon-{{ entity_kind }}"></span>
     <span>
-        {{ entity_kind }}:
+        {{!-- {{ entity_kind }}: --}}
         {{#if description }}
             {{ description }}
         {{else}}
             {{ entity_id }}
         {{/if}}
-        {{#if active }} (active){{/if}}
     </span>
 </a>
 {{/ifcond}}

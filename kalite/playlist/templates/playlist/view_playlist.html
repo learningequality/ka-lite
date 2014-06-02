@@ -24,6 +24,8 @@
     <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
     <!-- <![endif]-->
 
+    <link href="{% static "css/playlist/sidebar.css" %}" rel="stylesheet" type="text/css">
+
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -79,6 +81,7 @@
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
     <!-- playlist-related files -->
+    <script src="{% static 'js/playlist/bigSlide.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='playlists' %}"></script>
     <script src="{% static 'js/playlist/models.js' %}"></script>
     <script src="{% static 'js/playlist/view_playlist.js' %}"></script>

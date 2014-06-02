@@ -106,11 +106,28 @@ window.PlaylistSidebarView = Backbone.View.extend({
         this.listenTo(this.model.get('entries'), 'add', this.add_new_entry);
         this.listenTo(this.model.get('entries'), 'reset', this.add_all_entries);
 
+        this.sidebar = this.$('.playlist-sidebar-tab').bigSlide({
+            menu: this.$(".panel"),
+            // push: "#page-container, #footer, .playlist-sidebar-tab",
+            push: ".playlist-sidebar-tab",
+            menuWidth: "220px"
+        });
+
+        this.show_sidebar();
+
     },
 
     render: function() {
         this.$el.html(this.template(this.model.attributes));
         return this;
+    },
+
+    show_sidebar: function() {
+        this.sidebar.open();
+    },
+
+    hide_sidebar: function() {
+        this.sidebar.close();
     },
 
     add_new_entry: function(entry) {
@@ -140,7 +157,7 @@ window.PlaylistSidebarView = Backbone.View.extend({
 
 window.PlaylistSidebarEntryView = Backbone.View.extend({
 
-    tagName: "ul",
+    tagName: "li",
 
     template: HB.template("playlists/playlist-sidebar-entry"),
 
