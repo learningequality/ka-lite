@@ -17,17 +17,17 @@ from django.views.decorators.gzip import gzip_page
 
 from . import get_serialized_models, save_serialized_models, get_device_counters, serialize
 from .models import *
+from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
-from securesync.devices.models import *  # inter-dependence
 
 
 def require_sync_session(handler):
     @api_handle_error_with_json
     def require_sync_session_wrapper_fn(request):
-        if request.raw_post_data:
-            data = simplejson.loads(request.raw_post_data)
+        if request.body:
+            data = simplejson.loads(request.body)
         else:
             data = request.GET
         try:
@@ -49,7 +49,7 @@ def require_sync_session(handler):
 @csrf_exempt
 @api_handle_error_with_json
 def create_session(request):
-    data = simplejson.loads(request.raw_post_data or "{}")
+    data = simplejson.loads(request.body or "{}")
     if "client_nonce" not in data:
         return JsonResponseMessageError("Client nonce must be specified.")
     if len(data["client_nonce"]) != 32 or re.match("[^0-9a-fA-F]", data["client_nonce"]):
@@ -115,7 +115,7 @@ def destroy_session(data, session):
 def device_download(data, session):
     """This device is having its own devices downloaded"""
     zone = session.client_device.get_zone()
-    devicezones = list(DeviceZone.objects.filter(zone=zone, device__in=data["devices"]))
+    devicezones = list(DeviceZone.all_objects.filter(zone=zone, device__in=data["devices"]))  # including deleted devicezones
     devices = [devicezone.device for devicezone in devicezones]
     session.models_downloaded += len(devices) + len(devicezones)
 
@@ -137,7 +137,7 @@ def device_upload(data, session):
         result = save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
         logging.debug("Exception uploading devices: %s" % e)
-        result = { "error": e.message, "saved_model_count": 0 }
+        result = { "error": e.args[0], "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
@@ -170,7 +170,7 @@ def model_upload(data, session):
         result = save_serialized_models(data["models"], src_version=session.client_version)
     except Exception as e:
         logging.debug("Exception uploading models: %s" % e)
-        result = { "error": e.message, "saved_model_count": 0 }
+        result = { "error": e.args[0], "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
@@ -191,7 +191,7 @@ def model_download(data, session):
         result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, dest_version=session.client_version)
     except Exception as e:
         logging.debug("Exception downloading models: %s" % e)
-        result = { "error": e.message, "count": 0 }
+        result = { "error": e.args[0], "count": 0 }
 
     session.models_downloaded += result["count"]
     session.errors += result.has_key("error")

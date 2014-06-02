@@ -18,7 +18,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from ... import KHANLOAD_CACHE_DIR, kind_slugs
 from fle_utils.general import datediff
-from kalite.main import topic_tools
+from kalite import topic_tools
 
 
 # get the path to an exercise file, so we can check, below, which ones exist
@@ -147,7 +147,11 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
         node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
         node["ancestor_ids"] = ancestor_ids
 
-        if kind == "Exercise":
+        if kind == "Video":
+            # TODO: map new videos into old videos; for now, this will do nothing.
+            node["video_id"] = node["youtube_id"]
+
+        elif kind == "Exercise":
             # For each exercise, need to set the exercise_id
             #   get related videos
             #   and compute base points

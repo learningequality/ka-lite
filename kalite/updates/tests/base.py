@@ -1,6 +1,6 @@
 from .. import stamp_availability_on_topic
-from kalite.main.topic_tools import get_topic_tree
 from kalite.testing import KALiteTestCase
+from kalite.topic_tools import get_topic_tree
 
 
 class UpdatesTestCase(KALiteTestCase):

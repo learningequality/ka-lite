@@ -21,8 +21,8 @@ from fle_utils.internet import StatusException
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog
-from kalite.main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_live_topics
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_live_topics
 
 
 def get_accessible_objects_from_logged_in_user(request, facility):
@@ -151,6 +151,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     topic_videos = dict()
     exercises_by_topic = dict()
     videos_by_topic = dict()
+    subtopics = dict()
+    subtopic_ids = dict()
+
+    for id in topic_ids:
+        subtopics[id] = get_live_topics(node_cache["Topic"][id][0])
+        subtopic_ids[id] = [subtopic["id"] for subtopic in subtopics[id]]
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
@@ -162,13 +168,19 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         parent_ids = [topic for ex in node_cache["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
+        subtopic_ids = [subtopic["id"] for subtopic in get_live_topics(node_cache["Topic"][topic][0])]
+        subtopic = set(parent_ids).intersection(set(subtopic_ids))
         if not topic:
             logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
             topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
+        subtopic = subtopic.pop()
+        if not subtopic in topic_exercises:
+            topic_exercises[subtopic] = get_topic_exercises(path=node_cache["Topic"][subtopic][0]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
+        exercises_by_topic[subtopic] = exercises_by_topic.get(subtopic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
@@ -180,17 +192,23 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         parent_ids = [topic for vid in node_cache["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
+        subtopic_ids = [subtopic["id"] for subtopic in get_live_topics(node_cache["Topic"][topic][0])]
+        subtopic = set(parent_ids).intersection(set(subtopic_ids))
         if not topic:
             logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
             topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
+        if not subtopic in topic_videos:
+            topic_videos[subtopic] = get_topic_videos(path=node_cache["Topic"][subtopic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
+        videos_by_topic[subtopic] = videos_by_topic.get(subtopic, []) + [vlog]
 
 
     # Now compute stats
-    for id in topic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+    for id in topic_ids + subtopic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+
         n_exercises = len(topic_exercises.get(id, []))
         n_videos = len(topic_videos.get(id, []))
 
@@ -233,6 +251,8 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         "facilities": context["facilities"],
         "student": user,
         "topics": topics,
+        "subtopics": subtopics,
+        "subtopic_ids": subtopic_ids,
         "exercises": topic_exercises,
         "exercise_logs": exercises_by_topic,
         "video_logs": videos_by_topic,
