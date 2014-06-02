@@ -201,13 +201,15 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
+        this.context_type = options.context_type;
     },
 
     url: function() {
         return "/api/attemptlog/?" + $.param({
             "exercise_id": this.exercise_id,
             "user": window.statusModel.get("user_id"),
-            "limit": this.STREAK_WINDOW
+            "limit": this.STREAK_WINDOW,
+            "context_type": this.context_type
         });
     },
 
@@ -268,7 +270,8 @@ window.TestLogModel = Backbone.Model.extend({
 
     defaults: {
         index: 0,
-        complete: false
+        complete: false,
+        started: false
     },
 
     init: function(options) {
@@ -339,22 +342,21 @@ window.TestLogModel = Backbone.Model.extend({
         };
     },
 
-    get_item_test_data: function() {
-
-    },
-
     save: function() {
 
         var self = this;
 
         var already_complete = this.get("complete");
 
-        if((this.get("index") == this.item_sequence.length) && !already_complete){
-            this.set({
-                complete: true
-            })
-            this.trigger("complete");
-        }
+        if(this.item_sequence){
+
+            if((this.get("index") == this.item_sequence.length) && !already_complete){
+                this.set({
+                    complete: true
+                })
+                this.trigger("complete");
+            };
+        };
 
         Backbone.Model.prototype.save.call(this)
     },
@@ -384,9 +386,6 @@ window.TestLogCollection = Backbone.Collection.extend({
         } else { // create a new exercise log if none existed
             return new TestLogModel({
                 "user": window.statusModel.get("user_uri")
-            },
-            {
-                "test_data_model": this.test_data_model
             });
         }
     }
@@ -614,7 +613,7 @@ window.ExercisePracticeView = Backbone.View.extend({
                 var log_collection_deferred = self.log_collection.fetch();
 
                 // load the last 10 (or however many) specific attempts the user made on self exercise
-                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id});
+                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id, context_type: self.options.context_type});
                 var attempt_collection_deferred = self.attempt_collection.fetch();
 
                 // wait until both the exercise and attempt logs have been loaded before continuing
@@ -687,6 +686,8 @@ window.ExercisePracticeView = Backbone.View.extend({
     },
 
     check_answer: function(data) {
+
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -787,6 +788,10 @@ window.ExercisePracticeView = Backbone.View.extend({
 
 window.ExerciseTestView = Backbone.View.extend({
 
+    start_template: HB.template("exercise/test-start"),
+
+    stop_template: HB.template("exercise/test-stop"),
+
     initialize: function() {
 
         _.bindAll(this);
@@ -807,23 +812,55 @@ window.ExerciseTestView = Backbone.View.extend({
 
     },
 
+    finish_test: function() {
+        if(this.log_model.get("complete")){
+            this.$el.html(this.stop_template())
+
+            $("#stop-test").click(function(){window.location.href = "/"})
+
+            return true;
+        }
+    },
+
     user_data_loaded: function() {
 
         // get the test log model from the queried collection
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+        if(!this.log_model){
+            this.log_model = this.log_collection.get_first_log_or_new_log();
+        }
 
-        var question_data = this.log_model.get_item_data(this.test_model);
+        if(!this.log_model.get("started")){
+            this.$el.html(this.start_template());
 
-        var data = $.extend({el: this.el}, question_data)
+            $("#start-test").click(this.start_test);
 
-        this.initialize_new_attempt_log(question_data);
+        } else {
 
-        this.exercise_view = new ExerciseView(data);
+            this.listenTo(this.log_model, "complete", this.finish_test);
 
-        this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
-        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+            var question_data = this.log_model.get_item_data(this.test_model);
 
+            var data = $.extend({el: this.el}, question_data)
+
+            console.log(data);
+
+            this.initialize_new_attempt_log(question_data);
+
+            this.exercise_view = new ExerciseView(data);
+
+            this.exercise_view.on("check_answer", this.check_answer);
+            this.exercise_view.on("problem_loaded", this.problem_loaded);
+            this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+        }
+
+    },
+
+    start_test: function() {
+        this.log_model.set({"started": true});
+        model_save_deferred = this.log_model.save();
+        this.user_data_loaded();
+        this.ready_for_next_question();
+        this.problem_loaded();
     },
 
     problem_loaded: function(data) {
@@ -834,7 +871,6 @@ window.ExerciseTestView = Backbone.View.extend({
         if (this.current_attempt_log.isNew()) {
             this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
         }
-        console.log(this.current_attempt_log);
 
     },
 
@@ -858,6 +894,10 @@ window.ExerciseTestView = Backbone.View.extend({
     },
 
     check_answer: function(data) {
+
+        $("#check-answer-button").val("Next Question").show()
+
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -906,6 +946,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
             self.exercise_view.load_question(self.log_model.get_item_data());
             self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+            $("#next-question-button").remove()
 
         });
 

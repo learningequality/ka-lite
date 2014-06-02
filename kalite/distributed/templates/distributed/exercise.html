@@ -15,7 +15,8 @@
         $(function() {
             window.exercise_practice_view = new ExercisePracticeView({
                 el: $(".exercise-wrapper"),
-                exercise_id: "{{ exercise_id }}"
+                exercise_id: "{{ exercise_id }}",
+                context_type: "exercise"
             });
         });
 

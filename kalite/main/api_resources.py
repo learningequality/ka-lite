@@ -31,5 +31,6 @@ class AttemptLogResource(ModelResource):
         filtering = {
             "exercise_id": ('exact', ),
             "user": ('exact', ),
+            "context_type": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
