@@ -12,6 +12,9 @@ from kalite.topic_tools import get_flat_topic_tree
 
 
 class Playlist:
+
+    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned']
+
     def __init__(self, **kwargs):
         self.pk = self.id = kwargs.get('id')
         self.title = kwargs.get('title')
@@ -20,6 +23,9 @@ class Playlist:
 
 
 class PlaylistEntry:
+
+    __slots__ = ['entity_id', 'entity_kind', 'sort_order', 'playlist', 'id', 'pk']
+
     def __init__(self, **kwargs):
         self.entity_id = kwargs.get('entity_id')
         self.entity_kind = kwargs.get('entity_kind')
