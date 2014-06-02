@@ -9,7 +9,7 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
+
     <script>
 
         $(function() {
@@ -27,7 +27,10 @@
 
     <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
     <script src="{% static 'js/seedrandom.min.js' %}"></script>
+
     <script src="{% static 'js/distributed/exercises.js' %}"></script>
+    <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
+
 {% endblock headjs %}
 
 {% block content %}
