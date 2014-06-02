@@ -469,6 +469,9 @@ window.VideoWrapperView = Backbone.View.extend({
 
     render: function() {
 
+        // get a random ID for video.js to use to refer to this player
+        this.model.set("random_id", "video-" + Math.random().toString().slice(2));
+
         this.$el.html(this.template(this.model.attributes));
 
         this.videoPlayerView = new VideoPlayerView({
