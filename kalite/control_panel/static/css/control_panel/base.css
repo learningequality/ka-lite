@@ -179,7 +179,7 @@ a.edit-link {
     margin-bottom: 10px;
 }
 
-.select {
+.select, .selection {
     float: left;
 }
 
