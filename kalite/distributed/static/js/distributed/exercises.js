@@ -472,7 +472,7 @@ window.ExerciseView = Backbone.View.extend({
 
         this.render();
 
-        this.initialize_khan_exercises_listeners();
+        _.defer(this.initialize_khan_exercises_listeners);
 
     },
 
@@ -506,7 +506,7 @@ window.ExerciseView = Backbone.View.extend({
 
         var self = this;
 
-        $(Khan).bind("loaded", this.khan_loaded);
+        Khan.loaded.then(this.khan_loaded);
 
         $(Exercises).bind("checkAnswer", this.check_answer);
 

@@ -276,6 +276,9 @@ var Khan = (function() {
 
         startLoadingExercise: startLoadingExercise,
 
+        // KA-LITE-MOD: add a deferred that we can use to ensure khan-exercises has loaded
+        loaded: $.Deferred(),
+
         moduleDependencies: {
             "math": ["../third_party/raphael"],
 
@@ -962,8 +965,8 @@ var Khan = (function() {
             return $.contains(elem.ownerDocument.documentElement, elem);
         };
 
-        // KA-LITE-MOD: trigger an event at this point, so that in KA Lite we can launch exercise rendering
-        $(Khan).trigger("loaded");
+        // KA-LITE-MOD: resolve our deferred, so that in KA Lite we know we can now launch exercise rendering
+        Khan.loaded.resolve();
 
     }
 
