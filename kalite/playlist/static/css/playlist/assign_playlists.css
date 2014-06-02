@@ -3,9 +3,19 @@
 }
 
 .span3 th {
-  border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 .student-grp-row {
     cursor: move;
 }
+
+#student-groups {
+    position: fixed;
+    width: auto;
+}
+
+#playlists {
+    margin-left: 200px;
+}
+
