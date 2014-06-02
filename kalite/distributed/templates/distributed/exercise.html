@@ -13,28 +13,6 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script>
-        var urlBaseOverride = "{% static 'khan-exercises/' %}";
-        // some dummy features on the Exercises object to make khan-exercises.js happy
-        Exercises = {
-            completeStack: {
-                getUid: function() { return 0; },
-                getCustomStackID: function() { return 0; }
-            },
-            currentCard: {
-                attributes: {},
-                get: function() {}
-            },
-            RelatedVideos: {
-                render: function() {}
-            },
-            getCurrentFramework: function() { return "khan-exercises"; },
-            incompleteStack: [0],
-            PerseusBridge: {
-                cleanupProblem: function() {}
-            }
-        };
-    </script>
     <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
     <script>
 

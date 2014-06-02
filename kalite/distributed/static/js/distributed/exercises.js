@@ -1,5 +1,24 @@
 /*
 
+// add some dummy features onto the Exercises object to make khan-exercises.js happy
+window.Exercises = {
+    completeStack: {
+        getUid: function() { return 0; },
+        getCustomStackID: function() { return 0; }
+    },
+    currentCard: {
+        attributes: {},
+        get: function() {}
+    },
+    RelatedVideos: {
+        render: function() {}
+    },
+    getCurrentFramework: function() { return "khan-exercises"; },
+    incompleteStack: [0],
+    PerseusBridge: {
+        cleanupProblem: function() {}
+    }
+};
 TODO:
     - Fire an event when question has been loaded and displayed (to be used for marking start time on log.)
 
