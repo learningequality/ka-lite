@@ -1,4 +1,3 @@
-/*
 
 // add some dummy features onto the Exercises object to make khan-exercises.js happy
 window.Exercises = {
@@ -19,10 +18,7 @@ window.Exercises = {
         cleanupProblem: function() {}
     }
 };
-TODO:
-    - Fire an event when question has been loaded and displayed (to be used for marking start time on log.)
 
-*/
 
 window.ExerciseDataModel = Backbone.Model.extend({
     /*
