@@ -21,7 +21,7 @@ from fle_utils.internet import StatusException
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog
-from kalite.main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
+from kalite.main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_live_topics
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 
 
@@ -198,6 +198,9 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         videos = videos_by_topic.get(id, [])
         n_exercises_touched = len(exercises)
         n_videos_touched = len(videos)
+        #childtopics = get_live_topics(node_cache["Topic"][id])
+        #for child in get_live_topics(id):
+        #    childtopics.append(child["id"])
 
         exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
@@ -217,6 +220,9 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             "vid:total_minutes":      0 if not n_videos_touched else sum([vl["total_seconds_watched"] for vl in videos]) / 60.,
             "vid:average_points":   0. if not n_videos_touched else float(sum([vl["points"] for vl in videos]) / float(n_videos_touched)),
             "vid:last_completed": None if not n_videos_touched else max_none([vl["completion_timestamp"] or None for vl in videos]),
+        
+            "exandvid:last_completed": None if not (n_exercises_touched or n_videos_touched) else max_none([l["completion_timestamp"] or None for l in exercises + videos]),
+            #"childtopics": childtopics,     
         }
 
     context = plotting_metadata_context(request)
@@ -240,12 +246,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             {"key": "ex:average_attempts", "title": _("Average Attempts"), "type": "float"},
             {"key": "ex:average_streak",   "title": _("Average Streak"),   "type": "pct"},
             {"key": "ex:total_struggling", "title": _("Struggling"),       "type": "int"},
-            {"key": "ex:last_completed",   "title": _("Last Completed"),   "type": "date"},
             {"key": "vid:pct_completed",   "title": _("% Completed"),      "type": "pct"},
             {"key": "vid:pct_started",     "title": _("% Started"),        "type": "pct"},
             {"key": "vid:total_minutes",   "title": _("Average Minutes Watched"),"type": "float"},
             {"key": "vid:average_points",  "title": _("Average Points"),   "type": "float"},
-            {"key": "vid:last_completed",  "title": _("Last Completed"),   "type": "date"},
+            {"key": "exandvid:last_completed", "title": _("Topic Last Completed"), "type":"date"}
         ]
     }
 
