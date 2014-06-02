@@ -210,6 +210,25 @@ div.exercises-card {
     background-color: #5BDB44;
 }
 
+.exercise-title-prefix {
+    opacity: 0.3;
+}
+
+.attempts {
+    font-size: 18px;
+    text-align: right;
+    width: 100%;
+}
+
+.progress-points {
+    width: 90%;
+    text-align: center;
+    float: left;
+    white-space: nowrap;
+    font-size: 1.1em;
+    padding: 4px 8px;
+}
+
 .practice-exercise-description {
     opacity: 0.5;
     font-size: 0.7em;
