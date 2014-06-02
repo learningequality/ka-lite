@@ -1,0 +1,16 @@
+{{#ifcond entity_kind "==" "Divider"}}
+<b>{{ entity_id }}</b>
+{{else}}
+<a class="playlist-sidebar-entry-link {{#if active }}active{{/if}}" href="#">
+    <span class="icon-{{ entity_kind }}"></span>
+    <span>
+        {{ entity_kind }}:
+        {{#if description }}
+            {{ description }}
+        {{else}}
+            {{ entity_id }}
+        {{/if}}
+        {{#if active }} (active){{/if}}
+    </span>
+</a>
+{{/ifcond}}
