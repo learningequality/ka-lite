@@ -5,3 +5,7 @@
 .span3 th {
   border-bottom: 1px solid #ddd;
 }
+
+.student-grp-row {
+    cursor: move;
+}
