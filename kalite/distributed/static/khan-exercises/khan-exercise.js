@@ -218,9 +218,9 @@ var Khan = (function() {
     // Promise that gets resolved when MathJax is loaded
     mathJaxLoaded,
 
-    // KA-LITE-MOD: pull this path from an externally specified variable, so it can point
-    // to the correct location of khan-exercises within the context of our Django project
-    urlBase = urlBaseOverride,
+    // KA-LITE-MOD: ensure we're pointing to the correct location of khan-exercises,
+    // within the context of our Django project
+    urlBase = STATIC_URL + "khan-exercises/",
 
     // In local mode, we use khan-exercises local copy of the /images
     // directory.  But in production (on www.khanacademy.org), we use
