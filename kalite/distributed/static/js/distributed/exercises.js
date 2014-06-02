@@ -586,6 +586,8 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     initialize: function() {
 
+        var self = this;
+
         _.bindAll(this);
 
         this.exercise_view = new ExerciseView({
@@ -601,24 +603,26 @@ window.ExercisePracticeView = Backbone.View.extend({
             el: this.$(".exercise-hint-wrapper")
         });
 
-        if (window.statusModel.get("is_logged_in")) {
+        window.statusModel.loaded.then(function() {
 
-            this.exercise_view.on("check_answer", this.check_answer);
+            if (window.statusModel.get("is_logged_in")) {
 
-            // load the data about the user's overall progress on the exercise
-            this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
-            var log_collection_deferred = this.log_collection.fetch();
+                self.exercise_view.on("check_answer", self.check_answer);
 
-            // load the last 10 (or however many) specific attempts the user made on this exercise
-            this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id});
-            var attempt_collection_deferred = this.attempt_collection.fetch();
+                // load the data about the user's overall progress on the exercise
+                self.log_collection = new ExerciseLogCollection([], {exercise_id: self.options.exercise_id});
+                var log_collection_deferred = self.log_collection.fetch();
 
-            // wait until both the exercise and attempt logs have been loaded before continuing
-            this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
-            this.user_data_loaded_deferred.then(this.user_data_loaded);
+                // load the last 10 (or however many) specific attempts the user made on self exercise
+                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id});
+                var attempt_collection_deferred = self.attempt_collection.fetch();
 
-        }
+                // wait until both the exercise and attempt logs have been loaded before continuing
+                self.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+                self.user_data_loaded_deferred.then(self.user_data_loaded);
 
+            }
+        });
     },
 
     user_data_loaded: function() {
