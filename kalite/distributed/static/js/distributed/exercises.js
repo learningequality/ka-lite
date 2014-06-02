@@ -490,6 +490,11 @@ window.ExerciseView = Backbone.View.extend({
 
         this.initialize_listeners();
 
+        if ($("#exercise-inline-style").length == 0) {
+            // dummy style container that khan-exercises uses to dynamically add styling to an exercise
+            $("head").append("<style id='exercise-inline-style'></style>");
+        }
+
     },
 
     initialize_listeners: function() {
