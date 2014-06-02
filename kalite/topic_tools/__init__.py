@@ -21,6 +21,7 @@ so
 """
 import glob
 import os
+import re
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
@@ -450,3 +451,21 @@ def get_exercise_data(request, exercise_id=None):
     exercise["template"] = exercise_template
 
     return exercise
+
+
+def video_dict_by_video_id():
+    # TODO (aron): Add i18n by varying the language of the topic tree here
+    topictree = get_flat_topic_tree()
+
+    # since videos in the flat topic tree are indexed by youtube
+    # number, we have to construct another dict with the id
+    # instead as the key
+    video_title_dict = {}
+    video_id_regex = re.compile('.*/v/(?P<entity_id>.*)/')
+    for video_node in topictree['Video'].itervalues():
+        video_id_matches = re.match(video_id_regex, video_node['path'])
+        if video_id_matches:
+            video_key = video_id_matches.groupdict()['entity_id']
+            video_title_dict[video_key] = video_node
+
+    return video_title_dict

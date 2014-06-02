@@ -1,6 +1,5 @@
 import os
 import json
-import re
 from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
@@ -8,7 +7,7 @@ from tastypie.resources import Resource
 from .models import PlaylistToGroupMapping
 from kalite.facility.models import FacilityGroup
 from kalite.shared.contextmanagers.db import inside_transaction
-from kalite.topic_tools import get_flat_topic_tree
+from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id
 
 
 class Playlist:
@@ -69,24 +68,6 @@ class PlaylistResource(Resource):
         entry['old_entity_id'] = entry['entity_id']
         entry['entity_id'] = name
         return entry
-
-    @staticmethod
-    def _construct_video_dict():
-        # TODO (aron): Add i18n by varying the language of the topic tree here
-        topictree = get_flat_topic_tree()
-
-        # since videos in the flat topic tree are indexed by youtube
-        # number, we have to construct another dict with the id
-        # instead as the key
-        video_title_dict = {}
-        video_id_regex = re.compile('.*/v/(?P<entity_id>.*)/')
-        for video_node in topictree['Video'].itervalues():
-            video_id_matches = re.match(video_id_regex, video_node['path'])
-            if video_id_matches:
-                video_key = video_id_matches.groupdict()['entity_id']
-                video_title_dict[video_key] = video_node
-
-        return video_title_dict
 
     @classmethod
     def _add_full_title_from_topic_tree(cls, entry, video_title_dict):
@@ -169,7 +150,7 @@ class PlaylistResource(Resource):
     def obj_get(self, bundle, **kwargs):
         playlists = self.read_playlists()
         pk = kwargs['pk']
-        video_dict = self._construct_video_dict()
+        video_dict = video_dict_by_video_id()
         for playlist in playlists:
             if str(playlist.id) == pk:
                 playlist.entries = [self._add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
