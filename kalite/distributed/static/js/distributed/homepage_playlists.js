@@ -68,6 +68,7 @@ $(function() {
 function formatPlaylist(data) {
     data.numVideos = data.entries.filter(function(e) { return e.get('entity_kind') == 'Video'; }).length;
     data.numExercises = data.entries.filter(function(e) { return e.get('entity_kind') == 'Exercise'; }).length;
+    data.playlistLink = sprintf(VIEW_PLAYLIST_TEMPLATE_URL, {playlist_id: data.id});
     var format = HB.template("playlists/homepage-playlists-table-cell");
     return format(data);
 
