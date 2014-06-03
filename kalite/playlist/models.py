@@ -5,6 +5,7 @@ from django.db import models
 from fle_utils.django_utils import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
+from kalite.topic_tools import get_flat_topic_tree
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -123,21 +124,9 @@ class VanillaPlaylist:
 class VanillaPlaylistEntry:
     """
     A plain object that models playlist entries. Contrast with PlaylistEntry,
-    which is a Django model.
+    which is a Django model. For now, it's just a collection of static methods
+    for operating on playlist entry dictionaries.
     """
-
-    __slots__ = ['entity_id', 'entity_kind', 'sort_order', 'playlist', 'id', 'pk']
-
-    def __init__(self, **kwargs):
-        self.entity_id = kwargs.get('entity_id')
-        self.entity_kind = kwargs.get('entity_kind')
-        self.sort_order = kwargs.get('sort_order')
-        self.playlist = kwargs.get('playlist')
-        if self.playlist:
-            self.pk = self.id = "{}-{}".format(self.playlist.id, self.entity_id)
-        else:
-            self.pk = self.id = None
-        self._clean_playlist_entry_id()
 
     @staticmethod
     def _clean_playlist_entry_id(entry):
@@ -156,5 +145,26 @@ class VanillaPlaylistEntry:
 
         entry['old_entity_id'] = ['entity_id']
         entry['entity_id'] = name
+
+        return entry
+
+    @staticmethod
+    def add_full_title_from_topic_tree(entry, video_title_dict):
+        # TODO (aron): Add i18n by varying the language of the topic tree here
+        topictree = get_flat_topic_tree()
+
+        entry_kind = entry['entity_kind']
+        entry_name = entry['entity_id']
+
+        try:
+            if entry_kind == 'Exercise':
+                entry['title'] = entry['description'] = topictree['Exercise'][entry_name]['title']
+            if entry_kind == 'Video':
+                entry['title'] = entry['description'] = video_title_dict[entry_name]['title']
+            else:
+                entry['title'] = entry['description'] = entry_name
+        except KeyError:
+            # TODO: edit once we get the properly labeled entity ids from Nalanda
+            entry['description'] = entry['entity_id']
 
         return entry

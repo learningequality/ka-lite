@@ -2,9 +2,9 @@ from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist
+from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
-from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id
+from kalite.topic_tools import video_dict_by_video_id
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -21,25 +21,6 @@ class PlaylistResource(Resource):
         resource_name = 'playlist'
         # Use plain python object first instead of full-blown Django ORM model
         object_class = Playlist
-
-    @classmethod
-    def _add_full_title_from_topic_tree(cls, entry, video_title_dict):
-        # TODO (aron): Add i18n by varying the language of the topic tree here
-        topictree = get_flat_topic_tree()
-
-        entry_kind = entry['entity_kind']
-        entry_name = entry['entity_id']
-
-        try:
-            if entry_kind == 'Exercise':
-                entry['description'] = topictree['Exercise'][entry_name]['title']
-            if entry_kind == 'Video':
-                entry['description'] = video_title_dict[entry_name]['title']
-        except KeyError:
-            # TODO: edit once we get the properly labeled entity ids from Nalanda
-            entry['description'] = entry['entity_id']
-
-        return entry
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
@@ -66,7 +47,7 @@ class PlaylistResource(Resource):
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             # only allow them to access playlists that they're assigned to
-            playlists = self.read_playlists()
+            playlists = Playlist.all()
             group = request.session['facility_user'].group
             playlist_mappings_for_user_group = PlaylistToGroupMapping.objects.filter(group=group).values('playlist').values()
             playlist_ids_assigned = [mapping['playlist'] for mapping in playlist_mappings_for_user_group]
@@ -78,12 +59,12 @@ class PlaylistResource(Resource):
         return self.get_object_list(bundle.request)
 
     def obj_get(self, bundle, **kwargs):
-        playlists = self.read_playlists()
+        playlists = Playlist.all()
         pk = kwargs['pk']
         video_dict = video_dict_by_video_id()
         for playlist in playlists:
             if str(playlist.id) == pk:
-                playlist.entries = [self._add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
+                playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
                 return playlist
         else:
             raise NotFound('Playlist with pk %s not found' % pk)
