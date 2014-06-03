@@ -104,13 +104,19 @@ def get_id2slug_map(force=False):
 
 FLAT_TOPIC_TREE = None
 CACHE_VARS.append("FLAT_TOPIC_TREE")
-def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
+def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE, alldata=False):
     global FLAT_TOPIC_TREE
     if FLAT_TOPIC_TREE is None:
-        FLAT_TOPIC_TREE = {}
-    if lang_code not in FLAT_TOPIC_TREE or force:
-        FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
-    return FLAT_TOPIC_TREE[lang_code]
+        FLAT_TOPIC_TREE = {
+            # The true and false values are for whether we return
+            # the complete data for nodes, as given
+            # by the alldata parameter
+            True: {},
+            False: {}
+        }
+    if not FLAT_TOPIC_TREE[alldata] or lang_code not in FLAT_TOPIC_TREE[alldata] or force:
+        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code, alldata=alldata)
+    return FLAT_TOPIC_TREE[alldata][lang_code]
 
 
 def validate_ancestor_ids(topictree=None):
@@ -153,7 +159,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     return slug2id_map
 
 
-def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
+def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, alldata=False):
     translation.activate(lang_code)
 
     categories = node_cache or get_node_cache()
@@ -164,12 +170,15 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
         result[category_name] = {}
         for node_name, node_list in category.iteritems():
             node = node_list[0]
-            relevant_data = {
-                'title': _(node['title']),
-                'path': node['path'],
-                'kind': node['kind'],
-                'available': node.get('available', True),
-            }
+            if alldata:
+                relevant_data = node
+            else:
+                relevant_data = {
+                    'title': _(node['title']),
+                    'path': node['path'],
+                    'kind': node['kind'],
+                    'available': node.get('available', True),
+                }
             result[category_name][node_name] = relevant_data
 
     translation.deactivate()
