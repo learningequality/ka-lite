@@ -29,11 +29,11 @@
     };
 
     var animateSlide = {
-      '-webkit-transition': settings.side + ' ' + settings.speed + 'ms ease',
-      '-moz-transition': settings.side + ' ' + settings.speed + 'ms ease',
-      '-ms-transition': settings.side + ' ' + settings.speed + 'ms ease',
-      '-o-transition': settings.side + ' ' + settings.speed + 'ms ease',
-      'transition': settings.side + ' ' + settings.speed + 'ms ease'
+      '-webkit-transition': settings.side + ' ' + settings.speed + 'ms linear',
+      '-moz-transition': settings.side + ' ' + settings.speed + 'ms linear',
+      '-ms-transition': settings.side + ' ' + settings.speed + 'ms linear',
+      '-o-transition': settings.side + ' ' + settings.speed + 'ms linear',
+      'transition': settings.side + ' ' + settings.speed + 'ms linear'
     };
 
     menu.css(positionOffScreen);

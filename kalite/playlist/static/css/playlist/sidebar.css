@@ -56,6 +56,7 @@ Nav Panel
     position: fixed;
     left: -220px;
     width: 220px;
+    height: 130%;
 }
 
 .panel ul {
@@ -68,12 +69,15 @@ Nav Panel
 
 .panel .playlist-sidebar-entry {
     display: block;
-    padding: 1em;
+    padding: 1.1em 1em;
+    font-size: 1.2em;
 }
 
 .panel a:link,
 .panel a:visited {
     color: #fff;
+    display: block;
+    margin: 2px 5px 2px 0;
 }
 
 .panel a.playlist-sidebar-entry-link:hover {
@@ -103,8 +107,8 @@ Nav Panel
     background: #8dc63f;
     color: #fff;
     font-weight: bold;
-    font-size: 16px;
-    padding: 10px 20px;
+    font-size: 18px;
+    padding: 15px 20px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     cursor: pointer;
@@ -114,4 +118,9 @@ Nav Panel
     -moz-transform: rotate(270deg);
     -webkit-transform-origin: 0 0;
     -webkit-transform: rotate(270deg);
+}
+
+.playlist-sidebar-tab a {
+  display: block;
+  text-decoration: none;
 }
