@@ -95,6 +95,8 @@ window.PlaylistSidebarView = Backbone.View.extend({
 
     initialize: function() {
 
+        var self = this;
+
         _.bindAll(this);
 
         this.render();
@@ -106,14 +108,29 @@ window.PlaylistSidebarView = Backbone.View.extend({
         this.listenTo(this.model.get('entries'), 'add', this.add_new_entry);
         this.listenTo(this.model.get('entries'), 'reset', this.add_all_entries);
 
-        this.sidebar = this.$('.playlist-sidebar-tab').bigSlide({
+        this.sidebar = this.$('').bigSlide({
             menu: this.$(".panel"),
             // push: "#page-container, #footer, .playlist-sidebar-tab",
             push: ".playlist-sidebar-tab",
             menuWidth: "220px"
         });
 
+        this.state_model = new Backbone.Model({
+            open: false
+        });
+
+        this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
+
+        this.$(".playlist-sidebar-tab").click(this.toggle_sidebar);
+
+        // this.$(".playlist-sidebar-tab").hide();
+        // setTimeout(function() { self.$(".playlist-sidebar-tab").show(); }, 5000);
+
         this.show_sidebar();
+
+        _.defer(function() {
+            self.$("a:first").click();
+        });
 
     },
 
@@ -122,12 +139,27 @@ window.PlaylistSidebarView = Backbone.View.extend({
         return this;
     },
 
+    toggle_sidebar: function(ev) {
+        // this.$(".playlist-sidebar-tab").css("color", this.state_model.get("open") ? "red" : "blue")
+        this.state_model.set("open", !this.state_model.get("open"));
+        ev.preventDefault();
+        return false;
+    },
+
+    update_sidebar_visibility: function() {
+        if (this.state_model.get("open")) {
+            this.sidebar.open();
+        } else {
+            this.sidebar.close();
+        }
+    },
+
     show_sidebar: function() {
-        this.sidebar.open();
+        this.state_model.set("open", true);
     },
 
     hide_sidebar: function() {
-        this.sidebar.close();
+        this.state_model.set("open", false);
     },
 
     add_new_entry: function(entry) {
@@ -143,6 +175,7 @@ window.PlaylistSidebarView = Backbone.View.extend({
     },
 
     item_clicked: function(view) {
+        this.hide_sidebar();
         // only trigger an entry_requested event if the item wasn't already active
         if (!view.model.get("active")) {
             this.trigger("entry_requested", view.model);
@@ -162,7 +195,7 @@ window.PlaylistSidebarEntryView = Backbone.View.extend({
     template: HB.template("playlists/playlist-sidebar-entry"),
 
     events: {
-        "click .playlist-sidebar-entry-link": "clicked"
+        "click": "clicked"
     },
 
     initialize: function() {
@@ -178,7 +211,8 @@ window.PlaylistSidebarEntryView = Backbone.View.extend({
         return this;
     },
 
-    clicked: function() {
+    clicked: function(ev) {
+        ev.preventDefault();
         this.trigger("clicked", this);
         return false;
     },
