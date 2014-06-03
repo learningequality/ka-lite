@@ -99,7 +99,7 @@ $(document).ready(function() {
 
             // From the filtered titles, produce labels (html) and values (for doing stuff)
             var results = [];
-            var is_admin = window.userModel.get("is_admin");
+            var is_admin = window.statusModel.get("is_admin");
             for (idx in titles_filtered) {
                 var node = _nodes[titles_filtered[idx]];
 

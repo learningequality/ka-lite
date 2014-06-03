@@ -1,7 +1,9 @@
 """
 For functions mucking with internet access
 """
-import datetime;
+import datetime
+from django.db import models
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.utils import simplejson
 
@@ -21,12 +23,15 @@ class CsvResponse(HttpResponse):
 
 
 def _dthandler(obj):
-    "Handler for object types that are not Json-serializable"
+    """Handler for object types that are not Json-serializable"""
     return  obj.isoformat() if isinstance(obj, datetime.datetime) else None
 
 class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
     def __init__(self, content, *args, **kwargs):
+        if isinstance(content, models.Model):
+            # TODO(jamalex): write a wrapper for model_to_dict that filters out fields like sigs/counters/deletion
+            content = model_to_dict(content)
         if not isinstance(content, basestring):
             content = simplejson.dumps(content, ensure_ascii=False, default=_dthandler)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)

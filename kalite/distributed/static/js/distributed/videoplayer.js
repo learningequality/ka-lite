@@ -85,7 +85,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
                 self.saving = false;
 
                 // update the top-right points display to show the newly earned points
-                userModel.set("newpoints", data.points - self.get("starting_points"));
+                statusModel.set("newpoints", data.points - self.get("starting_points"));
             })
             .fail(function(resp) {
                 self.set({ wall_time_last_saved: lastSavedBeforeError });
@@ -289,7 +289,13 @@ window.VideoPlayerView = Backbone.View.extend({
 
     },
 
-    _initializePlayer: _.once(function(width, height) {
+    _initializePlayer: function(width, height) {
+
+        // avoid initializing more than once
+        if (this._loaded) {
+            return;
+        }
+        this._loaded = true;
 
         var player_id = this.$(".video-js").attr("id");
 
@@ -305,7 +311,7 @@ window.VideoPlayerView = Backbone.View.extend({
 
         this._onResize();
 
-    }),
+    },
 
     _onResize: _.throttle(function() {
         var available_width = $("article").width();
@@ -457,7 +463,15 @@ window.VideoWrapperView = Backbone.View.extend({
 
     initialize: function() {
 
-        this.render();
+        var self = this;
+
+        _.bindAll(this);
+
+        // TODO(jamalex): separate this out into a state model, video data model, and user data model
+        doRequest("/api/video/" + this.options.video_id).success(function(data) {
+            self.model = new VideoPlayerModel(data);
+            self.render();
+        });
 
         // this.listenTo(this.model, "change:selected_language", this.render);
 
@@ -468,6 +482,9 @@ window.VideoWrapperView = Backbone.View.extend({
     },
 
     render: function() {
+
+        // get a random ID for video.js to use to refer to this player
+        this.model.set("random_id", "video-" + Math.random().toString().slice(2));
 
         this.$el.html(this.template(this.model.attributes));
 
@@ -486,7 +503,7 @@ window.VideoWrapperView = Backbone.View.extend({
     languageChange: function() {
         // TODO(jamalex): allow this to be set dynamically, without reloading page?
         // this.model.set("selected_language", this.$(".video-language-selector").val());
-        window.location = "?lang=" + this.$(".video-language-selector").val();
+        window.location = setGetParam(window.location.href, "lang", this.$(".video-language-selector").val());
     }
 
 });

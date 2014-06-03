@@ -1,0 +1,106 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block headcss %}{{ block.super }}
+<!--   <link rel="stylesheet" src="{% static 'css/sidr.dark.css'%}">
+    <link rel="stylesheet" href="{% static 'css/playlist/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/playlist/utility.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
+
+    <!-- exercise-related files -->
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' True %}">
+
+    <!-- video-related files -->
+    <!--[if IE]>
+    <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link href="{% static "video-js-4/video-js-old-ie.css" %}" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if !IE]> -->
+    <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
+    <!-- <![endif]-->
+
+    <link href="{% static "css/playlist/sidebar.css" %}" rel="stylesheet" type="text/css">
+
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}";
+    </script>
+
+    <!-- templates for the backbone views in view_playlist.js -->
+
+    <!--
+    <script src="{% static 'js/modernizr.js' %}"></script>
+    <script src="{% static 'js/sidr.js'%}"></script>
+
+    <script src="{% static 'js/bootstrap/affix.js' %}"></script>
+    <script src="{% static 'js/bootstrap/alert.js' %}"></script>
+    <script src="{% static 'js/bootstrap/button.js' %}"></script>
+    <script src="{% static 'js/bootstrap/carousel.js' %}"></script>
+    <script src="{% static 'js/bootstrap/collapse.js' %}"></script>
+    <script src="{% static 'js/bootstrap/dropdown.js' %}"></script>
+    <script src="{% static 'js/bootstrap/modal.js' %}"></script>
+    <script src="{% static 'js/bootstrap/popover.js' %}"></script>
+    <script src="{% static 'js/bootstrap/scrollspy.js' %}"></script>
+    <script src="{% static 'js/bootstrap/tab.js' %}"></script>
+    <script src="{% static 'js/bootstrap/tooltip.js' %}"></script>
+    <script src="{% static 'js/bootstrap/transition.js' %}"></script>
+
+    <script src="{% static 'js/playlist/sidebar.js' %}"></script> -->
+
+    <!-- exercise-related files -->
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
+    <script src="{% static 'js/seedrandom.min.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises.js' %}"></script>
+    <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
+
+    <!-- video-related files -->
+    <!--[if IE]>
+    <script src="{% static "video-js-4/video.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js-4/video-js.swf" %}?" + Math.random();
+    </script>
+    <![endif]-->
+    <!--[if !IE]> -->
+    <script src="{% static "video-js/video.js" %}"></script>
+    <script src="{% static "video-js/video-speed.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
+    </script>
+    <!-- <![endif]-->
+
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
+    <script src="{% static "js/distributed/videoplayer.js" %}"></script>
+
+    <!-- playlist-related files -->
+    <script src="{% static 'js/playlist/bigSlide.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='playlists' %}"></script>
+    <script src="{% static 'js/playlist/models.js' %}"></script>
+    <script src="{% static 'js/playlist/view_playlist.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.playlist_view = new PlaylistView({
+                model: new Playlist({id: "{{ playlist_id }}"}),
+                el: $(".playlist-wrapper")
+            });
+        });
+    </script>
+
+{% endblock headjs %}
+
+{% block content %}
+
+    <div class="playlist-sidebar-wrapper"></div>
+
+    <div class="playlist-wrapper"></div>
+
+{% endblock content %}

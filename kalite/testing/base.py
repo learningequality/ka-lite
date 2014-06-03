@@ -5,12 +5,13 @@ for automated browser-based testing.
 """
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test.client import Client
+from django.test import Client
 
-from securesync.models import Zone, DeviceZone , Device
+from kalite.shared.decorators.misc import deprecated
 from securesync.tests.base import SecuresyncTestCase
 
 
+@deprecated
 def create_test_admin(username="admin", password="pass", email="admin@example.com"):
     """Create a test user.
     Taken from http://stackoverflow.com/questions/3495114/how-to-create-admin-user-in-django-tests-py"""
@@ -35,4 +36,3 @@ class KALiteTestCase(SecuresyncTestCase):
         """Given a URL name, returns the full central URL to that URL"""
 
         return self.live_server_url + reverse(url_name, args=args, kwargs=kwargs)
-

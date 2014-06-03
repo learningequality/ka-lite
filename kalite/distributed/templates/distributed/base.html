@@ -54,8 +54,9 @@
             jQuery.migrateMute = {% if settings.DEBUG %}false{% else %}true{% endif %};
         </script>
         {% endblock jqueryjs %}
-        <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/underscore-min.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone-tastypie.js' True %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
@@ -72,13 +73,13 @@
          var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
-         var SAVE_EXERCISE_LOG_URL       = "{% url 'save_exercise_log' %}";
          var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
          var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}"
          var STATUS_URL                  = "{% url 'status' %}";
          var USER_LOGIN_URL              = "{% url 'login' %}";
+         var STATIC_URL                  = "{% static "" %}";
 
          var SERVER_INFO_PATH    = "{% url 'get_server_info' %}";
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
@@ -91,6 +92,12 @@
         <script type="text/javascript" src="{% static 'js/khan-lite.js' True %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' True %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' True %}"></script>
+
+        <!-- Imports for handlebars, our JS templating engine -->
+        <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>
+        <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
+        <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
+
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
