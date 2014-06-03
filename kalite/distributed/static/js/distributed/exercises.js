@@ -407,7 +407,7 @@ var QuizDataModel = Backbone.Model.extend({
     initialize: function() {
         this.set({
             ids: this.get_exercise_ids_from_playlist_entry(this.get("entry")),
-            title: this.get("entry").get("title"),
+            quiz_id: this.get("entry").get("entity_id"),
             seed: this.get("entry").get("seed") || null
         })
     },
@@ -421,7 +421,6 @@ var QuizDataModel = Backbone.Model.extend({
                     return memo;
                 }
             }, 0);
-        console.log();
         return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id")});
     }
 })
@@ -506,8 +505,9 @@ window.QuizLogModel = Backbone.Model.extend({
                         complete: true,
 
                     })
-                    this.trigger("complete");
                 }
+
+                this.trigger("complete");
             };
         };
 
@@ -548,12 +548,12 @@ window.QuizLogCollection = Backbone.Collection.extend({
     model: QuizLogModel,
 
     initialize: function(models, options) {
-        this.title = options.title;
+        this.quiz = options.quiz;
     },
 
     url: function() {
         return "/api/playlists/quizlog/?" + $.param({
-            "title": this.title,
+            "quiz": this.quiz,
             "user": window.statusModel.get("user_id")
         });
     },
@@ -1138,6 +1138,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
 window.ExerciseQuizView = Backbone.View.extend({
 
+    stop_template: HB.template("exercise/quiz-stop"),
 
     initialize: function(options) {
 
@@ -1148,7 +1149,7 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.quiz_model = options.quiz_model;
 
             // load the data about the user's overall progress on the test
-            this.log_collection = new QuizLogCollection([], {title: this.options.title});
+            this.log_collection = new QuizLogCollection([], {quiz: this.quiz_model.get("quiz_id")});
             var log_collection_deferred = this.log_collection.fetch();
 
             this.user_data_loaded_deferred = $.when(log_collection_deferred).then(this.user_data_loaded);
@@ -1157,20 +1158,22 @@ window.ExerciseQuizView = Backbone.View.extend({
 
     },
 
-    finish_test: function() {
-        // TODO-Blocker (rtibbles): Increment loop counter here.
+    finish_quiz: function() {
+        this.$el.html(this.stop_template())
+
+        var self = this;
+
+        $("#stop-quiz").click(function(){self.trigger("complete");})
     },
 
     user_data_loaded: function() {
-
-        console.log(this.quiz_model)
 
         // get the quiz log model from the queried collection
         if(!this.log_model){
             this.log_model = this.log_collection.get_first_log_or_new_log();
         }
 
-        this.listenTo(this.log_model, "complete", this.finish_test);
+        this.listenTo(this.log_model, "complete", this.finish_quiz);
 
         var question_data = this.log_model.get_item_data(this.quiz_model);
 

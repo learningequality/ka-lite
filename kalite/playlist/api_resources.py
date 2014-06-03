@@ -209,7 +209,7 @@ class QuizLogResource(ModelResource):
         queryset = QuizLog.objects.all()
         resource_name = 'quizlog'
         filtering = {
-            "title": ('exact', ),
+            "quiz": ('exact', ),
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
