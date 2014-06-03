@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 from datetime import datetime, tzinfo
 
 try:
@@ -9,6 +7,7 @@ except ImportError:
 
 from django.template import Node
 from django.template import TemplateSyntaxError, Library
+from django.utils import six
 from django.utils import timezone
 
 register = Library()
@@ -66,7 +65,7 @@ def do_timezone(value, arg):
     # Obtain a tzinfo instance
     if isinstance(arg, tzinfo):
         tz = arg
-    elif isinstance(arg, basestring) and pytz is not None:
+    elif isinstance(arg, six.string_types) and pytz is not None:
         try:
             tz = pytz.timezone(arg)
         except pytz.UnknownTimeZoneError:
@@ -74,11 +73,7 @@ def do_timezone(value, arg):
     else:
         return ''
 
-    # Convert and prevent further conversion
-    result = value.astimezone(tz)
-    if hasattr(tz, 'normalize'):
-        # available for pytz time zones
-        result = tz.normalize(result)
+    result = timezone.localtime(value, tz)
 
     # HACK: the convert_to_local_time flag will prevent
     #       automatic conversion of the value to local time.

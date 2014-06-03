@@ -1,11 +1,11 @@
 {% extends base_template %}
 {% load i18n %}
-{% load staticfiles %}
+{% load kalite_staticfiles %}
 
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}?{{ BUILD_ID }}"></link>
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' True %}">
 
     <!-- Used by KA to dynamically add styling to the exercise -->
     <style id="exercise-inline-style"></style>
@@ -40,10 +40,10 @@
             incompleteStack: [0],
             PerseusBridge: {
                 cleanupProblem: function() {}
-            },
+            }
         };
     </script>
-    <script src="{% static 'khan-exercises/khan-exercise.js' %}?{{ BUILD_ID }}"></script>
+    <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
     <script>
         {# No user data is stored here; that is recovered via an AJAX call, so that this page is fully cacheable #}
         var exerciseData = {
@@ -101,7 +101,7 @@
                                 <div id='hintsarea'></div>
                             </div>
                             <div id="answer_area_wrap"><div id="answer_area">
-                                <form id="answerform" action="{% url exercise_dashboard %}" method="get" name="answerform">
+                                <form id="answerform" action="{% url 'exercise_dashboard' %}" method="get" name="answerform">
                                     {% trans "Your progress streak bar for this exercise" as prog_streak %}
                                     <div id="streakbar" class="info-box" title="{{ prog_streak }}">
                                         <div class="streak">

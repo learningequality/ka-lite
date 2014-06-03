@@ -8,7 +8,7 @@ __all__ = ('backend', 'connection', 'connections', 'router', 'DatabaseError',
     'IntegrityError', 'DEFAULT_DB_ALIAS')
 
 
-if DEFAULT_DB_ALIAS not in settings.DATABASES:
+if settings.DATABASES and DEFAULT_DB_ALIAS not in settings.DATABASES:
     raise ImproperlyConfigured("You must define a '%s' database" % DEFAULT_DB_ALIAS)
 
 connections = ConnectionHandler(settings.DATABASES)
@@ -42,8 +42,14 @@ backend = load_backend(connection.settings_dict['ENGINE'])
 # Register an event that closes the database connection
 # when a Django request is finished.
 def close_connection(**kwargs):
-    for conn in connections.all():
-        conn.close()
+    # Avoid circular imports
+    from django.db import transaction
+    for conn in connections:
+        # If an error happens here the connection will be left in broken
+        # state. Once a good db connection is again available, the
+        # connection state will be cleaned up.
+        transaction.abort(conn)
+        connections[conn].close()
 signals.request_finished.connect(close_connection)
 
 # Register an event that resets connection.queries

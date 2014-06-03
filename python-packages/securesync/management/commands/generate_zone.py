@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from securesync.models import Device, DeviceZone, Zone, ZoneInvitation
+from ...models import Device, DeviceZone, Zone, ZoneInvitation
 
 
 class Command(BaseCommand):

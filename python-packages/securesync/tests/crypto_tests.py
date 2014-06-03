@@ -1,14 +1,17 @@
 """
 """
+import os
 import re
+import tempfile
 
 from django.conf import settings
 from django.test import TestCase
 from django.utils import unittest
 
 from .base import SecuresyncTestCase
+from .. import crypto
+from ..models import Device
 from fle_utils.django_utils import call_command_with_output
-from securesync import crypto
 
 
 @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto tests as it does not appear to be installed.")
@@ -160,9 +163,6 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
         self.assertTrue(key.verify(self.message_actual, self.signature_base64))
         self.assertFalse(key.verify(self.message_fake, self.signature_base64))
 
-import os
-import tempfile
-from securesync.models import Device
 
 class TestSignLargeFile(SecuresyncTestCase):
     """Special code for signing large files.  Test that it works!"""

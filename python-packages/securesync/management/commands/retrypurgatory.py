@@ -2,8 +2,8 @@ import json
 
 from django.core.management.base import BaseCommand, CommandError
 
-from securesync.models import ImportPurgatory
-from securesync import engine
+from ... import engine
+from ...models import ImportPurgatory
 
 
 class Command(BaseCommand):
@@ -11,9 +11,9 @@ class Command(BaseCommand):
 
     def stdout_writeln(self, str):  self.stdout.write("%s\n"%str)
     def stderr_writeln(self, str):  self.stderr.write("%s\n"%str)
-    
+
     def handle(self, *args, **options):
-        
+
         purgatories = ImportPurgatory.objects.all()
 
         if not purgatories:
@@ -22,8 +22,8 @@ class Command(BaseCommand):
 
         for purgatory in purgatories:
             self.stdout_writeln("%s (%d %s, %s #%d)..." %
-                (("Attempting to save models"), 
-                 purgatory.model_count, ("models"), 
+                (("Attempting to save models"),
+                 purgatory.model_count, ("models"),
                  ("attempt"), purgatory.retry_attempts))
 
             # Serialized version is ourselves (or an earlier version of ourselves),

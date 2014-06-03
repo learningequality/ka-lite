@@ -11,13 +11,13 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q, Max
 from django.db.models.fields.related import ForeignKey
 
+from .. import VERSION
 from fle_utils.django_utils import serializers
-from securesync import VERSION
 
 
 _syncing_models = []  # all models we want to sync
 
-def add_syncing_models(models, dependency_check=True):
+def add_syncing_models(models, dependency_check=False):
     """When sync is run, these models will be sync'd"""
 
     get_foreign_key_classes = lambda m: set([field.rel.to for field in m._meta.fields if isinstance(field, ForeignKey)])
@@ -61,7 +61,7 @@ def get_local_device_unsynced_count():
     """
     count = 0
     for Model in _syncing_models:
-        count += Model.objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()
+        count += Model.all_objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()  # include deleted records
     return count
 
 
@@ -69,8 +69,8 @@ def get_device_counters(**kwargs):
     """Get device counters, filtered by zone"""
     assert ("zone" in kwargs) + ("devices" in kwargs) == 1, "Must specify zone or devices, and not both."
 
-    from securesync.devices.models import Device
-    devices = kwargs.get("devices") or Device.objects.by_zone(kwargs["zone"])
+    from ..devices.models import Device
+    devices = kwargs.get("devices") or Device.all_objects.by_zone(kwargs["zone"])  # include deleted objects
 
     device_counters = {}
     for device in list(devices):
@@ -92,7 +92,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     """
     limit = limit or settings.SYNCING_MAX_RECORDS_PER_REQUEST  # must be specified
 
-    from securesync.devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
+    from ..devices.models import Device # cannot be top-level, otherwise inter-dependency of this and models fouls things up
     own_device = Device.get_own_device()
 
     # Get the current version if none was specified
@@ -106,7 +106,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
     # if no devices specified, assume we're starting from zero, and include all devices in the zone
     if device_counters is None:
-        device_counters = dict((device.id, 0) for device in Device.objects.by_zone(zone))
+        device_counters = dict((device.id, 0) for device in Device.all_objects.by_zone(zone))  # include deleted devices
 
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
@@ -122,17 +122,18 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
     #    all models below the counter position selected are sent NOW,
     #    otherwise they will be forgotten FOREVER)
     for Model in _syncing_models:
-        # We need to track the min counter position (send things above this value)
-        #   and the max (we're sending up to this value, so make sure nothing
-        #   below it is left behind)
-        counter_min = counter + 1
-        counter_max = 0
 
         # loop through each of the devices of interest
         #   Do devices first, because each device is independent.
         #   Models within a device are highly dependent (on explicit dependencies,
         #   as well as counter position)
         for device_id, counter in device_counters.items():
+            # We need to track the min counter position (send things above this value)
+            #   and the max (we're sending up to this value, so make sure nothing
+            #   below it is left behind)
+            counter_min = counter + 1
+            counter_max = 0
+
             device = Device.objects.get(pk=device_id)
 
             queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
@@ -190,7 +191,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
 
 def get_serialized_models(*args, **kwargs):
-    from securesync.devices.models import Device
+    from ..devices.models import Device
 
     models = get_models(*args, **kwargs)
     dest_version = kwargs.get("dest_version", Device.get_own_device().get_version())
@@ -219,7 +220,7 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
     Returns a dictionary of the # of saved models, # unsaved, and any exceptions during saving"""
 
     from .models import ImportPurgatory # cannot be top-level, otherwise inter-dependency of this and models fouls things up
-    from securesync.devices.models import Device
+    from ..devices.models import Device
 
     own_device = Device.get_own_device()
     if not src_version:  # default version: our own
@@ -311,8 +312,8 @@ def serialize(models, sign=True, increment_counters=True, dest_version=VERSION, 
     This function encapsulates serialization, and ensures that any final steps needed before syncing
     (e.g. signing, incrementing counters, etc) are done.
     """
-    from securesync.devices.models import Device
     from .models import SyncedModel
+    from ..devices.models import Device
     own_device = Device.get_own_device()
 
     for model in models:
