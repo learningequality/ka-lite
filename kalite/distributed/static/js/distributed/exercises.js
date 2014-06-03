@@ -636,6 +636,38 @@ window.ExerciseProgressView = Backbone.View.extend({
 });
 
 
+window.ExerciseRelatedVideoView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-related-videos"),
+
+    render: function(data) {
+
+        var self = this;
+
+        this.$el.html(this.template(data));
+
+        // the following is adapted from khan-exercises/related-videos.js to recreate thumbnail hover effect
+        // TODO(jamalex): this can all probably be replaced by a simple CSS3 rule
+        var captionHeight = 45;
+        var marginTop = 23;
+        var options = {duration: 150, queue: false};
+        this.$(".related-video-box")
+            .delegate(".thumbnail", "mouseenter mouseleave", function(e) {
+                var isMouseEnter = e.type === "mouseenter";
+                self.$(e.currentTarget).find(".thumbnail_label").animate(
+                        {marginTop: marginTop + (isMouseEnter ? 0 : captionHeight)},
+                        options)
+                    .end()
+                    .find(".thumbnail_teaser").animate(
+                        {height: (isMouseEnter ? captionHeight : 0)},
+                        options);
+            });
+
+    }
+
+});
+
+
 window.ExerciseView = Backbone.View.extend({
 
     template: HB.template("exercise/exercise"),
@@ -678,11 +710,11 @@ window.ExerciseView = Backbone.View.extend({
 
         this.listenTo(this.data_model, "change:title", this.update_title);
 
+        this.listenTo(this.data_model, "change:related_videos", this.render_related_videos);
+
     },
 
     initialize_khan_exercises_listeners: function() {
-
-        var self = this;
 
         Khan.loaded.then(this.khan_loaded);
 
@@ -755,6 +787,18 @@ window.ExerciseView = Backbone.View.extend({
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
         this.trigger("ready_for_next_question");
+    },
+
+    render_related_videos: function() {
+        if (!this.related_video_view) {
+            this.related_video_view = new ExerciseRelatedVideoView({el: this.$(".exercise-related-video-wrapper")});
+        }
+        var related_videos = this.data_model.get("related_videos");
+        this.related_video_view.render({
+            has_related_videos: related_videos.length > 0,
+            first_video: related_videos[0],
+            other_videos: related_videos.slice(1)
+        });
     }
 
 });

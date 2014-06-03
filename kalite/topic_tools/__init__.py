@@ -420,7 +420,7 @@ def get_neighbor_nodes(node, neighbor_kind=None):
 
 def get_video_page_paths(video_id=None):
     try:
-        return [n["path"] for n in topic_tools.get_node_cache("Video")[video_id]]
+        return [n["path"] for n in get_node_cache("Video")[video_id]]
     except:
         return []
 
@@ -429,7 +429,7 @@ def get_exercise_page_paths(video_id=None):
 
     try:
         exercise_paths = set()
-        for exercise in topic_tools.get_related_exercises(videos=topic_tools.get_node_cache("Video")[video_id]):
+        for exercise in get_related_exercises(videos=get_node_cache("Video")[video_id]):
             exercise_paths = exercise_paths.union(set([exercise["path"]]))
         return list(exercise_paths)
     except Exception as e:
@@ -459,6 +459,8 @@ def get_exercise_data(request, exercise_id=None):
 
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
+
+    exercise["related_videos"] = get_related_videos(exercise, limit_to_available=False).values()
 
     return exercise
 
