@@ -1,83 +1,13 @@
-import os
-import json
 from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistToGroupMapping, QuizLog
-from kalite.facility.models import FacilityGroup
+from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist
 from kalite.shared.contextmanagers.db import inside_transaction
 from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
-
-class Playlist:
-    playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
-
-    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned']
-
-    def __init__(self, **kwargs):
-        self.pk = self.id = kwargs.get('id')
-        self.title = kwargs.get('title')
-        self.description = kwargs.get('description')
-        self.groups_assigned = kwargs.get('groups_assigned')
-
-    @classmethod
-    def all(cls):
-        with open(cls.playlistjson) as f:
-            raw_playlists = json.load(f)
-
-        # Coerce each playlist dict into a Playlist object
-        # also add in the group IDs that are assigned to view this playlist
-        playlists = []
-        for playlist_dict in raw_playlists:
-            playlist = cls(title=playlist_dict['title'], description='', id=playlist_dict['id'])
-
-            # instantiate the groups assigned to this playlist
-            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
-            playlist.groups_assigned = groups_assigned
-
-            # instantiate the playlist entries
-            raw_entries = playlist_dict['entries']
-            playlist.entries = raw_entries
-
-            playlists.append(playlist)
-
-        return playlists
-
-
-class PlaylistEntry:
-
-    __slots__ = ['entity_id', 'entity_kind', 'sort_order', 'playlist', 'id', 'pk']
-
-    def __init__(self, **kwargs):
-        self.entity_id = kwargs.get('entity_id')
-        self.entity_kind = kwargs.get('entity_kind')
-        self.sort_order = kwargs.get('sort_order')
-        self.playlist = kwargs.get('playlist')
-        if self.playlist:
-            self.pk = self.id = "{}-{}".format(self.playlist.id, self.entity_id)
-        else:
-            self.pk = self.id = None
-        self._clean_playlist_entry_id()
-
-    def _clean_playlist_entry_id(self):
-        name = self['entity_id']
-        # strip any trailing whitespace
-        name = name.strip()
-
-        # try to extract only the actual entity id
-        name_breakdown = name.split('/')
-        name_breakdown = [
-            component for component
-            in name.split('/')
-            if component  # make sure component has something in it
-        ]
-        name = name_breakdown[-1]
-
-        self['old_entity_id'] = ['entity_id']
-        self['entity_id'] = name
 
 class PlaylistResource(Resource):
 

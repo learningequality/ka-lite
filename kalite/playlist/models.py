@@ -1,3 +1,5 @@
+import json
+import os
 from django.db import models
 
 from fle_utils.django_utils import ExtendedModel
@@ -61,6 +63,7 @@ class PlaylistToGroupMapping(ExtendedModel):
     playlist = models.CharField(db_index=True, max_length=15)
     group = models.ForeignKey(FacilityGroup, related_name='playlists')
 
+
 class QuizLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     # test = models.ForeignKey(Test, blank=False, null=False, db_index=True)
@@ -76,3 +79,79 @@ class QuizLog(DeferredCountSyncedModel):
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
+
+
+class VanillaPlaylist:
+    """
+    A simple playlist object that just loads from a playlists json file. Contrast
+    with Playlist, which is a Django model.
+    """
+    playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
+
+    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned']
+
+    def __init__(self, **kwargs):
+        self.pk = self.id = kwargs.get('id')
+        self.title = kwargs.get('title')
+        self.description = kwargs.get('description')
+        self.groups_assigned = kwargs.get('groups_assigned')
+
+    @classmethod
+    def all(cls):
+        with open(cls.playlistjson) as f:
+            raw_playlists = json.load(f)
+
+        # Coerce each playlist dict into a Playlist object
+        # also add in the group IDs that are assigned to view this playlist
+        playlists = []
+        for playlist_dict in raw_playlists:
+            playlist = cls(title=playlist_dict['title'], description='', id=playlist_dict['id'])
+
+            # instantiate the groups assigned to this playlist
+            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
+            playlist.groups_assigned = groups_assigned
+
+            # instantiate the playlist entries
+            raw_entries = playlist_dict['entries']
+            playlist.entries = raw_entries
+
+            playlists.append(playlist)
+
+        return playlists
+
+
+class VanillaPlaylistEntry:
+    """
+    A plain object that models playlist entries. Contrast with PlaylistEntry,
+    which is a Django model.
+    """
+
+    __slots__ = ['entity_id', 'entity_kind', 'sort_order', 'playlist', 'id', 'pk']
+
+    def __init__(self, **kwargs):
+        self.entity_id = kwargs.get('entity_id')
+        self.entity_kind = kwargs.get('entity_kind')
+        self.sort_order = kwargs.get('sort_order')
+        self.playlist = kwargs.get('playlist')
+        if self.playlist:
+            self.pk = self.id = "{}-{}".format(self.playlist.id, self.entity_id)
+        else:
+            self.pk = self.id = None
+        self._clean_playlist_entry_id()
+
+    def _clean_playlist_entry_id(self):
+        name = self['entity_id']
+        # strip any trailing whitespace
+        name = name.strip()
+
+        # try to extract only the actual entity id
+        name_breakdown = name.split('/')
+        name_breakdown = [
+            component for component
+            in name.split('/')
+            if component  # make sure component has something in it
+        ]
+        name = name_breakdown[-1]
+
+        self['old_entity_id'] = ['entity_id']
+        self['entity_id'] = name
