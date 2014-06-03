@@ -5,6 +5,7 @@ INSTALLED_APPS packages. Based in part on django/template/loaders/app_directorie
 
 import glob
 import os
+import re
 import sys
 
 from django.conf import settings
@@ -56,9 +57,14 @@ def load_template_sources(module_name):
         template_name = filepath.split("/")[-1].split(".handlebars")[0]
         try:
             with open(filepath) as f:
+                # load the template text
+                template_text = f.read()
+                # collapse extraneous whitespace to a single space
+                template_text = re.sub("\s+", " ", template_text)
+                # add this template to the list
                 templates.append({
                     "name": "%s/%s" % (module_name, template_name),
-                    "raw": f.read().replace("\n", " ").encode("string_escape"),
+                    "raw": template_text,
                 })
         except IOError:
             pass

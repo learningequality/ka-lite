@@ -21,9 +21,11 @@ so
 """
 import glob
 import os
+import re
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
+from django.contrib import messages
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
@@ -103,13 +105,19 @@ def get_id2slug_map(force=False):
 
 FLAT_TOPIC_TREE = None
 CACHE_VARS.append("FLAT_TOPIC_TREE")
-def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE):
+def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE, alldata=False):
     global FLAT_TOPIC_TREE
     if FLAT_TOPIC_TREE is None:
-        FLAT_TOPIC_TREE = {}
-    if lang_code not in FLAT_TOPIC_TREE or force:
-        FLAT_TOPIC_TREE[lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code)
-    return FLAT_TOPIC_TREE[lang_code]
+        FLAT_TOPIC_TREE = {
+            # The true and false values are for whether we return
+            # the complete data for nodes, as given
+            # by the alldata parameter
+            True: {},
+            False: {}
+        }
+    if not FLAT_TOPIC_TREE[alldata] or lang_code not in FLAT_TOPIC_TREE[alldata] or force:
+        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code, alldata=alldata)
+    return FLAT_TOPIC_TREE[alldata][lang_code]
 
 
 def validate_ancestor_ids(topictree=None):
@@ -152,7 +160,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     return slug2id_map
 
 
-def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
+def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, alldata=False):
     translation.activate(lang_code)
 
     categories = node_cache or get_node_cache()
@@ -163,12 +171,15 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE):
         result[category_name] = {}
         for node_name, node_list in category.iteritems():
             node = node_list[0]
-            relevant_data = {
-                'title': _(node['title']),
-                'path': node['path'],
-                'kind': node['kind'],
-                'available': node.get('available', True),
-            }
+            if alldata:
+                relevant_data = node
+            else:
+                relevant_data = {
+                    'title': _(node['title']),
+                    'path': node['path'],
+                    'kind': node['kind'],
+                    'available': node.get('available', True),
+                }
             result[category_name][node_name] = relevant_data
 
     translation.deactivate()
@@ -439,6 +450,7 @@ def get_exercise_data(request, exercise_id=None):
     code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
     available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
 
+    # Return the best available exercise template
     exercise_lang = i18n.select_best_available_language(request.language, available_codes=available_langs)
     if exercise_lang == "en":
         exercise_template = exercise_file
@@ -449,3 +461,61 @@ def get_exercise_data(request, exercise_id=None):
     exercise["template"] = exercise_template
 
     return exercise
+
+
+def get_video_data(request, video_id=None):
+
+    topictree = get_flat_topic_tree(alldata=True)
+    videos_dict = video_dict_by_video_id(topictree)
+    video = videos_dict.get(video_id)
+
+    # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
+    from kalite.updates import stamp_availability_on_video
+    video = stamp_availability_on_video(video)
+
+    if not video["available"]:
+        if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
+            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
+        elif request.is_logged_in:
+            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
+        elif not request.is_logged_in:
+            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
+
+    # Fallback mechanism
+    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
+    if video["available"] and not available_urls:
+        vid_lang = "en"
+        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
+    else:
+        vid_lang = i18n.select_best_available_language(request.language, available_codes=available_urls.keys())
+
+    # TODO(jamalex): clean this up; we're flattening it here so handlebars can handle it more easily
+    video = video.copy()
+    video["video_urls"] = video["availability"].get(vid_lang)
+    video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
+    video["selected_language"] = vid_lang
+    video["dubs_available"] = len(video["availability"]) > 1
+    video["title"] = _(video["title"])
+    video["description"] = _(video["description"])
+    video["video_id"] = video["id"]
+
+    return video
+
+
+def video_dict_by_video_id(flat_topic_tree=None):
+    # TODO (aron): Add i18n by varying the language of the topic tree here
+    topictree = flat_topic_tree if flat_topic_tree else get_flat_topic_tree()
+
+    # since videos in the flat topic tree are indexed by youtube
+    # number, we have to construct another dict with the id
+    # instead as the key
+    video_title_dict = {}
+    video_id_regex = re.compile('.*/v/(?P<entity_id>.*)/')
+    for video_node in topictree['Video'].itervalues():
+        video_id_matches = re.match(video_id_regex, video_node['path'])
+        if video_id_matches:
+            video_key = video_id_matches.groupdict()['entity_id']
+            video_title_dict[video_key] = video_node
+
+    return video_title_dict

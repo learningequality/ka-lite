@@ -1,0 +1,48 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block home_active %}active{% endblock home_active %}
+
+{% block headcss %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' True %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+  <script type="text/html" id="all-groups-list-entry-template">
+      <td student-grp-id="<%= id %>" draggable="true"> <%= name %> </td>
+  </script>
+
+  <script type="text/html" id="playlist-template">
+    <td playlist-id="<%= id %>"> <%= title %> <table class="playlist-groups"></table></td>
+  </script>
+
+  <script type="text/html" id="playlist-group-template">
+    <td playlist-group-id="<%= id%>"> <%= name %> </td>
+  </script>
+
+  <script type="text/javascript" src="{% static 'js/playlist/models.js' True %}"></script>
+  <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>
+
+  <script type="text/javascript">
+   var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
+   var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+  </script>
+{% endblock headjs %}
+
+{% block content %}
+  <div class="row">
+    <table class="span3 table table-hover" id="student-groups">
+      <tr>
+        <th>Student Groups</th>
+      </tr>
+    </table>
+    <table class="span10 table table-hover" id="playlists">
+      <tr>
+        <th>Playlists</th>
+      </tr>
+    </table>
+  </div>
+{% endblock content %}
