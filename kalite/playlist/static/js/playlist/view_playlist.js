@@ -1,54 +1,228 @@
-var playlist = new Playlist({id: CURRENT_PLAYLIST_ID});
 
-var PlaylistView = Backbone.View.extend({
+window.PlaylistView = Backbone.View.extend({
 
     initialize: function() {
+
+        var self = this;
+
         _.bindAll(this);
-        this.listenTo(this.model.get('entries'), 'add', this.addNewEntry);
-        this.listenTo(this.model.get('entries'), 'reset', this.addAllEntries);
 
-        this.addAllEntries();
+        this.render();
+
+        this.content_view = new PlaylistContentAreaView({
+            el: this.$el
+        });
+
+        this.model.fetch()
+            .then(function() {
+                self.sidebar_view = new PlaylistSidebarView({
+                    // el: self.$("..."),
+                    model: self.model
+                });
+
+                self.listenTo(self.sidebar_view, "entry_requested", self.entry_requested);
+
+            });
+
     },
-
-    addNewEntry: function(entry) {
-        var view = new PlaylistEntrySidebarView({model: entry});
-        $("#playlist-items").append(view.render().el);
-    },
-
-    addAllEntries: function() {
-        this.model.get('entries').map(this.addNewEntry);
-    }
-});
-
-var PlaylistEntrySidebarView = Backbone.View.extend({
-
-    id: "playlist-item",
-
-    template: _.template($("#playlist-sidebar-entry-template").html()),
 
     render: function() {
-        var dict = this.model.toJSON();
-        this.$el.html(this.template(dict));
 
-        return this;
-    }
-});
-
-var AppView = Backbone.View.extend({
-
-    initialize: function() {
-        this.listenTo(playlist, "sync", this.renderPlaylist);
-        playlist.fetch();
     },
 
-    renderPlaylist: function(playlist) {
-        var view = new PlaylistView({model: playlist});
+    entry_requested: function(entry) {
+        switch(entry.get("entity_kind")) {
+
+            case "Exercise":
+                var view = new ExercisePracticeView({
+                    exercise_id: entry.get("entity_id")
+                });
+                this.content_view.show_view(view);
+                break;
+
+            case "Video":
+                var view = new VideoWrapperView({
+                    model: new VideoPlayerModel(
+                        // TODO-BLOCKER(jamalex): get actual video data loading for this
+                        {"ancestor_ids": ["root", "math", "arithmetic", "addition-subtraction", "basic_addition"], "available": true, "description": "Introduction to addition. Multiple visual ways to represent addition.", "duration": 462, "keywords": "Math, Addition, Khan, Academy, CC_1_OA_1, CC_1_OA_2, CC_1_OA_3, CC_1_OA_6", "related_exercise": {"path": "/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/", "slug": "addition_1", "id": "addition_1", "title": "1-digit addition"}, "video_urls": {"stream": "/content/AuX7nPBqDts.mp4", "on_disk": true, "stream_type": "video/mp4", "language_name": "English", "thumbnail": "/content/AuX7nPBqDts.png", "subtitles": [{"url": "/static/srt/ar/subtitles/AuX7nPBqDts.srt", "code": "ar", "name": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}, {"url": "/static/srt/es/subtitles/AuX7nPBqDts.srt", "code": "es", "name": "Espa\u00f1ol, Castellano"}]}, "dubs_available": true, "download_urls": {"mp4": "http://s3.amazonaws.com/KA-youtube-converted/AuX7nPBqDts.mp4/AuX7nPBqDts.mp4", "png": "http://s3.amazonaws.com/KA-youtube-converted/AuX7nPBqDts.mp4/AuX7nPBqDts.png", "m3u8": "http://s3.amazonaws.com/KA-youtube-converted/AuX7nPBqDts.m3u8/AuX7nPBqDts.m3u8"}, "path": "/math/arithmetic/addition-subtraction/basic_addition/v/basic-addition/", "availability": {"en": {"stream": "/content/AuX7nPBqDts.mp4", "on_disk": true, "stream_type": "video/mp4", "language_name": "English", "thumbnail": "/content/AuX7nPBqDts.png", "subtitles": [{"url": "/static/srt/ar/subtitles/AuX7nPBqDts.srt", "code": "ar", "name": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}, {"url": "/static/srt/es/subtitles/AuX7nPBqDts.srt", "code": "es", "name": "Espa\u00f1ol, Castellano"}]}, "es": {"language_name": "Espa\u00f1ol, Castellano", "on_disk": true, "stream_type": "video/mp4", "thumbnail": "/content/yHeTx8SAaOQ.png", "stream": "/content/yHeTx8SAaOQ.mp4"}}, "selected_language": "en", "kind": "Video", "title": "Basic addition", "on_disk": true, "video_id": "AuX7nPBqDts", "slug": "basic-addition", "parent_id": "basic_addition", "id": "AuX7nPBqDts", "youtube_id": "AuX7nPBqDts", "subtitle_urls": [{"url": "/static/srt/ar/subtitles/AuX7nPBqDts.srt", "code": "ar", "name": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}, {"url": "/static/srt/es/subtitles/AuX7nPBqDts.srt", "code": "es", "name": "Espa\u00f1ol, Castellano"}], "readable_id": "basic-addition"}
+                    )
+                });
+                this.content_view.show_view(view);
+                break;
+
+            case "Quiz":
+                var view = new ExerciseQuizView({
+                    quiz_model: new QuizDataModel({entry: entry})
+                });
+                this.content_view.show_view(view);
+                break;
+        }
+    }
+
+
+});
+
+window.PlaylistContentAreaView = Backbone.View.extend({
+
+    template: HB.template("playlists/playlist-content-area"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.model = new Backbone.Model();
+
+        this.render();
+
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+
+    show_view: function(view) {
+        // close the currently shown view, if possible
+        if (this.currently_shown_view && _.isFunction(this.currently_shown_view.close)) {
+            this.currently_shown_view.close();
+        }
+        // set the new view as the current view
+        this.currently_shown_view = view;
+        // show the view
+        this.$(".playlist-content").html("").append(view.$el);
     }
 
 });
 
-$(function() {
+window.PlaylistSidebarView = Backbone.View.extend({
 
-    var app = new AppView;
+    el: ".playlist-sidebar-wrapper",
+
+    template: HB.template("playlists/playlist-sidebar"),
+
+    initialize: function() {
+
+        var self = this;
+
+        _.bindAll(this);
+
+        this.render();
+
+        this._entry_views = [];
+
+        this.add_all_entries();
+
+        this.listenTo(this.model.get('entries'), 'add', this.add_new_entry);
+        this.listenTo(this.model.get('entries'), 'reset', this.add_all_entries);
+
+        this.sidebar = this.$('').bigSlide({
+            menu: this.$(".panel"),
+            // push: "#page-container, #footer, .playlist-sidebar-tab",
+            push: ".playlist-sidebar-tab",
+            menuWidth: "220px"
+        });
+
+        this.state_model = new Backbone.Model({
+            open: false
+        });
+
+        this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
+
+        this.$(".playlist-sidebar-tab").click(this.toggle_sidebar);
+
+        // this.$(".playlist-sidebar-tab").hide();
+        // setTimeout(function() { self.$(".playlist-sidebar-tab").show(); }, 5000);
+
+        this.show_sidebar();
+
+        _.defer(function() {
+            self.$("a:first").click();
+        });
+
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+
+    toggle_sidebar: function(ev) {
+        // this.$(".playlist-sidebar-tab").css("color", this.state_model.get("open") ? "red" : "blue")
+        this.state_model.set("open", !this.state_model.get("open"));
+        ev.preventDefault();
+        return false;
+    },
+
+    update_sidebar_visibility: function() {
+        if (this.state_model.get("open")) {
+            this.sidebar.open();
+        } else {
+            this.sidebar.close();
+        }
+    },
+
+    show_sidebar: function() {
+        this.state_model.set("open", true);
+    },
+
+    hide_sidebar: function() {
+        this.state_model.set("open", false);
+    },
+
+    add_new_entry: function(entry) {
+        var view = new PlaylistSidebarEntryView({model: entry});
+        this._entry_views.push(view);
+        this.$(".playlist-sidebar").append(view.render().$el);
+        this.listenTo(view, "clicked", this.item_clicked);
+    },
+
+    add_all_entries: function() {
+        this.render();
+        this.model.get('entries').map(this.add_new_entry);
+    },
+
+    item_clicked: function(view) {
+        this.hide_sidebar();
+        // only trigger an entry_requested event if the item wasn't already active
+        if (!view.model.get("active")) {
+            this.trigger("entry_requested", view.model);
+        }
+        // mark the clicked view as active, and unmark all the others
+        _.each(this._entry_views, function(v) {
+            v.model.set("active", v == view);
+        });
+    }
 
 });
+
+window.PlaylistSidebarEntryView = Backbone.View.extend({
+
+    tagName: "li",
+
+    template: HB.template("playlists/playlist-sidebar-entry"),
+
+    events: {
+        "click": "clicked"
+    },
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.listenTo(this.model, "change:active", this.render);
+
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+
+    clicked: function(ev) {
+        ev.preventDefault();
+        this.trigger("clicked", this);
+        return false;
+    },
+
+});
+

@@ -289,7 +289,13 @@ window.VideoPlayerView = Backbone.View.extend({
 
     },
 
-    _initializePlayer: _.once(function(width, height) {
+    _initializePlayer: function(width, height) {
+
+        // avoid initializing more than once
+        if (this._loaded) {
+            return;
+        }
+        this._loaded = true;
 
         var player_id = this.$(".video-js").attr("id");
 
@@ -305,7 +311,7 @@ window.VideoPlayerView = Backbone.View.extend({
 
         this._onResize();
 
-    }),
+    },
 
     _onResize: _.throttle(function() {
         var available_width = $("article").width();
@@ -457,6 +463,8 @@ window.VideoWrapperView = Backbone.View.extend({
 
     initialize: function() {
 
+        _.bindAll(this);
+
         this.render();
 
         // this.listenTo(this.model, "change:selected_language", this.render);
@@ -468,6 +476,9 @@ window.VideoWrapperView = Backbone.View.extend({
     },
 
     render: function() {
+
+        // get a random ID for video.js to use to refer to this player
+        this.model.set("random_id", "video-" + Math.random().toString().slice(2));
 
         this.$el.html(this.template(this.model.attributes));
 

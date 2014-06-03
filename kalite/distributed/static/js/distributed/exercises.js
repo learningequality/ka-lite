@@ -1,9 +1,24 @@
-/*
 
-TODO:
-    - Fire an event when question has been loaded and displayed (to be used for marking start time on log.)
+// add some dummy features onto the Exercises object to make khan-exercises.js happy
+window.Exercises = {
+    completeStack: {
+        getUid: function() { return 0; },
+        getCustomStackID: function() { return 0; }
+    },
+    currentCard: {
+        attributes: {},
+        get: function() {}
+    },
+    RelatedVideos: {
+        render: function() {}
+    },
+    getCurrentFramework: function() { return "khan-exercises"; },
+    incompleteStack: [0],
+    PerseusBridge: {
+        cleanupProblem: function() {}
+    }
+};
 
-*/
 
 window.ExerciseDataModel = Backbone.Model.extend({
     /*
@@ -186,13 +201,15 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
+        this.context_type = options.context_type;
     },
 
     url: function() {
         return "/api/attemptlog/?" + $.param({
             "exercise_id": this.exercise_id,
             "user": window.statusModel.get("user_id"),
-            "limit": this.STREAK_WINDOW
+            "limit": this.STREAK_WINDOW,
+            "context_type": this.context_type
         });
     },
 
@@ -253,7 +270,8 @@ window.TestLogModel = Backbone.Model.extend({
 
     defaults: {
         index: 0,
-        complete: false
+        complete: false,
+        started: false
     },
 
     init: function(options) {
@@ -324,22 +342,27 @@ window.TestLogModel = Backbone.Model.extend({
         };
     },
 
-    get_item_test_data: function() {
-
-    },
-
     save: function() {
 
         var self = this;
 
         var already_complete = this.get("complete");
 
-        if((this.get("index") == this.item_sequence.length) && !already_complete){
-            this.set({
-                complete: true
-            })
-            this.trigger("complete");
-        }
+        if(this.item_sequence){
+
+            if(!this.get("total_number")){
+                this.set({
+                    total_number: this.item_sequence.length
+                });
+            }
+
+            if((this.get("index") == this.item_sequence.length) && !already_complete){
+                this.set({
+                    complete: true
+                })
+                this.trigger("complete");
+            };
+        };
 
         Backbone.Model.prototype.save.call(this)
     },
@@ -369,9 +392,178 @@ window.TestLogCollection = Backbone.Collection.extend({
         } else { // create a new exercise log if none existed
             return new TestLogModel({
                 "user": window.statusModel.get("user_uri")
-            },
-            {
-                "test_data_model": this.test_data_model
+            });
+        }
+    }
+
+});
+
+var QuizDataModel = Backbone.Model.extend({
+
+    defaults: {
+        repeats: 3,
+    },
+
+    initialize: function() {
+        this.set({
+            ids: this.get_exercise_ids_from_playlist_entry(this.get("entry")),
+            quiz_id: this.get("entry").get("entity_id"),
+            seed: this.get("entry").get("seed") || null
+        })
+    },
+
+    get_exercise_ids_from_playlist_entry: function(entry) {
+        var temp_collection = entry.collection.slice(0, _.indexOf(entry.collection, entry));
+        var left_index = _.reduceRight(entry.collection.slice(0, _.indexOf(entry.collection, entry)), function(memo, value, index){
+                if(!memo && value.get("entity_kind")==="Quiz"){
+                    return index;
+                } else {
+                    return memo;
+                }
+            }, 0);
+        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id")});
+    }
+})
+
+window.QuizLogModel = Backbone.Model.extend({
+    /*
+    Contains summary data about the user's history of interaction with the current test.
+    */
+
+    defaults: {
+        index: 0,
+        complete: false,
+        attempts: 0
+    },
+
+    init: function(options) {
+
+        _.bindAll(this);
+
+        var self = this;
+
+    },
+
+    get_item_data: function(quiz_data_model) {
+        /*
+        This function is designed to give a deterministic quiz sequence for an individual, based
+        on their userModel URI. As such, each individual will always have the same generated quiz
+        sequence, but it is, for all intents and purposes, randomized across individuals.
+        */
+
+        /*
+        Seed random generator here so that it increments all seed randomization blocks.
+        If seeded inside each call to the function, then the blocks of seeds for each user
+        would be identically shuffled.
+        */
+        if(typeof(quiz_data_model)==="object"){
+
+            var random = new Math.seedrandom(this.get("user") + this.get("attempts"));
+
+            var items = quiz_data_model.get("ids");
+
+            var repeats = quiz_data_model.get("repeats");
+
+            this.item_sequence = [];
+
+            for(j=0; j < repeats; j++){
+                this.item_sequence.push(items);
+            }
+
+            this.item_sequence = _.flatten(this.item_sequence);
+
+            this.item_sequence = seeded_shuffle(this.item_sequence, random);
+        }
+        return {
+            exercise_id: this.item_sequence[this.get("index")]
+        };
+    },
+
+    save: function() {
+
+        var self = this;
+
+        var already_complete = this.get("complete");
+
+        if(this.item_sequence){
+
+            if(!this.get("total_number")){
+                this.set({
+                    total_number: this.item_sequence.length
+                });
+            }
+
+            if((this.get("index") == this.item_sequence.length)){
+
+                this.set({
+                    index: 0,
+                    attempts: this.get("attempts") + 1
+                });
+
+                if(!already_complete) {
+                    this.set({
+                        complete: true,
+
+                    })
+                }
+
+                this.trigger("complete");
+            };
+        };
+
+        Backbone.Model.prototype.save.call(this)
+    },
+
+    add_response_log_item: function(data) {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        if(this._response_log_cache[this.get("attempts")]){
+            this._response_log_cache.push(0);
+        }
+        // add the event to the response log list
+        if(data.correct){
+            this._response_log_cache[this.get("attempts")] += 1;
+            if(this.get("attempts")==0) {
+                this.set({
+                    total_correct: this.get("total_correct") + 1
+                });
+            }
+        }
+
+        // deflate the response log list so it will be saved along with the model later
+        this.set("response_log", JSON.stringify(this._response_log_cache));
+
+    },
+
+    urlRoot: "/api/playlists/quizlog/"
+
+});
+
+window.QuizLogCollection = Backbone.Collection.extend({
+
+    model: QuizLogModel,
+
+    initialize: function(models, options) {
+        this.quiz = options.quiz;
+    },
+
+    url: function() {
+        return "/api/playlists/quizlog/?" + $.param({
+            "quiz": this.quiz,
+            "user": window.statusModel.get("user_id")
+        });
+    },
+
+    get_first_log_or_new_log: function() {
+        if (this.length > 0) {
+            return this.at(0);
+        } else { // create a new exercise log if none existed
+            return new QuizLogModel({
+                "user": window.statusModel.get("user_uri")
             });
         }
     }
@@ -457,7 +649,7 @@ window.ExerciseView = Backbone.View.extend({
 
         this.render();
 
-        this.initialize_khan_exercises_listeners();
+        _.defer(this.initialize_khan_exercises_listeners);
 
     },
 
@@ -470,6 +662,11 @@ window.ExerciseView = Backbone.View.extend({
         this.$el.html(this.template(this.data_model.attributes));
 
         this.initialize_listeners();
+
+        if ($("#exercise-inline-style").length == 0) {
+            // dummy style container that khan-exercises uses to dynamically add styling to an exercise
+            $("head").append("<style id='exercise-inline-style'></style>");
+        }
 
     },
 
@@ -486,7 +683,7 @@ window.ExerciseView = Backbone.View.extend({
 
         var self = this;
 
-        $(Khan).bind("loaded", this.khan_loaded);
+        Khan.loaded.then(this.khan_loaded);
 
         $(Exercises).bind("checkAnswer", this.check_answer);
 
@@ -566,6 +763,8 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     initialize: function() {
 
+        var self = this;
+
         _.bindAll(this);
 
         this.exercise_view = new ExerciseView({
@@ -581,24 +780,26 @@ window.ExercisePracticeView = Backbone.View.extend({
             el: this.$(".exercise-hint-wrapper")
         });
 
-        if (window.statusModel.get("is_logged_in")) {
+        window.statusModel.loaded.then(function() {
 
-            this.exercise_view.on("check_answer", this.check_answer);
+            if (window.statusModel.get("is_logged_in")) {
 
-            // load the data about the user's overall progress on the exercise
-            this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
-            var log_collection_deferred = this.log_collection.fetch();
+                self.exercise_view.on("check_answer", self.check_answer);
 
-            // load the last 10 (or however many) specific attempts the user made on this exercise
-            this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id});
-            var attempt_collection_deferred = this.attempt_collection.fetch();
+                // load the data about the user's overall progress on the exercise
+                self.log_collection = new ExerciseLogCollection([], {exercise_id: self.options.exercise_id});
+                var log_collection_deferred = self.log_collection.fetch();
 
-            // wait until both the exercise and attempt logs have been loaded before continuing
-            this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
-            this.user_data_loaded_deferred.then(this.user_data_loaded);
+                // load the last 10 (or however many) specific attempts the user made on self exercise
+                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id, context_type: self.options.context_type});
+                var attempt_collection_deferred = self.attempt_collection.fetch();
 
-        }
+                // wait until both the exercise and attempt logs have been loaded before continuing
+                self.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+                self.user_data_loaded_deferred.then(self.user_data_loaded);
 
+            }
+        });
     },
 
     user_data_loaded: function() {
@@ -663,6 +864,8 @@ window.ExercisePracticeView = Backbone.View.extend({
     },
 
     check_answer: function(data) {
+
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -763,6 +966,10 @@ window.ExercisePracticeView = Backbone.View.extend({
 
 window.ExerciseTestView = Backbone.View.extend({
 
+    start_template: HB.template("exercise/test-start"),
+
+    stop_template: HB.template("exercise/test-stop"),
+
     initialize: function() {
 
         _.bindAll(this);
@@ -783,23 +990,53 @@ window.ExerciseTestView = Backbone.View.extend({
 
     },
 
+    finish_test: function() {
+        if(this.log_model.get("complete")){
+            this.$el.html(this.stop_template())
+
+            $("#stop-test").click(function(){window.location.href = "/"})
+
+            return true;
+        }
+    },
+
     user_data_loaded: function() {
 
         // get the test log model from the queried collection
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+        if(!this.log_model){
+            this.log_model = this.log_collection.get_first_log_or_new_log();
+        }
 
-        var question_data = this.log_model.get_item_data(this.test_model);
+        if(!this.log_model.get("started")){
+            this.$el.html(this.start_template());
 
-        var data = $.extend({el: this.el}, question_data)
+            $("#start-test").click(this.start_test);
 
-        this.initialize_new_attempt_log(question_data);
+        } else {
 
-        this.exercise_view = new ExerciseView(data);
+            this.listenTo(this.log_model, "complete", this.finish_test);
 
-        this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
-        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+            var question_data = this.log_model.get_item_data(this.test_model);
 
+            var data = $.extend({el: this.el}, question_data);
+
+            this.initialize_new_attempt_log(question_data);
+
+            this.exercise_view = new ExerciseView(data);
+
+            this.exercise_view.on("check_answer", this.check_answer);
+            this.exercise_view.on("problem_loaded", this.problem_loaded);
+            this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+        }
+
+    },
+
+    start_test: function() {
+        this.log_model.set({"started": true});
+        model_save_deferred = this.log_model.save();
+        this.user_data_loaded();
+        this.ready_for_next_question();
+        this.problem_loaded();
     },
 
     problem_loaded: function(data) {
@@ -810,7 +1047,6 @@ window.ExerciseTestView = Backbone.View.extend({
         if (this.current_attempt_log.isNew()) {
             this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
         }
-        console.log(this.current_attempt_log);
 
     },
 
@@ -834,6 +1070,10 @@ window.ExerciseTestView = Backbone.View.extend({
     },
 
     check_answer: function(data) {
+
+        $("#check-answer-button").val("Next Question").show()
+
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -864,6 +1104,12 @@ window.ExerciseTestView = Backbone.View.extend({
                 index: this.log_model.get("index") + 1
             });
 
+            if(data.correct) {
+                this.log_model.set({
+                    total_correct: this.log_model.get("total_correct") + 1
+                });
+            }
+
             this.log_model.save();
 
         }
@@ -881,13 +1127,160 @@ window.ExerciseTestView = Backbone.View.extend({
         this.user_data_loaded_deferred.then(function() {
 
             self.exercise_view.load_question(self.log_model.get_item_data());
-            self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+            self.initialize_new_attempt_log(self.log_model.get_item_data());
+            $("#next-question-button").remove()
 
         });
 
     }
 
 });
+
+window.ExerciseQuizView = Backbone.View.extend({
+
+    stop_template: HB.template("exercise/quiz-stop"),
+
+    initialize: function(options) {
+
+        _.bindAll(this);
+
+        if (window.statusModel.get("is_logged_in")) {
+
+            this.quiz_model = options.quiz_model;
+
+            // load the data about the user's overall progress on the test
+            this.log_collection = new QuizLogCollection([], {quiz: this.quiz_model.get("quiz_id")});
+            var log_collection_deferred = this.log_collection.fetch();
+
+            this.user_data_loaded_deferred = $.when(log_collection_deferred).then(this.user_data_loaded);
+
+        }
+
+    },
+
+    finish_quiz: function() {
+        this.$el.html(this.stop_template())
+
+        var self = this;
+
+        $("#stop-quiz").click(function(){self.trigger("complete");})
+    },
+
+    user_data_loaded: function() {
+
+        // get the quiz log model from the queried collection
+        if(!this.log_model){
+            this.log_model = this.log_collection.get_first_log_or_new_log();
+        }
+
+        this.listenTo(this.log_model, "complete", this.finish_quiz);
+
+        var question_data = this.log_model.get_item_data(this.quiz_model);
+
+        var data = $.extend({el: this.el}, question_data);
+
+        this.initialize_new_attempt_log(question_data);
+
+        this.exercise_view = new ExerciseView(data);
+
+        this.exercise_view.on("check_answer", this.check_answer);
+        this.exercise_view.on("problem_loaded", this.problem_loaded);
+        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+
+    },
+
+    problem_loaded: function(data) {
+        this.current_attempt_log.add_response_log_event({
+            type: "loaded"
+        });
+        // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
+        if (this.current_attempt_log.isNew()) {
+            this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
+        }
+
+    },
+
+    initialize_new_attempt_log: function(data) {
+
+        var defaults = {
+            exercise_id: this.options.exercise_id,
+            user: window.statusModel.get("user_uri"),
+            context_type: "quiz" || "",
+            context_id: this.options.title || "",
+            language: "", // TODO(jamalex): get the current exercise language
+            version: window.statusModel.get("version")
+        };
+
+        var data = $.extend(defaults, data);
+
+        this.current_attempt_log = new AttemptLogModel(data);
+
+        return this.current_attempt_log;
+
+    },
+
+    check_answer: function(data) {
+
+        $("#check-answer-button").val("Next Question").show()
+
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
+
+        // increment the response count
+        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+
+        this.current_attempt_log.add_response_log_event({
+            type: "answer",
+            answer: data.guess,
+            correct: data.correct
+        });
+
+        // update and save the exercise and attempt logs
+        this.update_and_save_log_models("answer_given", data);
+    },
+
+    update_and_save_log_models: function(event_type, data) {
+
+        // if current attempt log has not been saved, then this is the user's first response to the question
+        if (this.current_attempt_log.isNew()) {
+
+            this.current_attempt_log.set({
+                correct: data.correct,
+                answer_given: data.guess,
+                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp")),
+                complete: true
+            });
+
+            this.log_model.set({
+                index: this.log_model.get("index") + 1
+            });
+
+            this.log_model.add_response_log_item(data);
+
+            this.log_model.save();
+
+        }
+
+        this.current_attempt_log.save();
+
+        this.ready_for_next_question();
+
+    },
+
+    ready_for_next_question: function() {
+
+        var self = this;
+
+        this.user_data_loaded_deferred.then(function() {
+
+            self.exercise_view.load_question(self.log_model.get_item_data());
+            self.initialize_new_attempt_log(self.log_model.get_item_data());
+
+        });
+
+    }
+
+});
+
 
 function seeded_shuffle(source_array, random) {
     var array = source_array.slice(0)
