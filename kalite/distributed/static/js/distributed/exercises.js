@@ -722,9 +722,11 @@ window.ExerciseView = Backbone.View.extend({
 
         $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
 
-        $(Exercises).bind("hintUsed", this.hint_used);
-
-        $(Exercises).bind("newProblem", this.problem_loaded);
+        // some events we only care about if the user is logged in
+        if (statusModel.get("is_logged_in")) {
+            $(Exercises).bind("hintUsed", this.hint_used);
+            $(Exercises).bind("newProblem", this.problem_loaded);
+        }
 
     },
 
@@ -990,19 +992,28 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         var self = this;
 
-        this.user_data_loaded_deferred.then(function() {
+        if (this.user_data_loaded_deferred) {
 
-            // if this is the first attempt, or the previous attempt was complete, start a new attempt log
-            if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
-                self.exercise_view.load_question(); // will generate a new random seed to use
-                self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
-            } else { // use the seed already established for this attempt
-                self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
-            }
+            this.user_data_loaded_deferred.then(function() {
 
-            self.$(".hint-reminder").show(); // show message about hints
+                // if this is the first attempt, or the previous attempt was complete, start a new attempt log
+                if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
+                    self.exercise_view.load_question(); // will generate a new random seed to use
+                    self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+                } else { // use the seed already established for this attempt
+                    self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
+                }
 
-        });
+                self.$(".hint-reminder").show(); // show message about hints
+
+            });
+
+        } else { // not logged in, but just load the next question, for kicks
+
+            self.exercise_view.load_question();
+
+        }
+
 
     }
 
@@ -1229,8 +1240,8 @@ window.ExerciseQuizView = Backbone.View.extend({
         this.exercise_view = new ExerciseView(data);
 
         this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+        this.exercise_view.on("problem_loaded", this.problem_loaded);
 
     },
 
