@@ -77,7 +77,7 @@ class TestResource(Resource):
         return self.get_object_list(bundle.request)
 
     def obj_get(self, bundle, **kwargs):
-        title = kwargs.get("title", None)
+        title = kwargs.get("pk", None)
         test = self._read_tests(title)
         if test:
             return test
