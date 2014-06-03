@@ -68,6 +68,7 @@ var PlaylistView = Backbone.View.extend({
 
     renderGroup: function(group) {
         var view = new PlaylistGroupView({model: group});
+        group.parentModel = this.model;
         this.$el.find('.playlist-groups').append(view.render().el);
     },
 
@@ -83,6 +84,7 @@ var PlaylistView = Backbone.View.extend({
         var group = groups.get(groupID);
 
         this.model.get('groups_assigned').add(group);
+        console.log(this.model);
         this.model.save();
     },
 
@@ -103,6 +105,19 @@ var PlaylistGroupView = Backbone.View.extend({
         this.$el.html(this.template(dict));
 
         return this;
+    },
+
+    events: {
+        'click a': 'remove'
+    },
+
+    remove: function(ev) {
+        ev.preventDefault();
+        var group = this.model;
+        var parentModel = this.model.parentModel;
+
+        parentModel.get('groups_assigned').remove(group);
+        parentModel.save();
     }
 });
 

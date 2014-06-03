@@ -25,16 +25,19 @@ var Playlist = Backbone.Model.extend({
 
     parse: function(response) {
         // initialize the assigned groups list
-        var groupList = new GroupList(response.groups_assigned.map(function(groupdata) {
-            return new Group(groupdata);
-        }));
-        response.groups_assigned = groupList;
 
-        // initialize the playlists's entries list
-        var playlistEntryList = new PlaylistEntryList(response.entries.map(function(entrydata) {
-            return new PlaylistEntry(entrydata);
-        }));
-        response.entries = playlistEntryList;
+        if(response) {
+            var groupList = new GroupList(response.groups_assigned.map(function(groupdata) {
+                return new Group(groupdata);
+            }));
+            response.groups_assigned = groupList;
+
+            // initialize the playlists's entries list
+            var playlistEntryList = new PlaylistEntryList(response.entries.map(function(entrydata) {
+                return new PlaylistEntry(entrydata);
+            }));
+            response.entries = playlistEntryList;
+        }
 
         return response;
     },
