@@ -3,12 +3,14 @@ import json
 import re
 from tastypie import fields
 from tastypie.exceptions import NotFound
-from tastypie.resources import Resource
+from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistToGroupMapping
+from .models import PlaylistToGroupMapping, QuizLog
 from kalite.facility.models import FacilityGroup
 from kalite.shared.contextmanagers.db import inside_transaction
 from kalite.topic_tools import get_flat_topic_tree
+from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.facility.api_resources import FacilityUserResource
 
 
 class Playlist:
@@ -197,3 +199,17 @@ class PlaylistResource(Resource):
 
     def rollback(self, request):
         raise NotImplemented("Operation not implemented yet for playlists.")
+
+
+class QuizLogResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    class Meta:
+        queryset = QuizLog.objects.all()
+        resource_name = 'quizlog'
+        filtering = {
+            "title": ('exact', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()

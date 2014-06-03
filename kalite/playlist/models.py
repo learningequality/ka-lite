@@ -2,7 +2,9 @@ from django.db import models
 
 from fle_utils.django_utils import ExtendedModel
 
-from kalite.facility.models import FacilityGroup
+from kalite.facility.models import FacilityGroup, FacilityUser
+
+from securesync.models import DeferredCountSyncedModel
 
 
 class Playlist(ExtendedModel):
@@ -58,3 +60,19 @@ class PlaylistEntry(ExtendedModel):
 class PlaylistToGroupMapping(ExtendedModel):
     playlist = models.CharField(db_index=True, max_length=15)
     group = models.ForeignKey(FacilityGroup, related_name='playlists')
+
+class QuizLog(DeferredCountSyncedModel):
+    user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
+    # test = models.ForeignKey(Test, blank=False, null=False, db_index=True)
+    quiz = models.CharField(blank=False, null=False, max_length=100)
+    # TODO: Field that stores the Test/playlist field.
+    index = models.IntegerField(blank=False, null=False, default=0)
+    complete = models.BooleanField(blank=False, null=False, default=False)
+    # Attempts is the number of times the Quiz itself has been attempted.
+    attempts = models.IntegerField(blank=False, null=False, default=0)
+    total_number = models.IntegerField(blank=False, null=False, default=0)
+    total_correct = models.IntegerField(blank=False, null=False, default=0)
+    response_log = models.TextField(default="[]")
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
