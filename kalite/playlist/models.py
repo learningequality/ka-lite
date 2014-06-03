@@ -113,7 +113,7 @@ class VanillaPlaylist:
 
             # instantiate the playlist entries
             raw_entries = playlist_dict['entries']
-            playlist.entries = raw_entries
+            playlist.entries = [VanillaPlaylistEntry._clean_playlist_entry_id(e) for e in raw_entries]
 
             playlists.append(playlist)
 
@@ -139,8 +139,9 @@ class VanillaPlaylistEntry:
             self.pk = self.id = None
         self._clean_playlist_entry_id()
 
-    def _clean_playlist_entry_id(self):
-        name = self['entity_id']
+    @staticmethod
+    def _clean_playlist_entry_id(entry):
+        name = entry['entity_id']
         # strip any trailing whitespace
         name = name.strip()
 
@@ -153,5 +154,7 @@ class VanillaPlaylistEntry:
         ]
         name = name_breakdown[-1]
 
-        self['old_entity_id'] = ['entity_id']
-        self['entity_id'] = name
+        entry['old_entity_id'] = ['entity_id']
+        entry['entity_id'] = name
+
+        return entry
