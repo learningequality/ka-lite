@@ -462,9 +462,9 @@ def get_exercise_data(request, exercise_id=None):
     return exercise
 
 
-def video_dict_by_video_id():
+def video_dict_by_video_id(flat_topic_tree=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here
-    topictree = get_flat_topic_tree()
+    topictree = flat_topic_tree if flat_topic_tree else get_flat_topic_tree()
 
     # since videos in the flat topic tree are indexed by youtube
     # number, we have to construct another dict with the id
