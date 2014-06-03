@@ -469,6 +469,10 @@ def get_video_data(request, video_id=None):
     videos_dict = video_dict_by_video_id(topictree)
     video = videos_dict.get(video_id)
 
+    # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
+    from kalite.updates import stamp_availability_on_video
+    video = stamp_availability_on_video(video)
+
     if not video["available"]:
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
