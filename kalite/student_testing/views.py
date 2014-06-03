@@ -1,6 +1,8 @@
 import json
 import random
 
+from django.http.response import Http404
+
 from annoying.decorators import render_to
 
 from kalite.shared.decorators import require_login
@@ -15,7 +17,10 @@ def test(request, test_id):
     Display a test
     """
 
-    test_item = json.load(open(STUDENT_TESTING_DATA_PATH + "/" + test_id + ".json", "r"))
+    try:
+        test_item = json.load(open(STUDENT_TESTING_DATA_PATH + "/" + test_id + ".json", "r"))
+    except Exception as exc:
+        raise Http404
 
     was_created = False
 
@@ -27,8 +32,8 @@ def test(request, test_id):
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         # test_item = Test.objects.get(pk=test_id)
-
-        test_item = json.load(open(STUDENT_TESTING_DATA_PATH + "/" + test_id + ".json", "r"))
+        # TEMP (cpauya): why do we need to load the .json again when we already loaded it above?
+        # test_item = json.load(open(STUDENT_TESTING_DATA_PATH + "/" + test_id + ".json", "r"))
 
         (testlog, was_created) = TestLog.get_or_initialize(user=user, test=test_item["title"])
 
