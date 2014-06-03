@@ -40,10 +40,7 @@
 
     {{ block.super }}
 
-    <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>
-    <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
-    <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
-    <script src="{% url handlebars_templates module_name='video' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
 
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
@@ -51,7 +48,7 @@
     $(function() {
 
         window.videoWrapperView = new VideoWrapperView({
-            model: new VideoPlayerModel({{ video|jsonify }}),
+            video_id: "{{ video.slug }}",
             el: $(".video-wrapper")
         });
 

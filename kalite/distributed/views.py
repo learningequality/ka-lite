@@ -229,32 +229,7 @@ def topic_context(topic):
 @refresh_topic_cache
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    if not video["available"]:
-        if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
-            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
-        elif request.is_logged_in:
-            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
-        elif not request.is_logged_in:
-            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
-
-    # Fallback mechanism
-    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    if video["available"] and not available_urls:
-        vid_lang = "en"
-        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
-    else:
-        vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
-
-    # TODO(jamalex): clean this up, and move stuff into a generic video-info endpoint/function
-    video = video.copy()
-    video["video_urls"] = video["availability"].get(vid_lang)
-    video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
-    video["selected_language"] = vid_lang
-    video["dubs_available"] = len(video["availability"]) > 1
-    video["title"] = _(video["title"])
-    video["description"] = _(video["description"])
-    video["video_id"] = video["id"]
+    video = topic_tools.get_video_data(request, video["slug"])
 
     context = {
         "video": video,
@@ -273,30 +248,10 @@ def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
     """
     Display an exercise
     """
-    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
-    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    exercise_file = exercise["slug"] + ".html"
-    exercise_template = exercise_file
-    exercise_localized_template = os.path.join(lang, exercise_file)
-
-    # Get the language codes for exercise templates that exist
-    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
-    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
-    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
-
-    # Return the best available exercise template
-    exercise_lang = select_best_available_language(request.language, available_codes=available_langs)
-    if exercise_lang == "en":
-        exercise_template = exercise_file
-    else:
-        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
 
     context = {
-        "exercise": exercise,
+        "exercise_id": exercise["name"],
         "title": exercise["title"],
-        "exercise_template": exercise_template,
-        "exercise_lang": exercise_lang,
-        "related_videos": [v for v in related_videos.values() if v["available"]],
         "prev": prev,
         "next": next,
     }
