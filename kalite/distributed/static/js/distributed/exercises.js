@@ -359,12 +359,12 @@ window.TestLogModel = Backbone.Model.extend({
             if((this.get("index") == this.item_sequence.length) && !already_complete){
                 this.set({
                     complete: true
-                })
+                });
                 this.trigger("complete");
-            };
-        };
+            }
+        }
 
-        Backbone.Model.prototype.save.call(this)
+        Backbone.Model.prototype.save.call(this);
     },
 
     urlRoot: "/test/api/testlog/"
