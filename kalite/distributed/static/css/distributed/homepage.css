@@ -122,8 +122,12 @@ th {
 
 .cell-content {
     color: #305884;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     height: 60px;
+}
+
+.playlist-list-item {
+    padding: 10px;
 }
 
 li:hover {
