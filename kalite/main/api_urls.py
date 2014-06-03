@@ -20,7 +20,7 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     url(r'^', include(ExerciseLogResource().urls)),
     url(r'^', include(AttemptLogResource().urls)),
-    url(r'^', include(VideoResource().urls)),
+    # url(r'^', include(VideoResource().urls)),
     url(r'^exercise_log/(?P<exercise_id>\w+)$', 'exercise_log', {}, 'exercise_log'),
     url(r'^attempt_log/(?P<exercise_id>\w+)$', 'attempt_log', {}, 'attempt_log'),
 
@@ -31,5 +31,9 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
 
     # Retrieve exercise data to render a front-end exercise
-    url(r'^exercise/(?P<exercise_id>[^/]+)$', 'exercise', {}, 'exercise')
+    url(r'^exercise/(?P<exercise_id>[^/]+)$', 'exercise', {}, 'exercise'),
+
+    # Retrieve video data to render a front-end video player
+    url(r'^video/(?P<video_id>[^/]+)$', 'video', {}, 'video'),
+
 )

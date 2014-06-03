@@ -48,7 +48,7 @@
     $(function() {
 
         window.videoWrapperView = new VideoWrapperView({
-            model: new VideoPlayerModel({{ video|jsonify }}),
+            video_id: "{{ video.slug }}",
             el: $(".video-wrapper")
         });
 

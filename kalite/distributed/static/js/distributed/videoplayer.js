@@ -463,9 +463,15 @@ window.VideoWrapperView = Backbone.View.extend({
 
     initialize: function() {
 
+        var self = this;
+
         _.bindAll(this);
 
-        this.render();
+        // TODO(jamalex): separate this out into a state model, video data model, and user data model
+        doRequest("/api/video/" + this.options.video_id).success(function(data) {
+            self.model = new VideoPlayerModel(data);
+            self.render();
+        });
 
         // this.listenTo(this.model, "change:selected_language", this.render);
 

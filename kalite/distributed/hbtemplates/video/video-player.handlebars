@@ -7,3 +7,5 @@
     </video>
     {{#if video_urls.thumbnail}}<img class="video-thumb" src="{{ video_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{{/if}}
 </div>
+
+{{#unless video_urls.on_disk }}<div class="not-client-online-only">{{_ "Sorry, this video has not been downloaded." }}</div>{{/unless}}

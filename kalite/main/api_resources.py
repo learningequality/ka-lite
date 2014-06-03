@@ -43,6 +43,9 @@ class AttemptLogResource(ModelResource):
 class Video:
 
     def __init__(self, lang_code="en", **kwargs):
+
+        self.on_disk = False
+
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
@@ -52,12 +55,14 @@ class Video:
         self.selected_language = lang_code
         self.dubs_available = len(kwargs.get('availability', {})) > 1
         self.title = _(kwargs.get('title'))
-        self.description = _(kwargs.get('description'))
         self.id = self.pk = self.video_id = kwargs.get('id')
+        self.description = _(kwargs.get('description', ''))
+        if self.description == "None":
+            self.description = ""
 
 
 class VideoResource(Resource):
-
+    # TODO(jamalex): this seems very un-DRY (since it's replicating all the model fields again). DRY it out!
     availability = fields.DictField(attribute='availability')
     description = fields.CharField(attribute='description')
     download_urls = fields.DictField(attribute='download_urls')
