@@ -1,6 +1,6 @@
 from django.db import models
 
-from fle_utils.django_utils import ExtendedModel
+from securesync.models import DeferredCountSyncedModel
 from kalite.facility.models import FacilityUser
 
 # class Test(ExtendedModel):
@@ -14,7 +14,7 @@ from kalite.facility.models import FacilityUser
 #   title = models.CharField(blank=False, null=False, max_length=200)
 
 
-class TestLog(ExtendedModel):
+class TestLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     # test = models.ForeignKey(Test, blank=False, null=False, db_index=True)
     test = models.CharField(blank=False, null=False, max_length=100)
@@ -22,3 +22,8 @@ class TestLog(ExtendedModel):
     index = models.IntegerField(blank=False, null=False, default=0)
     complete = models.BooleanField(blank=False, null=False, default=False)
     started = models.BooleanField(blank=False, null=False, default=False)
+    total_number = models.IntegerField(blank=False, null=False, default=0)
+    total_correct = models.IntegerField(blank=False, null=False, default=0)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass

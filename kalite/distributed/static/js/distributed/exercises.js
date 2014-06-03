@@ -350,6 +350,12 @@ window.TestLogModel = Backbone.Model.extend({
 
         if(this.item_sequence){
 
+            if(!this.get("total_number")){
+                this.set({
+                    total_number: this.item_sequence.length
+                });
+            }
+
             if((this.get("index") == this.item_sequence.length) && !already_complete){
                 this.set({
                     complete: true
@@ -840,9 +846,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
             var question_data = this.log_model.get_item_data(this.test_model);
 
-            var data = $.extend({el: this.el}, question_data)
-
-            console.log(data);
+            var data = $.extend({el: this.el}, question_data);
 
             this.initialize_new_attempt_log(question_data);
 
@@ -928,6 +932,12 @@ window.ExerciseTestView = Backbone.View.extend({
                 index: this.log_model.get("index") + 1
             });
 
+            if(data.correct) {
+                this.log_model.set({
+                    total_correct: this.log_model.get("total_correct") + 1
+                });
+            }
+
             this.log_model.save();
 
         }
@@ -945,7 +955,7 @@ window.ExerciseTestView = Backbone.View.extend({
         this.user_data_loaded_deferred.then(function() {
 
             self.exercise_view.load_question(self.log_model.get_item_data());
-            self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+            self.initialize_new_attempt_log(self.log_model.get_item_data());
             $("#next-question-button").remove()
 
         });
