@@ -1,14 +1,14 @@
 /* ===================================
     Global
 =================================== */
-html, body, #background-photo {
+html, body {
     height: 100%;
 }
 body {
     margin: 0;
     padding-top: 79px;
 }
-#background-photo, .row {
+.row {
     width: 100%;
 }
 .container {
