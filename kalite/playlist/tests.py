@@ -1,10 +1,5 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
 
-Replace this with more appropriate tests for your application.
-"""
-
+import json
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
 
@@ -79,3 +74,53 @@ class PlaylistAPITests(CreateGroupMixin, CreateAdminMixin, TestCase):
     def test_playlist_detail_url_exists(self):
         resp = self.client.get(self._playlist_url(0))
         self.assertEquals(resp.status_code, 200)
+
+    def test_playlist_list_has_required_data(self):
+        PLAYLIST_REQUIRED_ATTRIBUTES = [('description', unicode),
+                                        ('entries', list),
+                                        ('groups_assigned', list),
+                                        ('id', unicode),
+                                        ('resource_uri', unicode),
+                                        ('title', unicode)]
+
+        resp = self.client.get(self._playlist_url())
+        playlists = json.loads(resp.content)
+
+        for playlist_dict in playlists['objects']:
+            # verify each of the attributes. Indexing the playlist
+            # dict shouldn't raise an error if they exist. We will
+            # also verify that they're the correct type
+            for attribute, attrtype in PLAYLIST_REQUIRED_ATTRIBUTES:
+                val = playlist_dict[attribute]
+                errmsgtemplate = "val %s for attribute %s is not of type %s; is actually of type %s"
+                self.assertTrue(isinstance(val, attrtype), errmsgtemplate % (val, attribute, attrtype, type(val)))
+
+    def test_playlist_detail_and_entry_has_required_data(self):
+        PLAYLIST_REQUIRED_ATTRIBUTES = [('description', unicode),
+                                        ('entries', list),
+                                        ('groups_assigned', list),
+                                        ('id', unicode),
+                                        ('resource_uri', unicode),
+                                        ('title', unicode)]
+        PLAYLIST_ENTRY_REQUIRED_ATTRIBUTES = [('entity_id', unicode),
+                                              ('title', unicode),
+                                              ('entity_kind', unicode),
+                                              ('sort_order', int),
+                                              ('description', unicode)]
+        playlist_id = 'g3_p1'
+
+        resp = self.client.get(self._playlist_url(playlist_id))
+        playlist_dict = json.loads(resp.content)
+
+        # check that the toplevel playlist attribute has the required data
+        for attribute, attrtype in PLAYLIST_REQUIRED_ATTRIBUTES:
+            val = playlist_dict[attribute]
+            errmsgtemplate = "val %s for attribute %s is not of type %s; is actually of type %s"
+            self.assertTrue(isinstance(val, attrtype), errmsgtemplate % (val, attribute, attrtype, type(val)))
+
+        # check that each of the entries has the required data
+        for entry in playlist_dict['entries']:
+            for attribute, attrtype in PLAYLIST_ENTRY_REQUIRED_ATTRIBUTES:
+                val = entry.get(attribute)
+                errmsgtemplate = "val %s for attribute %s for entry %s is not of type %s; is actually of type %s"
+                self.assertTrue(isinstance(val, attrtype), errmsgtemplate % (val, attribute, entry, attrtype, type(val)))

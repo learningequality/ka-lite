@@ -359,12 +359,12 @@ window.TestLogModel = Backbone.Model.extend({
             if((this.get("index") == this.item_sequence.length) && !already_complete){
                 this.set({
                     complete: true
-                })
+                });
                 this.trigger("complete");
-            };
-        };
+            }
+        }
 
-        Backbone.Model.prototype.save.call(this)
+        Backbone.Model.prototype.save.call(this);
     },
 
     urlRoot: "/test/api/testlog/"
@@ -401,7 +401,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: 3,
+        repeats: 3
     },
 
     initialize: function() {
@@ -502,14 +502,14 @@ window.QuizLogModel = Backbone.Model.extend({
 
                 if(!already_complete) {
                     this.set({
-                        complete: true,
+                        complete: true
 
                     })
                 }
 
                 this.trigger("complete");
-            };
-        };
+            }
+        }
 
         Backbone.Model.prototype.save.call(this)
     },
