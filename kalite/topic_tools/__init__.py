@@ -460,7 +460,7 @@ def get_exercise_data(request, exercise_id=None):
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
 
-    exercise["related_videos"] = get_related_videos(exercise, limit_to_available=False).values()
+    exercise["related_videos"] = get_related_videos(exercise, limit_to_available=True).values()
 
     return exercise
 
