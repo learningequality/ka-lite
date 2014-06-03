@@ -13,6 +13,7 @@ from kalite.facility.api_resources import FacilityUserResource
 
 
 class Playlist:
+    playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
 
     __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned']
 
@@ -21,6 +22,29 @@ class Playlist:
         self.title = kwargs.get('title')
         self.description = kwargs.get('description')
         self.groups_assigned = kwargs.get('groups_assigned')
+
+    @classmethod
+    def all(cls):
+        with open(cls.playlistjson) as f:
+            raw_playlists = json.load(f)
+
+        # Coerce each playlist dict into a Playlist object
+        # also add in the group IDs that are assigned to view this playlist
+        playlists = []
+        for playlist_dict in raw_playlists:
+            playlist = cls(title=playlist_dict['title'], description='', id=playlist_dict['id'])
+
+            # instantiate the groups assigned to this playlist
+            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
+            playlist.groups_assigned = groups_assigned
+
+            # instantiate the playlist entries
+            raw_entries = playlist_dict['entries']
+            playlist.entries = raw_entries
+
+            playlists.append(playlist)
+
+        return playlists
 
 
 class PlaylistEntry:
@@ -36,25 +60,10 @@ class PlaylistEntry:
             self.pk = self.id = "{}-{}".format(self.playlist.id, self.entity_id)
         else:
             self.pk = self.id = None
+        self._clean_playlist_entry_id()
 
-
-class PlaylistResource(Resource):
-    playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
-
-    description = fields.CharField(attribute='description')
-    id = fields.CharField(attribute='id')
-    title = fields.CharField(attribute='title')
-    groups_assigned = fields.ListField(attribute='groups_assigned')
-    entries = fields.ListField(attribute='entries')
-
-    class Meta:
-        resource_name = 'playlist'
-        # Use plain python object first instead of full-blown Django ORM model
-        object_class = Playlist
-
-    @staticmethod
-    def _clean_playlist_entry_id(entry):
-        name = entry['entity_id']
+    def _clean_playlist_entry_id(self):
+        name = self['entity_id']
         # strip any trailing whitespace
         name = name.strip()
 
@@ -67,9 +76,21 @@ class PlaylistResource(Resource):
         ]
         name = name_breakdown[-1]
 
-        entry['old_entity_id'] = entry['entity_id']
-        entry['entity_id'] = name
-        return entry
+        self['old_entity_id'] = ['entity_id']
+        self['entity_id'] = name
+
+class PlaylistResource(Resource):
+
+    description = fields.CharField(attribute='description')
+    id = fields.CharField(attribute='id')
+    title = fields.CharField(attribute='title')
+    groups_assigned = fields.ListField(attribute='groups_assigned')
+    entries = fields.ListField(attribute='entries')
+
+    class Meta:
+        resource_name = 'playlist'
+        # Use plain python object first instead of full-blown Django ORM model
+        object_class = Playlist
 
     @classmethod
     def _add_full_title_from_topic_tree(cls, entry, video_title_dict):
@@ -89,29 +110,6 @@ class PlaylistResource(Resource):
             entry['description'] = entry['entity_id']
 
         return entry
-
-    def read_playlists(self):
-        with open(self.playlistjson) as f:
-            raw_playlists = json.load(f)
-
-        # Coerce each playlist dict into a Playlist object
-        # also add in the group IDs that are assigned to view this playlist
-        playlists = []
-        for playlist_dict in raw_playlists:
-            playlist = Playlist(title=playlist_dict['title'], description='', id=playlist_dict['id'])
-
-            # instantiate the groups assigned to this playlist
-            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
-            playlist.groups_assigned = groups_assigned
-
-            # instantiate the playlist entries
-            raw_entries = playlist_dict['entries']
-            entries = [self._clean_playlist_entry_id(entry) for entry in raw_entries]
-            playlist.entries = entries
-
-            playlists.append(playlist)
-
-        return playlists
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
@@ -134,7 +132,7 @@ class PlaylistResource(Resource):
 
         elif request.is_logged_in and request.is_admin:  # either actual admin, or a teacher
             # allow access to all playlists
-            playlists = self.read_playlists()
+            playlists = Playlist.all()
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             # only allow them to access playlists that they're assigned to
