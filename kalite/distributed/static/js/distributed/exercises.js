@@ -398,6 +398,178 @@ window.TestLogCollection = Backbone.Collection.extend({
 
 });
 
+var QuizDataModel = Backbone.Model.extend({
+
+    defaults: {
+        repeats: 3,
+    },
+
+    initialize: function() {
+        this.set({
+            ids: this.get_exercise_ids_from_playlist_entry(this.get("entry")),
+            title: this.get("entry").get("title"),
+            seed: this.get("entry").get("seed") || null
+        })
+    },
+
+    get_exercise_ids_from_playlist_entry: function(entry) {
+        var temp_collection = entry.collection.slice(0, _.indexOf(entry.collection, entry));
+        var left_index = _.reduceRight(entry.collection.slice(0, _.indexOf(entry.collection, entry)), function(memo, value, index){
+                if(!memo && value.get("entity_kind")==="Quiz"){
+                    return index;
+                } else {
+                    return memo;
+                }
+            }, 0);
+        console.log();
+        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id")});
+    }
+})
+
+window.QuizLogModel = Backbone.Model.extend({
+    /*
+    Contains summary data about the user's history of interaction with the current test.
+    */
+
+    defaults: {
+        index: 0,
+        complete: false,
+        attempts: 0
+    },
+
+    init: function(options) {
+
+        _.bindAll(this);
+
+        var self = this;
+
+    },
+
+    get_item_data: function(quiz_data_model) {
+        /*
+        This function is designed to give a deterministic quiz sequence for an individual, based
+        on their userModel URI. As such, each individual will always have the same generated quiz
+        sequence, but it is, for all intents and purposes, randomized across individuals.
+        */
+
+        /*
+        Seed random generator here so that it increments all seed randomization blocks.
+        If seeded inside each call to the function, then the blocks of seeds for each user
+        would be identically shuffled.
+        */
+        if(typeof(quiz_data_model)==="object"){
+
+            var random = new Math.seedrandom(this.get("user") + this.get("attempts"));
+
+            var items = quiz_data_model.get("ids");
+
+            var repeats = quiz_data_model.get("repeats");
+
+            this.item_sequence = [];
+
+            for(j=0; j < repeats; j++){
+                this.item_sequence.push(items);
+            }
+
+            this.item_sequence = _.flatten(this.item_sequence);
+
+            this.item_sequence = seeded_shuffle(this.item_sequence, random);
+        }
+        return {
+            exercise_id: this.item_sequence[this.get("index")]
+        };
+    },
+
+    save: function() {
+
+        var self = this;
+
+        var already_complete = this.get("complete");
+
+        if(this.item_sequence){
+
+            if(!this.get("total_number")){
+                this.set({
+                    total_number: this.item_sequence.length
+                });
+            }
+
+            if((this.get("index") == this.item_sequence.length)){
+
+                this.set({
+                    index: 0,
+                    attempts: this.get("attempts") + 1
+                });
+
+                if(!already_complete) {
+                    this.set({
+                        complete: true,
+
+                    })
+                    this.trigger("complete");
+                }
+            };
+        };
+
+        Backbone.Model.prototype.save.call(this)
+    },
+
+    add_response_log_item: function(data) {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        if(this._response_log_cache[this.get("attempts")]){
+            this._response_log_cache.push(0);
+        }
+        // add the event to the response log list
+        if(data.correct){
+            this._response_log_cache[this.get("attempts")] += 1;
+            if(this.get("attempts")==0) {
+                this.set({
+                    total_correct: this.get("total_correct") + 1
+                });
+            }
+        }
+
+        // deflate the response log list so it will be saved along with the model later
+        this.set("response_log", JSON.stringify(this._response_log_cache));
+
+    },
+
+    urlRoot: "/api/playlists/quizlog/"
+
+});
+
+window.QuizLogCollection = Backbone.Collection.extend({
+
+    model: QuizLogModel,
+
+    initialize: function(models, options) {
+        this.title = options.title;
+    },
+
+    url: function() {
+        return "/api/playlists/quizlog/?" + $.param({
+            "title": this.title,
+            "user": window.statusModel.get("user_id")
+        });
+    },
+
+    get_first_log_or_new_log: function() {
+        if (this.length > 0) {
+            return this.at(0);
+        } else { // create a new exercise log if none existed
+            return new QuizLogModel({
+                "user": window.statusModel.get("user_uri")
+            });
+        }
+    }
+
+});
+
 
 window.ExerciseHintView = Backbone.View.extend({
 
@@ -963,6 +1135,149 @@ window.ExerciseTestView = Backbone.View.extend({
     }
 
 });
+
+window.ExerciseQuizView = Backbone.View.extend({
+
+
+    initialize: function(options) {
+
+        _.bindAll(this);
+
+        if (window.statusModel.get("is_logged_in")) {
+
+            this.quiz_model = options.quiz_model;
+
+            // load the data about the user's overall progress on the test
+            this.log_collection = new QuizLogCollection([], {title: this.options.title});
+            var log_collection_deferred = this.log_collection.fetch();
+
+            this.user_data_loaded_deferred = $.when(log_collection_deferred).then(this.user_data_loaded);
+
+        }
+
+    },
+
+    finish_test: function() {
+        // TODO-Blocker (rtibbles): Increment loop counter here.
+    },
+
+    user_data_loaded: function() {
+
+        console.log(this.quiz_model)
+
+        // get the quiz log model from the queried collection
+        if(!this.log_model){
+            this.log_model = this.log_collection.get_first_log_or_new_log();
+        }
+
+        this.listenTo(this.log_model, "complete", this.finish_test);
+
+        var question_data = this.log_model.get_item_data(this.quiz_model);
+
+        var data = $.extend({el: this.el}, question_data);
+
+        this.initialize_new_attempt_log(question_data);
+
+        this.exercise_view = new ExerciseView(data);
+
+        this.exercise_view.on("check_answer", this.check_answer);
+        this.exercise_view.on("problem_loaded", this.problem_loaded);
+        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+
+    },
+
+    problem_loaded: function(data) {
+        this.current_attempt_log.add_response_log_event({
+            type: "loaded"
+        });
+        // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
+        if (this.current_attempt_log.isNew()) {
+            this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
+        }
+
+    },
+
+    initialize_new_attempt_log: function(data) {
+
+        var defaults = {
+            exercise_id: this.options.exercise_id,
+            user: window.statusModel.get("user_uri"),
+            context_type: "quiz" || "",
+            context_id: this.options.title || "",
+            language: "", // TODO(jamalex): get the current exercise language
+            version: window.statusModel.get("version")
+        };
+
+        var data = $.extend(defaults, data);
+
+        this.current_attempt_log = new AttemptLogModel(data);
+
+        return this.current_attempt_log;
+
+    },
+
+    check_answer: function(data) {
+
+        $("#check-answer-button").val("Next Question").show()
+
+        $("#check-answer-button").parent().stop(jumpedToEnd=true)
+
+        // increment the response count
+        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+
+        this.current_attempt_log.add_response_log_event({
+            type: "answer",
+            answer: data.guess,
+            correct: data.correct
+        });
+
+        // update and save the exercise and attempt logs
+        this.update_and_save_log_models("answer_given", data);
+    },
+
+    update_and_save_log_models: function(event_type, data) {
+
+        // if current attempt log has not been saved, then this is the user's first response to the question
+        if (this.current_attempt_log.isNew()) {
+
+            this.current_attempt_log.set({
+                correct: data.correct,
+                answer_given: data.guess,
+                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp")),
+                complete: true
+            });
+
+            this.log_model.set({
+                index: this.log_model.get("index") + 1
+            });
+
+            this.log_model.add_response_log_item(data);
+
+            this.log_model.save();
+
+        }
+
+        this.current_attempt_log.save();
+
+        this.ready_for_next_question();
+
+    },
+
+    ready_for_next_question: function() {
+
+        var self = this;
+
+        this.user_data_loaded_deferred.then(function() {
+
+            self.exercise_view.load_question(self.log_model.get_item_data());
+            self.initialize_new_attempt_log(self.log_model.get_item_data());
+
+        });
+
+    }
+
+});
+
 
 function seeded_shuffle(source_array, random) {
     var array = source_array.slice(0)

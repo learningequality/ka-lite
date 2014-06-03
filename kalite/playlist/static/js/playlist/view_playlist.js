@@ -49,6 +49,13 @@ window.PlaylistView = Backbone.View.extend({
                 });
                 this.content_view.show_view(view);
                 break;
+
+            case "Quiz":
+                var view = new ExerciseQuizView({
+                    quiz_model: new QuizDataModel({entry: entry})
+                });
+                this.content_view.show_view(view);
+                break;
         }
     }
 
