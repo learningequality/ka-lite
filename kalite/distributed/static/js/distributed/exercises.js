@@ -63,7 +63,7 @@ $(function() {
     });
     $(Khan).on("answerGiven", function (event, answer) {
         answerGiven = answer;
-    })
+    });
     $(Exercises).bind("checkAnswer", function(ev, data) {
         updatePercentCompleted(data.correct);
 
