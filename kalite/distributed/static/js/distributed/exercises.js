@@ -1047,10 +1047,11 @@ window.ExerciseTestView = Backbone.View.extend({
     },
 
     finish_test: function() {
-        if(this.log_model.get("complete")){
+        if (this.log_model.get("complete")) {
             this.$el.html(this.stop_template())
 
-            $("#stop-test").click(function(){window.location.href = "/"})
+            // TODO-BLOCKER(jamalex): with exam mode redirect enabled, where does this lead you?
+            this.$(".stop-test").click(function() { window.location.href = "/"; })
 
             return true;
         }
@@ -1282,9 +1283,15 @@ window.ExerciseQuizView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        $("#check-answer-button").val("Next Question").show()
+        // hide the "Correct! Next question..." button
+        $("#next-question-button").hide();
 
-        $("#check-answer-button").parent().stop(jumpedToEnd=true)
+        // show the "Next Question" button and prevent it from shaking
+        $("#check-answer-button")
+            .val(gettext("Next Question"))
+            .show()
+            .parent()
+                .stop(jumpedToEnd=true);
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
