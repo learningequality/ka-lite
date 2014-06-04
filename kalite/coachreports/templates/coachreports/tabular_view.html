@@ -99,7 +99,7 @@
                 {% endfor %}
             </select>
         {% elif topics and groups %}
-            <div class="subtitle">{% trans "Select Topic" %}</div>
+            <div class="subtitle" id="select-topic">{% trans "Select Topic" %}</div>
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
