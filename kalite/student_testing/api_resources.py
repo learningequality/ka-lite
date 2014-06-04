@@ -16,7 +16,8 @@ from kalite.facility.api_resources import FacilityUserResource
 
 # TODO(cpauya):
 # 1. Save exam mode setting by teacher from front-end, maybe create the Test model?
-# 2. Return only tests that have exam mode on to students on front-end
+# 2. Return only tests that have exam mode on to students on front-end.
+# 3. Redirect student to exam page if exam mode is on.
 
 
 class Test():
