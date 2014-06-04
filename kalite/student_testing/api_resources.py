@@ -8,16 +8,15 @@ from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import TestLog
-from .settings import STUDENT_TESTING_DATA_PATH
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
+from .models import TestLog
+from .settings import STUDENT_TESTING_DATA_PATH
 
-# TODO(cpauya):
-# 1. Save exam mode setting by teacher from front-end, maybe create the Test model?
-# 2. Return only tests that have exam mode on to students on front-end.
-# 3. Redirect student to exam page if exam mode is on.
+
+# TODO(cpauya): 1. Save exam mode setting by teacher from front-end.  Only one exam at a time can be enabled at Setting.EXAM_MODE_ON.
+# TODO(cpauya): 2. Redirect student to exam page if exam mode is on.
 
 
 class Test():
@@ -75,6 +74,8 @@ class TestResource(Resource):
         if title:
             return None
 
+        # MUST: sort the tests based on title for user's sanity
+        tests = sorted(tests, key=lambda test: test.title)
         return tests
 
     def prepend_urls(self):

@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from fle_utils.config.models import Settings
 
 
+# This must be a string type.
 SETTINGS_KEY_EXAM_MODE = 'EXAM_MODE_ON'
 
 
@@ -39,12 +40,11 @@ class ExamModeCheck:
         if not request.is_logged_in or request.is_admin or request.is_teacher:
             return None
 
-        exam_mode_on = Settings.get(SETTINGS_KEY_EXAM_MODE, False)
+        exam_mode_on = Settings.get(SETTINGS_KEY_EXAM_MODE, '')
         if not exam_mode_on:
             return None
 
-        # logging.warn('==> process_request::: EXAM_MODE_ON')
-
-        # TODO: Redirect to the exam page set in the exam list page, for now, just redirect to user profile page.
+        # TODO(cpauya): Redirect to the exam page set in the EXAM_MODE_ON Setting.
+        # redirect_to = reverse('test', args=[exam_mode_on])
         response = HttpResponseRedirect(redirect_to)
         return response

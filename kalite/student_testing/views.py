@@ -1,6 +1,12 @@
+from django.core.exceptions import PermissionDenied
+
 from annoying.decorators import render_to
 
+from fle_utils.config.models import Settings
+
 from kalite.shared.decorators import require_login
+
+from .middleware import SETTINGS_KEY_EXAM_MODE
 
 
 @require_login
@@ -9,7 +15,6 @@ def test(request, test_title):
     """
     Display a test
     """
-
     context = {
         "title": test_title,
     }
@@ -20,7 +25,13 @@ def test(request, test_title):
 @render_to("student_testing/test_list.html")
 def test_list(request):
     """
-    TODO: Display list of tests for the user.
+    Display list of tests for the teacher.
     """
-    context = {}
+    if not request.is_admin:
+        raise PermissionDenied
+
+    exam_mode_on = Settings.get(SETTINGS_KEY_EXAM_MODE, '')
+    context = {
+        'exam_mode_on': exam_mode_on
+    }
     return context
