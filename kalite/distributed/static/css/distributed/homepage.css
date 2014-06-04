@@ -81,26 +81,10 @@ a:visited.topic-unavailable {
     color: #ACBDD1;
 }
 
-.inline {
-    display: inline;
-}
-
-.center-vertical {
-    display: table;
-}
-.center-vertical .center-target {
-    display: table-cell;
-    vertical-align: middle;
-}
-
 .float-center {
     display: table;
     margin-left: auto;
     margin-right: auto;
-}
-
-th h2 {
-    margin-right: 10px;
 }
 
 .table {
@@ -115,41 +99,36 @@ td div {
     text-align: center;
 }
 
-th {
-    background-color: #8FC475;
-    color: white;
-}
-
-.cell-content {
+#playlists .cell-content {
     color: #305884;
     margin-bottom: 10px;
     height: 60px;
 }
 
+.pull-right {
+    float: right;
+}
+
+.pull-left {
+    float: left;
+}
+
 .playlist-list-item {
-    padding: 10px;
-}
-
-li:hover {
-    background-color: #D5D5D5;
-}
-
-.table td {
-    padding: 0;
-}
-
-div+p {
-    margin-top: 10px;
-}
-
-li {
+    font-size: 15px;
     display: inline-block;
     width: 19.6%;
     border: 1px solid black;
     font-family: museosans500;
     height: 100px;
+    padding: 10px;
 }
 
-ul {
-    margin: 0;
+.playlist-list-item:hover {
+    background-color: #D5D5D5;
+}
+
+.playlist-list-header {
+    padding: 10px;
+    background-color: #8FC475;
+    color: white;
 }
