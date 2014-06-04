@@ -2,9 +2,9 @@ from django.core.management.base import BaseCommand
 
 class Command( BaseCommand ):
     help = 'Deletes old job logs.'
-    
+
     def handle( self, *args, **options ):
-        from chronograph.models import Log
+        from ...models import Log
         from datetime import datetime, timedelta
         if len( args ) != 2:
             print 'Command requires two argument. Unit (weeks, days, hours or minutes) and interval.'
@@ -15,7 +15,7 @@ class Command( BaseCommand ):
                 print 'Valid units are weeks, days, hours or minutes.'
                 return
             try:
-                amount = int( args[ 1 ] ) 
+                amount = int( args[ 1 ] )
             except ValueError:
                 print 'Interval must be an integer.'
                 return

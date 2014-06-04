@@ -1,7 +1,14 @@
-from itertools import izip
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
+
+from django.utils.six.moves import zip
+
 from django.db.backends.util import truncate_name, typecast_timestamp
 from django.db.models.sql import compiler
-from django.db.models.sql.constants import TABLE_NAME, MULTI
+from django.db.models.sql.constants import MULTI
+from django.utils import six
 
 SQLCompiler = compiler.SQLCompiler
 
@@ -23,7 +30,7 @@ class GeoSQLCompiler(compiler.SQLCompiler):
         qn = self.quote_name_unless_alias
         qn2 = self.connection.ops.quote_name
         result = ['(%s) AS %s' % (self.get_extra_select_format(alias) % col[0], qn2(alias))
-                  for alias, col in self.query.extra_select.iteritems()]
+                  for alias, col in six.iteritems(self.query.extra_select)]
         aliases = set(self.query.extra_select.keys())
         if with_aliases:
             col_aliases = aliases.copy()
@@ -32,10 +39,10 @@ class GeoSQLCompiler(compiler.SQLCompiler):
         if self.query.select:
             only_load = self.deferred_to_columns()
             # This loop customized for GeoQuery.
-            for col, field in izip(self.query.select, self.query.select_fields):
+            for col, field in zip(self.query.select, self.query.select_fields):
                 if isinstance(col, (list, tuple)):
                     alias, column = col
-                    table = self.query.alias_map[alias][TABLE_NAME]
+                    table = self.query.alias_map[alias].table_name
                     if table in only_load and column not in only_load[table]:
                         continue
                     r = self.get_field_select(field, alias, column)
@@ -78,7 +85,7 @@ class GeoSQLCompiler(compiler.SQLCompiler):
         ])
 
         # This loop customized for GeoQuery.
-        for (table, col), field in izip(self.query.related_select_cols, self.query.related_select_fields):
+        for (table, col), field in zip(self.query.related_select_cols, self.query.related_select_fields):
             r = self.get_field_select(field, table, col)
             if with_aliases and col in col_aliases:
                 c_alias = 'Col%d' % len(col_aliases)
@@ -114,31 +121,30 @@ class GeoSQLCompiler(compiler.SQLCompiler):
             opts = self.query.model._meta
         aliases = set()
         only_load = self.deferred_to_columns()
-        # Skip all proxy to the root proxied model
-        proxied_model = opts.concrete_model
 
         if start_alias:
             seen = {None: start_alias}
         for field, model in opts.get_fields_with_model():
+            # For local fields (even if through proxy) the model should
+            # be None.
+            if model == opts.concrete_model:
+                model = None
             if local_only and model is not None:
                 continue
             if start_alias:
                 try:
                     alias = seen[model]
                 except KeyError:
-                    if model is proxied_model:
-                        alias = start_alias
-                    else:
-                        link_field = opts.get_ancestor_link(model)
-                        alias = self.query.join((start_alias, model._meta.db_table,
-                                link_field.column, model._meta.pk.column))
+                    link_field = opts.get_ancestor_link(model)
+                    alias = self.query.join((start_alias, model._meta.db_table,
+                            link_field.column, model._meta.pk.column))
                     seen[model] = alias
             else:
                 # If we're starting from the base model of the queryset, the
                 # aliases will have already been set up in pre_sql_setup(), so
                 # we can save time here.
                 alias = self.query.included_inherited_models[model]
-            table = self.query.alias_map[alias][TABLE_NAME]
+            table = self.query.alias_map[alias].table_name
             if table in only_load and field.column not in only_load[table]:
                 continue
             if as_pairs:
@@ -169,7 +175,7 @@ class GeoSQLCompiler(compiler.SQLCompiler):
         objects.
         """
         values = []
-        aliases = self.query.extra_select.keys()
+        aliases = list(self.query.extra_select)
 
         # Have to set a starting row number offset that is used for
         # determining the correct starting row index -- needed for
@@ -184,11 +190,11 @@ class GeoSQLCompiler(compiler.SQLCompiler):
         values = [self.query.convert_values(v,
                                self.query.extra_select_fields.get(a, None),
                                self.connection)
-                  for v, a in izip(row[rn_offset:index_start], aliases)]
+                  for v, a in zip(row[rn_offset:index_start], aliases)]
         if self.connection.ops.oracle or getattr(self.query, 'geo_values', False):
             # We resolve the rest of the columns if we're on Oracle or if
             # the `geo_values` attribute is defined.
-            for value, field in map(None, row[index_start:], fields):
+            for value, field in zip_longest(row[index_start:], fields):
                 values.append(self.query.convert_values(value, field, self.connection))
         else:
             values.extend(row[index_start:])

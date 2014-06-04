@@ -10,7 +10,6 @@ from django.utils import unittest
 
 from .command_tests import VideoScanTests
 from ..models import VideoFile
-from kalite.facility.models import Facility, FacilityUser
 from kalite.main.tests.base import MainTestCase
 from kalite.testing import KALiteClient, KALiteTestCase
 

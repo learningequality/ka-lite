@@ -16,10 +16,10 @@
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
 
     <script type="text/javascript">
-        var URL_GET_ANNOTATED_TOPIC_TREE = "{% url get_annotated_topic_tree %}?lang={{ current_language }}";
-        var URL_START_VIDEO_DOWNLOADS = "{% url start_video_download %}?lang={{ current_language }}";
-        var URL_DELETE_VIDEOS = "{% url delete_videos %}";
-        var URL_CANCEL_VIDEO_DOWNLOADS = "{% url cancel_video_download %}";
+        var URL_GET_ANNOTATED_TOPIC_TREE = "{% url 'get_annotated_topic_tree' %}?lang={{ current_language }}";
+        var URL_START_VIDEO_DOWNLOADS = "{% url 'start_video_download' %}?lang={{ current_language }}";
+        var URL_DELETE_VIDEOS = "{% url 'delete_videos' %}";
+        var URL_CANCEL_VIDEO_DOWNLOADS = "{% url 'cancel_video_download' %}";
     </script>
 
     <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>

@@ -10,6 +10,8 @@ from django.test import TestCase
 from django.utils import unittest
 
 from .base import SecuresyncTestCase
+from .. import crypto
+from ..models import Device
 from fle_utils.django_utils import call_command_with_output
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from securesync import crypto
@@ -215,6 +217,7 @@ class TestSignLargeFile(SecuresyncTestCase):
         self.assertFalse(self.key.verify_large_file(self.filename, signature, chunk_size=1), "Should verify signature for file w/ %d bytes." % nchars)
 
 
+# TODO(jamalex): move this out of securesync, as securesync shouldn't depend on facilities
 @unittest.skipIf(not settings.CENTRAL_SERVER, "Skipping zone fallback tests as we're not on the central server.")
 class TestZoneFallbackSettingOnCentralSave(SecuresyncTestCase):
     """Ensure that when synced models are saved on the central server, the zone_fallback is set successfully."""

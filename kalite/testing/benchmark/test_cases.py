@@ -54,7 +54,7 @@ from . import base
 from ..browser import BrowserTestCase
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
-from kalite.main.topic_tools import get_node_cache
+from kalite.topic_tools import get_node_cache
 
 
 class HelloWorld(base.Common):
@@ -111,7 +111,7 @@ class OneThousandRandomReads(base.Common):
     def _setup(self, **kwargs):
         super(OneThousandRandomReads, self)._setup(**kwargs)
 
-        #give the platform a chance to cache the logs
+        # Give the platform a chance to cache the logs
         self.exercise_list = ExerciseLog.objects.get_query_set()
         self.video_list = VideoLog.objects.get_query_set()
         self.exercise_count = ExerciseLog.objects.count()

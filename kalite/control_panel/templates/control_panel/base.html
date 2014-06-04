@@ -15,12 +15,12 @@
             {% block titlebar_title %}
                 {% comment "Draw the top navigation bar %}{% endcomment %}
                 {% if org %}
-                <li><a href="{% url org_management %}"> {{ org.name }}</a></li>
+                <li><a href="{% url 'org_management' %}"> {{ org.name }}</a></li>
                 {% endif %}
 
                 <li>
                     {% if org %}&gt;{% endif %}
-                    {% if facility or device %}<a href="{%url zone_management zone_id=zone_id %}">{% endif %}
+                    {% if facility or device %}<a href="{% url 'zone_management' zone_id=zone_id %}">{% endif %}
                         {% if is_headless_zone %}
                             {% trans "Local KA Lite Installation" %}
                         {% elif zone %}
@@ -29,11 +29,11 @@
                             {% if is_central %}
                             {% trans "New Sharing Network" %}
                             {% else %}
-                            Unregistered Device {{ device.name }} - <a class="not-registered-only" href="{% url register_public_key %}">Register Now!</a>
+                            Unregistered Device {{ device.name }} - <a class="not-registered-only" href="{% url 'register_public_key' %}">Register Now!</a>
                             {% endif %}
                         {% endif %}
                     {% if facility or device %}</a>
-                    {% elif own_device_is_trusted %} <a class="edit-link" href="{% url zone_form zone_id=zone_id %}">{% trans "(edit)" %}</a>
+                    {% elif own_device_is_trusted %} <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">{% trans "(edit)" %}</a>
                     {% endif %}
                 </li>
                 <li>
@@ -44,10 +44,10 @@
 
                 {% if facility %}
                 <li>
-                    &gt; {% if group_id %}<a href="{% url facility_management zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
+                    &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
-                    <a class="edit-link" href="{% url facility_form zone_id=zone_id facility_id=facility.id %}">{% trans "(edit)" %}</a>
+                    <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">{% trans "(edit)" %}</a>
                     {% endif %}
                 </li>
                 {% endif %}

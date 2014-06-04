@@ -23,9 +23,9 @@ from django.views.decorators.cache import cache_page
 from .models import VideoFile
 from fle_utils.chronograph import force_job
 from fle_utils.internet import am_i_online, JsonResponse
-from kalite.control_panel.views import local_device_context
+from kalite import topic_tools
+from kalite.control_panel.views import local_install_context
 from kalite.i18n import get_installed_language_packs, get_language_name
-from kalite.main import topic_tools
 from kalite.shared.decorators import require_admin
 from securesync.models import Device
 from securesync.devices import require_registration
@@ -34,20 +34,11 @@ from securesync.devices import require_registration
 def update_context(request):
     device = Device.get_own_device()
     zone = device.get_zone()
-    try:
-        repo = git.Repo(os.path.dirname(__file__))
-        software_version = repo.git.describe()
-        is_git_repo = bool(repo)
-    except git.exc.InvalidGitRepositoryError:
-        is_git_repo = False
-        software_version = None
 
     context = {
-        "registered": Device.get_own_device().is_registered(),
+        "is_registered": device.is_registered(),
         "zone_id": zone.id if zone else None,
         "device_id": device.id,
-        "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
-        "git_software_version": software_version,
     }
     return context
 
@@ -82,5 +73,20 @@ def update_languages(request):
 @render_to("updates/update_software.html")
 def update_software(request):
     context = update_context(request)
-    context.update(local_device_context(request))
+    context.update(local_install_context(request))
+
+    try:
+        repo = git.Repo(os.path.dirname(__file__))
+        software_version = repo.git.describe()
+        is_git_repo = bool(repo)
+    except git.exc.InvalidGitRepositoryError:
+        is_git_repo = False
+        software_version = None
+
+    context.update({
+        "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
+        "git_software_version": software_version,
+    })
+
     return context
+

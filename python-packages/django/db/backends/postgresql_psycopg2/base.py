@@ -3,6 +3,7 @@ PostgreSQL database backend for Django.
 
 Requires psycopg 2: http://initd.org/projects/psycopg2
 """
+import logging
 import sys
 
 from django.db import utils
@@ -13,14 +14,15 @@ from django.db.backends.postgresql_psycopg2.client import DatabaseClient
 from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation
 from django.db.backends.postgresql_psycopg2.version import get_version
 from django.db.backends.postgresql_psycopg2.introspection import DatabaseIntrospection
-from django.utils.log import getLogger
-from django.utils.safestring import SafeUnicode, SafeString
+from django.utils.encoding import force_str
+from django.utils.safestring import SafeText, SafeBytes
+from django.utils import six
 from django.utils.timezone import utc
 
 try:
     import psycopg2 as Database
     import psycopg2.extensions
-except ImportError, e:
+except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
@@ -28,10 +30,10 @@ DatabaseError = Database.DatabaseError
 IntegrityError = Database.IntegrityError
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-psycopg2.extensions.register_adapter(SafeString, psycopg2.extensions.QuotedString)
-psycopg2.extensions.register_adapter(SafeUnicode, psycopg2.extensions.QuotedString)
+psycopg2.extensions.register_adapter(SafeBytes, psycopg2.extensions.QuotedString)
+psycopg2.extensions.register_adapter(SafeText, psycopg2.extensions.QuotedString)
 
-logger = getLogger('django.db.backends')
+logger = logging.getLogger('django.db.backends')
 
 def utc_tzinfo_factory(offset):
     if offset != 0:
@@ -50,18 +52,18 @@ class CursorWrapper(object):
     def execute(self, query, args=None):
         try:
             return self.cursor.execute(query, args)
-        except Database.IntegrityError, e:
-            raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-        except Database.DatabaseError, e:
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
+        except Database.IntegrityError as e:
+            six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])
+        except Database.DatabaseError as e:
+            six.reraise(utils.DatabaseError, utils.DatabaseError(*tuple(e.args)), sys.exc_info()[2])
 
     def executemany(self, query, args):
         try:
             return self.cursor.executemany(query, args)
-        except Database.IntegrityError, e:
-            raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
-        except Database.DatabaseError, e:
-            raise utils.DatabaseError, utils.DatabaseError(*tuple(e)), sys.exc_info()[2]
+        except Database.IntegrityError as e:
+            six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])
+        except Database.DatabaseError as e:
+            six.reraise(utils.DatabaseError, utils.DatabaseError(*tuple(e.args)), sys.exc_info()[2])
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
@@ -82,6 +84,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_select_for_update_nowait = True
     has_bulk_insert = True
     supports_tablespaces = True
+    supports_transactions = True
     can_distinct_on_fields = True
 
 class DatabaseWrapper(BaseDatabaseWrapper):
@@ -157,9 +160,11 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def _cursor(self):
         settings_dict = self.settings_dict
         if self.connection is None:
-            if settings_dict['NAME'] == '':
+            if not settings_dict['NAME']:
                 from django.core.exceptions import ImproperlyConfigured
-                raise ImproperlyConfigured("You need to specify NAME in your Django settings file.")
+                raise ImproperlyConfigured(
+                    "settings.DATABASES is improperly configured. "
+                    "Please supply the NAME value.")
             conn_params = {
                 'database': settings_dict['NAME'],
             }
@@ -169,7 +174,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             if settings_dict['USER']:
                 conn_params['user'] = settings_dict['USER']
             if settings_dict['PASSWORD']:
-                conn_params['password'] = settings_dict['PASSWORD']
+                conn_params['password'] = force_str(settings_dict['PASSWORD'])
             if settings_dict['HOST']:
                 conn_params['host'] = settings_dict['HOST']
             if settings_dict['PORT']:
@@ -233,5 +238,5 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         if self.connection is not None:
             try:
                 return self.connection.commit()
-            except Database.IntegrityError, e:
-                raise utils.IntegrityError, utils.IntegrityError(*tuple(e)), sys.exc_info()[2]
+            except Database.IntegrityError as e:
+                six.reraise(utils.IntegrityError, utils.IntegrityError(*tuple(e.args)), sys.exc_info()[2])

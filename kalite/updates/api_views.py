@@ -27,8 +27,8 @@ from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf, delete_language
-from kalite.main.topic_tools import get_topic_tree
 from kalite.shared.decorators import require_admin
+from kalite.topic_tools import get_topic_tree
 
 
 def divide_videos_by_language(youtube_ids):
@@ -131,7 +131,7 @@ def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
     """
-    youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
+    youtube_ids = OrderedSet(simplejson.loads(request.body or "{}").get("youtube_ids", []))
 
     # One query per video (slow)
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
@@ -169,7 +169,7 @@ def delete_videos(request):
     """
     API endpoint for deleting videos.
     """
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    youtube_ids = simplejson.loads(request.body or "{}").get("youtube_ids", [])
     num_deleted = 0
 
     for id in youtube_ids:
@@ -209,7 +209,7 @@ def start_languagepack_download(request):
     if not request.POST:
         raise Exception(_("Must call API endpoint with POST verb."));
 
-    data = json.loads(request.raw_post_data)  # Django has some weird post processing into request.POST, so use raw_post_data
+    data = json.loads(request.body)  # Django has some weird post processing into request.POST, so use .body
     lang_code = lcode_to_ietf(data['lang'])
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
@@ -224,7 +224,7 @@ def delete_language_pack(request):
     API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
     That particular language folders are deleted and that language gets removed.
     """
-    lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    lang_code = simplejson.loads(request.body or "{}").get("lang")
     delete_language(lang_code)
 
     return JsonResponse({"success": _("Deleted language pack for language %(lang_code)s successfully.") % {"lang_code": lang_code}})
@@ -329,7 +329,7 @@ Software updates
 @require_admin
 def start_update_kalite(request):
     try:
-        data = json.loads(request.raw_post_data)
+        data = json.loads(request.body)
         mechanism = data['mechanism']
     except KeyError:
         raise KeyError(_("You did not select a valid choice for an update mechanism."))

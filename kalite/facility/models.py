@@ -18,7 +18,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import verify_raw_password
-from securesync import engine
 from securesync.models import DeviceZone
 from securesync.engine.models import DeferredCountSyncedModel
 
@@ -313,5 +312,3 @@ class CachedPassword(models.Model):
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
-
-engine.add_syncing_models([Facility, FacilityGroup, FacilityUser])

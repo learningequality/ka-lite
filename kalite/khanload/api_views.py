@@ -28,7 +28,6 @@ import sys
 import time
 
 from django.conf import settings; logging = settings.LOG
-from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
@@ -39,8 +38,8 @@ from django.views.decorators.csrf import csrf_exempt
 from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.main.topic_tools import get_node_cache
 from kalite.shared.decorators import require_login
+from kalite.topic_tools import get_node_cache
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 CENTRAL_UPDATE_ALL_PATH = "/api/khanload/update/central/"
@@ -82,7 +81,7 @@ def update_all_distributed_callback(request):
             continue
 
         try:
-            (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id, youtube_id=youtube_id)
+            (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id)  # has to be that video_id, could be any youtube_id
             for key,val in video.iteritems():
                 setattr(vl, key, val)
             logging.debug("Saving video log for %s: %s" % (video_id, vl))

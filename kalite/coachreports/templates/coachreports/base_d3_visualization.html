@@ -63,8 +63,8 @@
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
     <script type="text/javascript">
-        var API_DATA_URL = "{% url api_data %}";
-        var GET_TOPIC_TREE_URL = "{% url get_topic_tree_by_kinds topic_path='/' %}";
+        var API_DATA_URL = "{% url 'api_data' %}";
+        var GET_TOPIC_TREE_URL = "{% url 'get_topic_tree_by_kinds' topic_path='/' %}";
         var IMAGES_URL = "{% static 'images/' %}";
 
         var FORM_USER = "{{ form.user|escapejs }}";
