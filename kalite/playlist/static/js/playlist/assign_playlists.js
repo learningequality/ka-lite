@@ -46,7 +46,8 @@ var PlaylistView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this);        // so that 'this' would always refer to PlaylistView in all methods
 
-        this.listenTo(this.model.get('groups_assigned'), 'add', this.renderGroup);
+        this.listenTo(this.model.get('groups_assigned'), 'add', this.renderGroups);
+        this.listenTo(this.model.get('groups_assigned'), 'remove', this.renderGroups);
         this.listenTo(this.model.get('groups_assigned'), 'reset', this.renderGroups);
     },
 
@@ -68,10 +69,12 @@ var PlaylistView = Backbone.View.extend({
 
     renderGroup: function(group) {
         var view = new PlaylistGroupView({model: group});
+        group.parentModel = this.model;
         this.$el.find('.playlist-groups').append(view.render().el);
     },
 
     renderGroups: function() {
+        this.$el.find('.playlist-groups').empty();
         this.model.get('groups_assigned').map(this.renderGroup);
     },
 
@@ -83,6 +86,7 @@ var PlaylistView = Backbone.View.extend({
         var group = groups.get(groupID);
 
         this.model.get('groups_assigned').add(group);
+        console.log(this.model);
         this.model.save();
     },
 
@@ -103,6 +107,19 @@ var PlaylistGroupView = Backbone.View.extend({
         this.$el.html(this.template(dict));
 
         return this;
+    },
+
+    events: {
+        'click a': 'remove'
+    },
+
+    remove: function(ev) {
+        ev.preventDefault();
+        var group = this.model;
+        var parentModel = this.model.parentModel;
+
+        parentModel.get('groups_assigned').remove(group);
+        parentModel.save();
     }
 });
 
