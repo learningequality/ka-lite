@@ -73,6 +73,7 @@ var PlaylistView = Backbone.View.extend({
     },
 
     renderGroups: function() {
+        this.$el.find('.playlist-groups').empty();
         this.model.get('groups_assigned').map(this.renderGroup);
     },
 
