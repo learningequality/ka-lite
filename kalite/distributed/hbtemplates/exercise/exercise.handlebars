@@ -36,49 +36,8 @@
                                     </div>
                                 </div>
                                 <div class="exercise-hint-wrapper"></div>
+                                <div class="exercise-related-video-wrapper"></div>
 
-                                {{#if related_videos }}
-                                <div class="info-box related-video-box">
-                                    <div id="related-video-content">
-                                        <span class="info-box-header">{{_ "Stuck? Watch a video." }}</span>
-
-                                        <div id="related-video-list">
-                                            <ul class="related-video-list">
-                                            {{#each related_videos }}
-                                            {{#if availability.en.thumbnail }}
-                                                <li>
-                                                    <div class="thumbnail">
-                                                        <a class="related-video" href="{{ path }}" title="{{ title }}" target="_blank">
-                                                            <div class="thumb">
-                                                                <img class="thumbimage" src="{{ availability.en.thumbnail }}"/>
-                                                                <div class="thumbnail_label" style="margin-top: 68px; ">
-                                                                    <div class="thumbnail_desc">
-                                                                        <span class="progress-circle" data-video-id="{{ id }}"></span>
-                                                                        <span>{{ title }}</span>
-                                                                    </div>
-                                                                    <div class="thumbnail_teaser" style="height: 0px;">{{#if description }}{{ description }}{{/if }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </div>
-                                                </li>
-                                            {{ else }}
-                                                <li>
-                                                    <a class="related-video related-video-inline" href="{{ path }}" title="{{ title }}" target="_blank">
-                                                        <span class="video-title">
-                                                            <span class="progress-circle" data-video-id="{{ id }}"></span>
-                                                            {{ title }}
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            {{/if }}
-                                            {{/each }}
-                                            </ul>
-                                        </div>
-                                        <div class="clear"></div>
-                                    </div>
-                                </div>
-                                {{/if }}
                             </form>
                         </div></div>
                         <div class="clear"></div>

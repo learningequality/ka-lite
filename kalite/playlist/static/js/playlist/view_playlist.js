@@ -79,6 +79,10 @@ window.PlaylistContentAreaView = Backbone.View.extend({
     },
 
     show_view: function(view) {
+
+        // hide any messages being shown for the old view
+        clear_messages();
+
         // close the currently shown view, if possible
         if (this.currently_shown_view && _.isFunction(this.currently_shown_view.close)) {
             this.currently_shown_view.close();
@@ -118,6 +122,21 @@ window.PlaylistSidebarView = Backbone.View.extend({
             push: ".playlist-sidebar-tab",
             menuWidth: "220px"
         });
+
+        this.$(".playlist-sidebar").slimScroll({
+            height: "auto",
+            color: "#033000",
+            size: "8px",
+            distance: "2px",
+            disableFadeOut: true
+        });
+
+        // resize the scrollable part of sidebar to the page height
+        $(window).resize(_.throttle(function() {
+            var height = $(window).height() - self.$(".slimScrollDiv").position().top;
+            self.$(".slimScrollDiv, .playlist-sidebar").height(height);
+        }, 200));
+        $(window).resize();
 
         this.state_model = new Backbone.Model({
             open: false

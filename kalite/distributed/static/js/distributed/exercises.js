@@ -87,7 +87,8 @@ window.ExerciseLogModel = Backbone.Model.extend({
     */
 
     defaults: {
-        streak_progress: 0
+        streak_progress: 0,
+        points: 0
     },
 
     initialize: function() {
@@ -359,12 +360,12 @@ window.TestLogModel = Backbone.Model.extend({
             if((this.get("index") == this.item_sequence.length) && !already_complete){
                 this.set({
                     complete: true
-                })
+                });
                 this.trigger("complete");
-            };
-        };
+            }
+        }
 
-        Backbone.Model.prototype.save.call(this)
+        Backbone.Model.prototype.save.call(this);
     },
 
     urlRoot: "/test/api/testlog/"
@@ -401,7 +402,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: 3,
+        repeats: 3
     },
 
     initialize: function() {
@@ -502,14 +503,14 @@ window.QuizLogModel = Backbone.Model.extend({
 
                 if(!already_complete) {
                     this.set({
-                        complete: true,
+                        complete: true
 
                     })
                 }
 
                 this.trigger("complete");
-            };
-        };
+            }
+        }
 
         Backbone.Model.prototype.save.call(this)
     },
@@ -635,6 +636,38 @@ window.ExerciseProgressView = Backbone.View.extend({
 });
 
 
+window.ExerciseRelatedVideoView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-related-videos"),
+
+    render: function(data) {
+
+        var self = this;
+
+        this.$el.html(this.template(data));
+
+        // the following is adapted from khan-exercises/related-videos.js to recreate thumbnail hover effect
+        // TODO(jamalex): this can all probably be replaced by a simple CSS3 rule
+        var captionHeight = 45;
+        var marginTop = 23;
+        var options = {duration: 150, queue: false};
+        this.$(".related-video-box")
+            .delegate(".thumbnail", "mouseenter mouseleave", function(e) {
+                var isMouseEnter = e.type === "mouseenter";
+                self.$(e.currentTarget).find(".thumbnail_label").animate(
+                        {marginTop: marginTop + (isMouseEnter ? 0 : captionHeight)},
+                        options)
+                    .end()
+                    .find(".thumbnail_teaser").animate(
+                        {height: (isMouseEnter ? captionHeight : 0)},
+                        options);
+            });
+
+    }
+
+});
+
+
 window.ExerciseView = Backbone.View.extend({
 
     template: HB.template("exercise/exercise"),
@@ -677,11 +710,11 @@ window.ExerciseView = Backbone.View.extend({
 
         this.listenTo(this.data_model, "change:title", this.update_title);
 
+        this.listenTo(this.data_model, "change:related_videos", this.render_related_videos);
+
     },
 
     initialize_khan_exercises_listeners: function() {
-
-        var self = this;
 
         Khan.loaded.then(this.khan_loaded);
 
@@ -689,9 +722,11 @@ window.ExerciseView = Backbone.View.extend({
 
         $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
 
-        $(Exercises).bind("hintUsed", this.hint_used);
-
-        $(Exercises).bind("newProblem", this.problem_loaded);
+        // some events we only care about if the user is logged in
+        if (statusModel.get("is_logged_in")) {
+            $(Exercises).bind("hintUsed", this.hint_used);
+            $(Exercises).bind("newProblem", this.problem_loaded);
+        }
 
     },
 
@@ -754,6 +789,18 @@ window.ExerciseView = Backbone.View.extend({
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
         this.trigger("ready_for_next_question");
+    },
+
+    render_related_videos: function() {
+        if (!this.related_video_view) {
+            this.related_video_view = new ExerciseRelatedVideoView({el: this.$(".exercise-related-video-wrapper")});
+        }
+        var related_videos = this.data_model.get("related_videos");
+        this.related_video_view.render({
+            has_related_videos: related_videos.length > 0,
+            first_video: related_videos[0],
+            other_videos: related_videos.slice(1)
+        });
     }
 
 });
@@ -945,19 +992,28 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         var self = this;
 
-        this.user_data_loaded_deferred.then(function() {
+        if (this.user_data_loaded_deferred) {
 
-            // if this is the first attempt, or the previous attempt was complete, start a new attempt log
-            if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
-                self.exercise_view.load_question(); // will generate a new random seed to use
-                self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
-            } else { // use the seed already established for this attempt
-                self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
-            }
+            this.user_data_loaded_deferred.then(function() {
 
-            self.$(".hint-reminder").show(); // show message about hints
+                // if this is the first attempt, or the previous attempt was complete, start a new attempt log
+                if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
+                    self.exercise_view.load_question(); // will generate a new random seed to use
+                    self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+                } else { // use the seed already established for this attempt
+                    self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
+                }
 
-        });
+                self.$(".hint-reminder").show(); // show message about hints
+
+            });
+
+        } else { // not logged in, but just load the next question, for kicks
+
+            self.exercise_view.load_question();
+
+        }
+
 
     }
 
@@ -991,10 +1047,11 @@ window.ExerciseTestView = Backbone.View.extend({
     },
 
     finish_test: function() {
-        if(this.log_model.get("complete")){
+        if (this.log_model.get("complete")) {
             this.$el.html(this.stop_template())
 
-            $("#stop-test").click(function(){window.location.href = "/"})
+            // TODO-BLOCKER(jamalex): with exam mode redirect enabled, where does this lead you?
+            this.$(".stop-test").click(function() { window.location.href = "/"; })
 
             return true;
         }
@@ -1152,7 +1209,12 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.log_collection = new QuizLogCollection([], {quiz: this.quiz_model.get("quiz_id")});
             var log_collection_deferred = this.log_collection.fetch();
 
-            this.user_data_loaded_deferred = $.when(log_collection_deferred).then(this.user_data_loaded);
+            this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
+
+        } else {
+
+            // TODO(jamalex): why can't poor account-less users quiz themselves? :(
+            this.$el.html("<h3>" + gettext("Sorry, you must be logged in to do a quiz.") + "</h3><br/><br/><br/>");
 
         }
 
@@ -1184,8 +1246,8 @@ window.ExerciseQuizView = Backbone.View.extend({
         this.exercise_view = new ExerciseView(data);
 
         this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+        this.exercise_view.on("problem_loaded", this.problem_loaded);
 
     },
 
@@ -1221,9 +1283,15 @@ window.ExerciseQuizView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        $("#check-answer-button").val("Next Question").show()
+        // hide the "Correct! Next question..." button
+        $("#next-question-button").hide();
 
-        $("#check-answer-button").parent().stop(jumpedToEnd=true)
+        // show the "Next Question" button and prevent it from shaking
+        $("#check-answer-button")
+            .val(gettext("Next Question"))
+            .show()
+            .parent()
+                .stop(jumpedToEnd=true);
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);

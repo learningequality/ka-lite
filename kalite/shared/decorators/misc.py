@@ -6,7 +6,7 @@ def deprecated(func):
     Signals in stdout if we're using a deprecated function.
     '''
     def new_func(*args, **kwargs):
-        warnings.warn("Call to deprecated function {}.".format(func.__name__),
+        warnings.warn("Call to deprecated function {0}.".format(func.__name__),
                       category=DeprecationWarning)
         return func(*args, **kwargs)
 

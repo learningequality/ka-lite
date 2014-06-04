@@ -8,32 +8,13 @@
 {% block headcss %}{{ block.super }}
     <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}?{{ BUILD_ID }}">
-    <style>
-
-        .pull-right {
-            float: right;
-        }
-
-        .pull-left {
-            float: left;
-        }
-
-        .playlist-list-item {
-            font-size: 15px;
-        }
-
-        .playlist-list-header {
-            padding: 10px 10px 0 10px;
-        }
-    </style>
-
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <!-- import handlebars templates here -->
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
     <script type="text/javascript" src="{% static 'js/playlist/models.js' True %}"></script>
-    <script type="text/javascript" src="{% static 'js/distributed/jquery.dotdotdot.min.js' True %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dotdotdot.min.js' True %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' True %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
@@ -89,9 +70,8 @@
             <table id="playlist-table" class="table">
               <tr>
                 <th colspan="5">
-                  <div class="center-vertical header">
+                  <div class="playlist-list-header-wrapper">
                     <h2 class="playlist-list-header">{% trans "Assigned Playlists" %}</h2>
-                    <small class="center-target"></small>
                   </div>
                 </th>
               </tr>
