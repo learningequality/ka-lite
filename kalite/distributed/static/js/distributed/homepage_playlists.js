@@ -23,7 +23,7 @@ var AppView = Backbone.View.extend({
         // and fetch the data to populate it
         if (statusModel.get('is_logged_in') && !statusModel.get('is_admin')) { // we're a student
 
-            var playlists = new PlaylistList;
+            var playlists = new PlaylistList();
 
             this.listenTo(playlists, "sync", this.displayPlaylistTable);
 
@@ -60,7 +60,7 @@ var AppView = Backbone.View.extend({
 
 $(function() {
 
-    var app = new AppView;
+    var app = new AppView();
 
 });
 
@@ -68,6 +68,7 @@ $(function() {
 function formatPlaylist(data) {
     data.numVideos = data.entries.filter(function(e) { return e.get('entity_kind') == 'Video'; }).length;
     data.numExercises = data.entries.filter(function(e) { return e.get('entity_kind') == 'Exercise'; }).length;
+    data.playlistLink = sprintf(VIEW_PLAYLIST_TEMPLATE_URL, {playlist_id: data.id});
     var format = HB.template("playlists/homepage-playlists-table-cell");
     return format(data);
 

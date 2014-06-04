@@ -1,8 +1,13 @@
+import json
+import os
 from django.db import models
 
 from fle_utils.django_utils import ExtendedModel
 
-from kalite.facility.models import FacilityGroup
+from kalite.facility.models import FacilityGroup, FacilityUser
+from kalite.topic_tools import get_flat_topic_tree
+
+from securesync.models import DeferredCountSyncedModel
 
 
 class Playlist(ExtendedModel):
@@ -58,3 +63,108 @@ class PlaylistEntry(ExtendedModel):
 class PlaylistToGroupMapping(ExtendedModel):
     playlist = models.CharField(db_index=True, max_length=15)
     group = models.ForeignKey(FacilityGroup, related_name='playlists')
+
+
+class QuizLog(DeferredCountSyncedModel):
+    user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
+    # test = models.ForeignKey(Test, blank=False, null=False, db_index=True)
+    quiz = models.CharField(blank=False, null=False, max_length=100)
+    # TODO: Field that stores the Test/playlist field.
+    index = models.IntegerField(blank=False, null=False, default=0)
+    complete = models.BooleanField(blank=False, null=False, default=False)
+    # Attempts is the number of times the Quiz itself has been attempted.
+    attempts = models.IntegerField(blank=False, null=False, default=0)
+    total_number = models.IntegerField(blank=False, null=False, default=0)
+    total_correct = models.IntegerField(blank=False, null=False, default=0)
+    response_log = models.TextField(default="[]")
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
+
+class VanillaPlaylist:
+    """
+    A simple playlist object that just loads from a playlists json file. Contrast
+    with Playlist, which is a Django model.
+    """
+    playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
+
+    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned']
+
+    def __init__(self, **kwargs):
+        self.pk = self.id = kwargs.get('id')
+        self.title = kwargs.get('title')
+        self.description = kwargs.get('description')
+        self.groups_assigned = kwargs.get('groups_assigned')
+
+    @classmethod
+    def all(cls):
+        with open(cls.playlistjson) as f:
+            raw_playlists = json.load(f)
+
+        # Coerce each playlist dict into a Playlist object
+        # also add in the group IDs that are assigned to view this playlist
+        playlists = []
+        for playlist_dict in raw_playlists:
+            playlist = cls(title=playlist_dict['title'], description='', id=playlist_dict['id'])
+
+            # instantiate the groups assigned to this playlist
+            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
+            playlist.groups_assigned = groups_assigned
+
+            # instantiate the playlist entries
+            raw_entries = playlist_dict['entries']
+            playlist.entries = [VanillaPlaylistEntry._clean_playlist_entry_id(e) for e in raw_entries]
+
+            playlists.append(playlist)
+
+        return playlists
+
+
+class VanillaPlaylistEntry:
+    """
+    A plain object that models playlist entries. Contrast with PlaylistEntry,
+    which is a Django model. For now, it's just a collection of static methods
+    for operating on playlist entry dictionaries.
+    """
+
+    @staticmethod
+    def _clean_playlist_entry_id(entry):
+        name = entry['entity_id']
+        # strip any trailing whitespace
+        name = name.strip()
+
+        # try to extract only the actual entity id
+        name_breakdown = name.split('/')
+        name_breakdown = [
+            component for component
+            in name.split('/')
+            if component  # make sure component has something in it
+        ]
+        name = name_breakdown[-1]
+
+        entry['old_entity_id'] = ['entity_id']
+        entry['entity_id'] = name
+
+        return entry
+
+    @staticmethod
+    def add_full_title_from_topic_tree(entry, video_title_dict):
+        # TODO (aron): Add i18n by varying the language of the topic tree here
+        topictree = get_flat_topic_tree()
+
+        entry_kind = entry['entity_kind']
+        entry_name = entry['entity_id']
+
+        try:
+            if entry_kind == 'Exercise':
+                entry['title'] = entry['description'] = topictree['Exercise'][entry_name]['title']
+            if entry_kind == 'Video':
+                entry['title'] = entry['description'] = video_title_dict[entry_name]['title']
+            else:
+                entry['title'] = entry['description'] = entry_name
+        except KeyError:
+            # TODO: edit once we get the properly labeled entity ids from Nalanda
+            entry['description'] = entry['entity_id']
+
+        return entry

@@ -6,15 +6,34 @@
 {% block home_active %}active{% endblock home_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}?{{ BUILD_ID }}">
+    <style>
+
+        .pull-right {
+            float: right;
+        }
+
+        .pull-left {
+            float: left;
+        }
+
+        .playlist-list-item {
+            font-size: 15px;
+        }
+
+        .playlist-list-header {
+            padding: 10px 10px 0 10px;
+        }
+    </style>
+
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <!-- import handlebars templates here -->
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
     <script type="text/javascript" src="{% static 'js/playlist/models.js' True %}"></script>
-    <script type="text/javascript" src="{% static 'js/distributed/jquery.dotdotdot.min.js' True %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dotdotdot.min.js' True %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' True %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
@@ -26,6 +45,7 @@
 
     <script type="text/javascript">
      var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+     var VIEW_PLAYLIST_TEMPLATE_URL = "/playlists/view/%(playlist_id)s/"
     </script>
 {% endblock headjs %}
 
@@ -61,23 +81,29 @@
 
     <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
 
-    <img src="/static/images/loading.gif" class="float-center loading"/>
+    <div class="not-admin-only">
+        <div class="logged-in-only">
 
-    <table id="playlist-table" class="table">
-      <tr>
-        <th colspan="5">
-          <div class="center-vertical header">
-            <h2 class="inline">Unit 1a</h2>
-            <small class="center-target">Week1: 5/11-7, Expanded form of number and writing numbers from the expanded</small>
-          </div>
-        </th>
-      </tr>
-      <tr>
-        <td>
-          <ul id="playlists">
-          </ul>
-        </td>
-      </tr>
-    </table>
+            <img src="/static/images/loading.gif" class="float-center loading"/>
+
+            <table id="playlist-table" class="table">
+              <tr>
+                <th colspan="5">
+                  <div class="center-vertical header">
+                    <h2 class="playlist-list-header">{% trans "Assigned Playlists" %}</h2>
+                    <small class="center-target"></small>
+                  </div>
+                </th>
+              </tr>
+              <tr>
+                <td>
+                  <ul id="playlists">
+                  </ul>
+                </td>
+              </tr>
+            </table>
+
+        </div>
+    </div>
 
 {% endblock content %}

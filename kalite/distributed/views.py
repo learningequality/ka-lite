@@ -229,32 +229,7 @@ def topic_context(topic):
 @refresh_topic_cache
 def video_handler(request, video, format="mp4", prev=None, next=None):
 
-    if not video["available"]:
-        if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
-            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
-        elif request.is_logged_in:
-            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
-        elif not request.is_logged_in:
-            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
-
-    # Fallback mechanism
-    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    if video["available"] and not available_urls:
-        vid_lang = "en"
-        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
-    else:
-        vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
-
-    # TODO(jamalex): clean this up, and move stuff into a generic video-info endpoint/function
-    video = video.copy()
-    video["video_urls"] = video["availability"].get(vid_lang)
-    video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
-    video["selected_language"] = vid_lang
-    video["dubs_available"] = len(video["availability"]) > 1
-    video["title"] = _(video["title"])
-    video["description"] = _(video["description"])
-    video["video_id"] = video["id"]
+    video = topic_tools.get_video_data(request, video["slug"])
 
     context = {
         "video": video,

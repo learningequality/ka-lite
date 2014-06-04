@@ -10,6 +10,8 @@ class CreateAdminMixin:
         'username': 'admin',
         'password': 'admin',
         'email': 'admin@admin.com',
+        'is_superuser': True,
+        'is_staff': True,
     }
 
     @classmethod
