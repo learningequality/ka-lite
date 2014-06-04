@@ -1,12 +1,7 @@
-import json
-import random
-
 from annoying.decorators import render_to
 
 from kalite.shared.decorators import require_login
 
-from .settings import STUDENT_TESTING_DATA_PATH
-from .models import TestLog
 
 @require_login
 @render_to("student_testing/test.html")
@@ -18,4 +13,14 @@ def test(request, test_title):
     context = {
         "title": test_title,
     }
+    return context
+
+
+@require_login
+@render_to("student_testing/test_list.html")
+def test_list(request):
+    """
+    TODO: Display list of tests for the user.
+    """
+    context = {}
     return context

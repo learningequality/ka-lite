@@ -1,0 +1,59 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block home_active %}active{% endblock home_active %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/html" id="all-tests-list-entry-template">
+        {% if request.is_admin %}
+            <td test-title="<%= title %>"> <a href="<%= test_url %>"><%= title %></a> </td>
+            <td> <%= playlist_ids %> </td>
+            <td> <%= ids %> </td>
+        {% else %}
+            <td test-title="<%= title %>"> <%= title %> </td>
+            <td> --playlist_ids-- </td>
+            <td> --ids-- </td>
+        {% endif %}
+        <td> <%= repeats %> </td>
+        <td>
+            {% if request.is_admin %}
+                <label for="id-test-on<%= title %>" style="display: inline-block;">
+                    <input type="checkbox" name="test" value="On" id="id-test-on<%= title %>">
+                    &nbsp;Enable Test Mode
+                </label>
+            {% else %}
+                {# TODO: check if exam mode is on for this test #}
+                <a class="btn" href="<%= test_url %>">Take Test</a>
+            {% endif %}
+        </td>
+    </script>
+    <script>
+        var ALL_TESTS_URL = "{% url 'api_dispatch_list' resource_name='test' %}";
+    </script>
+    <script src="{% static 'js/student_testing/models.js' %}"></script>
+    <script src="{% static 'js/student_testing/test_list.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+    <article class="clearfix">
+        <div class="row">
+            <h2 class="title-header">Tests</h2>
+            <table class="span10 table table-hover table-bordered" id="tests">
+                <tr>
+                    <th>Title</th>
+                    <th>Playlists</th>
+                    <th>Topics</th>
+                    <th>Repeats</th>
+                    <th>Action/s</th>
+                </tr>
+            </table>
+        </div>
+    </article>
+{% endblock content %}
