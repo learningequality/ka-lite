@@ -82,7 +82,7 @@ class TestResource(Resource):
         if test:
             return test
         else:
-            raise NotFound('Test with title %s not found' % kwargs['title'])
+            raise NotFound('Test with title %s not found' % title)
 
     def obj_create(self, request):
         raise NotImplemented("Operation not implemented yet for tests.")
