@@ -46,7 +46,7 @@ var PlaylistView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this);        // so that 'this' would always refer to PlaylistView in all methods
 
-        this.listenTo(this.model.get('groups_assigned'), 'add', this.renderGroup);
+        this.listenTo(this.model.get('groups_assigned'), 'add', this.renderGroups);
         this.listenTo(this.model.get('groups_assigned'), 'remove', this.renderGroups);
         this.listenTo(this.model.get('groups_assigned'), 'reset', this.renderGroups);
     },
