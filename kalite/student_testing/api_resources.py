@@ -69,6 +69,15 @@ class TestResource(Resource):
             url(r"^(?P<resource_name>%s)/(?P<title>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if getattr(bundle_or_obj, 'obj', None):
+            kwargs['pk'] = bundle_or_obj.obj.title
+        else:
+            kwargs['pk'] = bundle_or_obj.title
+
+        return kwargs
+
     def get_object_list(self, request):
         '''Get the list of tests based from a request'''
         return self._read_tests()
