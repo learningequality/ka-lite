@@ -1208,7 +1208,12 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.log_collection = new QuizLogCollection([], {quiz: this.quiz_model.get("quiz_id")});
             var log_collection_deferred = this.log_collection.fetch();
 
-            this.user_data_loaded_deferred = $.when(log_collection_deferred).then(this.user_data_loaded);
+            this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
+
+        } else {
+
+            // TODO(jamalex): why can't poor account-less users quiz themselves? :(
+            this.$el.html("<h3>" + gettext("Sorry, you must be logged in to do a quiz.") + "</h3><br/><br/><br/>");
 
         }
 
