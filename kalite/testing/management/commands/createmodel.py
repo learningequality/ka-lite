@@ -2,11 +2,11 @@
 # Exit with a zero value if everything goes alright. Otherwise will exit with a non-zero value (1).
 
 import sys
-import importlib
 import json 
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+from . import resolve_model
 
 class Command(BaseCommand):
     args = "<data_model_name>"
@@ -29,16 +29,13 @@ class Command(BaseCommand):
                 raise CommandError("Please specifiy input data as a json string")
             
             try:
-                # Loading the model
-                module_path, model_name = args[0].rsplit(".", 1)
-                module = importlib.import_module(module_path)
-                Model = getattr(module, model_name)
+                model = resolve_model(args[0])
 
                 # Reading the json data string into a map
                 data_map = json.loads(options["json_data"])
 
                 # Constructing an entity from the Model
-                entity = Model(**data_map)
+                entity = model(**data_map)
                 entity.save()
                 
                 # Printing out the id of the entity
