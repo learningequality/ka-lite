@@ -57,20 +57,24 @@ class Command(BaseCommand):
 
         # login to the central server
         login_url = client.path_to_url("/accounts/login/")
-        s.get(login_url)
+        r = s.get(login_url)
         csrftoken = s.cookies['csrftoken_central']
         login_data = dict(username=options["username"], password=options["password"], csrfmiddlewaretoken=csrftoken, next='/')
-        s.post(login_url, data=login_data, headers={"Referer": login_url})
+        r = s.post(login_url, data=login_data, headers={"Referer": login_url})
+        assert r.status_code == 200, "Error logging into central server: " + r.content
 
         # register on the central server
         reg_url = client.get_registration_url()
-        s.get(reg_url)
+        r = s.get(reg_url)
+        assert options["zone"] in r.content, "Zone does not seem to exist under your central server account."
         csrftoken = s.cookies['csrftoken_central']
         reg_data = dict(zone=options["zone"], public_key=Device.get_own_device().public_key, csrfmiddlewaretoken=csrftoken)
-        s.post(reg_url, data=reg_data, headers={"Referer": reg_url})
+        r = s.post(reg_url, data=reg_data, headers={"Referer": reg_url})
+        assert r.status_code == 200, "Error registering public key with central server: %s" % r.content
 
         # trigger local post-reg background reg finalization
-        client.register()
+        result = client.register()
+        assert result.get("code") == "registered", "Error doing background registration finalization: %s" % result
 
         # wrap up and confirm!
         own_device = Device.get_own_device()
