@@ -186,7 +186,7 @@ class SyncClient(BaseClient):
                 d.set_counter_position(counters_to_download[device_id])
 
         self.session.models_downloaded += download_results["saved_model_count"]
-        self.session.errors += download_results.has_key("error")
+        self.display_and_count_errors(download_results, context_name="downloading devices")
 
         self.session.save()
 
@@ -194,6 +194,15 @@ class SyncClient(BaseClient):
 
         return (counters_to_download, counters_to_upload)
 
+    def display_and_count_errors(self, data, context_name="syncing data"):
+
+        if "error" in data:
+            logging.warn("Server error(s) in %s: %s" % (context_name, data["errors"]))
+            self.session.errors += 1
+
+        if "exceptions" in data:
+            logging.warn("Server exceptions(s) in %s: %s" % (context_name, data["exceptions"]))
+            self.session.errors += 1
 
     def sync_models(self):
         """
@@ -222,8 +231,7 @@ class SyncClient(BaseClient):
             #   pre-cleanaed for us.
             download_results = save_serialized_models(response.get("models", "[]"))
             self.session.models_downloaded += download_results["saved_model_count"]
-            self.session.errors += download_results.has_key("error")
-            self.session.errors += download_results.has_key("exceptions")
+            self.display_and_count_errors(download_results, context_name="downloading models")
         except Exception as e:
             logging.debug("Exception downloading models: %s" % e)
             download_results["error"] = e
@@ -240,8 +248,7 @@ class SyncClient(BaseClient):
             response = self.post("models/upload", {"models": get_serialized_models(counters_to_upload)})
             upload_results = json.loads(response.content)
             self.session.models_uploaded += upload_results["saved_model_count"]
-            self.session.errors += upload_results.has_key("error")
-            self.session.errors += upload_results.has_key("exceptions")
+            self.display_and_count_errors(upload_results, context_name="uploading models")
         except Exception as e:
             logging.debug("Exception uploading models: %s" % e)
             upload_results["error"] = e
