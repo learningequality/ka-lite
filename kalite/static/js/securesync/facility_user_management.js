@@ -17,13 +17,13 @@ $(function() {
 
     $("#all").click(function(){
         // Selected all users
-        $("[type=checkbox]").prop("checked",true)
-    })
+        $("[type=checkbox]").prop("checked",true);
+    });
 
     $("#none").click(function(){
         // Unselect all users
-        $("[type=checkbox]").prop("checked",false)
-    })
+        $("[type=checkbox]").prop("checked",false);
+    });
 
     $("#movegroup").click(function(event) {
         // Move users to the selected group
@@ -40,7 +40,7 @@ $(function() {
             doRequest("/securesync/api/move_to_group", {users: users, group: group})
                 .success(function() {
                     location.reload();
-                })
+                });
         }
     });
 

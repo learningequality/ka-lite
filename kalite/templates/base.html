@@ -93,13 +93,15 @@
                                         {% block sitewide_navigation %}
                                             <span class="not-admin-only">
                                             {% if language_choices %}
+						{% if num_language_choices > 1 %}
                                             <form id="language-preferences">
                                                 <select id="language_selector">
-                                                {% for lang_code, lang_meta in language_choices.iteritems %}
+                                                	{% for lang_code, lang_meta in language_choices.iteritems %}
                                                     <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>{% if lang_meta.native_name %}{{ lang_meta.native_name }}{% else %}{% trans lang_meta.name %}{% endif %}</option>
-                                                {% endfor %}
+                                                	{% endfor %}
                                                 </select>
                                             </form>
+						{% endif %}
                                             {% endif %}
                                             </span>
                                             {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -140,6 +142,7 @@
                             <div id="logo">
                                 <a id="logo-image-small" href="/" title="{% trans 'KA Lite Home' %}">
                                     <img src="{% static "images/horizontal-logo-small.png" %}" alt="KA Lite logo">
+                                    <img src="{% static "images/horizontal-logo-small_ptak.png" %}" alt="We4DKids logo">
                                 </a>
                             </div>
                             <div class="clear"></div>

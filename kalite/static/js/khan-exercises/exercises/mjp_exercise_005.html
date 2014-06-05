@@ -1,0 +1,164 @@
+<html data-require="math angles graphie jquery.mobile.vmouse interactive">
+    <head>
+		<meta charset="UTF-8" />
+		<title>Ptak Multiple Choice Venn C</title>
+		<script src="../khan-exercise.js"></script>
+                <script>
+        //this is all set with a kind of weird scale but it works for now
+        //to make this work on mobile might require limited the width
+        function ImportPicturec( owner, quesnum, picname, center, r, w, h ) {
+			var graph = KhanUtil.currentGraph;
+			this.set = graph.raphael.set();
+			var dir = "images/"
+			this.cx = center[0];
+			this.cy = center[1];
+			var lineColor = "#789";
+			var imgPos = graph.scalePoint([ this.cx - r, this.cy + r ]);
+			this.set.push( graph.raphael.image( Khan.urlBase + dir + owner + "/" + quesnum + "/"+  picname, imgPos[0], imgPos[1], w, h ) );
+			return this;
+			}
+        </script>
+		
+	</head>
+	<body>
+		<div class="exercise">
+			<div class="vars">
+                                <var id="SELECTIONS">[["What is 1 divided by a half",[1,0,0,0,0]],["1 place",[0,1,0,0,0]],["two place",[0,0,1,0,0]]]</var>
+                                <var id="SELECTOR">randRange(0,SELECTIONS.length-1)</var>
+                                
+				
+			</div>
+
+                <div class="problems">
+				<div id="shade-the-diagram">
+
+					<div class="problem">
+						<p class="question">
+                         <code>\Huge{<span id="questext"><var>SELECTIONS[SELECTOR][0]</var></span>}</code></p>
+							<div class="graphie" id="pie" style="float: left;">
+							 //$('#outer-wrapper').css("width","320px");
+                    
+				    $('#message_container').hide();
+				    $('#scratchpad-show').hide();
+				    $('#hint-remainder').hide();
+				    $('.info-box-header').hide(); 
+				    $('.exercise-card').css("width","100%");
+				    $('.current-card-container').css("width","60%");
+				    $('.current-card-contents').css("width","60%");
+				    $('#Venn_Diagram').css("width","200px");
+				    $('.current-card-contents').css("width","600px");
+				    $('#problem-and-answer').css("width","50%");
+				    $('#answer_area_wrap').css("width","100px");
+				    $('#answer_area').css("width","100%");
+				    $('#answerform').css("width","100%");
+				    $('#outer-wrapper').css("width","100%");
+                    $('#page-container').css("width","100%");
+                    $('#page-container-inner').css("width","100%");
+                    $('.exercises-body').css("width","100px");
+				    $('#problemarea').css("width","100%");
+				    $('#problemarea').css("height","500px");
+				    $('.container').css("width","100%");
+				    $('#wrapper').css("width","100%");
+				    $('.related-video-box').hide();
+				    $('#solutionarea').hide();
+
+				    </div>
+
+						
+						<div class="graphie" id="Venn_Diagram" width="300px">
+							init({
+								range: [ [ -20, 15 ], [ -10, 10 ] ],
+								scale: [ 40, 40 ]
+							});
+                            
+                            //import a picture which houses the question
+                            //images and sound files are housed per question to allow for templating
+                            //of problem types
+                            
+                            graph.pic1 = new ImportPicturec("mjp","mjp_006","chicagoloop.png", [-20, 10], 0, 360, 395 );
+							
+							style({
+								stroke: "Black",
+								strokeWidth: 5, 
+							    });
+							//label( [-19.0, 9.0],"\\Huge{\\sqrt{7}}", "right" );
+							label( [-18.4, 9.0],"\\Huge{2}", "right" );
+                            label( [-18.7, 7.0],"\\Huge{\\sqrt{5}}", "right" );
+                            label( [-18.7, 5.0],"\\Huge{\\sqrt{3}}", "right" );
+							label( [-18.7, 3.0],"\\Huge{\\sqrt{2}}", "right" );
+							label( [-18.7, 1.0],"\\Huge{\\sqrt{1}}", "right" );
+                            //label( [-5, 0],"\\Huge{"+commonAngles[1].rad+"}", "right" );
+
+                            $("#solutionarea input:eq(0)").val( "0" ).hide();
+                            $("#solutionarea input:eq(1)").val( "0" ).hide();
+							graph.box0= raphael.path("M 5 10 l 50 0 l 0 50 l -50 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
+							jQuery(graph.box0.node).bind("vmousedown",function() {
+								graph.box0.attr({'fill-opacity': graph.box0.attr('fill-opacity') === 1 ? 0 : 1});
+                                                        $("#solutionarea input:eq(0)").val( graph.box0.attr('fill-opacity') ).hide();
+							})
+                                                        graph.box1= raphael.path("M 5 90 l 50 0 l 0 50 l -50 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
+							jQuery(graph.box1.node).bind("vmousedown",function() {
+								graph.box1.attr({'fill-opacity': graph.box1.attr('fill-opacity') === 1 ? 0 : 1})
+                                                         $("#solutionarea input:eq(1)").val( graph.box1.attr('fill-opacity') ).hide();
+							})
+                                                        graph.box2= raphael.path("M 5 170 l 50 0 l 0 50 l -50 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
+							jQuery(graph.box2.node).bind("vmousedown",function() {
+								graph.box2.attr({'fill-opacity': graph.box2.attr('fill-opacity') === 1 ? 0 : 1})
+                                                         $("#solutionarea input:eq(2)").val( graph.box2.attr('fill-opacity') ).hide();
+							})
+                                                        graph.box3= raphael.path("M 5 250 l 50 0 l 0 50 l -50 0 Z").attr({ fill: ORANGE, "stroke-width" : 1, "fill-opacity" : 0 });							
+							jQuery(graph.box3.node).bind("vmousedown",function() {
+								graph.box3.attr({'fill-opacity': graph.box3.attr('fill-opacity') === 1 ? 0 : 1})
+                                                         $("#solutionarea input:eq(3)").val( graph.box3.attr('fill-opacity') ).hide();
+							})
+                                                        graph.box4= raphael.path("M 5 330 l 50 0 l 0 50 l -50 0 Z").attr({ fill: BLUE, "stroke-width" : 1, "fill-opacity" : 0 });							
+							jQuery(graph.box4.node).bind("vmousedown",function() {
+								graph.box4.attr({'fill-opacity': graph.box4.attr('fill-opacity') === 1 ? 0 : 1})
+                                                        $("#solutionarea input:eq(4)").val( graph.box4.attr('fill-opacity') ).hide();
+							})
+                                                        graph.box0.attr({"fill-opacity" : 1 });
+                                                        graph.box1.attr({"fill-opacity" : 1 });
+                                                        graph.box2.attr({"fill-opacity" : 1 });
+						                                graph.box3.attr({"fill-opacity" : 1 });
+                                                        graph.box4.attr({"fill-opacity" : 1 });
+                                                       $("#solutionarea input:eq(0)").hide(); 
+                                                       
+							
+                                                        
+
+						</div>
+					</div>
+                                         <div class="solution" data-type="multiple">
+					
+                                        <div class="sol"><var>SELECTIONS[SELECTOR][1][0]</var></div>
+                                        <div class="sol"><var>SELECTIONS[SELECTOR][1][1]</var></div>
+                                        <div class="sol"><var>SELECTIONS[SELECTOR][1][2]</var></div>
+                                        <div class="sol"><var>SELECTIONS[SELECTOR][1][3]</var></div>
+                                        <div class="sol"><var>SELECTIONS[SELECTOR][1][4]</var></div>				
+
+			                <div class="input-format">
+
+            			        <p><span class="entry" style="visibility:hidden"></span></p>
+                                        <p><span class="entry" style="visibility:hidden"></span></p>
+                                        <p><span class="entry" style="visibility:hidden"></span></p>
+                                        <p><span class="entry" style="visibility:hidden"></span></p>
+                                        <p><span class="entry" style="visibility:hidden"></span></p>			                  
+					</div>
+                                        </div>
+
+					<div class="hints"> 
+                                             <div>
+                                                <div class="graphie" data-update="Venn_Diagram">
+                                                    graph.box0.attr({"fill-opacity" : <var>SELECTIONS[SELECTOR][1][0]</var> });
+                                                    graph.box1.attr({"fill-opacity" : <var>SELECTIONS[SELECTOR][1][1]</var> });
+                                                    graph.box2.attr({"fill-opacity" : <var>SELECTIONS[SELECTOR][1][2]</var> });
+						                            graph.box3.attr({"fill-opacity" : <var>SELECTIONS[SELECTOR][1][3]</var> });
+                                                    graph.box4.attr({"fill-opacity" : <var>SELECTIONS[SELECTOR][1][4]</var> });                     							
+						                        </div>	
+					                         </div>
+					</div>
+				</div>
+            </div>
+		</div>
+	</body>
+</html>

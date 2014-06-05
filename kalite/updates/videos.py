@@ -197,7 +197,7 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
             nvideos_known += child["nvideos_known"]
 
     # BASE CASE:
-    # All my children are leaves, so we'll query here (a bit more efficient than 1 query per leaf)
+    #  Got a topic node, get immediate video children and figure out what to do.
     videos = get_videos(topic)
     for video in videos:
         if force or update_counts_question_mark or "availability" not in video:
@@ -211,6 +211,9 @@ def stamp_availability_on_topic(topic, videos_path=settings.CONTENT_ROOT, force=
     topic["nvideos_local"] = nvideos_local
     topic["nvideos_known"] = nvideos_known
     topic["nvideos_available"] = nvideos_available
-    topic["available"] = bool(nvideos_local) or bool(settings.BACKUP_VIDEO_SOURCE)
+    # Topic is available if it contains a downloaded video, or any other resource type (other resources assumed to be downloaded)
+    topic["available"] = bool(nvideos_local)
+    topic["available"] = topic["available"] or bool(settings.BACKUP_VIDEO_SOURCE)
+    topic["available"] = topic["available"] or bool(set(topic.get("contains", [])) - set(["Topic", "Video"]))
 
     return (topic, nvideos_local, nvideos_known, nvideos_available, changed)

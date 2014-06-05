@@ -1,6 +1,23 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-VERSION = "0.11.1"
+VERSION = "0.11.2"
 VERSION_INFO = {
+
+    "0.11.2": {
+        "release_date": "2014/03/31",
+        "git_commit": "abc123abc123abc123abc123",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+    },
 
     "0.11.1": {
         "release_date": "2014/03/12",
