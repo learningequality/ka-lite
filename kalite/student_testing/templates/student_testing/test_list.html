@@ -33,18 +33,18 @@
 {% endblock headjs %}
 
 {% block content %}
-    <article class="clearfix">
-        <div class="row">
-            <h2 class="title-header">Tests</h2>
-            <p>Click on the "Enable Exam Mode" button to redirect students who will login to the exam page for that specific test.</p>
-            <p>Clicking on the "Disable Exam Mode" button will disable the exam mode setting.</p>
-            <br/>
-            <table class="span12 table table-hover table-bordered" id="tests">
-                <tr>
-                    <th>Test Title</th>
-                    <th>Exam Mode Setting</th>
-                </tr>
-            </table>
-        </div>
-    </article>
+    <h2 class="title-header">
+        <div class="title">{% trans "Tests" %}</div>
+    </h2>
+    <p>Click on the "Enable Exam Mode" button to enable exam-mode for that test and redirect students to the exam page.</p>
+    <p>Click on the "Disable Exam Mode" button to disable the exam-mode setting for the test.</p>
+    <br/>
+    <table class="span10 table table-hover table-bordered" id="tests">
+        <thead>
+            <tr>
+                <th>Test Title</th>
+                <th>Exam Mode Setting</th>
+            </tr>
+        </thead>
+    </table>
 {% endblock content %}
