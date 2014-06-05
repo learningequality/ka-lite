@@ -21,7 +21,7 @@ from .. import crypto
 from ..engine.models import SyncSession
 from fle_utils.chronograph import force_job
 from fle_utils.config.models import Settings
-from fle_utils.internet import JsonResponse, allow_jsonp, set_query_params
+from fle_utils.internet import JsonResponse, allow_jsonp
 
 
 def register_public_key(request):
@@ -40,7 +40,6 @@ def initialize_registration():
 @login_required
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
-    request.session.pop("registered", None)  # remove if exists, to clear caching
 
     own_device = Device.get_own_device()
     if own_device.is_registered():
@@ -71,15 +70,12 @@ def register_public_key_client(request):
     elif reg_status == "public_key_unregistered":
         # Callback url used to redirect to the distributed server url
         #   after successful registration on the central server.
-        base_registration_url = client.path_to_url(set_query_params(reverse("register_public_key"), {
-            "device_key": urllib.quote(own_device.public_key),
-        }))
         return {
             "unregistered": True,
-            "auto_registration_url": set_query_params(base_registration_url, {"auto": True}),
-            "classic_registration_url": set_query_params(base_registration_url, {
-                "callback_url": request.build_absolute_uri(reverse("register_public_key")),
-            }),
+            "auto_registration_url": client.get_registration_url(auto=True),
+            "classic_registration_url": client.get_registration_url(
+                callback_url=request.build_absolute_uri(reverse("register_public_key"))
+            ),
             "central_login_url": "%s://%s/accounts/login" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST),
         }
 
@@ -93,6 +89,7 @@ def register_public_key_client(request):
 @login_required
 @render_to("securesync/register_public_key_server.html")
 def register_public_key_server(request):
+
     if request.method == 'POST':
         form = RegisteredDevicePublicKeyForm(request.user, data=request.POST)
         if form.is_valid():
