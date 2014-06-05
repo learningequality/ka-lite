@@ -1,4 +1,6 @@
 import importlib
+import sys
+
 from optparse import make_option
 from . import resolve_model
 
@@ -7,31 +9,39 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import serializers
 
 class Command(BaseCommand):
-    args = "<module_path>"
+    args = "<model_path>"
 
-    help = "Reads model data and returns it."
+    help = "Reads model object with provided ID as primary key and returns it." \
+        " The retuned data is in django serialized format similar to when a list of objects are serialized." \
+        " If no data is found exit code '1' is returned."
 
     option_list = BaseCommand.option_list + (
         make_option('-i', '--id',
             action='store',
             type='string',
             dest='id',
-            help='Id of the model object to read'),
+            help='Primary key of the model object to read'),
     )
 
     def handle(self, *args, **options):
         if (len(args) == 0):
-            raise Exception("Please specify model class name.")
+            raise CommandError("Please specify model class name.")
 
-        if options["id"]:
-            model = resolve_model(args[0])
+        model_path = args[0]
+        model_id = options["id"]
+        if model_id:
+            Model = resolve_model(model_path)
+            
+            try:
+                data = Model.objects.get(pk=model_id)
+                logging.info("Retrieved '%s' entry with primary key: '%s'" % (model_path, model_id))
 
-            model_id = options["id"]
-            data = model.objects.get(pk=model_id)
-            logging.info("Retrieved '%s' entry with primary key: '%s'" % (args[0], model_id))
-
-            serialized_data = serializers.serialize("json", [data])
-            logging.debug("Serialized data: '%s'" % serialized_data)
-            return serialized_data
+                serialized_data = serializers.serialize("json", [data])
+                logging.debug("Serialized data: '%s'" % serialized_data)
+                return serialized_data
+            except:
+                logging.info("Could not retrieve '%s' entry with primary key: '%s'" % (model_path, model_id))
+                sys.exit(1)
+            
         else:
-            raise Exception("Please specify --id to fetch model.")
+            raise CommandError("Please specify --id to fetch model.")
