@@ -1,14 +1,10 @@
 import logging
 import re
 
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
-from fle_utils.config.models import Settings
-
-
-# This must be a string type.
-SETTINGS_KEY_EXAM_MODE = 'EXAM_MODE_ON'
+from .utils import get_exam_mode_on
 
 
 class ExamModeCheck:
@@ -36,7 +32,7 @@ class ExamModeCheck:
             if p.match(path):
                 return None
 
-        exam_mode_on = Settings.get(SETTINGS_KEY_EXAM_MODE, '')
+        exam_mode_on = get_exam_mode_on()
         if not exam_mode_on:
             return None
 

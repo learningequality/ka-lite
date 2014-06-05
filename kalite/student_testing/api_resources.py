@@ -15,12 +15,9 @@ from fle_utils.config.models import Settings
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
-from .middleware import SETTINGS_KEY_EXAM_MODE
 from .models import TestLog
-from .settings import STUDENT_TESTING_DATA_PATH
-
-
-# TODO(cpauya): 2. Redirect student to exam page if exam mode is on.
+from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
+from .utils import get_exam_mode_on
 
 
 class Test():
@@ -35,7 +32,7 @@ class Test():
 
         # check if exam mode is active on specific exam
         is_exam_mode = False
-        exam_mode_setting = Settings.get(SETTINGS_KEY_EXAM_MODE, '')
+        exam_mode_setting = get_exam_mode_on()
         if exam_mode_setting and exam_mode_setting == title:
             is_exam_mode = True
         self.is_exam_mode = is_exam_mode
