@@ -8,11 +8,12 @@ import urllib
 import urllib2
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from .models import *
 from .. import engine
 from ..api_client import BaseClient
-
+from fle_utils.internet import set_query_params
 
 class RegistrationClient(BaseClient):
     """
@@ -130,3 +131,10 @@ class RegistrationClient(BaseClient):
             # Save to our local store.  By NOT passing a src_version,
             #   we're saying it's OK to just store what we can.
             return engine.deserialize(r.content, src_version=None, dest_version=own_device.get_version())
+
+    def get_registration_url(self, **kwargs):
+
+        if "device_key" not in kwargs:
+            kwargs["device_key"] = urllib.quote(Device.get_own_device().public_key)
+
+        return self.path_to_url(set_query_params(reverse("register_public_key"), kwargs))
