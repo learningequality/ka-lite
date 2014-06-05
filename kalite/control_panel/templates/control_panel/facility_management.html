@@ -93,19 +93,19 @@
 {% block control_panel_content %}
     <div class="container">
         <!-- Begin Coaches --> 
-        <div class="row"> 
+        <div class="row" id="coaches"> 
             <div class="col-md-12">
                 <h2>{% trans "Coaches" %}&nbsp;<small><a title="{% trans 'Add a new coach.' %}" href="{% url 'add_facility_teacher' %}?facility={{ facility_id }}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}</small></h2>
             </div>
             {% if not coach_pages %}
-             <div class="col-md-12">
-                <p>{% trans "You currently have no coaches for this facility." %}</p>
-            </div>
+                <div class="col-md-12">
+                    <p class="no-data">{% trans "You currently have no coaches for this facility." %}</p>
+                </div>
             {% else %}
             <div class="col-md-2 pull-left">
                 <button class="action delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
             </div>
-            <div class="col-md-12" id="coaches">
+            <div class="col-md-12">
                 <div class="table-responsive">
                     <table class="table selectable-table">
                         <tr class="success">
@@ -156,9 +156,9 @@
         </div> <!-- End Coaches -->
 
         <!-- Begin Student Groups --> 
-        <div class="row"> 
+        <div class="row" id="groups"> 
             {% trans "Ungrouped" as ungrouped %}
-            <div class="col-md-12" id="groups">
+            <div class="col-md-12">
                 {% if group_id and groups %}
                     {# comment "First block is a group summary page for a single group's display" #}
                     <dl class="dl-horizontal">
@@ -180,7 +180,7 @@
                     <h2>{% trans "Student Groups" %}&nbsp;<small><a title="{% trans 'Add a new group.' %}" href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "A 'group' is set of students, such as a classroom of students or all students in one grade." %}
                     {% trans "Add students by selecting a group." %}</small></h2>
                     {% if not groups %}
-                        <p>
+                        <p class="no-data">
                             {% trans "You currently have no group data available." %}
                         </p>
                     {% else %}
@@ -261,33 +261,32 @@
         
         <!-- Begin Student --> 
         {% if group_id or num_groups < 25 %}
-        <div class="row">
+        <div class="row" id="students">
             <div class="col-md-12">
                 <h2>{% trans "Students" %}&nbsp;<small>
                     <a title="{% trans 'Add a new student.' %}" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}"><span class="glyphicon glyphicon-plus"></span>
                     </a></br>{% trans "This report contains information about recent student activity." %}</small></h2>
             </div>
-            <div class="col-md-12" id="students">
+            <div class="col-md-12">
                 {% if not student_pages %}
                     <p class="no-data">{% trans "You currently have no student data available." %}</p>
                 {% else %}
                     {% if groups %}
-                        <span class="dotted">
-                            <button class="movegroup" disabled="disabled" value="#students">{% trans "Change Student Groups" %}</button>
-                            <select class="movegrouplist" value="#students">
-                                    <option selected>----</option>
-                                    {% for group in groups %}
-                                        {% if not group_id == group.id and group.id %}
-                                            <option value="{{ group.id }}">{{ group.name }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if group_id != ungrouped_id %}
-                                        <option value="">{{ ungrouped }}</option>
+                        <button class="movegroup" disabled="disabled" value="#students">{% trans "Change Student Groups" %}</button>
+                        <select class="movegrouplist" value="#students">
+                                <option selected>----</option>
+                                {% for group in groups %}
+                                    {% if not group_id == group.id and group.id %}
+                                        <option value="{{ group.id }}">{{ group.name }}</option>
                                     {% endif %}
-                            </select>
-                        {% endif %}
-                        <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                                {% endfor %}
+                                {% if group_id != ungrouped_id %}
+                                    <option value="">{{ ungrouped }}</option>
+                                {% endif %}
+                        </select>
                     {% endif %}
+                    <button class="delete" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                {% endif %}
                 <div class="table-responsive">
                     <table class="table selectable-table">
                          <thead>
