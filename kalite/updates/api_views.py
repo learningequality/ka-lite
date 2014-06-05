@@ -11,7 +11,6 @@ from collections_local_copy import defaultdict
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
@@ -26,9 +25,9 @@ from fle_utils.django_utils import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n import get_youtube_id, get_video_language, get_localized_exercise_dirpath, lcode_to_ietf, delete_language
-from kalite.main.topic_tools import get_topic_tree
+from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language
 from kalite.shared.decorators import require_admin
+from kalite.topic_tools import get_topic_tree
 
 
 def divide_videos_by_language(youtube_ids):
@@ -48,7 +47,7 @@ def process_log_from_request(handler):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
-                return JsonResponseMessageError(_("process_id is not numeric."));
+                return JsonResponseMessageError(_("process_id is not numeric."))
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
@@ -73,7 +72,7 @@ def process_log_from_request(handler):
             except Exception as e:
                 # The process finished before we started checking, or it's been deleted.
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
-                return JsonResponseMessageError(unicode(e));
+                return JsonResponseMessageError(unicode(e))
         else:
             return JsonResponseMessageError(_("Must specify process_id or process_name"))
 
@@ -112,6 +111,7 @@ def _process_log_to_dict(process_log):
             "completed": process_log.completed or (process_log.end_time is not None),
         }
 
+
 @require_admin
 @api_handle_error_with_json
 @process_log_from_request
@@ -131,7 +131,7 @@ def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
     """
-    youtube_ids = OrderedSet(simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", []))
+    youtube_ids = OrderedSet(simplejson.loads(request.body or "{}").get("youtube_ids", []))
 
     # One query per video (slow)
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
@@ -169,7 +169,7 @@ def delete_videos(request):
     """
     API endpoint for deleting videos.
     """
-    youtube_ids = simplejson.loads(request.raw_post_data or "{}").get("youtube_ids", [])
+    youtube_ids = simplejson.loads(request.body or "{}").get("youtube_ids", [])
     num_deleted = 0
 
     for id in youtube_ids:
@@ -203,13 +203,14 @@ def cancel_video_download(request):
 def installed_language_packs(request):
     return JsonResponse(get_installed_language_packs(force=True).values())
 
+
 @require_admin
 @api_handle_error_with_json
 def start_languagepack_download(request):
     if not request.POST:
-        raise Exception(_("Must call API endpoint with POST verb."));
+        raise Exception(_("Must call API endpoint with POST verb."))
 
-    data = json.loads(request.raw_post_data)  # Django has some weird post processing into request.POST, so use raw_post_data
+    data = json.loads(request.body)  # Django has some weird post processing into request.POST, so use .body
     lang_code = lcode_to_ietf(data['lang'])
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
@@ -224,7 +225,7 @@ def delete_language_pack(request):
     API endpoint for deleting language pack which fetches the language code (in delete_id) which has to be deleted.
     That particular language folders are deleted and that language gets removed.
     """
-    lang_code = simplejson.loads(request.raw_post_data or "{}").get("lang")
+    lang_code = simplejson.loads(request.body or "{}").get("lang")
     delete_language(lang_code)
 
     return JsonResponse({"success": _("Deleted language pack for language %(lang_code)s successfully.") % {"lang_code": lang_code}})
@@ -241,7 +242,6 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
     if not statusdict:
         statusdict = {}
 
-
     if node["kind"] == "Topic":
         if "Video" not in node["contains"]:
             return None
@@ -251,7 +251,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
         complete = True
 
         for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level+1, statusdict=statusdict, lang_code=lang_code)
+            child = annotate_topic_tree(child_node, level=level + 1, statusdict=statusdict, lang_code=lang_code)
             if not child:
                 continue
             elif child["addClass"] == "unstarted":
@@ -285,7 +285,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
             # This video doesn't exist in this language, so remove from the topic tree.
             return None
 
-        #statusdict contains an item for each video registered in the database
+        # statusdict contains an item for each video registered in the database
         # will be {} (empty dict) if there are no videos downloaded yet
         percent = statusdict.get(youtube_id, 0)
         vid_size = None
@@ -293,10 +293,10 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
 
         if not percent:
             status = "unstarted"
-            vid_size = get_remote_video_size(youtube_id) / float(2**20)  # express in MB
+            vid_size = get_remote_video_size(youtube_id) / float(2 ** 20)  # express in MB
         elif percent == 100:
             status = "complete"
-            vid_size = get_local_video_size(youtube_id, 0) / float(2**20)  # express in MB
+            vid_size = get_local_video_size(youtube_id, 0) / float(2 ** 20)  # express in MB
         else:
             status = "partial"
 
@@ -326,10 +326,11 @@ def get_annotated_topic_tree(request, lang_code=None):
 Software updates
 """
 
+
 @require_admin
 def start_update_kalite(request):
     try:
-        data = json.loads(request.raw_post_data)
+        data = json.loads(request.body)
         mechanism = data['mechanism']
     except KeyError:
         raise KeyError(_("You did not select a valid choice for an update mechanism."))

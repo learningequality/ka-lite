@@ -18,9 +18,9 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.gzip import gzip_page
 
 from .models import *
+from .. import engine
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
-from securesync import engine
 
 
 @csrf_exempt
@@ -30,7 +30,7 @@ def register_device(request):
     Tries to register either because the device has been pre-registered,
     or because it has a valid INSTALL_CERTIFICATE."""
     # attempt to load the client device data from the request data
-    data = simplejson.loads(request.raw_post_data or "{}")
+    data = simplejson.loads(request.body or "{}")
     if "client_device" not in data:
         return JsonResponseMessageError("Serialized client device must be provided.")
     try:

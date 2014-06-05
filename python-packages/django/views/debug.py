@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import datetime
 import os
 import re
@@ -12,11 +14,12 @@ from django.template import Template, Context, TemplateDoesNotExist
 from django.template.defaultfilters import force_escape, pprint
 from django.utils.html import escape
 from django.utils.importlib import import_module
-from django.utils.encoding import smart_unicode, smart_str
+from django.utils.encoding import force_bytes, smart_text
+from django.utils import six
 
 HIDDEN_SETTINGS = re.compile('API|TOKEN|KEY|SECRET|PASS|PROFANITIES_LIST|SIGNATURE')
 
-CLEANSED_SUBSTITUTE = u'********************'
+CLEANSED_SUBSTITUTE = '********************'
 
 def linebreak_iter(template_source):
     yield 0
@@ -61,10 +64,10 @@ def technical_500_response(request, exc_type, exc_value, tb):
     reporter = ExceptionReporter(request, exc_type, exc_value, tb)
     if request.is_ajax():
         text = reporter.get_traceback_text()
-        return HttpResponseServerError(text, mimetype='text/plain')
+        return HttpResponseServerError(text, content_type='text/plain')
     else:
         html = reporter.get_traceback_html()
-        return HttpResponseServerError(html, mimetype='text/html')
+        return HttpResponseServerError(html, content_type='text/html')
 
 # Cache for the default exception reporter filter instance.
 default_exception_reporter_filter = None
@@ -77,7 +80,7 @@ def get_exception_reporter_filter(request):
         modname, classname = modpath.rsplit('.', 1)
         try:
             mod = import_module(modname)
-        except ImportError, e:
+        except ImportError as e:
             raise ImproperlyConfigured(
             'Error importing default exception reporter filter %s: "%s"' % (modpath, e))
         try:
@@ -108,7 +111,7 @@ class ExceptionReporterFilter(object):
             return request.POST
 
     def get_traceback_frame_variables(self, request, tb_frame):
-        return tb_frame.f_locals.items()
+        return list(six.iteritems(tb_frame.f_locals))
 
 class SafeExceptionReporterFilter(ExceptionReporterFilter):
     """
@@ -169,13 +172,12 @@ class SafeExceptionReporterFilter(ExceptionReporterFilter):
                 break
             current_frame = current_frame.f_back
 
-        cleansed = []
+        cleansed = {}
         if self.is_active(request) and sensitive_variables:
             if sensitive_variables == '__ALL__':
                 # Cleanse all variables
                 for name, value in tb_frame.f_locals.items():
-                    cleansed.append((name, CLEANSED_SUBSTITUTE))
-                return cleansed
+                    cleansed[name] = CLEANSED_SUBSTITUTE
             else:
                 # Cleanse specified variables
                 for name, value in tb_frame.f_locals.items():
@@ -184,16 +186,25 @@ class SafeExceptionReporterFilter(ExceptionReporterFilter):
                     elif isinstance(value, HttpRequest):
                         # Cleanse the request's POST parameters.
                         value = self.get_request_repr(value)
-                    cleansed.append((name, value))
-                return cleansed
+                    cleansed[name] = value
         else:
             # Potentially cleanse only the request if it's one of the frame variables.
             for name, value in tb_frame.f_locals.items():
                 if isinstance(value, HttpRequest):
                     # Cleanse the request's POST parameters.
                     value = self.get_request_repr(value)
-                cleansed.append((name, value))
-            return cleansed
+                cleansed[name] = value
+
+        if (tb_frame.f_code.co_name == 'sensitive_variables_wrapper'
+            and 'sensitive_variables_wrapper' in tb_frame.f_locals):
+            # For good measure, obfuscate the decorated function's arguments in
+            # the sensitive_variables decorator's frame, in case the variables
+            # associated with those arguments were meant to be obfuscated from
+            # the decorated function's frame.
+            cleansed['func_args'] = CLEANSED_SUBSTITUTE
+            cleansed['func_kwargs'] = CLEANSED_SUBSTITUTE
+
+        return cleansed.items()
 
 class ExceptionReporter(object):
     """
@@ -212,7 +223,7 @@ class ExceptionReporter(object):
         self.loader_debug_info = None
 
         # Handle deprecated string exceptions
-        if isinstance(self.exc_type, basestring):
+        if isinstance(self.exc_type, six.string_types):
             self.exc_value = Exception('Deprecated String Exception: %r' % self.exc_type)
             self.exc_type = type(self.exc_value)
 
@@ -253,7 +264,7 @@ class ExceptionReporter(object):
             end = getattr(self.exc_value, 'end', None)
             if start is not None and end is not None:
                 unicode_str = self.exc_value.args[1]
-                unicode_hint = smart_unicode(unicode_str[max(start-5, 0):min(end+5, len(unicode_str))], 'ascii', errors='replace')
+                unicode_hint = smart_text(unicode_str[max(start-5, 0):min(end+5, len(unicode_str))], 'ascii', errors='replace')
         from django import get_version
         c = {
             'is_email': self.is_email,
@@ -275,7 +286,7 @@ class ExceptionReporter(object):
         if self.exc_type:
             c['exception_type'] = self.exc_type.__name__
         if self.exc_value:
-            c['exception_value'] = smart_unicode(self.exc_value, errors='replace')
+            c['exception_value'] = smart_text(self.exc_value, errors='replace')
         if frames:
             c['lastframe'] = frames[-1]
         return c
@@ -344,25 +355,26 @@ class ExceptionReporter(object):
                 source = source.splitlines()
         if source is None:
             try:
-                f = open(filename)
-                try:
-                    source = f.readlines()
-                finally:
-                    f.close()
+                with open(filename, 'rb') as fp:
+                    source = fp.readlines()
             except (OSError, IOError):
                 pass
         if source is None:
             return None, [], None, []
 
-        encoding = 'ascii'
-        for line in source[:2]:
-            # File coding may be specified. Match pattern from PEP-263
-            # (http://www.python.org/dev/peps/pep-0263/)
-            match = re.search(r'coding[:=]\s*([-\w.]+)', line)
-            if match:
-                encoding = match.group(1)
-                break
-        source = [unicode(sline, encoding, 'replace') for sline in source]
+        # If we just read the source from a file, or if the loader did not
+        # apply tokenize.detect_encoding to decode the source into a Unicode
+        # string, then we should do that ourselves.
+        if isinstance(source[0], six.binary_type):
+            encoding = 'ascii'
+            for line in source[:2]:
+                # File coding may be specified. Match pattern from PEP-263
+                # (http://www.python.org/dev/peps/pep-0263/)
+                match = re.search(br'coding[:=]\s*([-\w.]+)', line)
+                if match:
+                    encoding = match.group(1).decode('ascii')
+                    break
+            source = [six.text_type(sline, encoding, 'replace') for sline in source]
 
         lower_bound = max(0, lineno - context_lines)
         upper_bound = lineno + context_lines
@@ -440,11 +452,11 @@ def technical_404_response(request, exception):
         'root_urlconf': settings.ROOT_URLCONF,
         'request_path': request.path_info[1:], # Trim leading slash
         'urlpatterns': tried,
-        'reason': smart_str(exception, errors='replace'),
+        'reason': force_bytes(exception, errors='replace'),
         'request': request,
         'settings': get_safe_settings(),
     })
-    return HttpResponseNotFound(t.render(c), mimetype='text/html')
+    return HttpResponseNotFound(t.render(c), content_type='text/html')
 
 def empty_urlconf(request):
     "Create an empty URLconf 404 error response."
@@ -452,7 +464,7 @@ def empty_urlconf(request):
     c = Context({
         'project_name': settings.SETTINGS_MODULE.split('.')[0]
     })
-    return HttpResponse(t.render(c), mimetype='text/html')
+    return HttpResponse(t.render(c), content_type='text/html')
 
 #
 # Templates are embedded in the file so that we know the error handler will

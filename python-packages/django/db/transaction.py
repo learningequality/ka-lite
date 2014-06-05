@@ -11,7 +11,6 @@ called, a commit is made.
 Managed transactions don't do those commits, but will need some kind of manual
 or implicit commits or rollbacks.
 """
-from __future__ import with_statement
 
 from functools import wraps
 
@@ -24,6 +23,21 @@ class TransactionManagementError(Exception):
     management.
     """
     pass
+
+def abort(using=None):
+    """
+    Roll back any ongoing transactions and clean the transaction management
+    state of the connection.
+
+    This method is to be used only in cases where using balanced
+    leave_transaction_management() calls isn't possible. For example after a
+    request has finished, the transaction state isn't known, yet the connection
+    must be cleaned up for the next request.
+    """
+    if using is None:
+        using = DEFAULT_DB_ALIAS
+    connection = connections[using]
+    connection.abort()
 
 def enter_transaction_management(managed=True, using=None):
     """

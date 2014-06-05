@@ -3,7 +3,7 @@ from django.db import models
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect, Http404
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
@@ -92,12 +92,7 @@ class JobAdmin(admin.ModelAdmin):
 
         log_id = obj.log_set.latest('run_date').id
 
-        try:
-            # Old way
-            reversed_url = reverse('chronograph_log_change', args=(log_id,))
-        except:
-            # New way
-            reversed_url = reverse('admin:chronograph_log_change', args=(log_id,))
+        reversed_url = reverse('admin:chronograph_log_change', args=(log_id,))
 
         return '<a href="%s">%s</a>' % (reversed_url, value)
     last_run_with_link.allow_tags = True

@@ -12,7 +12,7 @@ def cache_page(*args, **kwargs):
     The cache is keyed by the URL and some data from the headers.
     Additionally there is the key prefix that is used to distinguish different
     cache areas in a multi-site setup. You could use the
-    sites.get_current().domain, for example, as that is unique across a Django
+    sites.get_current_site().domain, for example, as that is unique across a Django
     project.
 
     Additionally, all headers from the response's Vary header will be taken
@@ -44,8 +44,8 @@ def cache_page(*args, **kwargs):
         warnings.warn('The cache_page decorator must be called like: '
                       'cache_page(timeout, [cache=cache name], [key_prefix=key prefix]). '
                       'All other ways are deprecated.',
-                      PendingDeprecationWarning,
-                      stacklevel=3)
+                      DeprecationWarning,
+                      stacklevel=2)
 
     if len(args) > 1:
         assert len(args) == 2, "cache_page accepts at most 2 arguments"

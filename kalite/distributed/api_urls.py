@@ -4,10 +4,10 @@ URLS that are API endpoints, usually producing some action and returning a JsonR
 Note that most times, these patterns are all under /api/, due to the way
 they're imported into the project's urls.py file.
 """
-from django.conf import settings
-from django.conf.urls.defaults import include, patterns, url
+from django.conf.urls import include, patterns, url
 from django.http import HttpResponseServerError
 
+import kalite.django_cherrypy_wsgiserver.api_urls
 import kalite.i18n.api_urls
 import kalite.khanload.api_urls
 import kalite.main.api_urls
@@ -20,15 +20,17 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     # Setting server time (RPi)
     url(r'^time_set/$', 'time_set', {}, 'time_set'),
-
-    # Show pid for the running server (used bt stop to help kill the server)
-    url(r'^getpid$', 'getpid', {}, 'getpid'),
 )
 
 
 # Khanload allows users to download data from a Khan Academy account
 urlpatterns += patterns('kalite.khanload.api_views',
     url(r'^khanload/', include(kalite.khanload.api_urls)),
+)
+
+# Cherrpyserver allows querying the PID
+urlpatterns += patterns('kalite.django_cherrypy_wsgiserver.api_views',
+    url(r'^cherrypy/', include(kalite.django_cherrypy_wsgiserver.api_urls)),
 )
 
 # Main exposes endpoints for loading/saving progress and topic tree info (search, etc)

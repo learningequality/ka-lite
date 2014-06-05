@@ -18,7 +18,7 @@ if __name__ == "__main__":
         os.path.join(PROJECT_PATH, "..", "python-packages"),
         os.path.join(PROJECT_PATH, ".."),
     ]
-    sys.path = PROJECT_PYTHON_PATHS + sys.path
+    sys.path = [os.path.realpath(p) for p in PROJECT_PYTHON_PATHS] + sys.path
 
 
     ########################

@@ -16,6 +16,8 @@ from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
 from kalite.facility.models import Facility
+from kalite.topic_tools import get_topic_tree
+from kalite.updates import stamp_availability_on_topic
 from securesync.models import Device
 
 
@@ -95,22 +97,18 @@ class Command(BaseCommand):
 
     def reinitialize_server(self):
         """Reset the server state."""
-        if not settings.CENTRAL_SERVER:
-            logging.info("Invalidating the web cache.")
-            from fle_utils.internet.webcache import invalidate_web_cache
-            invalidate_web_cache()
+        logging.info("Invalidating the web cache.")
+        from fle_utils.internet.webcache import invalidate_web_cache
+        invalidate_web_cache()
 
-            # Next, call videoscan.
-            logging.info("Running videoscan.")
-            call_command("videoscan")
+        # Next, call videoscan.
+        logging.info("Running videoscan.")
+        call_command("videoscan")
 
         # Finally, pre-load global data
         def preload_global_data():
-            if not settings.CENTRAL_SERVER:
-                logging.info("Preloading topic data.")
-                from kalite.main.topic_tools import get_topic_tree
-                from kalite.updates import stamp_availability_on_topic
-                stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
+            logging.info("Preloading topic data.")
+            stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
         preload_global_data()
 
 
