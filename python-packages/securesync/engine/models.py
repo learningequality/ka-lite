@@ -197,15 +197,23 @@ class SyncedModel(ExtendedModel):
                 obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
         self.save()
 
-    def full_clean(self, exclude=[]):
-        """
-        When I am deleted, don't validate my foreign keys anymore--they may fail.
+    def full_clean(self, exclude=None, imported=False):
+        """Django method for validating uniqueness contraints.
+        We can have uniqueness constraints that can't be expressed as a tuple of fields,
+        so need to override this to implement.
 
-        TODO(bcipolli): get validation to really work!
+        We can also have "soft" uniqueness constraints that may not be used when importing,
+        so we add that parameter here.
+
+        Also, when model is deleted, don't validate its foreign keys anymore--they may fail.
+
         """
+        exclude = exclude or []
+        if imported:
+            exclude = list(set(exclude + self._import_excluded_validation_fields))
         if self.deleted:
             exclude = exclude + [f.name for f in self._meta.fields if isinstance(f, models.ForeignKey) ]
-        super(SyncedModel, self).full_clean()
+        return super(SyncedModel, self).full_clean(exclude=exclude)
 
     def sign(self, device=None):
         """
@@ -304,19 +312,6 @@ class SyncedModel(ExtendedModel):
                 chunks.append("%s=%s" % (field, val))
 
         return "&".join(chunks)
-
-    def full_clean(self, exclude=None, imported=False):
-        """Django method for validating uniqueness contraints.
-        We can have uniqueness constraints that can't be expressed as a tuple of fields,
-        so need to override this to implement.
-
-        We can also have "soft" uniqueness constraints that may not be used when importing,
-        so we add that parameter here.
-        """
-        exclude = exclude or []
-        if imported:
-            exclude = list(set(exclude + self._import_excluded_validation_fields))
-        return super(SyncedModel, self).full_clean(exclude=exclude)
 
     def save(self, imported=False, increment_counters=True, sign=True, *args, **kwargs):
         """

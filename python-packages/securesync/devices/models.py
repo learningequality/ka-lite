@@ -251,8 +251,7 @@ class Device(SyncedModel):
         metadata.save()
         return metadata.counter_position
 
-
-    def full_clean(self):
+    def full_clean(self, *args, **kwargs):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
