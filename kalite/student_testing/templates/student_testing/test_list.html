@@ -13,17 +13,16 @@
 {% block headjs %}{{ block.super }}
     <script>
         var ALL_TESTS_URL = "{% url 'api_dispatch_list' resource_name='test' %}";
-        var EXAM_MODE_ON = "{{ exam_mode_on }}";
     </script>
 
     <script type="text/html" id="all-tests-list-entry-template">
         <td test-title="<%= title %>"> <a href="<%= test_url %>"><%= title %></a> </td>
         <td>
             {% if request.is_admin %}
-                <% if (title === EXAM_MODE_ON) { %>
-                    <button id="id-disable-exam" data-exam-title="<%= title %>" class="btn btn-danger">Disable Exam Mode</button>
+                <% if (is_exam_mode) { %>
+                    <button id="id-disable-exam" data-exam-title="<%= title %>" class="btn btn-info test-row-button">Disable Exam Mode</button>
                 <% } else { %>
-                    <button id="id-enable-exam" data-exam-title="<%= title %>" class="btn btn-info">Enable Exam Mode</button>
+                    <button id="id-enable-exam" data-exam-title="<%= title %>" class="btn test-row-button">Enable Exam Mode</button>
                 <% } %>
             {% endif %}
         </td>

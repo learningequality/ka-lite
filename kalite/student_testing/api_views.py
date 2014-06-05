@@ -10,7 +10,13 @@ from models import TestLog
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 
+from fle_utils.config.models import Settings
 from fle_utils.internet import api_handle_error_with_json, JsonResponse
+
+from kalite.shared.decorators import require_admin
+
+from .middleware import SETTINGS_KEY_EXAM_MODE
+
 
 @student_log_api(logged_out_message=_("Test progress not saved."))
 def save_attempt_log(request):
@@ -46,7 +52,7 @@ def save_attempt_log(request):
             correct=data["correct"],
             context_type="exam",
             context_id=data["title"]
-            )
+        )
     except ValidationError as e:
         return JsonResponse({"error": _("Could not save AttemptLog") + u": %s" % e}, status=500)
       
@@ -57,3 +63,28 @@ def save_attempt_log(request):
 
     # Return no message in release mode; "data saved" message in debug mode.
     return JsonResponse({})
+
+#
+# @require_admin
+# def set_exam_mode_on(request):
+#     """
+#     Receives an exam_title and sets it as the Settings.EXAM_MODE_ON value.
+#
+#     If exam_title are the same on the Settings, means we are disabling it.
+#     """
+#     try:
+#         data = json.loads(request.raw_post_data)
+#         exam_title = data['exam_title']
+#         # if request.is_ajax and request.is_admin:
+#         import logging
+#         logging.warn('==> set_exam_mode_on %s' % exam_title)
+#         obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
+#         if obj.value == exam_title:
+#             obj.value = ''
+#         else:
+#             obj.value = exam_title
+#         obj.save()
+#         return JsonResponse({"success": _("Successfully set the EXAM_MODE_ON setting!")})
+#     except Exception as e:
+#         return JsonResponse({"error": _("Could not set EXAM_MODE_ON setting.") + u": %s" % e}, status=500)
+#     return JsonResponse({"noop": _("Could not set EXAM_MODE_ON setting.")}, status=500)

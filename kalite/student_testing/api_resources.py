@@ -1,21 +1,25 @@
 import glob
 import json
+import logging
 
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from tastypie import fields
-from tastypie.exceptions import NotFound
+from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
+
+from fle_utils.config.models import Settings
 
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
+from .middleware import SETTINGS_KEY_EXAM_MODE
 from .models import TestLog
 from .settings import STUDENT_TESTING_DATA_PATH
 
 
-# TODO(cpauya): 1. Save exam mode setting by teacher from front-end.  Only one exam at a time can be enabled at Setting.EXAM_MODE_ON.
 # TODO(cpauya): 2. Redirect student to exam page if exam mode is on.
 
 
@@ -28,6 +32,13 @@ class Test():
         self.seed = kwargs.get('seed')
         self.repeats = kwargs.get('repeats')
         self.test_url = reverse('test', args=[title])
+
+        # check if exam mode is active on specific exam
+        is_exam_mode = False
+        exam_mode_setting = Settings.get(SETTINGS_KEY_EXAM_MODE, '')
+        if exam_mode_setting and exam_mode_setting == title:
+            is_exam_mode = True
+        self.is_exam_mode = is_exam_mode
 
 
 class TestLogResource(ModelResource):
@@ -52,6 +63,7 @@ class TestResource(Resource):
     seed = fields.IntegerField(attribute='seed')
     repeats = fields.IntegerField(attribute='repeats')
     test_url = fields.CharField(attribute='test_url')
+    is_exam_mode = fields.BooleanField(attribute='is_exam_mode')
 
     class Meta:
         resource_name = 'test'
@@ -97,6 +109,8 @@ class TestResource(Resource):
         """
         Get the list of tests based from a request.
         """
+        if not request.is_admin:
+            return []
         return self._read_tests()
 
     def obj_get_list(self, bundle, **kwargs):
@@ -114,6 +128,25 @@ class TestResource(Resource):
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_update(self, bundle, **kwargs):
+        """
+        Receives an exam_title and sets it as the Settings.EXAM_MODE_ON value.
+        If exam_title are the same on the Settings, means it's a toggle so we disable it.
+        Validates if user is an admin.
+        """
+        if not bundle.request.is_admin:
+            raise Unauthorized(_("You cannot set this test into exam mode."))
+        try:
+            exam_title = kwargs['pk']
+            obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
+            if obj.value == exam_title:
+                obj.value = ''
+            else:
+                obj.value = exam_title
+            obj.save()
+            return bundle
+        except Exception as e:
+            logging.error("==> TestResource exception: %s" % e)
+            pass
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_delete_list(self, request):

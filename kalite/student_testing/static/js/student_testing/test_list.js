@@ -18,13 +18,19 @@ var TestView = Backbone.View.extend({
     },
     setExamMode: function(ev) {
         ev.preventDefault();
-        var examTitle = ev.target.dataset.examTitle;
-        console.log('==> setExamMode', ev, examTitle, this.model);
-//        var group = this.model;
-//        var parentModel = this.model.parentModel;
-//
-//        parentModel.get('groups_assigned').remove(group);
-//        parentModel.save();
+
+        // toggle exam_mode state of the selected test
+        var is_exam_mode = ! this.model.attributes.is_exam_mode;
+        var errorFunc = function() {
+            // make sure we render the list of tests with the one set to exam mode
+            tests.fetch();
+//            alert("Did not successfully set the test into exam mode.");
+        };
+        var successFunc = function() {
+            // make sure we render the list of tests with the one set to exam mode
+            tests.fetch();
+        };
+        this.model.save({is_exam_mode: is_exam_mode}, {error: errorFunc, success: successFunc});
     }
 
 });
