@@ -1,5 +1,6 @@
 import importlib
 from optparse import make_option
+from . import resolve_model
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
@@ -23,13 +24,11 @@ class Command(BaseCommand):
             raise Exception("Please specify model class name.")
 
         if options["id"]:
-            module_path, model_name = args[0].rsplit(".", 1)
-            module = importlib.import_module(module_path)
-            model = getattr(module, model_name)
+            model = resolve_model(args[0])
 
             model_id = options["id"]
             data = model.objects.get(pk=model_id)
-            logging.info("Retrieved '%s' entry with primary key: '%s'" % (model_name, model_id))
+            logging.info("Retrieved '%s' entry with primary key: '%s'" % (args[0], model_id))
 
             serialized_data = serializers.serialize("json", [data])
             logging.debug("Serialized data: '%s'" % serialized_data)
