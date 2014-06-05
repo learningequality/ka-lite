@@ -24,7 +24,7 @@ var TestView = Backbone.View.extend({
         var errorFunc = function() {
             // make sure we render the list of tests with the one set to exam mode
             tests.fetch();
-//            alert("Did not successfully set the test into exam mode.");
+            alert("Did not successfully set the test into exam mode.  Try to reload the page.");
         };
         var successFunc = function() {
             // make sure we render the list of tests with the one set to exam mode
