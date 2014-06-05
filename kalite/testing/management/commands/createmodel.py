@@ -2,7 +2,7 @@
 # Exit with a zero value if everything goes alright. Otherwise will exit with a non-zero value (1).
 
 import sys
-import json 
+import json
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
@@ -37,10 +37,9 @@ class Command(BaseCommand):
                 # Constructing an entity from the Model
                 entity = model(**data_map)
                 entity.save()
-                
+
                 # Printing out the id of the entity
                 sys.stdout.write("%s\n" % (entity.id))
                 sys.exit(0)
             except:
-                # In case of an error just exit with a non-zero value
-                sys.exit(1)
+                raise
