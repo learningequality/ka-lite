@@ -8,25 +8,6 @@
 {% block headcss %}{{ block.super }}
     <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}?{{ BUILD_ID }}">
-    <style>
-
-        .pull-right {
-            float: right;
-        }
-
-        .pull-left {
-            float: left;
-        }
-
-        .playlist-list-item {
-            font-size: 15px;
-        }
-
-        .playlist-list-header {
-            padding: 10px 10px 0 10px;
-        }
-    </style>
-
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -89,9 +70,8 @@
             <table id="playlist-table" class="table">
               <tr>
                 <th colspan="5">
-                  <div class="center-vertical header">
+                  <div class="playlist-list-header-wrapper">
                     <h2 class="playlist-list-header">{% trans "Assigned Playlists" %}</h2>
-                    <small class="center-target"></small>
                   </div>
                 </th>
               </tr>

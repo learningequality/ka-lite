@@ -138,6 +138,8 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
+# only allow, and use by default, JSON in tastypie
+TASTYPIE_DEFAULT_FORMATS = ['json']
 
 ########################
 # After all settings, but before config packages,

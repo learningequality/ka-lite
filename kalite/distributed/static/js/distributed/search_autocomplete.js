@@ -108,7 +108,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<li class='autocomplete " + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</li>";
+                var label = "<li class='autocomplete autocomplete-" + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</li>";
                 results.push({
                     label: label,
                     value: node.title

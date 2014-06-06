@@ -151,20 +151,24 @@ class VanillaPlaylistEntry:
     @staticmethod
     def add_full_title_from_topic_tree(entry, video_title_dict):
         # TODO (aron): Add i18n by varying the language of the topic tree here
-        topictree = get_flat_topic_tree()
+        topictree = get_flat_topic_tree(alldata=True)
 
         entry_kind = entry['entity_kind']
         entry_name = entry['entity_id']
 
         try:
             if entry_kind == 'Exercise':
-                entry['title'] = entry['description'] = topictree['Exercise'][entry_name]['title']
-            if entry_kind == 'Video':
-                entry['title'] = entry['description'] = video_title_dict[entry_name]['title']
+                nodedict = topictree['Exercise']
+            elif entry_kind == 'Video':
+                # TODO-blocker: move use of video_dict_by_id to slug2id_map
+                nodedict = video_title_dict
             else:
-                entry['title'] = entry['description'] = entry_name
+                nodedict = {}
+
+            entry['title'] = nodedict[entry_name]['title']
+            entry['description'] = nodedict[entry_name].get('description', '')
         except KeyError:
             # TODO: edit once we get the properly labeled entity ids from Nalanda
-            entry['description'] = entry['entity_id']
+            entry['title'] = entry['description'] = entry['entity_id']
 
         return entry

@@ -14,10 +14,10 @@ var AppView = Backbone.View.extend({
         $("#playlist-table").hide(); // hide the playlist table regardless
         $(".loading").hide();
 
-        this.listenTo(window.statusModel, "sync", this.setupElementsForUser);
+        this.listenTo(window.statusModel, "sync", this.setup_elements_for_user);
     },
 
-    setupElementsForUser: function(statusModel) {
+    setup_elements_for_user: function(statusModel) {
 
         // check to see if we are a student. If so, render the playlist table
         // and fetch the data to populate it
@@ -25,14 +25,14 @@ var AppView = Backbone.View.extend({
 
             var playlists = new PlaylistList();
 
-            this.listenTo(playlists, "sync", this.displayPlaylistTable);
+            this.listenTo(playlists, "sync", this.display_playlist_table);
 
             $(".loading").show();
             playlists.fetch();
         }
     },
 
-    displayPlaylistTable: function(playlists) {
+    display_playlist_table: function(playlists) {
 
         // TODO (aron): transfer to proper playlist view.  Did this to
         // make things closer to how jomel implemented things
@@ -66,9 +66,9 @@ $(function() {
 
 
 function formatPlaylist(data) {
-    data.numVideos = data.entries.filter(function(e) { return e.get('entity_kind') == 'Video'; }).length;
-    data.numExercises = data.entries.filter(function(e) { return e.get('entity_kind') == 'Exercise'; }).length;
-    data.playlistLink = sprintf(VIEW_PLAYLIST_TEMPLATE_URL, {playlist_id: data.id});
+    data.num_videos = data.entries.filter(function(e) { return e.get('entity_kind') == 'Video'; }).length;
+    data.num_exercises = data.entries.filter(function(e) { return e.get('entity_kind') == 'Exercise'; }).length;
+    data.playlist_link = sprintf(VIEW_PLAYLIST_TEMPLATE_URL, {playlist_id: data.id});
     var format = HB.template("playlists/homepage-playlists-table-cell");
     return format(data);
 
