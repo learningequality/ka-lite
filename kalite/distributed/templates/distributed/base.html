@@ -151,6 +151,9 @@
                 <a href="{% url 'test_list' %}" id="nav_tests" class="teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Tests" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                <a href="{% url 'assign_playlists' %}" id="nav_manage_zone" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a>
+
+                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
