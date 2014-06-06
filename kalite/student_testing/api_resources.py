@@ -1,7 +1,6 @@
 import glob
 import json
 import os
-import logging
 
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
@@ -20,6 +19,7 @@ from .models import TestLog
 from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
 from .utils import get_exam_mode_on
 
+from django.conf import settings; logging = settings.LOG
 
 testscache = []
 
@@ -134,7 +134,8 @@ class TestResource(Resource):
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
-            test_id = kwargs['pk']
+            logging.debug(kwargs)
+            test_id = kwargs['test_id']
             obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
             if obj.value == test_id:
                 obj.value = ''

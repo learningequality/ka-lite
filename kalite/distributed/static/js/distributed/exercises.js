@@ -392,7 +392,8 @@ window.TestLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new TestLogModel({
-                "user": window.statusModel.get("user_uri")
+                "user": window.statusModel.get("user_uri"),
+                "test": this.test_id
             });
         }
     }
@@ -1071,19 +1072,24 @@ window.ExerciseTestView = Backbone.View.extend({
 
         } else {
 
-            this.listenTo(this.log_model, "complete", this.finish_test);
+            if(this.log_model.get("complete")){
+                this.finish_test();
+            } else {
 
-            var question_data = this.log_model.get_item_data(this.test_model);
+                this.listenTo(this.log_model, "complete", this.finish_test);
 
-            var data = $.extend({el: this.el}, question_data);
+                var question_data = this.log_model.get_item_data(this.test_model);
 
-            this.initialize_new_attempt_log(question_data);
+                var data = $.extend({el: this.el}, question_data);
 
-            this.exercise_view = new ExerciseView(data);
+                this.initialize_new_attempt_log(question_data);
 
-            this.exercise_view.on("check_answer", this.check_answer);
-            this.exercise_view.on("problem_loaded", this.problem_loaded);
-            this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+                this.exercise_view = new ExerciseView(data);
+
+                this.exercise_view.on("check_answer", this.check_answer);
+                this.exercise_view.on("problem_loaded", this.problem_loaded);
+                this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+            }
         }
 
     },
