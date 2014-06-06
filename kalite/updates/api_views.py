@@ -335,6 +335,9 @@ def start_update_kalite(request):
     except KeyError:
         raise KeyError(_("You did not select a valid choice for an update mechanism."))
 
+    # Clear any preexisting logs
+    UpdateProgressLog.get_active_log().delete()
+
     call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 
     return JsonResponseMessageSuccess(_("Launched software update process successfully."))
