@@ -260,7 +260,7 @@ window.TestDataModel = Backbone.Model.extend({
     */
 
     url: function() {
-        return "/test/api/test/" + this.get("title") + "/"
+        return "/test/api/test/" + this.get("test_id") + "/"
     }
 })
 
@@ -377,12 +377,12 @@ window.TestLogCollection = Backbone.Collection.extend({
     model: TestLogModel,
 
     initialize: function(models, options) {
-        this.title = options.title;
+        this.test_id = options.test_id;
     },
 
     url: function() {
         return "/test/api/testlog/?" + $.param({
-            "title": this.title,
+            "test": this.test_id,
             "user": window.statusModel.get("user_id")
         });
     },
@@ -1033,11 +1033,11 @@ window.ExerciseTestView = Backbone.View.extend({
         if (window.statusModel.get("is_logged_in")) {
 
             // load the data about this particular test
-            this.test_model = new TestDataModel({title: this.options.title})
+            this.test_model = new TestDataModel({test_id: this.options.test_id})
             var test_model_deferred = this.test_model.fetch()
 
             // load the data about the user's overall progress on the test
-            this.log_collection = new TestLogCollection([], {title: this.options.title});
+            this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
             var log_collection_deferred = this.log_collection.fetch();
 
             this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
@@ -1113,7 +1113,7 @@ window.ExerciseTestView = Backbone.View.extend({
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
             context_type: "test" || "",
-            context_id: this.options.title || "",
+            context_id: this.options.test_id || "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version")
         };
