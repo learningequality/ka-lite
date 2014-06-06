@@ -14,7 +14,7 @@ def test(request, test_id):
     Display a test when it is on exam-mode at Settings only when exam-mode is on for the test.
     Do the filter if the user is not an admin.
     """
-    if not request.is_admin and test_title != get_exam_mode_on():
+    if not request.is_admin and test_id != get_exam_mode_on():
         raise Http404()
 
     context = {
