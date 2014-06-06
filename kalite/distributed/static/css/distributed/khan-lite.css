@@ -162,7 +162,7 @@ header nav {
     color: darkRed;
 }
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice, #nav_tests {
     display: none;
 }
 

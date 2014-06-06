@@ -1,27 +1,44 @@
 import glob
-import os
 import json
-from django.db import models
-from django.conf.urls.defaults import url
+import logging
+
+from django.conf.urls import url
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+
 from tastypie import fields
-from tastypie.exceptions import NotFound
+from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
 
-from .models import TestLog
-from .settings import STUDENT_TESTING_DATA_PATH
+from fle_utils.config.models import Settings
+
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
+
+from .models import TestLog
+from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
+from .utils import get_exam_mode_on
+
 
 testscache = []
 
 class Test():
     def __init__(self, **kwargs):
+        test_id = kwargs.get('test_id')
         self.title = kwargs.get('title')
         self.ids = json.dumps(kwargs.get('ids'))
-        self.playlist_ids = kwargs.get('playlist_ids')
+        self.playlist_ids = json.dumps(kwargs.get('playlist_ids'))
         self.seed = kwargs.get('seed')
         self.repeats = kwargs.get('repeats')
-        self.test_id = kwargs.get('test_id')
+        self.test_id = test_id
+        self.test_url = reverse('test', args=[test_id])
+
+        # check if exam mode is active on specific exam
+        is_exam_mode = False
+        exam_mode_setting = get_exam_mode_on()
+        if exam_mode_setting and exam_mode_setting == test_id:
+            is_exam_mode = True
+        self.is_exam_mode = is_exam_mode
 
 class TestLogResource(ModelResource):
 
@@ -36,13 +53,17 @@ class TestLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
 class TestResource(Resource):
 
     title = fields.CharField(attribute='title')
     ids = fields.CharField(attribute='ids')
+    playlist_ids = fields.CharField(attribute='playlist_ids')
     seed = fields.IntegerField(attribute='seed')
     repeats = fields.IntegerField(attribute='repeats')
     test_id = fields.CharField(attribute='test_id')
+    test_url = fields.CharField(attribute='test_url')
+    is_exam_mode = fields.BooleanField(attribute='is_exam_mode')
 
     class Meta:
         resource_name = 'test'
@@ -64,11 +85,13 @@ class TestResource(Resource):
                     return test
             return None
 
-        return testscache
+        return sorted(testscache, key=lambda test: test.title)
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<test_id>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<test_id>[\w\d_.-]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -77,11 +100,14 @@ class TestResource(Resource):
             kwargs['pk'] = bundle_or_obj.obj.test_id
         else:
             kwargs['pk'] = bundle_or_obj.test_id
-
         return kwargs
 
     def get_object_list(self, request):
-        '''Get the list of tests based from a request'''
+        """
+        Get the list of tests based from a request.
+        """
+        if not request.is_admin:
+            return []
         return self._read_tests()
 
     def obj_get_list(self, bundle, **kwargs):
@@ -99,6 +125,25 @@ class TestResource(Resource):
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_update(self, bundle, **kwargs):
+        """
+        Receives an exam_title and sets it as the Settings.EXAM_MODE_ON value.
+        If exam_title are the same on the Settings, means it's a toggle so we disable it.
+        Validates if user is an admin.
+        """
+        if not bundle.request.is_admin:
+            raise Unauthorized(_("You cannot set this test into exam mode."))
+        try:
+            test_id = kwargs['pk']
+            obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
+            if obj.value == test_id:
+                obj.value = ''
+            else:
+                obj.value = test_id
+            obj.save()
+            return bundle
+        except Exception as e:
+            logging.error("==> TestResource exception: %s" % e)
+            pass
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_delete_list(self, request):

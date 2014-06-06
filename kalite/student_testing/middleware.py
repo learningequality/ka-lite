@@ -1,13 +1,10 @@
-# import logging
+import logging
 import re
 
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
-from fle_utils.config.models import Settings
-
-
-SETTINGS_KEY_EXAM_MODE = 'EXAM_MODE_ON'
+from .utils import get_exam_mode_on
 
 
 class ExamModeCheck:
@@ -16,35 +13,31 @@ class ExamModeCheck:
     """
     def process_request(self, request):
 
+        # check if logged-in user is a student
+        if not request.is_logged_in or request.is_admin or request.is_teacher:
+            return None
+
         # MUST: prevent redirect on certain url patterns
         path = request.path
-        redirect_to = '/'
-        try:
-            # This generates an exception during tests, not sure why, but we wrap it in an exception handler now.
-            redirect_to = reverse("account_management")
-        except Exception as exc:
-            pass
         url_exceptions = [
             "^/admin/*",
             "^/api/*",
             "^/securesync/*",
-            redirect_to
+            "^/test/*",
+            "^/static/*",
+            "^/handlebars/*",
         ]
         for item in url_exceptions:
             p = re.compile(item)
             if p.match(path):
                 return None
 
-        # check if logged-in user is a student
-        if not request.is_logged_in or request.is_admin or request.is_teacher:
-            return None
-
-        exam_mode_on = Settings.get(SETTINGS_KEY_EXAM_MODE, False)
+        exam_mode_on = get_exam_mode_on()
         if not exam_mode_on:
             return None
 
-        # logging.warn('==> process_request::: EXAM_MODE_ON')
+        redirect_to = reverse('test', args=[exam_mode_on])
 
-        # TODO: Redirect to the exam page set in the exam list page, for now, just redirect to user profile page.
+        # MUST: Redirect to the exam page set in the EXAM_MODE_ON Setting.
         response = HttpResponseRedirect(redirect_to)
         return response
