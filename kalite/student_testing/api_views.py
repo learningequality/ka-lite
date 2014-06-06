@@ -1,16 +1,16 @@
 import json
 
-from main.api_views import student_log_api
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 
 from main.api_forms import AttemptLogForm
+from main.api_views import student_log_api
 from main.models import AttemptLog
 
-from models import TestLog
-
-from django.utils.translation import ugettext as _
-from django.core.exceptions import ValidationError
-
 from fle_utils.internet import api_handle_error_with_json, JsonResponse
+
+from .models import TestLog
+
 
 @student_log_api(logged_out_message=_("Test progress not saved."))
 def save_attempt_log(request):
@@ -46,7 +46,7 @@ def save_attempt_log(request):
             correct=data["correct"],
             context_type="exam",
             context_id=data["title"]
-            )
+        )
     except ValidationError as e:
         return JsonResponse({"error": _("Could not save AttemptLog") + u": %s" % e}, status=500)
       
