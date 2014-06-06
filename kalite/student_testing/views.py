@@ -10,12 +10,12 @@ from .models import TestLog
 
 @require_login
 @render_to("student_testing/test.html")
-def test(request, test_title):
+def test(request, test_id):
     """
     Display a test
     """
 
     context = {
-        "title": test_title,
+        "test_id": test_id,
     }
     return context

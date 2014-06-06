@@ -31,7 +31,7 @@ class TestLogResource(ModelResource):
         queryset = TestLog.objects.all()
         resource_name = 'testlog'
         filtering = {
-            "test_id": ('exact', ),
+            "test": ('exact', ),
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
