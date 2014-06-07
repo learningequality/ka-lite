@@ -260,7 +260,7 @@ window.TestDataModel = Backbone.Model.extend({
     */
 
     url: function() {
-        return "/test/api/test/" + this.get("title") + "/"
+        return "/test/api/test/" + this.get("test_id") + "/"
     }
 })
 
@@ -377,12 +377,12 @@ window.TestLogCollection = Backbone.Collection.extend({
     model: TestLogModel,
 
     initialize: function(models, options) {
-        this.title = options.title;
+        this.test_id = options.test_id;
     },
 
     url: function() {
         return "/test/api/testlog/?" + $.param({
-            "title": this.title,
+            "test": this.test_id,
             "user": window.statusModel.get("user_id")
         });
     },
@@ -392,7 +392,8 @@ window.TestLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new TestLogModel({
-                "user": window.statusModel.get("user_uri")
+                "user": window.statusModel.get("user_uri"),
+                "test": this.test_id
             });
         }
     }
@@ -1033,11 +1034,11 @@ window.ExerciseTestView = Backbone.View.extend({
         if (window.statusModel.get("is_logged_in")) {
 
             // load the data about this particular test
-            this.test_model = new TestDataModel({title: this.options.title})
+            this.test_model = new TestDataModel({test_id: this.options.test_id})
             var test_model_deferred = this.test_model.fetch()
 
             // load the data about the user's overall progress on the test
-            this.log_collection = new TestLogCollection([], {title: this.options.title});
+            this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
             var log_collection_deferred = this.log_collection.fetch();
 
             this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
@@ -1071,19 +1072,24 @@ window.ExerciseTestView = Backbone.View.extend({
 
         } else {
 
-            this.listenTo(this.log_model, "complete", this.finish_test);
+            if(this.log_model.get("complete")){
+                this.finish_test();
+            } else {
 
-            var question_data = this.log_model.get_item_data(this.test_model);
+                this.listenTo(this.log_model, "complete", this.finish_test);
 
-            var data = $.extend({el: this.el}, question_data);
+                var question_data = this.log_model.get_item_data(this.test_model);
 
-            this.initialize_new_attempt_log(question_data);
+                var data = $.extend({el: this.el}, question_data);
 
-            this.exercise_view = new ExerciseView(data);
+                this.initialize_new_attempt_log(question_data);
 
-            this.exercise_view.on("check_answer", this.check_answer);
-            this.exercise_view.on("problem_loaded", this.problem_loaded);
-            this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+                this.exercise_view = new ExerciseView(data);
+
+                this.exercise_view.on("check_answer", this.check_answer);
+                this.exercise_view.on("problem_loaded", this.problem_loaded);
+                this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+            }
         }
 
     },
@@ -1113,7 +1119,7 @@ window.ExerciseTestView = Backbone.View.extend({
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
             context_type: "test" || "",
-            context_id: this.options.title || "",
+            context_id: this.options.test_id || "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version")
         };

@@ -31,7 +31,7 @@
             statusModel.loaded.then(function() {
                 window.exerciseTestView = new ExerciseTestView({
                     el: $(".exercise-wrapper"),
-                    title: "{{ title }}"
+                    test_id: "{{ test_id }}"
                 });
             });
         });
