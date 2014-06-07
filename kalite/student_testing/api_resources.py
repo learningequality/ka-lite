@@ -21,7 +21,7 @@ from .utils import get_exam_mode_on
 
 from django.conf import settings; logging = settings.LOG
 
-testscache = []
+testscache = {}
 
 class Test():
     def __init__(self, **kwargs):
@@ -33,11 +33,13 @@ class Test():
         self.repeats = kwargs.get('repeats')
         self.test_id = test_id
         self.test_url = reverse('test', args=[test_id])
+        self.set_exam_mode()
 
+    def set_exam_mode(self):
         # check if exam mode is active on specific exam
         is_exam_mode = False
         exam_mode_setting = get_exam_mode_on()
-        if exam_mode_setting and exam_mode_setting == test_id:
+        if exam_mode_setting and exam_mode_setting == self.test_id:
             is_exam_mode = True
         self.is_exam_mode = is_exam_mode
 
@@ -70,23 +72,25 @@ class TestResource(Resource):
         resource_name = 'test'
         object_class = Test
 
+    def _refresh_tests_cache(self):
+        for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
+            with open(testfile) as f:
+                data = json.load(f)
+                # Coerce each test dict into a Test object
+                # also add in the group IDs that are assigned to view this test
+                test_id = os.path.splitext(os.path.basename(f.name))[0]
+                data["test_id"] = test_id
+                testscache[test_id] = (Test(**data))
+
+    def _read_test(self, test_id, force=False):
+        if not testscache or force:
+            self._refresh_tests_cache()
+        return testscache.get(test_id, None)
+
     def _read_tests(self, test_id=None, force=False):
         if not testscache or force:
-            for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
-                with open(testfile) as f:
-                    data = json.load(f)
-                    data["test_id"] = os.path.splitext(os.path.basename(f.name))[0]
-                    testscache.append(Test(**data))
-
-        # Coerce each test dict into a Test object
-        # also add in the group IDs that are assigned to view this test
-        if test_id:
-            for test in testscache:
-                if test_id and test.test_id == test_id:
-                    return test
-            return None
-
-        return sorted(testscache, key=lambda test: test.title)
+            self._refresh_tests_cache()
+        return sorted(testscache.values(), key=lambda test: test.title)
 
     def prepend_urls(self):
         return [
@@ -108,7 +112,7 @@ class TestResource(Resource):
         Get the list of tests based from a request.
         """
         if not request.is_admin:
-            return []
+            return [] 
         return self._read_tests()
 
     def obj_get_list(self, bundle, **kwargs):
@@ -116,7 +120,7 @@ class TestResource(Resource):
 
     def obj_get(self, bundle, **kwargs):
         test_id = kwargs.get("test_id", None)
-        test = self._read_tests(test_id)
+        test = self._read_test(test_id)
         if test:
             return test
         else:
@@ -134,7 +138,6 @@ class TestResource(Resource):
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
-            logging.debug(kwargs)
             test_id = kwargs['test_id']
             obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
             if obj.value == test_id:
@@ -142,6 +145,7 @@ class TestResource(Resource):
             else:
                 obj.value = test_id
             obj.save()
+            testscache[test_id].set_exam_mode()
             return bundle
         except Exception as e:
             logging.error("==> TestResource exception: %s" % e)
