@@ -22,13 +22,13 @@ var TestView = Backbone.View.extend({
         // toggle exam_mode state of the selected test
         var isExamMode = ! this.model.get('is_exam_mode');
         var errorFunc = function() {
-            // make sure we render the list of tests with the one set to exam mode
-            tests.fetch();
+            // force to render the list of tests with the one set to exam mode
+            tests.fetch({data: {'force': true}});
             alert("Did not successfully set the test into exam mode.  Try to reload the page.");
         };
         var successFunc = function() {
-            // make sure we render the list of tests with the one set to exam mode
-            tests.fetch();
+            // force to render the list of tests with the one set to exam mode
+            tests.fetch({data: {'force': true}});
         };
         this.model.save({is_exam_mode: isExamMode}, {error: errorFunc, success: successFunc});
     }

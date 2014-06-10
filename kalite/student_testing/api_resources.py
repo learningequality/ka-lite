@@ -19,9 +19,12 @@ from .models import TestLog
 from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
 from .utils import get_exam_mode_on
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+
+logging = settings.LOG
 
 testscache = {}
+
 
 class Test():
     def __init__(self, **kwargs):
@@ -42,6 +45,7 @@ class Test():
         if exam_mode_setting and exam_mode_setting == self.test_id:
             is_exam_mode = True
         self.is_exam_mode = is_exam_mode
+
 
 class TestLogResource(ModelResource):
 
@@ -107,16 +111,17 @@ class TestResource(Resource):
             kwargs['pk'] = bundle_or_obj.test_id
         return kwargs
 
-    def get_object_list(self, request):
+    def get_object_list(self, request, force=False):
         """
         Get the list of tests based from a request.
         """
         if not request.is_admin:
             return [] 
-        return self._read_tests()
+        return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):
-        return self.get_object_list(bundle.request)
+        force = bundle.request.GET.get('force', False)
+        return self.get_object_list(bundle.request, force=force)
 
     def obj_get(self, bundle, **kwargs):
         test_id = kwargs.get("test_id", None)
@@ -131,8 +136,8 @@ class TestResource(Resource):
 
     def obj_update(self, bundle, **kwargs):
         """
-        Receives an exam_title and sets it as the Settings.EXAM_MODE_ON value.
-        If exam_title are the same on the Settings, means it's a toggle so we disable it.
+        Receives a `test_id` and sets it as the Settings.EXAM_MODE_ON value.
+        If `test_id` is the same on the Settings, means it's a toggle so we disable it.
         Validates if user is an admin.
         """
         if not bundle.request.is_admin:
