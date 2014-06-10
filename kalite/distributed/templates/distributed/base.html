@@ -111,7 +111,7 @@
                 </button>
 
                 <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
-                    <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="KA Lite logo">
+                    <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
                     <div class="pull-right visible-xs" id="sitepoints-xs"></div>
                 </a>
                 <div class="collapse navbar-collapse">
@@ -140,7 +140,7 @@
                         <li><a href="{% url 'zone_redirect' %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a></li>
+                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}">{% trans "Users" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a></li>
@@ -209,8 +209,8 @@
         <footer class="navbar-default">
             <div class="container">
                 <a class="navbar-brand tiny">
-                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="KA Lite logo"/>
-                    <p>Creators of KA Lite &copy; 2014</p>
+                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="{% trans 'Foundation for Learning Equality logo' %}"/>
+                    <p>{% trans "Creators of KA Lite" %} &copy; 2014</p>
                     <p class="visible-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</p>
                     <p class="visible-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></p>
                 </a>
