@@ -3,7 +3,9 @@
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-{% block home_active %}active{% endblock home_active %}
+{% block tests_active %}active{% endblock tests_active %}
+
+{% block title %}{% trans "Tests" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
@@ -39,12 +41,16 @@
     <p>Click on the "Enable Exam Mode" button to enable exam-mode for that test and redirect students to the exam page.</p>
     <p>Click on the "Disable Exam Mode" button to disable the exam-mode setting for the test.</p>
     <br/>
-    <table class="span10 table table-hover table-bordered" id="tests">
-        <thead>
-            <tr>
-                <th>Test Title</th>
-                <th>Exam Mode Setting</th>
-            </tr>
-        </thead>
-    </table>
+    <div class="row span10">
+        <table class="table table-hover table-bordered" id="tests">
+            <thead>
+                <tr>
+                    <th>Test Title</th>
+                    <th>Exam Mode Setting</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 {% endblock content %}
+{% comment %}
+{% endcomment %}
