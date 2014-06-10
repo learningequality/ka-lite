@@ -29,7 +29,7 @@ class Command(BaseCommand):
         else:
             if not options["json_data"]:
                 raise CommandError("Please specifiy input data as a json string")
-            
+
             try:
                 model = resolve_model(args[0])
 
@@ -38,6 +38,7 @@ class Command(BaseCommand):
 
                 # Constructing an entity from the Model
                 entity = model(**data_map)
+                entity.full_clean()
                 entity.save()
 
                 # Printing out the id of the entity
