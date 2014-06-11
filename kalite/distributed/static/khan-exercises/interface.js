@@ -255,9 +255,12 @@ function handleAttempt(data) {
         // Wrong answer. Enable all the input elements
 
         $("#check-answer-button")
-            .val($._("Try Again"))
-            .parent()  // .check-answer-wrapper makes shake behave
+            .val($._("Please Try Again!"))
+            // .parent()  // .check-answer-wrapper makes shake behave
             .effect("shake", {times: 3, distance: 5}, 480)
+            .removeClass("green")
+            .addClass("orange")
+            .height(15)
 
         if (framework === "perseus") {
             // TODO(alpert)?
