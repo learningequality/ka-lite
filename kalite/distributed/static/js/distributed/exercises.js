@@ -917,7 +917,8 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         check_answer_button.parent().stop(jumpedToEnd=true)
 
-        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
+        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct); 
+        // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
