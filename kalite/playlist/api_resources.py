@@ -12,6 +12,7 @@ from kalite.facility.api_resources import FacilityUserResource
 class PlaylistResource(Resource):
 
     description = fields.CharField(attribute='description')
+    tag = fields.CharField(attribute='tag', null=True)
     id = fields.CharField(attribute='id')
     title = fields.CharField(attribute='title')
     groups_assigned = fields.ListField(attribute='groups_assigned')
