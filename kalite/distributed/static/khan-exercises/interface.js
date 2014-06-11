@@ -258,9 +258,7 @@ function handleAttempt(data) {
             .val($._("Please Try Again!"))
             // .parent()  // .check-answer-wrapper makes shake behave
             .effect("shake", {times: 3, distance: 5}, 480)
-            .removeClass("green")
-            .addClass("orange")
-            .height(15)
+            .height(15); // Workaround because .parent() (Line 261) appears to be broken
 
         if (framework === "perseus") {
             // TODO(alpert)?
