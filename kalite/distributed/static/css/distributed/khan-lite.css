@@ -434,7 +434,7 @@ li .progress-circle {
 }
 
 #scratchpad > div {
-    margin-top: 10px;
+    margin-top: 0; /* Controls whether scratchpad comes out of bounday - GH #1859 */ 
     max-width: 514px;
 }
 
