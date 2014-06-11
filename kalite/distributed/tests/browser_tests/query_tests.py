@@ -64,7 +64,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_status_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(FuzzyInt(0, 2)):
+        with self.assertNumQueries(FuzzyInt(0, 7)):
             self.browse_to(self.reverse("status"))
 
     def test_query_logout_admin(self):
@@ -96,5 +96,5 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         """Check the # of queries when browsing to the "Math" topic page"""
 
         self.test_query_login_student()
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(FuzzyInt(0, 4)):
             self.browse_to(self.live_server_url + "/math/")

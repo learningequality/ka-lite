@@ -113,6 +113,8 @@ class BrowserTestCase(KALiteTestCase):
                 except DatabaseError:
                     raise
                 except Exception as e:
+                    import traceback
+                    print traceback.format_exc()
                     logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
     def tearDown(self):
