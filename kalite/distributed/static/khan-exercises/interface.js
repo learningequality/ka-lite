@@ -255,7 +255,7 @@ function handleAttempt(data) {
         // Wrong answer. Enable all the input elements
 
         $("#check-answer-button")
-            .val($._("Please Try Again!"))
+            .val($._("Try Again!"))
             // .parent()  // .check-answer-wrapper makes shake behave
             .effect("shake", {times: 3, distance: 5}, 480)
             .height(15); // Workaround because .parent() (Line 261) appears to be broken
