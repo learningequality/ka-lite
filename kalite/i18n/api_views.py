@@ -1,65 +1,36 @@
-import datetime
 import json
-import os
 
-from django.core.management import call_command
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, Http404
+from django.conf import settings; logging = settings.LOG
+from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 
-import settings
-from . import get_language_pack_availability_filepath, SUBTITLE_COUNTS_FILEPATH, SUBTITLES_DATA_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from settings import LOG as logging
-from testing.asserts import central_server_only
-from utils.internet import allow_jsonp, api_handle_error_with_json, JsonResponse, JsonpResponse
+from . import get_default_language, get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language, set_default_language, set_request_language
+from fle_utils.internet import JsonResponse, api_handle_error_with_json
+from fle_utils.config.models import Settings
 
 
-@central_server_only
-@allow_jsonp
+@csrf_exempt
 @api_handle_error_with_json
-def get_subtitle_counts(request):
-    """
-    Sort and return a dict in the following format that gives the count of srt files available by language:
-        {"gu": {"count": 45, "name": "Gujarati"}, etc.. }
-    """
+def set_server_or_user_default_language(request):
+    if request.method == 'GET':
+        raise Exception(_("Can only handle default language changes through GET requests"))
 
-    # Get the subtitles file
-    if not os.path.exists(SUBTITLE_COUNTS_FILEPATH):
-        # could call-command, but return 404 for now.
-        raise Http404("Subtitles count file %s not found." % SUBTITLE_COUNTS_FILEPATH)
+    elif request.method == 'POST':
+        data = json.loads(request.raw_post_data) # POST is getting interpreted wrong again by Django
+        lang_code = data['lang']
 
-    with open(SUBTITLE_COUNTS_FILEPATH, "r") as fp:
-        subtitle_counts = json.load(fp)
+        if request.is_django_user and lang_code != get_default_language():
+            logging.debug("setting server default language to %s" % lang_code)
+            set_default_language(lang_code)
+        elif not request.is_django_user and request.is_logged_in and lang_code != request.session["facility_user"].default_language:
+            logging.debug("setting user default language to %s" % lang_code)
+            request.session["facility_user"].default_language = lang_code
+            request.session["facility_user"].save()
 
-    return JsonResponse(subtitle_counts)
+        if lang_code != request.session.get("default_language"):
+            logging.debug("setting session language to %s" % lang_code)
+            request.session["default_language"] = lang_code
 
+        set_request_language(request, lang_code)
 
-@central_server_only
-@allow_jsonp
-@api_handle_error_with_json
-def get_available_language_packs(request, version):
-    """Return dict of available language packs"""
-
-    # On central, loop through available language packs in static/language_packs/
-    try:
-        with open(get_language_pack_availability_filepath(version=version), "r") as fp:
-            language_packs_available = json.load(fp)
-    except Exception as e:
-        logging.debug("Unexpected error getting available language packs: %s" % e)
-        language_packs_available = {}
-    return JsonResponse(sorted(language_packs_available.values(), key=lambda lp: lp["name"].lower()))
-
-@central_server_only
-@api_handle_error_with_json
-def get_dubbed_video_mappings(request):
-    """Return dict of available language packs"""
-
-    # On central, loop through available language packs in static/language_packs/
-    try:
-        if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
-            call_command("generate_dubbed_video_mappings")
-        with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "r") as fp:
-            dubbed_videos_mapping = json.load(fp)
-    except:
-        raise Http404
-
-    return JsonResponse(dubbed_videos_mapping)
+        return JsonResponse({"status": "OK"})

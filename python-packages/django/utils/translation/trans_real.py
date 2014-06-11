@@ -1,4 +1,5 @@
 """Translation helper functions."""
+from __future__ import unicode_literals
 
 import locale
 import os
@@ -7,13 +8,12 @@ import sys
 import gettext as gettext_module
 from threading import local
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 from django.utils.importlib import import_module
+from django.utils.encoding import force_str, force_text
+from django.utils._os import upath
 from django.utils.safestring import mark_safe, SafeData
+from django.utils import six
+from django.utils.six import StringIO
 
 
 # Translations are cached in a dictionary for every language+app tuple.
@@ -29,11 +29,12 @@ _default = None
 _accepted = {}
 
 # magic gettext number to separate context from message
-CONTEXT_SEPARATOR = u"\x04"
+CONTEXT_SEPARATOR = "\x04"
 
-# Format of Accept-Language header values. From RFC 2616, section 14.4 and 3.9.
+# Format of Accept-Language header values. From RFC 2616, section 14.4 and 3.9
+# and RFC 3066, section 2.1
 accept_language_re = re.compile(r'''
-        ([A-Za-z]{1,8}(?:-[A-Za-z]{1,8})*|\*)         # "en", "en-au", "x-y-z", "*"
+        ([A-Za-z]{1,8}(?:-[A-Za-z0-9]{1,8})*|\*)      # "en", "en-au", "x-y-z", "es-419", "*"
         (?:\s*;\s*q=(0(?:\.\d{,3})?|1(?:.0{,3})?))?   # Optional "q=1.00", "q=0.8"
         (?:\s*,\s*|$)                                 # Multiple accepts per header.
         ''', re.VERBOSE)
@@ -109,14 +110,7 @@ def translation(language):
 
     from django.conf import settings
 
-    globalpath = os.path.join(os.path.dirname(sys.modules[settings.__module__].__file__), 'locale')
-
-    if settings.SETTINGS_MODULE is not None:
-        parts = settings.SETTINGS_MODULE.split('.')
-        project = import_module(parts[0])
-        projectpath = os.path.join(os.path.dirname(project.__file__), 'locale')
-    else:
-        projectpath = None
+    globalpath = os.path.join(os.path.dirname(upath(sys.modules[settings.__module__].__file__)), 'locale')
 
     def _fetch(lang, fallback=None):
 
@@ -158,15 +152,10 @@ def translation(language):
 
         for appname in reversed(settings.INSTALLED_APPS):
             app = import_module(appname)
-            apppath = os.path.join(os.path.dirname(app.__file__), 'locale')
+            apppath = os.path.join(os.path.dirname(upath(app.__file__)), 'locale')
 
             if os.path.isdir(apppath):
                 res = _merge(apppath)
-
-        localepaths = [os.path.normpath(path) for path in settings.LOCALE_PATHS]
-        if (projectpath and os.path.isdir(projectpath) and
-                os.path.normpath(projectpath) not in localepaths):
-            res = _merge(projectpath)
 
         for localepath in reversed(settings.LOCALE_PATHS):
             if os.path.isdir(localepath):
@@ -262,8 +251,9 @@ def do_translate(message, translation_function):
     #  Django chokes when translation string is None, which is hard to detect upstream.
     #  Django - be more robust!!
     #  Change: translated None is ... None!
-    eol_message = message.replace('\r\n', '\n').replace('\r', '\n') if message is not None else None
 
+    # str() is allowing a bytestring message to remain bytestring on Python 2
+    eol_message = message and message.replace(str('\r\n'), str('\n')).replace(str('\r'), str('\n')) or None
     t = getattr(_active, "value", None)
     if t is not None:
         result = getattr(t, translation_function)(eol_message)
@@ -277,14 +267,22 @@ def do_translate(message, translation_function):
     return result
 
 def gettext(message):
+    """
+    Returns a string of the translation of the message.
+
+    Returns a string on Python 3 and an UTF-8-encoded bytestring on Python 2.
+    """
     return do_translate(message, 'gettext')
 
-def ugettext(message):
-    return do_translate(message, 'ugettext')
+if six.PY3:
+    ugettext = gettext
+else:
+    def ugettext(message):
+        return do_translate(message, 'ugettext')
 
 def pgettext(context, message):
-    result = do_translate(
-        u"%s%s%s" % (context, CONTEXT_SEPARATOR, message), 'ugettext')
+    msg_with_ctxt = "%s%s%s" % (context, CONTEXT_SEPARATOR, message)
+    result = ugettext(msg_with_ctxt)
     if CONTEXT_SEPARATOR in result:
         # Translation not found
         result = message
@@ -312,25 +310,31 @@ def do_ntranslate(singular, plural, number, translation_function):
 
 def ngettext(singular, plural, number):
     """
-    Returns a UTF-8 bytestring of the translation of either the singular or
-    plural, based on the number.
+    Returns a string of the translation of either the singular or plural,
+    based on the number.
+
+    Returns a string on Python 3 and an UTF-8-encoded bytestring on Python 2.
     """
     return do_ntranslate(singular, plural, number, 'ngettext')
 
-def ungettext(singular, plural, number):
-    """
-    Returns a unicode strings of the translation of either the singular or
-    plural, based on the number.
-    """
-    return do_ntranslate(singular, plural, number, 'ungettext')
+if six.PY3:
+    ungettext = ngettext
+else:
+    def ungettext(singular, plural, number):
+        """
+        Returns a unicode strings of the translation of either the singular or
+        plural, based on the number.
+        """
+        return do_ntranslate(singular, plural, number, 'ungettext')
 
 def npgettext(context, singular, plural, number):
-    result = do_ntranslate(u"%s%s%s" % (context, CONTEXT_SEPARATOR, singular),
-                           u"%s%s%s" % (context, CONTEXT_SEPARATOR, plural),
-                           number, 'ungettext')
+    msgs_with_ctxt = ("%s%s%s" % (context, CONTEXT_SEPARATOR, singular),
+                      "%s%s%s" % (context, CONTEXT_SEPARATOR, plural),
+                      number)
+    result = ungettext(*msgs_with_ctxt)
     if CONTEXT_SEPARATOR in result:
         # Translation not found
-        result = do_ntranslate(singular, plural, number, 'ungettext')
+        result = ungettext(singular, plural, number)
     return result
 
 def all_locale_paths():
@@ -339,7 +343,7 @@ def all_locale_paths():
     """
     from django.conf import settings
     globalpath = os.path.join(
-        os.path.dirname(sys.modules[settings.__module__].__file__), 'locale')
+        os.path.dirname(upath(sys.modules[settings.__module__].__file__)), 'locale')
     return [globalpath] + list(settings.LOCALE_PATHS)
 
 def check_for_language(lang_code):
@@ -476,8 +480,10 @@ def templatize(src, origin=None):
     does so by translating the Django translation tags into standard gettext
     function invocations.
     """
+    from django.conf import settings
     from django.template import (Lexer, TOKEN_TEXT, TOKEN_VAR, TOKEN_BLOCK,
             TOKEN_COMMENT, TRANSLATOR_COMMENT_MARK)
+    src = force_text(src, settings.FILE_CHARSET)
     out = StringIO()
     message_context = None
     intrans = False
@@ -607,7 +613,7 @@ def templatize(src, origin=None):
                 out.write(' # %s' % t.contents)
             else:
                 out.write(blankout(t.contents, 'X'))
-    return out.getvalue()
+    return force_str(out.getvalue())
 
 def parse_accept_lang_header(lang_string):
     """

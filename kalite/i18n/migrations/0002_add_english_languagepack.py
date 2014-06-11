@@ -4,17 +4,16 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-import version
-from i18n.models import LanguagePack
+from kalite.version import VERSION
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        LanguagePack.objects.get_or_create(
+        orm["i18n.LanguagePack"].objects.get_or_create(
             code='en',
             defaults={
-                'software_version': version.VERSION,
+                'software_version': VERSION,
                 'language_pack_version': 0,
                 'percent_translated': 100,
                 'subtitle_count': 0,
@@ -39,3 +38,5 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['i18n']
+    symmetrical = True
+    no_dry_run = True

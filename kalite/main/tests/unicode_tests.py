@@ -1,15 +1,17 @@
+"""
+"""
 import sys
 from datetime import datetime  # main.models imports this way, so we have this hacky dependency.
 
+from django.conf import settings
 from django.utils import unittest
 
-import settings
-import version
-from facility.models import Facility, FacilityGroup, FacilityUser
-from main.models import *
-from main.tests.base import MainTestCase
+from .base import MainTestCase
+from ..models import *
+from fle_utils.testing import UnicodeModelsTest
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from securesync.models import Device
-from testing import UnicodeModelsTest
+
 
 class MainUnicodeModelsTest(MainTestCase, UnicodeModelsTest):
 

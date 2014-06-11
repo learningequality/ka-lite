@@ -1,11 +1,21 @@
 #!/usr/bin/env python
-
-import logging, sys, os, signal, socket, time, errno
+import errno
+import logging
+import os
+import signal
+import socket
+import sys
+import time
 from socket import gethostname
 from urllib import urlopen
-from django.core.management.base import BaseCommand
+
 import django.contrib.admin
-from django_cherrypy_wsgiserver import cherrypyserver
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.core.urlresolvers import reverse
+
+from ... import cherrypyserver
+
 
 CPWSGI_HELP = r"""
   Run this project in CherryPy's production quality http webserver.
@@ -41,8 +51,8 @@ Examples:
 
 CPWSGI_OPTIONS = {
     'host': '127.0.0.1', # changed from localhost to avoid ip6 problem -clm
-    'port': 8008,   # changed from 8088 to 8000 to follow django devserver default
-    'threads': 50,
+    'port': getattr(settings, "CHERRYPY_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
+    'threads': getattr(settings, "CHERRPY_THREAD_COUNT", 50),
     'daemonize': False,
     'pidfile': None,
     'autoreload': False,
@@ -176,12 +186,20 @@ def ka_lite_is_using_port(host, port):
     if there is a numeric response, that will be the pid of the cherrypyserver process
     This is needed in case the PID file has been deleted, but the server continues to run
     """
+
+    pid = None
+
     try:
-        pid = int(urlopen("http://"+host+":"+port+"/api/getpid").read())
+        pid = int(urlopen("http://%s:%s%s" % (host, port, reverse('getpid'))).read())
+    except:
+        try: # also try the old URL for getpid, since the running server may not be recent
+            pid = int(urlopen("http://%s:%s%s" % (host, port, "/api/getpid")).read())
+        except:
+            pass
+
+    if pid:
         logging.warn("Existing KA-Lite server found, PID %d" % pid)
         return pid
-    except:
-        pass
 
 
 def runcherrypyserver(argset=[], **kwargs):

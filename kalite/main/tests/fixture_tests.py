@@ -1,17 +1,15 @@
 """
-
 """
 import os
 
+from django.conf import settings
 from django.core.management import call_command
 from django.db import DatabaseError
 from django.utils import unittest
 
-import settings
-from testing import distributed_server_test, KALiteTestCase
+from kalite.testing import KALiteTestCase
 
 
-@distributed_server_test
 class FixtureTestCases(KALiteTestCase):
     """ """
 

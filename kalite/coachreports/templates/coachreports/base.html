@@ -1,0 +1,131 @@
+{% extends base_template %}
+{% load staticfiles %}
+{% load i18n %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+
+{% block title %}{% trans "Coach Reports" %}{{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        .selection {
+            float: left;
+            padding: 0 10px 10px 0;
+        }
+        select {
+            margin-left: 10px;
+        }
+        .subtitle {
+            float:left;
+        }
+        #facility, .group_select {
+            display:none;
+        }
+        h2 {
+            width:100%;
+            margin: 0px;
+            margin-top: 10px;
+        }
+        h3 {
+            margin-left: 25px;
+            margin-bottom: 0px;
+        }
+        #link-box {
+            float:right;
+            margin-right:25px;
+        }
+        .group_div {
+            position: absolute;
+            margin-left: 20px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var FACILITY_ID = "{{ form.facility }}";
+        var GROUP_ID = "{{ form.group }}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/coachreports/base.js' %}"></script>
+{% endblock headjs %}
+
+{# sub-pages must embed the navbar within the content, to have it appear. #}
+{% block navbar %}
+
+    <div id="navbar" style="padding-bottom:25px">
+        <div id="users_link">
+        </div>
+
+        {% block navbar_title %}
+        <h2>
+            <div style="float:left">
+                {% block report_title %}
+                    {# Note to translators: following this phrase is the name of a class. #}
+                    {% trans "Coach Reports" %}
+                {% endblock %}
+                {# Note to translators: The context is the title "Coach Reports *for* Facility X." #}
+                {% trans "for" %}&nbsp;
+            </div>
+            {% block navbar_facilities %}
+            <div id="select-facilities" class="selection">
+                <select id="facility">
+                {% if facilities %}
+                    {% for facility in facilities %}
+                    <option value="{{ facility.id }}" {% if form.facility == facility.id %}selected{% endif %}>{{ facility }}</option>
+                    {% endfor %}
+                {% else %}
+                    <option value="" selected>[{% trans "this device" %}]</option>
+                {% endif %}
+                </select>
+                {% if facilities|length > 1 %}
+                <a id="facility_editable" href="javascript:make_editable('facility')"></a>
+                {% else %}
+                <span id="facility_editable"></span>
+                {% endif %}
+            </div>
+            {% endblock navbar_facilities %}
+
+            {% block navbar_groups %}
+            <div id="select-groups" class="selection">
+                <div class="subtitle"> {% if facilities and groups %}/&nbsp;{% endif %}</div>
+                {% if groups %}
+                    {% for groupobject in groups %}
+                    <div id="{{ groupobject.facility }}" class="group_div">
+                        <select id="{{ groupobject.facility }}_group_select" class="group_select">
+                            {% if groupobject.groups %}
+                                    <option value="">[{% trans "all groups" %}]</option>
+                                    {% for group in groupobject.groups %}
+                                    <option value="{{ group.id }}">{{ group }}</option>
+                                    {% endfor %}
+                            {% else %}
+                                <option value="" selected>[{% trans "no groups" %}]</option>
+                            {% endif %}
+                        </select>
+                        {% if groupobject.groups|length > 1 %}
+                        <a id="{{ groupobject.facility }}_group_select_editable" href="javascript:make_editable('{{ groupobject.facility }}_group_select')"></a>
+                        {% else %}
+                        <span id="{{ groupobject.facility }}_group_select_editable"></span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endblock navbar_groups %}
+
+            <div class="clearfix">
+                {% block navbar_makelink %}
+                <div id="link-box">
+                    <input name="url" id="url" type="text" style="display:none"></input>
+                    {# Translators: this is used to share a URL (with other teachers) #}
+                    <a href="javascript:display_link()">({% trans "share" %})</a>
+                </div>
+                {% endblock navbar_makelink %}
+            </div>
+        </h2>
+        {% endblock navbar_title %}
+
+        {% block navbar_topics %}
+        {% endblock navbar_topics %}
+    </div>
+{% endblock navbar %}

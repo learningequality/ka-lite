@@ -1,24 +1,46 @@
+"""
+"""
 import os
-import sys
-import time
+import youtube_dl
 from functools import partial
 from optparse import make_option
+from youtube_dl.utils import DownloadError
 
+from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 
-import i18n
-import settings
 from .classes import UpdatesDynamicCommand
-from chronograph.management.croncommand import CronCommand
-from i18n.management.commands.scrape_videos import scrape_video, DownloadError
-from settings import LOG as logging
-from main import caching
-from main.topic_tools import get_video_by_youtube_id
-from updates import download_video, DownloadCancelled, URLNotFound
-from updates.models import VideoFile
-from utils import set_process_priority
-from utils.general import ensure_dir
-from utils.internet import URLNotFound
+from ... import download_video, DownloadCancelled, URLNotFound
+from ...models import VideoFile
+from fle_utils import set_process_priority
+from fle_utils.chronograph.management.croncommand import CronCommand
+from fle_utils.general import ensure_dir
+from fle_utils.internet import URLNotFound
+from kalite import caching, i18n, topic_tools
+
+def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
+    """
+    Assumes it's in the path; if not, we try to download & install.
+
+    Callback will be called back with a dictionary as the first arg with a bunch of
+    youtube-dl info in it, as specified in the youtube-dl docs.
+    """
+    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
+    video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
+    if os.path.exists(video_file_download_path) and not force:
+        return
+
+    yt_dl = youtube_dl.YoutubeDL({'outtmpl': video_file_download_path, "quiet": quiet})
+    yt_dl.add_default_info_extractors()
+    if callback:
+        yt_dl.add_progress_hook(callback)
+    yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
+
+
+def get_video_node_by_youtube_id(youtube_id):
+    """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
+    video_id = i18n.get_video_id(youtube_id=youtube_id)
+    return topic_tools.get_node_cache("Video").get(video_id, [None])[0]
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -70,8 +92,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     self.video.save()
 
                 # update progress data
-                video_node = get_video_by_youtube_id(self.video.youtube_id)
-                video_title = _(video_node["title"]) if video_node else self.video.youtube_id
+                video_node = get_video_node_by_youtube_id(self.video.youtube_id)
+                video_title = (video_node and _(video_node["title"])) or self.video.youtube_id
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
                 self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
@@ -157,6 +179,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
 
+                    # caching.invalidate_all_caches()  # Unnecessary; we have a database listener for this.
+
                 except DownloadCancelled:
                     # Cancellation event
                     video.percent_complete = 0
@@ -173,7 +197,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                     # If a connection error, we should retry.
                     if isinstance(e, DownloadError):
-                        connection_error = "[Errno 8]" in e.message
+                        connection_error = "[Errno 8]" in e.args[0]
                     elif isinstance(e, IOError) and hasattr(e, "strerror"):
                         connection_error = e.strerror[0] == 8
                     else:

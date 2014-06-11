@@ -27,18 +27,15 @@ import json
 from math import exp, sqrt, ceil, floor
 from optparse import make_option
 
+from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-import settings
-import securesync
-from facility.models import Facility, FacilityUser, FacilityGroup
-from main.models import ExerciseLog, VideoLog, UserLog
-from main.topic_tools import get_topic_videos, get_topic_exercises
-from securesync.models import Device, DeviceMetadata
-from settings import LOG as logging
-from utils.general import datediff
+from fle_utils.general import datediff
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import ExerciseLog, VideoLog, UserLog
+from kalite.topic_tools import get_topic_videos, get_topic_exercises
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",
@@ -172,8 +169,12 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                         group=facility_group,
                     )
                     facility_user.set_password(password)  # set same password for every user
-                    facility_user.save()
-                    logging.info("Created facility user '%s/%s'" % (facility.name, user_data["username"]))
+                    try:
+                        facility_user.save()
+                        logging.info("Created facility user '%s/%s'" % (facility.name, user_data["username"]))
+                    except Exception as e:
+                        logging.error("Error saving facility user: %s" % e)
+                        continue
 
                 facility_users.append(facility_user)
 
@@ -202,7 +203,6 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
     By default, users start learning randomly between 6 months ago and now.
     """
 
-    own_device = Device.get_own_device()
     date_diff = datetime.datetime.now() - start_date
     exercise_logs = []
     user_logs = []
@@ -296,22 +296,26 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                         complete=completed,
                         completion_timestamp=date_completed,
                     )
-                    elog.save(update_userlog=False)
+                    try:
+                        elog.save()
 
-                    # For now, make all attempts on an exercise into a single UserLog.
-                    seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
-                    time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
-                    time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
-                    if UserLog.is_enabled():
-                        ulog = UserLog(
-                            user=facility_user,
-                            activity_type=1,
-                            start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
-                            end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
-                            last_active_datetime = date_completed,
-                        )
-                        ulog.save()
-                        user_logs.append(ulog)
+                        # For now, make all attempts on an exercise into a single UserLog.
+                        seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
+                        time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
+                        time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
+                        if UserLog.is_enabled():
+                            ulog = UserLog(
+                                user=facility_user,
+                                activity_type=1,
+                                start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
+                                end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
+                                last_active_datetime = date_completed,
+                            )
+                            ulog.save()
+                            user_logs.append(ulog)
+                    except Exception as e:
+                        logging.error("Error saving exercise log: %s" % e)
+                        continue
                 exercise_logs.append(elog)
 
     return (exercise_logs, user_logs)
@@ -322,7 +326,6 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
     If no users are given, they are created.
     If no topics exist, they are taken from the list at the top of this file."""
 
-    own_device = Device.get_own_device()
     date_diff = datetime.datetime.now() - start_date
     video_logs = []
 
@@ -349,7 +352,10 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
         except:
             user_settings = sample_user_settings()
             facility_user.notes = json.dumps(user_settings)
-            facility_user.save()
+            try:
+                facility_user.save()
+            except Exception as e:
+                logging.error("Error saving facility user: %s" % e)
 
         date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])  # when this user started in the program, relative to NOW
 
@@ -432,18 +438,28 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         complete=(pct_completed == 100.),
                         completion_timestamp=date_completed,
                     )
-                    vlog.save(update_userlog=False)  # avoid userlog issues
+                    try:
+                        vlog.save()  # avoid userlog issues
+                    except Exception as e:
+                        logging.error("Error saving video log: %s" % e)
+                        continue
 
                 video_logs.append(vlog)
 
     return video_logs
 
 def generate_fake_coachreport_logs(password="hellothere"):
-    t,_ = FacilityUser.objects.get_or_create(
-        facility=Facility.objects.all()[0],
-        username=random.choice(firstnames)
-    )
-    t.set_password(password)
+    try:
+        t = FacilityUser.objects.get(
+            facility=Facility.objects.all()[0],
+            username=random.choice(firstnames),
+        )
+    except FacilityUser.DoesNotExist as e:
+        t = FacilityUser(
+            facility=Facility.objects.all()[0],
+            username=random.choice(firstnames),
+        )
+        t.set_password(password)
 
     # TODO: create flags later
     num_logs = 20

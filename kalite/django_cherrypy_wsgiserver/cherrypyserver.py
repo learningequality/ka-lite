@@ -3,12 +3,6 @@ import imp
 import os, sys, time, signal, errno
 import urlparse
 
-PROJECT_PATH = os.path.dirname(os.path.realpath(__file__)) + "/../../kalite/"
-
-sys.path = [PROJECT_PATH, os.path.join(PROJECT_PATH, "../"), os.path.join(PROJECT_PATH, "../python-packages/")] + sys.path
-
-os.environ['DJANGO_SETTINGS_MODULE'] = "settings"
-
 import cherrypy
 from cherrypy.process import plugins
 
@@ -122,7 +116,9 @@ def stop_server(pidfile):
         os.remove(pidfile)
 
 
-def run_cherrypy_server(host="127.0.0.1", port=8008, threads=50, daemonize=False, pidfile=None, autoreload=False):
+def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False):
+    port = port or getattr(settings, "CHERRYPY_PORT", 8008)
+    threads = threads or getattr(settings, "CHERRYPY_THREAD_COUNT", 18)
 
     if daemonize:
         if not pidfile:

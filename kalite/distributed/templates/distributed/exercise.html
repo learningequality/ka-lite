@@ -1,0 +1,50 @@
+{% extends base_template %}
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block practice_active %}active{% endblock practice_active %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' True %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+
+    <script>
+
+        $(function() {
+            window.exercise_practice_view = new ExercisePracticeView({
+                el: $(".exercise-wrapper"),
+                exercise_id: "{{ exercise_id }}",
+                context_type: "exercise"
+            });
+        });
+
+    </script>
+
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+
+    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
+    <script src="{% static 'js/seedrandom.min.js' %}"></script>
+
+    <script src="{% static 'js/distributed/exercises.js' %}"></script>
+    <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
+
+{% endblock headjs %}
+
+{% block content %}
+    <div class="exercises-header">
+
+        {% if prev %}
+        <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
+        {% endif %}
+
+        {% if next %}
+        <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+        {% endif %}
+        <div class="clear"></div>
+    </div>
+
+    <div class="exercise-wrapper"></div>
+
+{% endblock content %}

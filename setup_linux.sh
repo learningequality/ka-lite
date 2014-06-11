@@ -5,8 +5,9 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 
 "$pyexec" "$current_dir/kalite/manage.py" setup
 
-we_are_rpi=`"$SCRIPT_DIR/get_setting.sh" package_selected\(\"RPi\"\)`
-if [ $we_are_rpi = "True" ]; then
+# TODO: make a check to see if we're running the rpi
+we_are_rpi=""
+if [[ $we_are_rpi = "True" ]]; then
     while true
     do
         echo
@@ -34,8 +35,7 @@ if [ $we_are_rpi = "True" ]; then
     done
 fi
 
-initd_available=`command -v update-rc.d`
-if [ $initd_available ]; then
+if [ -d "/etc/init.d" ]; then
     while true
     do
         echo

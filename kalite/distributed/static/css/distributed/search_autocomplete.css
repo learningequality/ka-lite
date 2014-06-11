@@ -1,0 +1,34 @@
+li.autocomplete {
+    font-weight: bold;
+    line-height: 35px;
+    padding-left: 35px;
+    margin: 3px 0px 3px 0px;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 25px 25px;
+    cursor: pointer;
+}
+li.autocomplete-exercise.available {
+    background-image:url(/static/images/distributed/search-exercise-available.png);
+}
+li.autocomplete-topic.available {
+    background-image:url(/static/images/distributed/search-topic-available.png);
+}
+li.autocomplete-video.available {
+    background-image:url(/static/images/distributed/search-video-available.png);
+}
+li.autocomplete-exercise.unavailable {
+    background-image:url(/static/images/distributed/search-exercise-unavailable.png);
+}
+li.autocomplete-topic.unavailable {
+    background-image:url(/static/images/distributed/search-topic-unavailable.png);
+}
+li.autocomplete-video.unavailable {
+    background-image:url(/static/images/distributed/search-video-unavailable.png);
+}
+.available {
+    color: black;
+}
+.unavailable {
+    color:gray;
+}
