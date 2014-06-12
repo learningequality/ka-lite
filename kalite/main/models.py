@@ -12,6 +12,7 @@ from dateutil import relativedelta
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.signals import user_logged_out
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
@@ -512,3 +513,15 @@ def cull_records(sender, **kwargs):
             to_discard = current_models \
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
+
+def logout_endlog(sender, request, user, **kwargs):
+    if "facility_user" in request.session:
+        # Logout, ignore any errors.
+        try:
+            UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
+        except ValidationError as e:
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
+        del request.session["facility_user"]
+
+# End a log whenever a logout event is fired.
+user_logged_out.connect(logout_endlog)
