@@ -48,12 +48,12 @@ $(function() {
 
     // Code for checkboxes
     $(".select-all").click(function(event){
-        // Select all checkbxes within local table
+        // Select all checkboxes within local table
         var el = $(event.target.value);
-        if(this.checked) {
-            el.find("input").prop("checked", true);
+        if(!event.target.checked){
+            el.find("tbody").find("input:checked").mousedown();
         } else {
-            el.find("input").prop("checked", false);
+            el.find("tbody").find("input:checkbox:not(:checked)").mousedown();
         }
     })
 
@@ -94,52 +94,59 @@ $(function() {
         }
     });
 
-    // // This code is to allow rows of a selectable-table class table to be clicked for selection,
-    // // and dragged across with mousedown for selection.
-    // // When mouse is pressed over a row in the table body (not the header row), make mouseovers select.
-    // var tableRows = $(".selectable-table").find("tbody").find("tr");
-    // tableRows.find('td:not(:has input)').mousedown(function(event){
-    //     $(this).toggleClass("selected");
-    //     var checkbox = $(this).find("input");
-    //     if (checkbox.prop("checked")) {
-    //         checkbox.prop("checked", false);
-    //     } else {
-    //         checkbox.prop("checked", true);
-    //     }
-    //     // Only set action button state on related action buttons.
-    //     setActionButtonState("#" + $(event.currentTarget).attr("type"));
-    //     $(".selectable-table").find("tbody").find("tr").mouseover(function(event){
-    //         $(this).toggleClass("selected");
-    //         var checkbox = $(this).find("input");
-    //         if (checkbox.prop("checked")) {
-    //             checkbox.prop("checked", false);
-    //         } else {
-    //             checkbox.prop("checked", true);
-    //         }
-    //         // This code is to toggle action buttons on only when items have been selected
-    //         // Works for now as only students have action buttons
-    //         // Only set action button state on related action buttons.
-    //         setActionButtonState("#" + $(event.currentTarget).attr("type"));
-    //     });
-    // });
+    // This code is to allow rows of a selectable-table class table to be clicked for selection,
+    // and dragged across with mousedown for selection.
+    // When mouse is pressed over a row in the table body (not the header row), make mouseovers select.
+    $(".selectable-table").find("tbody").find("tr").mousedown(function(event){
+        $(this).toggleClass("selected");
+        var checkbox = $(this).find("input");
+        if (checkbox.prop("checked")) {
+            checkbox.prop("checked", false);
+        } else {
+            checkbox.prop("checked", true);
+        }
+        // Only set action button state on related action buttons.
+        setActionButtonState("#" + $(event.currentTarget).attr("type"));
+        $(".selectable-table").find("tbody").find("tr").mouseover(function(event){
+            $(this).toggleClass("selected");
+            var checkbox = $(this).find("input");
+            if (checkbox.prop("checked")) {
+                checkbox.prop("checked", false);
+            } else {
+                checkbox.prop("checked", true);
+            }
+            // This code is to toggle action buttons on only when items have been selected
+            // Only set action button state on related action buttons.
+            setActionButtonState("#" + $(event.currentTarget).attr("type"));
+        });
+    });
 
-    // // Unbind the mouseover selection once the button has been released.
-    // $(".selectable-table").find("tbody").find("tr").mouseup(function(){
-    //     $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
-    // });
+    // Unbind the mouseover selection once the button has been released.
+    $(".selectable-table").find("tbody").find("tr").mouseup(function(){
+        $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
+    });
 
-    // // If the mouse moves out of the table with the button still depressed, the above unbind will not fire.
-    // // Unbind the mouseover once the mouse leaves the table.
-    // // This means that moving the mouse out and then back in with the button depressed will not select.
-    // $(".selectable-table").mouseleave(function(){
-    //     $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
-    // })
+    // If the mouse moves out of the table with the button still depressed, the above unbind will not fire.
+    // Unbind the mouseover once the mouse leaves the table.
+    // This means that moving the mouse out and then back in with the button depressed will not select.
+    $(".selectable-table").mouseleave(function(){
+        $(".selectable-table").find("tbody").find("tr").unbind("mouseover");
+    })
 
-    // // Prevent propagation of click events on links to limit confusing behaviour
-    // // of rows being selected when links clicked.
-    // $(".selectable-table").find("a").mousedown(function(event) {
-    //     event.stopPropagation();
-    //     return false;
-    // });
+    // Prevent propagation of click events on links to limit confusing behaviour
+    // of rows being selected when links clicked.
+    $(".selectable-table").find("a").mousedown(function(event) {
+        event.stopPropagation();
+        return false;
+    });
+
+    $(".selectable-table").find("tbody").find("input").mousedown(function(event){
+        event.preventDefault();
+    })
+
+    $(".selectable-table").find("tbody").find("input").click(function(event){
+        event.preventDefault();
+        return false;
+    })
 
 });
