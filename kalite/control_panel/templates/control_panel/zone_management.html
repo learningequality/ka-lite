@@ -51,11 +51,11 @@
 {% block control_panel_content %}
 
 <div class="container">
-    <!-- Begin Facilities --> 
-    <div class="row"> 
+    <!-- Begin Facilities -->
+    <div class="row">
         <div class="col-md-12">
             <h2>{% trans "Facilities" %}&nbsp;<small><a href="{% url 'add_facility' zone_id=zone_id %}" title="{% trans 'Add a new facility' %}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "A facility is a physical location where students learn." %}</small></h2>
-            
+
         </div>
     </div>
     <div class="row">
@@ -76,9 +76,9 @@
                         </thead>
                         <tbody>
                         {% for id,facility in facilities.items %}
-                            <tr>
+                            <tr facility-id="{{ facility.id }}">
                                 <td>
-                                    <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+                                    <a class='facility-name' href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                                         {{ facility.name }}
                                     </a>
                                 </td>
@@ -105,8 +105,8 @@
                 </div>
             {% endif %}
         </div>
-    </div> <!-- End Facilities --> 
-    <!-- Begin Devices --> 
+    </div> <!-- End Facilities -->
+    <!-- Begin Devices -->
     <div class="row">
         <div class="col-md-12">
             <h2>{% trans "Devices" %}</br><small>{% trans "A device is a KA Lite installation." %}{% trans "Devices in the same 'sharing network' sync user data with each other." %}</small></h2>
@@ -180,6 +180,6 @@
                 </div>
             {% endif %}
         </div>
-    </div> <!-- End Devices --> 
-</div> <!-- End container --> 
+    </div> <!-- End Devices -->
+</div> <!-- End container -->
 {% endblock control_panel_content %}
