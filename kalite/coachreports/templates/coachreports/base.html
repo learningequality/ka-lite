@@ -5,7 +5,7 @@
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
 
-{% block title %}{% trans "Coach Reports" %}{{ block.super }}{% endblock title %}
+{% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <style>
@@ -40,6 +40,9 @@
             h4 { margin-top: 0; }
             .selection { padding-bottom: 0; }
             #link-box { float: left; padding-bottom: 10px; }
+        }
+        @media only screen and (max-width: 655px) {
+            #select-topic, select#topic { margin-top: 10px; }
         }
     </style>
 {% endblock headcss %}

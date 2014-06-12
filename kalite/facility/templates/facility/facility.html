@@ -168,7 +168,7 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h3>{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
+    <h3 class="no-margin-top">{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
     <div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>
     <div id="id_direc_map">
         {% trans "Please use this search box to locate your facility (and/or click on the map to select a spot), and then enter the additional information in the form below." %}<br/>
@@ -183,6 +183,6 @@
         {% csrf_token %}
         {{ form.as_p }}
         {% trans "Save facility" as value %}
-        <input type="submit" value="{{ value }}" class="submit btn btn-default btn-xs"/>
+        <input type="submit" value="{{ value }}" class="submit btn btn-default btn-sm"/>
     </form>
 {% endblock content %}

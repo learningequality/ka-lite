@@ -5,7 +5,7 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Progress by topic" %} | {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' True %}" />
@@ -99,7 +99,7 @@
                 {% endfor %}
             </select>
         {% elif topics and groups %}
-            <div class="subtitle">{% trans "Select Topic" %}</div>
+            <div class="subtitle" id="select-topic">{% trans "Select Topic" %}</div>
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}

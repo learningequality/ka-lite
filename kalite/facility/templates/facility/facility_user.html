@@ -49,14 +49,14 @@
 
 {% block content %}
     <div class="container">
-        <h3>{{ title }}</h3>
+        <h3 class="no-margin-top">{{ title }}</h3>
 
         <form method="post" class="basic-form">
             {% csrf_token %}
 
             {{ form.as_p }}
 
-            <input type="submit" class="submit btn btn-default btn-xs" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
+            <input type="submit" class="submit btn btn-default btn-sm" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
         </form>
     </div>
 {% endblock content %}
