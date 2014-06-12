@@ -30,3 +30,34 @@ class FacilityControlTests(CreateFacilityMixin,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
+
+
+class GroupControlTests(CreateGroupMixin,
+                        CreateFacilityMixin,
+                        CreateDeviceMixin,
+                        KALiteDistributedBrowserTestCase):
+
+    def test_delete_group(self):
+        self.setup_fake_device()
+        group_name = 'should-be-deleted'
+        facility = self.create_facility()
+        group = self.create_group(name=group_name, facility=facility)
+
+        self.browser_login_admin()
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': facility.id, 'zone_id': None}))
+
+        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % group.id)
+        group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
+        group_delete_checkbox.click()
+
+        confirm_group_delete_button = self.browser.find_element_by_xpath('//button[@class="delete-group"]')
+        confirm_group_delete_button.click()
+
+        # there should be a confirm popup
+        alert = self.browser.switch_to_alert()
+        alert.accept()
+
+        time.sleep(3)
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_xpath('//tr[@value="%s"]' % group.id)
