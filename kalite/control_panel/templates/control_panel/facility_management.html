@@ -94,7 +94,7 @@
     <div class="container">
         <!-- Begin Coaches --> 
         <div class="row" id="coaches">
-            {% if not group_id and groups %}
+            {% if not group_id %}
                 <div class="col-md-12">
                     <h2>{% trans "Coaches" %}&nbsp;<small><a title="{% trans 'Add a new coach.' %}" href="{% url 'add_facility_teacher' %}?facility={{ facility_id }}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}</small></h2>
                 </div>
