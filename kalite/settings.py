@@ -139,7 +139,7 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
-# Default to a 20 minute timeout for a session
+# Default to a 20 minute timeout for a session - set to 0 to disable.
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
 
 ########################
