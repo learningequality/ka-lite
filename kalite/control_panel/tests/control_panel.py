@@ -26,7 +26,7 @@ class FacilityControlTests(CreateFacilityMixin,
         facility_delete_link.click()
         alert = self.browser.switch_to_alert()
         alert.accept()
-        time.sleep(3)
+        time.sleep(5)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
@@ -57,7 +57,7 @@ class GroupControlTests(CreateGroupMixin,
         alert = self.browser.switch_to_alert()
         alert.accept()
 
-        time.sleep(3)
+        time.sleep(5)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % group.id)
