@@ -175,7 +175,7 @@
                     <dt>{% trans "Exercises Completed" %}</dt>
                     <dd>{{ group_data.total_exercises }}</dd>
                     <dt>{% trans "Mastery " %}</dt>
-                    <dd>{{ group_data.pct_mastery }}</dd>
+                    <dd>{{ group_data.pct_mastery|percent:1 }}</dd>
                     </dl>
 
                 {% else %}
