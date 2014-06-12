@@ -20,9 +20,10 @@ class SessionIdleTimeout:
                 current_datetime = datetime.datetime.now()
                 
                 # Timeout if idle time period is exceeded.
-                if request.session.has_key('last_activity') and \
-                    (current_datetime - request.session['last_activity']).seconds > \
-                    settings.SESSION_IDLE_TIMEOUT:
+                if (request.session.has_key('last_activity')
+                    and
+                    (current_datetime - request.session['last_activity']).seconds >
+                    settings.SESSION_IDLE_TIMEOUT):
                     logout(request)
                     messages.add_message(request, messages.ERROR, 'Your session has been timed out.')
                 # Set last activity time in current session.
