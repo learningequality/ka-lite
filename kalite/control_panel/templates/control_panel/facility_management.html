@@ -118,7 +118,7 @@
                                 <th>{% trans "Coach Report Views" %}</th>
                             </tr>
                             {% for coach in coach_pages %}
-                            <tr value="{{ coach.id }}" type="coaches">
+                            <tr class="selectable" value="{{ coach.id }}" type="coaches">
                                 <td><input type="checkbox" value="#coaches"></td>
                                 <td>
                                     {{ coach|format_name:"last_first" }}
@@ -207,8 +207,8 @@
                                 <tbody>
                                     {% for group in groups %}
                                         {% if group.name != ungrouped or group.total_users != 0 %}
-                                        <tr value="{{ group.id }}" type="groups">
-                                            <td><input type="checkbox" value="#groups"></td>
+                                        <tr {% if group.id %}class="selectable"{% endif %} value="{{ group.id }}" type="groups">
+                                            <td>{% if group.id %}<input type="checkbox" value="#groups">{% endif %}</td>
                                             <td>
                                                 {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
                                                 <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
@@ -307,7 +307,7 @@
                         </thead>
                         <tbody>
                             {% for student in student_pages %}
-                                <tr value="{{ student.id }}" type="students">
+                                <tr class="selectable" value="{{ student.id }}" type="students">
                                     <td><input type="checkbox" value="#students"></td>
                                     <td>
                                         {{ student|format_name:"last_first" }}
