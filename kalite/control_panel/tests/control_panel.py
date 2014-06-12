@@ -3,15 +3,18 @@ import time
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
-from kalite.testing.mixins.facility_mixins import CreateFacilityMixin
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateGroupMixin
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class FacilityControlTests(CreateFacilityMixin,
                            CreateAdminMixin,
+                           CreateDeviceMixin,
                            KALiteDistributedBrowserTestCase):
 
     def test_delete_facility(self):
+        self.setup_fake_device()
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)
         self.browser_login_admin()
