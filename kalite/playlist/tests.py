@@ -82,6 +82,7 @@ class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, Test
                                         ('entries', list),
                                         ('groups_assigned', list),
                                         ('id', unicode),
+                                        ('tag', unicode),
                                         ('resource_uri', unicode),
                                         ('title', unicode)]
 
@@ -101,6 +102,7 @@ class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, Test
         PLAYLIST_REQUIRED_ATTRIBUTES = [('description', unicode),
                                         ('entries', list),
                                         ('groups_assigned', list),
+                                        ('tag', unicode),
                                         ('id', unicode),
                                         ('resource_uri', unicode),
                                         ('title', unicode)]

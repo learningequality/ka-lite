@@ -94,6 +94,7 @@ class VanillaPlaylist:
     def __init__(self, **kwargs):
         self.pk = self.id = kwargs.get('id')
         self.title = kwargs.get('title')
+        self.tag = kwargs.get('tag')
         self.description = kwargs.get('description')
         self.groups_assigned = kwargs.get('groups_assigned')
 
@@ -106,7 +107,10 @@ class VanillaPlaylist:
         # also add in the group IDs that are assigned to view this playlist
         playlists = []
         for playlist_dict in raw_playlists:
-            playlist = cls(title=playlist_dict['title'], description='', id=playlist_dict['id'])
+            playlist = cls(title=playlist_dict['title'],
+                           description='',
+                           id=playlist_dict['id'],
+                           tag=playlist_dict['tag'])
 
             # instantiate the groups assigned to this playlist
             groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
