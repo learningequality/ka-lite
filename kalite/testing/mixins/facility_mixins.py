@@ -36,6 +36,7 @@ class CreateStudentMixin(CreateFacilityMixin):
         'first_name': 'Cannon',
         'last_name': 'Fodder',
         'username': 'teststudent1',
+        'password': 'password',
         'is_teacher': False,
     }
 
@@ -51,7 +52,28 @@ class CreateStudentMixin(CreateFacilityMixin):
         return user
 
 
-class FacilityMixins(CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
+class CreateTeacherMixin(CreateFacilityMixin):
+    DEFAULTS = {
+        'first_name': 'Teacher 1',
+        'last_name': 'Sample',
+        'username': 'teacher1',
+        'password': 'password',
+        'is_teacher': True
+    }
+
+    @classmethod
+    def create_teacher(cls, **kwargs):
+        fields = CreateTeacherMixin.DEFAULTS.copy()
+        fields.update(**kwargs)
+        fields['facility'] = (fields.get('facility') or
+                              cls.create_facility(name='%s-facility' % fields['username']))
+        user = FacilityUser(**fields)
+        user.set_password(fields['password'])
+        user.save()
+        return user
+
+
+class FacilityMixins(CreateStudentMixin, CreateGroupMixin, CreateTeacherMixin, CreateFacilityMixin):
     '''
     Toplevel class that has all the mixin methods defined above
     '''
