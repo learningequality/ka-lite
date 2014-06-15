@@ -29,6 +29,8 @@ class BrowserTests(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, 
     teacher = None
     student = None
 
+    exam_id = '128'
+
     def setUp(self):
         super(BrowserTests, self).setUp()
 
@@ -38,6 +40,7 @@ class BrowserTests(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, 
         self.teacher = self.create_teacher(username=self.teacher_username,
                                            password=self.teacher_password,
                                            facility=self.facility)
+
         self.assertTrue(self.teacher)
 
         self.student = self.create_student(username=self.student_username,
@@ -51,14 +54,42 @@ class BrowserTests(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, 
     def tearDown(self):
         super(BrowserTests, self).tearDown()
 
-    def test_teacher_can_access_test_list_page(self):
+    def http_auth(self, username, password):
+        import base64
+        credentials = base64.encodestring('%s:%s' % (username, password)).strip()
+        auth_string = 'Basic %s' % credentials
+        return auth_string
+
+    def login_teacher(self):
         data = {
             'username': self.teacher_username,
             'password': self.teacher_password,
             'facility': self.facility.id
         }
-        # login student
-        response = self.client.post(self.login_url, data=data, follow=True)
+        return self.client.post(self.login_url, data=data, follow=True)
+
+    def teacher_auth(self):
+        return {
+            'HTTP_AUTHORIZATION': self.http_auth(self.teacher_username,
+                                                 self.teacher_password)
+        }
+
+    def login_student(self):
+        data = {
+            'username': self.student_username,
+            'password': self.student_password,
+            'facility': self.facility.id
+        }
+        return self.client.post(self.login_url, data=data, follow=True)
+
+    def student_auth(self):
+        return {
+            'HTTP_AUTHORIZATION': self.http_auth(self.student_username,
+                                                 self.student_password)
+        }
+
+    def test_teacher_can_access_test_list_page(self):
+        response = self.login_teacher()
         url = reverse('coach_reports')
         self.assertEqual(response.request['PATH_INFO'], url)
         # check content
@@ -69,13 +100,7 @@ class BrowserTests(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, 
         self.assertEqual(response.request['PATH_INFO'], self.test_list_url)
 
     def test_student_cannot_access_test_list_page(self):
-        data = {
-            'username': self.student_username,
-            'password': self.student_password,
-            'facility': self.facility.id
-        }
-        # login student
-        response = self.client.post(self.login_url, data=data, follow=True)
+        response = self.login_student()
         self.assertEqual(response.request['PATH_INFO'], '/')
         # check content
         text = "Assigned Playlists"
@@ -84,6 +109,62 @@ class BrowserTests(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, 
         response = self.client.get(self.test_list_url, follow=True)
         # did student redirect to login page?
         self.assertEqual(response.request['PATH_INFO'], self.login_url)
+
+    def test_teacher_enable_exam_mode(self):
+        self.login_teacher()
+        self.fail('TODO')
+
+    def test_teacher_disable_exam_mode(self):
+        self.login_teacher()
+        self.fail('TODO')
+
+    def test_redirect_student_if_exam_mode(self):
+        """
+        option 1. set exam mode by tastypie api
+        option 2. set exam mode by post/browser call
+        option 3. set exam mode by code
+        """
+
+        response = self.login_teacher()
+        # logging.warn('==> response %s' % response)
+
+        # TODO(cpauya): option 1. set exam mode by tastypie api
+        # from tastypie.test import TestApiClient
+        # client = TestApiClient()
+        # url = '/test/api/test/'
+        # data = {
+        #     'exam_id': self.exam_id
+        # }
+        # url = '/test/api/test/128/'
+        # data = {}
+        # extra = self.teacher_auth()
+        # response = client.put(url, data=data, **extra)
+        # # logging.warn('==> response %s' % response)
+
+        # TODO(cpauya): option 2. set exam mode by post/browser call
+        # url = '/test/api/test/%s/' % self.exam_id
+        # data = {
+        # }
+        # response = self.client.post(url, data=data, follow=True)
+        # # logging.warn('==> response %s' % response)
+        # text = '"test_id": "128"'
+        # self.assertContains(response, text)
+        # self.assertEqual(response.request['PATH_INFO'], url)
+
+        # TODO(cpauya): option 3. set exam mode by code
+        from student_testing.utils import set_exam_mode_on
+        set_exam_mode_on(self.exam_id)
+
+        from student_testing.utils import get_exam_mode_on
+        self.assertEqual(get_exam_mode_on(), self.exam_id)
+
+        # logged-in student must be redirected to the exam page
+        response = self.login_student()
+        # logging.warn('==> response %s' % response)
+        text = 'test_id: "128"'
+        self.assertContains(response, text)
+        url = reverse('test', args=[self.exam_id])
+        self.assertEqual(response.request['PATH_INFO'], url)
 
 
 # class StudentTestingTests(CreateCoachMixin, CreateStudentMixin, TestCase):
