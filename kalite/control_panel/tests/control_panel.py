@@ -4,17 +4,20 @@ from selenium.common.exceptions import NoSuchElementException
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateGroupMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
-class FacilityControlTests(CreateFacilityMixin,
+class FacilityControlTests(FacilityMixins,
                            CreateAdminMixin,
                            CreateDeviceMixin,
                            KALiteDistributedBrowserTestCase):
 
-    def test_delete_facility(self):
+    def setUp(self):
         self.setup_fake_device()
+        super(FacilityControlTests, self).setUp()
+
+    def test_delete_facility(self):
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)
         self.browser_login_admin()
@@ -31,9 +34,25 @@ class FacilityControlTests(CreateFacilityMixin,
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
 
+    def test_teachers_have_no_facility_delete_button(self):
+        facility_name = 'should-not-be-deleted'
+        self.fac = self.create_facility(name=facility_name)
 
-class GroupControlTests(CreateGroupMixin,
-                        CreateFacilityMixin,
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        facility_row = self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
+
+        with self.assertRaises(NoSuchElementException):
+            facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]')
+
+
+class GroupControlTests(FacilityMixins,
                         CreateDeviceMixin,
                         KALiteDistributedBrowserTestCase):
 
