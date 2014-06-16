@@ -51,7 +51,23 @@ class CreateStudentMixin(CreateFacilityMixin):
         return user
 
 
-class FacilityMixins(CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
+class CreateTeacherMixin(CreateStudentMixin):
+    DEFAULTS = {
+        'first_name': 'terror',
+        'last_name': 'teacher',
+        'username': 'testteacher1',
+        'password': 'password',
+        'is_teacher': True,
+    }
+
+    @classmethod
+    def create_teacher(cls, **kwargs):
+        fields = CreateTeacherMixin.DEFAULTS.copy()
+        fields.update(**kwargs)
+        return cls.create_student(**fields)  # delegate to the create_student method, which has the right logic
+
+
+class FacilityMixins(CreateTeacherMixin, CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
     '''
     Toplevel class that has all the mixin methods defined above
     '''
