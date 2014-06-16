@@ -29,8 +29,6 @@ var AppView = Backbone.View.extend({
 
     setup_elements_for_user: function(statusModel) {
 
-      statusModel.set('is_logged_in', true)
-      statusModel.set('is_admin', false)
         // check to see if we are a student. If so, render the playlist table
         // and fetch the data to populate it
         if (statusModel.get('is_logged_in') && !statusModel.get('is_admin')) { // we're a student
