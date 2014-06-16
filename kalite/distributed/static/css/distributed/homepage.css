@@ -116,11 +116,14 @@ td div {
 .playlist-list-item {
     font-size: 15px;
     display: inline-block;
-    width: 19.6%;
+    width: 20%;
     border: 1px solid black;
     font-family: museosans500;
     height: 100px;
     padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 .playlist-list-item:hover {
