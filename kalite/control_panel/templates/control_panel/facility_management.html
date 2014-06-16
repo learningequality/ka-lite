@@ -104,7 +104,9 @@
                     </div>
                 {% else %}
                 <div class="col-md-2 pull-left">
-                    <button class="action delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                    {% if not request.is_teacher %}
+                      <button class="action delete" id="delete-coaches" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                    {% endif %}
                 </div>
                 <div class="col-md-12">
                     <div class="table-responsive">

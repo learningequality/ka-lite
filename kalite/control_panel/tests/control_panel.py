@@ -98,3 +98,17 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@class="delete-group"]')
+
+    def test_teachers_have_no_delete_coaches_button(self):
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password,
+                                           facility=self.facility)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
