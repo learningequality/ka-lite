@@ -56,16 +56,21 @@ class GroupControlTests(FacilityMixins,
                         CreateDeviceMixin,
                         KALiteDistributedBrowserTestCase):
 
-    def test_delete_group(self):
+    def setUp(self):
         self.setup_fake_device()
-        group_name = 'should-be-deleted'
-        facility = self.create_facility()
-        group = self.create_group(name=group_name, facility=facility)
+        self.facility = self.create_facility()
+
+        group_name = 'group1'
+        self.group = self.create_group(name=group_name, facility=self.facility)
+
+        super(GroupControlTests, self).setUp()
+
+    def test_delete_group(self):
 
         self.browser_login_admin()
-        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': facility.id, 'zone_id': None}))
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
-        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % group.id)
+        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
@@ -79,4 +84,17 @@ class GroupControlTests(FacilityMixins,
         time.sleep(5)
 
         with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_xpath('//tr[@value="%s"]' % group.id)
+            self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
+
+    def test_teachers_have_no_group_delete_button(self):
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_xpath('//button[@class="delete-group"]')
