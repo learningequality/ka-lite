@@ -1,8 +1,18 @@
 var PlaylistTableView = Backbone.View.extend({
 
     initialize: function() {
+        this.render();
+    },
 
+    render: function() {
+      var variables = { title: "Assigned Playlists" };
+      var template = _.template($("#playlist-table").html(), variables);
+      this.$el.html(template);
+    },
 
+    add_playlist: function(playlist) {
+        var format = formatPlaylist(playlist.toJSON());
+        this.$el.find("#playlists").append(format);
     }
 
 });
@@ -11,7 +21,7 @@ var AppView = Backbone.View.extend({
 
     initialize: function() {
 
-        $("#playlist-table").hide(); // hide the playlist table regardless
+        $("#playlist-table-container").hide(); // hide the playlist table regardless
         $(".loading").hide();
 
         this.listenTo(window.statusModel, "sync", this.setup_elements_for_user);
@@ -19,6 +29,8 @@ var AppView = Backbone.View.extend({
 
     setup_elements_for_user: function(statusModel) {
 
+      statusModel.set('is_logged_in', true)
+      statusModel.set('is_admin', false)
         // check to see if we are a student. If so, render the playlist table
         // and fetch the data to populate it
         if (statusModel.get('is_logged_in') && !statusModel.get('is_admin')) { // we're a student
@@ -34,15 +46,16 @@ var AppView = Backbone.View.extend({
 
     display_playlist_table: function(playlists) {
 
+        var playlist_table_view = new PlaylistTableView({ el: $("#playlist-table-container") });
+
         // TODO (aron): transfer to proper playlist view.  Did this to
         // make things closer to how jomel implemented things
         playlists.map(function(playlist) {
-            var format = formatPlaylist(playlist.toJSON());
-            $("#playlists").append(format);
+            playlist_table_view.add_playlist(playlist);
         });
 
         $(".loading").hide();
-        $("#playlist-table").show();
+        $("#playlist-table-container").show();
 
         $(".cell-content").dotdotdot({
             ellipsis: '...',
