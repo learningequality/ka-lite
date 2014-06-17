@@ -28,6 +28,24 @@
      var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
      var VIEW_PLAYLIST_TEMPLATE_URL = "/playlists/view/%(playlist_id)s/"
     </script>
+
+    <script type="text/template" id="playlist-table">
+      <table class="table">
+        <tr>
+          <th colspan="5">
+            <div class="playlist-list-header-wrapper">
+              <h2 class="playlist-list-header"><%= title %></h2>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <ul id="playlists">
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </script>
 {% endblock headjs %}
 
 {% block content %}
@@ -67,21 +85,9 @@
 
             <img src="/static/images/loading.gif" class="float-center loading"/>
 
-            <table id="playlist-table" class="table">
-              <tr>
-                <th colspan="5">
-                  <div class="playlist-list-header-wrapper">
-                    <h2 class="playlist-list-header">{% trans "Assigned Playlists" %}</h2>
-                  </div>
-                </th>
-              </tr>
-              <tr>
-                <td>
-                  <ul id="playlists">
-                  </ul>
-                </td>
-              </tr>
-            </table>
+            <div id="playlist-table-container">
+
+            </div>
 
         </div>
     </div>
