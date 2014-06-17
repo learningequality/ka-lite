@@ -120,10 +120,14 @@ class TestResource(Resource):
         return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):
+        # logging.warn('==> API get_list %s -- %s' % (bundle.request.user, bundle.request.is_teacher,))
+        if not bundle.request.is_admin:
+            raise Unauthorized(_("You are not authorized to view this page."))
         force = bundle.request.GET.get('force', False)
         return self.get_object_list(bundle.request, force=force)
 
     def obj_get(self, bundle, **kwargs):
+        # logging.warn('==> API get %s -- %s' % (bundle.request.user, bundle.request.is_teacher,))
         test_id = kwargs.get("test_id", None)
         test = self._read_test(test_id)
         if test:
@@ -132,6 +136,7 @@ class TestResource(Resource):
             raise NotFound('Test with test_id %s not found' % test_id)
 
     def obj_create(self, request):
+        # logging.warn('==> API create %s -- %s' % (request.user, request.is_teacher,))
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_update(self, bundle, **kwargs):
@@ -140,6 +145,7 @@ class TestResource(Resource):
         If `test_id` is the same on the Settings, means it's a toggle so we disable it.
         Validates if user is an admin.
         """
+        # logging.warn('==> API update %s -- %s' % (bundle.request.user, bundle.request.is_teacher,))
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
@@ -158,10 +164,13 @@ class TestResource(Resource):
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_delete_list(self, request):
+        # logging.warn('==> API delete_list %s' % request.user)
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_delete(self, request):
+        # logging.warn('==> API delete %s' % request.user)
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def rollback(self, request):
+        # logging.warn('==> API rollback %s' % request.user)
         raise NotImplemented("Operation not implemented yet for tests.")
