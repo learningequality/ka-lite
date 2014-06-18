@@ -31,3 +31,5 @@ class Command(BaseCommand):
 
         for attr, value in newdata.iteritems():
             setattr(model, attr, value)
+
+        model.save()
