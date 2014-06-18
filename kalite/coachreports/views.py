@@ -6,6 +6,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from collections import OrderedDict
 from functools import partial
+from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
@@ -397,6 +398,7 @@ def test_view(request, facility):
     """Test view gets data server-side and displays exam results"""
 
     # Get students
+    #TODO(dylan): this is not dry at all, shares a ton of code with the above tabular_view
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     student_ordering = ["last_name", "first_name", "username"]
     group_id = request.GET.get("group", "")
@@ -447,8 +449,10 @@ def test_view(request, facility):
 
     # Create the table
     results_table = OrderedDict()
+    summary_stats = ['Max', 'Min', 'Average', 'Standard Deviation']
     for s in users:
         user_test_logs = [log for log in test_logs if log.user == s]
+        results_table[s] = []
         for t in test_objects:
             # Get the log object for this test, if it exists, otherwise return empty TestLog object
             log_object = next((log for log in user_test_logs if log.test == t.test_id), '')
@@ -456,14 +460,52 @@ def test_view(request, facility):
                 score = round(100 * float(log_object.total_correct) / float(log_object.total_number), 1)
             else:
                 score = None
-            results_table[s] = {
+            results_table[s].append({
                 "log": log_object,
                 "score": score,
-            }
+            })
+
+        score_list = [round(100 * float(result.total_correct) / float(result.total_number), 1) for result in user_test_logs]
+        for stat in summary_stats:
+            if score_list:
+                if stat == 'Max':
+                    results_table[s].append({"stat": max(score_list)})
+                elif stat == 'Min':
+                    results_table[s].append({"stat": min(score_list)})
+                elif stat == 'Average':
+                    results_table[s].append({"stat": sum(score_list)/len(score_list)})
+                elif stat == 'Standard Deviation':
+                    avg_score = sum(score_list)/len(score_list)
+                    variance = map(lambda x: (x - avg_score)**2, score_list)
+                    avg_variance = sum(variance)/len(variance)
+                    results_table[s].append({"stat": sqrt(avg_variance)})
+            else:
+                results_table[s].append({"stat": ''})
+
+    stats_dict = OrderedDict()
+    for stat in summary_stats:
+        stats_dict[stat] = []
+        for test_obj in test_objects:
+            # get the logs for this test across all users and then add summary stats 
+            log_scores = [round(100 * float(test_log.total_correct) / float(test_log.total_number), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
+            if stat == 'Max':
+                stats_dict[stat].append(max(log_scores)) 
+            elif stat == 'Min':
+                stats_dict[stat].append(min(log_scores))
+            elif stat == 'Average': 
+                stats_dict[stat].append(sum(log_scores)/len(log_scores))
+            elif stat == 'Standard Deviation':
+                avg_score = sum(log_scores)/len(log_scores)
+                variance = map(lambda x: (x - avg_score)**2, log_scores)
+                avg_variance = sum(variance)/len(variance)
+                stats_dict[stat].append(sqrt(avg_variance))
+
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "results_table": results_table,
         "test_columns": test_objects,
+        "summary_stats": summary_stats,
+        "stats_dict": stats_dict,
     })
 
     return context

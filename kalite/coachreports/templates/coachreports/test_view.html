@@ -76,6 +76,13 @@
                             {{ student.username }}
                         </th>
                     </tr>
+                {% endfor %} 
+                {% for stat in summary_stats %}
+                    <tr>
+                        <th>
+                            {{ stat }}
+                        </th>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -88,19 +95,36 @@
                             {{ t.title }}
                         </th>
                     {% endfor %}
+                    {% for s in summary_stats %}
+                        <th>
+                            {{ s }}
+                        </th>
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
-                {% for result in results_table.values %}
+                {% for results in results_table.values %}
                     <tr>
-                        {% if result.score %}
-                            <td class="{% if result.score > 79 %}pass{% elif result.score > 59 %}borderline{% else %}fail{% endif %}">
-                                {{ result.score }}%
+                    {% for r in results %}
+                        {% if r.score %}
+                            <td class="{% if r.score > 79 %}pass{% elif r.score > 59 %}borderline{% else %}fail{% endif %}">{{ r.score }}%
                             </td>
-                        {% else %}
-                            <td class="incomplete" title="Not started"></td>    
+                        {% elif r.stat >= 0 %}
+                            <td>{{ r.stat }}</td>
+                        {% elif r.score == None %}
+                            <td class="incomplete" title="Not started"></td>
                         {% endif %}
+                    {% endfor %}
                     </tr>    
+                {% endfor %}
+                {% for stats in stats_dict.values %}
+                    <tr>
+                        {% for stat in stats %}
+                            <td>
+                                {{stat}}
+                            </td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
