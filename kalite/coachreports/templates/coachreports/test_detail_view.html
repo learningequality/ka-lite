@@ -5,7 +5,7 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Test" %} {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Test Details" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/test_view.css' True %}" />
@@ -27,7 +27,7 @@
 {% endblock headjs %}
 
 {% block report_title %}
-    {% trans "Exam Results" %}
+    {{ test_obj.title }}&nbsp;{% trans "Results" %}
 {% endblock report_title %}
 
 {% block content %}
@@ -42,7 +42,9 @@
     </div>
     <div style="clear: both;"></div>
 
-    {% if not results_table.keys %}
+    <p> Insert beautiful exam selection bar here</p>
+
+    {% if not results_table %}
         <p><div class="subtitle error" id="error_message">
         {% if not groups.0.groups and not groups.1 and request.GET.topic %}
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
@@ -90,29 +92,25 @@
             <table>
                 <thead>
                     <tr>
-                        {% for t in test_columns %}
+                        {% for ex in ex_cols %}
                             <th>
-                                <a class="changeable-link" href="{% url 'test_detail_view' t.test_id %}">{{ t.title }}</a>
+                                {{ ex }}
                             </th>
                         {% endfor %}
-                        {% for s in summary_stats %}
-                            <th>
-                                {{ s }}
-                            </th>
-                        {% endfor %}
+                        <th>
+                            {% trans "Overall" %}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for results in results_table.values %}
                         <tr>
                         {% for r in results %}
-                            {% if r.score %}
-                                <td class="{% if r.score > 79 %}pass{% elif r.score > 59 %}borderline{% else %}fail{% endif %}">{{ r.score }}%
+                            {% if r == 'n/a' %}
+                                <td class="incomplete" title="Student hasn't taken exam yet"></td>
+                            {% else %}
+                                <td class="{% if r > 79 %}pass{% elif r > 59 %}borderline{% else %}fail{% endif %}">{{ r }}%
                                 </td>
-                            {% elif r.stat >= 0 %}
-                                <td>{{ r.stat }}</td>
-                            {% elif r.score == None %}
-                                <td class="incomplete" title="Not started"></td>
                             {% endif %}
                         {% endfor %}
                         </tr>    

@@ -15,7 +15,10 @@ th, td {
     margin-right: 1px;
     text-align: left;
 }
-
+.results-table {
+    overflow: auto;
+    width: 88%;
+}
 .pass {
     background-color: #2F942F;
 }
@@ -27,11 +30,6 @@ th, td {
 }
 .incomplete {
     background-color: #EEE;
-}
-
-.userstatus {
-    overflow: auto;
-    width: 88%;
 }
 
 .users table {

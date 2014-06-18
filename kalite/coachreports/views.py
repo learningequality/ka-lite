@@ -4,6 +4,7 @@ import datetime
 import re
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from ast import literal_eval
 from collections import OrderedDict
 from functools import partial
 from math import sqrt
@@ -22,7 +23,7 @@ from fle_utils.general import max_none
 from fle_utils.internet import StatusException
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
-from kalite.main.models import VideoLog, ExerciseLog, UserLog
+from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
@@ -272,7 +273,6 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # Get a list of topics (sorted) and groups
     topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
@@ -288,27 +288,7 @@ def tabular_view(request, facility, report_type="exercise"):
         return context
 
     group_id = request.GET.get("group", "")
-    if group_id:
-        # Narrow by group
-        users = FacilityUser.objects.filter(
-            group=group_id, is_teacher=False).order_by(*student_ordering)
-
-    elif facility:
-        # Narrow by facility
-        search_groups = [groups_dict["groups"] for groups_dict in groups if groups_dict["facility"] == facility.id]
-        assert len(search_groups) <= 1, "Should only have one or zero matches."
-
-        # Return groups and ungrouped
-        search_groups = search_groups[0]  # make sure to include ungrouped students
-        users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by(*student_ordering)
-
-    else:
-        # Show all (including ungrouped)
-        for groups_dict in groups:
-            search_groups += groups_dict["groups"]
-        users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by(*student_ordering)
+    users = get_user_queryset(request, facility, group_id)
 
     # We have enough data to render over a group of students
     # Get type-specific information
@@ -377,16 +357,7 @@ def tabular_view(request, facility, report_type="exercise"):
     else:
         raise Http404(_("Unknown report_type: %(report_type)s") % {"report_type": report_type})
 
-    if "facility_user" in request.session:
-        try:
-            # Log a "begin" and end here
-            user = request.session["facility_user"]
-            UserLog.begin_user_activity(user, activity_type="coachreport")
-            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
-            UserLog.end_user_activity(user, activity_type="coachreport")
-        except ValidationError as e:
-            # Never report this error; don't want this logging to block other functionality.
-            logging.error("Failed to update Teacher userlog activity login: %s" % e)
+    log_coach_report_view(request)
 
     return context
 
@@ -398,46 +369,15 @@ def test_view(request, facility):
     """Test view gets data server-side and displays exam results"""
 
     # Get students
-    #TODO(dylan): this is not dry at all, shares a ton of code with the above tabular_view
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
-    student_ordering = ["last_name", "first_name", "username"]
     group_id = request.GET.get("group", "")
-    if group_id:
-        # Narrow by group
-        users = FacilityUser.objects.filter(
-            group=group_id, is_teacher=False).order_by(*student_ordering)
-
-    elif facility:
-        # Narrow by facility
-        search_groups = [groups_dict["groups"] for groups_dict in groups if groups_dict["facility"] == facility.id]
-        assert len(search_groups) <= 1, "Should only have one or zero matches."
-
-        # Return groups and ungrouped
-        search_groups = search_groups[0]  # make sure to include ungrouped students
-        users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by(*student_ordering)
-
-    else:
-        # Show all (including ungrouped)
-        for groups_dict in groups:
-            search_groups += groups_dict["groups"]
-        users = FacilityUser.objects.filter(
-            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by(*student_ordering)
-
-    # Record coach report view by teacher
-    if "facility_user" in request.session:
-        try:
-            # Log a "begin" and end here
-            user = request.session["facility_user"]
-            UserLog.begin_user_activity(user, activity_type="coachreport")
-            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
-            UserLog.end_user_activity(user, activity_type="coachreport")
-        except ValidationError as e:
-            # Never report this error; don't want this logging to block other functionality.
-            logging.error("Failed to update Teacher userlog activity login: %s" % e)
+    users = get_user_queryset(request, facility, group_id)
     
     # Get the TestLog objects generated by this group of students
-    test_logs = TestLog.objects.filter(user__group=group_id) 
+    if group_id:
+        test_logs = TestLog.objects.filter(user__group=group_id) 
+    else:
+        # covers the all groups case
+        test_logs = TestLog.objects.filter(user__facility=facility) 
     
     # Get list of all test objects
     test_resource = TestResource()
@@ -509,3 +449,93 @@ def test_view(request, facility):
     })
 
     return context
+
+
+@require_authorized_admin
+@facility_required
+@render_to("coachreports/test_detail_view.html")
+def test_detail_view(request, facility, test_id):
+    """View details of student performance on specific exams"""
+
+    # get users in this facility and group
+    group_id = request.GET.get("group", "")
+    users = get_user_queryset(request, facility, group_id)
+
+    # Get test object
+    test_resource = TestResource()
+    test_obj = test_resource._read_test(test_id=test_id)
+
+    # get all of the test logs for this specific test object and generated by these specific users
+    if group_id:
+        test_logs = TestLog.objects.filter(user__group=group_id, test=test_id)  
+    else:
+        # covers the all groups case
+        test_logs = TestLog.objects.filter(user__facility=facility, test=test_id)
+   
+    results_table = OrderedDict()
+    for s in users:
+        # aggregate attempt logs 
+        user_attempts = AttemptLog.objects.filter(user=s, context_type='test', context_id=test_id)
+        results_table[s] = []
+        ex_ids = literal_eval(test_obj.ids)
+        for ex in ex_ids:
+            attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
+            correct_attempts = len([attempt for attempt in attempts if attempt.correct])
+            total_attempts = len(attempts)
+            if total_attempts:
+                score = round(100 * float(correct_attempts)/float(total_attempts))
+            else:
+                score = 'n/a'
+            results_table[s].append(score)
+
+    # Generate summary stats
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
+        "test_obj": test_obj,
+        "ex_cols": ex_ids,
+        "results_table": results_table,
+    })
+    return context
+
+
+def get_user_queryset(request, facility, group_id):
+    student_ordering = ["last_name", "first_name", "username"]
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+
+    if group_id:
+        # Narrow by group
+        users = FacilityUser.objects.filter(
+            group=group_id, is_teacher=False).order_by(*student_ordering)
+
+    elif facility:
+        # Narrow by facility
+        search_groups = [groups_dict["groups"] for groups_dict in groups if groups_dict["facility"] == facility.id]
+        assert len(search_groups) <= 1, "Should only have one or zero matches."
+
+        # Return groups and ungrouped
+        search_groups = search_groups[0]  # make sure to include ungrouped students
+        users = FacilityUser.objects.filter(
+            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by(*student_ordering)
+
+    else:
+        # Show all (including ungrouped)
+        for groups_dict in groups:
+            search_groups += groups_dict["groups"]
+        users = FacilityUser.objects.filter(
+            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by(*student_ordering)
+
+    return users 
+
+
+def log_coach_report_view(request):
+    # Record coach report view by teacher
+    if "facility_user" in request.session:
+        try:
+            # Log a "begin" and end here
+            user = request.session["facility_user"]
+            UserLog.begin_user_activity(user, activity_type="coachreport")
+            UserLog.update_user_activity(user, activity_type="login")  # to track active login time for teachers
+            UserLog.end_user_activity(user, activity_type="coachreport")
+        except ValidationError as e:
+            # Never report this error; don't want this logging to block other functionality.
+            logging.error("Failed to update Teacher userlog activity login: %s" % e)
