@@ -444,12 +444,25 @@ def test_view(request, facility):
     completed_test_ids = set([item.test for item in test_logs])
     test_objects = [test for test in tests_list if test.test_id in completed_test_ids]
 
-    # Make an OrderedDict organized by column names here
+    # Create the table
+    results_table = OrderedDict()
+    for s in users:
+        user_test_logs = [log for log in test_logs if log.user == s]
+        for t in test_objects:
+            # Get the log object for this test, if it exists, otherwise return empty TestLog object
+            log_object = next((log for log in user_test_logs if log.test == t.test_id), '')
+            if log_object:
+                score = round(100 * float(log_object.total_correct) / float(log_object.total_number), 1)
+            else:
+                score = None
+            results_table[s] = {
+                "log": log_object,
+                "score": score,
+            }
 
     context = {
-        "students": users,
-        "tests": test_objects,
-        "test_results": test_logs,
+        "results_table": results_table,
+        "test_columns": test_objects,
     }
 
     return context
