@@ -1,29 +1,23 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-# from selenium.common.exceptions import NoSuchElementException
-from tastypie.test import ResourceTestCase
-
 # from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase, \
 #     KALiteDistributedWithFacilityBrowserTestCase
-from kalite.facility.models import FacilityUser
-from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin
+from kalite.testing.base import KALiteTestCase
+from kalite.testing.client import KALiteClient
+from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, \
+    FacilityMixins
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on
 
 logging = settings.LOG
 
 
-class BaseTest(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, ResourceTestCase):
+class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
-    student_username = 'student'
-    student_password = 'password'
-    teacher_username = 'teacher'
-    teacher_password = 'password'
-    facility_name = 'facility'
-    facility = None
-    teacher = None
-    student = None
+    client_class = KALiteClient
+
     exam_id = '128'
     login_url = reverse('login')
     logout_url = reverse('logout')
@@ -32,21 +26,24 @@ class BaseTest(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, Reso
     put_url = '/test/api/test/%s/' % exam_id
 
     def setUp(self):
+
+        # make tests faster
+        self.setup_fake_device()
+
         super(BaseTest, self).setUp()
 
-        self.max_wait_time = 1
-        self.facility = self.create_facility(name=self.facility_name)
-        self.assertTrue(self.facility)
+        # MUST: create a facility to be shared between the teacher and student
+        self.client.facility = self.create_facility()
+        self.client.facility_data = CreateFacilityMixin.DEFAULTS.copy()
+        self.assertTrue(self.client.facility)
 
-        self.teacher = self.create_teacher(username=self.teacher_username,
-                                           password=self.teacher_password,
-                                           facility=self.facility)
-        self.assertTrue(self.teacher)
+        self.client.teacher = self.create_teacher()
+        self.client.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
+        self.assertTrue(self.client.teacher)
 
-        self.student = self.create_student(username=self.student_username,
-                                           password=self.student_password,
-                                           facility=self.facility)
-        self.assertTrue(self.student)
+        self.client.student = self.create_student()
+        self.client.student_data = CreateStudentMixin.DEFAULTS.copy()
+        self.assertTrue(self.client.student)
 
     def tearDown(self):
         super(BaseTest, self).tearDown()
@@ -56,29 +53,14 @@ class BaseTest(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, Reso
     #     return self.create_basic(username=username, password=password)
     #
     # def teacher_auth(self):
-    #     return self.get_credentials(self.teacher_username, self.teacher_password)
+    #     return self.get_credentials(self.client.teacher_username, self.client.teacher_password)
     #
     # def student_auth(self):
-    #     return self.get_credentials(self.student_username, self.student_password)
-
-    def login_user(self, data, url):
-        response = self.client.post(self.login_url, data=data, follow=True)
-        self.assertEqual(response.request['PATH_INFO'], url)
-        logged_in = self.is_logged_in()
-        self.assertTrue(logged_in)
-        if logged_in:
-            fu = self.client.session.get('facility_user', None)
-            self.assertIsInstance(fu, FacilityUser)
-        return response
+    #     return self.get_credentials(self.client.student_username, self.client.student_password)
 
     def login_teacher(self):
-        data = {
-            'username': self.teacher_username,
-            'password': self.teacher_password,
-            'facility': self.facility.id
-        }
-        url = reverse('coach_reports')
-        response = self.login_user(data, url)
+        response = self.client.login_teacher()
+        # logging.warn('==> response %s' % response)
         # check content for teacher
         text = "Coach Reports"
         self.assertContains(response, text)
@@ -88,14 +70,9 @@ class BaseTest(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, Reso
         return response
 
     def login_student(self, url='/'):
-        data = {
-            'username': self.student_username,
-            'password': self.student_password,
-            'facility': self.facility.id
-        }
-        response = self.login_user(data, url)
-        # if url == '/':
-        #     self.assertTrue(self.is_logged_in())
+        response = self.client.login_student()
+        if url == '/':
+            self.assertTrue(self.client.is_logged_in())
         if url == self.exam_page_url:
             text = '<title>Take Test | KA Lite</title>'
             self.assertContains(response, text)
@@ -103,14 +80,7 @@ class BaseTest(CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, Reso
 
     def logout(self):
         self.client.get(self.logout_url)
-        self.assertTrue(self.is_logged_out())
-
-    def is_logged_in(self):
-        logged_in = 'facility_user' in self.client.session
-        return logged_in
-
-    def is_logged_out(self):
-        return not self.is_logged_in()
+        self.assertTrue(self.client.is_logged_out())
 
     def get_page_redirects_to_login_url(self, url):
         response = self.client.get(url, follow=True)
@@ -240,14 +210,14 @@ class CoreTest(BaseTest):
 #         super(BrowserTests, self).tearDown()
 #
 #     def test_teacher_enable_exam_mode(self):
-#         self.browser_login_teacher(username=self.teacher_username,
-#                                    password=self.teacher_password,
+#         self.browser_login_teacher(username=self.client.teacher_username,
+#                                    password=self.client.teacher_password,
 #                                    facility_name=self.facility.name)
 #         self.browse_to(self.test_list_url)
 #         # with self.assertRaises(NoSuchElementException):
 #         # self.browser.find_element_by_css_selector('.test-row-button')
-
-
+#
+#
 # TODO(cpauya): references for possible unit tests
 # class StudentTestingTests(CreateCoachMixin, CreateStudentMixin, TestCase):
 #
@@ -292,11 +262,11 @@ class CoreTest(BaseTest):
 #         self.assertFalse(True)
 #
 #
-# class StudentTestingAPITests(CreateCoachMixin, CreateStudentMixin, TestCase):
+# class StudentTestingAPITests(CreateTeacherMixin, CreateStudentMixin, TestCase):
 #
 #     def setUp(self):
 #         self.create_student()
-#         self.create_coach()
+#         self.create_teacher()
 #
 #     def test_list_page_url_exists(self):
 #         self.assertFalse(True)

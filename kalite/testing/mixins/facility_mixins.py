@@ -3,6 +3,7 @@ from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
 class CreateFacilityMixin(object):
     DEFAULTS = {
+        'id': 1,
         'name': 'facility0',
         'description': 'a default facility',
         'user_count': 1,
@@ -14,7 +15,8 @@ class CreateFacilityMixin(object):
         fields = CreateFacilityMixin.DEFAULTS.copy()
         fields.update(**kwargs)
 
-        return Facility.objects.create(**fields)
+        obj, created = Facility.objects.get_or_create(**fields)
+        return obj
 
 
 class CreateGroupMixin(CreateFacilityMixin):
@@ -27,7 +29,7 @@ class CreateGroupMixin(CreateFacilityMixin):
         fields = CreateGroupMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         fields['facility'] = (fields.get('facility') or
-                              cls.create_facility(name='%s-facility' % fields['name']))
+                              cls.create_facility())
         return FacilityGroup.objects.create(**fields)
 
 
@@ -37,7 +39,7 @@ class CreateStudentMixin(CreateFacilityMixin):
         'last_name': 'Fodder',
         'username': 'teststudent1',
         'password': 'password',
-        'is_teacher': False,
+        'is_teacher': False
     }
 
     @classmethod
@@ -45,7 +47,7 @@ class CreateStudentMixin(CreateFacilityMixin):
         fields = CreateStudentMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         fields['facility'] = (fields.get('facility') or
-                              cls.create_facility(name='%s-facility' % fields['username']))
+                              cls.create_facility())
         user = FacilityUser(**fields)
         user.set_password(password)
         user.save()
@@ -66,7 +68,7 @@ class CreateTeacherMixin(CreateFacilityMixin):
         fields = CreateTeacherMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         fields['facility'] = (fields.get('facility') or
-                              cls.create_facility(name='%s-facility' % fields['username']))
+                              cls.create_facility())
         user = FacilityUser(**fields)
         user.set_password(fields['password'])
         user.save()
