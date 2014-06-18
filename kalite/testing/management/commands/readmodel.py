@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 logging.debug("Serialized data: '%s'" % serialized_data)
                 return serialized_data
             except:
-                logging.info("Could not retrieve '%s' entry with primary key: '%s'" % (model_path, model_id))
+                # logging.info("Could not retrieve '%s' entry with primary key: '%s'" % (model_path, model_id))
                 sys.exit(1)
             
         else:
