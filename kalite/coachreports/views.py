@@ -397,6 +397,7 @@ def test_view(request, facility):
     """Test view gets data server-side and displays exam results"""
 
     # Get students
+    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     student_ordering = ["last_name", "first_name", "username"]
     group_id = request.GET.get("group", "")
     if group_id:
@@ -459,10 +460,10 @@ def test_view(request, facility):
                 "log": log_object,
                 "score": score,
             }
-
-    context = {
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
         "results_table": results_table,
         "test_columns": test_objects,
-    }
+    })
 
     return context

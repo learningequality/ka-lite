@@ -11,6 +11,25 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/test_view.css' True %}" />
 {% endblock headcss %}
 
+{% block headjs %}
+    {{block.super}}
+    <script>
+        $(function(){
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
+        })
+    </script>
+{% endblock headjs %}
+
+{% block report_title %}
+    {% trans "Exam Results" %}
+{% endblock report_title %}
+
 {% block content %}
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
 
@@ -28,6 +47,10 @@
         {% if not groups.0.groups and not groups.1 and request.GET.topic %}
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
             {% trans "No student accounts have been created." %}
+        {% elif not results_table %}
+            {% comment %}Group was selected, but data not queried because a topic was not selected
+            (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            {% trans "No exam results for this group." %}
         {% else %}
             {% comment %}Everything specified, but no users fit the query.{% endcomment %}
             {% trans "No student accounts in this group have been created." %}
@@ -71,7 +94,7 @@
                 {% for result in results_table.values %}
                     <tr>
                         {% if result.score %}
-                            <td class="{% if result.score > 79 %}pass{% elif result.score > 59 %}bordeline{% else %}fail{% endif %}">
+                            <td class="{% if result.score > 79 %}pass{% elif result.score > 59 %}borderline{% else %}fail{% endif %}">
                                 {{ result.score }}%
                             </td>
                         {% else %}
