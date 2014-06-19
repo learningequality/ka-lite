@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-# from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase, \
-#     KALiteDistributedWithFacilityBrowserTestCase
+# from selenium.common.exceptions import NoSuchElementException
+
+from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
-from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin, \
-    FacilityMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on
@@ -27,22 +27,14 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
     def setUp(self):
 
+        super(BaseTest, self).setUp()
+
         # make tests faster
         self.setup_fake_device()
 
-        super(BaseTest, self).setUp()
-
-        # MUST: create a facility to be shared between the teacher and student
-        self.client.facility = self.create_facility()
-        self.client.facility_data = CreateFacilityMixin.DEFAULTS.copy()
+        self.client.setUp()
         self.assertTrue(self.client.facility)
-
-        self.client.teacher = self.create_teacher()
-        self.client.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
         self.assertTrue(self.client.teacher)
-
-        self.client.student = self.create_student()
-        self.client.student_data = CreateStudentMixin.DEFAULTS.copy()
         self.assertTrue(self.client.student)
 
     def tearDown(self):
@@ -199,23 +191,33 @@ class CoreTest(BaseTest):
         # _check_student_access_to_exam()
 
 
-# # TODO(cpauya): browser tests for exam mode
-# class BrowserTests(BaseTest, KALiteDistributedWithFacilityBrowserTestCase):
-#
-#     def setUp(self):
-#         # super(KALiteDistributedBrowserTestCase, self).setUp()
-#         super(BrowserTests, self).setUp()
-#
-#     def tearDown(self):
-#         super(BrowserTests, self).tearDown()
-#
-#     def test_teacher_enable_exam_mode(self):
-#         self.browser_login_teacher(username=self.client.teacher_username,
-#                                    password=self.client.teacher_password,
-#                                    facility_name=self.facility.name)
-#         self.browse_to(self.test_list_url)
-#         # with self.assertRaises(NoSuchElementException):
-#         # self.browser.find_element_by_css_selector('.test-row-button')
+# TODO(cpauya): browser tests for exam mode
+class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
+
+    persistent_browser = True
+
+    def setUp(self):
+
+        super(KALiteDistributedBrowserTestCase, self).setUp()
+        super(BrowserTests, self).setUp()
+
+        # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
+        # or use the KALiteTestCase.reverse() method.
+        self.test_list_url = '%s%s' % (self.live_server_url, self.test_list_url,)
+        self.exam_page_url = '%s%s' % (self.live_server_url, self.exam_page_url,)
+        self.put_url = '%s%s' % (self.live_server_url, self.put_url,)
+
+    def tearDown(self):
+        super(BrowserTests, self).tearDown()
+
+    def test_teacher_enable_exam_mode(self):
+        self.browser_login_teacher(username=self.client.teacher_data['username'],
+                                   password=self.client.teacher_data['password'],
+                                   facility_name=self.client.facility.name)
+        self.browse_to(self.test_list_url)
+        # with self.assertRaises(NoSuchElementException):
+        self.browser.find_element_by_css_selector('.test-row-button').click()
+        self.browser.find_element_by_css_selector('.test-row-button.btn-info')
 #
 #
 # TODO(cpauya): references for possible unit tests

@@ -4,6 +4,8 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client
 
+from .mixins.facility_mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin
+
 logging = settings.LOG
 
 
@@ -23,6 +25,18 @@ class KALiteClient(Client):
         super(KALiteClient, self).__init__(*args, **kwargs)
         self.login_url = reverse('login')
         self.logout_url = reverse('logout')
+
+    def setUp(self):
+
+        # MUST: create a facility to be shared between the teacher and student
+        self.facility = CreateFacilityMixin.create_facility()
+        self.facility_data = CreateFacilityMixin.DEFAULTS.copy()
+
+        self.teacher = CreateTeacherMixin.create_teacher()
+        self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
+
+        self.student = CreateStudentMixin.create_student()
+        self.student_data = CreateStudentMixin.DEFAULTS.copy()
 
     def login(self, username, password, facility=None):
         self.get(self.login_url)
