@@ -1092,6 +1092,9 @@ window.ExerciseTestView = Backbone.View.extend({
                 this.exercise_view = new ExerciseView(data);
                 this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
+                // don't render the related videos box on tests
+                this.exercise_view.stopListening(this.data_model, "change:related_videos");
+
                 this.exercise_view.on("check_answer", this.check_answer);
                 this.exercise_view.on("problem_loaded", this.problem_loaded);
                 this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
