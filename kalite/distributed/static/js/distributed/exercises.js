@@ -917,7 +917,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         check_answer_button.parent().stop(jumpedToEnd=true)
 
-        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct); 
+        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
         // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
 
         // increment the response count
@@ -1090,6 +1090,7 @@ window.ExerciseTestView = Backbone.View.extend({
                 this.initialize_new_attempt_log(question_data);
 
                 this.exercise_view = new ExerciseView(data);
+                this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
                 this.exercise_view.on("check_answer", this.check_answer);
                 this.exercise_view.on("problem_loaded", this.problem_loaded);
@@ -1255,6 +1256,7 @@ window.ExerciseQuizView = Backbone.View.extend({
         this.initialize_new_attempt_log(question_data);
 
         this.exercise_view = new ExerciseView(data);
+        this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
         this.exercise_view.on("check_answer", this.check_answer);
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
