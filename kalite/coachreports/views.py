@@ -475,22 +475,27 @@ def test_detail_view(request, facility, test_id):
    
     results_table = OrderedDict()
     for s in users:
-        # aggregate attempt logs 
         s.name = s.get_name()
         user_attempts = AttemptLog.objects.filter(user=s, context_type='test', context_id=test_id)
         results_table[s] = []
         ex_ids = literal_eval(test_obj.ids)
+        total_attempts, total_score = 0, 0
         for ex in ex_ids:
             attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
             correct_attempts = len([attempt for attempt in attempts if attempt.correct])
-            total_attempts = len(attempts)
-            if total_attempts:
-                score = round(100 * float(correct_attempts)/float(total_attempts), 1)
+            summed_attempts = len(attempts)
+            total_attempts += summed_attempts
+            if summed_attempts:
+                score = round(100 * float(correct_attempts)/float(summed_attempts), 1)
+                total_score += score
             else:
                 score = 'n/a'
             results_table[s].append(score)
+        if total_score:
+            results_table[s].append(round(float(total_score)/float(total_attempts), 1))
+        else: 
+            results_table[s].append('n/a')
 
-    # Generate summary stats
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "test_obj": test_obj,
