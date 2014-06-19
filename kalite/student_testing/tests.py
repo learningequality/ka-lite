@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-# from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.base import KALiteTestCase
@@ -39,16 +41,6 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
     def tearDown(self):
         super(BaseTest, self).tearDown()
-
-    # TODO(cpauya): some methods for Tastypie tests for future references
-    # def get_credentials(self, username, password):
-    #     return self.create_basic(username=username, password=password)
-    #
-    # def teacher_auth(self):
-    #     return self.get_credentials(self.client.teacher_username, self.client.teacher_password)
-    #
-    # def student_auth(self):
-    #     return self.get_credentials(self.client.student_username, self.client.student_password)
 
     def login_teacher(self):
         response = self.client.login_teacher()
@@ -147,7 +139,6 @@ class CoreTest(BaseTest):
 
         option 1. set exam mode by code
         option 2. set exam mode by client.put call
-        option 3. set exam mode by tastypie api
         """
 
         def _check_student_access_to_exam(url=None):
@@ -174,25 +165,13 @@ class CoreTest(BaseTest):
         self.client.put(self.put_url, data=data, content_type='application/json')  # set exam mode
         _check_student_access_to_exam()
 
-        # TODO(cpauya): option 3. set exam mode by tastypie api
-        # from tastypie.test import TestApiClient
-        # client = TestApiClient()
 
-        # set_exam_mode_on('')  # reset exam mode
-        # response = self.login_teacher()
-        # data = {
-        # }
-        # # data = self.teacher_auth()
-        # response = self.client.get(self.put_url, data=data, follow=True, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        # # # logging.warn('==> response %s' % response)
-        # # text = '"test_id": "128"'
-        # # self.assertContains(response, text)
-        # self.assertEqual(response.request['PATH_INFO'], self.put_url)
-        # _check_student_access_to_exam()
-
-
-# TODO(cpauya): browser tests for exam mode
 class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
+
+    CSS_TEST_ROW_BUTTON = '.test-row-button'
+    CSS_TEST_ROW_BUTTON_ON = '.test-row-button.btn-info'
+    TEXT_ENABLE = 'Enable Exam Mode'
+    TEXT_DISABLE = 'Disable Exam Mode'
 
     persistent_browser = True
 
@@ -203,75 +182,79 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
         # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
         # or use the KALiteTestCase.reverse() method.
-        self.test_list_url = '%s%s' % (self.live_server_url, self.test_list_url,)
-        self.exam_page_url = '%s%s' % (self.live_server_url, self.exam_page_url,)
+        self.test_list_url = self.reverse('test_list')
+        self.exam_page_url = self.reverse('test', args=[self.exam_id])
         self.put_url = '%s%s' % (self.live_server_url, self.put_url,)
 
     def tearDown(self):
         super(BrowserTests, self).tearDown()
 
-    def test_teacher_enable_exam_mode(self):
+    def login_teacher_in_browser(self):
         self.browser_login_teacher(username=self.client.teacher_data['username'],
                                    password=self.client.teacher_data['password'],
                                    facility_name=self.client.facility.name)
+
+    def login_student_in_browser(self):
+        self.browser_login_student(username=self.client.student_data['username'],
+                                   password=self.client.student_data['password'],
+                                   facility_name=self.client.facility.name)
+
+    def wait_for_element(self, by, elem):
+        WebDriverWait(self.browser, 3).until(EC.element_to_be_clickable((by, elem)))
+
+    def test_exam_mode(self):
+        self.login_teacher_in_browser()
+
+        # go to test list page and look for an exam
         self.browse_to(self.test_list_url)
-        # with self.assertRaises(NoSuchElementException):
-        self.browser.find_element_by_css_selector('.test-row-button').click()
-        self.browser.find_element_by_css_selector('.test-row-button.btn-info')
-#
-#
-# TODO(cpauya): references for possible unit tests
-# class StudentTestingTests(CreateCoachMixin, CreateStudentMixin, TestCase):
-#
-#     def setUp(self):
-#         self.create_student()
-#         self.create_coach()
-#         self.client = Client()
-#         self.test_list_url = reverse('test_list')
-#
-#     def test_coach_can_access_test_list_page(self):
-#         self.coach_username = CreateCoachMixin.DEFAULTS['username']
-#         self.coach_password = CreateCoachMixin.DEFAULTS['password']
-#         result = self.client.login(username=self.coach_username, password=self.coach_password)
-#         self.assertTrue(result)
-#         self.assertFalse(True)
-#
-#     def test_coach_can_access_test_page(self):
-#         self.assertFalse(True)
-#
-#     def test_admin_can_access_test_page(self):
-#         self.assertFalse(True)
-#
-#     def test_admin_can_access_test_list_page(self):
-#         self.assertFalse(True)
-#
-#     def test_student_cannot_access_test_list_page(self):
-#         self.assertFalse(True)
-#
-#     def test_student_cannot_access_test_page_if_no_exam(self):
-#         self.assertFalse(True)
-#
-#     def test_redirect_student_to_exam_page(self):
-#         self.assertFalse(True)
-#
-#     def test_guest_can_access_test_page_on_exam_mode(self):
-#         self.assertFalse(True)
-#
-#     def test_guest_cannot_access_test_page(self):
-#         self.assertFalse(True)
-#
-#     def test_guest_cannot_access_test_list_page(self):
-#         self.assertFalse(True)
-#
-#
-# class StudentTestingAPITests(CreateTeacherMixin, CreateStudentMixin, TestCase):
-#
-#     def setUp(self):
-#         self.create_student()
-#         self.create_teacher()
-#
-#     def test_list_page_url_exists(self):
-#         self.assertFalse(True)
-#
-#     def test_student_cannot_access_test_list_page(self):
-#         self.assertFalse(True)
+        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
+        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
+        self.assertEqual(btn.text, self.TEXT_ENABLE)
+
+        # enable exam mode
+        btn.click()
+        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
+        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
+        self.assertEqual(btn.text, self.TEXT_DISABLE)
+
+        # disable exam mode
+        btn.click()
+        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
+        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
+        self.assertEqual(btn.text, self.TEXT_ENABLE)
+
+        # enable exam mode again
+        btn.click()
+        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
+        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
+        self.assertEqual(btn.text, self.TEXT_DISABLE)
+
+        # logout the teacher and login a student to check the exam redirect
+        self.browser_logout_user()
+        self.login_student_in_browser()
+        self.assertEqual(self.browser.current_url, self.exam_page_url)
+        self.wait_for_element(By.ID, 'start-test')
+        btn = self.browser.find_element_by_id('start-test')
+        self.assertEqual(btn.text, 'Begin test')
+
+        # logout the student then log the teacher back in to disable the exam mode
+        self.browser_logout_user()
+        self.login_teacher_in_browser()
+
+        # go to test list page and look for the enabled exam
+        self.browse_to(self.test_list_url)
+        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
+        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
+        self.assertEqual(btn.text, self.TEXT_DISABLE)
+        # disable exam mode
+        btn.click()
+        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
+        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
+        self.assertEqual(btn.text, self.TEXT_ENABLE)
+
+        # logout the teacher and login a student to check the exam redirect
+        self.browser_logout_user()
+        self.login_student_in_browser()
+        self.assertEqual(self.reverse("homepage"), self.browser.current_url)
+
+        self.browser_logout_user()
