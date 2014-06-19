@@ -30,7 +30,7 @@ th, td {
 
 .users th {
     text-align: left;
-    
+
 }
 
 .subtitle {
@@ -93,10 +93,10 @@ th.headrowuser {
     height:12px;
     margin:0px;
     padding:0px;
-}*/   
+}*/
 
 .student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
-    float:left; 
+    float:left;
     display:none;
     overflow:hidden;
     white-space:nowrap;
@@ -111,6 +111,7 @@ th.headrowuser {
     float:none;
     text-align:left;
     display:block;
+    text-overflow: ellipsis;
 }
 #legend {
     padding-left: 0;
