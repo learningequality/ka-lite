@@ -16,8 +16,13 @@ class KALiteClient(Client):
     teacher_data = {}
 
     # urls
-    login_url = reverse('login')
-    logout_url = reverse('logout')
+    login_url = ''
+    logout_url = ''
+
+    def __init__(self, *args, **kwargs):
+        super(KALiteClient, self).__init__(*args, **kwargs)
+        self.login_url = reverse('login')
+        self.logout_url = reverse('logout')
 
     def login(self, username, password, facility=None):
         self.get(self.login_url)
