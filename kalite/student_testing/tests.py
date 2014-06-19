@@ -202,36 +202,41 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
     def wait_for_element(self, by, elem):
         WebDriverWait(self.browser, 3).until(EC.element_to_be_clickable((by, elem)))
 
+    def get_button(self, is_on=False):
+        if is_on:
+            self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
+            btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
+            self.assertEqual(btn.text, self.TEXT_DISABLE)
+        else:
+            self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
+            btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
+            self.assertEqual(btn.text, self.TEXT_ENABLE)
+        return btn
+
     def test_exam_mode(self):
         self.login_teacher_in_browser()
 
         # go to test list page and look for an exam
         self.browse_to(self.test_list_url)
-        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
-        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
-        self.assertEqual(btn.text, self.TEXT_ENABLE)
 
         # enable exam mode
+        btn = self.get_button(is_on=False)
         btn.click()
-        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
-        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
-        self.assertEqual(btn.text, self.TEXT_DISABLE)
 
         # disable exam mode
+        btn = self.get_button(is_on=True)
         btn.click()
-        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
-        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
-        self.assertEqual(btn.text, self.TEXT_ENABLE)
 
         # enable exam mode again
+        btn = self.get_button(is_on=False)
         btn.click()
-        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
-        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
-        self.assertEqual(btn.text, self.TEXT_DISABLE)
+        btn = self.get_button(is_on=True)
 
         # logout the teacher and login a student to check the exam redirect
         self.browser_logout_user()
         self.login_student_in_browser()
+
+        # did student redirect to exam page?
         self.assertEqual(self.browser.current_url, self.exam_page_url)
         self.wait_for_element(By.ID, 'start-test')
         btn = self.browser.find_element_by_id('start-test')
@@ -243,14 +248,10 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
         # go to test list page and look for the enabled exam
         self.browse_to(self.test_list_url)
-        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
-        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
-        self.assertEqual(btn.text, self.TEXT_DISABLE)
         # disable exam mode
+        btn = self.get_button(is_on=True)
         btn.click()
-        self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
-        btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
-        self.assertEqual(btn.text, self.TEXT_ENABLE)
+        btn = self.get_button(is_on=False)
 
         # logout the teacher and login a student to check the exam redirect
         self.browser_logout_user()
