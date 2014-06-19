@@ -23,6 +23,10 @@
                 window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
             });
 
+            $("#test").change(function(){
+                window.location.href = setGetParamDict($("#test option:selected").val(), {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+
             $(window).resize(function() {
                 $('.student-header').height($('.data-header').height()+1);
             }).resize();
@@ -36,6 +40,24 @@
 
 {% block content %}
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+
+    <div id="selection-bar">
+        <div class="selection">
+        {# Select the test to view #}
+        {% if test_options %}
+            <div class="subtitle">{% trans "Select Exam" %}</div>
+            <select id="test">
+                {% for test in test_options %}
+                    <option value="{{test.url}}" {% if test.id == test_obj.test_id %}selected{% endif %}>{{test.title}}</option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <div class="subtitle">
+                {% trans "No other tests available to view" %}
+            </div>
+        {% endif %}
+        </div>
+    </div>
 
     <div id="content">
         <div id="legend">

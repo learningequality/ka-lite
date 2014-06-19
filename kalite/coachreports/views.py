@@ -494,18 +494,28 @@ def test_detail_view(request, facility, test_id):
             else:
                 stats_dict[stat].append('')
 
-    # Finally, replace the exercise ids with their full names
+    # replace the exercise ids with their full names
     flat_topics = get_flat_topic_tree()
     ex_titles = []
     for ex in ex_ids:
         ex_titles.append(flat_topics['Exercise'][ex]['title'])
 
+    # provide a list of test options to view for this group/facility combo
+    if group_id:
+        test_logs = TestLog.objects.filter(user__group=group_id) 
+    else:
+        # covers the all/no groups case
+        test_logs = TestLog.objects.filter(user__facility=facility)
+    test_objects = test_resource._read_tests() 
+    unique_test_ids = set([test_log.test for test_log in test_logs])
+    test_options = [{'id': obj.test_id, 'url': reverse('test_detail_view', kwargs={'test_id':obj.test_id}), 'title': obj.title} for obj in test_objects if obj.test_id in unique_test_ids]
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "test_obj": test_obj,
         "ex_cols": ex_titles,
         "results_table": results_table,
         "stats_dict": stats_dict,
+        "test_options": test_options,
     })
     return context
 
