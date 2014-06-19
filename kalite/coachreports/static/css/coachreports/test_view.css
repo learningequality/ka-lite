@@ -4,16 +4,24 @@ th, td {
     height: 27px;
 }
 
-#table-container {
+.table-container {
     width: 100%;
     padding-top: 2%;
 }
-
-#student-table {
+.table-container th {
+    max-width: 80px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.student-table {
     float: left;
     width: 11%;
     margin-right: 1px;
     text-align: left;
+}
+.student-table > th {
+
 }
 .results-table {
     overflow: auto;
@@ -30,76 +38,6 @@ th, td {
 }
 .incomplete {
     background-color: #EEE;
-}
-
-.users table {
-    width: 100%;
-}
-
-#displaygrid table {
-    table-layout: fixed;
-}
-
-
-.users th {
-    text-align: left;
-    
-}
-
-.subtitle {
-    font-size: 1.15em;
-    font-weight: bold;
-}
-
-th.username {
-    height: 27px;
-    border: 1px solid black;
-    /*border-right: none;*/
-    padding-left: 5px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-th.headrow, th.headrow div {
-    width: 80px;
-    font-weight: bold;
-    background-color: white;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-th.headrowuser {
-    font-weight: bold;
-}
-
-#displaygrid td, #displaygrid th {
-    min-width: 60px;
-    max-width: 60px;
-    overflow: hidden;
-    /*white-space: nowrap;*/
-}
-
-#legend a {
-    height:12px;
-    margin:0px;
-    padding:0px;
-}   
-
-.student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
-    float:left; 
-    display:none;
-    overflow:hidden;
-    white-space:nowrap;
-    width:100%;
-    margin:0px 5px 0px 0px;
-    padding:0px;
-    text-align:right;
-    vertical-align:middle;
-}
-.student-name {
-    float:none;
-    text-align:left;
-    display:block;
 }
 #legend {
     float:right;
@@ -118,17 +56,9 @@ th.headrowuser {
     border-width: 1px;
     padding:2px;
     margin-right: 2px;
-/*display:none;*/
-
 }
 .legend div {
     float:left;
     width:35px;
     height:21px;
-}
-#selection-bar {
-    overflow:hide;
-}
-#disp_options {
-    float:right;
 }

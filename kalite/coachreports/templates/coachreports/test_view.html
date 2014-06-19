@@ -22,6 +22,10 @@
             $(".group_select").change(function(event){
                 window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
             });
+
+            $(window).resize(function() {
+                $('.student-header').height($('.data-header').height()+1);
+            }).resize();
         })
     </script>
 {% endblock headjs %}
@@ -60,11 +64,11 @@
     {% else %}
 
         {# Student Table #}
-    <div id="table-container">
-        <table id="student-table">
+    <div class="table-container">
+        <table class="student-table">
             <thead>
                 <tr>
-                    <th>
+                    <th class="student-header">
                         {% trans "Student" %}
                     </th>
                 </tr>
@@ -72,8 +76,8 @@
             <tbody>
                 {% for student in results_table.keys %}
                     <tr>
-                        <th>
-                            {{ student.username }}
+                        <th title="({{ student.username }})">
+                            {{ student.name }}
                         </th>
                     </tr>
                 {% endfor %} 
@@ -91,7 +95,7 @@
                 <thead>
                     <tr>
                         {% for t in test_columns %}
-                            <th>
+                            <th class="data-header">
                                 <a class="changeable-link" href="{% url 'test_detail_view' t.test_id %}">{{ t.title }}</a>
                             </th>
                         {% endfor %}

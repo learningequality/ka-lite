@@ -391,6 +391,7 @@ def test_view(request, facility):
     results_table = OrderedDict()
     summary_stats = ['Max', 'Min', 'Average', 'Standard Deviation']
     for s in users:
+        s.name = s.get_name()
         user_test_logs = [log for log in test_logs if log.user == s]
         results_table[s] = []
         for t in test_objects:
@@ -413,12 +414,12 @@ def test_view(request, facility):
                 elif stat == 'Min':
                     results_table[s].append({"stat": min(score_list)})
                 elif stat == 'Average':
-                    results_table[s].append({"stat": sum(score_list)/len(score_list)})
+                    results_table[s].append({"stat": round(sum(score_list)/len(score_list), 1)})
                 elif stat == 'Standard Deviation':
                     avg_score = sum(score_list)/len(score_list)
                     variance = map(lambda x: (x - avg_score)**2, score_list)
                     avg_variance = sum(variance)/len(variance)
-                    results_table[s].append({"stat": sqrt(avg_variance)})
+                    results_table[s].append({"stat": round(sqrt(avg_variance), 1)})
             else:
                 results_table[s].append({"stat": ''})
 
@@ -475,6 +476,7 @@ def test_detail_view(request, facility, test_id):
     results_table = OrderedDict()
     for s in users:
         # aggregate attempt logs 
+        s.name = s.get_name()
         user_attempts = AttemptLog.objects.filter(user=s, context_type='test', context_id=test_id)
         results_table[s] = []
         ex_ids = literal_eval(test_obj.ids)
@@ -483,7 +485,7 @@ def test_detail_view(request, facility, test_id):
             correct_attempts = len([attempt for attempt in attempts if attempt.correct])
             total_attempts = len(attempts)
             if total_attempts:
-                score = round(100 * float(correct_attempts)/float(total_attempts))
+                score = round(100 * float(correct_attempts)/float(total_attempts), 1)
             else:
                 score = 'n/a'
             results_table[s].append(score)
