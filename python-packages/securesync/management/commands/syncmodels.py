@@ -3,6 +3,7 @@ This is the command that does the actual syncing of models from distributed
 servers to the central server, and back again.
 """
 import time
+from optparse import make_option
 
 from django.conf import settings
 from django.core.management import call_command
@@ -15,6 +16,14 @@ from fle_utils import set_process_priority
 class Command(BaseCommand):
     args = "<target server host (protocol://domain:port)> <num_retries>"
     help = "Synchronize the local SyncedModels with a remote server"
+
+    option_list = BaseCommand.option_list + (
+        make_option('-b', '--verbose',
+            action='store_true',
+            dest='verbose',
+            default=False,
+            help='Verbose display of syncing process.'),
+    )
 
     def stdout_writeln(self, str):  self.stdout.write("%s\n"%str)
     def stderr_writeln(self, str):  self.stderr.write("%s\n"%str)
@@ -33,7 +42,7 @@ class Command(BaseCommand):
         self.stdout_writeln(("Checking purgatory for unsaved models")+"...")
         call_command("retrypurgatory")
 
-        client = SyncClient(**kwargs)
+        client = SyncClient(verbose=options["verbose"], **kwargs)
 
         connection_status = client.test_connection()
         if connection_status != "success":
@@ -52,9 +61,11 @@ class Command(BaseCommand):
         while True:
             results = client.sync_models()
 
+            if options["verbose"]:
+                print results
+
             upload_results = results["upload_results"]
             download_results = results["download_results"]
-
 
             # display counts for this block of models being transferred
             self.stdout_writeln("\t%-15s: %d (%d failed, %d error(s))" % (

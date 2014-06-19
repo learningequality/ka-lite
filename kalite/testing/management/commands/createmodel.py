@@ -21,14 +21,20 @@ class Command(BaseCommand):
             dest='json_data',
             default=None,
             help='The json string representing the fields of the data model.'),
+        make_option('-c', '--count',
+            action='store',
+            dest='count',
+            default=1,
+            help='The number of instances to create.'),
     )
 
     def handle(self, *args, **options):
+
         if len(args) != 1:
             raise CommandError("No args specified")
         else:
             if not options["json_data"]:
-                raise CommandError("Please specifiy input data as a json string")
+                raise CommandError("Please specify input data as a json string")
 
             try:
                 model = resolve_model(args[0])
@@ -36,13 +42,26 @@ class Command(BaseCommand):
                 # Reading the json data string into a map
                 data_map = json.loads(options["json_data"])
 
-                # Constructing an entity from the Model
-                entity = model(**data_map)
-                entity.full_clean()
-                entity.save()
+                entity_ids = []
+
+                for i in range(int(options["count"])):
+
+                    # Incorporate the iteration number into any fields that need it
+                    model_data = {}
+                    for key, val in data_map.items():
+                        if "%d" in val or "%s" in val:
+                            val = val % i
+                        model_data[key] = val
+
+                    # Constructing an entity from the Model
+                    entity = model(**model_data)
+                    entity.full_clean()
+                    entity.save()
+
+                    entity_ids.append(entity.id)
 
                 # Printing out the id of the entity
-                sys.stdout.write("%s\n" % (entity.id))
+                sys.stdout.write("%s\n" % (",".join(entity_ids)))
                 sys.exit(0)
             except:
                 raise

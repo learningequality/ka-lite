@@ -136,7 +136,7 @@ def device_upload(data, session):
         #   dest_version assumed to be this device's version
         result = save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
-        logging.debug("Exception uploading devices: %s" % e)
+        logging.debug("Exception uploading devices (in api_views): %s" % e)
         result = { "error": e.message, "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
@@ -169,7 +169,7 @@ def model_upload(data, session):
         #   dest_version assumed to be this device's version
         result = save_serialized_models(data["models"], src_version=session.client_version)
     except Exception as e:
-        logging.debug("Exception uploading models: %s" % e)
+        print "Exception uploading models (in api_views): %s, %s, %s" % (e.__class__.__name__, e.message, e.args)
         result = { "error": e.message, "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
@@ -190,7 +190,7 @@ def model_download(data, session):
         # Return the objects serialized to the version of the other device.
         result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, dest_version=session.client_version)
     except Exception as e:
-        logging.debug("Exception downloading models: %s" % e)
+        print "Exception downloading models (in api_views): %s, %s, %s" % (e.__class__.__name__, e.message, e.args)
         result = { "error": e.message, "count": 0 }
 
     session.models_downloaded += result["count"]
