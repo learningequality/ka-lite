@@ -27,8 +27,10 @@ from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree
 
+# shared by test_view and test_detail view
+SUMMARY_STATS = ['Max', 'Min', 'Average', 'Std Dev']
 
 def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
@@ -389,7 +391,6 @@ def test_view(request, facility):
 
     # Create the table
     results_table = OrderedDict()
-    summary_stats = ['Max', 'Min', 'Average', 'Standard Deviation']
     for s in users:
         s.name = s.get_name()
         user_test_logs = [log for log in test_logs if log.user == s]
@@ -406,46 +407,28 @@ def test_view(request, facility):
                 "score": score,
             })
 
+        # This retrieves stats for students 
         score_list = [round(100 * float(result.total_correct) / float(result.total_number), 1) for result in user_test_logs]
-        for stat in summary_stats:
+        for stat in SUMMARY_STATS:
             if score_list:
-                if stat == 'Max':
-                    results_table[s].append({"stat": max(score_list)})
-                elif stat == 'Min':
-                    results_table[s].append({"stat": min(score_list)})
-                elif stat == 'Average':
-                    results_table[s].append({"stat": round(sum(score_list)/len(score_list), 1)})
-                elif stat == 'Standard Deviation':
-                    avg_score = sum(score_list)/len(score_list)
-                    variance = map(lambda x: (x - avg_score)**2, score_list)
-                    avg_variance = sum(variance)/len(variance)
-                    results_table[s].append({"stat": round(sqrt(avg_variance), 1)})
+                results_table[s].append({"stat": return_list_stat(score_list, stat)})
             else:
                 results_table[s].append({"stat": ''})
 
+    # This retrieves stats for tests 
     stats_dict = OrderedDict()
-    for stat in summary_stats:
+    for stat in SUMMARY_STATS:
         stats_dict[stat] = []
         for test_obj in test_objects:
             # get the logs for this test across all users and then add summary stats 
             log_scores = [round(100 * float(test_log.total_correct) / float(test_log.total_number), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
-            if stat == 'Max':
-                stats_dict[stat].append(max(log_scores)) 
-            elif stat == 'Min':
-                stats_dict[stat].append(min(log_scores))
-            elif stat == 'Average': 
-                stats_dict[stat].append(sum(log_scores)/len(log_scores))
-            elif stat == 'Standard Deviation':
-                avg_score = sum(log_scores)/len(log_scores)
-                variance = map(lambda x: (x - avg_score)**2, log_scores)
-                avg_variance = sum(variance)/len(variance)
-                stats_dict[stat].append(sqrt(avg_variance))
+            stats_dict[stat].append(return_list_stat(log_scores, stat))
 
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "results_table": results_table,
         "test_columns": test_objects,
-        "summary_stats": summary_stats,
+        "summary_stats": SUMMARY_STATS,
         "stats_dict": stats_dict,
     })
 
@@ -473,13 +456,16 @@ def test_detail_view(request, facility, test_id):
         # covers the all groups case
         test_logs = TestLog.objects.filter(user__facility=facility, test=test_id)
    
-    results_table = OrderedDict()
+    results_table, scores_dict = OrderedDict(), OrderedDict()
+    # build this up now to use in summary stats section
+    ex_ids = literal_eval(test_obj.ids)
+    for ex in ex_ids:
+        scores_dict[ex] = [] 
     for s in users:
         s.name = s.get_name()
         user_attempts = AttemptLog.objects.filter(user=s, context_type='test', context_id=test_id)
         results_table[s] = []
-        ex_ids = literal_eval(test_obj.ids)
-        total_attempts, total_score = 0, 0
+        total_attempts, overall_score = 0, 0
         for ex in ex_ids:
             attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
             correct_attempts = len([attempt for attempt in attempts if attempt.correct])
@@ -487,25 +473,45 @@ def test_detail_view(request, facility, test_id):
             total_attempts += summed_attempts
             if summed_attempts:
                 score = round(100 * float(correct_attempts)/float(summed_attempts), 1)
-                total_score += score
+                scores_dict[ex].append(score)
+                overall_score += score
             else:
                 score = 'n/a'
             results_table[s].append(score)
-        if total_score:
-            results_table[s].append(round(float(total_score)/float(total_attempts), 1))
+        if overall_score:
+            results_table[s].append(round(float(overall_score)/float(total_attempts), 1))
         else: 
             results_table[s].append('n/a')
+
+    # This retrieves stats for individual exercises
+    stats_dict = OrderedDict()
+    for stat in SUMMARY_STATS: 
+        stats_dict[stat] = []
+        for ex in ex_ids:
+            scores_list = scores_dict[ex]
+            if scores_list:
+                stats_dict[stat].append(return_list_stat(scores_list, stat))
+            else:
+                stats_dict[stat].append('')
+
+    # Finally, replace the exercise ids with their full names
+    flat_topics = get_flat_topic_tree()
+    ex_titles = []
+    for ex in ex_ids:
+        ex_titles.append(flat_topics['Exercise'][ex]['title'])
 
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "test_obj": test_obj,
-        "ex_cols": ex_ids,
+        "ex_cols": ex_titles,
         "results_table": results_table,
+        "stats_dict": stats_dict,
     })
     return context
 
 
 def get_user_queryset(request, facility, group_id):
+    """Return set of users appropriate to the facility and group"""
     student_ordering = ["last_name", "first_name", "username"]
     (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
@@ -535,7 +541,7 @@ def get_user_queryset(request, facility, group_id):
 
 
 def log_coach_report_view(request):
-    # Record coach report view by teacher
+    """Record coach report view by teacher"""
     if "facility_user" in request.session:
         try:
             # Log a "begin" and end here
@@ -546,3 +552,23 @@ def log_coach_report_view(request):
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update Teacher userlog activity login: %s" % e)
+
+
+def return_list_stat(stat_list, stat):
+    """
+    Return the stat requests from the list provided. 
+    Ex: given stat_list = [1, 2, 3] and stat = 'Max' return 3
+    """
+    if stat == 'Max':
+        return_stat = max(stat_list) 
+    elif stat == 'Min':
+        return_stat = min(stat_list)
+    elif stat == 'Average': 
+        return_stat = sum(stat_list)/len(stat_list)
+    elif stat == 'Std Dev':
+        avg_score = sum(stat_list)/len(stat_list)
+        variance = map(lambda x: (x - avg_score)**2, stat_list)
+        avg_variance = sum(variance)/len(variance)
+        return_stat = sqrt(avg_variance)
+
+    return round(return_stat, 1)
