@@ -161,6 +161,12 @@ class SyncClient(BaseClient):
         server_counters = self.get_server_device_counters()
         client_counters = self.get_client_device_counters()
 
+        if self.verbose:
+            print client_counters, server_counters
+            print "COUNTERS: ([D]istributed, [C]entral)"
+            for device in set(server_counters.keys()).union(client_counters.keys()):
+                print "\t", device[0:5], "D%d" % client_counters.get(device, 0), "C%d" % server_counters.get(device, 0)
+
         devices_to_download = []
         devices_to_upload = []
 

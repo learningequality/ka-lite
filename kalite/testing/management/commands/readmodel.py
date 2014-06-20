@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 
 from optparse import make_option
@@ -34,13 +35,15 @@ class Command(BaseCommand):
             
             try:
                 data = Model.objects.get(pk=model_id)
-                logging.info("Retrieved '%s' entry with primary key: '%s'" % (model_path, model_id))
+                # logging.info("Retrieved '%s' entry with primary key: '%s'" % (model_path, model_id))
 
-                serialized_data = serializers.serialize("json", [data])
+                serialized_data = serializers.serialize("python", [data])[0]["fields"]
+                serialized_data["id"] = model_id
                 logging.debug("Serialized data: '%s'" % serialized_data)
-                return serialized_data
-            except:
-                # logging.info("Could not retrieve '%s' entry with primary key: '%s'" % (model_path, model_id))
+                print json.dumps(serialized_data)
+
+            except Model.DoesNotExist:
+                logging.error("Could not find '%s' entry with primary key: '%s'" % (model_path, model_id))
                 sys.exit(1)
             
         else:

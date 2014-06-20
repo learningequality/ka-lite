@@ -103,6 +103,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
+    "fle_utils.testing",
     "kalite.testing",
     "kalite.distributed",
 ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
