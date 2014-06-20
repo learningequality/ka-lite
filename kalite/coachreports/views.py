@@ -5,7 +5,7 @@ import re
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from ast import literal_eval
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 from functools import partial
 from math import sqrt
 
@@ -398,14 +398,15 @@ def test_view(request, facility):
         for t in test_objects:
             # Get the log object for this test, if it exists, otherwise return empty TestLog object
             log_object = next((log for log in user_test_logs if log.test == t.test_id), '')
+            # check if student has completed test 
             if log_object:
                 score = round(100 * float(log_object.total_correct) / float(log_object.total_number), 1)
+                results_table[s].append({
+                    "log": log_object,
+                    "score": score,
+                })
             else:
-                score = None
-            results_table[s].append({
-                "log": log_object,
-                "score": score,
-            })
+                results_table[s].append({})
 
         # This retrieves stats for students 
         score_list = [round(100 * float(result.total_correct) / float(result.total_number), 1) for result in user_test_logs]
@@ -413,7 +414,7 @@ def test_view(request, facility):
             if score_list:
                 results_table[s].append({"stat": return_list_stat(score_list, stat)})
             else:
-                results_table[s].append({"stat": ''})
+                results_table[s].append({})
 
     # This retrieves stats for tests 
     stats_dict = OrderedDict()
@@ -476,12 +477,12 @@ def test_detail_view(request, facility, test_id):
                 scores_dict[ex].append(score)
                 overall_score += score
             else:
-                score = 'n/a'
+                score = ''
             results_table[s].append(score)
         if overall_score:
             results_table[s].append(round(float(overall_score)/float(total_attempts), 1))
         else: 
-            results_table[s].append('n/a')
+            results_table[s].append('')
 
     # This retrieves stats for individual exercises
     stats_dict = OrderedDict()

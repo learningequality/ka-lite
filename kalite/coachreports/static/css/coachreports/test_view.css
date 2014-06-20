@@ -6,6 +6,7 @@ th, td {
 
 .table-container {
     width: 100%;
+    min-width: 680px;
     padding-top: 2%;
 }
 .table-container th {
@@ -35,7 +36,7 @@ th, td {
     background-color: #CA4D4D;
 }
 .incomplete {
-    background-color: #EEE;
+    background-color: #D8D8D8;
 }
 #legend {
     float:right;
@@ -59,4 +60,11 @@ th, td {
     float:left;
     width:35px;
     height:21px;
+}
+.summary-stat-header {
+    background-color: rgb(189, 189, 189)
+}
+.unpadded-p {
+    margin: 0;
+    padding: 0;
 }
