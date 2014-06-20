@@ -2,7 +2,7 @@ import importlib
 import sys
 
 from optparse import make_option
-from . import resolve_model
+from fle_utils.importing import resolve_model
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError

@@ -3,7 +3,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
-from . import resolve_model
+from fle_utils.importing import resolve_model
 
 
 class Command(BaseCommand):
