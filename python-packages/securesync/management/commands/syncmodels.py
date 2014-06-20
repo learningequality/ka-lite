@@ -61,9 +61,6 @@ class Command(BaseCommand):
         while True:
             results = client.sync_models()
 
-            if options["verbose"]:
-                print results
-
             upload_results = results["upload_results"]
             download_results = results["download_results"]
 

@@ -25,7 +25,7 @@ class BaseClient(object):
 
     def post(self, path, payload={}, *args, **kwargs):
         if self.verbose:
-            print "CLIENT: post %s" % self.path_to_url(path)
+            print "CLIENT: post %s" % path
         return requests.post(self.path_to_url(path), data=json.dumps(payload))
 
     def get(self, path, payload={}, *args, **kwargs):
@@ -33,7 +33,7 @@ class BaseClient(object):
         payload["_"] = uuid.uuid4().hex
         query = urllib.urlencode(payload)
         if self.verbose:
-            print "CLIENT: get %s" % self.path_to_url(path) + "?" + query
+            print "CLIENT: get %s" % path
         return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
 
     def test_connection(self):

@@ -191,7 +191,8 @@ class SyncClient(BaseClient):
         # As usual, we're deserializing from the central server, so we assume that what we're getting
         #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
         #   pre-cleaned for us.
-        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
+
+        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False, verbose=self.verbose)
 
         # BUGFIX(bcipolli) metadata only gets created if models are
         #   streamed; if a device is downloaded but no models are downloaded,
@@ -257,7 +258,7 @@ class SyncClient(BaseClient):
             # As usual, we're deserializing from the central server, so we assume that what we're getting
             #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
             #   pre-cleanaed for us.
-            download_results.update(save_serialized_models(response.get("models", "[]")))
+            download_results.update(save_serialized_models(response.get("models", "[]"), verbose=self.verbose))
             self.session.models_downloaded += download_results["saved_model_count"]
             self.display_and_count_errors(download_results, context_name="downloading models")
         except Exception as e:
@@ -278,7 +279,7 @@ class SyncClient(BaseClient):
 
             # By not specifying a dest_version, we're sending everything.
             #   Again, this is OK because we're sending to the central server.
-            response = self.post("models/upload", {"models": get_serialized_models(counters_to_upload)})
+            response = self.post("models/upload", {"models": get_serialized_models(counters_to_upload, verbose=self.verbose)})
 
             upload_results.update(json.loads(response.content))
             self.session.models_uploaded += upload_results["saved_model_count"]
