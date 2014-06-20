@@ -5,7 +5,7 @@ var TestView = Backbone.View.extend({
     className: "test-row",
     template: _.template($("#all-tests-list-entry-template").html()),
     initialize: function(options) {
-        this.title = this.model.title;
+        this.title = this.model.get('title');
         this.listenTo(this.model, 'change', this.render);
     },
     render: function() {
@@ -20,17 +20,17 @@ var TestView = Backbone.View.extend({
         ev.preventDefault();
 
         // toggle exam_mode state of the selected test
-        var is_exam_mode = ! this.model.attributes.is_exam_mode;
+        var isExamMode = ! this.model.get('is_exam_mode');
         var errorFunc = function() {
-            // make sure we render the list of tests with the one set to exam mode
-            tests.fetch();
+            // force to render the list of tests with the one set to exam mode
+            tests.fetch({data: {'force': true}});
             alert("Did not successfully set the test into exam mode.  Try to reload the page.");
         };
         var successFunc = function() {
-            // make sure we render the list of tests with the one set to exam mode
-            tests.fetch();
+            // force to render the list of tests with the one set to exam mode
+            tests.fetch({data: {'force': true}});
         };
-        this.model.save({is_exam_mode: is_exam_mode}, {error: errorFunc, success: successFunc});
+        this.model.save({is_exam_mode: isExamMode}, {error: errorFunc, success: successFunc});
     }
 
 });

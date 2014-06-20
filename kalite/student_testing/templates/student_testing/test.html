@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block practice_active %}active{% endblock practice_active %}
+{% block title %}{% trans "Take Test" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}?{{ BUILD_ID }}"></link>
