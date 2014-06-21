@@ -97,7 +97,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
         if facility_name and self.browser.find_element_by_id("id_facility").is_displayed():
-            self.browser_activate_element("id_facility")
+            self.browser_activate_element(id="id_facility")
             self.browser_send_keys(facility_name)
 
         self.browser.find_element_by_id("id_username").clear() # clear any data

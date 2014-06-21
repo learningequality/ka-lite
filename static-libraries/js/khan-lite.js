@@ -200,8 +200,8 @@ function show_message(msg_class, msg_text) {
     x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
     msg_html = "<div class='alert alert-" + msg_class + "'";
+
     if (msg_id) {
-        $("#" + msg_id).remove();
         msg_html += " id='" + msg_id + "'";
     }
     msg_html += ">" + x_button + msg_text + "</div>";

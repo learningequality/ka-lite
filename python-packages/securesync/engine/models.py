@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.base import ModelBase
+from django.db.models.query import QuerySet
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.utils.text import compress_string
@@ -83,18 +84,28 @@ class SyncSession(ExtendedModel):
                 model.delete()
 
 
+class SyncedModelQuerySet(QuerySet):
+
+    def soft_delete(self):
+        for model in self:
+            model.soft_delete()
+
 class SyncedModelManager(models.Manager):
 
     class Meta:
         app_label = "securesync"
 
     def __init__(self, show_deleted=None, *args, **kwargs):
+        """
+        Pass in 'show_deleted=True' to return a model manager that will also show
+        deleted objects in the queryset.
+        """
         super(SyncedModelManager, self).__init__(*args, **kwargs)
 
         self.show_deleted = show_deleted is None and getattr(settings, "SHOW_DELETED_OBJECTS", False) or show_deleted
 
-    def get_query_set(self, *args, **kwargs):
-        qset = super(SyncedModelManager, self).get_query_set(*args, **kwargs)
+    def get_query_set(self):
+        qset = SyncedModelQuerySet(self.model, using=self._db)
 
         if not self.show_deleted:
             qset = qset.filter(deleted=False)
@@ -163,6 +174,10 @@ class SyncedModel(ExtendedModel):
     For backwards compatibility reasons, signed_version must remain, and would be used
     in future designs/implementations reusing the original (elegant) design that is appropriate
     for mixed version P2P sync.
+
+    SyncedModels have a 'soft_delete' method which allows them to be flagged as deleted,
+    but not actually be deleted to preserve data. In order to access the deleted objects in queries
+    the 'all_objects' model property should be used in place of 'objects'.
     """
     id = models.CharField(primary_key=True, max_length=ID_MAX_LENGTH, editable=False)
     counter = models.IntegerField(default=None, blank=True, null=True)
@@ -187,14 +202,20 @@ class SyncedModel(ExtendedModel):
         app_label = "securesync"
 
     @transaction.commit_on_success
-    def delete(self):
+    def soft_delete(self):
         self.deleted = True  # mark self as deleted
 
         for related_model in (self._meta.get_all_related_objects()):
             manager = getattr(self, related_model.get_accessor_name())
             related_objects = manager.all()
             for obj in related_objects:
-                obj.delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+                # Some related objects are SyncedModels, some are not.
+                # Try to soft delete so as not to lose syncable data.
+                # Fall back to actual deletion if the model does not have a soft_delete method.
+                try:
+                    obj.soft_delete()  # call this function, not the bulk delete (which we don't have control over, and have disabled)
+                except AttributeError:
+                    obj.delete()
         self.save()
 
     def full_clean(self, exclude=None, imported=False):

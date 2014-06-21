@@ -216,16 +216,15 @@
                                 {% for video in videos %}
                                     {% if not student.video_logs|get_item:video.id %}
                                         <td class="status data" title="{% trans "Not Viewed" %}">
-                                            &nbsp;
                                     {% elif not student.video_logs|get_item:video.id|get_item:"complete" %}
                                         <td class="status data partial" title="{% trans "Viewing" %}">
-                                            <div class="total_seconds_watched">{% blocktrans with total_seconds_watched=student.video_logs|get_item:video.id|get_item:"total_seconds_watched" %}{{ total_seconds_watched }} secs{% endblocktrans %}</div>
+                                            {# <div class="total_seconds_watched">{% blocktrans with total_seconds_watched=student.video_logs|get_item:video.id|get_item:"total_seconds_watched" %}{{ total_seconds_watched }} secs{% endblocktrans %}</div> #}
                                     {% else %}
                                         <td class="status data complete" title="{% trans "Viewed" %}">
-                                            <div class="total_seconds_watched">100%</div>
+                                            {# <div class="total_seconds_watched">100%</div> #}
                                     {% endif %}
                                     {% if student.video_logs|get_item:video.id  %}
-                                            <div class="points">{% blocktrans with points=student.video_logs|get_item:video.id|get_item:"points"  %}{{ points}} points{% endblocktrans %}</div>
+                                            {# <div class="points">{% blocktrans with points=student.video_logs|get_item:video.id|get_item:"points"  %}{{ points}} points{% endblocktrans %}</div> #}
                                     {% endif %}
                                         </td>
                                 {% endfor %}

@@ -109,6 +109,7 @@ INSTALLED_APPS = (
 ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
+    "django_snippets.session_timeout_middleware.SessionIdleTimeout",
 ) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",  # needed for django admin
@@ -139,6 +140,8 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
+# Default to a 20 minute timeout for a session - set to 0 to disable.
+SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
 
 ########################
 # After all settings, but before config packages,

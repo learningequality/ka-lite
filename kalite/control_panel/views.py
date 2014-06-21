@@ -288,12 +288,26 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
     period_end = form.data.get("period_end")
     (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
+    # Collate data for all groups
+    groups = group_data.values()
+
+    # If group_id exists, extract data for that group
+    if group_id:
+        if group_id == "Ungrouped":
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == "Ungrouped")
+        else:
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
+        group_data = group_data.values()[group_id_index]
+    else:
+        group_data = {}
+
     context.update({
         "form": form,
         "date_range": [str(period_start), str(period_end)],
         "group": group,
         "group_id": group_id,
-        "groups": group_data.values(),
+        "group_data": group_data,
+        "groups": groups, # sends dict if group page, list of group data otherwise
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
         "page_urls": {
