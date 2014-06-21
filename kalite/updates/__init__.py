@@ -7,7 +7,6 @@ from .models import UpdateProgressLog, VideoFile
 from .videos import *
 from fle_utils.chronograph.models import Job
 from fle_utils.internet import invalidate_web_cache
-from kalite import caching
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
 
 
@@ -35,6 +34,7 @@ def invalidate_on_video_update(sender, **kwargs):
         # This event should only happen once, so don't bother checking if
         #   this is the field that changed.
         logging.debug("Invalidating cache on VideoFile save for %s" % kwargs["instance"])
+        from kalite import caching  # caching also imports updates; import here to prevent circular dependencies
         caching.invalidate_all_caches()
 
 
@@ -46,6 +46,7 @@ def invalidate_on_video_delete(sender, **kwargs):
     was_available = kwargs["instance"] and kwargs["instance"].percent_complete == 100
     if was_available:
         logging.debug("Invalidating cache on VideoFile delete for %s" % kwargs["instance"])
+        from kalite import caching  # caching also imports updates; import here to prevent circular dependencies
         caching.invalidate_all_caches()
 
 
