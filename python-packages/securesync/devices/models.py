@@ -13,11 +13,11 @@ from django.db.models import Q
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-from .. import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
-from .. import crypto, engine
-from ..engine.models import SyncedModel, SyncedModelManager
 from fle_utils.general import get_host_name
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
+from securesync import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
+from securesync import crypto, engine
+from securesync.engine.models import SyncedModel
 
 class RegisteredDevicePublicKey(ExtendedModel):
     public_key = models.CharField(max_length=500, help_text="(This field will be filled in automatically)")
@@ -169,7 +169,7 @@ class DeviceZone(SyncedModel):
         return u"Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
-class DeviceManager(SyncedModelManager):
+class DeviceManager(models.Manager):
 
     class Meta:
         app_label = "securesync"
@@ -187,8 +187,6 @@ class Device(SyncedModel):
     version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.minversion="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
-    all_objects = DeviceManager(show_deleted=True)
-
     key = None
     own_device = None  # cached property, shared globally.
 
