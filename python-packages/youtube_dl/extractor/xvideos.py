@@ -15,7 +15,7 @@ class XVideosIE(InfoExtractor):
         'file': '939581.flv',
         'md5': '1d0c835822f0a71a7bf011855db929d0',
         'info_dict': {
-            "title": "Funny Porns By >>>>S<<<<<< -1",
+            "title": "Funny Porns By S -1",
             "age_limit": 18,
         }
     }
