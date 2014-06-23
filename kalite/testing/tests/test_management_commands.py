@@ -1,17 +1,18 @@
-import json 
-import os
-import platform
-import sys
-import unittest
+import json
 import importlib
 
 from django.core.management.base import CommandError
-from django.core import serializers
+from django.utils import unittest
 
 from fle_utils.django_utils import call_command_with_output
 from kalite.facility.models import Facility
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
-class ModelCreationCommandTests(unittest.TestCase):
+
+class ModelCreationCommandTests(CreateDeviceMixin, unittest.TestCase):
+    def setUp(self):
+        self.setup_fake_device()
+
     def test_no_args(self):
         try:
             (out, err, rc) = call_command_with_output('createmodel')
@@ -24,8 +25,8 @@ class ModelCreationCommandTests(unittest.TestCase):
             (out, err, rc) = call_command_with_output('createmodel', 'some.model')
             self.assertFail()
         except CommandError as e:
-            self.assertRegexpMatches(str(e), 
-                                     "Please specifiy input data as a json string")
+            self.assertRegexpMatches(str(e),
+                                     "Please specify input data as a json string")
 
     def test_save_model(self):
         MODEL_NAME = 'kalite.facility.models.Facility'
@@ -39,9 +40,12 @@ class ModelCreationCommandTests(unittest.TestCase):
 
         data = model.objects.get(pk=out.strip())
         self.assertEquals(data.name, "kir1")
-        
 
-class ReadModelCommandTests(unittest.TestCase):
+
+class ReadModelCommandTests(CreateDeviceMixin, unittest.TestCase):
+    def setUp(self):
+        self.setup_fake_device()
+
     def test_no_args(self):
         try:
             (out, err, rc) = call_command_with_output('readmodel')
@@ -54,7 +58,7 @@ class ReadModelCommandTests(unittest.TestCase):
             (out, err, rc) = call_command_with_output('readmodel', 'some.model')
             self.assertFail()
         except CommandError as e:
-            self.assertRegexpMatches(str(e), 
+            self.assertRegexpMatches(str(e),
                                      "Please specify --id to fetch model.")
 
     def test_fetch_model(self):
@@ -68,5 +72,4 @@ class ReadModelCommandTests(unittest.TestCase):
                                                   MODEL_NAME,
                                                   id=facility.id)
         data_map = json.loads(out)
-        self.assertEquals(data_map[0]['fields']['name'], facility_name)
-
+        self.assertEquals(data_map['name'], facility_name)
