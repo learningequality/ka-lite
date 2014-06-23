@@ -22,7 +22,7 @@ class ModelCreationCommandTests(unittest.TestCase):
             self.assertFail()
         except CommandError as e:
             self.assertRegexpMatches(str(e),
-                                     "Please specifiy input data as a json string")
+                                     "Please specify input data as a json string")
 
     def test_save_model(self):
         MODEL_NAME = 'kalite.facility.models.Facility'
