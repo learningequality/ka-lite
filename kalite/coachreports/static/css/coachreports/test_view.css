@@ -2,6 +2,7 @@ th, td {
     border: 1px solid black;
     padding: 4px;
     height: 27px;
+    vertical-align: middle;
 }
 
 .table-container {
