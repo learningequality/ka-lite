@@ -35,9 +35,9 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
         student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[2]/td[1]').text
-        self.assertTrue(student_score=='50.0%')
+        self.assertTrue(student_score == '50.0%')
         empty_student = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr/td[1]').text
-        self.assertTrue(empty_student=='')
+        self.assertTrue(empty_student == '')
 
     def test_test_stats_display(self):
         """
@@ -69,13 +69,13 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[3]/td[1]').text
-        self.assertTrue(stat_max=='50.0%')
+        self.assertTrue(stat_max == '50.0%')
         stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[4]/td[1]').text
-        self.assertTrue(stat_min=='25.0%')
+        self.assertTrue(stat_min == '25.0%')
         stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[1]').text
-        self.assertTrue(stat_avg=='37.5%')
+        self.assertTrue(stat_avg == '37.5%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[6]/td[1]').text
-        self.assertTrue(stat_std=='12.5%')
+        self.assertTrue(stat_std == '12.5%')
 
     def test_student_stats_display(self):
         """
@@ -106,13 +106,13 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
-        self.assertTrue(stat_max=='50.0%')
+        self.assertTrue(stat_max == '50.0%')
         stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
-        self.assertTrue(stat_min=='25.0%')
+        self.assertTrue(stat_min == '25.0%')
         stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
-        self.assertTrue(stat_avg=='37.5%')
+        self.assertTrue(stat_avg == '37.5%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[6]').text
-        self.assertTrue(stat_std=='12.5%')
+        self.assertTrue(stat_std == '12.5%')
 
     def test_student_detail_scores_display(self):
         """
@@ -142,14 +142,14 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_detail_view', kwargs={'test_id': self.test_log.test}))
         student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[1]').text
-        self.assertTrue(student_score=='100.0%')
+        self.assertTrue(student_score == '100.0%')
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[2]/td[1]').text
-        self.assertTrue(stat_max=='100.0%')
+        self.assertTrue(stat_max == '100.0%')
         stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[3]/td[1]').text
-        self.assertTrue(stat_min=='100.0%')
+        self.assertTrue(stat_min == '100.0%')
         stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[4]/td[1]').text
-        self.assertTrue(stat_avg=='100.0%')
+        self.assertTrue(stat_avg == '100.0%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[1]').text
-        self.assertTrue(stat_std=='0.0%')
+        self.assertTrue(stat_std == '0.0%')
         overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[19]').text
-        self.assertTrue(overall=='100.0%') 
+        self.assertTrue(overall == '100.0%') 
