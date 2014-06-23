@@ -65,4 +65,4 @@ class ReadModelCommandTests(unittest.TestCase):
                                                   MODEL_NAME,
                                                   id=facility.id)
         data_map = json.loads(out)
-        self.assertEquals(data_map[0]['fields']['name'], facility_name)
+        self.assertEquals(data_map['name'], facility_name)
