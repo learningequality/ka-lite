@@ -143,7 +143,7 @@ $(function () {
         var installed_languages = installed.map(function(elem) { return elem['code']; });
         if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
             if (percent_translated > 0 || srtcount > 0) {
-                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s)</option>', langdata));
+                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s</option>', langdata));
             }
         }
     });
