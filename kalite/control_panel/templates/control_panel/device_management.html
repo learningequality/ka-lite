@@ -6,6 +6,14 @@
 {% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
+    <style>
+        th:first-child, th:nth-child(2) {
+            width: 250px;
+        }
+        th:nth-child(3), th:nth-child(4), th:last-child {
+            width: 200px;
+        }
+    </style>
 {% endblock headcss %}
 
 {% block buttons %}{{ block.super }}
@@ -83,11 +91,11 @@
                 called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
                     <table class="simple-table">
                         <tr>
-                            <th width="250px">{% trans "Sync Date" %}</th>
-                            <th width="250px">{% trans "Device IP Address" %}</th>
-                            <th width="200px">{% trans "# Models Uploaded" %}</th>
-                            <th width="200px">{% trans "# Models Downloaded" %}</th>
-                            <th width="200px">{% trans "# Errors" %}</th>
+                            <th>{% trans "Sync Date" %}</th>
+                            <th>{% trans "Device IP Address" %}</th>
+                            <th>{% trans "# Models Uploaded" %}</th>
+                            <th>{% trans "# Models Downloaded" %}</th>
+                            <th>{% trans "# Errors" %}</th>
                         </tr>
                         {% for sync_session in session_pages %}
                             <tr>
