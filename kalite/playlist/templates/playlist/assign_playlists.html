@@ -16,11 +16,11 @@
   </script>
 
   <script type="text/html" id="playlist-template">
-    <td playlist-id="<%= id %>"> <%= title %> <table class="playlist-groups"></table></td>
+    <td playlist-id="<%= id %>"> <%= tag %>: <%= title %> <table class="playlist-groups"></table></td>
   </script>
-
   <script type="text/html" id="playlist-group-template">
-    <td playlist-group-id="<%= id%>"> <%= name %> <a href="">[-]</a></td>
+    <td playlist-group-id="<%= id%>"> <%= name %></td>
+    <td playlist-group-id="<%= id%>"><a class="remove" href="">[-]</a></td>
   </script>
 
   <script type="text/javascript" src="{% static 'js/playlist/models.js' True %}"></script>

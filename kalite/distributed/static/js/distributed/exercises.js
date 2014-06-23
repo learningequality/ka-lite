@@ -913,7 +913,12 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        $("#check-answer-button").parent().stop(jumpedToEnd=true)
+        var check_answer_button = $("#check-answer-button");
+
+        check_answer_button.parent().stop(jumpedToEnd=true)
+
+        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
+        // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -1085,6 +1090,10 @@ window.ExerciseTestView = Backbone.View.extend({
                 this.initialize_new_attempt_log(question_data);
 
                 this.exercise_view = new ExerciseView(data);
+                this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
+
+                // don't render the related videos box on tests
+                this.exercise_view.stopListening(this.data_model, "change:related_videos");
 
                 this.exercise_view.on("check_answer", this.check_answer);
                 this.exercise_view.on("problem_loaded", this.problem_loaded);
@@ -1250,6 +1259,7 @@ window.ExerciseQuizView = Backbone.View.extend({
         this.initialize_new_attempt_log(question_data);
 
         this.exercise_view = new ExerciseView(data);
+        this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
         this.exercise_view.on("check_answer", this.check_answer);
         this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);

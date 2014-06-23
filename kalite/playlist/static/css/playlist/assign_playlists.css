@@ -18,3 +18,8 @@
 #playlists {
     margin-left: 200px;
 }
+
+.remove {
+    position: relative;
+    top: -2px;
+}

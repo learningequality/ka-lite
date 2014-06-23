@@ -134,7 +134,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     node_cache = get_node_cache()
     topic_ids = get_knowledgemap_topics()
-    topic_ids += [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
+    topic_ids = topic_ids + [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
     topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id

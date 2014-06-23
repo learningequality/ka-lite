@@ -36,25 +36,6 @@ ul, li {
     margin: 0;
 }
 
-.simple-table{
-    margin-top: 20px;
-    font-size: 13px;
-    width: 100%;
-    border: 1px #DFDFDF solid;
-}
-
-.simple-table th{
-    font-weight: bold;
-    text-align: left;
-    padding: 8px 8px 8px 10px;
-    background-color: #E7E7E7;
-}
-
-.simple-table td{
-    padding: 10px;
-    border-bottom: 1px #DFDFDF solid;
-}
-
 .selectable-table {
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -69,10 +50,6 @@ ul, li {
 
 .selectable-table tbody tr.selected {
     background: #C4CAF5;
-}
-
-a.edit-link {
-    font-size:11pt;
 }
 
 .btn-large {
@@ -111,10 +88,6 @@ a.edit-link {
     width: 180px;
 }
 
-#students, #groups, #coaches {
-    margin-bottom: 50px;
-}
-
 .no-data {
     padding-left: 50px;
     font-weight: bold;
@@ -122,9 +95,6 @@ a.edit-link {
 }
 .definition {
     font-style: italic;
-}
-.pagination {
-    margin-top: 25px;
 }
 
 .hidden {
@@ -219,25 +189,6 @@ a.edit-link {
     cursor: default;
 }
 
-.action-bar h4 {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.select {
-    float: left;
-}
-.action {
-    float: right;
-}
-.select, .action {
-    width: 50%;
-}
-.select button, .action button, .action select {
-    height: 25px;
-}
-.select > p, .action > p {
-    top: 1px;
-}
 select.movegrouplist {
     margin-bottom: 0px;
 }

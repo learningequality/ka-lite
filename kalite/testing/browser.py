@@ -40,6 +40,7 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
     """Given a selenium browser, open the given url and wait until the browser has completed."""
+
     if dest_url == browser.current_url:
         return True
 
@@ -152,8 +153,7 @@ class BrowserTestCase(KALiteTestCase):
         else:
             raise Exception("Must specify the destination url.")
 
-        self.assertTrue(browse_to(self.browser, *args, **kwargs), "Browsing to '%s'" % dest_url)
-
+        browse_to(self.browser, *args, **kwargs)
 
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
         """
