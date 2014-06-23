@@ -1,15 +1,12 @@
-import json 
-import os
-import platform
-import sys
-import unittest
+import json
 import importlib
 
 from django.core.management.base import CommandError
-from django.core import serializers
+from django.utils import unittest
 
 from fle_utils.django_utils import call_command_with_output
 from kalite.facility.models import Facility
+
 
 class ModelCreationCommandTests(unittest.TestCase):
     def test_no_args(self):
@@ -24,7 +21,7 @@ class ModelCreationCommandTests(unittest.TestCase):
             (out, err, rc) = call_command_with_output('createmodel', 'some.model')
             self.assertFail()
         except CommandError as e:
-            self.assertRegexpMatches(str(e), 
+            self.assertRegexpMatches(str(e),
                                      "Please specifiy input data as a json string")
 
     def test_save_model(self):
@@ -39,7 +36,7 @@ class ModelCreationCommandTests(unittest.TestCase):
 
         data = model.objects.get(pk=out.strip())
         self.assertEquals(data.name, "kir1")
-        
+
 
 class ReadModelCommandTests(unittest.TestCase):
     def test_no_args(self):
@@ -54,7 +51,7 @@ class ReadModelCommandTests(unittest.TestCase):
             (out, err, rc) = call_command_with_output('readmodel', 'some.model')
             self.assertFail()
         except CommandError as e:
-            self.assertRegexpMatches(str(e), 
+            self.assertRegexpMatches(str(e),
                                      "Please specify --id to fetch model.")
 
     def test_fetch_model(self):
@@ -69,4 +66,3 @@ class ReadModelCommandTests(unittest.TestCase):
                                                   id=facility.id)
         data_map = json.loads(out)
         self.assertEquals(data_map[0]['fields']['name'], facility_name)
-
