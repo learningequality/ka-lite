@@ -71,7 +71,7 @@
                                 <th>{% trans "# Users" %}</th>
                                 <th>{% trans "# Groups" %}</th>
                                 <th>{% trans "Last Usage" %}</th>
-                                <th>{% trans "Delete" %}</th>
+                                <th> {% if not request.is_teacher%}{% trans "Delete" %}{% endif %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,9 +94,11 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a class="facility-delete-link" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}" href="#">
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                    </a>
+                                    {% if not request.is_teacher %}
+                                        <a class="facility-delete-link" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}" href="#">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
