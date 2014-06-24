@@ -76,6 +76,7 @@ class TestResource(Resource):
         resource_name = 'test'
         object_class = Test
 
+    #TODO(aron): refactor reading of tests json files
     def _refresh_tests_cache(self):
         for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
             with open(testfile) as f:
