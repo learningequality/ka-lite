@@ -197,7 +197,7 @@ if package_selected("RPi"):
 
 
 if package_selected("Nalanda"):
-    Log.info("Nalanda package selected")
+    LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
 
 

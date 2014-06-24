@@ -281,7 +281,7 @@ def watch_home(request):
 
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-@backend_cache_page
+# @backend_cache_page
 @render_to("distributed/homepage.html")
 @refresh_topic_cache
 def homepage(request, topics):
@@ -290,7 +290,8 @@ def homepage(request, topics):
     """
     context = topic_context(topics)
     # TODO-BLOCKER(aron): Remove this when merging to other branches
-    assert package_selected("Nalanda"), "Nalanda deployment should have the Nalanda package activated"
+    if "nalanda" not in settings.CONFIG_PACKAGE:
+        return HttpResponse("The Nalanda package must be activated. Put in the following to your local_settings.py:\n\nCONFIG_PACKAGE = 'Nalanda'", content_type="text/plain")
     context.update({
         "title": "Home",
     })
