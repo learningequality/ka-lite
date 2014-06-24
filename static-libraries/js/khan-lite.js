@@ -209,9 +209,13 @@ function show_message(msg_class, msg_text, msg_id) {
         $("#" + msg_id).remove();
     }
 
-    x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+    if (!msg_text) {
+        return $("#message_container");
+    }
 
-    msg_html = "<div class='alert alert-" + msg_class + "'";
+    var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+
+    var msg_html = "<div class='alert alert-" + msg_class + "'";
 
     if (msg_id) {
         msg_html += " id='" + msg_id + "'";
