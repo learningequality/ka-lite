@@ -186,3 +186,9 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+#################################
+# Toggling motivational features
+#################################
+TURN_OFF_MOTIVATIONAL_FEATURES = False
