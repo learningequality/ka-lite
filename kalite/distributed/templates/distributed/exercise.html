@@ -5,7 +5,7 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' True %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -28,7 +28,7 @@
     <script src="{% static 'js/seedrandom.min.js' %}"></script>
 
     <script src="{% static 'js/distributed/exercises.js' %}"></script>
-    <script src="{% static 'khan-exercises/khan-exercise.js' True %}"></script>
+    <script src="{% static 'khan-exercises/khan-exercise.js' %}"></script>
 
 {% endblock headjs %}
 
