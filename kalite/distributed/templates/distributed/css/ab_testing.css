@@ -1,6 +1,10 @@
 /* Hide motivational features if disabled in settings */
+{% if turn_off_motivational_features %}
 .motivational-feature {
-  {% if turn_off_motivational_features %}
   display: none;
-  {% endif %}
 }
+
+#map-container .ex-live {
+  display: none;
+}
+{% endif %}
