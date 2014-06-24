@@ -191,4 +191,4 @@ LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 #################################
 # Toggling motivational features
 #################################
-TURN_OFF_MOTIVATIONAL_FEATURES = False
+TURN_OFF_MOTIVATIONAL_FEATURES = getattr(local_settings, 'TURN_OFF_MOTIVATIONAL_FEATURES', False)
