@@ -19,6 +19,11 @@ window.Exercises = {
     }
 };
 
+window.ExerciseParams = {
+    STREAK_CORRECT_NEEDED: 8,
+    STREAK_WINDOW: 10,
+    FIXED_BLOCK_EXERCISES: 5
+};
 
 window.ExerciseDataModel = Backbone.Model.extend({
     /*
@@ -119,6 +124,13 @@ window.ExerciseLogModel = Backbone.Model.extend({
         return Backbone.Model.prototype.save.call(this);
     },
 
+    attempts_since_completion: function() {
+        if (!this.get("complete")) {
+            return 0;
+        }
+        return this.get("attempts") - this.get("attempts_before_completion");
+    },
+
     urlRoot: "/api/exerciselog/"
 
 });
@@ -197,9 +209,6 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     model: AttemptLogModel,
 
-    STREAK_WINDOW: 10,
-    STREAK_CORRECT_NEEDED: 8,
-
     initialize: function(models, options) {
         this.exercise_id = options.exercise_id;
         this.context_type = options.context_type;
@@ -209,13 +218,13 @@ window.AttemptLogCollection = Backbone.Collection.extend({
         return "/api/attemptlog/?" + $.param({
             "exercise_id": this.exercise_id,
             "user": window.statusModel.get("user_id"),
-            "limit": this.STREAK_WINDOW,
+            "limit": ExerciseParams.STREAK_WINDOW,
             "context_type": this.context_type
         });
     },
 
     add_new: function(attemptlog) {
-        if (this.length == this.STREAK_WINDOW) {
+        if (this.length == ExerciseParams.STREAK_WINDOW) {
             this.pop();
         }
         this.unshift(attemptlog);
@@ -231,7 +240,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 
     get_streak_progress_percent: function() {
         var streak_progress = this.get_streak_progress();
-        return Math.min((streak_progress / this.STREAK_CORRECT_NEEDED) * 100, 100);
+        return Math.min((streak_progress / ExerciseParams.STREAK_CORRECT_NEEDED) * 100, 100);
     },
 
     get_streak_points: function() {
@@ -240,7 +249,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
         // add up and return the total number of points represented by these attempts
         // (only include the latest STREAK_CORRECT_NEEDED attempts, so the user doesn't get too many points)
         var total = 0;
-        for (var i = 0; i < Math.min(this.STREAK_CORRECT_NEEDED, filtered_attempts.length); i++) {
+        for (var i = 0; i < Math.min(ExerciseParams.STREAK_CORRECT_NEEDED, filtered_attempts.length); i++) {
             total += filtered_attempts[i].get("points");
         }
         return total;
@@ -249,7 +258,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     calculate_points_per_question: function(basepoints) {
         // for comparability with the original algorithm (when a streak of 10 was needed),
         // we calibrate the points awarded for each question (note that there are no random bonuses now)
-        return Math.round((basepoints * 10) / this.STREAK_CORRECT_NEEDED);
+        return Math.round((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
     }
 
 });
@@ -850,6 +859,32 @@ window.ExercisePracticeView = Backbone.View.extend({
         });
     },
 
+    display_message: function() {
+
+        var context = {
+            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
+            denominator: ExerciseParams.STREAK_WINDOW
+        };
+
+        if (!this.log_model.get("complete")) {
+            var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+        } else {
+            context.remaining = ExerciseParams.FIXED_BLOCK_EXERCISES - this.log_model.attempts_since_completion();
+            if (!this.current_attempt_log.get("correct") && !this.current_attempt_log.get("complete")) {
+                context.remaining++;
+            }
+            if (context.remaining > 1) {
+                var msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
+            } else if (context.remaining == 1) {
+                var msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
+            } else {
+                var msg = gettext("You have completed this exercise.");
+            }
+        }
+
+        show_message("info", sprintf(msg, context), "id_exercise_status");
+    },
+
     user_data_loaded: function() {
 
         // get the exercise log model from the queried collection
@@ -857,7 +892,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // add some dummy attempt logs if needed, to match it up with the exercise log
         // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
-        if (this.attempt_collection.length < this.attempt_collection.STREAK_WINDOW) {
+        if (this.attempt_collection.length < ExerciseParams.STREAK_WINDOW) {
             var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
             while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
                 this.attempt_collection.add({correct: true, complete: true, points: this.get_points_per_question()});
@@ -878,6 +913,8 @@ window.ExercisePracticeView = Backbone.View.extend({
             model: this.log_model,
             collection: this.attempt_collection
         });
+
+        this.display_message();
 
     },
 
@@ -931,6 +968,9 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // update and save the exercise and attempt logs
         this.update_and_save_log_models("answer_given", data);
+
+        this.display_message();
+
     },
 
     hint_used: function() {
