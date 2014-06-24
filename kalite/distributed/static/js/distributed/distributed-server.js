@@ -127,7 +127,7 @@ var TotalPointView = Backbone.View.extend({
         if (!this.model.get("is_logged_in")) {
             return;
         } else if (points > 0) {
-            message = sprintf("%s | %s", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
+            message = sprintf("%s<span class='motivational-feature'> | %s</span>", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
         } else {
             message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
         }

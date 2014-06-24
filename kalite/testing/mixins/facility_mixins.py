@@ -49,6 +49,7 @@ class CreateStudentMixin(CreateFacilityMixin):
                               cls.create_facility())
         user = FacilityUser(**fields)
         user.set_password(password)
+        user.real_password = password
         user.save()
         return user
 
