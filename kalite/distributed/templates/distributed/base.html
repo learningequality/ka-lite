@@ -30,6 +30,7 @@
             window.console = window.console || {log: function() {}};
         </script>
 
+        <script type="text/javascript" src="{% url 'ab_testing_js' %}"></script>
 
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
