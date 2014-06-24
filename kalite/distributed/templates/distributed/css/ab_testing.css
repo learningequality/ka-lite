@@ -1,0 +1,6 @@
+/* Hide motivational features if disabled in settings */
+.motivational-feature {
+  {% if turn_off_motivational_features %}
+  display: none;
+  {% endif %}
+}

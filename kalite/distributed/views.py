@@ -393,7 +393,6 @@ def search(request, topics):  # we don't use the topics variable, but this setup
         'category': category,
     }
 
-
 def crypto_login(request):
     """
     Remote admin endpoint, for login to a distributed server (given its IP address; see central/views.py:crypto_login)
@@ -427,6 +426,16 @@ def handler_403(request, *args, **kwargs):
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
+
+
+#########
+# Custom JS and CSS django templates
+#########
+@render_to('distributed/css/ab_testing.css', mimetype='text/css')
+def ab_testing_css(request):
+    return {
+        'turn_off_motivational_features': settings.TURN_OFF_MOTIVATIONAL_FEATURES
+    }
 
 
 def handler_404(request):
