@@ -91,6 +91,11 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
+# css and js templates
+urlpatterns += patterns(__package__ + '.views',
+    url(r'_generated/ab_testing.css', 'ab_testing_css', {}, 'ab_testing_css'),
+)
+
 handler403 = __package__ + '.views.handler_403'
 handler404 = __package__ + '.views.handler_404'
 handler500 = __package__ + '.views.handler_500'
