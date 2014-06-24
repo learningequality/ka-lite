@@ -7,7 +7,7 @@
 
 {% block headcss %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
-  <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' True %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -23,8 +23,8 @@
     <td playlist-group-id="<%= id%>"><a class="remove" href="">[-]</a></td>
   </script>
 
-  <script type="text/javascript" src="{% static 'js/playlist/models.js' True %}"></script>
-  <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' True %}"></script>
+  <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' %}"></script>
 
   <script type="text/javascript">
    var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
