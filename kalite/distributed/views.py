@@ -289,6 +289,8 @@ def homepage(request, topics):
     Homepage.
     """
     context = topic_context(topics)
+    # TODO-BLOCKER(aron): Remove this when merging to other branches
+    assert package_selected("Nalanda"), "Nalanda deployment should have the Nalanda package activated"
     context.update({
         "title": "Home",
     })
