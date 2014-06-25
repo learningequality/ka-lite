@@ -80,8 +80,8 @@ class SyncSession(ExtendedModel):
         #   to timestamp, making sure that whatever we do works for both
         #   distributed and central servers.
         if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
-            to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
-            to_discard.delete()
+            for model in list(SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]):
+                model.delete()
 
 
 class SyncedModelQuerySet(QuerySet):
