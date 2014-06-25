@@ -138,7 +138,9 @@
                 <a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
+                <span class="motivational-feature">
+                    <a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
+                </span>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url 'help' %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a>
