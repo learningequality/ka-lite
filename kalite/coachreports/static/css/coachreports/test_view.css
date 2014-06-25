@@ -15,8 +15,7 @@ th, td {
     min-width: 60px;
     font-weight: bold;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.1em;
 }
 .student-table {
     float: left;
