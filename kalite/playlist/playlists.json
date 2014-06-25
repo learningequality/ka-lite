@@ -1,7 +1,7 @@
 [
   {
     "title":
-      "Playlist 1: Read/write 4 digit numbers; place value and face value; expanded form of numbers",
+      "Playlist 1: Read/write 4 digit numbers, place value and face value, expanded form of numbers",
     "id": "g3_p1",
     "tag": "Grade 3",
     "entries": [
@@ -39,7 +39,7 @@
   },
   {
     "title":
-      "Playlist 2: Identify numbers that are <, >, =; ascending and descending numbers",
+      "Playlist 2: Identify numbers that are <, >, =- ascending and descending numbers",
     "id": "g3_p2",
     "tag": "Grade 3",
     "entries": [
@@ -488,7 +488,7 @@
     ]
   },
   {
-    "title": "Playlist 11: Multi digit ultiplication without carryover",
+    "title": "Playlist 11: Multi digit multiplication without carryover",
     "id": "g3_p11",
     "tag": "Grade 3",
     "entries": [
@@ -690,7 +690,7 @@
   },
   {
     "title":
-      "Playlist 2: Understanding & regrouping whole numbers; Counting and Greater than/Less than basics",
+      "Playlist 2: Understanding & regrouping whole numbers- counting and greater than/less than basics",
     "id": "g4_p2",
     "tag": "Grade 4",
     "entries": [
@@ -779,7 +779,7 @@
     ]
   },
   {
-    "title": "Playlist 3:  Addition & Subtraction; Addition with carrying;",
+    "title": "Playlist 3:  Addition & subtraction- addition with carrying",
     "id": "g4_p3",
     "tag": "Grade 4",
     "entries": [
@@ -873,7 +873,7 @@
   },
   {
     "title":
-      "Playlist 4:  Subtraction with carrying; Addition & Subtraction Word Problems",
+      "Playlist 4:  Subtraction with carrying- addition & subtraction word problems",
     "id": "g4_p4",
     "tag": "Grade 4",
     "entries": [
@@ -949,7 +949,7 @@
     ]
   },
   {
-    "title": "Playlist 5: Concept of multiplication; Basic Multiplication",
+    "title": "Playlist 5: Concept of multiplication- basic multiplication",
     "id": "g4_p5",
     "tag": "Grade 4",
     "entries": [
@@ -1012,7 +1012,7 @@
     ]
   },
   {
-    "title": "Playlist 6: Multi-digit multiplication; Lattice Multiplication",
+    "title": "Playlist 6: Multi-digit multiplication- lattice multiplication",
     "id": "g4_p6",
     "tag": "Grade 4",
     "entries": [
@@ -1115,7 +1115,7 @@
     ]
   },
   {
-    "title": "Playlist 7: Multiplication Word Problems",
+    "title": "Playlist 7: Multiplication word problems",
     "id": "g4_p7",
     "tag": "Grade 4",
     "entries": [
@@ -1211,7 +1211,7 @@
     ]
   },
   {
-    "title": "Playlist 8: Measuring Segments; Number Patterns (OPTIONAL)",
+    "title": "Playlist 8: Measuring segments- number patterns",
     "id": "g4_p8",
     "tag": "Grade 4",
     "entries": [
@@ -1385,7 +1385,7 @@
   },
   {
     "title":
-      "Playlist 10: Division Word Problems; Revision of Multiplication & Division",
+      "Playlist 10: Division word problems- revision of multiplication & division",
     "id": "g4_p10",
     "tag": "Grade 4",
     "entries": [
@@ -1462,7 +1462,7 @@
     ]
   },
   {
-    "title": "Playlist 11: Tables & Bar Graphs",
+    "title": "Playlist 11: Tables & bar graphs",
     "id": "g4_p11",
     "tag": "Grade 4",
     "entries": [
@@ -1546,7 +1546,7 @@
     ]
   },
   {
-    "title": "Playlist 12: Telling Time",
+    "title": "Playlist 12: Telling time",
     "id": "g4_p12",
     "tag": "Grade 4",
     "entries": [
@@ -1594,7 +1594,7 @@
     ]
   },
   {
-    "title": "Playlist 13: Understanding Fractions",
+    "title": "Playlist 13: Understanding fractions",
     "id": "g4_p13",
     "tag": "Grade 4",
     "entries": [
@@ -1657,7 +1657,7 @@
     ]
   },
   {
-    "title": "Playlist 14: Visualizing, Comparing & Decomposing Fractions",
+    "title": "Playlist 14: Visualizing, comparing & decomposing fractions",
     "id": "g4_p14",
     "tag": "Grade 4",
     "entries": [
@@ -1736,7 +1736,7 @@
     ]
   },
   {
-    "title": "Playlist 15: Adding & Subtracting Fractions",
+    "title": "Playlist 15: Adding & subtracting fractions",
     "id": "g4_p15",
     "tag": "Grade 4",
     "entries": [
@@ -1850,7 +1850,7 @@
     ]
   },
   {
-    "title": "Playlist 16: Non-standard shapes; Angle basics & measurements",
+    "title": "Playlist 16: Non-standard shapes- angle basics & measurements",
     "id": "g4_p16",
     "tag": "Grade 4",
     "entries": [
@@ -1928,7 +1928,7 @@
     ]
   },
   {
-    "title": "Playlist 17: Logical Reasoning (OPTIONAL)",
+    "title": "Playlist 17: Logical reasoning",
     "id": "g4_p17",
     "tag": "Grade 4",
     "entries": [
@@ -1972,7 +1972,7 @@
   },
   {
     "title":
-      "Playlist 18: Addition & Subtraction Word Problems; Circumference & Area of Circles",
+      "Playlist 18: Addition & subtraction word problems- circumference & area of circles",
     "id": "g4_p18",
     "tag": "Grade 4",
     "entries": [
@@ -2029,7 +2029,7 @@
     ]
   },
   {
-    "title": "Playlist 1: Place Values",
+    "title": "Playlist 1: Place values",
     "id": "g5_p1",
     "tag": "Grade 5",
     "entries": [
@@ -2102,7 +2102,7 @@
   },
   {
     "title":
-      "Playlist 2: Understanding & regrouping whole numbers; Counting and Inequalities",
+      "Playlist 2: Understanding & regrouping whole numbers- counting and inequalities",
     "id": "g5_p2",
     "tag": "Grade 5",
     "entries": [
@@ -2137,27 +2137,27 @@
         "entity_kind": "Exercise"
       },
       {
-        "entity_id": "15:/v/plotting-inequalities-on-a-number-line/",
+        "entity_id": "/v/plotting-inequalities-on-a-number-line/",
         "sort_order": 6,
         "entity_kind": "Video"
       },
       {
-        "entity_id": "16:/v/writing-numerical-inequalities-exercise/",
+        "entity_id": "/v/writing-numerical-inequalities-exercise/",
         "sort_order": 7,
         "entity_kind": "Video"
       },
       {
-        "entity_id": "17:/v/inequalities-in-one-variable-1-exercise/",
+        "entity_id": "/v/inequalities-in-one-variable-1-exercise/",
         "sort_order": 8,
         "entity_kind": "Video"
       },
       {
-        "entity_id": "18:/v/inequalities-on-a-number-line/",
+        "entity_id": "/v/inequalities-on-a-number-line/",
         "sort_order": 9,
         "entity_kind": "Video"
       },
       {
-        "entity_id": "19:/v/figuring-out-days-of-the-week/",
+        "entity_id": "/v/figuring-out-days-of-the-week/",
         "sort_order": 10,
         "entity_kind": "Video"
       },
@@ -2180,7 +2180,7 @@
     ]
   },
   {
-    "title": "Playlist 3: Addition & Subtraction; Addition with carrying;",
+    "title": "Playlist 3: Addition & subtraction- addition with carrying",
     "id": "g5_p3",
     "tag": "Grade 5",
     "entries": [
@@ -2331,7 +2331,8 @@
     ]
   },
   {
-    "title": "Playlist 4: Concept of Multipliction, Basics of Multiplication",
+    "title":
+      "Playlist 4: Concept of multiplication- basics of multiplication",
     "id": "g5_p4",
     "tag": "Grade 5",
     "entries": [
@@ -2393,7 +2394,7 @@
     ]
   },
   {
-    "title": "Playlist 5: Multi-digit multiplication; Lattice Multiplication",
+    "title": "Playlist 5: Multi-digit multiplication- lattice multiplication",
     "id": "g5_p5",
     "tag": "Grade 5",
     "entries": [
@@ -2497,7 +2498,7 @@
   },
   {
     "title": "Playlist 6: Multiplication and division word problems",
-    "id": "",
+    "id": "g5_p6",
     "tag": "Grade 5",
     "entries": [
       {
@@ -2591,7 +2592,7 @@
     ]
   },
   {
-    "title": "Playlist 7: Point,Lines and Planes; Number patterns",
+    "title": "Playlist 7: Points, lines and planes- number patterns",
     "id": "g5_p7",
     "tag": "Grade 5",
     "entries": [
@@ -2722,7 +2723,7 @@
     ]
   },
   {
-    "title": "Playlist 9 Reasing and Interpreting Data",
+    "title": "Playlist 9:Reading and interpreting data",
     "id": "g5_p9",
     "tag": "Grade 5",
     "entries": [
@@ -2815,7 +2816,7 @@
     ]
   },
   {
-    "title": "Playlist 10- Perimeter,Area and volume; Ratio and Proportions",
+    "title": "Playlist 10: Perimeter, area and volume- ratio and proportion",
     "id": "g5_p10",
     "tag": "Grade 5",
     "entries": [
@@ -2894,7 +2895,7 @@
     ]
   },
   {
-    "title": "Playlist 11- Quadrilaterals, Telling time",
+    "title": "Playlist 11- Quadrilaterals & telling time",
     "id": "g5_p11",
     "tag": "Grade 5",
     "entries": [
@@ -3010,8 +3011,8 @@
     ]
   },
   {
-    "title": "Playlist 12- Understanding Fractions,Equivalent fraction2",
-    "id": "",
+    "title": "Playlist 12- Understanding fractions & equivalent fractions",
+    "id": "g5_p12",
     "tag": "Grade 5",
     "entries": [
       {
@@ -3139,7 +3140,7 @@
   },
   {
     "title":
-      "Playlist 13 - Comparing Fractions, Decomposing Fractions, Factors and Multiples, Adding and subtracting Fractions",
+      "Playlist 13 - Comparing fractions, decomposing fractions, factors and multiples, adding and subtracting fractions",
     "id": "g5_p13",
     "tag": "Grade 5",
     "entries": [
@@ -3310,7 +3311,7 @@
     ]
   },
   {
-    "title": "Playlist 14 - Multiplying and Dividing fractions",
+    "title": "Playlist 14 - Multiplying and dividing fractions",
     "id": "g5_p14",
     "tag": "Grade 5",
     "entries": [
@@ -3439,7 +3440,7 @@
     ]
   },
   {
-    "title": "Playlist 15 - Mixed fractions and Improper Fractions",
+    "title": "Playlist 15 - Mixed fractions and improper fractions",
     "id": "g5_p15",
     "tag": "Grade 5",
     "entries": [
@@ -3533,7 +3534,7 @@
   },
   {
     "title":
-      "Playlist 16- Mixed Fractions and Improper Fractions Addition, Subtraction, Multiplication and Division",
+      "Playlist 16- Mixed fractions and improper fractions- addition, subtraction, multiplication and division",
     "id": "g5_p16",
     "tag": "Grade 5",
     "entries": [
@@ -3622,7 +3623,7 @@
   },
   {
     "title":
-      "Playlist 17 - Conceptualizing Decimals and place notation, Decimals and fractions, Regrouping and comparing",
+      "Playlist 17 - Conceptualizing decimals and place notation, decimals and fractions, regrouping and comparing",
     "id": "g5_p17",
     "tag": "Grade 5",
     "entries": [
@@ -3675,7 +3676,7 @@
   },
   {
     "title":
-      "Playlist 18 - Decimal Operations : Addition and Subtraction and Multiplication of Decimals \n",
+      "Playlist 18 - Decimal operations- addition, subtraction and multiplication of decimals \n",
     "id": "g5_p18",
     "tag": "Grade 5",
     "entries": [
@@ -3763,7 +3764,7 @@
     ]
   },
   {
-    "title": "Playlist 19 - Conversion of Decimals",
+    "title": "Playlist 19 - Conversion of decimals",
     "id": "g5_p19",
     "tag": "Grade 5",
     "entries": [
@@ -3873,7 +3874,7 @@
     ]
   },
   {
-    "title": "Playlist 20: Measuring Angles",
+    "title": "Playlist 20: Measuring angles",
     "id": "g5_p20",
     "tag": "Grade 5",
     "entries": [
@@ -3925,7 +3926,7 @@
     ]
   },
   {
-    "title": "Playlist 21 - Circles",
+    "title": "Playlist 21: Circles",
     "id": "g5_p21",
     "tag": "Grade 5",
     "entries": [
@@ -4874,7 +4875,7 @@
     ]
   },
   {
-    "title": "Playlist 13: Oveview and history of algebra",
+    "title": "Playlist 13: Overview and history of algebra",
     "id": "g6_p13",
     "tag": "Grade 6",
     "entries": [
@@ -5394,7 +5395,7 @@
     ]
   },
   {
-    "title": "Playlist 21: Introduction to Geometry",
+    "title": "Playlist 21: Introduction to geometry",
     "id": "g6_p21",
     "tag": "Grade 6",
     "entries": [
