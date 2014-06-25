@@ -46,9 +46,13 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
+
+        if "registered" not in request.session:
+            logging.error("Key 'registered' not defined in session, but should be by now.")
+
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
-            if not request.session["registered"] and BaseClient().test_connection() == "success":
+            if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
@@ -56,7 +60,7 @@ def check_setup_status(handler):
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility", kwargs={"zone_id": zone_id})))
 
         elif not request.is_logged_in:
-            if not request.session["registered"] and BaseClient().test_connection() == "success":
+            if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 redirect_url = reverse("register_public_key")
             elif not request.session["facility_exists"]:
