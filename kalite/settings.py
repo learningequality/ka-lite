@@ -199,6 +199,7 @@ if package_selected("RPi"):
 if package_selected("Nalanda"):
     LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
+    FIXED_BLOCK_EXERCISES = 5
 
 
 if package_selected("UserRestricted"):

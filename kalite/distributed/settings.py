@@ -95,6 +95,10 @@ CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http:/
 
 KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan-exercises")
 
+########################
+# Exercise AB-testing
+########################
+FIXED_BLOCK_EXERCISES = getattr(local_settings, 'FIXED_BLOCK_EXERCISES', 0)
 
 ########################
 # Ports & Accessibility
