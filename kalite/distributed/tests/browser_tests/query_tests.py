@@ -10,6 +10,7 @@ from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
@@ -19,6 +20,10 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         random.seed('ben')  # to make password reproducible
         self.persistent_browser = False
         super(QueryTest, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+        self.setup_fake_device()
+        super(QueryTest, self).setUp()
 
     @staticmethod
     def _gen_valid_password():
