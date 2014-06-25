@@ -13,7 +13,7 @@ from kalite.testing.utils import FuzzyInt
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
-class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
+class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
         """To guarantee state across tests, clear browser state every time."""
@@ -40,7 +40,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(FuzzyInt(25, 28) + 3 * UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(25, 29) + 3 * UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
