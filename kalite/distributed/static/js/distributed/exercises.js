@@ -867,7 +867,11 @@ window.ExercisePracticeView = Backbone.View.extend({
         };
 
         if (!this.log_model.get("complete")) {
-            var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+            if (this.log_model.get("attempts") !== undefined) { // don't display a message if the user is already partway into the streak
+                var msg = "";
+            } else {
+                var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+            }
         } else {
             context.remaining = ExerciseParams.FIXED_BLOCK_EXERCISES - this.log_model.attempts_since_completion();
             if (!this.current_attempt_log.get("correct") && !this.current_attempt_log.get("complete")) {
