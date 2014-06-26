@@ -110,17 +110,10 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser.find_element_by_id("id_username").click()  # explicitly set the focus, to start
         self.browser_form_fill(username)
         self.browser_form_fill(password)
-        # self.browser_form_fill(password, move_to_next_element=False)
-        # el = self.browser.find_element_by_tag_name("input")
-        # logging.warn('==> el %s -- %s -- %s' % (el.get_attribute('value'), el.parent.name, dir(el),))
-        # els = self.browser.find_elements_by_css_selector("input[type='submit']")
-        # for el in els:
-        #     logging.warn('==> el %s -- %s -- %s' % (el.get_attribute('value'), el.parent.name, dir(el),))
         self.browser.find_element_by_id("id_username").submit()
 
         # Make sure that the page changed
         if expect_success:
-            # self.assertTrue(self.wait_for_page_change(expect_url), "RETURN causes page to change")
             self.assertTrue(self.wait_for_page_change(login_url, wait_time=0.5, max_retries=10))
             time.sleep(0.5)  # allow async status to update
             self.assertTrue(self.browser_is_logged_in(username), "make sure %s is logged in." % username)
@@ -143,19 +136,25 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             if not expect_url:
                 expect_url = self.reverse("coach_reports")
             self.assertEqual(self.browser.current_url, expect_url)
-            logging.warn('==> login teacher %s' % (username,))
             self.browser_check_django_message("alert-success", contains="You've been logged in!")
 
-    def browser_login_student(self, username, password, facility_name=None, expect_success=True, expect_url=None):
+    def browser_login_student(self, username, password, facility_name=None, expect_success=True, expect_url=None,
+                              exam_mode_on=False):
+        """
+        Consider that student may be redirected to the exam page when Settings.EXAM_MODE_ON is set.
+        """
         self.browser_login_user(username=username, password=password, facility_name=facility_name,
                                 expect_success=expect_success)
-        # time.sleep(self.max_wait_time/10)  # allow time for async messages to load
+        time.sleep(self.max_wait_time/10)  # allow time for async messages to load
         if expect_success:
             if not expect_url:
                 expect_url = self.reverse("homepage")
             self.assertEqual(self.browser.current_url, expect_url)
-            logging.warn('==> login student %s' % (username,))
-            self.browser_check_django_message("alert-success", contains="You've been logged in!")
+            if exam_mode_on:
+                has_elem = self.browser_wait_for_element("#start-test")
+                self.assertTrue(has_elem)
+            else:
+                self.browser_check_django_message("alert-success", contains="You've been logged in!")
 
     def browser_logout_user(self):
         if self.browser_is_logged_in():
