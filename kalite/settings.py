@@ -196,6 +196,12 @@ if package_selected("RPi"):
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 
+if package_selected("Nalanda"):
+    LOG.info("Nalanda package selected")
+    TURN_OFF_MOTIVATIONAL_FEATURES = True
+    FIXED_BLOCK_EXERCISES = 5
+
+
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
 

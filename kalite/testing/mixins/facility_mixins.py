@@ -3,7 +3,6 @@ from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
 class CreateFacilityMixin(object):
     DEFAULTS = {
-        'id': 1,
         'name': 'facility0',
         'description': 'a default facility',
         'user_count': 1,
@@ -50,11 +49,12 @@ class CreateStudentMixin(CreateFacilityMixin):
                               cls.create_facility())
         user = FacilityUser(**fields)
         user.set_password(password)
+        user.real_password = password
         user.save()
         return user
 
 
-class CreateTeacherMixin(CreateFacilityMixin):
+class CreateTeacherMixin(CreateStudentMixin):
     DEFAULTS = {
         'first_name': 'Teacher 1',
         'last_name': 'Sample',
@@ -67,15 +67,10 @@ class CreateTeacherMixin(CreateFacilityMixin):
     def create_teacher(cls, **kwargs):
         fields = CreateTeacherMixin.DEFAULTS.copy()
         fields.update(**kwargs)
-        fields['facility'] = (fields.get('facility') or
-                              cls.create_facility())
-        user = FacilityUser(**fields)
-        user.set_password(fields['password'])
-        user.save()
-        return user
+        return cls.create_student(**fields)  # delegate to the create_student method, which has the right logic
 
 
-class FacilityMixins(CreateStudentMixin, CreateGroupMixin, CreateTeacherMixin, CreateFacilityMixin):
+class FacilityMixins(CreateTeacherMixin, CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
     '''
     Toplevel class that has all the mixin methods defined above
     '''
