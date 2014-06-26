@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
@@ -75,13 +75,13 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         return response
 
 
-class CoreTest(BaseTest):
+class CoreTests(BaseTest):
 
     def setUp(self):
-        super(CoreTest, self).setUp()
+        super(CoreTests, self).setUp()
 
     def tearDown(self):
-        super(CoreTest, self).tearDown()
+        super(CoreTests, self).tearDown()
 
     def test_teacher_can_access_test_list_page(self):
         self.login_teacher()
@@ -174,6 +174,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
     TEXT_DISABLE = 'Disable Exam Mode'
 
     persistent_browser = True
+    # NOTE: Setting `HEADLESS = True` at `settings.py` will not work if `persistent_browser = True`.
 
     def setUp(self):
 
@@ -194,13 +195,14 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
                                    password=self.client.teacher_data['password'],
                                    facility_name=self.client.facility.name)
 
-    def login_student_in_browser(self):
+    def login_student_in_browser(self, expect_url=None):
         self.browser_login_student(username=self.client.student_data['username'],
                                    password=self.client.student_data['password'],
-                                   facility_name=self.client.facility.name)
+                                   facility_name=self.client.facility.name,
+                                   expect_url=expect_url)
 
     def wait_for_element(self, by, elem):
-        WebDriverWait(self.browser, 3).until(EC.element_to_be_clickable((by, elem)))
+        WebDriverWait(self.browser, 1).until(ec.element_to_be_clickable((by, elem)))
 
     def get_button(self, is_on=False):
         if is_on:
@@ -234,7 +236,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
         # logout the teacher and login a student to check the exam redirect
         self.browser_logout_user()
-        self.login_student_in_browser()
+        self.login_student_in_browser(expect_url=self.exam_page_url)
 
         # did student redirect to exam page?
         self.assertEqual(self.browser.current_url, self.exam_page_url)

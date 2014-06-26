@@ -1,24 +1,25 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-import re
+# import re
 import time
-from selenium import webdriver
+# from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions, ui
-from selenium.webdriver.firefox.webdriver import WebDriver
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.support import expected_conditions, ui
+# from selenium.webdriver.firefox.webdriver import WebDriver
 
-from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
-from django.core.urlresolvers import reverse
-from django.test import TestCase
-from django.utils import unittest
+from django.conf import settings
+# from django.core.management import call_command
+# from django.core.urlresolvers import reverse
+# from django.test import TestCase
+# from django.utils import unittest
 from django.utils.translation import ugettext as _
 
-from fle_utils.django_utils import call_command_with_output
-from kalite.facility.models import Facility, FacilityGroup, FacilityUser
+from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.browser import BrowserTestCase
+
+logging = settings.LOG
 
 
 class KALiteDistributedBrowserTestCase(BrowserTestCase):
@@ -33,19 +34,18 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     def tearDown(self):
         """
         """
-
         # Must clean up, as browser sessions could persist
         if self.persistent_browser:
             self.browser_logout_user()
         super(KALiteDistributedBrowserTestCase, self).tearDown()
 
-    def create_student(self, username=default_username, password=default_password, facility_name=default_facility_name):
+    def create_student(self, username=default_username, password=default_password,
+                       facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
         student = FacilityUser(username=username, facility=facility)
         student.set_password(raw_password=password)
         student.save()
-
         return student
 
     def create_facility(self, facility_name=default_facility_name):
@@ -55,7 +55,8 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         facility.save()
         return facility
 
-    def browser_register_user(self, username, password, first_name="firstname", last_name="lastname", facility_name=None, stay_logged_in=False, expect_success=True):
+    def browser_register_user(self, username, password, first_name="firstname", last_name="lastname",
+                              facility_name=None, stay_logged_in=False, expect_success=True):
         """Tests that a user can register"""
 
         # Expected results vary based on whether a user is logged in or not.
@@ -63,35 +64,40 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.browser_logout_user()
 
         register_url = self.reverse("add_facility_student")
-        self.browse_to(register_url) # Load page
+        self.browse_to(register_url)  # Load page
         #self.assertIn(_("Sign up"), self.browser.title, "Register page title") # this depends on who is logged in.
 
         # Part 1: REGISTER
         if facility_name and self.browser.find_element_by_id("id_facility").is_displayed():
             self.browser_activate_element("id_facility")
             self.browser_send_keys(facility_name)
-        self.browser_activate_element(id="id_username") # explicitly set the focus, to start
-        self.browser_form_fill(username) # first name
-        self.browser_form_fill(first_name) # first name
-        self.browser_form_fill(last_name) # last name
-        self.browser_form_fill(password) #password
-        self.browser_form_fill(password) #password (again)
+        self.browser_activate_element(id="id_username")  # explicitly set the focus, to start
+        self.browser_form_fill(username)
+        self.browser_form_fill(first_name)
+        self.browser_form_fill(last_name)
+        self.browser_form_fill(password)
+        self.browser_form_fill(password)  # password (again)
         self.browser.find_element_by_id("id_username").submit()
 
         # Make sure that the page changed to the admin homepage
         if expect_success:
             self.assertTrue(self.wait_for_page_change(register_url), "RETURN causes page to change")
-            self.assertIn(reverse("login"), self.browser.current_url, "Register browses to login page" )
+            self.assertIn(self.reverse("login"), self.browser.current_url, "Register browses to login page")
             #self.browser_check_django_message(message_type="success", contains="You successfully registered.")
             # uncomment message check when that code gets checked in
+
+    # # REF: http://lincolnloop.com/blog/2012/nov/2/introduction-django-selenium-testing/
+    # def wait_for_css(self, css_selector, timeout=7):
+    #     """ Shortcut for WebDriverWait"""
+    #     from selenium.webdriver.support.ui import WebDriverWait
+    #     return WebDriverWait(self, timeout).until(lambda driver: driver.find_css(css_selector))
 
     def browser_login_user(self, username, password, facility_name=None, expect_success=True):
         """
         Tests that an existing admin user can log in.
         """
-
         login_url = self.reverse("login")
-        self.browse_to(login_url) # Load page
+        self.browse_to(login_url)  # Load page
         # self.assertIn(_("Log in"), self.browser.title, "Login page title")
 
         # Focus should be on username, password and submit
@@ -100,21 +106,26 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.browser_activate_element(id="id_facility")
             self.browser_send_keys(facility_name)
 
-        self.browser.find_element_by_id("id_username").clear() # clear any data
-        self.browser.find_element_by_id("id_username").click() # explicitly set the focus, to start
+        self.browser.find_element_by_id("id_username").clear()  # clear any data
+        self.browser.find_element_by_id("id_username").click()  # explicitly set the focus, to start
         self.browser_form_fill(username)
         self.browser_form_fill(password)
-        self.browser_send_keys(Keys.RETURN)
+        # self.browser_form_fill(password, move_to_next_element=False)
+        # el = self.browser.find_element_by_tag_name("input")
+        # logging.warn('==> el %s -- %s -- %s' % (el.get_attribute('value'), el.parent.name, dir(el),))
+        # els = self.browser.find_elements_by_css_selector("input[type='submit']")
+        # for el in els:
+        #     logging.warn('==> el %s -- %s -- %s' % (el.get_attribute('value'), el.parent.name, dir(el),))
+        self.browser.find_element_by_id("id_username").submit()
 
-        # Make sure that the page changed to the admin homepage
+        # Make sure that the page changed
         if expect_success:
-            self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
+            # self.assertTrue(self.wait_for_page_change(expect_url), "RETURN causes page to change")
+            self.assertTrue(self.wait_for_page_change(login_url, wait_time=0.5, max_retries=10))
             time.sleep(0.5)  # allow async status to update
             self.assertTrue(self.browser_is_logged_in(username), "make sure %s is logged in." % username)
 
-
-
-    def browser_login_admin(self, username=None, password=None, expect_success=True):
+    def browser_login_admin(self, username=None, password=None, expect_success=True, expect_url=None):
         if username is None:
             username = self.admin_user.username
         if password is None:
@@ -122,31 +133,44 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
         self.browser_login_user(username=username, password=password, expect_success=expect_success)
         if expect_success:
-            self.assertIn(reverse("zone_management", kwargs={"zone_id": "None"}), self.browser.current_url, "Login browses to zone_management page" )
+            self.assertIn(self.reverse("zone_management", kwargs={"zone_id": "None"}), self.browser.current_url,
+                          "Login browses to zone_management page")
 
-    def browser_login_teacher(self, username, password, facility_name=None, expect_success=True):
-        self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
+    def browser_login_teacher(self, username, password, facility_name=None, expect_success=True, expect_url=None):
+        self.browser_login_user(username=username, password=password, facility_name=facility_name,
+                                expect_success=expect_success)
         if expect_success:
-            self.assertIn(reverse("coach_reports"), self.browser.current_url, "Login browses to coach reports page" )
-            self.browser_check_django_message("success", contains="You've been logged in!")
+            if not expect_url:
+                expect_url = self.reverse("coach_reports")
+            self.assertEqual(self.browser.current_url, expect_url)
+            logging.warn('==> login teacher %s' % (username,))
+            self.browser_check_django_message("alert-success", contains="You've been logged in!")
 
-    def browser_login_student(self, username, password, facility_name=None, expect_success=True):
-        self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
-        time.sleep(self.max_wait_time/10) # allow time for async messages to load
+    def browser_login_student(self, username, password, facility_name=None, expect_success=True, expect_url=None):
+        self.browser_login_user(username=username, password=password, facility_name=facility_name,
+                                expect_success=expect_success)
+        # time.sleep(self.max_wait_time/10)  # allow time for async messages to load
         if expect_success:
-            self.assertIn(reverse("homepage"), self.browser.current_url, "Login browses to homepage" )
-            self.browser_check_django_message("success", contains="You've been logged in!")
+            if not expect_url:
+                expect_url = self.reverse("homepage")
+            self.assertEqual(self.browser.current_url, expect_url)
+            logging.warn('==> login student %s' % (username,))
+            self.browser_check_django_message("alert-success", contains="You've been logged in!")
 
     def browser_logout_user(self):
         if self.browser_is_logged_in():
             # Since logout redirects to the homepage, browse_to will fail (with no good way to avoid).
             #   so be smarter in that case.
-            if self.reverse("homepage") in self.browser.current_url:
-                self.browser.get(self.reverse("logout"))
+            homepage_url = self.reverse("homepage")
+            logout_url = self.reverse("logout")
+            if homepage_url == self.browser.current_url:
+                self.browser.get(logout_url)
             else:
-                self.browse_to(self.reverse("logout"))
-            self.assertIn(reverse("homepage"), self.browser.current_url, "Logout redirects to the homepage" )
+                self.browse_to(logout_url)
+            self.assertEqual(homepage_url, self.browser.current_url, "Logout redirects to the homepage")
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
+        else:
+            logging.warn('==> Will not logout browser because NOT logged in.')
 
     def browser_is_logged_in(self, expected_username=None):
         # Two ways to be logged in:
@@ -196,5 +220,5 @@ class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestC
 
     def setUp(self):
         """Add a facility, so users can begin registering / logging in immediately."""
-        super(KALiteDistributedWithFacilityBrowserTestCase,self).setUp() # sets up admin, etc
+        super(KALiteDistributedWithFacilityBrowserTestCase, self).setUp()  # sets up admin, etc
         self.facility = self.create_facility(facility_name=self.facility_name)
