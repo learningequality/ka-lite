@@ -39,6 +39,18 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
     else:
         local_browser = browser
 
+    # MUST: If using PhantomJS, override the window.alert() function to return true because
+    # the GhostDriver does not support modal dialogs (alert, confirm, prompt).
+    # REF: https://groups.google.com/forum/#!topic/phantomjs/w_rKkFJ0g8w
+    if isinstance(local_browser, webdriver.PhantomJS):
+        js = """
+            window.confirm = function(message) {
+                return true;
+            }
+            window.alert = window.prompt = window.confirm;
+        """
+        local_browser.execute_script("%s" % js)
+
     return (local_browser, admin_user, test_password)
 
 
@@ -302,3 +314,22 @@ class BrowserTestCase(KALiteTestCase):
         self.browser_send_keys(Keys.RETURN)
         # how to wait for page change?  Will reload the same page.
         self.assertNotEqual(self.browser_wait_for_element(".errorlist"), None, "Make sure there's an error.")
+
+    def browser_set_alert(self):
+        """
+        PhantomJS still have no support for modal dialogs (alert, confirm) javascript functions so we wrap the call
+        to it here so we can capture the exception or update the function in case this gets fixed later.
+
+        What we do here is to override the alert() function so any call that expects the dialog with return true.
+
+        REF: http://stackoverflow.com/questions/15708518/how-can-i-handle-an-alert-with-ghostdriver-via-python
+        REF: https://groups.google.com/forum/#!topic/phantomjs/w_rKkFJ0g8w
+        """
+        alert = None
+        try:
+            # if not isinstance(self.browser, webdriver.PhantomJS):
+            alert = self.browser.switch_to_alert()
+            alert.accept()
+        except Exception as exc:
+            logging.warn('==> Exception at browser.browser_set_alert(): %s' % exc)
+        return alert

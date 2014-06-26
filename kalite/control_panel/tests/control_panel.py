@@ -27,8 +27,7 @@ class FacilityControlTests(FacilityMixins,
         facility_row = self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
         facility_delete_link = facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]/span')
         facility_delete_link.click()
-        alert = self.browser.switch_to_alert()
-        alert.accept()
+        self.browser_set_alert()
         time.sleep(5)
 
         with self.assertRaises(NoSuchElementException):
@@ -78,9 +77,7 @@ class GroupControlTests(FacilityMixins,
         confirm_group_delete_button.click()
 
         # there should be a confirm popup
-        alert = self.browser.switch_to_alert()
-        alert.accept()
-
+        self.browser_set_alert()
         time.sleep(5)
 
         with self.assertRaises(NoSuchElementException):
