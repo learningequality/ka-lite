@@ -1,6 +1,5 @@
 import getpass
 import hashlib
-import json
 import os
 import sys
 import tempfile
@@ -51,6 +50,7 @@ INSTALLED_APPS = (
     "kalite.khanload",  # khan academy interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
+    "kalite.ab_testing",
     "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
@@ -190,9 +190,3 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
-
-
-#################################
-# Toggling motivational features
-#################################
-TURN_OFF_MOTIVATIONAL_FEATURES = getattr(local_settings, 'TURN_OFF_MOTIVATIONAL_FEATURES', False)

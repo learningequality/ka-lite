@@ -12,6 +12,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 
 from . import api_urls
+import kalite.ab_testing.urls
 import kalite.coachreports.urls
 import kalite.playlist.urls
 import kalite.control_panel.urls
@@ -77,6 +78,11 @@ urlpatterns += patterns('',
     url(r'^handlebars/', include(fle_utils.handlebars.urls)),
 )
 
+# AB testing urls
+urlpatterns += patterns('',
+    url(r'^ab_testing/', include(kalite.ab_testing.urls)),
+)
+
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
@@ -89,12 +95,6 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
-)
-
-# css and js templates
-urlpatterns += patterns(__package__ + '.views',
-    url(r'_generated/ab_testing.css', 'ab_testing_css', {}, 'ab_testing_css'),
-    url(r'_generated/ab_testing.js', 'ab_testing_js', {}, 'ab_testing_js'),
 )
 
 handler403 = __package__ + '.views.handler_403'

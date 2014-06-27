@@ -428,22 +428,6 @@ def handler_403(request, *args, **kwargs):
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
 
-#########
-# Custom JS and CSS django templates
-#########
-@render_to('distributed/css/ab_testing.css', mimetype='text/css')
-def ab_testing_css(request):
-    return {
-        'turn_off_motivational_features': settings.TURN_OFF_MOTIVATIONAL_FEATURES,
-    }
-
-@render_to('distributed/js/ab_testing.js', mimetype='text/javascript')
-def ab_testing_js(request):
-    return {
-        'fixed_block_exercises': settings.FIXED_BLOCK_EXERCISES,
-    }
-
-
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))
 
