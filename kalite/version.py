@@ -3,16 +3,16 @@ VERSION = "0.12.0"
 VERSION_INFO = {
 
     "0.12.0": {
-        "release_date": "2014/04/15",
-        "git_commit": "dabc123abc123abc123abc123",
+        "release_date": "2014/06/30",
+        "git_commit": "4f69360",
         "new_features": {
             "all": [],
             "students": [],
-            "coaches": [],
-            "admins": [],
+            "coaches": ["transfer students between groups"],
+            "admins": ["Delete language", "Delete groups", "Delete students"],
         },
         "bugs_fixed": {
-            "all": [],
+            "all": ["tweaks to the i18n framework"],
             "students": [],
             "coaches": [],
             "admins": [],
