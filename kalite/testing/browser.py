@@ -39,19 +39,49 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
     else:
         local_browser = browser
 
-    # MUST: If using PhantomJS, override the window.alert() function to return true because
-    # the GhostDriver does not support modal dialogs (alert, confirm, prompt).
-    # REF: https://groups.google.com/forum/#!topic/phantomjs/w_rKkFJ0g8w
-    if isinstance(local_browser, webdriver.PhantomJS):
+    hacks_for_phantomjs(local_browser)
+
+    return (local_browser, admin_user, test_password)
+
+
+def hacks_for_phantomjs(browser):
+    """
+    HACK: If using PhantomJS, override the window.alert()/confirm()/prompt() functions to return true because
+    the GhostDriver does not support modal dialogs (alert, confirm, prompt).
+
+    What we do is override the alert/confirm/prompt functions so any call that expects the dialog with return true.
+
+    REF: http://stackoverflow.com/questions/15708518/how-can-i-handle-an-alert-with-ghostdriver-via-python
+    REF: https://groups.google.com/forum/#!topic/phantomjs/w_rKkFJ0g8w
+    REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
+    """
+    if isinstance(browser, webdriver.PhantomJS):
         js = """
             window.confirm = function(message) {
                 return true;
             }
             window.alert = window.prompt = window.confirm;
-        """
-        local_browser.execute_script("%s" % js)
 
-    return (local_browser, admin_user, test_password)
+            // REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
+            // REF: http://stackoverflow.com/questions/2705583/how-to-simulate-a-click-with-javascript/2706236#2706236
+            window.eventFire = function(el, etype) {
+                if (el.fireEvent) {
+                    el.fireEvent('on' + etype);
+                } else {
+                    var evObj = document.createEvent('Events');
+                    evObj.initEvent(etype, true, false);
+                    el.dispatchEvent(evObj);
+                }
+            };
+
+            // shortcut of above method
+            window.simulateClick = function(el) {
+                var e = document.createEvent('MouseEvents');
+                e.initEvent( 'click', true, true );
+                el.dispatchEvent(e);
+            };
+        """
+        browser.execute_script("%s" % js)
 
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
@@ -115,7 +145,7 @@ class BrowserTestCase(KALiteTestCase):
 
         super(BrowserTestCase, self).setUp()
 
-        # Clear the session cache after ever test case, to keep things clean.
+        # Clear the session cache after every test case, to keep things clean.
         Session.objects.all().delete()
 
         # # Can use already launched browser.
@@ -315,21 +345,51 @@ class BrowserTestCase(KALiteTestCase):
         # how to wait for page change?  Will reload the same page.
         self.assertNotEqual(self.browser_wait_for_element(".errorlist"), None, "Make sure there's an error.")
 
-    def browser_set_alert(self):
+    def browser_accept_alert(self, sleep=1):
         """
-        PhantomJS still have no support for modal dialogs (alert, confirm) javascript functions so we wrap the call
-        to it here so we can capture the exception or update the function in case this gets fixed later.
+        PhantomJS still have no support for modal dialogs (alert, confirm, prompt) javascript functions.
 
-        What we do here is to override the alert() function so any call that expects the dialog with return true.
-
-        REF: http://stackoverflow.com/questions/15708518/how-can-i-handle-an-alert-with-ghostdriver-via-python
-        REF: https://groups.google.com/forum/#!topic/phantomjs/w_rKkFJ0g8w
+        See comment on `hacks_for_phantomjs()` method above.
         """
         alert = None
         try:
-            # if not isinstance(self.browser, webdriver.PhantomJS):
-            alert = self.browser.switch_to_alert()
-            alert.accept()
+            if not isinstance(self.browser, webdriver.PhantomJS):
+                alert = self.browser.switch_to_alert()
+                alert.accept()
+            # set some delay to allow browser to process / reload the page
+            if sleep:
+                time.sleep(sleep)
         except Exception as exc:
             logging.warn('==> Exception at browser.browser_set_alert(): %s' % exc)
         return alert
+
+    def browser_click(self, elem, selector=None):
+        """
+        PhantomJS does not support the click fully, specially on <a> tags so send a Return key instead.
+
+        REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
+        """
+        if isinstance(self.browser, webdriver.PhantomJS):
+            if not selector:
+                elem.send_keys(Keys.RETURN)
+            else:
+                # MUST: Make sure we re-inject the script hacks because the browser may have been reloaded.
+                hacks_for_phantomjs(self.browser)
+                js = """
+                    var el = $('%s')[0];
+                    window.simulateClick(el);
+                """ % selector
+                self.browser.execute_script("%s" % js)
+        else:
+            elem.click()
+
+    def browser_click_and_accept(self, elem, selector, sleep=1):
+        """
+        Shorthand to click on a link/button, show a modal dialog, then accept it.
+
+        Use the fixed quirks on PhantomJS/GhostDriver on modal dialogs and clicking on anchor tags.
+
+        See comment on `hacks_for_phantomjs()` method above.
+        """
+        self.browser_click(elem=elem, selector=selector)
+        self.browser_accept_alert(sleep=sleep)

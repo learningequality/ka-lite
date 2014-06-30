@@ -1,11 +1,17 @@
 import time
 
+from django.conf import settings
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+
+logging = settings.LOG
 
 
 class FacilityControlTests(FacilityMixins,
@@ -26,9 +32,8 @@ class FacilityControlTests(FacilityMixins,
         # assert that our facility exists
         facility_row = self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
         facility_delete_link = facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]/span')
-        facility_delete_link.click()
-        self.browser_set_alert()
-        time.sleep(5)
+        # facility_delete_link.click()
+        self.browser_click_and_accept(facility_delete_link, 'a.facility-delete-link > span')
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
@@ -74,11 +79,8 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox.click()
 
         confirm_group_delete_button = self.browser.find_element_by_xpath('//button[@class="delete-group"]')
-        confirm_group_delete_button.click()
-
-        # there should be a confirm popup
-        self.browser_set_alert()
-        time.sleep(5)
+        # confirm_group_delete_button.click()
+        self.browser_click_and_accept(confirm_group_delete_button, 'button.delete-group')
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
