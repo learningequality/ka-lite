@@ -30,10 +30,8 @@ class FacilityControlTests(FacilityMixins,
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
 
         # assert that our facility exists
-        facility_row = self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
-        facility_delete_link = facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]/span')
-        # facility_delete_link.click()
-        self.browser_click_and_accept(facility_delete_link, 'a.facility-delete-link > span')
+        selector = 'tr[facility-id="%s"] > td > a.facility-delete-link > span' % self.fac.id
+        self.browser_click_and_accept(selector)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
@@ -78,9 +76,7 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
-        confirm_group_delete_button = self.browser.find_element_by_xpath('//button[@class="delete-group"]')
-        # confirm_group_delete_button.click()
-        self.browser_click_and_accept(confirm_group_delete_button, 'button.delete-group')
+        self.browser_click_and_accept('button.delete-group')
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)

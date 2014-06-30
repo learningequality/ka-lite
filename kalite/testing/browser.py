@@ -363,27 +363,27 @@ class BrowserTestCase(KALiteTestCase):
             logging.warn('==> Exception at browser.browser_set_alert(): %s' % exc)
         return alert
 
-    def browser_click(self, elem, selector=None):
+    def browser_click(self, selector):
         """
-        PhantomJS does not support the click fully, specially on <a> tags so send a Return key instead.
+        PhantomJS does not support the click fully, specially on <a> tags so we use the hack script from
+        `hacks_for_phantomjs()` method above.
 
         REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
         """
-        if isinstance(self.browser, webdriver.PhantomJS):
-            if not selector:
-                elem.send_keys(Keys.RETURN)
-            else:
-                # MUST: Make sure we re-inject the script hacks because the browser may have been reloaded.
-                hacks_for_phantomjs(self.browser)
-                js = """
-                    var el = $('%s')[0];
-                    window.simulateClick(el);
-                """ % selector
-                self.browser.execute_script("%s" % js)
+        browser = self.browser
+        if isinstance(browser, webdriver.PhantomJS):
+            # MUST: Make sure we re-inject the script hacks because the browser may have been reloaded.
+            hacks_for_phantomjs(browser)
+            js = """
+                var el = $('%s')[0];
+                window.simulateClick(el);
+            """ % selector
+            browser.execute_script("%s" % js)
         else:
+            elem = browser.find_element_by_css_selector(selector)
             elem.click()
 
-    def browser_click_and_accept(self, elem, selector, sleep=1):
+    def browser_click_and_accept(self, selector, sleep=1):
         """
         Shorthand to click on a link/button, show a modal dialog, then accept it.
 
@@ -391,5 +391,5 @@ class BrowserTestCase(KALiteTestCase):
 
         See comment on `hacks_for_phantomjs()` method above.
         """
-        self.browser_click(elem=elem, selector=selector)
+        self.browser_click(selector)
         self.browser_accept_alert(sleep=sleep)
