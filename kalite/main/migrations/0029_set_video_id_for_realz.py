@@ -4,7 +4,8 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
-import i18n
+from kalite import i18n
+
 
 class Migration(DataMigration):
 

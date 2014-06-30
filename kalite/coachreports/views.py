@@ -2,29 +2,27 @@ import json
 import requests
 import datetime
 import re
-import settings
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
 
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from facility.decorators import facility_required
-from facility.models import Facility, FacilityUser, FacilityGroup
-from main.models import VideoLog, ExerciseLog, UserLog
-from main.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
-from settings import LOG as logging
-from shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from utils.general import max_none
-from utils.internet import StatusException
+from fle_utils.general import max_none
+from fle_utils.internet import StatusException
+from kalite.facility.decorators import facility_required
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import VideoLog, ExerciseLog, UserLog
+from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree
 
 
 def get_accessible_objects_from_logged_in_user(request, facility):
@@ -136,7 +134,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
     node_cache = get_node_cache()
     topic_ids = get_knowledgemap_topics()
-    topic_ids += [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
+    topic_ids = topic_ids + [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
     topics = [node_cache["Topic"][id][0] for id in topic_ids]
 
     user_id = user.id

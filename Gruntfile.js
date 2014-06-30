@@ -3,54 +3,24 @@ module.exports = function(grunt) {
   // Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'), //To read the values of the package.json file
-		
-		less: {
-			compile: {
-				options: {
-					paths:["./kalite/static/less"], //Directory to check for @imports
-					yuicompress: true,
-					strictImports: true //Force evaluation of imports.
-				},
-				files: {
-					"./kalite/static/css/style.css": "./kalite/static/less/style.less",
-				},
 
-			},
-			
-			bootstrap: {
-				options: {
-					paths:["./kalite/static/less/bootstrap"],
-					yuicompress: true,
-					strictImports: true //Force evaluation of imports.
-				},
-				files: {
-					"./kalite/static/css/bootstrap/bootstrap.css": "./kalite/static/less/bootstrap/bootstrap.less",
-					"./kalite/static/css/bootstrap/responsive.css": "./kalite/static/less/bootstrap/responsive.less"
-				},
-			}
-		},
 		jshint: {
 			files: [
 				'Gruntfile.js',
-				'kalite/static/js/coachreports/',
-				'kalite/static/js/securesync/',
-				'kalite/static/js/updates/',
-				'kalite/static/js/exercises.js',
-				'kalite/static/js/khan-lite.js',
-				'kalite/static/js/kmap-editor.js',
-				'kalite/static/js/search_autocomplete.js',
-				'kalite/static/js/videoplayer.js'
+				'kalite/coachreports/static/js/coachreports/',
+				'kalite/control_panel/static/js/control_panel/',
+				'kalite/distributed/static/js/distributed/',
+				'kalite/updates/static/js/updates/',
+				'python-packages/securesync/static/js/securesync/'
 			],
 			// http://www.jshint.com/docs/options/
 			options: {
-				"-W018": false, // Confusing use of '!'.
-				"-W032": false, // Unnecessary semicolon.
 				"-W038": false, // 'variable' used out of scope.
 				"-W041": false, // Use '===' to compare with ''.
 				"-W047": false, // A trailing decimal point can be confused with a dot
 				"-W065": false, // Missing radix parameter.
-				"-W070": false, // Extra comma. (it breaks older versions of IE)
 				"-W088": false, // Creating global 'for' variable.
+				"-W107": false, // Script URL.
 
 				// Enforcing options
 				bitwise: true, // Unexpected use of '&'.
@@ -68,7 +38,7 @@ module.exports = function(grunt) {
 				//undef: true, // 'variable' is not defined.
 				//unused: true, // 'variable' is defined but never used.
 				//strict: true, // Missing "use strict" statement.
-				//trailing: true, // Trailing whitespace.
+				trailing: true, // Trailing whitespace.
 
 				// Relaxing options
 				asi: true, // Missing semicolon.
@@ -89,13 +59,10 @@ module.exports = function(grunt) {
 		}
 	});
 
-	// Load the plugin that provides the "less" task.
-	grunt.loadNpmTasks('grunt-contrib-less');
-
 	// Load the plugin that provides the "jshint" task.
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
 	// Default task(s).
-	grunt.registerTask('default', ['less']);
+	grunt.registerTask('default', ['jshint']);
 
 };

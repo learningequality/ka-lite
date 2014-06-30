@@ -1,31 +1,31 @@
+"""
+"""
 import datetime
 import re
 import json
 import sys
-import logging
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from functools import partial
-from collections import OrderedDict
+from collections_local_copy import OrderedDict
 
+from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from django.shortcuts import render_to_response, get_object_or_404, redirect, get_list_or_404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
-from facility.decorators import facility_required
-from facility.models import Facility, FacilityUser, FacilityGroup
-from main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from main.topic_tools import get_topic_by_path, get_node_cache
-from settings import LOG as logging
-from testing.decorators import allow_api_profiling
-from utils.internet import StatusException, JsonResponse, api_handle_error_with_json
+from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
+from fle_utils.testing.decorators import allow_api_profiling
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
+from kalite.topic_tools import get_topic_by_path, get_node_cache
 
 
 # Global variable of all the known stats, their internal and external names,
@@ -295,37 +295,48 @@ def compute_data(data_types, who, where):
     }
 
 
-def convert_topic_tree_for_dynatree(node):
-    """Converts topic tree from standard dictionary nodes
-    to dictionary nodes usable by the dynatree app"""
-
-    if node["kind"] == "Topic":
-        # Only show topics with exercises
-        if "Exercise" not in node["contains"]:
-            return None
-
-        children = []
-        for child_node in node["children"]:
-            child = convert_topic_tree_for_dynatree(child_node)
-            if child:
-                children.append(child)
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', node["description"] or ""),
-            "isFolder": True,
-            "key": node["path"],
-            "children": children,
-            "expand": False,  # top level
-        }
-    return None
-
-
 # view endpoints #######
 
 @api_handle_error_with_json
-def get_exercise_topic_tree(request, topic_path):
-    return JsonResponse(convert_topic_tree_for_dynatree(get_topic_by_path(topic_path)));
+def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
+    """Given a root path, returns all topic nodes that contain the requested kind(s).
+    Topic nodes without those kinds are removed.
+    """
+
+    def convert_topic_tree_for_dynatree(node, kinds_to_query):
+        """Converts topic tree from standard dictionary nodes
+        to dictionary nodes usable by the dynatree app"""
+
+        if node["kind"] != "Topic":
+            # Should never happen, but only run this function for topic nodes.
+            return None
+
+        elif not set(kinds_to_query).intersection(set(node["contains"])):
+            # Eliminate topics that don't contain the requested kinds
+            return None
+
+        topic_children = []
+        for child_node in node["children"]:
+            child_dict = convert_topic_tree_for_dynatree(child_node, kinds_to_query)
+            if child_dict:
+                # Only keep children that themselves have the requsted kind
+                topic_children.append(child_dict)
+
+        return {
+            "title": _(node["title"]),
+            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
+            "isFolder": True,
+            "key": node["path"],
+            "children": topic_children,
+            "expand": False,  # top level
+        }
+
+    kinds_to_query = kinds_to_query or request.GET.get("kinds", "Exercise").split(",")
+    topic_node = get_topic_by_path(topic_path)
+    if not topic_node:
+        raise Http404
+
+    return JsonResponse(convert_topic_tree_for_dynatree(topic_node, kinds_to_query));
 
 
 @csrf_exempt
@@ -340,7 +351,13 @@ def api_data(request, xaxis="", yaxis=""):
     """
 
     # Get the request form
-    form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    try:
+        form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
+    except Exception as e:
+        # In investigating #1509: we can catch SQL errors here and communicate clearer error
+        #   messages with the user here.  For now, we have no such error to catch, so just
+        #   pass the errors on to the user (via the @api_handle_error_with_json decorator).
+        raise e
 
     # Query out the data: who?
     if form.data.get("user"):
@@ -364,9 +381,20 @@ def api_data(request, xaxis="", yaxis=""):
 
     # Query out the data: what?
     computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+
+    # Quickly add back in exercise meta-data (could potentially be used in future for other data too!)
+    ex_nodes = get_node_cache()["Exercise"]
+    exercises = []
+    for e in computed_data["exercises"]:
+        exercises.append({
+            "slug": e,
+            "full_name": ex_nodes[e][0]["display_name"],
+            "url": ex_nodes[e][0]["path"],
+        })
+
     json_data = {
         "data": computed_data["data"],
-        "exercises": computed_data["exercises"],
+        "exercises": exercises,
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
                           ["%s, %s" % (u.last_name, u.first_name) for u in users]

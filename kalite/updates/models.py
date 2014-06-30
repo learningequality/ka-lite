@@ -1,12 +1,13 @@
+"""
+"""
 import datetime
 
+from django.conf import settings; logging = settings.LOG
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
 
-import settings
-from settings import LOG as logging
-from utils.django_utils import ExtendedModel
+from fle_utils.django_utils import ExtendedModel
 
 
 class UpdateProgressLog(ExtendedModel):
@@ -90,10 +91,10 @@ class UpdateProgressLog(ExtendedModel):
         logging.info("Cancelling stage %s of process %s" % (self.stage_name, self.process_name))
 
         self.stage_percent = 0.
-        self.update_total_stages(self.total_stages - 1)
         self.stage_name = None
         self.stage_status = stage_status or "cancelled"
         self.notes = notes
+        self.process_percent = self._compute_process_percent()
         self.save()
 
 
@@ -120,6 +121,7 @@ class UpdateProgressLog(ExtendedModel):
         self.save()
 
     def _compute_process_percent(self):
+        assert self.total_stages, "Must have set total_stages by now."
         return (self.stage_percent + (self.current_stage or 1) - 1) / float(self.total_stages)
 
     def cancel_progress(self, stage_status=None, notes=None):

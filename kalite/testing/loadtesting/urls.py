@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns('tests.loadtesting.views',
+
+urlpatterns = patterns(__package__ + '.views',
     url(r'^$', 'load_test', {}, 'load_test'),
 )

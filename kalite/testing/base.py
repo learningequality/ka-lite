@@ -5,10 +5,10 @@ for automated browser-based testing.
 """
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import LiveServerTestCase
 from django.test.client import Client
 
-from securesync.models import Device
+from securesync.models import Zone, DeviceZone , Device
+from securesync.tests.base import SecuresyncTestCase
 
 
 def create_test_admin(username="admin", password="pass", email="admin@example.com"):
@@ -28,15 +28,8 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
     return test_admin
 
 
-
-class KALiteTestCase(LiveServerTestCase):
+class KALiteTestCase(SecuresyncTestCase):
     """The base class for KA Lite test cases."""
-
-    def setUp(self):
-        Device.own_device = None  # cached within securesync, never cleared out
-
-    def tearDown(self):
-        Device.own_device = None  # cached within securesync, never cleared out
 
     def reverse(self, url_name, args=None, kwargs=None):
         """Given a URL name, returns the full central URL to that URL"""

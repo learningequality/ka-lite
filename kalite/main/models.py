@@ -1,3 +1,8 @@
+"""
+All models associated with user learning / usage, including:
+* Exercise/Video progress
+* Login stats
+"""
 import random
 import uuid
 from annoying.functions import get_object_or_None
@@ -5,29 +10,28 @@ from math import ceil
 from datetime import datetime
 from dateutil import relativedelta
 
+from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.signals import user_logged_out
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-import i18n
-import settings
-from facility.models import FacilityUser
-from securesync import engine
+from fle_utils.django_utils import ExtendedModel
+from fle_utils.general import datediff, isnumeric
+from kalite import i18n
+from kalite.facility.models import FacilityUser
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
-from settings import LOG as logging
-from utils.django_utils import ExtendedModel
-from utils.general import datediff, isnumeric
 
 
 class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"
-    youtube_id = models.CharField(max_length=20)
+    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
+    youtube_id = models.CharField(max_length=20) # metadata only
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
@@ -49,7 +53,7 @@ class VideoLog(DeferredCountSyncedModel):
             " (completed)" if self.complete else "",
         )
 
-    def save(self, update_userlog=True, *args, **kwargs):
+    def save(self, update_userlog=False, *args, **kwargs):
         # To deal with backwards compatibility,
         #   check video_id, whether imported or not.
         if not self.video_id:
@@ -78,7 +82,7 @@ class VideoLog(DeferredCountSyncedModel):
 
     def get_uuid(self, *args, **kwargs):
         assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
-        assert self.youtube_id is not None, "Youtube ID required for get_uuid"
+        assert self.video_id is not None, "video_id is required for get_uuid"
 
         namespace = uuid.UUID(self.user.id)
         # can be video_id because that's set to the english youtube_id, to match past code.
@@ -112,7 +116,7 @@ class VideoLog(DeferredCountSyncedModel):
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
         videolog.full_clean()
-        videolog.save()
+        videolog.save(update_userlog=True)
 
         return videolog
 
@@ -136,7 +140,7 @@ class ExerciseLog(DeferredCountSyncedModel):
     def __unicode__(self):
         return u"user=%s, exercise_id=%s, points=%d, language=%s%s" % (self.user, self.exercise_id, self.points, self.language, " (completed)" if self.complete else "")
 
-    def save(self, update_userlog=True, *args, **kwargs):
+    def save(self, update_userlog=False, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
 
@@ -319,7 +323,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     @staticmethod
     def is_enabled():
-        return settings.USER_LOG_MAX_RECORDS_PER_USER != 0
+        return getattr(settings, "USER_LOG_MAX_RECORDS_PER_USER", 0) != 0
 
     def __unicode__(self):
         if self.end_datetime:
@@ -510,5 +514,14 @@ def cull_records(sender, **kwargs):
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
 
+def logout_endlog(sender, request, user, **kwargs):
+    if "facility_user" in request.session:
+        # Logout, ignore any errors.
+        try:
+            UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
+        except ValidationError as e:
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
+        del request.session["facility_user"]
 
-engine.add_syncing_models([VideoLog, ExerciseLog, UserLogSummary])
+# End a log whenever a logout event is fired.
+user_logged_out.connect(logout_endlog)

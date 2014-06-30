@@ -1,13 +1,13 @@
 import sys
 from datetime import datetime  # main.models imports this way, so we have this hacky dependency.
 
+from django.conf import settings; logging = settings.LOG
 from django.utils import unittest
 
-import settings
-import version
-from facility.models import Facility, FacilityGroup, FacilityUser
-from testing import KALiteTestCase, UnicodeModelsTest
-from updates.models import *
+from ..models import *
+from fle_utils.testing import UnicodeModelsTest
+from kalite.testing import KALiteTestCase
+
 
 class UpdatesUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
 

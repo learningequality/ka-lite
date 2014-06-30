@@ -1,21 +1,19 @@
 import json
 import os
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-import settings
 from .command_tests import VideoScanTests
-from facility.models import Facility, FacilityUser
-from main.tests.base import MainTestCase
-from testing import distributed_server_test, KALiteClient, KALiteTestCase
-from updates.models import VideoFile
+from ..models import VideoFile
+from kalite.main.tests.base import MainTestCase
+from kalite.testing import KALiteClient, KALiteTestCase
 
 
-@distributed_server_test
 class TestAdminApiCalls(MainTestCase):
     """
     Test main.api_views that require an admin login

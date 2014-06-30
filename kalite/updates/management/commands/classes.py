@@ -1,10 +1,13 @@
+"""
+"""
 import sys
 
+from django.conf import settings; logging = settings.LOG
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
-from updates.models import UpdateProgressLog
-from utils.django_utils.command import LocaleAwareCommand
+from ...models import UpdateProgressLog
+from fle_utils.django_utils.command import LocaleAwareCommand
 
 
 class UpdatesCommand(LocaleAwareCommand):
@@ -22,7 +25,7 @@ class UpdatesCommand(LocaleAwareCommand):
 
     def display_notes(self, notes, ignore_same=True):
             if notes and (not ignore_same or notes != self.progress_log.notes):
-                self.stdout.write("%s\n" % notes)
+                logging.info(notes)
 
     def ended(self):
         return self.progress_log.end_time is not None

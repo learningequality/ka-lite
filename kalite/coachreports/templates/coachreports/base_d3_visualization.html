@@ -1,0 +1,138 @@
+{% extends "coachreports/base.html" %}
+{% comment %}
+    This template is a basic skeleton around a d3 plot.  It has the following parts:
+
+    * Loads scripts necessary for d3 Visualizations (locally)
+    * Has a div for plotting, and a div for status message (loading)
+
+    You must:
+    * Implement js function drawJsonChart(chart_div, json, xaxis, yaxis);
+        - Get a JSON blob
+        - Create the visualization chart and options
+        - Dump to the chart div (by default: chart_div)
+    * Implement template block axis_dropdown that contains:
+            <select id="xaxis" name="xaxis">
+                <option value="">----</option>
+                [other options with value=API key for that value, and nice text for it (via common views.py code)
+            <select id="yaxis" name="yaxis">
+                <option value="">----</option>
+                [other options with value=API key for that value, and nice text for it (via common views.py code)
+{% endcomment %}
+{% load i18n %}
+{% load my_filters %}
+{% load staticfiles %}
+
+{% block headcss %} {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}" />
+
+    <style>
+        #loading {
+            width:100%;
+            font-size:12pt;
+            text-align:center;
+        }
+        .google-chart {
+            width: 900px;
+            height: 500px;
+        }
+        .subtitle {
+            float: left;
+        }
+
+        #summary {
+            border: 1px black solid;
+            position: absolute;
+            background-color: white;
+        }
+        #topic_header {
+            margin-left: 25px;
+            margin-bottom: 0px;
+        }
+        #topic_paths_note {
+            font-weight:normal;
+            color:red;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
+    <script type="text/javascript">
+        var API_DATA_URL = "{% url 'api_data' %}";
+        var GET_TOPIC_TREE_URL = "{% url 'get_topic_tree_by_kinds' topic_path='/' %}";
+        var IMAGES_URL = "{% static 'images/' %}";
+
+        var FORM_USER = "{{ form.user|escapejs }}";
+        var FORM_TOPIC_PATH = {{ form.topic_path|jsonify }};
+        var FORM_XAXIS = "{{ form.xaxis }}";
+        var FORM_YAXIS = "{{ form.yaxis }}";
+
+        function stat2type(stat) {
+            switch (stat) {
+                {% for stat in stats %}
+                case "{{ stat.key }}": return "{{ stat.type }}";
+                {% endfor %}
+            }
+            return null;
+        }
+    </script>
+    <script type="text/javascript" src="{% static 'js/coachreports/base_d3_visualization.js' %}"></script>
+{% endblock headjs %}
+
+{% block navbar_topics %}
+    <h3 id="topic_header">
+        {% trans "Topics Selected" %}:
+        <a id="topic_paths" href="javascript:toggle_tree()"></a>
+        <span id="topic_paths_note"></span>
+    </h3>
+{% endblock navbar_topics %}
+
+{% block content %}
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
+
+    <!-- a good way to do this would be to create these elements dynamically (in script),
+         and move this all to javascript. -->
+    <div id="content_tree_template">
+        <button id="content_tree_toggle">
+            {% trans "View Report" %}
+        </button>
+        <div id="content_tree">
+            <br/>
+            <h2>{% trans "Loading topic tree... Please wait!" %}</h2>
+        </div>
+    </div>
+
+    <div id="google-chart">
+    {% block chart_div %}
+        <div id="loading"></div>
+        <div id="chart_div" class="google-chart"></div>
+    {% endblock chart_div %}
+    </div>
+
+    {% block data_table %}
+        <div id="data_table"></div>
+    {% endblock data_table %}
+
+    <div id="choose">
+        <form id="select_data" name="select_data">
+        {% block axis_dropdown %}
+        [You must fill me in!!]
+            {% comment "Stick this in here, as it will be silenced (but available as a block) %}{% endcomment %}
+            {% block data_options %}
+                <option value="">----</option>
+                {% for stat in stats %}
+                {% if stat.type == "number" %}
+                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
+                {% endif %}
+                {% endfor %}
+            {% endblock data_options %}
+        {% endblock axis_dropdown %}
+        </form>
+    </div>
+{% endblock content %}
+

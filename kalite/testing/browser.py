@@ -1,12 +1,16 @@
+"""
+"""
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
+from django.conf import settings; logging = settings.LOG
 from django.contrib.sessions.models import Session
+from django.db import DatabaseError
 
-import settings
 from .base import create_test_admin, KALiteTestCase
-from settings import LOG as logging
 
 
 browser = None # persistent browser
@@ -18,17 +22,20 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
     global browser
 
     # Add the test user
-    admin_user = create_test_admin(username=test_user, password=test_password, email=test_email)
+    try:
+        admin_user = User.objects.get(username=test_user)
+    except ObjectDoesNotExist:
+        admin_user = create_test_admin(username=test_user, password=test_password, email=test_email)
 
     # Launch the browser
     if not persistent_browser or (persistent_browser and not browser):
-        local_browser = getattr(webdriver, browser_type)() # Get local session of firefox
-        if persistent_browser: # share browser across tests
+        local_browser = getattr(webdriver, browser_type)()  # Get local session of firefox
+        if persistent_browser:  # share browser across tests
             browser = local_browser
     else:
         local_browser = browser
 
-    return (local_browser,admin_user,test_password)
+    return (local_browser, admin_user, test_password)
 
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
@@ -66,12 +73,23 @@ class BrowserTestCase(KALiteTestCase):
     clients and logging in profiles.
     """
 
-    persistent_browser = True
+    persistent_browser = False
 
-    HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "ubtton", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
+    HtmlFormElements = ["form", "input", "textarea", "label", "fieldset", "legend", "select", "optgroup", "option", "button", "datalist", "keygen", "output"]  # not all act as tab stops, but ...
 
     def __init__(self, *args, **kwargs):
         self.max_wait_time = kwargs.get("max_wait_time", 30)
+        # DJANGO_CHANGE(aron):
+        # be able to support headless tests, which run PhantomJS
+        # instead of showing running a full-blown browser.
+        # Since there's no elegant way to pass options to testcases,
+        # we pass it through the settings module, with HEADLESS
+        # essentially acting as a global variable. See:
+        # python-packages/django/core/management/commands/test.py
+        if getattr(settings, 'HEADLESS', None):
+            self.browser_list = ['PhantomJS']
+        else:
+            self.browser_list = ['Firefox', 'Chrome', 'Ie', 'Opera']
         super(BrowserTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -84,17 +102,18 @@ class BrowserTestCase(KALiteTestCase):
 
         # Can use already launched browser.
         if self.persistent_browser:
-            (self.browser,self.admin_user,self.admin_pass) = setup_test_env(persistent_browser=self.persistent_browser)
+            (self.browser, self.admin_user, self.admin_pass) = setup_test_env(persistent_browser=self.persistent_browser)
 
         # Must create a new browser to use
         else:
-            for browser_type in ["Firefox", "Chrome", "Ie", "Opera"]:
+            for browser_type in self.browser_list:
                 try:
-                    (self.browser,self.admin_user,self.admin_pass) = setup_test_env(browser_type=browser_type)
+                    (self.browser, self.admin_user, self.admin_pass) = setup_test_env(browser_type=browser_type)
                     break
+                except DatabaseError:
+                    raise
                 except Exception as e:
                     logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
-
 
     def tearDown(self):
         if not self.persistent_browser and hasattr(self, "browser") and self.browser:
@@ -108,7 +127,6 @@ class BrowserTestCase(KALiteTestCase):
             browser.quit()
             browser = None
         return super(BrowserTestCase, cls).tearDownClass()
-
 
     def browse_to(self, *args, **kwargs):
         """
@@ -132,7 +150,7 @@ class BrowserTestCase(KALiteTestCase):
         else:
             raise Exception("Must specify the destination url.")
 
-        self.assertTrue(browse_to(self.browser, *args, **kwargs), "Browsing to '%s'" % dest_url)
+        browse_to(self.browser, *args, **kwargs)
 
 
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
@@ -171,7 +189,7 @@ class BrowserTestCase(KALiteTestCase):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        time.sleep(0.50) # wait for the message to get created via AJAX
+        time.sleep(2) # wait for the message to get created via AJAX
 
         # Get messages (and limit by type)
         messages = self.browser.find_elements_by_class_name("alert")
@@ -189,38 +207,41 @@ class BrowserTestCase(KALiteTestCase):
                 self.assertEqual(exact, message.text, "Make sure message = '%s'" % exact)
 
 
-    def browser_next_form_element(self, num_expected_links=None):
+    def browser_next_form_element(self, num_expected_links=None, max_tabs=10):
         """
         Use keyboard navigation to traverse form elements.  Skip any intervening elements that have tab stops (namely, links).
 
         If specified, validate the # links skipped, or the total # of tabs needed.
         """
 
-        # Move tot he next thing.
+        # Move to the next actable element.
+        cur_element = self.browser.switch_to_active_element()
         self.browser_send_keys(Keys.TAB)
         num_tabs = 1
 
         # Loop until you've arrived at a form element
         num_links = 0
-        while self.browser.switch_to_active_element().tag_name not in BrowserTestCase.HtmlFormElements:
+        while num_tabs <= max_tabs and self.browser.switch_to_active_element().tag_name not in BrowserTestCase.HtmlFormElements:
             num_links += self.browser.switch_to_active_element().tag_name == "a"
             self.browser_send_keys(Keys.TAB)
             num_tabs += 1
 
+        self.assertLessEqual(num_tabs, max_tabs, "# of tabs exceeded max # of tabs (orig element: tag '%s' text '%s')." % (cur_element.tag_name, cur_element.text))
+
         if num_expected_links is not None:
-            self.assertEqual(num_links, num_expected_links, "Num links (%d) == %d" % (num_links, num_expected_links))
+            self.assertEqual(num_links, num_expected_links, "Num links: actual (%d) != expected (%d)" % (num_links, num_expected_links))
 
         return num_tabs
 
 
-    def browser_form_fill(self, keys="", num_expected_links=0):
+    def browser_form_fill(self, keys=""):
         """
         Convenience function to send some keys to a form element,
         then traverse to the next form element.
         """
         if keys:
             self.browser_send_keys(keys)
-        self.browser_next_form_element(num_expected_links=num_expected_links)
+        self.browser_next_form_element()
 
 
 

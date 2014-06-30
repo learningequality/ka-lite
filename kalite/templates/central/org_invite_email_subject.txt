@@ -1,1 +1,0 @@
-You've been invited to be a KA Lite Admin of '{{ organization }}'!
