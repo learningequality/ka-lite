@@ -13,7 +13,7 @@ from kalite.testing.utils import FuzzyInt
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
-class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
+class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
         """To guarantee state across tests, clear browser state every time."""
