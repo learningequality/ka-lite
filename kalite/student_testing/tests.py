@@ -173,7 +173,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
     TEXT_ENABLE = 'Enable Exam Mode'
     TEXT_DISABLE = 'Disable Exam Mode'
 
-    persistent_browser = True
+    persistent_browser = False
 
     def setUp(self):
 
