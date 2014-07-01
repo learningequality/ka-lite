@@ -62,7 +62,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         if not stay_logged_in:
             self.browser_logout_user()
 
-        register_url = self.reverse("add_facility_student")
+        register_url = self.reverse("facility_user_signup")
         self.browse_to(register_url) # Load page
         #self.assertIn(_("Sign up"), self.browser.title, "Register page title") # this depends on who is logged in.
 
