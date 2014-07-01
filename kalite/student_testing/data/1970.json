@@ -1,18 +1,12 @@
 {
   "id": 1970,
-  "title": "Grade VI - Unit Test 5",
+  "title": "Grade VI - Unit Test 3",
   "seed": 6559,
-  "playlist_ids": [ "g6_p19", "g6_p20", "g6_p21", "g6_p22" ],
+  "playlist_ids": [ "g6_p11", "g6_p12", "g6_p13" ],
   "repeats": "1",
   "ids": [
-    "converting_decimals_to_percents", "converting_percents_to_decimals",
-    "finding_percents", "discount_tax_and_tip_word_problems",
-    "markup_and_commission_word_problems", "rounding_numbers",
-    "estimation_with_decimals", "understanding_moving_the_decimal",
-    "converting_fractions_to_decimals_0.5",
-    "recognizing_rays_lines_and_line_segments", "points_lines_and_planes",
-    "vertical_angles", "vertical_angles_2", "congruent_angles",
-    "parallel_lines_1", "parallel_lines_2",
-    "complementary_and_supplementary_angles", "angle_addition_postulate"
+    "expressing_ratios_as_fractions", "ratio_word_problems",
+    "discount_tax_and_tip_word_problems",
+    "markup_and_commission_word_problems"
   ]
 }
