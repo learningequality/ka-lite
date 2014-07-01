@@ -21,7 +21,7 @@ class UserRegistrationTestCase(FacilityTestCase):
 
     def test_facility_user_form_works(self):
         """Valid password should work"""
-        response = self.client.post(reverse('add_facility_student'), self.data)
+        response = self.client.post(reverse('facility_user_signup'), self.data)
         self.assertNotIn("errorlist", response.content, "Must be no form errors")
         self.assertEqual(response.status_code, 302, "Status code must be 302")
 
