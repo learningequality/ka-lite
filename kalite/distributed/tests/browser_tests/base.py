@@ -55,6 +55,14 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         facility.save()
         return facility
 
+    def browser_wait_for_ajax_calls_to_finish(self):
+        while True:
+            num_ajax_calls = int(self.browser.execute_script('return jQuery.active;'))
+            if num_ajax_calls > 0:
+                time.sleep(1)
+            else:
+                break
+
     def browser_register_user(self, username, password, first_name="firstname", last_name="lastname", facility_name=None, stay_logged_in=False, expect_success=True):
         """Tests that a user can register"""
 
