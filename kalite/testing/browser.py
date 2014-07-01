@@ -74,7 +74,7 @@ def hacks_for_phantomjs(browser):
                 }
             };
 
-            // shortcut of above method
+            // shorter alternative of above method
             window.simulateClick = function(el) {
                 var e = document.createEvent('MouseEvents');
                 e.initEvent( 'click', true, true );
@@ -352,8 +352,9 @@ class BrowserTestCase(KALiteTestCase):
         See comment on `hacks_for_phantomjs()` method above.
         """
         alert = None
+        alert = self.browser.switch_to_alert()
         try:
-            if not isinstance(self.browser, webdriver.PhantomJS):
+            if not self.is_phantomjs:
                 alert = self.browser.switch_to_alert()
                 alert.accept()
             # set some delay to allow browser to process / reload the page
@@ -365,13 +366,13 @@ class BrowserTestCase(KALiteTestCase):
 
     def browser_click(self, selector):
         """
-        PhantomJS does not support the click fully, specially on <a> tags so we use the hack script from
+        PhantomJS does not support the click fully, specially on anchor tags so we use the hack script from
         `hacks_for_phantomjs()` method above.
 
         REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
         """
         browser = self.browser
-        if isinstance(browser, webdriver.PhantomJS):
+        if self.is_phantomjs:
             # MUST: Make sure we re-inject the script hacks because the browser may have been reloaded.
             hacks_for_phantomjs(browser)
             js = """
@@ -392,4 +393,9 @@ class BrowserTestCase(KALiteTestCase):
         See comment on `hacks_for_phantomjs()` method above.
         """
         self.browser_click(selector)
-        self.browser_accept_alert(sleep=sleep)
+        alert = self.browser_accept_alert(sleep=sleep)
+        return alert
+
+    @property
+    def is_phantomjs(self):
+        return isinstance(self.browser, webdriver.PhantomJS)

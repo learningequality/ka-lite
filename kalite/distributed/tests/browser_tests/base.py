@@ -43,16 +43,18 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                        facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
-        student = FacilityUser(username=username, facility=facility)
-        student.set_password(raw_password=password)
-        student.save()
+        try:
+            student = FacilityUser(username=username, facility=facility)
+            student.set_password(password)
+            student.save()
+        except Exception:
+            student = FacilityUser.objects.get(username=username)
         return student
 
     def create_facility(self, facility_name=default_facility_name):
         if Facility.objects.filter(name=facility_name):
             logging.debug("Creating duplicate facility: %s" % facility_name)
-        facility = Facility(name=facility_name)
-        facility.save()
+        facility, created = Facility.objects.get_or_create(name=facility_name)
         return facility
 
     def browser_register_user(self, username, password, first_name="firstname", last_name="lastname",
@@ -168,8 +170,6 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 self.browse_to(logout_url)
             self.assertEqual(homepage_url, self.browser.current_url, "Logout redirects to the homepage")
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
-        else:
-            logging.warn('==> Will not logout browser because NOT logged in.')
 
     def browser_is_logged_in(self, expected_username=None):
         # Two ways to be logged in:

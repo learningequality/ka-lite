@@ -25,6 +25,7 @@ from kalite.testing.browser import BrowserTestCase
 from kalite.topic_tools import get_exercise_paths, get_node_cache
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
 class TestAddFacility(KALiteDistributedBrowserTestCase):
     """
     Test webpage for adding a facility
@@ -154,6 +155,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
 class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
@@ -173,7 +175,8 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
         self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG][0]["path"])
-        self.browser_check_django_message(num_messages=0)  # make sure no messages
+        msg = 'Answer 8 out of the last 10 questions correctly to complete your streak.'
+        self.browser_check_django_message(contains=msg, num_messages=1)
 
     def browser_get_current_points(self):
         """
