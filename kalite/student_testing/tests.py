@@ -20,7 +20,7 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
     client_class = KALiteClient
 
-    exam_id = '128'
+    exam_id = '1970'
     login_url = reverse('login')
     logout_url = reverse('logout')
     test_list_url = reverse('test_list')
