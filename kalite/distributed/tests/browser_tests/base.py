@@ -132,10 +132,8 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
 
     def browser_login_student(self, username, password, facility_name=None, expect_success=True):
         self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
-        time.sleep(self.max_wait_time/10) # allow time for async messages to load
         if expect_success:
             self.assertIn(reverse("homepage"), self.browser.current_url, "Login browses to homepage" )
-            self.browser_check_django_message("success", contains="You've been logged in!")
 
     def browser_logout_user(self):
         if self.browser_is_logged_in():
