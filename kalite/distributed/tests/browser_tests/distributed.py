@@ -173,7 +173,6 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
         self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG][0]["path"])
-        self.browser_check_django_message(num_messages=0)  # make sure no messages
 
     def browser_get_current_points(self):
         """
@@ -338,4 +337,4 @@ class TestSessionTimeout(KALiteDistributedWithFacilityBrowserTestCase):
     #     self.browser_login_admin()
     #     time.sleep(3)
     #     self.browse_to(self.reverse("homepage"))
-    #     self.browser_check_django_message(message_type="error", contains="Your session has been timed out.")        
+    #     self.browser_check_django_message(message_type="error", contains="Your session has been timed out.")
