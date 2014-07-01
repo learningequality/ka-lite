@@ -179,10 +179,13 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         Check the total points a student has accumulated, from an exercise page.
         """
-        points_regexp = r'\((?P<points>\w+) points\)'
-        points_text = self.browser.find_element_by_css_selector('.progress-points').text
-        points = re.match(points_regexp, points_text).group('points')
-        return points
+        try:
+            points_regexp = r'\((?P<points>\w+) points\)'
+            points_text = self.browser.find_element_by_css_selector('.progress-points').text
+            points = re.match(points_regexp, points_text).group('points')
+            return points
+        except AttributeError:
+            return ""
 
 
     def browser_submit_answer(self, answer):
@@ -222,8 +225,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         Answer an exercise incorrectly.
         """
         points = self.browser_submit_answer('this is a wrong answer')
-        self.assertEqual(points, "", "points text should be empty")
-        self.browser_check_django_message(num_messages=0)  # make sure no messages
+        self.assertEquals(points, "", "points text should be empty")
 
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 0, "Streak progress should be 0%")
@@ -237,12 +239,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         Answer an exercise incorrectly, and make sure button text changes.
         """
-        try:
-            # Student has no points, so this will always return an
-            # exception. Continue either way.
-            self.browser_submit_answer('this is a wrong answer')
-        except:
-            pass
+        self.browser_submit_answer('this is a wrong answer')
 
         answer_button_text = self.browser.find_element_by_id("check-answer-button").get_attribute("value")
 
