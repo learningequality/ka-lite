@@ -135,7 +135,7 @@
 
                 {% if not restricted %}
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <a href="{% url 'add_facility_student' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
+                    <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
                 {% endif %}
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}

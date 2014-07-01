@@ -64,36 +64,59 @@ def facility_edit(request, id=None, zone_id=None):
 
 @require_authorized_admin
 def add_facility_teacher(request):
-    return edit_facility_user(request, id="new", is_teacher=True)
+    """
+    Only admins can add teachers 
+    If central, must be an org admin
+    If distributed, must be superuser
+    """
+    return _facility_user(request, facility_user_id="new", is_teacher=True)
 
 
+@require_authorized_admin
 def add_facility_student(request):
-    return edit_facility_user(request, id="new", is_teacher=False)
+    """
+    Admins and coaches can add coaches 
+    If central, must be an org admin
+    If distributed, must be superuser or a coach
+    """
+    return _facility_user(request, facility_user_id="new", is_teacher=False)
+
+
+def facility_user_signup(request):
+    """
+    Anyone can sign up, unless we have set the restricted flag
+    """
+    if settings.DISABLE_SELF_ADMIN and not request.is_admin:
+        # Users cannot create/edit their own data when UserRestricted
+        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+    if settings.CENTRAL_SERVER:
+        raise PermissionDenied(_("You may not create a facility user on the central server."))        
+    
+    return _facility_user(request, facility_user_id="new", is_teacher=False)    
+
+
+@require_authorized_admin
+def edit_facility_user(request, facility_user_id):
+    """
+    If users have permission to add a user, they also can edit the user. Additionally,
+    a user may edit his/her own information, like in the case of a student.
+    """
+    user = (facility_user_id != "new" and get_object_or_404(FacilityUser, id=facility_user_id)) or None
+    return _facility_user(request, user=user)    
 
 
 @facility_required
 @render_to("facility/facility_user.html")
-def edit_facility_user(request, facility, is_teacher=None, id=None):
+def _facility_user(request, facility, is_teacher=None, facility_user_id=None, user=None):
     """Different codepaths for the following:
     * Django admin/teacher creates user, teacher
     * Student creates self
 
     Each has its own message and redirect.
     """
-
     title = ""
-    user = (id != "new" and get_object_or_404(FacilityUser, id=id)) or None
     is_teacher = user and user.is_teacher or is_teacher
     is_editing_user = user is not None
-
-    # Check permissions
-    if user and not request.is_admin and user != request.session.get("facility_user"):
-        # Editing a user, user being edited is not self, and logged in user is not admin
-        raise PermissionDenied()
-
-    elif settings.DISABLE_SELF_ADMIN and not request.is_admin:
-        # Users cannot create/edit their own data when UserRestricted
-        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
 
     # Data submitted to create the user.
     if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
@@ -106,14 +129,13 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
             if form.cleaned_data["password_first"]:
                 form.instance.set_password(form.cleaned_data["password_first"])
             form.save()
-
             if getattr(request.session.get("facility_user"), "id", None) == form.instance.id:
                 # Edited: own account; refresh the facility_user setting
                 request.session["facility_user"] = form.instance
                 messages.success(request, _("You successfully updated your user settings."))
                 return HttpResponseRedirect(request.next or reverse("account_management"))
 
-            elif id != "new":
+            elif facility_user_id != "new":
                 # Edited: by admin; someone else's ID
                 messages.success(request, _("Changes saved for user '%(username)s'") % {"username": form.instance.get_name()})
                 if request.next:
@@ -152,7 +174,7 @@ def edit_facility_user(request, facility, is_teacher=None, id=None):
 
     return {
         "title": title,
-        "user_id": id,
+        "user_id": facility_user_id,
         "form": form,
         "facility": facility,
         "singlefacility": request.session["facility_count"] == 1,
