@@ -93,7 +93,8 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
     defaults: {
         streak_progress: 0,
-        points: 0
+        points: 0,
+        attempts: 0
     },
 
     initialize: function() {
