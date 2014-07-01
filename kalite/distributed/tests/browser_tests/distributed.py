@@ -5,6 +5,7 @@ import re
 import time
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.webdriver.firefox.webdriver import WebDriver
@@ -178,7 +179,11 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         Check the total points a student has accumulated, from an exercise page.
         """
-        return self.browser.find_element_by_css_selector('#totalpoints').text
+        points_regexp = r'\((?P<points>\w+) points\)'
+        points_text = self.browser.find_element_by_css_selector('.progress-points').text
+        points = re.match(points_regexp, points_text).group('points')
+        return points
+
 
     def browser_submit_answer(self, answer):
         """
@@ -241,11 +246,19 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
     def test_exercise_mastery(self):
         """
-        Answer an exercise 10 times correctly; verify mastery message
+        Answer an exercise til mastery
         """
         points = 0
-        nanswers = 10
-        for ai in range(1,1 + nanswers):
+        nanswers = self.browser.execute_script('return window.ExerciseParams.STREAK_CORRECT_NEEDED;')
+        for ai in range(1, 1 + nanswers):
+            # Hey future maintainer! The visibility_of_element_located
+            # requires that the element be ACTUALLY visible on the screen!
+            # so you can't just have the test spawn a teeny-bitty browser to
+            # the side while you have the world cup occupying a big part of your
+            # screen.
+            ui.WebDriverWait(self.browser, 10).until(
+                expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'mn'))
+            )
             numbers = self.browser.find_elements_by_class_name('mn')
             answer = sum(int(num.text) for num in numbers)
             expected_min_points = points + self.MIN_POINTS
@@ -253,19 +266,16 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
             points = self.browser_submit_answer(answer)
             self.assertGreaterEqual(points, expected_min_points, "Too few points were given: %s < %s" % (points, expected_min_points))
             self.assertLessEqual(points, expected_max_points, "Too many points were given: %s > %s" % (points, expected_max_points))
-            if ai < nanswers:
-                self.browser_check_django_message(num_messages=0)  # make sure no messages
-            else:
-                self.browser_check_django_message(message_type="success", contains="You have mastered this exercise!")
+
             self.browser_send_keys(Keys.RETURN)  # move on to next question.
 
         # Now test the models
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 100, "Streak progress should be 100%")
         self.assertFalse(elog.struggling, "Student is not struggling.")
-        self.assertEqual(elog.attempts, nanswers, "Student should have 10 attempts.")
+        self.assertEqual(elog.attempts, nanswers, "Student should have %s attempts. Got %s" % (nanswers, elog.attempts))
         self.assertTrue(elog.complete, "Student should have completed the exercise.")
-        self.assertEqual(elog.attempts_before_completion, nanswers, "Student should have 10 attempts for completion.")
+        self.assertEqual(elog.attempts_before_completion, nanswers, "Student should have %s attempts for completion." % nanswers)
 
 
 @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
