@@ -253,8 +253,7 @@ class Device(SyncedModel):
         metadata.save()
         return metadata.counter_position
 
-
-    def full_clean(self):
+    def full_clean(self, *args, **kwargs):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
@@ -317,7 +316,7 @@ class Device(SyncedModel):
 
     @validate_via_booleans
     def validate(self):
-        if self.signed_by_id != self.id:
+        if self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
             raise ValidationError("Device is not self-signed.")
         return True
 
