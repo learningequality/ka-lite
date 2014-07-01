@@ -19,7 +19,7 @@ class TestReportTests(FacilityMixins,
         and don't when they dont
         """
         test_log_defaults = {
-            'test': 128, # this must be an actual exercise
+            'test': 685, # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -44,7 +44,7 @@ class TestReportTests(FacilityMixins,
         Test that we show correct stats for a test.
         """
         test_log_1 = {
-            'test': 128, # this must be an actual exercise
+            'test': 685,  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -52,7 +52,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 2,
         }
         test_log_2 = {
-            'test': 128, # this must be an actual exercise
+            'test': 685,  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -119,7 +119,7 @@ class TestReportTests(FacilityMixins,
         Test that we show results for an exercise cluster in the test detail view
         """
         test_log_defaults = {
-            'test': 1940, # this must be an actual test
+            'test': 685,  # this must be an actual test
             'index': '0',
             'complete': True,
             'started': True,
@@ -129,7 +129,7 @@ class TestReportTests(FacilityMixins,
         attempt_log_default = {
             'exercise_id': 'place_value',
             'context_type': 'test',
-            'context_id': 1940,
+            'context_id': 685,
             'timestamp': datetime.now(),
             'correct': True,
         }
@@ -151,5 +151,5 @@ class TestReportTests(FacilityMixins,
         self.assertTrue(stat_avg == '100.0%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[1]').text
         self.assertTrue(stat_std == '0.0%')
-        overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[19]').text
+        overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[7]').text
         self.assertTrue(overall == '100.0%')
