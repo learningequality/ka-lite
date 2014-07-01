@@ -22,9 +22,9 @@
         <td>
             {% if request.is_admin %}
                 <% if (is_exam_mode) { %>
-                    <button data-exam-title="<%= title %>" class="btn btn-info test-row-button">Disable Exam Mode</button>
+                    <button data-exam-title="<%= title %>" data-test-id="test-<%= test_id %>" class="btn btn-info test-row-button">Disable Exam Mode</button>
                 <% } else { %>
-                    <button data-exam-title="<%= title %>" class="btn test-row-button">Enable Exam Mode</button>
+                    <button data-exam-title="<%= title %>" data-test-id="test-<%= test_id %>" class="btn test-row-button">Enable Exam Mode</button>
                 <% } %>
             {% endif %}
         </td>
