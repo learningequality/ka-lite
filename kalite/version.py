@@ -1,5 +1,6 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-VERSION = "0.12.0" # this is actually 0.12.1, but we need to update language pack version fallbacks before changing here
+# this is actually 0.12.1, but we need to update language pack version fallbacks before changing here
+VERSION = "0.12.0"
 VERSION_INFO = {
 
     "0.12.1": {
