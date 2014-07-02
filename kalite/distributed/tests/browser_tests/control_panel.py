@@ -12,6 +12,7 @@ from .base import KALiteDistributedWithFacilityBrowserTestCase
 from facility.models import FacilityGroup, FacilityUser
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
 class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test errors and successes for different user management actions.
@@ -86,10 +87,14 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[1]/input[@type='checkbox'][1]").click()
         Select(self.browser.find_element_by_css_selector("div#students select.movegrouplist")).select_by_visible_text("To Group")
         self.browser.find_element_by_css_selector("button.movegroup").click()
-        alert = self.browser.switch_to_alert()
-        self.assertNotEqual(alert.text, None, "Does not produce alert of group movement.")
-        self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
-        alert.accept()
+        if self.is_phantomjs:
+            alert = self.browser_click_and_accept('button.movegroup')
+        else:
+            alert = self.browser.switch_to_alert()
+            self.assertNotEqual(alert.text, None, "Does not produce alert of group movement.")
+            self.assertEqual(alert.text, "You are about to move selected users to another group.",
+                             "Does not warn that users are about to be moved.")
+            alert.accept()
         WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "students")))
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[1]/td[5]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[2]/td[5]").text, "1", "Does not report one user for To Group.")

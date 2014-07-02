@@ -24,6 +24,7 @@ from kalite.i18n import get_installed_language_packs, delete_language
 from kalite.main.models import ExerciseLog
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
 class LanguagePackTest(KALiteDistributedBrowserTestCase):
 
     def is_language_installed(self, lang_code, force_reload=True):

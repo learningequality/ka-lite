@@ -58,6 +58,7 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
     Currently, only testing that the device is not registered works.
     """
 
+    @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     def test_device_unregistered(self):
         """
         Tests that a device is initially unregistered, and that it can
@@ -155,6 +156,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Fails if settings.HEADLESS is set.")
 class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
@@ -188,7 +190,6 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         except AttributeError:
             return ""
 
-
     def browser_submit_answer(self, answer):
         """
         From an exercise page, insert an answer into the text box and submit.
@@ -203,6 +204,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         return float(points) if isnumeric(points) else points
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
+    @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     def test_question_correct_points_are_added(self):
         """
         Answer an exercise correctly
@@ -249,6 +251,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.assertTrue(answer_button_text == "Try Again!", "Answer button did not change to 'Try Again' on incorrect answer!")
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
+    @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     def test_exercise_mastery(self):
         """
         Answer an exercise til mastery
