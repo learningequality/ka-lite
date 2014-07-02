@@ -148,35 +148,35 @@ class BrowserTestCase(KALiteTestCase):
         # Clear the session cache after every test case, to keep things clean.
         Session.objects.all().delete()
 
-        # # Can use already launched browser.
-        # if self.persistent_browser:
-        #     kwargs = {
-        #         'persistent_browser': self.persistent_browser
-        #     }
-        #     # If `browser_list` exists and has element, use the first element on the list instead of defaulting
-        #     # to `Firefox` browser.  This will have `PhantomJS` if `settings.HEADLESS` is specified.
-        #     # See `__init__` method.
-        #     if self.browser_list and len(self.browser_list) > 0:
-        #         kwargs['browser_type'] = self.browser_list[0]
-        #     (self.browser, self.admin_user, self.admin_pass) = setup_test_env(**kwargs)
-        #
-        # # Must create a new browser to use
-        # else:
-        for browser_type in self.browser_list:
-            try:
-                kwargs = {
-                    'persistent_browser': self.persistent_browser,
-                    'browser_type': browser_type
-                }
-                (self.browser, self.admin_user, self.admin_pass) = setup_test_env(**kwargs)
-                # (self.browser, self.admin_user, self.admin_pass) = setup_test_env(browser_type=browser_type)
-                break
-            except DatabaseError:
-                raise
-            except Exception as e:
-                import traceback
-                print traceback.format_exc()
-                logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
+        # Can use already launched browser.
+        if self.persistent_browser:
+            kwargs = {
+                'persistent_browser': self.persistent_browser
+            }
+            # If `browser_list` exists and has element, use the first element on the list instead of defaulting
+            # to `Firefox` browser.  This will have `PhantomJS` if `settings.HEADLESS` is specified.
+            # See `__init__` method.
+            if self.browser_list and len(self.browser_list) > 0:
+                kwargs['browser_type'] = self.browser_list[0]
+            (self.browser, self.admin_user, self.admin_pass) = setup_test_env(**kwargs)
+
+        # Must create a new browser to use
+        else:
+            for browser_type in self.browser_list:
+                try:
+                    # kwargs = {
+                    #     'persistent_browser': self.persistent_browser,
+                    #     'browser_type': browser_type
+                    # }
+                    # (self.browser, self.admin_user, self.admin_pass) = setup_test_env(**kwargs)
+                    (self.browser, self.admin_user, self.admin_pass) = setup_test_env(browser_type=browser_type)
+                    break
+                except DatabaseError:
+                    raise
+                except Exception as e:
+                    import traceback
+                    print traceback.format_exc()
+                    logging.error("Could not create browser %s through selenium: %s" % (browser_type, e))
 
     def tearDown(self):
         if not self.persistent_browser and hasattr(self, "browser") and self.browser:

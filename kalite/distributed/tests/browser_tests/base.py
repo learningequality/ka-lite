@@ -1,23 +1,14 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-import re
 import time
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions, ui
-from selenium.webdriver.firefox.webdriver import WebDriver
 
 from django.conf import settings
-# from django.core.management import call_command
-# from django.core.urlresolvers import reverse
-# from django.test import TestCase
-# from django.utils import unittest
 from django.utils.translation import ugettext as _
 
-from fle_utils.django_utils import call_command_with_output
-from kalite.facility.models import Facility, FacilityGroup, FacilityUser
+from selenium.common.exceptions import NoSuchElementException
+
+from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.browser import BrowserTestCase
 
 logging = settings.LOG
@@ -66,7 +57,6 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             else:
                 break
 
-    def browser_register_user(self, username, password, first_name="firstname", last_name="lastname", facility_name=None, stay_logged_in=False, expect_success=True):
     def browser_register_user(self, username, password, first_name="firstname", last_name="lastname",
                               facility_name=None, stay_logged_in=False, expect_success=True):
         """Tests that a user can register"""
@@ -151,7 +141,8 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         """
         Consider that student may be redirected to the exam page when Settings.EXAM_MODE_ON is set.
         """
-        self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
+        self.browser_login_user(username=username, password=password, facility_name=facility_name,
+                                expect_success=expect_success)
         if expect_success:
             if not expect_url:
                 expect_url = self.reverse("homepage")
