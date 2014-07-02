@@ -156,6 +156,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Fails if settings.HEADLESS is set.")
 class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test exercises.
