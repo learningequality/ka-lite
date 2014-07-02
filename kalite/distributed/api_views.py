@@ -118,7 +118,7 @@ def status(request):
     # Default data
     data = {
         "is_logged_in": request.is_logged_in,
-        "registered": request.session["registered"],
+        "registered": request.session.get("registered", True),
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,

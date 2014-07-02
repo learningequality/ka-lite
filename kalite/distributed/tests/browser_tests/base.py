@@ -1,13 +1,13 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-# import re
+import re
 import time
-# from selenium import webdriver
+from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-# from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver.support import expected_conditions, ui
-# from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions, ui
+from selenium.webdriver.firefox.webdriver import WebDriver
 
 from django.conf import settings
 # from django.core.management import call_command
@@ -16,7 +16,8 @@ from django.conf import settings
 # from django.utils import unittest
 from django.utils.translation import ugettext as _
 
-from kalite.facility.models import Facility, FacilityUser
+from fle_utils.django_utils import call_command_with_output
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.testing.browser import BrowserTestCase
 
 logging = settings.LOG
@@ -34,6 +35,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     def tearDown(self):
         """
         """
+
         # Must clean up, as browser sessions could persist
         if self.persistent_browser:
             self.browser_logout_user()
@@ -43,20 +45,28 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                        facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
-        try:
-            student = FacilityUser(username=username, facility=facility)
-            student.set_password(password)
-            student.save()
-        except Exception:
-            student = FacilityUser.objects.get(username=username)
+        student = FacilityUser(username=username, facility=facility)
+        student.set_password(raw_password=password)
+        student.save()
+
         return student
 
     def create_facility(self, facility_name=default_facility_name):
         if Facility.objects.filter(name=facility_name):
             logging.debug("Creating duplicate facility: %s" % facility_name)
-        facility, created = Facility.objects.get_or_create(name=facility_name)
+        facility = Facility(name=facility_name)
+        facility.save()
         return facility
 
+    def browser_wait_for_ajax_calls_to_finish(self):
+        while True:
+            num_ajax_calls = int(self.browser.execute_script('return jQuery.active;'))
+            if num_ajax_calls > 0:
+                time.sleep(1)
+            else:
+                break
+
+    def browser_register_user(self, username, password, first_name="firstname", last_name="lastname", facility_name=None, stay_logged_in=False, expect_success=True):
     def browser_register_user(self, username, password, first_name="firstname", last_name="lastname",
                               facility_name=None, stay_logged_in=False, expect_success=True):
         """Tests that a user can register"""
@@ -88,16 +98,11 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             #self.browser_check_django_message(message_type="success", contains="You successfully registered.")
             # uncomment message check when that code gets checked in
 
-    # # REF: http://lincolnloop.com/blog/2012/nov/2/introduction-django-selenium-testing/
-    # def wait_for_css(self, css_selector, timeout=7):
-    #     """ Shortcut for WebDriverWait"""
-    #     from selenium.webdriver.support.ui import WebDriverWait
-    #     return WebDriverWait(self, timeout).until(lambda driver: driver.find_css(css_selector))
-
     def browser_login_user(self, username, password, facility_name=None, expect_success=True):
         """
         Tests that an existing admin user can log in.
         """
+
         login_url = self.reverse("login")
         self.browse_to(login_url)  # Load page
         # self.assertIn(_("Log in"), self.browser.title, "Login page title")
@@ -113,10 +118,11 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(username)
         self.browser_form_fill(password)
         self.browser.find_element_by_id("id_username").submit()
+        # self.browser_send_keys(Keys.RETURN)
 
         # Make sure that the page changed
         if expect_success:
-            self.assertTrue(self.wait_for_page_change(login_url, wait_time=0.5, max_retries=10))
+            self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
             time.sleep(0.5)  # allow async status to update
             self.assertTrue(self.browser_is_logged_in(username), "make sure %s is logged in." % username)
 
@@ -145,9 +151,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         """
         Consider that student may be redirected to the exam page when Settings.EXAM_MODE_ON is set.
         """
-        self.browser_login_user(username=username, password=password, facility_name=facility_name,
-                                expect_success=expect_success)
-        time.sleep(self.max_wait_time/10)  # allow time for async messages to load
+        self.browser_login_user(username=username, password=password, facility_name=facility_name, expect_success=expect_success)
         if expect_success:
             if not expect_url:
                 expect_url = self.reverse("homepage")
