@@ -70,6 +70,9 @@
         .progressbox {
         	width: 250px;
             display: none;
+            position: absolute;
+            margin-top: 30px;
+            background: #FFFFFF;
         }
         .completedbox {
             border: 3px solid #338533;
@@ -232,7 +235,23 @@
 $(function() {
 
 
-	$(".progressindicator").click(function(ev){$("#"+$(ev.target).attr("subtopic")).show()})
+	$(".progressindicator").click(function(ev){
+        if($("#"+$(ev.target).attr("subtopic")).css("display")!="none"){
+            $("#"+$(ev.target).attr("subtopic")).hide();
+        } else {
+            $(".progressbox").hide();
+            $("#"+$(ev.target).attr("subtopic")).show();
+        }
+        ev.stopPropagation();
+    })
+
+    $("body").click(function(ev){
+        $(".progressbox").hide();
+    })
+
+    $(".column").click(function(ev){
+        ev.stopPropagation();
+    })
 
 
 })
