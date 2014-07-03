@@ -12,7 +12,9 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 
 from . import api_urls
+import kalite.ab_testing.urls
 import kalite.coachreports.urls
+import kalite.playlist.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
@@ -48,6 +50,9 @@ urlpatterns += patterns(__package__ + '.views',
     # For teachers
     url(r'^coachreports/', include(kalite.coachreports.urls)),
 
+    # For playlists
+    url(r'^playlists/', include(kalite.playlist.urls)),
+
     # For admins
     url(r'^update/', include(kalite.updates.urls)),
 
@@ -71,6 +76,11 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
 # Handlebars
 urlpatterns += patterns('',
     url(r'^handlebars/', include(fle_utils.handlebars.urls)),
+)
+
+# AB testing urls
+urlpatterns += patterns('',
+    url(r'^ab_testing/', include(kalite.ab_testing.urls)),
 )
 
 # Front-end

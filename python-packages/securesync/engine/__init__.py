@@ -110,7 +110,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
-        device = get_object_or_None(Device, pk=device_id)
+        device = get_object_or_None(Device.all_objects, pk=device_id)
         if not device or not (device.in_zone(zone) or device.is_trusted()):
             del device_counters[device_id]
 
@@ -134,9 +134,9 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
             counter_min = counter + 1
             counter_max = 0
 
-            device = Device.objects.get(pk=device_id)
+            device = Device.all_objects.get(pk=device_id)
 
-            queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
+            queryset = Model.all_objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):

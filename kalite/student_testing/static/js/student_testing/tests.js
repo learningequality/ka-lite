@@ -31,14 +31,16 @@ function nextQuestion() {
 }
 
 function loadExercise(exercise_id, callback) {
-        doRequest("/api/exercise/" + exercise_id)
-            .success(function(data) {
-                callback(data);
-            })
-            .fail(function(resp) {
-                handleFailedAPI(resp, "id_student_logs");
-            });
-    }
+    console.log('==> loadExercise', exercise_id);
+    doRequest("/api/exercise/" + exercise_id)
+        .success(function(data) {
+            callback(data);
+        })
+        .fail(function(resp) {
+            handleFailedAPI(resp, "exercise_data");
+        }
+    );
+}
 
 
 function endTest() {

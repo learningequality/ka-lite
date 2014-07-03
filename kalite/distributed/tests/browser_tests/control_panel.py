@@ -12,6 +12,7 @@ from .base import KALiteDistributedWithFacilityBrowserTestCase
 from facility.models import FacilityGroup, FacilityUser
 
 
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
 class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
     """
     Test errors and successes for different user management actions.
@@ -40,8 +41,8 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         group.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text, "Test Group", "Does not show group in list.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text, "0", "Does not report zero users for empty group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[2]/a[1]").text, "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text, "0", "Does not report zero users for empty group.")
 
 
 
@@ -59,10 +60,10 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[1]/a[1]").text.strip()[:len(group.name)], "Test Group", "Does not show group in list.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr/td[3]").text.strip()[:len(group.name)], "1", "Does not report one user for group.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr[1]/td[1]").text.strip()[:len(user.username)], "test_user", "Does not show user in list.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[3]").text.strip()[:len(user.group.name)], "Test Group", "Does not report user in group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[2]/a[1]").text.strip()[:len(group.name)], "Test Group", "Does not show group in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text.strip()[:len(group.name)], "1", "Does not report one user for group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[2]").text.strip()[:len(user.username)], "test_user", "Does not show user in list.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text.strip()[:len(user.group.name)], "Test Group", "Does not report user in group.")
 
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, 'fails occasionally on travis')
@@ -83,13 +84,17 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user.save()
         self.browser_login_admin()
         self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.browser.find_element_by_xpath("//div[@id='students']/table/tbody/tr/td[4]").click()
+        self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[1]/input[@type='checkbox'][1]").click()
         Select(self.browser.find_element_by_css_selector("div#students select.movegrouplist")).select_by_visible_text("To Group")
-        self.browser.find_element_by_css_selector("div#students button.movegroup").click()
-        alert = self.browser.switch_to_alert()
-        self.assertNotEqual(alert, None, "Does not produce alert of group movement.")
-        self.assertEqual(alert.text, "You are about to move selected users to another group.", "Does not warn that users are about to be moved.")
-        alert.accept()
+        self.browser.find_element_by_css_selector("button.movegroup").click()
+        if self.is_phantomjs:
+            alert = self.browser_click_and_accept('button.movegroup')
+        else:
+            alert = self.browser.switch_to_alert()
+            self.assertNotEqual(alert.text, None, "Does not produce alert of group movement.")
+            self.assertEqual(alert.text, "You are about to move selected users to another group.",
+                             "Does not warn that users are about to be moved.")
+            alert.accept()
         WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "students")))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[1]/td[3]").text, "0", "Does not report no user for From Group.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/table/tbody/tr[2]/td[3]").text, "1", "Does not report one user for To Group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[1]/td[5]").text, "0", "Does not report no user for From Group.")
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[2]/td[5]").text, "1", "Does not report one user for To Group.")

@@ -5,20 +5,26 @@ import random
 import string
 
 from django.conf import settings
+from django.utils import unittest
 
 from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
-
-class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
+@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
+class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
         """To guarantee state across tests, clear browser state every time."""
         random.seed('ben')  # to make password reproducible
         self.persistent_browser = False
         super(QueryTest, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+        self.setup_fake_device()
+        super(QueryTest, self).setUp()
 
     @staticmethod
     def _gen_valid_password():
@@ -35,7 +41,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(FuzzyInt(25, 28) + 3 * UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(25, 29) + 3 * UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
@@ -64,7 +70,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_query_status_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(FuzzyInt(0, 2)):
+        with self.assertNumQueries(FuzzyInt(0, 7)):
             self.browse_to(self.reverse("status"))
 
     def test_query_logout_admin(self):
@@ -96,5 +102,5 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         """Check the # of queries when browsing to the "Math" topic page"""
 
         self.test_query_login_student()
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(FuzzyInt(0, 4)):
             self.browse_to(self.live_server_url + "/math/")
