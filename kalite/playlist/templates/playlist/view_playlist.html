@@ -89,9 +89,11 @@
 
     <script>
         $(function() {
-            window.playlist_view = new PlaylistView({
-                model: new Playlist({id: "{{ playlist_id }}"}),
-                el: $(".playlist-wrapper")
+            statusModel.loaded.then(function() {
+                window.playlist_view = new PlaylistView({
+                    model: new Playlist({id: "{{ playlist_id }}"}),
+                    el: $(".playlist-wrapper")
+                });
             });
         });
     </script>
