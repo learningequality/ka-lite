@@ -39,62 +39,45 @@
             margin-bottom: 15px;
         }
         .column {
-            height: 10%;
 			width: 30%;
 			float: left;
 			margin-bottom: 20%;
 			text-align: center;
-        }  
-        .completed {
+        } 
+        .progressindicator{
             width:20px;
             height:20px;
             border-radius: 50%/50%;
-            background:#338533;
             float: left;
-            margin-left: 5%;
+            margin: 5px;
+        }
+        .progresswrapper{
+            display: inline-block; 
+            max-width: 150px;  
+        }
+        .completed {
+            background:#338533;
         }
         .inprogress {
-            width:20px;
-            height:20px;
-            border-radius: 50%/50%;
             background:#B2D1B2;
-            float: left;
-            margin-left: 5%;
         }
         .inprogress2 {
-            width:20px;
-            height:20px;
-            border-radius: 50%/50%;
             background:#B2D1B2;
-            float: left;
-            margin-left: 5%;
         }
         .struggling {
-            width:20px;
-            height:20px;
-            border-radius: 50%/50%;
             background:#FFCCCC;
-            float: left;
-            margin-left: 5%;
         }
-        .box1 {
-            width: 250px;
-            height: 200px;
+        .progressbox {
+        	width: 250px;
+            display: none;
+        }
+        .completedbox {
             border: 3px solid #338533;
         }
-        .box2 {
-        	width: 250px;
-            height: 200px;
+        .inprogressbox {
             border: 3px solid #B2D1B2;
         }
-        .box3 {
-        	width: 250px;
-            height: 200px;
-            border: 3px solid #B2D1B2;
-        }
-        .box4 {
-        	width: 250px;
-            height: 200px;
+        .strugglingbox {
             border: 3px solid #FFCCCC;
         }
         
@@ -141,6 +124,7 @@
                     {% endif %}
                 </span>
             <br>
+            <div>
             {% for def in stat_defs %}
             <span class=" {{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}">
                 {% if def.type == "date" %}
@@ -148,65 +132,95 @@
                 {% endif %}
             </span>
             {% endfor %}
-         
-            <br>
-            <br>
-           
-            
-            <div class = "completed"> </div>
-            <div class = "inprogress"> </div>
-            <div class = "inprogress2"> </div>
-            <div class = "struggling"> </div>
-            
-            <br>
-            <br>
-            
-         <!--    <div class = "box1">
-             <h5>Adding Two-Digit Numbers </h5>
-             <br> Mastered
-             <br>
-             <br> Completed Exercises
-             <br>
-             <br> Watched Videos
             </div>
-            
-            <br>
-            
-            <div class = "box2">
-             <h5>Adding Two-Digit Numbers </h5>
-             <br>In Progress
-             <br>
-             <br>Exercises in Progress
-             <br> 
-             <br>Videos in Progress
+            <div class = "progresswrapper">
+            {% for subtopic in subtopics|get_item:topic.id %}
+                {% if stats|get_item:subtopic.id %} 
+                {% if stats|get_item:subtopic.id|get_item:"ex:pct_mastery" == 1 %}
+                    <div class = "completed progressindicator" subtopic = "{{ subtopic.id }}" > </div>
+                    <div class = "completedbox progressbox" id = "{{ subtopic.id }}">
+                        <h5> {{ subtopic.title }} </h5>
+                        <br> Mastered
+                        <br>
+                        <br> Completed {{ stats|get_item:subtopic.id|get_item:"ex:total_mastered" }} Exercises
+                        <br>
+                        <br> Watched {{ stats|get_item:subtopic.id|get_item:"vid:total_completed" }} Videos
+            		</div>
+                {% elif stats|get_item:subtopic.id|get_item:"ex:pct_mastery" > 0 %}
+                    <div class = "inprogress progressindicator" subtopic = "{{ subtopic.id }}"> </div>
+                    <div class = "inprogressbox progressbox" id = "{{ subtopic.id }}">
+             			<h5> {{ subtopic.title }} </h5>
+             			<br> In Progress
+             			<br>
+             		 {% if stats|get_item:subtopic.id|get_item:"ex:inprogress" %}
+             			<br> Exercises in Progress
+             			{% if exercise_logs|get_item:subtopic.id %}
+             		        {% for exerciselog in exercise_logs|get_item:subtopic.id %}
+             			        {% if not exerciselog.complete %} 
+             			        {% for exercise in exercises|get_item:subtopic.id %}
+             			            {% if exercise.name = exerciselog.exercise_id %}
+             			               <div> <a href= "{{ exercise.path }}"> {{exercise.title}} </a> </div>
+             			            {% endif %}
+             			        {% endfor %}
+             			        {% endif %} 
+             			    {% endfor %}
+             			{% endif %}
+             		 {% else %}     
+             			<br> No exercises currently in progress!
+             			{% if stats|get_item:subtopic.id|get_item:"ex:nextexercise" %}
+             			<br> Start next exercise!
+             			     {% with exercise=stats|get_item:subtopic.id|get_item:"ex:nextexercise" %}
+             			         <div> <a href= "{{ exercise.path }}"> {{exercise.title}} </a> </div>
+             			     {% endwith %}
+             			{% endif %}
+             		 {% endif %}
+             		 {% if stats|get_item:subtopic.id|get_item:"vid:inprogress" %}
+             			<br> Videos in Progress
+             			{% if video_logs|get_item:subtopic.id %}
+             		        {% for videolog in video_logs|get_item:subtopic.id %}
+             			        {% if not videolog.complete %} 
+             			        {% for video in videos|get_item:subtopic.id %}
+             			            {% if video.id = videolog.video_id %}
+             			               <div> <a href= "{{ video.path }}"> {{video.title}} </a> </div>
+             			            {% endif %}
+             			        {% endfor %}
+             			        {% endif %} 
+             			    {% endfor %}
+             			{% endif %}
+             		 {% else %}     
+             			<br> No videos currently being watched!
+             			{% if stats|get_item:subtopic.id|get_item:"vid:nextvideo" %}
+             			<br> Watch the next video!
+             			     {% with video=stats|get_item:subtopic.id|get_item:"vid:nextvideo" %}
+             			         <div> <a href= "{{ video.path }}"> {{video.title}} </a> <div> 
+             			     {% endwith %}
+             			{% endif %}
+             		 {% endif %}
+            		</div>
+                {% elif stats|get_item:subtopic.id|get_item:"ex:total_struggling" > 0 %}
+                    <div class = "struggling progressindicator" subtopic = "{{ subtopic.id }}"> </div>
+                    <div class = "strugglingbox progressbox" id = "{{ subtopic.id }}">
+             			<h5> {{ subtopic.title }} </h5>
+             			<br> Struggling
+             			<br>
+             			<br> You are currently struggling in these exercises!
+            			<br> 
+            			{% for exerciselog in exercise_logs|get_item:subtopic.id %}
+             			    {% if exerciselog.struggling %} 
+             			       {% for exercise in exercises|get_item:subtopic.id %}
+             			            {% if exercise.name = exerciselog.exercise_id %}
+             			               <div> <a href= "{{ exercise.path }}"> {{exercise.title}} </a></div>
+             			            {% endif %}
+             			        {% endfor %}
+             			    {% endif %}
+             			{% endfor %}	 
+            		</div>
+                {% endif %}           
+        <!-- {{stats|get_item:subtopic.id|get_item:"ex:pct_mastery" }} -->
+            {% endif %}
+            {% endfor %}
             </div>
-            
-            <br>
-            
-            <div class = "box3">
-             <h5> Adding Two-Digit Numbers </h5>
-             <br> In Progress
-             <br>
-             <br> No exercises currently in progress!
-             <br> Start next exercise!
-             <br>
-             <br> No videos currently being watched!
-             <br> Watch the next video!
-            </div>
-            
-            <br>
-            
-            <div class = "box4">
-             <h5> Borrowing </h5>
-             <br> Struggling
-             <br>
-             <br> You are currently struggling in these exercises!
-             <br> Watch related videos.
-            </div>
-            -->
-        </div>
-
-        <div>
+ 
             
         </div>
         
@@ -215,13 +229,9 @@
 <script>
 $(function() {
 
-	//console.log("HERE!");
-	//alert("THERE!");
-	$(".completed").click(function(){alert("Completed Tool Tip")})
-	$(".inprogress").click(function(){alert("InProgress1 Tool Tip")})
-	$(".inprogress2").click(function(){alert("InProgress2 Tool Tip")})
-	$(".struggling").click(function(){alert("Struggling Tool Tip")})
-	
+
+	$(".progressindicator").click(function(ev){$("#"+$(ev.target).attr("subtopic")).show()})
+
 
 })
 </script>

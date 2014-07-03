@@ -152,11 +152,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     exercises_by_topic = dict()
     videos_by_topic = dict()
     subtopics = dict()
-    subtopic_ids = dict()
+    subtopic_ids = list()
 
     for id in topic_ids:
         subtopics[id] = get_live_topics(node_cache["Topic"][id][0])
-        subtopic_ids[id] = [subtopic["id"] for subtopic in subtopics[id]]
+        subtopic_ids.extend([subtopic["id"] for subtopic in subtopics[id]])
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
@@ -168,14 +168,13 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         parent_ids = [topic for ex in node_cache["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
-        subtopic_ids = [subtopic["id"] for subtopic in get_live_topics(node_cache["Topic"][topic][0])]
-        subtopic = set(parent_ids).intersection(set(subtopic_ids))
         if not topic:
             logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
             topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
+        subtopic = set(parent_ids).intersection(set([subtopic["id"] for subtopic in subtopics[topic]]))
         subtopic = subtopic.pop()
         if not subtopic in topic_exercises:
             topic_exercises[subtopic] = get_topic_exercises(path=node_cache["Topic"][subtopic][0]["path"])
@@ -192,14 +191,14 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
 
         parent_ids = [topic for vid in node_cache["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
         topic = set(parent_ids).intersection(set(topic_ids))
-        subtopic_ids = [subtopic["id"] for subtopic in get_live_topics(node_cache["Topic"][topic][0])]
-        subtopic = set(parent_ids).intersection(set(subtopic_ids))
         if not topic:
             logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
             continue
         topic = topic.pop()
         if not topic in topic_videos:
             topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
+        subtopic = set(parent_ids).intersection(set([subtopic["id"] for subtopic in subtopics[topic]]))
+        subtopic = subtopic.pop()
         if not subtopic in topic_videos:
             topic_videos[subtopic] = get_topic_videos(path=node_cache["Topic"][subtopic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
@@ -226,18 +225,25 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         # proportion (like other percentages here)
         stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
+            "ex:total_mastered":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
             "ex:average_points":   0 if not n_exercises_touched else sum([el["points"] for el in exercises]) / float(n_exercises_touched),
             "ex:average_attempts": 0 if not n_exercises_touched else sum([el["attempts"] for el in exercises]) / float(n_exercises_touched),
             "ex:average_streak":   0 if not n_exercises_touched else sum([el["streak_progress"] for el in exercises]) / float(n_exercises_touched) / 100.,
             "ex:total_struggling": 0 if not n_exercises_touched else sum([el["struggling"] for el in exercises]),
             "ex:last_completed": None if not n_exercises_touched else max_none([el["completion_timestamp"] or None for el in exercises]),
+            "ex:inprogress": False if not n_exercises_touched else any([not el["complete"] for el in exercises]),
+            "ex:nextexercise": next((exercise for exercise in topic_exercises.get(id, []) if exercise["name"] not in [el["exercise_id"] for el in exercises]), {}),
 
             "vid:pct_started":      0 if not n_videos_touched else n_videos_touched / float(n_videos),
             "vid:pct_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]) / float(n_videos),
+            "vid:total_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]),
             "vid:total_minutes":      0 if not n_videos_touched else sum([vl["total_seconds_watched"] for vl in videos]) / 60.,
             "vid:average_points":   0. if not n_videos_touched else float(sum([vl["points"] for vl in videos]) / float(n_videos_touched)),
             "vid:last_completed": None if not n_videos_touched else max_none([vl["completion_timestamp"] or None for vl in videos]),
+            "vid:inprogress": False if not n_videos_touched else any([not vl["complete"] for vl in videos]),
+            "vid:nextvideo": next((video for video in topic_videos.get(id, []) if video["id"] not in [vl["video_id"] for vl in videos]), {}),
+
         
             "exandvid:last_completed": None if not (n_exercises_touched or n_videos_touched) else max_none([l["completion_timestamp"] or None for l in exercises + videos]),
             #"childtopics": childtopics,     
@@ -255,6 +261,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         "subtopic_ids": subtopic_ids,
         "exercises": topic_exercises,
         "exercise_logs": exercises_by_topic,
+        "videos": topic_videos,
         "video_logs": videos_by_topic,
         "exercise_sparklines": exercise_sparklines,
         "no_data": not exercise_logs and not video_logs,
