@@ -127,7 +127,7 @@
 
                                 </td>
                                 <td>
-                                    <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}">
+                                    <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
                                 </td>
@@ -317,7 +317,7 @@
                                         {{ student|format_name:"last_first" }}
                                     </td>
                                     <td>
-                                        <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}">
+                                        <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                                             <span class="glyphicon glyphicon-pencil"></span>
                                         </a>
                                     </td>
