@@ -203,5 +203,5 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
 
         # Fails for a second; userlist if admin
-        user_form = FacilityUserForm(facility=self.facility, admin_access=True, data=self.data)
+        user_form = FacilityUserForm(facility=self.facility, data=self.data)
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")

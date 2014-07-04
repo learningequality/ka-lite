@@ -162,7 +162,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             else:
                 # Double check permissions 
                 messages.success(request, _("You successfully registered."))
-                return HttpResponseRedirect(next)
+                return HttpResponseRedirect(reverse("login"))
 
     # render form for editicng 
     elif user_being_edited:
