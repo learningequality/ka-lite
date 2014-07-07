@@ -7,7 +7,7 @@
     "g4_p10", "g4_p11", "g4_p12", "g4_p13", "g4_p14", "g4_p15", "g4_p16",
     "g4_p18"
   ],
-  "repeats": "1",
+  "repeats": "2",
   "ids": [
     "place_value", "counting_1", "comparing_whole_numbers",
     "inequalities_on_a_number_line", "addition_1", "subtraction_1",
