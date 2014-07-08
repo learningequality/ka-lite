@@ -132,6 +132,7 @@ class FacilityUserForm(forms.ModelForm):
 
 
 class FacilityForm(forms.ModelForm):
+    name = forms.CharField(label=_("Name (required"))
 
     class Meta:
         model = Facility
