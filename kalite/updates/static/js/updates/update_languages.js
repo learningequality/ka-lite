@@ -50,7 +50,7 @@ function display_languages() {
             } else {
                 link_text = "(Default)";
             }
-            var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+            var lang_name = sprintf("<b>%(name)s</b>", lang);
             var lang_code = lang['code'];
             var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
             var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
