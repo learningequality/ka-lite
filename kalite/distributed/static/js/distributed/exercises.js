@@ -825,20 +825,21 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this.exercise_view = new ExerciseView({
-            el: this.el,
-            exercise_id: this.options.exercise_id
-        });
-
-        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
-        this.exercise_view.on("hint_used", this.hint_used);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
-
-        this.hint_view = new ExerciseHintView({
-            el: this.$(".exercise-hint-wrapper")
-        });
 
         window.statusModel.loaded.then(function() {
+
+            self.exercise_view = new ExerciseView({
+                el: self.el,
+                exercise_id: self.options.exercise_id
+            });
+
+            self.exercise_view.on("ready_for_next_question", self.ready_for_next_question);
+            self.exercise_view.on("hint_used", self.hint_used);
+            self.exercise_view.on("problem_loaded", self.problem_loaded);
+
+            self.hint_view = new ExerciseHintView({
+                el: self.$(".exercise-hint-wrapper")
+            });
 
             if (window.statusModel.get("is_logged_in")) {
 
