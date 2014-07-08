@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load staticfiles %}
+
+{% block headcss %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-timepicker.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/clock_set.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}
+    <script type="text/javascript" src="{% static 'js/bootstrap-timepicker.min.js' %}"></script>
+    <script type="text/javascript">
+        var TIME_SET_URL = "{% url 'time_set' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/clock_set.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+<table>
+
+            <tr>
+                <td class="title" colspan="2">
+                    <h2>{% trans "Raspberry Pi Clock Reset" %}</h2>
+                </td>
+            </tr>
+            <tr>
+                <td><div class="link bootstrap-timepicker"><input id="time_select" type="text"></div></td>
+                <td class="desc">{% blocktrans with time_format="HH:MM" %}Input current time ({{ time_format }} - 24 Hour){% endblocktrans %}</td>
+            </tr>
+            <tr>
+                <td><div class="link date"><input id="date_select" type="text"><input type="text" id="standard-date"></div></td>
+                <td class="desc">{% blocktrans with date_format="DD-MM-YYYY" %}Input current date ({{ date_format }}){% endblocktrans %}</td>
+            </tr>
+            <tr>
+                <td class="link" colspan="2">
+                    <input id="set_time" type="submit" value='{% trans "Update Server Date & Time" %}'>
+                </td>
+            </tr>
+        </table>
+{% endblock content %}

@@ -1,0 +1,115 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load my_filters %}
+
+{% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        th:first-child, th:nth-child(2) {
+            width: 250px;
+        }
+        th:nth-child(3), th:nth-child(4), th:last-child {
+            width: 200px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block buttons %}{{ block.super }}
+    {% if is_own_device %}
+        <div class="server-online-only">
+            <a class="registered-only btn btn-success" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
+            <a class="not-registered-only btn btn-success" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
+        </div>
+    {% endif %}
+{% endblock buttons %}
+
+{% block control_panel_content %}
+    <div id="zone_container">
+
+        <div class="device_metadata">
+            <h3>{% trans "Device Metadata" %}</h3>
+
+            <dl class="dl-horizontal">
+            {% if software_version %}
+                <!---Current System status -->
+                <dt>{% trans "Device ID" %}:</dt>
+                <dd>{{ device.id }}</dd>
+                <dt>{% trans "Current Version" %}:</dt>
+                <dd>{{ software_version }}</dd>
+                <dt>{% trans "Released Date" %}:</dt>
+                <dd>{{ software_release_date }}</dd>
+                <dt>{% trans "Database Size" %}:</dt>
+                <dd>{{ database_size|floatformat }} MB</dd>
+                <dt>{% trans "Database last update" %}:</dt>
+                <dd>{{ database_last_updated }}</dd>
+                <dt>{% trans "Install Directory" %}:</dt>
+                <dd>{{ install_dir }}</dd>
+
+            {% elif not shown_sessions %}
+
+            {% else %}
+                <!---Remote system status -->
+                <dt>{% trans "Version" %}:</dt>
+                <dd>{{ device_version }}</dd>
+                <dt>{% trans "Operating System" %}:</dt>
+                <dd>{{ device_os }}</dd>
+            {% endif %}
+            </dl>
+        </div>
+
+        <div class="sync_sessions">
+            <div>
+                <h3>{% trans "Sync Sessions" %}</h3>
+            </div>
+
+            {% if not session_pages %}
+                <p class="registered-only">{% trans "This device has never synced with the central server." %}</p>
+                <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
+            {% else %}
+                {% if session_pages.num_listed_pages > 1 %}
+                <div class="pagination">
+                        <a title="{% trans 'Browse to the previous page of sync sessions.' %}" {% if session_pages.has_previous %}href="{{ page_urls.prev_page }}"{% endif %}>&lt&lt</a>
+                        {% for listed_page in session_pages.listed_pages %}
+                            {% if listed_page == -1 %}
+                                <span class="disabled">&hellip;</span>
+                            {% elif listed_page == session_pages.number %}
+                                <span class="current">
+                                   {{ session_pages.number }}
+                                </span>
+                            {% else %}
+                                <a title="{% blocktrans %}Browse to page # {{ listed_page }} of sessions.{% endblocktrans %}" href="{{ page_urls|get_item:listed_page }}">{{ listed_page }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        <a title="{% trans 'Browse to the next page of sessions.' %}" {% if session_pages.has_next %}href="{{ page_urls.next_page }}"{% endif %}>&gt&gt</a>
+                </div>
+                <div class="clear"></div>
+                {% endif %}
+
+                <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
+                called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
+                    <table class="simple-table">
+                        <tr>
+                            <th>{% trans "Sync Date" %}</th>
+                            <th>{% trans "Device IP Address" %}</th>
+                            <th>{% trans "# Models Uploaded" %}</th>
+                            <th>{% trans "# Models Downloaded" %}</th>
+                            <th>{% trans "# Errors" %}</th>
+                        </tr>
+                        {% for sync_session in session_pages %}
+                            <tr>
+                                <td>{{ sync_session.timestamp }}</td>
+                                <td>{{ sync_session.ip }}</td>
+                                <td>{{ sync_session.models_uploaded }}</td>
+                                <td>{{ sync_session.models_downloaded }}</td>
+                                <td>{{ sync_session.errors }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+    </div><!-- zone_container -->
+{% endblock control_panel_content %}

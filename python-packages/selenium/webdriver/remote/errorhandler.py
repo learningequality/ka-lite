@@ -32,6 +32,12 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
+try:
+    basestring
+except NameError:  # Python 3.x
+    basestring = str
+
+
 class ErrorCode(object):
     """
     Error codes defined in the WebDriver wire protocol.
@@ -124,7 +130,7 @@ class ErrorHandler(object):
         else:
             exception_class = WebDriverException
         value = response['value']
-        if type(value) is str:
+        if isinstance(value, basestring):
             if exception_class == ErrorInResponseException:
                 raise exception_class(response, value)
             raise exception_class(value)
@@ -138,15 +144,21 @@ class ErrorHandler(object):
 
         stacktrace = None
         if 'stackTrace' in value and value['stackTrace']:
-            zeroeth = ''
+            stacktrace = []
             try:
-                zeroeth = value['stackTrace'][0]
-            except:
+                for frame in value['stackTrace']:
+                    line = self._value_or_default(frame, 'lineNumber', '')
+                    file = self._value_or_default(frame, 'fileName', '<anonymous>')
+                    if line:
+                        file = "%s:%s" % (file, line)
+                    meth = self._value_or_default(frame, 'methodName', '<anonymous>')
+                    if 'className' in frame:
+                        meth = "%s.%s" % (frame['className'], meth)
+                    msg = "    at %s (%s)"
+                    msg = msg % (meth, file)
+                    stacktrace.append(msg)
+            except TypeError:
                 pass
-            if 'methodName' in zeroeth:
-                stacktrace = "Method %s threw an error in %s" % \
-                    (zeroeth['methodName'],
-                    self._value_or_default(zeroeth, 'fileName', '[No file name]'))
         if exception_class == ErrorInResponseException:
             raise exception_class(response, message)
         raise exception_class(message, screen, stacktrace)

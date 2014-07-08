@@ -1,0 +1,19 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+{% load include_block %}
+
+{% block title %}
+    {% include_block "facility/facility.html" "title" %}
+{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    {% include_block "facility/facility.html" "headcss" %}
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    {% include_block "facility/facility.html" "headjs" %}
+{% endblock headjs %}
+
+{% block control_panel_content %}
+    {% include_block "facility/facility.html" "content" %}
+{% endblock control_panel_content %}

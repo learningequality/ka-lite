@@ -292,7 +292,7 @@ class KaLiteProject(object):
             pickle.dump(cls.port_map, fp)
             fp.close()
         except Exception as e:
-            self.log.warn("Failed to save port map: %s" % e.message)
+            self.log.warn("Failed to save port map: %s" % e.args[0])
 
     @classmethod
     def get_ports_from_map(cls, port_keys):

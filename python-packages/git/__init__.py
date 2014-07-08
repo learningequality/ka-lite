@@ -5,23 +5,50 @@
 # the BSD License: http://www.opensource.org/licenses/bsd-license.php
 
 import os
+import sys
 import inspect
 
-__version__ = '0.1.6'
+__version__ = '0.3.2 RC1'
 
-from git.actor import Actor
-from git.blob import Blob
-from git.commit import Commit
-from git.diff import Diff
-from git.errors import InvalidGitRepositoryError, NoSuchPathError, GitCommandError
+
+#{ Initialization
+def _init_externals():
+	"""Initialize external projects by putting them into the path"""
+	sys.path.append(os.path.join(os.path.dirname(__file__), 'ext', 'gitdb'))
+	
+	try:
+		import gitdb
+	except ImportError:
+		raise ImportError("'gitdb' could not be found in your PYTHONPATH")
+	#END verify import
+	
+#} END initialization
+
+#################
+_init_externals()
+#################
+
+#{ Imports
+
+from git.config import GitConfigParser
+from git.objects import *
+from git.refs import *
+from git.diff import *
+from git.exc import *
+from git.db import *
 from git.cmd import Git
-from git.head import Head
 from git.repo import Repo
-from git.stats import Stats
-from git.tag import Tag
-from git.tree import Tree
-from git.utils import dashify
-from git.utils import touch
+from git.remote import *
+from git.index import *
+from git.util import (
+						LockFile, 
+						BlockingLockFile, 
+						Stats,
+						Actor
+						)
+
+#} END imports
 
 __all__ = [ name for name, obj in locals().items()
-            if not (name.startswith('_') or inspect.ismodule(obj)) ]
+			if not (name.startswith('_') or inspect.ismodule(obj)) ]
+			

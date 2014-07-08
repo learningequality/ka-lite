@@ -1,0 +1,37 @@
+{% extends base_template %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %}{% trans "Register device to a sharing network" %} {{ block.super }}{% endblock title %}
+
+{% block headjs %}
+    <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
+    <script>
+        $(function() {
+            var cururl = $.url(window.location);
+            var public_key = null;
+            var params = cururl.param();
+            for (key in params) {
+                if (key.length > 50 && cururl.param(key) == "") {
+                    public_key = key;
+                    break;
+                } else if (params[key].length > 50) {
+                    public_key = params[key];
+                    break;
+                }
+            }
+            $("#id_public_key").val(decodeURIComponent(public_key));
+            $('#id_public_key').attr('readonly',true);
+            $('#id_public_key').css('color','grey');
+        });
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+    <h2>{% trans "Register a device" %}</h2>
+    <form method="post" class="basic-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Register" class="submit"/>
+    </form>
+{% endblock content %}

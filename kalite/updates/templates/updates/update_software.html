@@ -1,0 +1,139 @@
+{% extends "updates/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load my_filters %}
+
+{% block title %}{% trans "Update Software" %} {{ block.super }}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-fileupload.min.css' %}" />
+
+    <style>
+        #file_update {
+            display: none;
+        }
+        .vertical-shadow {
+            margin-left: 5px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+
+        .container {
+            margin-left: 130px;
+        }
+
+        #software_available {
+            margin-left: -4px;
+            margin-top: 6px;
+        }
+
+        #cancel-update-kalite {
+            margin-top: 10px;
+            margin-bottom: 15px;
+
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-left: 45px;
+        }
+
+        img {
+            margin-left: 15px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/bootstrap-fileupload.min.js' %}"></script>
+    <script type="text/javascript">
+        var CENTRAL_KALITE_VERSION_URL = "{% central_server_api path='/api/version' %}?current_version={{ software_version }}"
+        var CENTRAL_KALITE_DOWNLOAD_URL = "{% central_server_api path='/api/download/kalite/' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/updates/update_software.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+
+    <!---Current System status -->
+    <div>
+        <div class="">
+            <div class= "row">
+                <div class="span6 vertical-shadow">
+                    <h2>{% trans "Current Installation" %}</h2>
+
+                    <dl class="dl-horizontal">
+                        <dt>{% trans "Current Version" %}:</dt>
+                        {% if is_git_repo %}
+                            <dd>{{ git_software_version }}</dd>
+                        {% else %}
+                            <dd>{{ software_version }}</dd>
+                        {% endif %}
+                        {# Translators: this specifies the software release date #}
+                        <dt>{% trans "Release Date" %}:</dt>
+                        <dd>{{ software_release_date }}</dd>
+                        <dt>{% trans "Database Size" %}:</dt>
+                        <dd>{{ database_size|floatformat }} MB</dd>
+                        <dt>{% trans "Device ID" %}:</dt>
+                        <dd>{{ device_id }}</dd>
+                        <dt>{% trans "Last recorded usage" %}:</dt>
+                        <dd>{{ database_last_updated }}</dd>
+                        <dt>{% trans "Installation Location" %}:</dt>
+                        <dd>{{ install_dir }}</dd>
+                    </dl>
+                </div>
+
+                <div id="update_info" class="span6 offset6 vertical-shadow" style="display:none">
+                    <h2>{% trans "Available Update" %}</h2>
+                    <dl class="dl-horizontal">
+                        <dt>{% trans "Latest Version" %}:</dt>
+                        <dd><span id="remote_version"></span></dd>
+                        <dt>{% trans "Released Date" %}:</dt>
+                        <dd><span id="remote_release_date"></span></dd>
+                        <dt>{% trans "Description" %}:</dt>
+                        <dd>{% trans "New Features" %}:
+                            <ul id="new_features"></ul>
+                            {% trans "Bugs fixed" %}:
+                            <ul id="bugs_fixed"></ul>
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="span4 offset2">
+                    <div id="internet_update" style="display:none">
+                        {# Translators: this text specifies where admins can get an update from #}
+                        {% if is_git_repo %}
+                            <h4>{% trans "Through Git" %}:</h4>
+                            <button type="button" class="btn" id="git-update-kalite" mechanism="git" disabled>{% trans "Fetch through Git" %}</button>
+                        {% else %}
+                            <h4>{% trans "From the internet" %}:</h4>
+                            <button type="button" class="btn" id="download-update-kalite" mechanism="internet" disabled>{% trans "Download and update" %}</button>
+                        {% endif %}
+                        <select class="span1" id="software_available" style="display:none"></select>
+                        <!---File Upload Button -->
+                    </div>
+                    <div id="file_update">
+                        <h4>{% trans "Use local file" %}:</h4>
+                        <div class="fileupload fileupload-new" data-provides="fileupload" id="upload-update-kalite">
+                            <span class="btn btn-file"><span class="fileupload-new">{% trans "Select file" %}</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+                            <span class="fileupload-preview"></span>
+                            <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+                        </div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+
+            </div>
+        </div>
+
+    <div style="clear: both;"></div>
+    <!-- Progress Bar, note: id must match the "updates" app process name -->
+    <div id="update-progressbar">
+        {% include "updates/progress-bar.html" %}
+    </div>
+
+    <div id="refresh-page-dialog" title="refresh page dialog">
+      <p id="dialog-content">The JS of this page isn't working properly!</p>
+    </div>
+{% endblock content %}

@@ -1,0 +1,62 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block users_active %}active{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        #id_group {
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        var DEFAULT_LANGUAGE = "{{ default_language }}";
+        $(function() {
+            // Guarantee that SOME language code is either SELECTED by the back-end,
+            // or selected to the default value in the front-end.
+            if ($('#id_default_language option[selected]').length == 0) {
+                $("#id_default_language").val(DEFAULT_LANGUAGE);
+            }
+
+        {# Allow admins to add a new group #}
+        {% if request.is_admin %}
+            {% trans "Add a new group" as add_new_group %}
+            $('#id_group').parent().find(".helptext").html('(<a href="{% url 'add_group' %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
+        {% elif num_groups == 0 %}
+            $('#id_group').parent().hide();
+        {% endif %}
+
+        {# Don't allow teacher accounts to be in a group. #}
+        {% if request.is_admin and teacher %}
+            $("#id_group").attr('disabled',true);
+            $("#id_group").parent().hide();
+        {% endif %}
+
+        {# Show facility info #}
+        {% if not singlefacility %}
+            // Show the dropdown
+            $("#id_facility").show();
+        {% else %}
+            // Show that there's only one facility, and it's being selected.
+            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text()).insertAfter($("#id_facility"));
+        {% endif %}
+        });
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+    <div class="container">
+        <h3 class="no-margin-top">{{ title }}</h3>
+
+        <form method="post" class="basic-form">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <input type="submit" class="submit btn btn-default btn-sm" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
+        </form>
+    </div>
+{% endblock content %}

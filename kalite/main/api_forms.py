@@ -1,10 +1,13 @@
+"""
+Data validation of different types of POST responses through our api_urls/views
+"""
 from django import forms
 
-from main.topicdata import ID2SLUG_MAP, NODE_CACHE
+from kalite.topic_tools import get_node_cache
 
 
 class ExerciseLogForm(forms.Form):
-    """Form that represents the schema for data API requests"""
+    """Form that validates ExerciseLog data from a POST request"""
 
     exercise_id = forms.CharField(max_length=100)
     streak_progress = forms.IntegerField()
@@ -15,22 +18,38 @@ class ExerciseLogForm(forms.Form):
         """
         Make sure the exercise ID is found.
         """
-        if not self.cleaned_data.get("exercise_id", "") in NODE_CACHE['Exercise']:
+        if not self.cleaned_data.get("exercise_id", "") in get_node_cache('Exercise'):
             raise forms.ValidationError(_("Exercise ID not recognized"))
 
 
 class VideoLogForm(forms.Form):
-    """Form that represents the schema for data API requests"""
+    """Form that validates VideoLog data from a POST request"""
 
-    youtube_id = forms.CharField(max_length=25)
+    video_id = forms.CharField(max_length=100)
+    youtube_id = forms.CharField(max_length=20)
     total_seconds_watched = forms.FloatField(required=False)
-    seconds_watched = forms.FloatField()
+    seconds_watched = forms.FloatField(required=False)
     points = forms.IntegerField()
 
-    def clean_youtube_id(self):
+    def clean_video_id(self):
         """
-        Make sure the youtube ID is found.
+        Make sure the video ID is found.
         """
-        if not self.cleaned_data.get("youtube_id", "") in ID2SLUG_MAP:
-            raise forms.ValidationError(_("Youtube ID not recognized."))
+        if self.cleaned_data["video_id"] not in get_node_cache("Video"):
+            raise forms.ValidationError(_("Video ID not recognized."))
 
+
+class AttemptLogForm(forms.Form):
+    """Form that represents the schema for data API requests"""
+
+    exercise_id = forms.CharField(max_length=100)
+    correct = forms.BooleanField(required=False)  # Allows client to omit this parameter when answer is incorrect.
+    random_seed = forms.IntegerField()
+    answer_given = forms.CharField(max_length=100)
+
+    def clean_exercise_id(self):
+        """
+        Make sure the exercise ID is found.
+        """
+        if not self.cleaned_data.get("exercise_id", "") in get_node_cache()['Exercise']:
+            raise forms.ValidationError(_("Exercise ID not recognized"))

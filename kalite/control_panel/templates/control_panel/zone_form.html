@@ -1,0 +1,27 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ zone.name }} - {% trans "Sharing Network Add / Edit" %} {{ block.super }}{% endblock title %}
+
+{% block control_panel_content %}
+<div id="zone_container">
+    <form method="post" class="basic-form">
+    {% csrf_token %}
+
+    <div>
+        <h2>
+            {% if form.instance.pk %}{% trans "Update Your Sharing Network" %}{% else %}{% trans "Create A Sharing Network" %}{% endif %}
+            <span class="glossary-link nudge-left" title="{% trans "A 'Sharing Network' is a set of KA Lite installations that share logins and student progress with each other through the internet (when available)." %}"></span>
+        </h2>
+
+        {{ form.as_p }}
+
+        {% if form.instance.pk %}
+        <input type="submit" value="{% trans 'Update Sharing Network' %}" class="button"/>
+        {% else %}
+        <input type="submit" value="{% trans 'Create Sharing Network' %}" class="button"/>
+        {% endif %}
+    </div>
+    </form>
+</div>
+{% endblock control_panel_content %}

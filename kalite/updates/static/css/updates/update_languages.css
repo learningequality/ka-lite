@@ -1,0 +1,88 @@
+.download-actions-languages {
+    padding-right: 0;
+}
+
+#language-packs {
+    margin-bottom: 10px;
+}
+
+.lang-link, .lang-name, .lang-data, .upgrade-link {
+    float: left;
+    font-size: 12pt;
+}
+
+.upgrade-link a {
+    text-decoration: underline;
+}
+
+.lang-link, .lang-name {
+    width: 12.5%; 
+}
+
+.lang-link { 
+    text-align: left;
+}
+
+.lang-name {
+    text-align: middle; 
+}
+
+.lang-data, .upgrade-link {
+    text-align: right; 
+}
+
+.lang-data {
+    width: 25%; 
+}
+
+.upgrade-link {
+    text-align: right; 
+    width: 50%; 
+}
+
+#langpack-details {
+    display: none;
+    font-size: 12px;
+}
+
+#langpack-details span {
+    font-weight: bold;
+}
+
+#languagepackdownload-progressbar {
+    margin-bottom: 25px;
+}
+
+h4.button_text, p.button_text, #language-packs, #langpack-details span {
+    margin-left: 10px;
+}
+
+h4.button_text {
+    margin-top: 10px;
+}
+
+#installed-languages-div {
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+@media only screen and (max-width: 1199px) {
+    .lang-link, .lang-name, .lang-data, .upgrade-link { font-size: 12px; }
+}
+
+@media only screen and (max-width: 767px) {
+    .lang-data { text-align: middle; }
+}
+
+@media only screen and (max-width: 450px) {
+    .lang-link, .lang-name, .lang-data, .upgrade-link { font-size: 10px; }
+}
+
+@media only screen and (max-width: 432px) {
+    #langpack-details { font-size: 10px; }
+}
+
+@media only screen and (max-width: 401px) {
+    #langpack-details { float: left; }
+    #get-language-button { float: left !important; margin-bottom: 10px; margin-left: 10px; }
+}
