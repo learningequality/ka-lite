@@ -143,6 +143,16 @@ class FacilityForm(forms.ModelForm):
 
         return user_count
 
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        matching = Facility.objects.by_zone(self.instance.get_zone()).filter(name__iexact=name)
+        for model in matching:
+            if model.id != self.instance.id:
+                raise ValidationError(_("There is already a facility with this name."), code='facility_name_exists')
+
+        return name
+
+
 class FacilityGroupForm(forms.ModelForm):
 
     def __init__(self, facility, *args, **kwargs):
@@ -158,7 +168,7 @@ class FacilityGroupForm(forms.ModelForm):
         fields = ("name", "facility", "zone_fallback", )
         widgets = {
             "facility": forms.HiddenInput(),
-            "zone_fallback": forms.HiddenInput(),
+            "zone_fallback": forms.HiddenInput(), # TODO(jamalex): this shouldn't be in here
         }
 
     def clean_name(self):
@@ -167,6 +177,11 @@ class FacilityGroupForm(forms.ModelForm):
 
         if ungrouped.match(name):
             raise forms.ValidationError(_("This group name is reserved. Please choose one without 'ungrouped' in the name."))
+
+        matching = FacilityGroup.objects.by_zone(self.instance.get_zone()).filter(name__iexact=name)
+        for model in matching:
+            if model.id != self.instance.id:
+                raise ValidationError(_("There is already a group with this name."), code='group_name_exists')
 
         return name
 

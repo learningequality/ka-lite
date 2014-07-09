@@ -49,23 +49,6 @@ class Facility(DeferredCountSyncedModel):
     def is_default(self):
         return self.id == Settings.get("default_facility")
 
-    def validate_unique(self, exclude=None):
-        """Django method for validating uniqueness contraints.
-        We have uniqueness constraints that can't be expressed as a tuple of fields,
-        so need to override this to implement."""
-        rv = super(Facility, self).validate_unique(exclude=exclude)
-
-        if not exclude or "name" not in exclude:
-            # Has to have the same name, has to be within the same zone.
-            facilities_with_same_name = list(self.__class__.objects.filter(name=self.name) \
-                .filter(Q(signed_by__devicezone__zone=self.get_zone()) | Q(zone_fallback=self.get_zone())))
-            if self not in facilities_with_same_name and len(facilities_with_same_name) > 0:
-                assert facilities_with_same_name[0].get_zone() == self.get_zone(), "Make sure that the queries to match zone worked."
-                # Don't raise for facilities already with duplicate names, just for changes.
-                raise ValidationError({"name": [_("There is already a facility with this name.")]})
-
-        return rv
-
     @classmethod
     def from_zone(cls, zone):
         """Our best approximation of how to map facilities to zones"""
@@ -123,24 +106,6 @@ class FacilityGroup(DeferredCountSyncedModel):
         self.facilityuser_set.clear()
 
         self.save()
-
-
-
-    def validate_unique(self, exclude=None):
-        """Django method for validating uniqueness contraints.
-        We have uniqueness constraints that can't be expressed as a tuple of fields,
-        so need to override this to implement."""
-        rv = super(FacilityGroup, self).validate_unique(exclude=exclude)
-
-        if not exclude or "name" not in exclude:
-            # Has to have the same name, has to be within the same zone.
-            groups_with_same_name = list(self.__class__.objects.filter(name=self.name, facility=self.facility) \
-                .filter(Q(signed_by__devicezone__zone=self.get_zone()) | Q(zone_fallback=self.get_zone())))
-            if self not in groups_with_same_name and len(groups_with_same_name) > 0:
-                # Don't raise for facilities already with duplicate names, just for changes.
-                raise ValidationError({"name": [_("There is already a group with this name.")]})
-
-        return rv
 
     def get_zone(self, *args, **kwargs):
         zone = super(FacilityGroup, self).get_zone(*args, **kwargs)
