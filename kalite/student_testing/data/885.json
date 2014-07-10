@@ -3,7 +3,7 @@
   "title": "Grade IV - Unit Test 1",
   "seed": 5217,
   "playlist_ids": [ "g4_p1", "g4_p2", "g4_p3", "g4_p4" ],
-  "repeats": "1",
+  "repeats": "3",
   "ids": [
     "place_value", "counting_1", "comparing_whole_numbers",
     "inequalities_on_a_number_line", "addition_1", "subtraction_1",

@@ -3,7 +3,7 @@
   "title": "Grade VI - Unit Test 1",
   "seed": 2183,
   "playlist_ids": [ "g6_p1", "g6_p2", "g6_p3", "g6_p4" ],
-  "repeats": "1",
+  "repeats": "3",
   "ids": [
     "divisibility_tests", "composite_numbers", "prime_factorization",
     "the_fundamental_theorem_of_arithmetic", "divisibility",
