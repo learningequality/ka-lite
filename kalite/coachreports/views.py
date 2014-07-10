@@ -466,21 +466,27 @@ def test_detail_view(request, facility, test_id):
         s.name = s.get_name()
         user_attempts = AttemptLog.objects.filter(user=s, context_type='test', context_id=test_id)
         results_table[s] = []
-        total_attempts, overall_score = 0, 0
+        attempts_count_total, attempts_count_correct_total = 0, 0, 0
         for ex in ex_ids:
+
             attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
-            correct_attempts = len([attempt for attempt in attempts if attempt.correct])
-            summed_attempts = len(attempts)
-            total_attempts += summed_attempts
-            if summed_attempts:
-                score = round(100 * float(correct_attempts)/float(summed_attempts), 1)
+
+            attempts_count = len(attempts)
+            attempts_count_correct = len([attempt for attempt in attempts if attempt.correct])
+
+            attempts_count_total += attempts_count
+            attempts_count_correct_total += attempts_count_correct
+
+            if attempts_count:
+                score = round(100 * float(attempts_count_correct)/float(attempts_count), 1)
                 scores_dict[ex].append(score)
-                overall_score += score
             else:
                 score = ''
+
             results_table[s].append(score)
-        if overall_score:
-            results_table[s].append(round(float(overall_score)/float(total_attempts), 1))
+
+        if attempts_count_total:
+            results_table[s].append(round(float(attempts_count_correct_total)/float(attempts_count_total), 1))
         else: 
             results_table[s].append('')
 
