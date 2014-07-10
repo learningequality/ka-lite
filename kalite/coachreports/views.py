@@ -466,7 +466,7 @@ def test_detail_view(request, facility, test_id):
         s.name = s.get_name()
         user_attempts = AttemptLog.objects.filter(user=s, context_type='test', context_id=test_id)
         results_table[s] = []
-        attempts_count_total, attempts_count_correct_total = 0, 0, 0
+        attempts_count_total, attempts_count_correct_total = 0, 0
         for ex in ex_ids:
 
             attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
