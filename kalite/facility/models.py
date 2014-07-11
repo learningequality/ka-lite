@@ -35,8 +35,6 @@ class Facility(DeferredCountSyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
-    _import_excluded_validation_fields = ["name"]  # don't enforce uniqueness constraint on name on import.
-
     class Meta:
         verbose_name_plural = _("Facilities")
         app_label = "securesync"  # for back-compat reasons
@@ -81,8 +79,6 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-
-    _import_excluded_validation_fields = ["name"]  # don't enforce uniqueness constraint on name on import.
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
@@ -135,7 +131,6 @@ class FacilityUser(DeferredCountSyncedModel):
     default_language = models.CharField(max_length=8, blank=True, null=True); default_language.minversion="0.11.1"
 
     class Meta:
-        unique_together = ("facility", "username")
         app_label = "securesync"  # for back-compat reasons
 
     def __unicode__(self):
