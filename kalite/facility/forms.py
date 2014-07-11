@@ -198,7 +198,10 @@ class LoginForm(forms.ModelForm):
         password = self.cleaned_data.get('password', "")
 
         # Find all matching users
-        users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
+        users = FacilityUser.objects.filter(username=username, facility=facility)
+        # If no exact matches were found, try a case-insensitive search
+        if users.count() == 0:
+            users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
 
         if users.count() == 0:
             if self.fields["facility"].queryset.count() > 1:
