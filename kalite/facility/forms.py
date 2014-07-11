@@ -74,23 +74,12 @@ class FacilityUserForm(forms.ModelForm):
         username = self.cleaned_data.get('username', '')
         zone = self.cleaned_data.get('zone_fallback')
 
-        ## check if given username is unique on both facility users and admins, whatever the casing
-        #
-        # Change: don't allow (only through the form) the same username either in the same facility,
-        #   or even in the same zone.
-        # Change: Use 'all_objects' instead of 'objects' in order to return soft deleted users as well.
-        users_with_same_username = FacilityUser.all_objects.filter(username__iexact=username, facility=facility) \
-            or FacilityUser.all_objects.filter(username__iexact=username) \
-                .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same zone
+        # Don't allow (only through the form) the same username within the same facility, or conflicting with the admin.
+        users_with_same_username = FacilityUser.objects.filter(username__iexact=username, facility=facility)
         username_taken = users_with_same_username.count() > 0
         username_changed = not self.instance or self.instance.username != username
-        if username_taken and username_changed:
-            error_message = _("A user with this username already exists. Please choose a new username and try again.")
-            self.set_field_error(field_name='username', message=error_message)
-
-        elif User.objects.filter(username__iexact=username).count() > 0:
-            # Admin (django) user exists with the same name; we don't want overlap there!
-            self.set_field_error(field_name='username', message=_("The specified username is unavailable. Please choose a new username and try again."))
+        if username_taken and username_changed or User.objects.filter(username__iexact=username).count() > 0:
+            self.set_field_error(field_name='username', message=_("A user with this username already exists. Please choose a new username and try again."))
 
         ## Check password
         password_first = self.cleaned_data.get('password_first', "")
@@ -178,7 +167,7 @@ class FacilityGroupForm(forms.ModelForm):
         if ungrouped.match(name):
             raise forms.ValidationError(_("This group name is reserved. Please choose one without 'ungrouped' in the name."))
 
-        matching = FacilityGroup.objects.by_zone(self.instance.get_zone()).filter(name__iexact=name)
+        matching = FacilityGroup.objects.filter(facility=self.fields["facility"].initial, name__iexact=name)
         for model in matching:
             if model.id != self.instance.id:
                 raise ValidationError(_("There is already a group with this name."), code='group_name_exists')
