@@ -95,11 +95,11 @@ $(function() {
         if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
         var isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
 
-        // if(isAndroid) {
+        if(isAndroid) {
             window.softwareKeyboardView = new SoftwareKeyboardView({
                 el: $("#solutionarea")
             });
-        // }
+        }
         }
     });
 
