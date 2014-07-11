@@ -202,31 +202,33 @@ class LoginForm(forms.ModelForm):
             self.fields["facility"].widget = forms.HiddenInput()
 
     def clean(self):
-        # Don't call super; this isn't a proper where the model (FacilityUser) is being fully completed.
+        # Don't call super; this isn't a proper form where the model (FacilityUser) is being fully completed.
 
         username = self.cleaned_data.get('username', "")
         facility = self.cleaned_data.get('facility', "")
         password = self.cleaned_data.get('password', "")
 
-        # Coerce
+        # Find all matching users
         users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
-        if users.count() == 1 and users[0].username != username:
-            username = users[0].username
-            self.cleaned_data['username'] = username
 
-        try:
-            self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
-        except FacilityUser.DoesNotExist as e:
+        if users.count() == 0:
             if self.fields["facility"].queryset.count() > 1:
                 error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
             else:
                 error_message = _("Username was not found. Did you type your username correctly?")
             raise forms.ValidationError(error_message)
 
-        if not self.user_cache.check_password(password):
-            self.user_cache = None
-            if password and "password" not in self._errors:
-                self._errors["password"] = self.error_class([_("The passwords do not match. Please try again.")])
+        for user in users:
+            # if we find a user whose password matches, stop looking
+            if user.check_password(password):
+                break
+            else:
+                user = None
+
+        if not user and "password" not in self._errors:
+            self._errors["password"] = self.error_class([_("Password was incorrect. Please try again.")])
+
+        self.user_cache = user
 
         return self.cleaned_data
 
