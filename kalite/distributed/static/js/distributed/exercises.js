@@ -94,8 +94,8 @@ $(function() {
         });
     });
 
-    $(Exercises).bind("newProblem", function (data) {
-        if (data.answerType=="number"){
+    $(Exercises).bind("newProblem", function (ev, data) {
+        if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
         var isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
 
         // if(isAndroid) {
