@@ -360,3 +360,37 @@ a:hover.topic-unavailable {
 a.disabled {
     background-color: #C0C0C0;
 }
+
+/* BEGIN styles for software-keyboard */
+
+
+#software-keyboard {
+    border: 2px solid #cfcfcf;
+    background: #c3c3c3;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 1);
+    text-align: center;
+    padding: 0px;
+    margin-top: 10px;
+}
+
+#software-keyboard div {
+    display: inline-block;
+    min-width: 33%;
+    padding: 3px;
+}
+
+#software-keyboard div .key {
+    width: 100%;
+    text-align: center;
+    line-height: 40px;
+    font-size: 26px;
+}
+
+#software-keyboard div .key-bs {
+    font-size: 20px;
+}
+
+/* END styles for software-keyboard */
