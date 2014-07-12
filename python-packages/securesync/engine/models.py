@@ -219,7 +219,7 @@ class SyncedModel(ExtendedModel):
         self.save()
 
     def full_clean(self, exclude=None, imported=False):
-        """Django method for validating uniqueness contraints.
+        """Django method for validating uniqueness constraints.
         We can have uniqueness constraints that can't be expressed as a tuple of fields,
         so need to override this to implement.
 
