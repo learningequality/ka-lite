@@ -452,6 +452,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
+        if group_pk not in group_data:
+            logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))
+            continue
         group_data[group_pk]["total_users"] += 1
         group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]
