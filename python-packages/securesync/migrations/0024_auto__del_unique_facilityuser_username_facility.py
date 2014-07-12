@@ -23,6 +23,12 @@ class Migration(SchemaMigration):
         except DatabaseError:
             pass
 
+        # It seems mysql didn't drop it either, so manually drop the index using the ID from our central server
+        try:
+            db.execute("DROP INDEX securesync_facilityuser_facility_id_4487ee308249fe82_uniq ON securesync_facilityuser");
+        except DatabaseError:
+            pass
+
         # Restore stderr to its former glory
         sys.stderr = old_stderr
 
