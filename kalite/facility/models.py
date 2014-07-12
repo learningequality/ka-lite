@@ -99,7 +99,10 @@ class FacilityGroup(DeferredCountSyncedModel):
 
         # This is not very robust, as it relies on explicitly calling the reverse relations to the model
         # and then clearing them. If anything else Foreign Keys onto groups here, it will have to be set here.
-        self.facilityuser_set.clear()
+        # Note that we cannot simply call .clear() on the reverse relation, as then the user models are not signed.
+        for user in self.facilityuser_set.all():
+            user.group = None
+            user.save()
 
         self.save()
 

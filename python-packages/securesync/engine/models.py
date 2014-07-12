@@ -445,7 +445,8 @@ class SyncedModel(ExtendedModel):
 
 class DeferredSignSyncedModel(SyncedModel):
     """
-    Synced model that we defer signing until it's time to sync.
+    Synced model that defers signing until it's time to sync. This helps with CPU efficency because
+    we don't need to recalculate the model signature every time the model is updated and saved.
     """
     def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
         super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
@@ -457,7 +458,8 @@ class DeferredSignSyncedModel(SyncedModel):
 
 class DeferredCountSyncedModel(DeferredSignSyncedModel):
     """
-    Defer incrementing counters until syncing.
+    Defer incrementing counters until syncing. This helps with IO efficiency because we don't need to
+    update the counter_position on our device's metadata model everytime this model is saved.
     """
     def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
         """
