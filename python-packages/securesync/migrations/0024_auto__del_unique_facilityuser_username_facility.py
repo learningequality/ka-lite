@@ -11,8 +11,11 @@ from django.db.utils import DatabaseError
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing unique constraint on 'FacilityUser', fields ['username', 'facility']
-        db.delete_unique(u'securesync_facilityuser', ['username', 'facility_id'])
+        try:
+            # Removing unique constraint on 'FacilityUser', fields ['username', 'facility']
+            db.delete_unique(u'securesync_facilityuser', ['username', 'facility_id'])
+        except ValueError:
+            pass
 
         # Attempt to suppress stderr to hide errors printed by the commands to follow
         old_stderr, sys.stderr = sys.stderr, open(os.devnull, 'w')
