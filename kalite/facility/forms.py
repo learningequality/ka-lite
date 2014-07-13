@@ -27,10 +27,9 @@ class FacilityUserForm(forms.ModelForm):
     default_language = forms.ChoiceField(label=_("Default Language"))
     warned           = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
 
-    def __init__(self, facility, admin_access=False, *args, **kwargs):
+    def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
 
-        self.admin_access = admin_access
         self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
 
         # Select the initial default language,
