@@ -50,7 +50,7 @@ function display_languages() {
             } else {
                 link_text = "(Default)";
             }
-            var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+            var lang_name = sprintf("<b>%(name)s</b>", lang);
             var lang_code = lang['code'];
             var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
             var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
@@ -143,7 +143,7 @@ $(function () {
         var installed_languages = installed.map(function(elem) { return elem['code']; });
         if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
             if (percent_translated > 0 || srtcount > 0) {
-                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s)</option>', langdata));
+                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s</option>', langdata));
             }
         }
     });
