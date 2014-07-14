@@ -403,7 +403,8 @@ def test_view(request, facility):
                 score = round(100 * float(log_object.total_correct) / float(log_object.total_number), 1)
                 results_table[s].append({
                     "log": log_object,
-                    "score": score,
+                    "raw_score": score,
+                    "display_score": "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': log_object.total_correct, 'attempts': log_object.total_correct},
                 })
             else:
                 results_table[s].append({})
@@ -412,7 +413,7 @@ def test_view(request, facility):
         score_list = [round(100 * float(result.total_correct) / float(result.total_number), 1) for result in user_test_logs]
         for stat in SUMMARY_STATS:
             if score_list:
-                results_table[s].append({"stat": return_list_stat(score_list, stat)})
+                results_table[s].append({"stat": "%d%%" % return_list_stat(score_list, stat)})
             else:
                 results_table[s].append({})
 
@@ -423,7 +424,7 @@ def test_view(request, facility):
         for test_obj in test_objects:
             # get the logs for this test across all users and then add summary stats 
             log_scores = [round(100 * float(test_log.total_correct) / float(test_log.total_number), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
-            stats_dict[stat].append(return_list_stat(log_scores, stat))
+            stats_dict[stat].append("%d%%" % return_list_stat(log_scores, stat))
 
     context = plotting_metadata_context(request, facility=facility)
     context.update({
