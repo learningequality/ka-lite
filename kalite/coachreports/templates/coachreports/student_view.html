@@ -24,7 +24,7 @@
         th, td {
             padding: 3px;
         }
-        tr.invisible {
+        div.invisible {
             display:none;
         }
         td.pct, td.float, td.int, td.date {
@@ -38,6 +38,52 @@
         .table-title {
             margin-bottom: 15px;
         }
+        .column {
+			width: 30%;
+			float: left;
+			margin-bottom: 20%;
+			text-align: center;
+        } 
+        .progressindicator{
+            width:20px;
+            height:20px;
+            border-radius: 50%/50%;
+            float: left;
+            margin: 5px;
+        }
+        .progresswrapper{
+            display: inline-block; 
+            max-width: 150px;  
+        }
+        .completed {
+            background:#338533;
+        }
+        .inprogress {
+            background:#B2D1B2;
+        }
+        .inprogress2 {
+            background:#B2D1B2;
+        }
+        .struggling {
+            background:#FFCCCC;
+        }
+        .progressbox {
+        	width: 250px;
+            display: none;
+            position: absolute;
+            margin-top: 30px;
+            background: #FFFFFF;
+        }
+        .completedbox {
+            border: 3px solid #338533;
+        }
+        .inprogressbox {
+            border: 3px solid #B2D1B2;
+        }
+        .strugglingbox {
+            border: 3px solid #FFCCCC;
+        }
+        
     </style>
 {% endblock headcss %}
 
@@ -70,77 +116,145 @@
           {% trans "Please return to this page after watching videos or practicing exercises." %}
       {% endif %}
     {% else %}
-      <h2 class="table-title">{% trans "Progress Report" %}</h2>
-      <!-- Begin table --> 
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <!-- Top header -->
-            <tr>
-              <th colspan="2" class="super-header"></th>
-              <th colspan="7" class="super-header">{% trans "Exercises" %}</th><!-- everything is programmatic... except colspans here. :( -->
-              <th colspan="5" class="super-header">{% trans "Videos" %}</th>
-            </tr> <!-- End top header -->
-            <tr>
-              <th colspan="2" class="" >{% trans "Topic" %}</th>
-              <!-- Stat name -->
-              {% for def in stat_defs %}
-                <th>{% trans def.title %}</th>
-              {% endfor %} <!-- End Stat Name -->
-            </tr>
-          </thead>
-          <tbody>
-            {% for topic in topics %}
-              <tr class="{% if exercise_logs|get_item:topic.id or video_logs|get_item:topic.id%}visible{% else %}invisible{% endif %}">
-                  <!-- Progress circle -->
-                  <td>
-                      <div class="progress-circle {% if stats|get_item:topic.id|get_item:'pct_mastery' = 1.0 %}complete{% else %}partial{% endif %}">
-                      &nbsp;
-                      </div>
-                  </td> <!-- End Progress circle -->
-                  <!-- Topic Title -->
-                  <td>
-                      <span title="{% trans topic.description %}">
-                          {% if not is_central %}
-                              <a href="{{ topic.path }}">{% trans topic.title %}</a>
-                          {% else %}
-                              {% trans topic.title %}
-                          {% endif %}
-                      </span>
-                  </td> <!-- End Topic title -->
-                  <!-- Stat values -->
-                  {% for def in stat_defs %}
-                    <td class="{{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}">
-                        {% if def.type == "float" %}
-                            {{ stats|get_item:topic.id|get_item:def.key|floatformat }}
-                        {% elif def.type == "pct" %}
-                            {{ stats|get_item:topic.id|get_item:def.key|percent:1 }}
-                        {% elif def.type == "date" %}
-                            {{ stats|get_item:topic.id|get_item:def.key|date:"SHORT_DATE_FORMAT" }}
-                        {% elif def.key != "ex:total_struggling" %}
-                            {{ stats|get_item:topic.id|get_item:def.key }}
-                        {% else %}
-                            {% for exercise_log in exercise_logs|get_item:topic.id %}
-                                {% if exercise_log.struggling %}
-                                    {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' as letter silent %}
-                                    {% for exercise in exercises|get_item:topic.id %}
-                                        {% if exercise.name = exercise_log.exercise_id %}
-                                        <a href="{{ exercise.path }}">{{ letter }}</a>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    </td>
-                  {% endfor %} <!-- End stat values -->
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table> 
-      </div><!-- end table --> 
-    {% endif %}
-  </div>
-</div>
 
-{% endblock student_report %}
+    <h2 class="table-title">{% trans "Mastery of Topics" %}</h2>
+
+    {% for topic in topics %}
+        <div class=" column {% if exercise_logs|get_item:topic.id or video_logs|get_item:topic.id%}visible{% else %}invisible{% endif %}"> 
+                <span title="{% trans topic.description %}">
+                    {% if not is_central %}
+                        <a href="{{ topic.path }}">{% trans topic.title %}</a>
+                    {% else %}
+                        {% trans topic.title %}
+                    {% endif %}
+                </span>
+            <br>
+            <div>
+            {% for def in stat_defs %}
+            <span class=" {{ def.type }}{% if def.key == 'total_struggling' and stats|get_item:topic.id|get_item:def.key > 0 %} struggling{% endif %}">
+                {% if def.type == "date" %}
+                    {{ stats|get_item:topic.id|get_item:def.key|date:"SHORT_DATE_FORMAT" }}
+                {% endif %}
+            </span>
+            {% endfor %}
+            </div>
+            <div class = "progresswrapper">
+            {% for subtopic in subtopics|get_item:topic.id %}
+                {% if stats|get_item:subtopic.id %} 
+                {% if stats|get_item:subtopic.id|get_item:"ex:pct_mastery" == 1 %}
+                    <div class = "completed progressindicator" subtopic = "{{ subtopic.id }}" > </div>
+                    <div class = "completedbox progressbox" id = "{{ subtopic.id }}">
+                        <h5> {{ subtopic.title }} </h5>
+                        <br> Mastered
+                        <br>
+                        <br> Completed {{ stats|get_item:subtopic.id|get_item:"ex:total_mastered" }} Exercises
+                        <br>
+                        <br> Watched {{ stats|get_item:subtopic.id|get_item:"vid:total_completed" }} Videos
+            		</div>
+                {% elif stats|get_item:subtopic.id|get_item:"ex:pct_mastery" > 0 %}
+                    <div class = "inprogress progressindicator" subtopic = "{{ subtopic.id }}"> </div>
+                    <div class = "inprogressbox progressbox" id = "{{ subtopic.id }}">
+             			<h5> {{ subtopic.title }} </h5>
+             			<br> In Progress
+             			<br>
+             		 {% if stats|get_item:subtopic.id|get_item:"ex:inprogress" %}
+             			<br> Exercises in Progress
+             			{% if exercise_logs|get_item:subtopic.id %}
+             		        {% for exerciselog in exercise_logs|get_item:subtopic.id %}
+             			        {% if not exerciselog.complete %} 
+             			        {% for exercise in exercises|get_item:subtopic.id %}
+             			            {% if exercise.name = exerciselog.exercise_id %}
+             			               <div> <a href= "{{ exercise.path }}"> {{exercise.title}} </a> </div>
+             			            {% endif %}
+             			        {% endfor %}
+             			        {% endif %} 
+             			    {% endfor %}
+             			{% endif %}
+             		 {% else %}     
+             			<br> No exercises currently in progress!
+             			{% if stats|get_item:subtopic.id|get_item:"ex:nextexercise" %}
+             			<br> Start next exercise!
+             			     {% with exercise=stats|get_item:subtopic.id|get_item:"ex:nextexercise" %}
+             			         <div> <a href= "{{ exercise.path }}"> {{exercise.title}} </a> </div>
+             			     {% endwith %}
+             			{% endif %}
+             		 {% endif %}
+             		 {% if stats|get_item:subtopic.id|get_item:"vid:inprogress" %}
+             			<br> Videos in Progress
+             			{% if video_logs|get_item:subtopic.id %}
+             		        {% for videolog in video_logs|get_item:subtopic.id %}
+             			        {% if not videolog.complete %} 
+             			        {% for video in videos|get_item:subtopic.id %}
+             			            {% if video.id = videolog.video_id %}
+             			               <div> <a href= "{{ video.path }}"> {{video.title}} </a> </div>
+             			            {% endif %}
+             			        {% endfor %}
+             			        {% endif %} 
+             			    {% endfor %}
+             			{% endif %}
+             		 {% else %}     
+             			<br> No videos currently being watched!
+             			{% if stats|get_item:subtopic.id|get_item:"vid:nextvideo" %}
+             			<br> Watch the next video!
+             			     {% with video=stats|get_item:subtopic.id|get_item:"vid:nextvideo" %}
+             			         <div> <a href= "{{ video.path }}"> {{video.title}} </a> <div> 
+             			     {% endwith %}
+             			{% endif %}
+             		 {% endif %}
+            		</div>
+                {% elif stats|get_item:subtopic.id|get_item:"ex:total_struggling" > 0 %}
+                    <div class = "struggling progressindicator" subtopic = "{{ subtopic.id }}"> </div>
+                    <div class = "strugglingbox progressbox" id = "{{ subtopic.id }}">
+             			<h5> {{ subtopic.title }} </h5>
+             			<br> Struggling
+             			<br>
+             			<br> You are currently struggling in these exercises!
+            			<br> 
+            			{% for exerciselog in exercise_logs|get_item:subtopic.id %}
+             			    {% if exerciselog.struggling %} 
+             			       {% for exercise in exercises|get_item:subtopic.id %}
+             			            {% if exercise.name = exerciselog.exercise_id %}
+             			               <div> <a href= "{{ exercise.path }}"> {{exercise.title}} </a></div>
+             			            {% endif %}
+             			        {% endfor %}
+             			    {% endif %}
+             			{% endfor %}	 
+            		</div>
+                {% endif %}           
+        <!-- {{stats|get_item:subtopic.id|get_item:"ex:pct_mastery" }} -->
+            {% endif %}
+            {% endfor %}
+            </div>
+ 
+            
+        </div>
+        
+    {% endfor %}
+    {% endif %}
+<script>
+$(function() {
+
+
+	$(".progressindicator").click(function(ev){
+        if($("#"+$(ev.target).attr("subtopic")).css("display")!="none"){
+            $("#"+$(ev.target).attr("subtopic")).hide();
+        } else {
+            $(".progressbox").hide();
+            $("#"+$(ev.target).attr("subtopic")).show();
+        }
+        ev.stopPropagation();
+    })
+
+    $("body").click(function(ev){
+        $(".progressbox").hide();
+    })
+
+    $(".column").click(function(ev){
+        ev.stopPropagation();
+    })
+
+
+})
+</script>
+    {% endblock student_report %}
 {% endblock content %}
