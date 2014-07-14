@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import include, patterns, url
 
 from . import api_urls
@@ -14,10 +15,13 @@ urlpatterns = patterns(__package__ + '.views',
 
     url(r'^group/$', 'group_edit', {'group_id': 'new'}, 'add_group'),
     url(r'^group/(?P<group_id>\w+)/edit/$', 'group_edit', {'facility': None}, 'group_edit'),
-
-    url(r'^login/$', 'login', {}, 'login'),
-    url(r'^logout/$', 'logout', {}, 'logout'),
 )
+
+if not settings.CENTRAL_SERVER:
+    urlpatterns = patterns(__package__ + '.views',
+        url(r'^login/$', 'login', {}, 'login'),
+        url(r'^logout/$', 'logout', {}, 'logout'),
+    )
 
 urlpatterns += patterns(__package__ + '.api_views',
     url(r'^api/', include(api_urls)),

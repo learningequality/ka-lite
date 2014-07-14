@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
@@ -65,9 +65,9 @@ def facility_edit(request, id=None, zone_id=None):
 @require_authorized_admin
 def add_facility_teacher(request):
     """
-    Only admins can add teachers 
+    Admins and coaches can add teachers
     If central, must be an org admin
-    If distributed, must be superuser
+    If distributed, must be superuser or a coach
     """
     title = _("Add a new teacher")
     return _facility_user(request, new_user=True, is_teacher=True, title=title)
@@ -76,7 +76,7 @@ def add_facility_teacher(request):
 @require_authorized_admin
 def add_facility_student(request):
     """
-    Admins and coaches can add coaches 
+    Admins and coaches can add students
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
@@ -88,14 +88,14 @@ def facility_user_signup(request):
     """
     Anyone can sign up, unless we have set the restricted flag
     """
-    if settings.DISABLE_SELF_ADMIN and not request.is_admin:
+    if settings.DISABLE_SELF_ADMIN:
         # Users cannot create/edit their own data when UserRestricted
         raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
     if settings.CENTRAL_SERVER:
-        raise PermissionDenied(_("You may not create a facility user on the central server."))        
-    
+        raise Http404(_("You may not sign up as a facility user on the central server."))
+
     title = _("Sign up for an account")
-    return _facility_user(request, new_user=True, title=title)    
+    return _facility_user(request, new_user=True, title=title)
 
 
 @require_authorized_admin
@@ -106,7 +106,7 @@ def edit_facility_user(request, facility_user_id):
     """
     user_being_edited = get_object_or_404(FacilityUser, id=facility_user_id) or None
     title = _("Edit user %(username)s") % {"username": user_being_edited.username}
-    return _facility_user(request, user_being_edited=user_being_edited, is_teacher=user_being_edited.is_teacher, title=title)    
+    return _facility_user(request, user_being_edited=user_being_edited, is_teacher=user_being_edited.is_teacher, title=title)
 
 
 @facility_required
@@ -123,7 +123,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
     """
     next = request.next or request.get_full_path() or reverse("homepage")
     # Data submitted to create/edit the user.
-    if request.method == "POST": 
+    if request.method == "POST":
 
         form = FacilityUserForm(facility, data=request.POST, instance=user_being_edited)
         if not form.is_valid():
@@ -133,10 +133,10 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             # In case somebody tries to check the hidden 'is_teacher' field
             if form.cleaned_data["is_teacher"] and not request.is_admin:
                 raise PermissionDenied(_("You must be a teacher to edit or create a teacher."))
-            
+
             if form.cleaned_data["password_first"]:
                 form.instance.set_password(form.cleaned_data["password_first"])
-            
+
             form.save()
 
             # Editing self
@@ -144,7 +144,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                 messages.success(request, _("You successfully updated your user settings."))
                 if form.instance.is_teacher:
                     return HttpResponseRedirect(next)
-                else: 
+                else:
                     return HttpResponseRedirect(next)
 
             # Editing another user
@@ -160,16 +160,16 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
 
             # New student signed up
             else:
-                # Double check permissions 
+                # Double check permissions
                 messages.success(request, _("You successfully registered."))
                 return HttpResponseRedirect(reverse("login"))
 
-    # render form for editicng 
+    # render form for editicng
     elif user_being_edited:
         form = FacilityUserForm(facility=facility, instance=user_being_edited)
 
     # in all other cases, we are creating a new user
-    else:  
+    else:
         form = FacilityUserForm(facility, initial={
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
