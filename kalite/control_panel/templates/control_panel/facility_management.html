@@ -219,7 +219,7 @@
                                                     {% if group.id %}
                                                         href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
                                                     {% else %}
-                                                        href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
+                                                        href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped_id %}">
                                                     {% endif %}
                                                     {{ group.name }}
                                                 </a>
