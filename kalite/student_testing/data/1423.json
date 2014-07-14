@@ -6,7 +6,7 @@
     "g3_p1", "g3_p2", "g3_p3", "g3_p4", "g3_p5", "g3_p6", "g3_p7", "g3_p8",
     "g3_p9", "g3_p10", "g3_p11", "g3_p12"
   ],
-  "repeats": "1",
+  "repeats": "2",
   "ids": [
     "place_value", "comparing_whole_numbers",
     "inequalities_on_a_number_line", "place_value", "counting_1",

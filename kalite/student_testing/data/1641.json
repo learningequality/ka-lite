@@ -3,7 +3,7 @@
   "title": "Grade III - Unit Test 2",
   "seed": 182,
   "playlist_ids": [ "g3_p5", "g3_p6", "g3_p7" ],
-  "repeats": "1",
+  "repeats": "5",
   "ids": [
     "number_line", "multiplication_0.5", "measuring_segments",
     "congruent_segments", "conditional_statements_2",

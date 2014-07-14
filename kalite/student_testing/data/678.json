@@ -3,7 +3,7 @@
   "title": "Grade IV - Unit Test 2",
   "seed": 5949,
   "playlist_ids": [ "g4_p5", "g4_p6", "g4_p7" ],
-  "repeats": "1",
+  "repeats": "3",
   "ids": [
     "number_line", "multiplication_0.5", "multiplication_1",
     "multiplication_1.5", "multiplication_2", "multiplication_3",
