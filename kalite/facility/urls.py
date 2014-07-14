@@ -18,7 +18,7 @@ urlpatterns = patterns(__package__ + '.views',
 )
 
 if not settings.CENTRAL_SERVER:
-    urlpatterns = patterns(__package__ + '.views',
+    urlpatterns += patterns(__package__ + '.views',
         url(r'^login/$', 'login', {}, 'login'),
         url(r'^logout/$', 'logout', {}, 'logout'),
     )
