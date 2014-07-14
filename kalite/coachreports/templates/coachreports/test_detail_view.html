@@ -135,10 +135,10 @@
                     {% for results in results_table.values %}
                         <tr>
                         {% for r in results %}
-                            {% if r == '' %}
+                            {% if r.raw_score == '' %}
                                 <td class="incomplete" title="Not yet completed"></td>
                             {% else %}
-                                <td class="{% if r > 79 %}pass{% elif r > 59 %}borderline{% else %}fail{% endif %}">{{ r }}%
+                                <td class="{% if r.raw_score > 79 %}pass{% elif r.raw_score > 59 %}borderline{% else %}fail{% endif %}">{{ r.display_score }}
                                 </td>
                             {% endif %}
                         {% endfor %}

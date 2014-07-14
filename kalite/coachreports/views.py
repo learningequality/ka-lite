@@ -459,7 +459,7 @@ def test_detail_view(request, facility, test_id):
    
     results_table, scores_dict = OrderedDict(), OrderedDict()
     # build this up now to use in summary stats section
-    ex_ids = literal_eval(test_obj.ids)
+    ex_ids = set(literal_eval(test_obj.ids))
     for ex in ex_ids:
         scores_dict[ex] = [] 
     for s in users:
@@ -468,7 +468,6 @@ def test_detail_view(request, facility, test_id):
         results_table[s] = []
         attempts_count_total, attempts_count_correct_total = 0, 0
         for ex in ex_ids:
-
             attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
 
             attempts_count = len(attempts)
@@ -483,12 +482,21 @@ def test_detail_view(request, facility, test_id):
             else:
                 score = ''
 
-            results_table[s].append(score)
+            results_table[s].append({
+                'display_score': "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct, 'attempts': attempts_count},
+                'raw_score': score,
+            })
 
+        # Calc overall score
         if attempts_count_total:
-            results_table[s].append(round(float(attempts_count_correct_total)/float(attempts_count_total), 1))
-        else: 
-            results_table[s].append('')
+            score = round(100 * float(attempts_count_correct_total)/float(attempts_count_total), 1)
+        else:
+            score = ''
+
+        results_table[s].append({
+            'display_score': "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct_total, 'attempts': attempts_count_total},
+            'raw_score': score,
+        })
 
     # This retrieves stats for individual exercises
     stats_dict = OrderedDict()
