@@ -104,7 +104,7 @@ class FacilityUserForm(forms.ModelForm):
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
-                self.set_field_error(field_name='password_first', message=ve.message)
+                self.set_field_error(field_name='password_first', message="Password must be more than 5 characters")
         elif (self.instance and not self.instance.password) or password_first or password_recheck:
             # Only perform check on a new user or a password change
             if password_first != password_recheck:
