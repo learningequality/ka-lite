@@ -27,7 +27,7 @@ from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = ['Max', 'Min', 'Average', 'Std Dev']
@@ -158,6 +158,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     topic_videos = dict()
     exercises_by_topic = dict()
     videos_by_topic = dict()
+    subtopics = dict()
+    subtopic_ids = list()
+
+    for id in topic_ids:
+        subtopics[id] = get_live_topics(node_cache["Topic"][id][0])
+        subtopic_ids.extend([subtopic["id"] for subtopic in subtopics[id]])
 
     # Categorize every exercise log into a "midlevel" exercise
     for elog in exercise_logs:
@@ -175,7 +181,12 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         topic = topic.pop()
         if not topic in topic_exercises:
             topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
+        subtopic = set(parent_ids).intersection(set([subtopic["id"] for subtopic in subtopics[topic]]))
+        subtopic = subtopic.pop()
+        if not subtopic in topic_exercises:
+            topic_exercises[subtopic] = get_topic_exercises(path=node_cache["Topic"][subtopic][0]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
+        exercises_by_topic[subtopic] = exercises_by_topic.get(subtopic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
     for vlog in video_logs:
@@ -193,11 +204,17 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         topic = topic.pop()
         if not topic in topic_videos:
             topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
+        subtopic = set(parent_ids).intersection(set([subtopic["id"] for subtopic in subtopics[topic]]))
+        subtopic = subtopic.pop()
+        if not subtopic in topic_videos:
+            topic_videos[subtopic] = get_topic_videos(path=node_cache["Topic"][subtopic][0]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
+        videos_by_topic[subtopic] = videos_by_topic.get(subtopic, []) + [vlog]
 
 
     # Now compute stats
-    for id in topic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+    for id in topic_ids + subtopic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
+
         n_exercises = len(topic_exercises.get(id, []))
         n_videos = len(topic_videos.get(id, []))
 
@@ -205,6 +222,9 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         videos = videos_by_topic.get(id, [])
         n_exercises_touched = len(exercises)
         n_videos_touched = len(videos)
+        #childtopics = get_live_topics(node_cache["Topic"][id])
+        #for child in get_live_topics(id):
+        #    childtopics.append(child["id"])
 
         exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
 
@@ -212,18 +232,28 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         # proportion (like other percentages here)
         stats[id] = {
             "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
+            "ex:total_mastered":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]),
             "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
             "ex:average_points":   0 if not n_exercises_touched else sum([el["points"] for el in exercises]) / float(n_exercises_touched),
             "ex:average_attempts": 0 if not n_exercises_touched else sum([el["attempts"] for el in exercises]) / float(n_exercises_touched),
             "ex:average_streak":   0 if not n_exercises_touched else sum([el["streak_progress"] for el in exercises]) / float(n_exercises_touched) / 100.,
             "ex:total_struggling": 0 if not n_exercises_touched else sum([el["struggling"] for el in exercises]),
             "ex:last_completed": None if not n_exercises_touched else max_none([el["completion_timestamp"] or None for el in exercises]),
+            "ex:inprogress": False if not n_exercises_touched else any([not el["complete"] for el in exercises]),
+            "ex:nextexercise": next((exercise for exercise in topic_exercises.get(id, []) if exercise["name"] not in [el["exercise_id"] for el in exercises]), {}),
 
             "vid:pct_started":      0 if not n_videos_touched else n_videos_touched / float(n_videos),
             "vid:pct_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]) / float(n_videos),
+            "vid:total_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]),
             "vid:total_minutes":      0 if not n_videos_touched else sum([vl["total_seconds_watched"] for vl in videos]) / 60.,
             "vid:average_points":   0. if not n_videos_touched else float(sum([vl["points"] for vl in videos]) / float(n_videos_touched)),
             "vid:last_completed": None if not n_videos_touched else max_none([vl["completion_timestamp"] or None for vl in videos]),
+            "vid:inprogress": False if not n_videos_touched else any([not vl["complete"] for vl in videos]),
+            "vid:nextvideo": next((video for video in topic_videos.get(id, []) if video["id"] not in [vl["video_id"] for vl in videos]), {}),
+
+        
+            "exandvid:last_completed": None if not (n_exercises_touched or n_videos_touched) else max_none([l["completion_timestamp"] or None for l in exercises + videos]),
+            #"childtopics": childtopics,     
         }
 
     context = plotting_metadata_context(request)
@@ -234,8 +264,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         "facilities": context["facilities"],
         "student": user,
         "topics": topics,
+        "subtopics": subtopics,
+        "subtopic_ids": subtopic_ids,
         "exercises": topic_exercises,
         "exercise_logs": exercises_by_topic,
+        "videos": topic_videos,
         "video_logs": videos_by_topic,
         "exercise_sparklines": exercise_sparklines,
         "no_data": not exercise_logs and not video_logs,
@@ -247,12 +280,11 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             {"key": "ex:average_attempts", "title": _("Average Attempts"), "type": "float"},
             {"key": "ex:average_streak",   "title": _("Average Streak"),   "type": "pct"},
             {"key": "ex:total_struggling", "title": _("Struggling"),       "type": "int"},
-            {"key": "ex:last_completed",   "title": _("Last Completed"),   "type": "date"},
             {"key": "vid:pct_completed",   "title": _("% Completed"),      "type": "pct"},
             {"key": "vid:pct_started",     "title": _("% Started"),        "type": "pct"},
             {"key": "vid:total_minutes",   "title": _("Average Minutes Watched"),"type": "float"},
             {"key": "vid:average_points",  "title": _("Average Points"),   "type": "float"},
-            {"key": "vid:last_completed",  "title": _("Last Completed"),   "type": "date"},
+            {"key": "exandvid:last_completed", "title": _("Topic Last Completed"), "type":"date"}
         ]
     }
 

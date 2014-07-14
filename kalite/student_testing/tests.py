@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
@@ -20,7 +20,7 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
     client_class = KALiteClient
 
-    exam_id = '1970'
+    exam_id = '685'  # needs to be the first exam in the test list UI
     login_url = reverse('login')
     logout_url = reverse('logout')
     test_list_url = reverse('test_list')
@@ -44,7 +44,6 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
     def login_teacher(self):
         response = self.client.login_teacher()
-        # logging.warn('==> response %s' % response)
         # check content for teacher
         text = "Coach Reports"
         self.assertContains(response, text)
@@ -75,13 +74,13 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         return response
 
 
-class CoreTest(BaseTest):
+class CoreTests(BaseTest):
 
     def setUp(self):
-        super(CoreTest, self).setUp()
+        super(CoreTests, self).setUp()
 
     def tearDown(self):
-        super(CoreTest, self).tearDown()
+        super(CoreTests, self).tearDown()
 
     def test_teacher_can_access_test_list_page(self):
         self.login_teacher()
@@ -173,7 +172,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
     TEXT_ENABLE = 'Enable Exam Mode'
     TEXT_DISABLE = 'Disable Exam Mode'
 
-    persistent_browser = True
+    persistent_browser = False
 
     def setUp(self):
 
@@ -194,13 +193,14 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
                                    password=self.client.teacher_data['password'],
                                    facility_name=self.client.facility.name)
 
-    def login_student_in_browser(self):
+    def login_student_in_browser(self, expect_url=None, exam_mode_on=False):
         self.browser_login_student(username=self.client.student_data['username'],
                                    password=self.client.student_data['password'],
-                                   facility_name=self.client.facility.name)
+                                   facility_name=self.client.facility.name,
+                                   expect_url=expect_url, exam_mode_on=exam_mode_on)
 
     def wait_for_element(self, by, elem):
-        WebDriverWait(self.browser, 3).until(EC.element_to_be_clickable((by, elem)))
+        WebDriverWait(self.browser, 1).until(ec.element_to_be_clickable((by, elem)))
 
     def get_button(self, is_on=False):
         if is_on:
@@ -234,7 +234,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
         # logout the teacher and login a student to check the exam redirect
         self.browser_logout_user()
-        self.login_student_in_browser()
+        self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True)
 
         # did student redirect to exam page?
         self.assertEqual(self.browser.current_url, self.exam_page_url)
@@ -257,5 +257,3 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         self.browser_logout_user()
         self.login_student_in_browser()
         self.assertEqual(self.reverse("homepage"), self.browser.current_url)
-
-        self.browser_logout_user()

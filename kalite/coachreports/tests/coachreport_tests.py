@@ -4,22 +4,22 @@ from kalite.main.models import AttemptLog
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.student_testing.models import TestLog
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class TestReportTests(FacilityMixins,
-                       CreateAdminMixin,
-                       CreateDeviceMixin,
-                       KALiteDistributedBrowserTestCase):
+                      CreateAdminMixin,
+                      CreateDeviceMixin,
+                      KALiteDistributedBrowserTestCase):
 
     def test_student_scores_display(self):
         """
-        Test that we show results for a test if they exist, 
+        Test that we show results for a test if they exist,
         and don't when they dont
         """
         test_log_defaults = {
-            'test': 128, # this must be an actual exercise
+            'test': 685, # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -44,7 +44,7 @@ class TestReportTests(FacilityMixins,
         Test that we show correct stats for a test.
         """
         test_log_1 = {
-            'test': 128, # this must be an actual exercise
+            'test': 685,  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -52,7 +52,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 2,
         }
         test_log_2 = {
-            'test': 128, # this must be an actual exercise
+            'test': 685,  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -90,7 +90,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 2,
         }
         test_log_2 = {
-            'test': 1940, # this must be an actual exercise
+            'test': 685, # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -105,13 +105,13 @@ class TestReportTests(FacilityMixins,
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
-        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
+        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
         self.assertTrue(stat_max == '50.0%')
-        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
+        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
         self.assertTrue(stat_min == '25.0%')
-        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
+        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
         self.assertTrue(stat_avg == '37.5%')
-        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[6]').text
+        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
         self.assertTrue(stat_std == '12.5%')
 
     def test_student_detail_scores_display(self):
@@ -119,7 +119,7 @@ class TestReportTests(FacilityMixins,
         Test that we show results for an exercise cluster in the test detail view
         """
         test_log_defaults = {
-            'test': 1940, # this must be an actual test
+            'test': 685,  # this must be an actual test
             'index': '0',
             'complete': True,
             'started': True,
@@ -129,7 +129,7 @@ class TestReportTests(FacilityMixins,
         attempt_log_default = {
             'exercise_id': 'place_value',
             'context_type': 'test',
-            'context_id': 1940,
+            'context_id': 685,
             'timestamp': datetime.now(),
             'correct': True,
         }
@@ -151,5 +151,5 @@ class TestReportTests(FacilityMixins,
         self.assertTrue(stat_avg == '100.0%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[1]').text
         self.assertTrue(stat_std == '0.0%')
-        overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[19]').text
-        self.assertTrue(overall == '100.0%') 
+        overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[7]').text
+        self.assertTrue(overall == '100.0%')
