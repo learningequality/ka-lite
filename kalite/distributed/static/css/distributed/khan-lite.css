@@ -385,12 +385,18 @@ a.disabled {
 #software-keyboard div .key {
     width: 100%;
     text-align: center;
-    line-height: 40px;
+    line-height: 30px;
     font-size: 26px;
 }
 
 #software-keyboard div .key-bs {
     font-size: 20px;
+}
+
+#show-keyboard {
+    font-size: 10px;
+    width: 90px;
+    float: right;
 }
 
 /* END styles for software-keyboard */
