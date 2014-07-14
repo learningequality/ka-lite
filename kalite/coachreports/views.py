@@ -486,7 +486,7 @@ def test_detail_view(request, facility, test_id):
             results_table[s].append(score)
 
         if attempts_count_total:
-            results_table[s].append(round(float(attempts_count_correct_total)/float(attempts_count_total), 1))
+            results_table[s].append(round(100 * float(attempts_count_correct_total)/float(attempts_count_total), 1))
         else: 
             results_table[s].append('')
 
