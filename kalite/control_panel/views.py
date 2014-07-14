@@ -255,6 +255,8 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @render_to("control_panel/facility_management.html")
 def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
 
+    ungrouped_id = _("Ungrouped").split(" ")[0]
+
     if request.method == "POST" and request.GET.get("format") == "csv":
         try:
             return facility_management_csv(request, facility=facility, group_id=group_id, zone_id=zone_id)
@@ -293,8 +295,8 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
 
     # If group_id exists, extract data for that group
     if group_id:
-        if group_id == "Ungrouped":
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == "Ungrouped")
+        if group_id == ungrouped_id:
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _("Ungrouped"))
         else:
             group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
         group_data = group_data.values()[group_id_index]
@@ -314,7 +316,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
             "coaches": coach_urls,
             "students": student_urls,
         },
-        "ungrouped_id": _("Ungrouped").split(" ")[0]
+        "ungrouped_id": ungrouped_id
     })
     return context
 
