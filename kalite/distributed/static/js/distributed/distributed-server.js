@@ -129,7 +129,9 @@ var TotalPointView = Backbone.View.extend({
         }
 
         // TODO-BLOCKER(jamalex): only include the hex user ID when Nalanda package is enabled
-        username_span += sprintf(" (%s)", this.model.get("user_id").slice(0, 8));
+        if (this.model.has("user_id")) {
+            username_span += sprintf(" (%s)", this.model.get("user_id").slice(0, 8));
+        }
 
         if (points > 0) {
             message = sprintf("%s<span class='motivational-feature'> | %s</span>", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
