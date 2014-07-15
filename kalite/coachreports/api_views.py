@@ -366,8 +366,12 @@ def api_data(request, xaxis="", yaxis=""):
         users = [get_object_or_404(FacilityUser, id=form.data.get("user"))]
     elif form.data.get("group"):
         facility = []
-        groups = [get_object_or_404(FacilityGroup, id=form.data.get("group"))]
-        users = FacilityUser.objects.filter(group=form.data.get("group"), is_teacher=False).order_by("last_name", "first_name")
+        if form.data.get("group") == "Ungrouped":
+            groups = []
+            users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], group__isnull=True, is_teacher=False).order_by("last_name", "first_name")
+        else:
+            groups = [get_object_or_404(FacilityGroup, id=form.data.get("group"))]
+            users = FacilityUser.objects.filter(group=form.data.get("group"), is_teacher=False).order_by("last_name", "first_name")
     elif form.data.get("facility"):
         facility = get_object_or_404(Facility, id=form.data.get("facility"))
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
