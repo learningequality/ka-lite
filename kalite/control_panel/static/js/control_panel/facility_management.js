@@ -12,9 +12,10 @@ function getSelectedItems(select) {
 function setActionButtonState(select) {
     // argument to allow conditional selection of action buttons.
     if($(select).find("tr.selectable.selected").length) {
-        $('button[value="'+select+'"]').removeAttr("disabled");
+        $('button[value="'+select+'"]').removeAttr("disabled").removeAttr("title");
     } else {
         $('button[value="'+select+'"]').attr("disabled", "disabled");
+        $('button[value="'+select+'"]').attr("title", "You must select one or more rows from the table below before taking this action.");
     }
 }
 
@@ -23,7 +24,6 @@ function setSelectAllState(selectAllId) {
     var allChecked = true;
     var boxes = $(selectAllId).find('tbody').find('input[type="checkbox"]');
     _.each(boxes, function(box) {
-        console.log($(box).prop('checked'));
         if ($(box).prop('checked') === false){
             allChecked = false;
         }
@@ -37,6 +37,9 @@ function setSelectAllState(selectAllId) {
 }
 
 $(function() {
+
+    // on load add the same title tag to all disabled buttons 
+    $('button[disabled="disabled"]').attr("title", "You must select one or more rows from the table below before taking this action.");
 
     $("#group").change(function(){
         // Change the URL to the selected group.
@@ -129,7 +132,9 @@ $(function() {
         } else {
             checkbox.prop("checked", true);
         }
-        setActionButtonState("#" + $(this).attr("type"));
+        var el = "#" + $(this).attr("type");
+        setActionButtonState(el);
+        setSelectAllState(el);
         // $(".selectable-table").find("tbody").find("tr.selectable").mouseover(function(){
         //     $(this).toggleClass("selected");
         //     var checkbox = $(this).find("input");
