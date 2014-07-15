@@ -397,7 +397,7 @@ def api_data(request, xaxis="", yaxis=""):
         "exercises": exercises,
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
-                          ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                          ["%s, %s" % (u.last_name, u.first_name) if u.last_name or u.first_name else u.username for u in users]
                      )),
         "groups": dict(zip([g.id for g in groups],
                            dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
