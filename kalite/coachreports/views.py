@@ -404,7 +404,7 @@ def test_view(request, facility):
                 results_table[s].append({
                     "log": log_object,
                     "raw_score": score,
-                    "display_score": "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': log_object.total_correct, 'attempts': log_object.total_correct},
+                    "display_score": "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': log_object.total_correct, 'attempts': log_object.total_number},
                 })
             else:
                 results_table[s].append({})
@@ -480,22 +480,26 @@ def test_detail_view(request, facility, test_id):
             if attempts_count:
                 score = round(100 * float(attempts_count_correct)/float(attempts_count), 1)
                 scores_dict[ex].append(score)
+                display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct, 'attempts': attempts_count}
             else:
                 score = ''
+                display_score = ''
 
             results_table[s].append({
-                'display_score': "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct, 'attempts': attempts_count},
+                'display_score': display_score,
                 'raw_score': score,
             })
 
         # Calc overall score
         if attempts_count_total:
             score = round(100 * float(attempts_count_correct_total)/float(attempts_count_total), 1)
+            display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct_total, 'attempts': attempts_count_total}
         else:
             score = ''
+            display_score = ''
 
         results_table[s].append({
-            'display_score': "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct_total, 'attempts': attempts_count_total},
+            'display_score': display_score,
             'raw_score': score,
         })
 
@@ -506,7 +510,7 @@ def test_detail_view(request, facility, test_id):
         for ex in ex_ids:
             scores_list = scores_dict[ex]
             if scores_list:
-                stats_dict[stat].append(return_list_stat(scores_list, stat))
+                stats_dict[stat].append("%d%%" % return_list_stat(scores_list, stat))
             else:
                 stats_dict[stat].append('')
 
