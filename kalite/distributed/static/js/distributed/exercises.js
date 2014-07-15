@@ -92,7 +92,7 @@ $(function() {
     });
 
 
-    // TODO (rtibbles): Integrate with Backbone views for Practice/Quiz/Test - only rerender on change of question type.
+    // TODO-BLOCKER (rtibbles): Integrate with Backbone views for Practice/Quiz/Test - only rerender on change of question type.
     $(Exercises).bind("newProblem", function (ev, data) {
         if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
             window.softwareKeyboardView = new SoftwareKeyboardView({

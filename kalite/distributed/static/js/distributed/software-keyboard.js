@@ -1,8 +1,8 @@
 window.SoftwareKeyboardView = Backbone.View.extend({
 
     events: {
-       "click button.key" : "keyPressed",
-       "click button#show-keyboard": "toggleKeypad"
+       "click button.key" : "key_pressed",
+       "click button#show-keyboard": "toggle_keypad"
      },
 
     initialize: function () {
@@ -19,9 +19,9 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
     },
 
-    toggleKeypad: function() {
+    toggle_keypad: function() {
         this.enabled = !this.enabled;
-        this.softwareKeyboard.toggle();
+        this.software_keyboard.toggle();
         this.inputs.prop("readonly", function(index, value){
             return !value;
         });
@@ -32,7 +32,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         return false;
     },
 
-    keyPressed: function( ev ) {
+    key_pressed: function( ev ) {
         if(!this.enabled) {
             return false;
         }
@@ -56,7 +56,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     render: function () {
         self = this;
 
-        // TODO (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
+        // TODO-BLOCKER (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
 
         this.$el.append("<button class='btn btn-info' id='show-keyboard'>" + gettext("Hide Keypad") + "</button>");
 
@@ -69,12 +69,12 @@ window.SoftwareKeyboardView = Backbone.View.extend({
             "bs": "ui-corner-br"
         };
 
-        this.softwareKeyboard = this.$el.find("#software-keyboard");
+        this.software_keyboard = this.$el.find("#software-keyboard");
 
         jQuery.each( keys, function( i, row ) {
             var rowDiv = jQuery( "<div>" )
                 .attr( "class", "row" )
-                .appendTo( self.softwareKeyboard );
+                .appendTo( self.software_keyboard );
 
             jQuery.each( row, function( j, key ) {
                 var keySpan = $("<div class='.col-xs-4'><button class='key btn btn-success " + (key === "bs" ? "key-bs" : "") + "' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo( rowDiv );
@@ -83,9 +83,9 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         } );
 
         if(!this.touch){
-            this.toggleKeypad();
+            this.toggle_keypad();
         }
 
     }
 
-})
+});
