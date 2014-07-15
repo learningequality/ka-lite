@@ -111,31 +111,35 @@
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <table class="table selectable-table">
-                            <tr class="success">
-                                <th><input class="select-all" type="checkbox" value="#coaches"></th>
-                                <th>{% trans "Coach" %}</th>
-                                <th>{% trans "Edit" %}</th>
-                                <th>{% trans "Logins" %}</th>
-                                <th>{% trans "Login Time" %}</th>
-                                <th>{% trans "Coach Report Views" %}</th>
-                            </tr>
-                            {% for coach in coach_pages %}
-                            <tr class="selectable" value="{{ coach.id }}" type="coaches">
-                                <td><input type="checkbox" value="#coaches"></td>
-                                <td>
-                                    {{ coach|format_name:"last_first" }}
+                            <thead>
+                                <tr class="success">
+                                    <th><input class="select-all" type="checkbox" value="#coaches"></th>
+                                    <th>{% trans "Coach" %}</th>
+                                    <th>{% trans "Edit" %}</th>
+                                    <th>{% trans "Logins" %}</th>
+                                    <th>{% trans "Login Time" %}</th>
+                                    <th>{% trans "Coach Report Views" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for coach in coach_pages %}
+                                <tr class="selectable" value="{{ coach.id }}" type="coaches">
+                                    <td><input type="checkbox" value="#coaches"></td>
+                                    <td>
+                                        {{ coach|format_name:"last_first" }}
 
-                                </td>
-                                <td>
-                                    <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                        <span class="glyphicon glyphicon-pencil"></span>
-                                    </a>
-                                </td>
-                                <td>{{ coach.total_logins }}</td>
-                                <td>{{ coach.total_hours|floatformat }}</td>
-                                <td>{{ coach.total_report_views }}</td>
-                            </tr>
-                            {% endfor %}
+                                    </td>
+                                    <td>
+                                        <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </a>
+                                    </td>
+                                    <td>{{ coach.total_logins }}</td>
+                                    <td>{{ coach.total_hours|floatformat }}</td>
+                                    <td>{{ coach.total_report_views }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>

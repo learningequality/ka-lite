@@ -18,6 +18,24 @@ function setActionButtonState(select) {
     }
 }
 
+function setSelectAllState(selectAllId) {
+    // If all checkboxes selected, set to checked, if not, set to unchecked
+    var allChecked = true;
+    var boxes = $(selectAllId).find('tbody').find('input[type="checkbox"]');
+    _.each(boxes, function(box) {
+        console.log($(box).prop('checked'));
+        if ($(box).prop('checked') === false){
+            allChecked = false;
+        }
+    });
+    var selectAllBox = $(selectAllId).find('thead').find('.select-all');
+    if (!allChecked) {
+        $(selectAllBox).prop("checked", false);
+    } else {
+        $(selectAllBox).prop("checked", true);
+    }
+}
+
 $(function() {
 
     $("#group").change(function(){
@@ -54,12 +72,19 @@ $(function() {
         } else {
             el.find("tbody").find("input:checkbox:not(:checked)").mousedown();
         }
-    })
+    });
 
     $("input:checkbox").click(function(event){
+        var el = event.target.value
         // Only set action button state on related action buttons.
-        setActionButtonState(event.target.value);
-    })
+        setActionButtonState(el);
+    });
+
+    $("input:checkbox").mouseup(function(event){
+        var el = event.target.value
+        // Set state of select all checkbox based on clicks 
+        setSelectAllState(el);
+    });
 
     $(".delete").click(function(event) {
         // Delete the selected users
@@ -105,29 +130,29 @@ $(function() {
             checkbox.prop("checked", true);
         }
         setActionButtonState("#" + $(this).attr("type"));
-        $(".selectable-table").find("tbody").find("tr.selectable").mouseover(function(){
-            $(this).toggleClass("selected");
-            var checkbox = $(this).find("input");
-            if (checkbox.prop("checked")) {
-                checkbox.prop("checked", false);
-            } else {
-                checkbox.prop("checked", true);
-            }
-            setActionButtonState("#" + $(this).attr("type"));
-        });
+        // $(".selectable-table").find("tbody").find("tr.selectable").mouseover(function(){
+        //     $(this).toggleClass("selected");
+        //     var checkbox = $(this).find("input");
+        //     if (checkbox.prop("checked")) {
+        //         checkbox.prop("checked", false);
+        //     } else {
+        //         checkbox.prop("checked", true);
+        //     }
+        //     setActionButtonState("#" + $(this).attr("type"));
+        // });
     });
 
     // Unbind the mouseover selection once the button has been released.
-    $(".selectable-table").find("tbody").find("tr.selectable").mouseup(function(){
-        $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
-    });
+    // $(".selectable-table").find("tbody").find("tr.selectable").mouseup(function(){
+    //     $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
+    // });
 
     // If the mouse moves out of the table with the button still depressed, the above unbind will not fire.
     // Unbind the mouseover once the mouse leaves the table.
     // This means that moving the mouse out and then back in with the button depressed will not select.
-    $(".selectable-table").mouseleave(function(){
-        $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
-    })
+    // $(".selectable-table").mouseleave(function(){
+    //     $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
+    // })
 
     // Prevent propagation of click events on links to limit confusing behaviour
     // of rows being selected when links clicked.
