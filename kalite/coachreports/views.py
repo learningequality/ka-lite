@@ -38,14 +38,14 @@ def get_accessible_objects_from_logged_in_user(request, facility):
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
         groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
-        ungrouped_available = len(FacilityUser.objects.filter(facility=facilitie, is_teacher=False, group__isnull=True)) > 0
+        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
 
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
             facilities = Facility.objects.all()
             groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
-            ungrouped_available = len(FacilityUser.objects.filter(facility=facilitie, is_teacher=False, group__isnull=True)) > 0
+            ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
         else:
             # Students can only access their group
             facilities = [user.facility]

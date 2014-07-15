@@ -74,10 +74,10 @@ function drawJsonChart_timeline(chart_div, json, xaxis, yaxis) {
     var data = json2dataTable_timeline(json, xaxis, yaxis);
     var dataTable = data[0];
     var timeScale = data[1];
-    if (timeScale.length>1){
+    if (timeScale.length > 1){
         drawChart_timeline(chart_div, dataTable, timeScale, options);
     } else {
-        show_message("info", gettext("Not enough data to show time line."));
+        show_message("info", gettext("Not enough data to show timeline."));
     }
 }
 
