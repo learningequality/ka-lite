@@ -140,7 +140,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             form.save()
 
             # Editing self
-            if request.is_logged_in and request.session.get("facility_user").id == form.instance.id:
+            if request.session.get("facility_user") and request.session.get("facility_user").id == form.instance.id:
                 messages.success(request, _("You successfully updated your user settings."))
                 if form.instance.is_teacher:
                     return HttpResponseRedirect(next)
