@@ -28,6 +28,6 @@ if UserLog.is_enabled() or settings.CENTRAL_SERVER:  # only enable admin if the 
     admin.site.register(UserLogSummary, UserLogSummaryAdmin)
 
 class AttemptLogAdmin(admin.ModelAdmin):
-    list_display = ("exercise_id", "user", "language", "answer_given", "context_type", )
-    list_filter = ("exercise_id", "user", "language", )
+    list_display = ("exercise_id", "user", "language", "answer_given", "context_type", "context_id", "correct")
+    list_filter = ("exercise_id", "user", "language", "context_type", "context_id" )
 admin.site.register(AttemptLog, AttemptLogAdmin)
