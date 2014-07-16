@@ -12,13 +12,34 @@ function getSelectedItems(select) {
 function setActionButtonState(select) {
     // argument to allow conditional selection of action buttons.
     if($(select).find("tr.selectable.selected").length) {
-        $('button[value="'+select+'"]').removeAttr("disabled");
+        $('button[value="'+select+'"]').removeAttr("disabled").removeAttr("title");
     } else {
         $('button[value="'+select+'"]').attr("disabled", "disabled");
+        $('button[value="'+select+'"]').attr("title", "You must select one or more rows from the table below before taking this action.");
+    }
+}
+
+function setSelectAllState(selectAllId) {
+    // If all checkboxes selected, set to checked, if not, set to unchecked
+    var allChecked = true;
+    var boxes = $(selectAllId).find('tbody').find('input[type="checkbox"]');
+    _.each(boxes, function(box) {
+        if ($(box).prop('checked') === false){
+            allChecked = false;
+        }
+    });
+    var selectAllBox = $(selectAllId).find('thead').find('.select-all');
+    if (!allChecked) {
+        $(selectAllBox).prop("checked", false);
+    } else {
+        $(selectAllBox).prop("checked", true);
     }
 }
 
 $(function() {
+
+    // on load add the same title tag to all disabled buttons 
+    $('button[disabled="disabled"]').attr("title", "You must select one or more rows from the table below before taking this action.");
 
     $("#group").change(function(){
         // Change the URL to the selected group.
@@ -54,12 +75,19 @@ $(function() {
         } else {
             el.find("tbody").find("input:checkbox:not(:checked)").mousedown();
         }
-    })
+    });
 
     $("input:checkbox").click(function(event){
+        var el = event.target.value
         // Only set action button state on related action buttons.
-        setActionButtonState(event.target.value);
-    })
+        setActionButtonState(el);
+    });
+
+    $("input:checkbox").mouseup(function(event){
+        var el = event.target.value
+        // Set state of select all checkbox based on clicks 
+        setSelectAllState(el);
+    });
 
     $(".delete").click(function(event) {
         // Delete the selected users
@@ -104,30 +132,32 @@ $(function() {
         } else {
             checkbox.prop("checked", true);
         }
-        setActionButtonState("#" + $(this).attr("type"));
-        $(".selectable-table").find("tbody").find("tr.selectable").mouseover(function(){
-            $(this).toggleClass("selected");
-            var checkbox = $(this).find("input");
-            if (checkbox.prop("checked")) {
-                checkbox.prop("checked", false);
-            } else {
-                checkbox.prop("checked", true);
-            }
-            setActionButtonState("#" + $(this).attr("type"));
-        });
+        var el = "#" + $(this).attr("type");
+        setActionButtonState(el);
+        setSelectAllState(el);
+        // $(".selectable-table").find("tbody").find("tr.selectable").mouseover(function(){
+        //     $(this).toggleClass("selected");
+        //     var checkbox = $(this).find("input");
+        //     if (checkbox.prop("checked")) {
+        //         checkbox.prop("checked", false);
+        //     } else {
+        //         checkbox.prop("checked", true);
+        //     }
+        //     setActionButtonState("#" + $(this).attr("type"));
+        // });
     });
 
     // Unbind the mouseover selection once the button has been released.
-    $(".selectable-table").find("tbody").find("tr.selectable").mouseup(function(){
-        $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
-    });
+    // $(".selectable-table").find("tbody").find("tr.selectable").mouseup(function(){
+    //     $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
+    // });
 
     // If the mouse moves out of the table with the button still depressed, the above unbind will not fire.
     // Unbind the mouseover once the mouse leaves the table.
     // This means that moving the mouse out and then back in with the button depressed will not select.
-    $(".selectable-table").mouseleave(function(){
-        $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
-    })
+    // $(".selectable-table").mouseleave(function(){
+    //     $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
+    // })
 
     // Prevent propagation of click events on links to limit confusing behaviour
     // of rows being selected when links clicked.
