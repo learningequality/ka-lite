@@ -26,7 +26,8 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     They will have different functions in here, for sure.
     """
 
-    default_username = "test_student"
+    default_student_username = "test_student"
+    default_teacher_username = "test_teacher"
     default_password = "socrates"
     default_facility_name = "middle of nowhere"
 
@@ -39,7 +40,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.browser_logout_user()
         super(KALiteDistributedBrowserTestCase, self).tearDown()
 
-    def create_student(self, username=default_username, password=default_password, facility_name=default_facility_name):
+    def create_student(self, username=default_student_username, password=default_password, facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
         student = FacilityUser(username=username, facility=facility)
@@ -47,6 +48,15 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         student.save()
 
         return student
+
+    def create_teacher(self, username=default_teacher_username, password=default_password, facility_name=default_facility_name):
+        facilities = Facility.objects.filter(name=facility_name)
+        facility = facilities[0] if facilities else self.create_facility()
+        teacher = FacilityUser(username=username, facility=facility, is_teacher=True)
+        teacher.set_password(raw_password=password)
+        teacher.save()
+
+        return teacher
 
     def create_facility(self, facility_name=default_facility_name):
         if Facility.objects.filter(name=facility_name):
@@ -62,7 +72,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         if not stay_logged_in:
             self.browser_logout_user()
 
-        register_url = self.reverse("add_facility_student")
+        register_url = self.reverse("facility_user_signup")
         self.browse_to(register_url) # Load page
         #self.assertIn(_("Sign up"), self.browser.title, "Register page title") # this depends on who is logged in.
 
@@ -186,6 +196,18 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 return username_text.lower() == user_obj[0].get_name().lower()
             else:
                 assert username_text == "", "Impossible for anybody to be logged in."
+
+
+    def fill_form(self, input_id_dict):
+        """
+        Fill the form with the values of the given a dictionary 
+        where the keys are the ids of the input fields
+        """
+        for key in input_id_dict.keys():
+            inputElement = self.browser.find_element_by_id(key)
+            inputElement.clear()
+            inputElement.send_keys(input_id_dict[key])
+            time.sleep(0.5)
 
 
 class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):

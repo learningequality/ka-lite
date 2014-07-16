@@ -12,8 +12,7 @@ from .base import FacilityTestCase
 from ..forms import FacilityUserForm
 from ..models import Facility, FacilityUser, FacilityGroup
 from kalite.testing import KALiteTestCase
-from securesync.models import Zone, Device, DeviceMetadata
-
+from securesync.models import Zone, Device, DeviceMetadata, SyncedModel
 
 class UserDeletionTestCase(FacilityTestCase):
 
@@ -67,8 +66,11 @@ class GroupDeletionTestCase(FacilityTestCase):
         self.assertTrue(self.group.deleted)
 
     def test_soft_deleting_group_removes_user_from_group(self):
-        user = FacilityUser(username=self.data['username'], facility=self.facility)
+        user = FacilityUser(username=self.data['username'], facility=self.facility, group=self.group)
         user.set_password('insecure')
         user.save()
+
         self.group.soft_delete()
-        self.assertIsNone(user.group)
+
+        user_reloaded = FacilityUser.objects.get(id=user.id)
+        self.assertIsNone(user_reloaded.group)

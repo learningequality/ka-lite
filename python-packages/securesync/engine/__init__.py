@@ -110,7 +110,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
     # remove all requested devices that either don't exist or aren't in the correct zone
     for device_id in device_counters.keys():
-        device = get_object_or_None(Device, pk=device_id)
+        device = get_object_or_None(Device.all_objects, pk=device_id)
         if not device or not (device.in_zone(zone) or device.is_trusted()):
             del device_counters[device_id]
 
@@ -134,9 +134,9 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
             counter_min = counter + 1
             counter_max = 0
 
-            device = Device.objects.get(pk=device_id)
+            device = Device.all_objects.get(pk=device_id)
 
-            queryset = Model.objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
+            queryset = Model.all_objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):
@@ -151,9 +151,9 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
             # Make sure you send anything that HAS to be sent (i.e. send anything that is BELOW
             #   the max counter position that we do plan to send.  If we find things that we
             #   unexpectedly need to send, make sure to add room for them.
-            if remaining is None:
-                new_models = queryset
 
+            if remaining is None: # this means limit was None, so we just sync everything
+                new_models = queryset
             else:
                 if counter_max is None:
                     # If we're sending something with counter=None, then this will set
@@ -194,11 +194,17 @@ def get_serialized_models(*args, **kwargs):
     from ..devices.models import Device
 
     models = get_models(*args, **kwargs)
-    dest_version = kwargs.get("dest_version", Device.get_own_device().get_version())
+
+    dest_version = kwargs.get("dest_version") or Device.get_own_device().get_version()
     include_count = kwargs.get("include_count", False)
+    verbose = kwargs.get("verbose", False)
 
     # serialize the models we found
     serialized_models = serialize(models, ensure_ascii=False, dest_version=dest_version)
+
+    if verbose:
+        for model in models:
+            print "EXPORTED %s (id: %s, counter: %d, signed_by: %s)" % (model.__class__.__name__, model.id[0:5], model.counter, model.signed_by.id[0:5])
 
     if include_count:
         return {"models": serialized_models, "count": len(models)}
@@ -207,7 +213,7 @@ def get_serialized_models(*args, **kwargs):
 
 
 #@transaction.commit_on_success
-def save_serialized_models(data, increment_counters=True, src_version=None):
+def save_serialized_models(data, increment_counters=True, src_version=None, verbose=False):
     """Unserializes models (from a device of version=src_version) in data and saves them to the django database.
     If src_version is None, all unrecognized fields are (silently) stripped off.
     If it is set to some value, then only fields of versions higher than ours are stripped off.
@@ -265,6 +271,9 @@ def save_serialized_models(data, increment_counters=True, src_version=None):
 
                 # keep track of how many models have been successfully saved
                 saved_model_count += 1
+
+                if verbose:
+                    print "IMPORTED %s (id: %s, counter: %d, signed_by: %s)" % (model.__class__.__name__, model.id[0:5], model.counter, model.signed_by.id[0:5])
 
             except ValidationError as e: # the model could not be saved
 
