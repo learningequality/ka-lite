@@ -20,8 +20,8 @@ function setActionButtonState(select) {
 }
 
 function setSelectAllState(selectAllId) {
-    // If all checkboxes selected, set to checked, if not, set to unchecked
     var allChecked = true;
+    // If all checkboxes selected, set to checked, if not, set to unchecked
     var boxes = $(selectAllId).find('tbody').find('input[type="checkbox"]');
     _.each(boxes, function(box) {
         if ($(box).prop('checked') === false){
@@ -29,11 +29,7 @@ function setSelectAllState(selectAllId) {
         }
     });
     var selectAllBox = $(selectAllId).find('thead').find('.select-all');
-    if (!allChecked) {
-        $(selectAllBox).prop("checked", false);
-    } else {
-        $(selectAllBox).prop("checked", true);
-    }
+    $(selectAllBox).prop("checked", allChecked);
 }
 
 $(function() {
@@ -121,8 +117,6 @@ $(function() {
         }
     });
 
-    // This code is to allow rows of a selectable-table class table to be clicked for selection,
-    // and dragged across with mousedown for selection.
     // When mouse is pressed over a row in the table body (not the header row), make mouseovers select.
     $(".selectable-table").find("tbody").find("tr.selectable").mousedown(function(){
         $(this).toggleClass("selected");
@@ -135,6 +129,10 @@ $(function() {
         var el = "#" + $(this).attr("type");
         setActionButtonState(el);
         setSelectAllState(el);
+        
+        // (Currently disabled due to a bit of bugginess with not registering the mouseup event, which created a weird flickering effect. Also, this won't work on tablets, since drag is scroll.) 
+        // This code is to allow rows of a selectable-table class table to be clicked for selection,
+        // and dragged across with mousedown for selection.
         // $(".selectable-table").find("tbody").find("tr.selectable").mouseover(function(){
         //     $(this).toggleClass("selected");
         //     var checkbox = $(this).find("input");
@@ -147,6 +145,7 @@ $(function() {
         // });
     });
 
+    // (Currently disabled for the same reasons as above)
     // Unbind the mouseover selection once the button has been released.
     // $(".selectable-table").find("tbody").find("tr.selectable").mouseup(function(){
     //     $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
