@@ -5,7 +5,7 @@ $(function () {
 
     $(".facility-delete-link").click(function(event) {
         var facilityName = $.trim($(this).parent().prevAll().find('a.facility-name').text());
-        var confirmDelete = prompt(sprintf(gettext("Are you sure you want to delete '%s'? You will lose all associated student, group, and teacher accounts. If you are sure, type the name of the facility in into the box below and press ok."), facilityName));
+        var confirmDelete = prompt(sprintf(gettext("Are you sure you want to delete '%s'? You will lose all associated student, group, and teacher accounts. If you are sure, type the name of the facility into the box below and press OK."), facilityName));
         
         if (confirmDelete === null) {
             return false; // cancel
