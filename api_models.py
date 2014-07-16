@@ -297,7 +297,7 @@ class Khan():
         Return list of all badge categories in the Khan API, or a particular category.
         """
         if category_id is not None:
-            return BadgeCategory(api_call("v1", BadgeCategory.base_url + "/categories/" + str(category_id) + self.params(), session=self)[0], self)
+            return BadgeCategory(api_call("v1", BadgeCategory.base_url + "/categories/" + str(category_id) + self.params(), self)[0], session=self)
         else:
             return self.convert_list_to_classes(api_call("v1", BadgeCategory.base_url + "/categories" + self.params(), self))
 
@@ -307,7 +307,7 @@ class Khan():
         If no user specified, download logged in user's data.
         """
         if self.require_authentication():
-            return User(api_call("v1", User.base_url + "?userId=" + user_id + self.params(), self))
+            return User(api_call("v1", User.base_url + "?userId=" + user_id + self.params(), self), session=self)
 
     def get_topic_tree(self, topic_slug=""):
         """
@@ -377,7 +377,10 @@ class BadgeCategory(APIModel):
 class APIAuthModel(APIModel):
 
     def __getattr__(self, name):
-        if self.session.require_authentication():
+        # Added to avoid infinite recursion during authentication
+        if name == "session":
+            return super(APIAuthModel, self).__getattr__(name)
+        elif self.session.require_authentication():
             return super(APIAuthModel, self).__getattr__(name)
 
     # TODO: Add API_url function to add "?userID=" + user_id to each item
