@@ -29,6 +29,7 @@ def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
     """
+    ungrouped_available = False
 
     # Options to select.  Note that this depends on the user.
     if request.user.is_superuser:
@@ -37,12 +38,14 @@ def get_accessible_objects_from_logged_in_user(request, facility):
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
         groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
 
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
             facilities = Facility.objects.all()
             groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+            ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
         else:
             # Students can only access their group
             facilities = [user.facility]
@@ -57,7 +60,7 @@ def get_accessible_objects_from_logged_in_user(request, facility):
     else:
         facilities = groups = None
 
-    return (groups, facilities)
+    return (groups, facilities, ungrouped_available)
 
 
 def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kwargs):
@@ -67,13 +70,14 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+    (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     return {
         "form": form.data,
         "stats": stats_dict,
         "groups": groups,
         "facilities": facilities,
+        "ungrouped_available": ungrouped_available,
     }
 
 # view end-points ####
@@ -268,7 +272,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # Get a list of topics (sorted) and groups
     topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+    (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
@@ -286,8 +290,12 @@ def tabular_view(request, facility, report_type="exercise"):
     group_id = request.GET.get("group", "")
     if group_id:
         # Narrow by group
-        users = FacilityUser.objects.filter(
-            group=group_id, is_teacher=False).order_by(*student_ordering)
+        if group_id == "Ungrouped":
+            users = FacilityUser.objects.filter(
+                facility=facility, group__isnull=True, is_teacher=False).order_by(*student_ordering)
+        else:
+            users = FacilityUser.objects.filter(
+                group=group_id, is_teacher=False).order_by(*student_ordering)
 
     elif facility:
         # Narrow by facility
