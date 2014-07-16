@@ -10,15 +10,15 @@ VERSION_INFO = {
             "all": [],
             "students": [],
             "coaches": [],
-            "admins": ["'register' management command for registering from command line"],
+            "admins": ["'register' management command for registering from command line",
+                       "added --verbose option to syncmodels command to facilitate debugging and error reporting"],
         },
         "bugs_fixed": {
             "all": [],
             "students": [],
             "coaches": [],
             "admins": ["deleted models should now be synced properly",
-                       "syncing no longer fails for duplicate names for users, groups, and facilities",
-                       "added --verbose option to syncmodels command to facilitate debugging and error reporting"],
+                       "syncing no longer fails for duplicate names for users, groups, and facilities"],
         },
     },
 
