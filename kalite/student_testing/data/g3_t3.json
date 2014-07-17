@@ -3,7 +3,7 @@
   "title": "Grade III - Unit Test 3",
   "seed": 2048,
   "playlist_ids": [ "g3_p6", "g3_p7" ],
-  "repeats": "2",
+  "repeats": "5",
   "ids": [
     "measuring_segments", "congruent_segments", "conditional_statements_2",
     "logical_arguments_deductive_reasoning", "subtraction_1", "subtraction_2"
