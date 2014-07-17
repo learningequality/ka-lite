@@ -7,7 +7,8 @@
 
 function toggle_state(state, status){
     $("." + (status ? "not-" : "") + state + "-only").hide();
-    $("." + (!status ? "not-" : "") + state + "-only").show();
+    // Use display block setting instead of inline to prevent misalignment of navbar items.
+    $("." + (!status ? "not-" : "") + state + "-only").css("display", "block");
 }
 
 function show_api_messages(messages) {
@@ -157,7 +158,7 @@ $(function(){
     var totalPointView = new TotalPointView({model: statusModel, el: "#sitepoints"});
 
     // For mobile (Bootstrap xs) view
-    var totalPointViewXs = new TotalPointView({model: userModel, el: "#sitepoints-xs"});
+    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#sitepoints-xs"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
