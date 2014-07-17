@@ -21,3 +21,7 @@ source "$SCRIPT_DIR/serverstart.sh"
 
 echo
 source "$SCRIPT_DIR/cronstart.sh"
+
+echo "Backing up data.sqlite"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+$DIR/../date-save-kalite-data.sh
