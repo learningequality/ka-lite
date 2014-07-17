@@ -1,0 +1,14 @@
+{
+  "id": "g6_t3_practice",
+  "title": "Grade VI - Unit Test 3 - Practice",
+  "seed": 3211,
+  "playlist_ids": [ "g6_p8", "g6_p9", "g6_p10" ],
+  "repeats": "3",
+  "ids": [
+    "reading_tables_1", "reading_tables_2", "reading_stem_and_leaf_plots",
+    "reading_pictographs_1", "reading_pictographs_2", "reading_bar_charts_1",
+    "creating_bar_charts_1", "reading_bar_charts_2", "reading_bar_charts_3",
+    "area_of_triangles_1", "shaded_areas", "area_of_parallelograms",
+    "areas_of_trapezoids_rhombi_and_kites"
+  ]
+}

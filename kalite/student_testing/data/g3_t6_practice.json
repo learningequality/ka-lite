@@ -1,0 +1,11 @@
+{
+  "id": "g3_t6_practice",
+  "title": "Grade III - Unit Test 6 - Practice",
+  "seed": 1818,
+  "playlist_ids": [ "g3_p11", "g3_p12" ],
+  "repeats": "2",
+  "ids": [
+    "multiplication_1", "multiplication_1.5", "multiplication_2",
+    "telling_time_0.5", "telling_time", "telling_time_2"
+  ]
+}
