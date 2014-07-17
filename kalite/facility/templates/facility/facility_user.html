@@ -29,7 +29,7 @@
             $('#id_group').parent().hide();
         {% endif %}
 
-        {# Don't allow teacher accounts to be in a group. #}
+        {# Do not allow teacher accounts to be in a group. #}
         {% if request.is_admin and teacher %}
             $("#id_group").attr('disabled',true);
             $("#id_group").parent().hide();
@@ -41,7 +41,7 @@
             $("#id_facility").show();
         {% else %}
             // Show that there's only one facility, and it's being selected.
-            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text()).insertAfter($("#id_facility"));
+            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text())).insertAfter($("#id_facility"));
         {% endif %}
         });
     </script>

@@ -70,7 +70,7 @@ ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
-#USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
+# USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -108,6 +108,7 @@ INSTALLED_APPS = (
 ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
+    "django_snippets.session_timeout_middleware.SessionIdleTimeout",
 ) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",  # needed for django admin
@@ -138,6 +139,11 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
+# only allow, and use by default, JSON in tastypie
+TASTYPIE_DEFAULT_FORMATS = ['json']
+
+# Default to a 20 minute timeout for a session - set to 0 to disable.
+SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
 
 ########################
 # After all settings, but before config packages,
@@ -150,22 +156,10 @@ SOUTH_TESTS_MIGRATE = False
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
-if 'CACHE_NAME' in locals():
-    if CACHE_NAME == "file_based_cache":
-        LOG.debug("Cache location = %s" % CACHE_LOCATION)
-    else:
-        LOG.debug("Using %s caching" % CACHE_NAME)
-
 # Override
 KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(STATIC_ROOT, "khan-exercises"))
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 TEST_RUNNER = KALITE_TEST_RUNNER
-
-LOG.debug("======== MIDDLEWARE ========")
-LOG.debug("\n".join(MIDDLEWARE_CLASSES))
-LOG.debug("====== INSTALLED_APPS ======")
-LOG.debug("\n".join(INSTALLED_APPS))
-LOG.debug("============================")
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -200,6 +194,12 @@ if package_selected("RPi"):
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 500)
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
+
+
+if package_selected("Nalanda"):
+    LOG.info("Nalanda package selected")
+    TURN_OFF_MOTIVATIONAL_FEATURES = True
+    FIXED_BLOCK_EXERCISES = 5
 
 
 if package_selected("UserRestricted"):

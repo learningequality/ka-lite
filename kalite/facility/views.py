@@ -263,14 +263,6 @@ def login(request, facility):
 
 
 def logout(request):
-    if "facility_user" in request.session:
-        # Logout, ignore any errors.
-        try:
-            UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
-        except ValidationError as e:
-            logging.error("Failed to end_user_activity upon logout: %s" % e)
-        del request.session["facility_user"]
-
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":

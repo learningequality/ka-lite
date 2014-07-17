@@ -26,18 +26,12 @@
             padding-right: 15px;
             white-space: nowrap;
         }
-        .demo {
-            background-color:#fee;
-        }
         .devices{
             padding-top: 20px;
         }
         .facilities__header li{
             display: inline;
             padding-right: 10px;
-        }
-        tr.unregistered{
-            background-color: pink;
         }
         .not-registered-only{
             /*Remove after bootstrap*/
@@ -67,6 +61,7 @@
 {% endblock buttons %}
 
 {% block control_panel_content %}
+
 <div id="zone_container">
     <div class="facilities">
         <div class="title-div">
@@ -142,15 +137,56 @@
         <div class="title-div">
             <span class="title">{% trans "Devices" %}</span>
         </div>
-        <div class="clear"></div>
-
-        <div>
-            <span>
-            {% trans "A device is a KA Lite installation." %}
-            {% trans "Devices in the same 'sharing network' sync user data with each other." %}
-            </span>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {% if not facilities %}
+                <p>{% trans "You currently have no facilities that sync data with the central server." %}</p>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr class="success">
+                                <th>{% trans "Facility Name" %}</th>
+                                <th>{% trans "# Users" %}</th>
+                                <th>{% trans "# Groups" %}</th>
+                                <th>{% trans "Last Usage" %}</th>
+                                <th> {% if not request.is_teacher%}{% trans "Delete" %}{% endif %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for id,facility in facilities.items %}
+                            <tr facility-id="{{ facility.id }}">
+                                <td>
+                                    <a class='facility-name' href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+                                        {{ facility.name }}
+                                    </a>
+                                </td>
+                                <td>{{ facility.num_users }}</td>
+                                <td>{{ facility.num_groups }}</td>
+                                <td>
+                                    {% if not facility.last_time_used %}
+                                        {% trans "Never" %}
+                                    {% elif facility.last_time_used.last_activity_datetime %}
+                                        {{ facility.last_time_used.last_activity_datetime }}
+                                    {% else %}
+                                        {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not request.is_teacher %}
+                                        <a class="facility-delete-link" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}" href="#">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
         </div>
-
         {% if not devices %}
             <p>{% trans "You currently have no devices that sync data with the central server" %}</p>
 

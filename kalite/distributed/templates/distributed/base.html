@@ -24,6 +24,9 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' True %}">
 
+        <!-- CSS to control AB testing -->
+        <link rel="stylesheet" type="text/css" href="{% url 'ab_testing_css' %}">
+
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/distributed/favicon.ico" %}">
         {# In some versions of IE, console isn't defined, which can lead to JS errors #}
@@ -31,6 +34,7 @@
             window.console = window.console || {log: function() {}};
         </script>
 
+        <script type="text/javascript" src="{% url 'ab_testing_js' %}"></script>
 
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
@@ -59,7 +63,8 @@
         </script>
         {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone-tastypie.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
@@ -75,12 +80,12 @@
          var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
-         var SAVE_EXERCISE_LOG_URL       = "{% url 'save_exercise_log' %}";
          var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
          var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}"
          var STATUS_URL                  = "{% url 'status' %}";
          var USER_LOGIN_URL              = "{% url 'login' %}";
+         var STATIC_URL                  = "{% static "" True %}"; // pass "True" to avoid build id being appended
 
          var SERVER_INFO_PATH    = "{% url 'get_server_info' %}";
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
@@ -92,9 +97,15 @@
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/modernizr.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/khan-lite.js' True %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' True %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' %}"></script>
+
+        <!-- Imports for handlebars, our JS templating engine -->
+        <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>
+        <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
+        <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
+
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
@@ -154,6 +165,12 @@
                         <li><a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <a href="{% url 'assign_playlists' %}" id="nav_manage_zone" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a>
+
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only {% block tests_active %}{% endblock tests_active %}" title="{% trans 'See list of available tests.' %}">{% trans "Tests" %}</a></li>
+
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'help' %}" id="nav_help" class="{% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
 
                         {% if not restricted %}
@@ -165,7 +182,7 @@
                         <li><a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a></li>
+                        <li class="motivational-feature"><a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a></li>
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">{% trans "Logout" %}</a></li>

@@ -13,6 +13,7 @@ import re
 import os
 import datetime
 
+from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError, PermissionDenied
@@ -21,12 +22,12 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy, string_concat
 
-from .api_forms import ExerciseLogForm, VideoLogForm
-from .models import VideoLog, ExerciseLog
+from .api_forms import ExerciseLogForm, VideoLogForm, AttemptLogForm
+from .models import VideoLog, ExerciseLog, AttemptLog
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
 
 
 class student_log_api(object):
@@ -48,7 +49,7 @@ class student_log_api(object):
             if "facility_user" not in request.session:
                 return JsonResponseMessageWarning(string_concat(self.logged_out_message, "  ", ugettext_lazy("You must be logged in as a student or teacher to view/save progress.")))
             else:
-                return handler(request)
+                return handler(request, *args, **kwargs)
         return student_log_api_wrapper_fn
 
 
@@ -86,54 +87,130 @@ def save_video_log(request):
         "complete": videolog.complete,
     })
 
+@allow_api_profiling
+@student_log_api(logged_out_message=ugettext_lazy("Exercise progress not logged."))
+def exercise_log(request, exercise_id):
 
-@student_log_api(logged_out_message=ugettext_lazy("Exercise progress not saved."))
-def save_exercise_log(request):
+    if request.method == "POST":
+        """
+        Receives an exercise_id and relevant data,
+        saves it to the currently authorized user.
+        """
+
+        # Form does all data validation, including of the exercise_id
+        form = ExerciseLogForm(data=simplejson.loads(request.raw_post_data))
+        if not form.is_valid():
+            raise Exception(form.errors)
+        data = form.data
+
+        # More robust extraction of previous object
+        user = request.session["facility_user"]
+        (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=user, exercise_id=exercise_id)
+
+        exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
+        exerciselog.streak_progress = data["streak_progress"]
+        exerciselog.points = data["points"]
+        exerciselog.language = data.get("language") or request.language
+
+        try:
+            exerciselog.full_clean()
+            exerciselog.save()
+        except ValidationError as e:
+            return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
+
+        if "points" in request.session:
+            del request.session["points"]  # will be recomputed when needed
+
+        # Special message if you've just completed.
+        #   NOTE: it's important to check this AFTER calling save() above.
+        # TODO (rtibbles): MOVE THIS TO THE CLIENT SIDE!
+        if not previously_complete and exerciselog.complete:
+            exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
+            junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
+            if not next_exercise:
+                return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
+            else:
+                return JsonResponseMessageSuccess(_("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
+                    "href": next_exercise["path"],
+                    "title": _(next_exercise["title"]),
+                })
+
+        # Return no message in release mode; "data saved" message in debug mode.
+        return JsonResponse({})
+
+    if request.method == "GET":
+        """
+        Given an exercise_id, retrieve an exercise log for this user.
+        """
+        user = request.session["facility_user"]
+        log = get_object_or_None(ExerciseLog, user=user, exercise_id=exercise_id) or ExerciseLog()
+        return JsonResponse(log)
+
+
+# TODO(rtibbles): Refactor client side code for status rendering in knowledge map and topic pages
+# to use a more RESTful API call.
+@allow_api_profiling
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
+def get_exercise_logs(request):
     """
-    Receives an exercise_id and relevant data,
-    saves it to the currently authorized user.
+    Given a list of exercise_ids, retrieve a list of video logs for this user.
     """
+    data = simplejson.loads(request.raw_post_data or "[]")
+    if not isinstance(data, list):
+        return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
 
-    # Form does all data validation, including of the exercise_id
-    form = ExerciseLogForm(data=simplejson.loads(request.body))
-    if not form.is_valid():
-        raise Exception(form.errors)
-    data = form.data
-
-    # More robust extraction of previous object
     user = request.session["facility_user"]
-    (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=user, exercise_id=data["exercise_id"])
-    previously_complete = exerciselog.complete
+    logs = ExerciseLog.objects \
+            .filter(user=user, exercise_id__in=data) \
+            .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts")
+    return JsonResponse(list(logs))
 
-    exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
-    exerciselog.streak_progress = data["streak_progress"]
-    exerciselog.points = data["points"]
-    exerciselog.language = data.get("language") or request.language
 
-    try:
-        exerciselog.full_clean()
-        exerciselog.save(update_userlog=True)
-    except ValidationError as e:
-        return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
+@allow_api_profiling
+@student_log_api(logged_out_message=ugettext_lazy("Attempt logs not active."))
+def attempt_log(request, exercise_id):
+    """
+    RESTful API endpoint for AttemptLogs.
+    """
 
-    if "points" in request.session:
-        del request.session["points"]  # will be recomputed when needed
+    if request.method == "POST":
 
-    # Special message if you've just completed.
-    #   NOTE: it's important to check this AFTER calling save() above.
-    if not previously_complete and exerciselog.complete:
-        exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
-        junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
-        if not next_exercise:
-            return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
-        else:
-            return JsonResponseMessageSuccess(_("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
-                "href": next_exercise["path"],
-                "title": _(next_exercise["title"]),
-            })
+        form = AttemptLogForm(data=json.loads(request.raw_post_data))
+        if not form.is_valid():
+            raise Exception(form.errors)
+        data = form.data
 
-    # Return no message in release mode; "data saved" message in debug mode.
-    return JsonResponse({})
+        # More robust extraction of previous object
+        user = request.session["facility_user"]
+
+        try:
+            AttemptLog.objects.create(
+                user=user,
+                exercise_id=data["exercise_id"],
+                random_seed=data["random_seed"],
+                answer_given=data["answer_given"],
+                points_awarded=data["points"],
+                correct=data["correct"],
+                context_type=data["context_type"],
+                language=data.get("language") or request.language,
+                )
+        except ValidationError as e:
+            return JsonResponseMessageError(_("Could not save AttemptLog") + u": %s" % e)
+
+        # Return no message in release mode; "data saved" message in debug mode.
+        return JsonResponse({})
+
+    if request.method == "GET":
+        """
+        Given an exercise_id, retrieve a list of the last ten attempt logs for this user.
+        """
+        user = request.session["facility_user"]
+        logs = AttemptLog.objects \
+                .filter(user=user, exercise_id=exercise_id, context_type="exercise") \
+                .order_by("-timestamp") \
+                .values("exercise_id", "correct", "context_type", "timestamp", "time_taken", "answer_given", "points_awarded")[:10]
+        return JsonResponse(list(reversed(logs)))
+
 
 
 @allow_api_profiling
@@ -154,32 +231,22 @@ def get_video_logs(request):
     return JsonResponse(list(logs))
 
 
-@allow_api_profiling
-@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
-def get_exercise_logs(request):
-    """
-    Given a list of exercise_ids, retrieve a list of video logs for this user.
-    """
-    data = simplejson.loads(request.body or "[]")
-    if not isinstance(data, list):
-        return JsonResponseMessageError(_("Could not load ExerciseLog objects: Unrecognized input data format."))
-
-    user = request.session["facility_user"]
-    logs = ExerciseLog.objects \
-            .filter(user=user, exercise_id__in=data) \
-            .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts")
-    return JsonResponse(list(logs))
-
-
 @api_handle_error_with_json
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
 
+
 @api_handle_error_with_json
 @backend_cache_page
 def exercise(request, exercise_id):
     return JsonResponse(get_exercise_data(request, exercise_id))
+
+
+@api_handle_error_with_json
+@backend_cache_page
+def video(request, video_id):
+    return JsonResponse(get_video_data(request, video_id))
 
 
 @api_handle_error_with_json
