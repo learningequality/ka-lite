@@ -30,8 +30,9 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
+        var channel = '{{ channel }}';
         var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
-        var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}";
+        var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name=channel %}";
     </script>
 
     <!-- templates for the backbone views in view_playlist.js -->
@@ -90,10 +91,18 @@
     <script>
         $(function() {
             statusModel.loaded.then(function() {
-                window.playlist_view = new PlaylistView({
-                    model: new Playlist({id: "{{ playlist_id }}"}),
-                    el: $(".playlist-wrapper")
-                });
+                if (channel === 'ka_playlist') {
+                    window.playlist_view = new PlaylistView({
+                        model: new KAPlaylist({id: "{{ playlist_id }}"}),
+                        el: $(".playlist-wrapper")
+                    });
+                } else {
+                    window.playlist_view = new PlaylistView({
+                        model: new Playlist({id: "{{ playlist_id }}"}),
+                        el: $(".playlist-wrapper")
+                    });
+                }
+                
             });
         });
     </script>

@@ -389,6 +389,14 @@ def get_related_videos(exercise, limit_to_available=True):
     return related_videos
 
 
+def is_base_leaf(node, is_base_leaf=True):
+    """Return true if the topic node has no child topic nodes"""
+    for child in node['children']:
+        if child['kind'] == 'Topic':
+            return False
+    return is_base_leaf
+
+
 def is_sibling(node1, node2):
     """
     """
