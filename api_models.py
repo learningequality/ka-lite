@@ -309,14 +309,17 @@ class Khan():
         if self.require_authentication():
             return User(api_call("v1", User.base_url + "?userId=" + user_id + self.params(), self), session=self)
 
-    def get_topic_tree(self, topic_slug=""):
+    def get_topic_tree(self):
         """
         Retrieve complete node tree starting at the specified root_slug and descending.
         """
-        if topic_slug:
-            return Topic(api_call("v1", Topic.base_url + "/" + topic_slug + self.params(), self), session=self)
-        else:
-            return Topic(api_call("v1", "/topictree" + self.params(), self), session=self)
+        return Topic(api_call("v1", "/topictree" + self.params(), self), session=self)
+
+    def get_topic(self, topic_slug):
+        """
+        Retrieve complete topic at the specified topic_slug and descending.
+        """
+        return Topic(api_call("v1", Topic.base_url + "/" + topic_slug + self.params(), self), session=self)
 
     def get_topic_exercises(self, topic_slug):
         """
@@ -330,13 +333,31 @@ class Khan():
         This will return a list of videos in the highest level of a topic.
         Not lazy loading from get_tree, as any load of the topic data includes these.
         """
-        return self.convert_list_to_classes(api_call("v1", Video.base_url + "/" + topic_slug + "/videos" + self.params(), self))
+        return self.convert_list_to_classes(api_call("v1", Topic.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
     def get_video(self, video_id):
         """
         Return particular video, by "readable_id" or "youtube_id" (deprecated)
         """
         return Video(api_call("v1", Video.base_url + "/" + video_id + self.params(), self), session=self)
+
+    def get_playlists(self):
+        """
+        Return list of all exercises in the Khan API
+        """
+        return self.convert_list_to_classes(api_call("v1", Playlist.base_url + self.params(), self))
+
+    def get_playlist_exercises(self, topic_slug):
+        """
+        This will return a list of exercises in a playlist.
+        """
+        return self.convert_list_to_classes(api_call("v1", Playlist.base_url + "/" + topic_slug + "/exercises" + self.params(), self))
+
+    def get_playlist_videos(self, topic_slug):
+        """
+        This will return a list of videos in the highest level of a topic.
+        """
+        return self.convert_list_to_classes(api_call("v1", Playlist.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
 
 class Exercise(APIModel):
@@ -471,6 +492,18 @@ class Topic(APIModel):
             "children": self.session.class_by_kind,
         }
 
+class Playlist(APIModel):
+
+    base_url = "/playlists"
+
+    def __init__(self, *args, **kwargs):
+
+        super(Playlist, self).__init__(*args, **kwargs)
+
+        self._related_field_types = {
+            "children": self.session.class_by_kind,
+        }
+
 
 class Separator(APIModel):
     pass
@@ -519,6 +552,7 @@ kind_to_class_map = {
     "UserExercise": UserExercise,
     "ProblemLog": ProblemLog,
     "VideoLog": VideoLog,
+    "Playlist": Playlist,
 }
 
 
@@ -531,6 +565,7 @@ kind_to_id_map = {
     "Video": partial(n_deep, names=["readable_id"]),
     "Exercise": partial(n_deep, names=["name"]),
     "Topic": partial(n_deep, names=["slug"]),
+    "Playlist": partial(n_deep, names=["slug"]),
     # "User": partial(n_deep, names=["user_id"]),
     # "UserData": partial(n_deep, names=["user_id"]),
     "UserExercise": partial(n_deep, names=["exercise"]),
