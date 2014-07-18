@@ -293,10 +293,6 @@ def homepage(request, topics):
     Homepage.
     """
     context = topic_context(topics)
-    # TODO-BLOCKER(aron): Remove this when merging to other branches
-    if ("nalanda" not in settings.CONFIG_PACKAGE and
-       not settings.RUNNING_IN_TRAVIS):  # don't activate this when we're on travis
-        return HttpResponse("The Nalanda package must be activated. Put in the following to your local_settings.py:\n\nCONFIG_PACKAGE = 'Nalanda'", content_type="text/plain")
     context.update({
         "title": "Home",
     })
