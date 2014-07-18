@@ -5,10 +5,10 @@
   "playlist_ids": [ "g6_p1", "g6_p2", "g6_p3", "g6_p4" ],
   "repeats": "3",
   "ids": [
-    "divisibility_tests", "composite_numbers", "prime_factorization",
-    "the_fundamental_theorem_of_arithmetic", "divisibility",
-    "least_common_multiple", "greatest_common_divisor",
+    "composite_numbers", "distributive_property", "divisibility",
+    "divisibility_tests", "greatest_common_divisor", "least_common_multiple",
     "least_common_multiple_and_greatest_common_divisor_word_problems",
-    "order_of_operations", "distributive_property"
+    "order_of_operations", "prime_factorization",
+    "the_fundamental_theorem_of_arithmetic"
   ]
 }

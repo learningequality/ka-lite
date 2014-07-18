@@ -5,8 +5,8 @@
   "playlist_ids": [ "g4_p1", "g4_p2", "g4_p3" ],
   "repeats": "3",
   "ids": [
-    "place_value", "counting_1", "comparing_whole_numbers",
-    "inequalities_on_a_number_line", "addition_1", "subtraction_1",
-    "addition_2", "subtraction_2", "addition_3", "addition_4"
+    "addition_1", "addition_2", "addition_3", "addition_4",
+    "comparing_whole_numbers", "counting_1", "inequalities_on_a_number_line",
+    "place_value", "subtraction_1", "subtraction_2"
   ]
 }

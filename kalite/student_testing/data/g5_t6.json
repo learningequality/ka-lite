@@ -5,9 +5,9 @@
   "playlist_ids": [ "g5_p18", "g5_p19" ],
   "repeats": "3",
   "ids": [
-    "adding_decimals_0.5", "adding_decimals", "adding_decimals_2",
-    "subtracting_decimals_0.5", "subtracting_decimals",
-    "converting_fractions_to_decimals", "converting_decimals_to_fractions_1",
-    "converting_decimals_to_fractions_2"
+    "adding_decimals", "adding_decimals_0.5", "adding_decimals_2",
+    "converting_decimals_to_fractions_1",
+    "converting_decimals_to_fractions_2", "converting_fractions_to_decimals",
+    "subtracting_decimals", "subtracting_decimals_0.5"
   ]
 }
