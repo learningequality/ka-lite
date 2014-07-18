@@ -153,7 +153,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # 1. Student: #logged-in-name is username
         # 2. Admin: #logout contains username
         try:
-            logged_in_name = self.browser.find_element_by_id("logged-in-name").text.strip()
+            logged_in_name = self.browser.find_element_by_xpath("(//span[@id='logged-in-name'])[2]").text.strip()
             logout_text = self.browser.find_element_by_id("nav_logout").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
