@@ -53,41 +53,9 @@
 
     <script>
 
-        $(function() {
-            window.exercise_practice_perseus_view = new ExercisePerseusView({
-                el: $(".exercise-wrapper"),
-                perseus_data: {
-
-                }
-            });
-        });
-
-    </script>
-
-    <script>
-        (function() {
-
-        // Load khan-exercises modules, then perseus
-        require(["{% static "perseus/ke-deps.js" %}"], function() {
-            // pre built
-            require(["{% static "perseus/build/perseus-1.js" %}"], initPerseus);
-
-            // pre built with source maps
-            // require(["build/perseus.debug.js"], initPerseus);
-
-            // built on demand
-            // require(["src/perseus.js"], initPerseus);
-        });
-
-        $('#score').on('click', function() {
-            console.log(zk.scoreInput());
-        });
-
-        function initPerseus(Perseus) {
-
-        var seedContent = {
+        var item_data = {
             "question": {
-                "content": "[[☃ interactive-graph 2]]",
+                "content": "Hi there! [[☃ interactive-graph 2]]",
                 "images": {
                     "https://ka-perseus-graphie.s3.amazonaws.com/da8df81c78b22f5c69d477d8eabfb583968eaf84.png": {
                         "width": 400,
@@ -172,23 +140,43 @@
             "hints": []
         };
 
+        var item_data = {"answerArea": {"calculator": false, "type": "multiple", "options": {"content": "Answer to left.", "images": {}, "widgets": {}}}, "question": {"content": "Given the polar curve $~r=3\\cos(2\\theta)~$ for $~\\theta \\in \\left[ 0,2\\pi  \\right)\\,$, determine which of the following lines are tangent to the curve at the pole (the origin).\n\nLine equation|YES or NO\n:-:|:-:\n$y=x$|[[\u2603 dropdown 6]]\n$y=2x$|[[\u2603 dropdown 7]]\n$y=-x$|[[\u2603 dropdown 8]]\n$y=-2x$|[[\u2603 dropdown 9]]\n$y=0$|[[\u2603 dropdown 10]]\n", "images": {}, "widgets": {"dropdown 10": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": false}, {"content": "No", "correct": true}]}}, "dropdown 7": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": false}, {"content": "No", "correct": true}]}}, "dropdown 6": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": true}, {"content": "No", "correct": false}]}}, "dropdown 9": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": false}, {"content": "No", "correct": true}]}}, "dropdown 8": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": true}, {"content": "No", "correct": false}]}}}}, "hints": [{"content": "First we determine the values of $~\\theta \\in \\left[ 0,2\\pi  \\right)~$ at which the curve passes through the pole by setting $~r=0\\,$.\n\n $\\qquad3\\cos(2\\theta)=0$\n\n$\\qquad\\qquad\\quad~2\\theta=\\displaystyle\\frac{\\pi}{2}+\\pi k~$, where $~k\\in \\mathbb{Z}$\n\n$\\qquad\\qquad\\quad~~~\\theta=\\displaystyle\\frac{\\pi}{4}+\\displaystyle\\frac{\\pi}{2}k~$, where $~k\\in \\mathbb{Z}$\n\n$~~~\\quad\\qquad\\qquad\\theta=\\displaystyle\\frac{\\pi}{4}~~$ or $~~\\theta=\\displaystyle\\frac{3\\pi}{4}~~$ or $~~\\theta=\\displaystyle\\frac{5\\pi}{4}~~$ or $~~\\theta=\\displaystyle\\frac{7\\pi}{4}$", "images": {}, "widgets": {}}, {"content": "Next we will need to find the slopes of the tangent lines to the curve at these values of $~\\theta\\,$.  \n\nWe could go through the long, involved process of calculating  $~\\displaystyle\\frac{dy}{dx}~$ for the curve, using both $~\\dfrac{dy}{d\\theta}~$ and $~\\dfrac{dx}{d\\theta}\\,$. However, there is a **much** easier way to find the slope of the tangent line when the point in question is the pole.\n\nSince the values of $~\\theta~$ in question are $~\\theta=\\dfrac{n\\pi}{4}~$ where $~n=1\\,,~3\\,,~5\\,,~\\text{or}~7\\,$, we know that the lines $~r=\\dfrac\\pi4\\,,~r=\\dfrac{3\\pi}{4}\\,,~r=\\dfrac{5\\pi}{4}\\,,~\\text{and}~r=\\dfrac{7\\pi}{4}~$ are the tangent lines. The slopes of those lines are $~~\\tan\\dfrac\\pi4=1\\,$, $~~\\tan\\dfrac{3\\pi}4=-1\\,$, $~~\\tan\\dfrac{5\\pi}4=1\\,$, and $~~\\tan\\dfrac{7\\pi}4=-1\\,$, respectively.", "images": {}, "widgets": {}}, {"content": "Thus we find that the tangent lines to the curve $~r=3\\cos(2\\theta)~$ at the pole are the lines $~y=x~$ and  $~y=-x\\,$.", "images": {}, "widgets": {}}]};
+
+        (function() {
+
+        // Load khan-exercises modules, then perseus
+        require(["{% static "perseus/ke-deps.js" %}"], function() {
+            // pre built
+            require(["{% static "perseus/build/perseus-1.js" %}"], initPerseus);
+        });
+
+        function initPerseus(Perseus) {
+
         Perseus.init({}).then(function() {
-            // var itemMountNode = $("#workarea")[0]
+
+            window.exercise_practice_perseus_view = new ExercisePerseusView({
+                el: $(".exercise-wrapper"),
+                perseus_data: {
+
+                }
+            });
+
             var itemMountNode = document.createElement("div");
             zk = React.renderComponent(Perseus.ItemRenderer({
-                item: seedContent,
+                item: item_data,
                 problemNum: Math.floor(Math.random() * 50) + 1,
-                initialHintsVisible: seedContent.hints.length,
+                initialHintsVisible: false, //&& item_data.hints && item_data.hints.length,
                 enabledFeatures: {
                     highlight: true,
                     toolTipFormats: true
                 }
             }, null), itemMountNode);
             zk.focus();
+
         }).then(function() {
-            console.log("all done.", +new Date/1000);
+            console.log("Perseus question rendered!", item_data);
         }, function(err) {
-            console.error(err);
+            console.error("Perseus question error!", err);
         });
 
         }
