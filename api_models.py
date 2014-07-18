@@ -97,9 +97,11 @@ class AttrDict(dict):
 
 class APIModel(AttrDict):
 
-    _related_field_types = {}  # this is a dummy; do not use directly
+    # _related_field_types = None  # this is a dummy; do not use directly
 
-    API_attributes = {}  # this is also a dummy.
+    # _lazy_related_field_types = None  # this is a dummy.
+
+    # _API_attributes = None  # this is also a dummy.
 
     def __getattr__(self, name):
         """
@@ -109,23 +111,38 @@ class APIModel(AttrDict):
         then make the appropriate API call to fetch the data, and set it
         into the object, so that repeated queries will not requery the API.
         """
-        if name in self.API_attributes and name not in self:
-            self[name] = api_call("v1", self.API_url(name), self.session)
-            self.session.convert_items(name, self)
-            return self[name]
-        else:
-            if name in self._related_field_types:
-                self.session.convert_items(name, self)
+        if name in self:
+            if name.startswith("_"):
+                return super(APIModel, self).__getattr__(name)
+            if name in self._lazy_related_field_types or name in self._related_field_types:
+                self.session.convert_items(name, self, loaded=(name in self._related_field_types))
                 return self[name]
             else:
                 return super(APIModel, self).__getattr__(name)
+        if name in self._API_attributes:
+            self[name] = api_call("v1", self.API_url(name), self.session)
+            self.session.convert_items(name, self)
+            return self[name]
+        if not self.loaded and name not in self:
+            self.fetch()
+        if name in self._related_field_types:
+            self.session.convert_items(name, self)
+            return self[name]
+        else:
+            return super(APIModel, self).__getattr__(name)
 
     def __init__(self, *args, **kwargs):
 
         session = kwargs.get('session')
-        del kwargs['session']
+        loaded = kwargs.get('loaded', True)
+        kwargs.pop('session', None)
+        kwargs.pop('loaded', None)
         super(APIModel, self).__init__(*args, **kwargs)
         self.session = session
+        self.loaded = loaded
+        self._related_field_types = {}
+        self._lazy_related_field_types = {}
+        self._API_attributes = {}
 
     def API_url(self, name):
         """
@@ -138,7 +155,12 @@ class APIModel(AttrDict):
         if self.session.lang:
             get_param = get_param + "&lang=" if get_param else "?lang="
             get_param += self.session.lang
-        return self.base_url + id + self.API_attributes[name] + get_param
+        return self.base_url + id + self._API_attributes[name] + get_param
+
+    def fetch(self):
+        self.update(api_call(
+            "v1", self.base_url + "/" + self[kind_to_id_map.get(type(self).__name__, "id")], self.session))
+        self.loaded = True
 
 
 def api_call(target_version, target_api_url, session, debug=False, authenticate=True):
@@ -224,19 +246,19 @@ class Khan():
         else:
             print "Consumer key and secret not set in secrets.py - authenticated access to API unavailable."
 
-    def class_by_kind(self, node):
+    def class_by_kind(self, node, loaded=True):
         """
         Function to turn a dictionary into a Python object of the appropriate kind,
         based on the "kind" attribute found in the dictionary.
         """
         # TODO: Fail better or prevent failure when "kind" is missing.
         try:
-            return kind_to_class_map[node["kind"]](node, session=self)
+            return kind_to_class_map[node["kind"]](node, session=self, loaded=loaded)
         except KeyError:
             raise APIError(
                 "This kind of object should have a 'kind' attribute.", node)
 
-    def convert_list_to_classes(self, nodelist, class_converter=None):
+    def convert_list_to_classes(self, nodelist, class_converter=None, loaded=True):
         """
         Convert each element of the list (in-place) into an instance of a subclass of APIModel.
         You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
@@ -244,29 +266,32 @@ class Khan():
         if not class_converter:
             class_converter = self.class_by_kind
         for i in range(len(nodelist)):
-            nodelist[i] = class_converter(nodelist[i])
+            nodelist[i] = class_converter(nodelist[i], loaded=loaded)
 
         return nodelist  # just for good measure; it's already been changed
 
-    def class_by_name(self, node, name):
+    def class_by_name(self, node, name, loaded=True):
         """
         Function to turn a dictionary into a Python object of the kind given by name.
         """
-        return kind_to_class_map[name](node, session=self)
+        return kind_to_class_map[name](node, session=self, loaded=loaded)
 
-    def convert_items(self, name, obj):
+    def convert_items(self, name, obj, loaded=True):
         """
         Convert attributes of an object to related object types.
         If in a list call to convert each element of the list.
         """
-
-        # convert dicts to the related type
-        if isinstance(obj[name], dict):
-            obj[name] = obj._related_field_types[name](obj[name], session=self)
-        # convert every item in related list to correct type
-        elif isinstance(obj[name], list):
-            self.convert_list_to_classes(obj[
-                name], class_converter=obj._related_field_types[name])
+        try:
+            class_converter = obj._related_field_types.get(name, None) or obj._lazy_related_field_types.get(name, None)
+            # convert dicts to the related type
+            if isinstance(obj[name], dict):
+                obj[name] = class_converter(obj[name], session=self, loaded=loaded)
+            # convert every item in related list to correct type
+            elif isinstance(obj[name], list):
+                self.convert_list_to_classes(obj[
+                    name], class_converter=class_converter, loaded=loaded)
+        except Exception as e:
+            import pdb; pdb.set_trace()
 
     def params(self):
         if self.lang:
@@ -364,7 +389,7 @@ class Exercise(APIModel):
 
     base_url = "/exercises"
 
-    API_attributes = {
+    _API_attributes = {
         "related_videos": "/videos",
         "followup_exercises": "/followup_exercises"
     }
@@ -375,8 +400,25 @@ class Exercise(APIModel):
         self._related_field_types = {
             "related_videos": partial(self.session.class_by_name, name="Video"),
             "followup_exercises": partial(self.session.class_by_name, name="Exercise"),
+            "problem_types": partial(self.session.class_by_name, name="ProblemType"),
         }
 
+class ProblemType(APIModel):
+    def __init__(self, *args, **kwargs):
+        super(ProblemType, self).__init__(*args, **kwargs)
+        self._lazy_related_field_types = {
+            "assessment_items": partial(self.session.class_by_name, name="AssessmentItem"),
+        }
+        if self.has_key("items"):
+            self.assessment_items = self["items"]
+            del self["items"]
+
+class AssessmentItem(APIModel):
+    """
+    A class to lazily load assessment item data for Perseus Exercise questions.
+    """
+
+    base_url = "/assessment_items"
 
 class Badge(APIModel):
 
@@ -412,7 +454,7 @@ class User(APIAuthModel):
 
     base_url = "/user"
 
-    API_attributes = {
+    _API_attributes = {
         "videos": "/videos",
         "exercises": "/exercises",
         "students": "/students",
@@ -433,7 +475,7 @@ class UserExercise(APIAuthModel):
 
     base_url = "/user/exercises"
 
-    API_attributes = {
+    _API_attributes = {
         "log": "/log",
         "followup_exercises": "/followup_exercises",
     }
@@ -452,7 +494,7 @@ class UserExercise(APIAuthModel):
 class UserVideo(APIAuthModel):
     base_url = "/user/videos"
 
-    API_attributes = {
+    _API_attributes = {
         "log": "/log",
     }
 
@@ -521,7 +563,7 @@ class Video(APIModel):
 
     base_url = "/videos"
 
-    API_attributes = {"related_exercises": "/exercises"}
+    _API_attributes = {"related_exercises": "/exercises"}
 
     def __init__(self, *args, **kwargs):
 
@@ -553,6 +595,8 @@ kind_to_class_map = {
     "ProblemLog": ProblemLog,
     "VideoLog": VideoLog,
     "Playlist": Playlist,
+    "ProblemType": ProblemType,
+    "AssessmentItem": AssessmentItem,
 }
 
 
