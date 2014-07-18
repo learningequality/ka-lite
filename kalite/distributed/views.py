@@ -432,6 +432,11 @@ def handler_403(request, *args, **kwargs):
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
 
+@render_to("distributed/perseus.html")
+def perseus(request):
+    return {}
+
+
 #########
 # Custom JS and CSS django templates
 #########

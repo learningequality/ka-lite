@@ -88,6 +88,8 @@ urlpatterns += patterns(__package__ + '.views',
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
+    url(r'^perseus/$', 'perseus', {}, 'perseus'),
+
     url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
