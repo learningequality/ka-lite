@@ -10,6 +10,8 @@ import requests
 import shutil
 import sys
 import time
+
+from khan_api_python.api_models import Khan
 from math import ceil, log, exp  # needed for basepoints calculation
 from optparse import make_option
 
@@ -115,18 +117,20 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
     rebuild the KA Lite topictree cache (topics.json).
     """
 
-    topic_tree = download_khan_data("http://www.khanacademy.org/api/v1/topictree?kind=Video,Exercise")
+    khan = Khan()
+
+    topic_tree = khan.get_topic_tree()
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
+
+    #Do Something Terrible Today
 
     def recurse_nodes(node, path="", ancestor_ids=[]):
         """
         Internal function for recursing over the topic tree, marking relevant metadata,
         and removing undesired attributes and children.
         """
-
-        kind = node["kind"]
 
         # Only keep key data we can use
         for key in node.keys():
@@ -652,7 +656,7 @@ class Command(BaseCommand):
         # Disabled until we revamp it based on the current KA API.
         # h_position and v_position are available on each exercise now.
         # If not on the topic_tree, then here: http://api-explorer.khanacademy.org/api/v1/playlists/topic_slug/exercises
-        rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
+        # rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
 
         scrub_topic_tree(node_cache=node_cache)
 
