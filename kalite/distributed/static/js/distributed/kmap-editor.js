@@ -189,7 +189,7 @@ var KMapEditor = {
                     exerciseStatus = "partially completed";
                     imageSrc = KMapEditor.IMG_PARTIAL;
                 } else if (KMapEditor.exercisesCompleted[ex.id] === "complete") {
-                    exerciseStatus = "completed"
+                    exerciseStatus = "completed";
                     imageSrc = KMapEditor.IMG_COMPLETE;
                 }
 

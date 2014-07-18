@@ -270,9 +270,9 @@ window.TestDataModel = Backbone.Model.extend({
     */
 
     url: function() {
-        return "/test/api/test/" + this.get("test_id") + "/"
+        return "/test/api/test/" + this.get("test_id") + "/";
     }
-})
+});
 
 window.TestLogModel = Backbone.Model.extend({
     /*
@@ -323,12 +323,12 @@ window.TestLogModel = Backbone.Model.extend({
             }
 
             // Cache random shuffling of block seeds for each exercise_id.
-            var shuffled_block_seeds_gen = {}
+            var shuffled_block_seeds_gen = {};
 
             // Final seed and item sequences.
-            this.seed_sequence = []
+            this.seed_sequence = [];
 
-            this.item_sequence = []
+            this.item_sequence = [];
 
             /*
             Loop over every repeat, adding each exercise_id in turn to item_sequence.
@@ -339,7 +339,7 @@ window.TestLogModel = Backbone.Model.extend({
             */
             for(j=0; j < repeats; j++){
                 for(i=0; i < items.length; i++){
-                    if(j==0){
+                    if(j===0){
                         shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
                     }
                     this.item_sequence.push(items[i]);
@@ -421,7 +421,7 @@ var QuizDataModel = Backbone.Model.extend({
             ids: this.get_exercise_ids_from_playlist_entry(this.get("entry")),
             quiz_id: this.get("entry").get("entity_id"),
             seed: this.get("entry").get("seed") || null
-        })
+        });
     },
 
     get_exercise_ids_from_playlist_entry: function(entry) {
@@ -433,9 +433,9 @@ var QuizDataModel = Backbone.Model.extend({
                     return memo;
                 }
             }, 0);
-        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id")});
+        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id");});
     }
-})
+});
 
 window.QuizLogModel = Backbone.Model.extend({
     /*
@@ -516,14 +516,14 @@ window.QuizLogModel = Backbone.Model.extend({
                     this.set({
                         complete: true
 
-                    })
+                    });
                 }
 
                 this.trigger("complete");
             }
         }
 
-        Backbone.Model.prototype.save.call(this)
+        Backbone.Model.prototype.save.call(this);
     },
 
     add_response_log_item: function(data) {
@@ -707,7 +707,7 @@ window.ExerciseView = Backbone.View.extend({
 
         this.initialize_listeners();
 
-        if ($("#exercise-inline-style").length == 0) {
+        if ($("#exercise-inline-style").length === 0) {
             // dummy style container that khan-exercises uses to dynamically add styling to an exercise
             $("head").append("<style id='exercise-inline-style'></style>");
         }
@@ -954,7 +954,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1093,8 +1093,8 @@ window.ExerciseTestView = Backbone.View.extend({
         if (window.statusModel.get("is_logged_in")) {
 
             // load the data about this particular test
-            this.test_model = new TestDataModel({test_id: this.options.test_id})
-            var test_model_deferred = this.test_model.fetch()
+            this.test_model = new TestDataModel({test_id: this.options.test_id});
+            var test_model_deferred = this.test_model.fetch();
 
             // load the data about the user's overall progress on the test
             this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
@@ -1108,10 +1108,10 @@ window.ExerciseTestView = Backbone.View.extend({
 
     finish_test: function() {
         if (this.log_model.get("complete")) {
-            this.$el.html(this.stop_template())
+            this.$el.html(this.stop_template());
 
             // TODO-BLOCKER(jamalex): with exam mode redirect enabled, where does this lead you?
-            this.$(".stop-test").click(function() { window.location.href = "/"; })
+            this.$(".stop-test").click(function() { window.location.href = "/"; });
 
             return true;
         }
@@ -1256,7 +1256,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
             self.exercise_view.load_question(self.log_model.get_item_data());
             self.initialize_new_attempt_log(self.log_model.get_item_data());
-            $("#next-question-button").remove()
+            $("#next-question-button").remove();
 
         });
 
@@ -1292,11 +1292,11 @@ window.ExerciseQuizView = Backbone.View.extend({
     },
 
     finish_quiz: function() {
-        this.$el.html(this.stop_template())
+        this.$el.html(this.stop_template());
 
         var self = this;
 
-        $("#stop-quiz").click(function(){self.trigger("complete");})
+        $("#stop-quiz").click(function(){self.trigger("complete");});
     },
 
     user_data_loaded: function() {
@@ -1423,7 +1423,7 @@ window.ExerciseQuizView = Backbone.View.extend({
 
 
 function seeded_shuffle(source_array, random) {
-    var array = source_array.slice(0)
+    var array = source_array.slice(0);
     var m = array.length, t, i;
 
     // While there remain elements to shuffle…

@@ -47,7 +47,7 @@ $(function() {
 
         if (group==="----") {
             alert(gettext("Please choose a group to move users to."));
-        } else if (users.length==0) {
+        } else if (users.length===0) {
             alert(gettext("Please select users first."));
         } else if(!confirm(gettext("You are about to move selected users to another group."))) {
             return;
@@ -68,18 +68,18 @@ $(function() {
         } else {
             el.find("tbody").find("input:checkbox:not(:checked)").mousedown();
         }
-    })
+    });
 
     $("input:checkbox").click(function(event){
         // Only set action button state on related action buttons.
         setActionButtonState(event.target.value);
-    })
+    });
 
     $(".delete").click(function(event) {
         // Delete the selected users
         var users = getSelectedItems(this.value);
 
-        if (users.length == 0) {
+        if (users.length === 0) {
             alert(gettext("Please select users first."));
         } else if (!confirm(gettext("You are about to delete selected users, they will be permanently deleted."))) {
             return;
@@ -95,7 +95,7 @@ $(function() {
         // Delete the selected users
         var groups = getSelectedItems(this.value);
 
-        if (groups.length == 0) {
+        if (groups.length === 0) {
             alert(gettext("Please select groups first."));
         } else if (!confirm(gettext("You are about to permanently delete the selected group(s). Note that any students currently in this group will now be characterized as 'Ungrouped' but their profiles will not be deleted."))) {
             return;
@@ -141,7 +141,7 @@ $(function() {
     // This means that moving the mouse out and then back in with the button depressed will not select.
     $(".selectable-table").mouseleave(function(){
         $(".selectable-table").find("tbody").find("tr.selectable").unbind("mouseover");
-    })
+    });
 
     // Prevent propagation of click events on links to limit confusing behaviour
     // of rows being selected when links clicked.
@@ -152,10 +152,10 @@ $(function() {
 
     $(".selectable-table").find("tbody").find("input").mousedown(function(event){
         event.preventDefault();
-    })
+    });
 
     $(".selectable-table").find("tbody").find("input").click(function(event){
         event.preventDefault();
         return false;
-    })
+    });
 });
