@@ -85,8 +85,8 @@ class MainTestCase(KALiteTestCase):
         """
         Helper function for testing video files.
         """
-        video_id = get_node_cache("Video").keys()[0]
-        youtube_id = get_node_cache("Video")[video_id][0]["youtube_id"]
+        video_id = get_node_cache("Video").keys()
+        youtube_id = get_node_cache("Video")[video_id]["youtube_id"]
         fake_video_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_video_file, "w") as fh:
             fh.write("")

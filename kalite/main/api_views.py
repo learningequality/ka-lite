@@ -125,7 +125,7 @@ def exercise_log(request, exercise_id):
         #   NOTE: it's important to check this AFTER calling save() above.
         # TODO (rtibbles): MOVE THIS TO THE CLIENT SIDE!
         if not previously_complete and exerciselog.complete:
-            exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
+            exercise = get_node_cache("Exercise").get(data["exercise_id"], None)
             junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
             if not next_exercise:
                 return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
@@ -266,15 +266,15 @@ def knowledge_map_json(request, topic_id):
     topic = get_node_cache("Topic").get(topic_id)
     if not topic:
         raise Http404("Topic '%s' not found" % topic_id)
-    elif not "knowledge_map" in topic[0]:
+    elif not "knowledge_map" in topic:
         raise Http404("Topic '%s' has no knowledge map metadata." % topic_id)
 
     # For each node (can be of any type now), pull out only
     #   the relevant data.
-    kmap = topic[0]["knowledge_map"]
+    kmap = topic["knowledge_map"]
     nodes_out = {}
     for id, kmap_data in kmap["nodes"].iteritems():
-        cur_node = get_node_cache(kmap_data["kind"])[id][0]
+        cur_node = get_node_cache(kmap_data["kind"])[id]
         nodes_out[id] = {
             "id": cur_node["id"],
             "title": _(cur_node["title"]),

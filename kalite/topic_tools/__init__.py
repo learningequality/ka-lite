@@ -169,8 +169,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
     # to avoid redundancy
     for category_name, category in categories.iteritems():
         result[category_name] = {}
-        for node_name, node_list in category.iteritems():
-            node = node_list[0]
+        for node_name, node in category.iteritems():
             if alldata:
                 relevant_data = node
             else:
@@ -218,7 +217,7 @@ def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
     if not potential_parents:
         return None
     elif len(potential_parents) == 1:
-        return potential_parents[0]
+        return potential_parents
     else:
         for pp in potential_parents:
             if node["path"].startswith(pp["path"]):  # find parent by path
@@ -265,9 +264,7 @@ def get_topic_by_path(path, root_node=None):
     cur_node = root_node
     for part in parts:
         cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
-        if cur_node:
-            cur_node = cur_node[0]
-        else:
+        if not cur_node:
             break
 
     return cur_node or {}
@@ -332,7 +329,7 @@ def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
         if not topic_node:
             return []
         else:
-            path = topic_node[0]['path']
+            path = topic_node['path']
 
     topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
@@ -381,7 +378,7 @@ def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
     if not possible_videos:
         possible_videos = []
         for topic in (topics or get_node_cache('Topic').values()):
-            possible_videos += get_topic_videos(topic_id=topic[0]['id'])
+            possible_videos += get_topic_videos(topic_id=topic['id'])
 
     # Get exercises from videos
     exercise_ids = [ex["id"] for ex in exercises]
@@ -407,11 +404,11 @@ def get_related_videos(exercise, limit_to_available=True):
     # Find related videos
     related_videos = {}
     for slug in exercise["related_video_slugs"]:
-        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
+        video_node = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), {})
 
         # Make sure the IDs are recognized, and are available.
-        if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
-            related_videos[slug] = find_most_related_video(video_nodes, exercise)
+        if video_node and (not limit_to_available or video_node.get("available", False)):
+            related_videos[slug] = find_most_related_video(video_node, exercise)
 
     return related_videos
 
@@ -428,7 +425,7 @@ def is_base_leaf(node, is_base_leaf=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
+    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])
 
     parent_path1 = parse_path(node1)
     parent_path2 = parse_path(node2)
@@ -473,7 +470,7 @@ def get_exercise_page_paths(video_id=None):
         return []
 
 def get_exercise_data(request, exercise_id=None):
-    exercise = get_node_cache()["Exercise"][exercise_id][0]
+    exercise = get_node_cache()["Exercise"][exercise_id]
 
     lang = request.session[settings.LANGUAGE_COOKIE_NAME]
     exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")

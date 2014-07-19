@@ -146,7 +146,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
     node_cache = get_node_cache()
     topic_ids = get_knowledgemap_topics()
     topic_ids = topic_ids + [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
-    topics = [node_cache["Topic"][id][0] for id in topic_ids]
+    topics = [node_cache["Topic"][id] for id in topic_ids]
 
     user_id = user.id
     exercise_logs = list(ExerciseLog.objects \
@@ -178,7 +178,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             continue
         topic = topic.pop()
         if not topic in topic_exercises:
-            topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
+            topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic]["path"])
         exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
 
     # Categorize every video log into a "midlevel" exercise.
@@ -196,7 +196,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             continue
         topic = topic.pop()
         if not topic in topic_videos:
-            topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
+            topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic]["path"])
         videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
 
 
@@ -287,7 +287,7 @@ def tabular_view(request, facility, report_type="exercise"):
         # For translators: the following two translations are nouns
         "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
-        "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
+        "topics": [{"id": t["id"], "title": t["title"]} for t in topics if t],
     })
 
     # get querystring info
