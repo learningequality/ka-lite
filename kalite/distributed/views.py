@@ -157,7 +157,8 @@ def refresh_topic_cache(handler, force=False):
 @backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
-    current_node = topic_tools.get_topic_tree()
+    topic_tree = topic_tools.get_topic_tree()
+    current_node = topic_tree
     
     # Parse out actual current node
     while current_node:
@@ -172,7 +173,7 @@ def splat_handler(request, splat):
 
     # render topic list or playlist of base node
     if not topic_tools.is_base_leaf(current_node):
-        return topic_handler(request, cached_nodes={"topic": current_node})
+        return topic_handler(request, cached_nodes={"topic_tree": topic_tree})
     else: 
         return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
 
@@ -181,23 +182,11 @@ def splat_handler(request, splat):
 @render_to("distributed/topic.html")
 @refresh_topic_cache
 def topic_handler(request, topic):
-    return topic_context(topic)
-
-
-def topic_context(topic):
     """
-    Given a topic node, create all context related to showing that topic
-    in a template.
+    Render the entire topic tree to the client to help with navigation UX
     """
-
-    topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
-
     context = {
-        "topic": topic,
-        "title": topic["title"],
-        "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
-        "topics": my_topics,
+        "topics": topic_tools.get_topic_hierarchy(),
     }
     return context
 
