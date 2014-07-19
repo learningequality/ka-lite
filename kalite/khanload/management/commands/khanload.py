@@ -123,7 +123,11 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
 
     exercises = khan.get_exercises()
 
+    exercise_lookup = {exercise["id"]: exercise for exercise in exercises}
+
     videos = khan.get_videos()
+
+    video_lookup = {video["id"]: video for video in videos}
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
