@@ -409,7 +409,7 @@ class Khan():
 
     def get_playlists(self):
         """
-        Return list of all exercises in the Khan API
+        Return list of all playlists in the Khan API
         """
         return self.convert_list_to_classes(api_call("v1", Playlist.base_url + self.params(), self))
 
@@ -424,6 +424,18 @@ class Khan():
         This will return a list of videos in the highest level of a topic.
         """
         return self.convert_list_to_classes(api_call("v1", Playlist.base_url + "/" + topic_slug + "/videos" + self.params(), self))
+
+    def get_assessment_items(self):
+        """
+        Return list of all assessment items in the Khan API
+        """
+        return self.convert_list_to_classes(api_call("v1", AssessmentItem.base_url + self.params(), self))
+
+    def get_assessment_item(self, assessment_id):
+        """
+        Return particular assessment item, by "assessment_id"
+        """
+        return AssessmentItem(api_call("v1", AssessmentItem.base_url + "/" + assessment_id + self.params(), self), session=self)
 
 
 class Exercise(APIModel):
