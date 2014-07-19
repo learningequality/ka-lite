@@ -1,24 +1,4 @@
 
-// add some dummy features onto the Exercises object to make khan-exercises.js happy
-window.Exercises = {
-    completeStack: {
-        getUid: function() { return 0; },
-        getCustomStackID: function() { return 0; }
-    },
-    currentCard: {
-        attributes: {},
-        get: function() {}
-    },
-    RelatedVideos: {
-        render: function() {}
-    },
-    getCurrentFramework: function() { return "khan-exercises"; },
-    incompleteStack: [0],
-    PerseusBridge: {
-        cleanupProblem: function() {}
-    }
-};
-
 window.ExerciseParams = {
     STREAK_CORRECT_NEEDED: 8,
     STREAK_WINDOW: 10,
@@ -835,16 +815,16 @@ window.ExercisePerseusView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this.exercise_view = new ExerciseView({el: this.el, model: this.model});
+        // this.exercise_view = new ExerciseView({el: this.el, model: this.model});
 
-        // this.render();
+        this.render();
 
-        _.defer(this.initialize_khan_exercises_listeners);
+        // _.defer(this.initialize_khan_exercises_listeners);
 
     },
 
     events: {
-        "submit .answer-form": "answer_form_submitted"
+        // "submit .answer-form": "answer_form_submitted"
     },
 
     render: function() {

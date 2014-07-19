@@ -42,13 +42,31 @@
                 enable: function() {}
             }
         };
+
+        window.Exercises = {
+            localMode: true,
+
+            useKatex: true,
+
+            khanExercisesUrlBase: "../",
+
+            getCurrentFramework: function() {
+                return "perseus";
+            },
+
+            PerseusBridge: {
+                cleanupProblem: function() {
+                    return false;
+                }
+            }
+        };
         React.initializeTouchEvents(true);
     </script>
 
     <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
     <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
     <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
-    <script src="{% static "perseus/ke/exercises-stub.js" %}"></script>
+    <!-- // <script src="{% static "perseus/ke/exercises-stub.js" %}"></script> -->
     <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
 
     <script>
@@ -141,14 +159,19 @@
         };
 
         var item_data = {"answerArea": {"calculator": false, "type": "multiple", "options": {"content": "Answer to left.", "images": {}, "widgets": {}}}, "question": {"content": "Given the polar curve $~r=3\\cos(2\\theta)~$ for $~\\theta \\in \\left[ 0,2\\pi  \\right)\\,$, determine which of the following lines are tangent to the curve at the pole (the origin).\n\nLine equation|YES or NO\n:-:|:-:\n$y=x$|[[\u2603 dropdown 6]]\n$y=2x$|[[\u2603 dropdown 7]]\n$y=-x$|[[\u2603 dropdown 8]]\n$y=-2x$|[[\u2603 dropdown 9]]\n$y=0$|[[\u2603 dropdown 10]]\n", "images": {}, "widgets": {"dropdown 10": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": false}, {"content": "No", "correct": true}]}}, "dropdown 7": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": false}, {"content": "No", "correct": true}]}}, "dropdown 6": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": true}, {"content": "No", "correct": false}]}}, "dropdown 9": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": false}, {"content": "No", "correct": true}]}}, "dropdown 8": {"type": "dropdown", "graded": true, "options": {"placeholder": "Yes/No", "choices": [{"content": "Yes", "correct": true}, {"content": "No", "correct": false}]}}}}, "hints": [{"content": "First we determine the values of $~\\theta \\in \\left[ 0,2\\pi  \\right)~$ at which the curve passes through the pole by setting $~r=0\\,$.\n\n $\\qquad3\\cos(2\\theta)=0$\n\n$\\qquad\\qquad\\quad~2\\theta=\\displaystyle\\frac{\\pi}{2}+\\pi k~$, where $~k\\in \\mathbb{Z}$\n\n$\\qquad\\qquad\\quad~~~\\theta=\\displaystyle\\frac{\\pi}{4}+\\displaystyle\\frac{\\pi}{2}k~$, where $~k\\in \\mathbb{Z}$\n\n$~~~\\quad\\qquad\\qquad\\theta=\\displaystyle\\frac{\\pi}{4}~~$ or $~~\\theta=\\displaystyle\\frac{3\\pi}{4}~~$ or $~~\\theta=\\displaystyle\\frac{5\\pi}{4}~~$ or $~~\\theta=\\displaystyle\\frac{7\\pi}{4}$", "images": {}, "widgets": {}}, {"content": "Next we will need to find the slopes of the tangent lines to the curve at these values of $~\\theta\\,$.  \n\nWe could go through the long, involved process of calculating  $~\\displaystyle\\frac{dy}{dx}~$ for the curve, using both $~\\dfrac{dy}{d\\theta}~$ and $~\\dfrac{dx}{d\\theta}\\,$. However, there is a **much** easier way to find the slope of the tangent line when the point in question is the pole.\n\nSince the values of $~\\theta~$ in question are $~\\theta=\\dfrac{n\\pi}{4}~$ where $~n=1\\,,~3\\,,~5\\,,~\\text{or}~7\\,$, we know that the lines $~r=\\dfrac\\pi4\\,,~r=\\dfrac{3\\pi}{4}\\,,~r=\\dfrac{5\\pi}{4}\\,,~\\text{and}~r=\\dfrac{7\\pi}{4}~$ are the tangent lines. The slopes of those lines are $~~\\tan\\dfrac\\pi4=1\\,$, $~~\\tan\\dfrac{3\\pi}4=-1\\,$, $~~\\tan\\dfrac{5\\pi}4=1\\,$, and $~~\\tan\\dfrac{7\\pi}4=-1\\,$, respectively.", "images": {}, "widgets": {}}, {"content": "Thus we find that the tangent lines to the curve $~r=3\\cos(2\\theta)~$ at the pole are the lines $~y=x~$ and  $~y=-x\\,$.", "images": {}, "widgets": {}}]};
+        var item_data = {"answerArea": {"calculator": false, "type": "multiple", "options": {"content": "Choose the correct answer.", "widgets": {}}}, "question": {"content": "$2$ bananas were eaten by the monkey.  Just now, $5$ more bananas were eaten. \n\n\n\n**Which choice shows how many bananas have been eaten now?**\n\n![](https://ka-perseus-graphie.s3.amazonaws.com/fb39b798248f1fcfd3769be51db8f5cc96ec7545.png)\n\n![](https://ka-perseus-graphie.s3.amazonaws.com/d3f20e015e185b2fc52029e9f9f2077973a54d28.png)\n\n[[\u2603 radio 1]]", "widgets": {"radio 1": {"type": "radio", "graded": true, "options": {"multipleSelect": false, "randomize": true, "choices": [{"content": "$5 - 2 = 3$", "correct": false}, {"content": "$2 + 5 = 7$", "correct": true}, {"content": "$5 + 7 = 12$", "correct": false}]}}}}, "hints": [{"content": "Count all the bananas together.", "widgets": {}}, {"content": "$2 + 5 = 7$. The monkey ate $7$ bananas.", "widgets": {}}]};
+        var item_data = {"answerArea": {"calculator": false, "type": "radio", "options": {"onePerLine": true, "multipleSelect": false, "displayCount": null, "randomize": true, "choices": [{"content": "Scholars do not know", "correct": true}, {"content": "A coffin for the burial of a king", "correct": false}, {"content": "leading troops into battle"}, {"content": "An elaborate head board possibly for a king"}]}}, "question": {"content": "**What was the *Standard of Ur* used for?**", "images": {}, "widgets": {}}, "hints": [{"content": "We do not know what the object was used for, though many historians have made suggestions.\n\n[Watch this video for review](https://www.khanacademy.org/test-prep/ap-art-history/ancient-mediterranean-AP/ancient-near-east-AP/v/standard-of-ur--c--2600-2400-b-c-e)", "images": {}, "widgets": {}}]};
 
         (function() {
 
         // Load khan-exercises modules, then perseus
-        require(["{% static "perseus/ke-deps.js" %}"], function() {
-            // pre built
-            require(["{% static "perseus/build/perseus-1.js" %}"], initPerseus);
-        });
+        require([
+                "{% static "perseus/ke-deps.js" True %}",
+                "{% static "perseus/ke/interface.js" True %}"
+            ], function() {
+                require(["{% static "perseus/build/perseus-1.js" True %}", "{% static "js/distributed/perseus-mobile-bridge.js" True %}"], initPerseus);
+            }
+        );
 
         function initPerseus(Perseus) {
 
@@ -162,7 +185,7 @@
             });
 
             var itemMountNode = document.createElement("div");
-            zk = React.renderComponent(Perseus.ItemRenderer({
+            window.itemRenderer = Perseus.ItemRenderer({
                 item: item_data,
                 problemNum: Math.floor(Math.random() * 50) + 1,
                 initialHintsVisible: false, //&& item_data.hints && item_data.hints.length,
@@ -170,11 +193,14 @@
                     highlight: true,
                     toolTipFormats: true
                 }
-            }, null), itemMountNode);
+            }, null);
+            zk = React.renderComponent(itemRenderer, itemMountNode);
             zk.focus();
 
         }).then(function() {
             console.log("Perseus question rendered!", item_data);
+            $(Exercises).trigger("problemTemplateRendered");
+            $(Exercises).trigger("newProblem", {});
         }, function(err) {
             console.error("Perseus question error!", err);
         });
@@ -192,8 +218,7 @@
     <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
 
     <script src="{% static 'js/distributed/exercises.js' %}"></script>
-    <script src="{% static 'js/distributed/exercises-perseus.js' %}"></script>
-    <script src="{% static 'khan-exercises/khan-exercise.js' %}"></script>
+    <!-- // <script src="{% static 'khan-exercises/khan-exercise.js' %}"></script> -->
 
 {% endblock headjs %}
 
