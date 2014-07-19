@@ -121,6 +121,10 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
 
     topic_tree = khan.get_topic_tree()
 
+    exercises = khan.get_exercises()
+
+    videos = khan.get_videos()
+
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
 
@@ -131,6 +135,8 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
         Internal function for recursing over the topic tree, marking relevant metadata,
         and removing undesired attributes and children.
         """
+
+        kind = node["kind"]
 
         # Only keep key data we can use
         for key in node.keys():
@@ -193,12 +199,12 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
                 children_to_delete.append(i)
                 continue
             elif not child.get("live", True) and remove_disabled_topics:  # node is not live
-                logging.debug("Remvong non-live child: %s" % child[slug_key[child_kind]])
+                logging.debug("Removing non-live child: %s" % child[slug_key[child_kind]])
                 children_to_delete.append(i)
                 continue
             elif child.get("hide", False) and remove_disabled_topics:  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
                 children_to_delete.append(i)
-                logging.debug("Remvong hidden child: %s" % child[slug_key[child_kind]])
+                logging.debug("Removing hidden child: %s" % child[slug_key[child_kind]])
                 continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
