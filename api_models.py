@@ -425,12 +425,6 @@ class Khan():
         """
         return self.convert_list_to_classes(api_call("v1", Playlist.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
-    def get_assessment_items(self):
-        """
-        Return list of all assessment items in the Khan API
-        """
-        return self.convert_list_to_classes(api_call("v1", AssessmentItem.base_url + self.params(), self))
-
     def get_assessment_item(self, assessment_id):
         """
         Return particular assessment item, by "assessment_id"
@@ -455,6 +449,10 @@ class Exercise(APIModel):
             "followup_exercises": partial(self._session.class_by_name, name="Exercise"),
             "problem_types": partial(self._session.class_by_name, name="ProblemType"),
         }
+        self._lazy_related_field_types = {
+            "all_assessment_items": partial(self._session.class_by_name, name="AssessmentItem"),
+        }
+
 
 class ProblemType(APIModel):
     def __init__(self, *args, **kwargs):
