@@ -35,6 +35,9 @@ from kalite import khanload  # should be removed ASAP, to make more generic and 
                              # Required because of odd KA URL structure that makes sibling detection impossible otherwise.
 
 TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
+EXERCISES_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "exercises.json")
+VIDEOS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "videos.json")
+ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "assessmentitems.json")
 
 CACHE_VARS = []
 
@@ -70,6 +73,33 @@ def get_node_cache(node_type=None, force=False):
         return NODE_CACHE
     else:
         return NODE_CACHE[node_type]
+
+EXERCISES          = None
+CACHE_VARS.append("EXERCISES")
+def get_exercise_cache(force=False):
+    global EXERCISES, EXERCISES_FILEPATH
+    if EXERCISES is None or force:
+        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=True)
+
+    return EXERCISES
+
+VIDEOS          = None
+CACHE_VARS.append("VIDEOS")
+def get_video_cache(force=False):
+    global VIDEOS, VIDEOS_FILEPATH
+    if VIDEOS is None or force:
+        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=True)
+
+    return VIDEOS
+
+ASSESSMENT_ITEMS          = None
+CACHE_VARS.append("ASSESSMENT_ITEMS")
+def get_assessment_item_cache(force=False):
+    global ASSESSMENT_ITEMS, ASSESSMENT_ITEMS_FILEPATH
+    if ASSESSMENT_ITEMS is None or force:
+        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=True)
+
+    return ASSESSMENT_ITEMS
 
 
 KNOWLEDGEMAP_TOPICS = None
