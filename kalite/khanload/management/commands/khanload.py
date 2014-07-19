@@ -10,6 +10,8 @@ import requests
 import shutil
 import sys
 import time
+
+from khan_api_python.api_models import Khan
 from math import ceil, log, exp  # needed for basepoints calculation
 from optparse import make_option
 
@@ -115,10 +117,22 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
     rebuild the KA Lite topictree cache (topics.json).
     """
 
-    topic_tree = download_khan_data("http://www.khanacademy.org/api/v1/topictree?kind=Video,Exercise")
+    khan = Khan()
+
+    topic_tree = khan.get_topic_tree()
+
+    exercises = khan.get_exercises()
+
+    exercise_lookup = {exercise["id"]: exercise for exercise in exercises}
+
+    videos = khan.get_videos()
+
+    video_lookup = {video["id"]: video for video in videos}
 
     related_exercise = {}  # Temp variable to save exercises related to particular videos
     related_videos = {}  # Similar idea, reverse direction
+
+    #Do Something Terrible Today
 
     def recurse_nodes(node, path="", ancestor_ids=[]):
         """
@@ -189,12 +203,12 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
                 children_to_delete.append(i)
                 continue
             elif not child.get("live", True) and remove_disabled_topics:  # node is not live
-                logging.debug("Remvong non-live child: %s" % child[slug_key[child_kind]])
+                logging.debug("Removing non-live child: %s" % child[slug_key[child_kind]])
                 children_to_delete.append(i)
                 continue
             elif child.get("hide", False) and remove_disabled_topics:  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
                 children_to_delete.append(i)
-                logging.debug("Remvong hidden child: %s" % child[slug_key[child_kind]])
+                logging.debug("Removing hidden child: %s" % child[slug_key[child_kind]])
                 continue
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
@@ -652,7 +666,7 @@ class Command(BaseCommand):
         # Disabled until we revamp it based on the current KA API.
         # h_position and v_position are available on each exercise now.
         # If not on the topic_tree, then here: http://api-explorer.khanacademy.org/api/v1/playlists/topic_slug/exercises
-        rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
+        # rebuild_knowledge_map(topic_tree, node_cache, force_icons=options["force_icons"])
 
         scrub_topic_tree(node_cache=node_cache)
 
