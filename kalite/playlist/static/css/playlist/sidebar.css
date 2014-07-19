@@ -61,6 +61,8 @@ Nav Panel
 
 .panel ul {
     border-top: 2px solid #587448;
+    list-style-type: none;
+    margin-left: -35px;
 }
 
 .panel li {

@@ -282,7 +282,6 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     if not topic_node:
         topic_node = get_topic_tree()
     leaves = []
-
     # base case
     if not "children" in topic_node:
         if leaf_type is None or topic_node['kind'] == leaf_type:
@@ -293,6 +292,35 @@ def get_all_leaves(topic_node=None, leaf_type=None):
             leaves += get_all_leaves(topic_node=child, leaf_type=leaf_type)
 
     return leaves
+
+
+def get_child_topics(topic_node):
+    """Return list of immediate children that are topics"""
+    topics = []
+    if "children" in topic_node:
+        for child in topic_node["children"]:
+            if child['kind'] == 'Topic':
+                topics.append(child['id'])
+    return topics
+
+
+def get_topic_hierarchy(topic_node=get_topic_tree()):
+    """
+    Return hierarchical list of topics for main nav
+    """
+    # import pdb; pdb.set_trace()
+    topic_hierarchy = {
+        "id": topic_node['id'],
+        "title": topic_node['title'],
+        "description": topic_node['description'],    
+    }
+    if ("children" in topic_node) and ('Topic' in topic_node['contains']):
+        topic_hierarchy["children"] = []
+        for child in topic_node['children']:
+            if child['kind'] == 'Topic':
+                topic_hierarchy["children"].append(get_topic_hierarchy(child))
+
+    return topic_hierarchy
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
@@ -386,6 +414,15 @@ def get_related_videos(exercise, limit_to_available=True):
             related_videos[slug] = find_most_related_video(video_nodes, exercise)
 
     return related_videos
+
+
+
+def is_base_leaf(node, is_base_leaf=True):
+    """Return true if the topic node has no child topic nodes"""
+    for child in node['children']:
+        if child['kind'] == 'Topic':
+            return False
+    return is_base_leaf
 
 
 def is_sibling(node1, node2):

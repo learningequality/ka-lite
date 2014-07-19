@@ -125,6 +125,14 @@ class VanillaPlaylist:
         return playlists
 
 
+class KAPlaylist(VanillaPlaylist):
+    """
+    A playlist object -- same as VanillaPlaylist but instead of Nalanda playlist JSON we use
+    the json file that we pull and format from the KA API. 
+    """
+    playlistjson = os.path.join(os.path.dirname(__file__), 'ka_node.json')
+
+
 class VanillaPlaylistEntry:
     """
     A plain object that models playlist entries. Contrast with PlaylistEntry,
