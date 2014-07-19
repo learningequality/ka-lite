@@ -5,6 +5,7 @@ import os
 import SocketServer
 import SimpleHTTPServer
 import sys
+import copy
 from decorator import decorator
 from functools import partial
 
@@ -115,18 +116,18 @@ class APIModel(AttrDict):
             if name.startswith("_"):
                 return super(APIModel, self).__getattr__(name)
             if name in self._lazy_related_field_types or name in self._related_field_types:
-                self.session.convert_items(name, self, loaded=(name in self._related_field_types))
+                self._session.convert_items(name, self, loaded=(name in self._related_field_types))
                 return self[name]
             else:
                 return super(APIModel, self).__getattr__(name)
         if name in self._API_attributes:
-            self[name] = api_call("v1", self.API_url(name), self.session)
-            self.session.convert_items(name, self)
+            self[name] = api_call("v1", self.API_url(name), self._session)
+            self._session.convert_items(name, self)
             return self[name]
-        if not self.loaded and name not in self:
+        if not self._loaded and name not in self:
             self.fetch()
         if name in self._related_field_types:
-            self.session.convert_items(name, self)
+            self._session.convert_items(name, self)
             return self[name]
         else:
             return super(APIModel, self).__getattr__(name)
@@ -138,8 +139,8 @@ class APIModel(AttrDict):
         kwargs.pop('session', None)
         kwargs.pop('loaded', None)
         super(APIModel, self).__init__(*args, **kwargs)
-        self.session = session
-        self.loaded = loaded
+        self._session = session
+        self._loaded = loaded
         self._related_field_types = {}
         self._lazy_related_field_types = {}
         self._API_attributes = {}
@@ -152,15 +153,36 @@ class APIModel(AttrDict):
             self) if kind_to_id_map.get(self.kind) else ""
         get_param = "?" + get_key_to_get_param_map.get(kind_to_get_key_map.get(
             self.kind)) + "=" + self.get(kind_to_get_key_map.get(self.kind)) if kind_to_get_key_map.get(self.kind) else ""
-        if self.session.lang:
+        if self._session.lang:
             get_param = get_param + "&lang=" if get_param else "?lang="
-            get_param += self.session.lang
+            get_param += self._session.lang
         return self.base_url + id + self._API_attributes[name] + get_param
 
     def fetch(self):
         self.update(api_call(
-            "v1", self.base_url + "/" + self[kind_to_id_map.get(type(self).__name__, "id")], self.session))
-        self.loaded = True
+            "v1", self.base_url + "/" + self[kind_to_id_map.get(type(self).__name__, "id")], self._session))
+        self._loaded = True
+
+    def toJSON(self):
+        output = copy.copy(self)
+        for key in output._related_field_types.keys() + output._lazy_related_field_types.keys():
+            if isinstance(output[key], APIModel):
+                output[key] = output[key].toJSON()
+            elif isinstance(output[key], dict):
+                output[key] = json.dumps(output[key])
+            elif isinstance(output[key], list):
+                for i, item in enumerate(output[key]):
+                    if isinstance(output[key][i], APIModel):
+                        output[key][i] = output[key][i].toJSON()
+                    elif isinstance(output[key][i], dict):
+                        output[key][i] = json.dumps(output[key][i])
+        deletekeys = []
+        for key in output:
+            if key.startswith("_"):
+                deletekeys.append(key)
+        for key in deletekeys:
+            del output[key]
+        return json.dumps(output)
 
 
 def api_call(target_version, target_api_url, session, debug=False, authenticate=True):
@@ -281,17 +303,14 @@ class Khan():
         Convert attributes of an object to related object types.
         If in a list call to convert each element of the list.
         """
-        try:
-            class_converter = obj._related_field_types.get(name, None) or obj._lazy_related_field_types.get(name, None)
-            # convert dicts to the related type
-            if isinstance(obj[name], dict):
-                obj[name] = class_converter(obj[name], session=self, loaded=loaded)
-            # convert every item in related list to correct type
-            elif isinstance(obj[name], list):
-                self.convert_list_to_classes(obj[
-                    name], class_converter=class_converter, loaded=loaded)
-        except Exception as e:
-            import pdb; pdb.set_trace()
+        class_converter = obj._related_field_types.get(name, None) or obj._lazy_related_field_types.get(name, None)
+        # convert dicts to the related type
+        if isinstance(obj[name], dict):
+            obj[name] = class_converter(obj[name], session=self, loaded=loaded)
+        # convert every item in related list to correct type
+        elif isinstance(obj[name], list):
+            self.convert_list_to_classes(obj[
+                name], class_converter=class_converter, loaded=loaded)
 
     def params(self):
         if self.lang:
@@ -366,6 +385,28 @@ class Khan():
         """
         return Video(api_call("v1", Video.base_url + "/" + video_id + self.params(), self), session=self)
 
+    def get_videos(self):
+        """
+        Return list of all videos, by "readable_id" or "youtube_id" (deprecated)
+        """
+        topic_tree = self.get_topic_tree()
+
+        video_nodes = {}
+
+        def recurse_nodes(node):
+            # Add the video to the video nodes
+            kind = node["kind"]
+            
+            if node["id"] not in video_nodes:
+                video_nodes[node["id"]] = node
+
+            # Do the recursion
+            for child in node.get("children", []):
+                recurse_nodes(child)
+        recurse_nodes(topic_tree)
+
+        return self.convert_list_to_classes(video_nodes.values())
+
     def get_playlists(self):
         """
         Return list of all exercises in the Khan API
@@ -398,16 +439,16 @@ class Exercise(APIModel):
 
         super(Exercise, self).__init__(*args, **kwargs)
         self._related_field_types = {
-            "related_videos": partial(self.session.class_by_name, name="Video"),
-            "followup_exercises": partial(self.session.class_by_name, name="Exercise"),
-            "problem_types": partial(self.session.class_by_name, name="ProblemType"),
+            "related_videos": partial(self._session.class_by_name, name="Video"),
+            "followup_exercises": partial(self._session.class_by_name, name="Exercise"),
+            "problem_types": partial(self._session.class_by_name, name="ProblemType"),
         }
 
 class ProblemType(APIModel):
     def __init__(self, *args, **kwargs):
         super(ProblemType, self).__init__(*args, **kwargs)
         self._lazy_related_field_types = {
-            "assessment_items": partial(self.session.class_by_name, name="AssessmentItem"),
+            "assessment_items": partial(self._session.class_by_name, name="AssessmentItem"),
         }
         if self.has_key("items"):
             self.assessment_items = self["items"]
@@ -429,7 +470,7 @@ class Badge(APIModel):
         super(Badge, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "user_badges": self.session.class_by_kind,
+            "user_badges": self._session.class_by_kind,
         }
 
 
@@ -441,9 +482,9 @@ class APIAuthModel(APIModel):
 
     def __getattr__(self, name):
         # Added to avoid infinite recursion during authentication
-        if name == "session":
+        if name == "_session":
             return super(APIAuthModel, self).__getattr__(name)
-        elif self.session.require_authentication():
+        elif self._session.require_authentication():
             return super(APIAuthModel, self).__getattr__(name)
 
     # TODO: Add API_url function to add "?userID=" + user_id to each item
@@ -465,9 +506,9 @@ class User(APIAuthModel):
         super(User, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "videos": partial(self.session.class_by_name, name="UserVideo"),
-            "exercises": partial(self.session.class_by_name, name="UserExercise"),
-            "students": partial(self.session.class_by_name, name="User"),
+            "videos": partial(self._session.class_by_name, name="UserVideo"),
+            "exercises": partial(self._session.class_by_name, name="UserExercise"),
+            "students": partial(self._session.class_by_name, name="User"),
         }
 
 
@@ -485,9 +526,9 @@ class UserExercise(APIAuthModel):
         super(UserExercise, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "exercise_model": self.session.class_by_kind,
-            "followup_exercises": self.session.class_by_kind,
-            "log": partial(self.session.class_by_name, name="ProblemLog"),
+            "exercise_model": self._session.class_by_kind,
+            "followup_exercises": self._session.class_by_kind,
+            "log": partial(self._session.class_by_name, name="ProblemLog"),
         }
 
 
@@ -503,8 +544,8 @@ class UserVideo(APIAuthModel):
         super(UserVideo, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "video": self.session.class_by_kind,
-            "log": partial(self.session.class_by_name, name="VideoLog"),
+            "video": self._session.class_by_kind,
+            "log": partial(self._session.class_by_name, name="VideoLog"),
         }
 
 
@@ -531,7 +572,7 @@ class Topic(APIModel):
         super(Topic, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "children": self.session.class_by_kind,
+            "children": self._session.class_by_kind,
         }
 
 class Playlist(APIModel):
@@ -543,7 +584,7 @@ class Playlist(APIModel):
         super(Playlist, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "children": self.session.class_by_kind,
+            "children": self._session.class_by_kind,
         }
 
 
@@ -570,7 +611,7 @@ class Video(APIModel):
         super(Video, self).__init__(*args, **kwargs)
 
         self._related_field_types = {
-            "related_exercises": self.session.class_by_kind,
+            "related_exercises": self._session.class_by_kind,
         }
 
 
