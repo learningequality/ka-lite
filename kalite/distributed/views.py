@@ -33,6 +33,7 @@ from kalite import topic_tools
 from kalite.facility.models import Facility, FacilityUser,FacilityGroup
 from kalite.i18n import select_best_available_language
 from kalite.main.models import VideoLog, ExerciseLog
+from kalite.playlist.views import view_playlist
 from kalite.shared.decorators import require_admin
 from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
@@ -156,7 +157,10 @@ def refresh_topic_cache(handler, force=False):
 @backend_cache_page
 def splat_handler(request, splat):
     slugs = filter(lambda x: x, splat.split("/"))
-    current_node = topic_tools.get_topic_tree()
+    topic_tree = topic_tools.get_topic_tree()
+    current_node = topic_tree
+    
+    # Parse out actual current node
     while current_node:
         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
         if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
@@ -167,97 +171,22 @@ def splat_handler(request, splat):
         if request.path == current_node["path"]:
             break
 
-    if current_node["kind"] == "Topic":
-        return topic_handler(request, cached_nodes={"topic": current_node})
-    elif current_node["kind"] == "Video":
-        prev, next = topic_tools.get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
-        return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
-    elif current_node["kind"] == "Exercise":
-        cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
-        cached_nodes["exercise"] = current_node
-        cached_nodes["prev"], cached_nodes["next"] = topic_tools.get_neighbor_nodes(current_node, neighbor_kind=current_node['kind'])
-        return exercise_handler(request, cached_nodes=cached_nodes)
-    else:
-        raise Http404
+    # render topic list or playlist of base node
+    if not topic_tools.is_base_leaf(current_node):
+        return topic_handler(request, cached_nodes={"topic_tree": topic_tree})
+    else: 
+        return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
 
 
 @backend_cache_page
 @render_to("distributed/topic.html")
 @refresh_topic_cache
 def topic_handler(request, topic):
-    return topic_context(topic)
-
-
-def topic_context(topic):
     """
-    Given a topic node, create all context related to showing that topic
-    in a template.
+    Render the entire topic tree to the client to help with navigation UX
     """
-    videos    = topic_tools.get_videos(topic)
-    exercises = topic_tools.get_exercises(topic)
-    topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
-
-    exercises_path = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
-
-    # Determine what exercises (and languages) are available
-    exercise_all_lang_codes = os.listdir(exercises_path) if os.path.exists(exercises_path) else []
-    exercise_all_lang_codes = set(exercise_all_lang_codes) - set(["test"])
-    for lang_code in exercise_all_lang_codes:  # hard-code out test
-        loc_path = os.path.join(exercises_path, lang_code)
-        if not os.path.isdir(loc_path):
-            continue
-
-        for exercise in exercises:
-            ex_path = os.path.join(loc_path, "%s.html" % exercise["id"])
-            if not os.path.exists(ex_path):
-                continue
-            exercise_langs[exercise["id"]].append(lang_code)
-
-
     context = {
-        "topic": topic,
-        "title": topic["title"],
-        "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
-        "videos": videos,
-        "exercises": exercises,
-        "exercise_langs": exercise_langs,
-        "topics": my_topics,
-    }
-    return context
-
-
-@backend_cache_page
-@render_to("distributed/video.html")
-@refresh_topic_cache
-def video_handler(request, video, format="mp4", prev=None, next=None):
-
-    video = topic_tools.get_video_data(request, video["slug"])
-
-    context = {
-        "video": video,
-        "title": video["title"],
-        "prev": prev,
-        "next": next,
-        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
-    }
-    return context
-
-
-@backend_cache_page
-@render_to("distributed/exercise.html")
-@refresh_topic_cache
-def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
-    """
-    Display an exercise
-    """
-
-    context = {
-        "exercise_id": exercise["name"],
-        "title": exercise["title"],
-        "prev": prev,
-        "next": next,
+        "topics": topic_tools.get_topic_hierarchy(),
     }
     return context
 
