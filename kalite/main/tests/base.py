@@ -13,7 +13,7 @@ from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_exercise_cache, get_video_cache
 from securesync.models import Device
 
 
@@ -85,8 +85,8 @@ class MainTestCase(KALiteTestCase):
         """
         Helper function for testing video files.
         """
-        video_id = get_node_cache("Video").keys()
-        youtube_id = get_node_cache("Video")[video_id]["youtube_id"]
+        video_id = get_video_cache().keys()
+        youtube_id = get_video_cache()[video_id]["youtube_id"]
         fake_video_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_video_file, "w") as fh:
             fh.write("")

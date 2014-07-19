@@ -14,9 +14,7 @@ Each node in the topic tree comes with lots of metadata, including:
 * kind (Topic, Exercise, Video)
 and more.
 
-The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
-so
-* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
+* get_video_cache() returns all videos
 * get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
