@@ -154,8 +154,8 @@ def generate_slug_to_video_id_map(node_cache=None):
 
     # Make a map from youtube ID to video slug
     for video_id, v in node_cache.get('Video', {}).iteritems():
-        assert v[0]["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
-        slug2id_map[v[0]['slug']] = video_id
+        assert v["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
+        slug2id_map[v['slug']] = video_id
 
     return slug2id_map
 
@@ -203,8 +203,7 @@ def generate_node_cache(topictree=None):
         node_cache[kind] = node_cache.get(kind, {})
 
         if node["id"] not in node_cache[kind]:
-            node_cache[kind][node["id"]] = []
-        node_cache[kind][node["id"]] += [node]        # Append
+            node_cache[kind][node["id"]] = node
 
         # Do the recursion
         for child in node.get("children", []):
