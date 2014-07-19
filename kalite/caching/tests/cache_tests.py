@@ -28,7 +28,7 @@ class CachingTest(KALiteTestCase):
         n_videos = len(self.video_cache)
         video_id = self.video_cache.keys()[10]#random.choice(self.video_cache.keys())
         logging.debug("Testing on video_id = %s" % video_id)
-        video_path = self.video_cache[video_id][0]['path']
+        video_path = self.video_cache[video_id]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path, failure_ok=True)
@@ -53,7 +53,7 @@ class CachingTest(KALiteTestCase):
         n_videos = len(self.video_cache)
         video_id = random.choice(self.video_cache.keys())
         logging.debug("Testing on video_id = %s" % video_id)
-        video_path = self.video_cache[video_id][0]['path']
+        video_path = self.video_cache[video_id]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path, failure_ok=True)
