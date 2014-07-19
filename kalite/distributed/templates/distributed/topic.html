@@ -6,10 +6,13 @@
 {% block headjs %}{{ block.super }}
 
     <script type="text/javascript">
+        var ALL_TOPICS_URL = '{% static "data/topic_hierarchy.json" %}';
+    </script>
+
+    <script type="text/javascript">
         $(function() {
-            window.topic_node_view = new TopicContainerView({
-                el: $("#topic-container")
-            });
+            window.topic_node_view = new TopicContainerOuter();
+            $("#topic-container").append(topic_node_view.el);
         });
     </script>
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
