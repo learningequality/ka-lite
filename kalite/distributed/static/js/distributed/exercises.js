@@ -1,24 +1,4 @@
 
-// add some dummy features onto the Exercises object to make khan-exercises.js happy
-window.Exercises = {
-    completeStack: {
-        getUid: function() { return 0; },
-        getCustomStackID: function() { return 0; }
-    },
-    currentCard: {
-        attributes: {},
-        get: function() {}
-    },
-    RelatedVideos: {
-        render: function() {}
-    },
-    getCurrentFramework: function() { return "khan-exercises"; },
-    incompleteStack: [0],
-    PerseusBridge: {
-        cleanupProblem: function() {}
-    }
-};
-
 window.ExerciseParams = {
     STREAK_CORRECT_NEEDED: 8,
     STREAK_WINDOW: 10,
@@ -689,7 +669,9 @@ window.ExerciseView = Backbone.View.extend({
 
         // load the info about the exercise itself
         this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
-        this.data_model.fetch();
+        if (this.data_model.exercise_id) {
+            this.data_model.fetch();
+        }
 
         this.render();
 
@@ -809,6 +791,140 @@ window.ExerciseView = Backbone.View.extend({
         $(Exercises).trigger("problemTemplateRendered");
         this.trigger("ready_for_next_question");
     },
+
+    render_related_videos: function() {
+        if (!this.related_video_view) {
+            this.related_video_view = new ExerciseRelatedVideoView({el: this.$(".exercise-related-video-wrapper")});
+        }
+        var related_videos = this.data_model.get("related_videos");
+        this.related_video_view.render({
+            has_related_videos: related_videos.length > 0,
+            first_video: related_videos[0],
+            other_videos: related_videos.slice(1)
+        });
+    }
+
+});
+
+
+window.ExercisePerseusView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        // this.exercise_view = new ExerciseView({el: this.el, model: this.model});
+
+        this.render();
+
+        // _.defer(this.initialize_khan_exercises_listeners);
+
+    },
+
+    events: {
+        // "submit .answer-form": "answer_form_submitted"
+    },
+
+    render: function() {
+
+        // this.$el.html(this.template(this.data_model.attributes));
+        this.$el.html(this.template());
+
+        // this.initialize_listeners();
+
+        if ($("#exercise-inline-style").length === 0) {
+            // dummy style container that khan-exercises uses to dynamically add styling to an exercise
+            $("head").append("<style id='exercise-inline-style'></style>");
+        }
+
+    },
+
+    initialize_khan_exercises_listeners: function() {
+
+        // Khan.loaded.then(this.khan_loaded);
+
+        $(Exercises).bind("checkAnswer", this.check_answer);
+
+        $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
+
+        // TODO (rtibbles): Make this nice, not horrible.
+        $(Exercises).bind("newProblem", function (ev, data) {
+            if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
+                window.softwareKeyboardView = new SoftwareKeyboardView({
+                    el: $("#solutionarea")
+                });
+            }
+        });
+
+        // some events we only care about if the user is logged in
+        if (statusModel.get("is_logged_in")) {
+            $(Exercises).bind("hintUsed", this.hint_used);
+            $(Exercises).bind("newProblem", this.problem_loaded);
+        }
+
+    },
+
+    load_question: function(question_data) {
+
+        var self = this;
+
+        var defaults = {
+            seed: Math.floor(Math.random() * 1000)
+        };
+
+        var question_data = $.extend(defaults, question_data);
+
+        this.data_model.set(question_data);
+
+        this.$("#workarea").html("<center>" + gettext("Loading...") + "</center>");
+
+        this.data_model.update_if_needed_then(function() {
+            var userExercise = self.data_model.as_user_exercise();
+            $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
+        });
+    },
+
+    check_answer: function() {
+
+        var data = Khan.scoreInput();
+
+        this.trigger("check_answer", data);
+
+    },
+
+    next_question_clicked: function() {
+
+        this.trigger("ready_for_next_question");
+
+    },
+
+    problem_loaded: function(ev, data) {
+        this.trigger("problem_loaded", data);
+    },
+
+    answer_form_submitted: function(e) {
+        e.preventDefault();
+        this.$("#check-answer-button").click();
+    },
+
+    update_title: function() {
+        this.$(".exercise-title").text(this.data_model.get("title"));
+    },
+
+    hint_used: function() {
+        this.trigger("hint_used");
+    },
+
+    goto_next_problem: function() {
+
+    },
+
+    // khan_loaded: function() {
+    //     $(Exercises).trigger("problemTemplateRendered");
+    //     this.trigger("ready_for_next_question");
+    // },
 
     render_related_videos: function() {
         if (!this.related_video_view) {
