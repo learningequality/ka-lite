@@ -308,6 +308,10 @@ def build_full_cache(items, id_key="id"):
     for item in items:
         for attribute in item._API_attributes:
             dummy_variable_to_force_fetch = item.__getattr__(attribute)
+            item[attribute].has_key("kind"):
+                item[attribute] = whitewash_node_data(
+                    {key: value for key, value in item.attribute.items()
+                    if key in denormed_attribute_list[item[attribute]["kind"]]})
     return {item["id"]: whitewash_node_data(item) for item in items}
 
 
