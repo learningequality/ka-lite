@@ -25,7 +25,7 @@ from fle_utils.internet import StatusException, JsonResponse, api_handle_error_w
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from kalite.topic_tools import get_topic_by_path, get_node_cache
+from kalite.topic_tools import get_topic_by_path, get_node_cache, get_exercise_cache
 
 
 # Global variable of all the known stats, their internal and external names,
@@ -204,9 +204,9 @@ def compute_data(data_types, who, where):
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t[0]["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex[0]["id"] for ex in filter(sf, get_node_cache('Exercise').values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid[0]["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_multi_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache().values())], sf=search_fun_multi_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_multi_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -392,8 +392,8 @@ def api_data(request, xaxis="", yaxis=""):
     for e in computed_data["exercises"]:
         exercises.append({
             "slug": e,
-            "full_name": ex_nodes[e][0]["display_name"],
-            "url": ex_nodes[e][0]["path"],
+            "full_name": ex_nodes[e]["display_name"],
+            "url": ex_nodes[e]["path"],
         })
 
     json_data = {

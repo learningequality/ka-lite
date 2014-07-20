@@ -167,7 +167,7 @@ def splat_handler(request, splat):
             match = [m for m in match if request.path == m["path"]]
         if not match:
             raise Http404
-        current_node = match[0]
+        current_node = match
         if request.path == current_node["path"]:
             break
 
@@ -199,7 +199,7 @@ def exercise_dashboard(request):
     if not slug:
         title = _("Your Knowledge Map")
     elif slug in topic_tools.get_node_cache("Topic"):
-        title = _(topic_tools.get_node_cache("Topic")[slug][0]["title"])
+        title = _(topic_tools.get_node_cache("Topic")[slug]["title"])
     else:
         raise Http404
 
@@ -305,8 +305,7 @@ def search(request, topics):  # we don't use the topics variable, but this setup
                 continue
 
             possible_matches[node_type] = []  # make dict only for non-skipped categories
-            for nodearr in node_dict.values():
-                node = nodearr[0]
+            for node in node_dict.values():
                 title = _(node['title']).lower()  # this could be done once and stored.
                 if title == query:
                     # Redirect to an exact match

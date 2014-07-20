@@ -36,4 +36,7 @@ urlpatterns = patterns(__package__ + '.api_views',
     # Retrieve video data to render a front-end video player
     url(r'^video/(?P<video_id>[^/]+)$', 'video', {}, 'video'),
 
+    # Retrieve assessment item data to render front-end Perseus Exercises
+    url(r'^assessment_item/(?P<assessment_item_id>[^/]+)$', 'assessment_item', {}, 'assessment_item'),
+
 )
