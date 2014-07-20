@@ -203,7 +203,7 @@ def api_call(target_version, target_api_url, session, debug=False, authenticate=
             response = requests.get(session.SERVER_URL + resource_url).content
         json_object = json.loads(response)
     except Exception as e:
-        print e
+        print e, "for target: %(target)s " % {"target": target_api_url}
         return {}
     if(debug):
         print json_object
@@ -397,7 +397,7 @@ class Khan():
             # Add the video to the video nodes
             kind = node["kind"]
             
-            if node["id"] not in video_nodes:
+            if node["id"] not in video_nodes and kind=="Video":
                 video_nodes[node["id"]] = node
 
             # Do the recursion
@@ -425,12 +425,6 @@ class Khan():
         """
         return self.convert_list_to_classes(api_call("v1", Playlist.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
-    def get_assessment_items(self):
-        """
-        Return list of all assessment items in the Khan API
-        """
-        return self.convert_list_to_classes(api_call("v1", AssessmentItem.base_url + self.params(), self))
-
     def get_assessment_item(self, assessment_id):
         """
         Return particular assessment item, by "assessment_id"
@@ -455,6 +449,10 @@ class Exercise(APIModel):
             "followup_exercises": partial(self._session.class_by_name, name="Exercise"),
             "problem_types": partial(self._session.class_by_name, name="ProblemType"),
         }
+        self._lazy_related_field_types = {
+            "all_assessment_items": partial(self._session.class_by_name, name="AssessmentItem"),
+        }
+
 
 class ProblemType(APIModel):
     def __init__(self, *args, **kwargs):
