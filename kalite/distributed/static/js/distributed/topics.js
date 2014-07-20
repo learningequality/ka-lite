@@ -10,6 +10,42 @@ window.TopicCollection = Backbone.Collection.extend({
 
 // Views
 
+window.ContentAreaView = Backbone.View.extend({
+
+    template: HB.template("distributed/content-area"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.model = new Backbone.Model();
+
+        this.render();
+
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+
+    show_view: function(view) {
+
+        // hide any messages being shown for the old view
+        clear_messages();
+
+        // close the currently shown view, if possible
+        if (this.currently_shown_view && _.isFunction(this.currently_shown_view.close)) {
+            this.currently_shown_view.close();
+        }
+        // set the new view as the current view
+        this.currently_shown_view = view;
+        // show the view
+        this.$(".content").html("").append(view.$el);
+    }
+
+});
+
 window.SidebarView = Backbone.View.extend({
 
     el: ".sidebar-wrapper",
@@ -81,6 +117,9 @@ window.SidebarView = Backbone.View.extend({
             self.listenTo(entry_view, "clicked", self.item_clicked);
         });
         this.toggle_sidebar();
+        if (this.model.get("has_parent")){
+            this.$(".back-to-parent").show();
+        }
         return this;
     },
 
@@ -166,6 +205,9 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.inner_views = [];
         this.model =  new TopicNode();
         this.model.fetch().then(this.render);
+        this.content_view = new ContentAreaView({
+            el: this.$el
+        });
     },
 
     render: function() {
@@ -173,13 +215,14 @@ window.TopicContainerOuter = Backbone.View.extend({
     },
 
     show_new_topic: function(node) {
-        // switch (node) {
-        //     case 
-        // }
-        var new_topic = new TopicContainerInner({
+        if(node.get("render_type")=="Tutorial"){
+            ItemWrapper = PlaylistSidebarView;
+        } else {
+            ItemWrapper = TopicContainerInner;
+        }
+        var new_topic = new ItemWrapper({
             model: node
         });
-        console.log(node.kind);
 
         // Only hide after we have the first one!
         // if (this.inner_views.length > 0) {
@@ -195,7 +238,11 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.inner_views.unshift(new_topic);
 
         // Listeners
-        this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
+        if(node.get("render_type")=="Tutorial"){
+            this.listenTo(new_topic, "entry_requested", this.entry_requested);
+        } else {
+            this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
+        }
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
     },
 
@@ -204,6 +251,65 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.inner_views[0].$el.hide();
         this.inner_views.shift();
         this.inner_views[0].$el.show();
+    },
+
+    entry_requested: function(entry) {
+        switch(entry.get("entity_kind")) {
+
+            case "Exercise":
+                var view = new ExercisePracticeView({
+                    exercise_id: entry.get("entity_id")
+                });
+                this.content_view.show_view(view);
+                break;
+
+            case "Video":
+                var view = new VideoWrapperView({
+                    video_id: entry.get("entity_id")
+                });
+                this.content_view.show_view(view);
+                break;
+
+            case "Quiz":
+                var view = new ExerciseQuizView({
+                    quiz_model: new QuizDataModel({entry: entry})
+                });
+                this.content_view.show_view(view);
+                break;
+        }
+    }
+});
+
+window.PlaylistSidebarView = SidebarView.extend({
+
+    entries_key: "children",
+
+    EntryCollection: TopicCollection,
+
+    events: function(){
+       return _.extend({},SidebarView.prototype.events,{
+           'click .back-to-parent' : 'backToParent'
+       });
+    },
+
+    render: function() {
+        var self = this;
+        SidebarView.prototype.render.call(this);
+        _.defer(function() {
+            self.$("li:first").click();
+        });
+    },
+
+    item_clicked: function(view) {
+        this.hide_sidebar();
+        // only trigger an entry_requested event if the item wasn't already active
+        if (!view.model.get("active")) {
+            this.trigger("entry_requested", view.model);
+        }
+        // mark the clicked view as active, and unmark all the others
+        _.each(this._entry_views, function(v) {
+            v.model.set("active", v == view);
+        });
     }
 });
 
@@ -225,43 +331,11 @@ window.TopicContainerInner = SidebarView.extend({
 
     render: function() {
         SidebarView.prototype.render.call(this);
-        if (this.model.get("has_parent")){
-            this.$(".sidebar-navbar").append("<a href='#' class='back-to-parent'>&larr;&nbsp;Back</a>");
-        }
-    },
 
-    // events: {
-    //     'click a.back-to-parent': 'backToParent'
-    // },
+    },
 
     backToParent: function(ev) {
         this.trigger('back_button_clicked', this.model);
     }
 
-    // topic_node_clicked: function(node) {
-    //     this.trigger('topic_node_clicked', node);
-    // }
-});
-
-window.TopicNodeView = Backbone.View.extend({
-
-    template: HB.template("topics/topic_node"),
-
-    initialize: function() {
-        this.render();
-    },
-
-    render: function() {
-        this.$el.html(this.template(this.model.attributes));
-    },
-
-    events: {
-        'click .topic-container-node-list-item': 'showChildCollection'
-    },
-
-    showChildCollection: function(ev) {
-        ev.preventDefault();
-        // Create the child elements and paste them on top
-        this.trigger('topic_node_clicked', this.model);
-    }
 });
