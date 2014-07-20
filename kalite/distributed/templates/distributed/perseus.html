@@ -46,6 +46,8 @@
     <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
 
+    <!-- // <script src="{% static 'khan-exercises/khan-exercise.js' %}"></script> -->
+
     <script src="{% static 'perseus/ke/interface.js' %}"></script>
 
     <!-- // <script src="{% static 'js/ke.js' %}"></script> -->
@@ -59,12 +61,15 @@
 
         $(function() {
 
+            // require(["{% static 'perseus/ke/khan-exercise.js' %}"]);
+
             window.exercise_practice_view = new ExercisePracticeView({
                 el: $(".exercise-wrapper"),
                 context_type: "exercise",
                 // exercise_id: "{{ exercise_id }}"
-                // exercise_id: "count-from-any-number"
-                exercise_id: "count-to-100"
+                exercise_id: "count-from-any-number"
+                // exercise_id: "count-to-100"
+                // exercise_id: "dividing_fractions_2"
             });
 
         });

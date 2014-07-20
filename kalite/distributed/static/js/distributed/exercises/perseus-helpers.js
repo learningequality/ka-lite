@@ -1,10 +1,10 @@
 // $(Exercises).trigger("clearExistingProblem");
 
-var KhanUtil = {
+var KhanUtil = window.KhanUtil || {
     debugLog: function() {}
 };
 
-var Khan = {
+var Khan = window.Khan || {
     Util: KhanUtil,
     error: function() {},
     query: {debug: ""},
@@ -27,7 +27,19 @@ window.Exercises = {
     },
     setCurrentFramework: function(framework) {
         Exercises._current_framework = framework;
-    }
+    },
+    completeStack: {
+        getUid: function() { return 0; },
+        getCustomStackID: function() { return 0; }
+    },
+    currentCard: {
+        attributes: {},
+        get: function() {}
+    },
+    RelatedVideos: {
+        render: function() {}
+    },
+    incompleteStack: [0]
 };
 
 // React.initializeTouchEvents(true);
@@ -102,8 +114,8 @@ Exercises.PerseusBridge = {
             },
             apiOptions: {
                 // interceptInputFocus: function() {}, // do nothing here; prevent keyboard from popping up
-                fancyDropdowns: true // needed?
-                // staticRender: true // needed?
+                // fancyDropdowns: true // needed?
+                // staticRender: true // don't want; iOS mode, blocks input box rendering
             },
         }, null);
         zk = React.renderComponent(

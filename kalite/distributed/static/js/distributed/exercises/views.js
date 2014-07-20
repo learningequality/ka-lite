@@ -50,8 +50,10 @@ window.ExerciseView = Backbone.View.extend({
     initialize_khan_exercises_listeners: function() {
 
         // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
-        _.defer(this.khan_loaded)
-        //Khan.loaded.then(this.khan_loaded);
+        _.defer(this.khan_loaded);
+        if (Khan.loaded) {
+            Khan.loaded.then(this.khan_loaded);
+        }
 
         $(Exercises).bind("checkAnswer", this.check_answer);
 
@@ -97,8 +99,20 @@ window.ExerciseView = Backbone.View.extend({
 
             if (framework == "khan-exercises") {
 
-                var userExercise = self.data_model.as_user_exercise();
-                $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
+                // TODO-BLOCKER(jamalex): this is a broken attempt to get khan-exercises loading in same page as perseus
+                if (Khan.loaded === undefined) {
+                    $.getScript(KHAN_EXERCISES_SCRIPT_URL);
+                }
+
+                Khan.loaded.then(function() {
+
+                    var userExercise = self.data_model.as_user_exercise();
+                    $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
+
+                    // $(Exercises).trigger("newProblem", {
+                    //     userExercise: userExercise
+                    // });
+                });
 
             } else if (framework == "perseus") {
 
