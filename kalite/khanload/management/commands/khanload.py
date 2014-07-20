@@ -59,8 +59,8 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id"],
-    "Exercise": ["kind", "description", "display_name", "name"]
+    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id", "id"],
+    "Exercise": ["kind", "description", "display_name", "name", "id"]
 }
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
@@ -128,7 +128,10 @@ def whitewash_node_data(node, path="", ancestor_ids=[]):
     and fully inflated exercise and video nodes.
     """
 
-    kind = node["kind"]
+    kind = node.get("kind", None)
+
+    if not kind:
+        return node
 
     # Only keep key data we can use
     for key in node.keys():
@@ -308,10 +311,18 @@ def build_full_cache(items, id_key="id"):
     for item in items:
         for attribute in item._API_attributes:
             dummy_variable_to_force_fetch = item.__getattr__(attribute)
-            if item[attribute].has_key("kind"):
-                item[attribute] = whitewash_node_data(
-                    {key: value for key, value in item.attribute.items()
-                    if key in denormed_attribute_list[item[attribute]["kind"]]})
+            if isinstance(item[attribute], list):
+                for subitem in item[attribute]:
+                    if isinstance(subitem, dict):
+                        if subitem.has_key("kind"):
+                            subitem = whitewash_node_data(
+                                {key: value for key, value in subitem.items()
+                                if key in denormed_attribute_list[subitem["kind"]]})
+            elif isinstance(item[attribute], dict):
+                if item[attribute].has_key("kind"):
+                    item[attribute] = whitewash_node_data(
+                        {key: value for key, value in item.attribute.items()
+                        if key in denormed_attribute_list[item[attribute]["kind"]]})
     return {item["id"]: whitewash_node_data(item) for item in items}
 
 
@@ -554,7 +565,7 @@ def validate_data(topic_tree, node_cache, slug2id_map):
     # Validate related videos
     for exercise in node_cache['Exercise'].values():
         exercise_path = EXERCISE_FILEPATH_TEMPLATE % exercise["slug"]
-        if not os.path.exists(exercise_path):
+        if not os.path.exists(exercise_path) and not exercise.get("uses_assessment_items", False):
             sys.stderr.write("Could not find exercise HTML file: %s\n" % exercise_path)
         for vid_slug in exercise.get("related_video_slugs", []):
             if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Video"]:
