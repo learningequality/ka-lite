@@ -6,7 +6,7 @@ they're imported into the project's urls.py file.
 """
 from django.conf.urls import include, patterns, url
 
-from .api_resources import ExerciseLogResource, AttemptLogResource, VideoResource, AssessmentItemResource
+from .api_resources import ExerciseLogResource, AttemptLogResource, VideoResource, ExerciseResource, AssessmentItemResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -21,6 +21,8 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(ExerciseLogResource().urls)),
     url(r'^', include(AttemptLogResource().urls)),
     # url(r'^', include(VideoResource().urls)),
+    # Retrieve exercise data to render a front-end exercise
+    url(r'^', include(ExerciseResource().urls)),
     # Retrieve assessment item data to render front-end Perseus Exercises
     url(r'^', include(AssessmentItemResource().urls)),
     url(r'^exercise_log/(?P<exercise_id>\w+)$', 'exercise_log', {}, 'exercise_log'),
@@ -31,9 +33,6 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     # For building a graphical knowledge map
     url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
-
-    # Retrieve exercise data to render a front-end exercise
-    url(r'^exercise/(?P<exercise_id>[^/]+)$', 'exercise', {}, 'exercise'),
 
     # Retrieve video data to render a front-end video player
     url(r'^video/(?P<video_id>[^/]+)$', 'video', {}, 'video'),
