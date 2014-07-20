@@ -3,7 +3,7 @@ Data validation of different types of POST responses through our api_urls/views
 """
 from django import forms
 
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_exercise_cache, get_video_cache
 
 
 class ExerciseLogForm(forms.Form):
@@ -18,7 +18,7 @@ class ExerciseLogForm(forms.Form):
         """
         Make sure the exercise ID is found.
         """
-        if not self.cleaned_data.get("exercise_id", "") in get_node_cache('Exercise'):
+        if not self.cleaned_data.get("exercise_id", "") in get_exercise_cache():
             raise forms.ValidationError(_("Exercise ID not recognized"))
 
 
@@ -35,7 +35,7 @@ class VideoLogForm(forms.Form):
         """
         Make sure the video ID is found.
         """
-        if self.cleaned_data["video_id"] not in get_node_cache("Video"):
+        if self.cleaned_data["video_id"] not in get_video_cache():
             raise forms.ValidationError(_("Video ID not recognized."))
 
 
@@ -51,5 +51,5 @@ class AttemptLogForm(forms.Form):
         """
         Make sure the exercise ID is found.
         """
-        if not self.cleaned_data.get("exercise_id", "") in get_node_cache()['Exercise']:
+        if not self.cleaned_data.get("exercise_id", "") in get_exercise_cache():
             raise forms.ValidationError(_("Exercise ID not recognized"))

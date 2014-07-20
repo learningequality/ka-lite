@@ -14,9 +14,7 @@ Each node in the topic tree comes with lots of metadata, including:
 * kind (Topic, Exercise, Video)
 and more.
 
-The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
-so
-* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
+* get_video_cache() returns all videos
 * get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
@@ -35,6 +33,9 @@ from kalite import khanload  # should be removed ASAP, to make more generic and 
                              # Required because of odd KA URL structure that makes sibling detection impossible otherwise.
 
 TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
+EXERCISES_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "exercises.json")
+VIDEOS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "videos.json")
+ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "assessmentitems.json")
 
 CACHE_VARS = []
 
@@ -70,6 +71,33 @@ def get_node_cache(node_type=None, force=False):
         return NODE_CACHE
     else:
         return NODE_CACHE[node_type]
+
+EXERCISES          = None
+CACHE_VARS.append("EXERCISES")
+def get_exercise_cache(force=False):
+    global EXERCISES, EXERCISES_FILEPATH
+    if EXERCISES is None or force:
+        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=True)
+
+    return EXERCISES
+
+VIDEOS          = None
+CACHE_VARS.append("VIDEOS")
+def get_video_cache(force=False):
+    global VIDEOS, VIDEOS_FILEPATH
+    if VIDEOS is None or force:
+        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=True)
+
+    return VIDEOS
+
+ASSESSMENT_ITEMS          = None
+CACHE_VARS.append("ASSESSMENT_ITEMS")
+def get_assessment_item_cache(force=False):
+    global ASSESSMENT_ITEMS, ASSESSMENT_ITEMS_FILEPATH
+    if ASSESSMENT_ITEMS is None or force:
+        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=True)
+
+    return ASSESSMENT_ITEMS
 
 
 KNOWLEDGEMAP_TOPICS = None
@@ -169,8 +197,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
     # to avoid redundancy
     for category_name, category in categories.iteritems():
         result[category_name] = {}
-        for node_name, node_list in category.iteritems():
-            node = node_list[0]
+        for node_name, node in category.iteritems():
             if alldata:
                 relevant_data = node
             else:
@@ -218,7 +245,7 @@ def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
     if not potential_parents:
         return None
     elif len(potential_parents) == 1:
-        return potential_parents[0]
+        return potential_parents
     else:
         for pp in potential_parents:
             if node["path"].startswith(pp["path"]):  # find parent by path
@@ -265,9 +292,7 @@ def get_topic_by_path(path, root_node=None):
     cur_node = root_node
     for part in parts:
         cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
-        if cur_node:
-            cur_node = cur_node[0]
-        else:
+        if not cur_node:
             break
 
     return cur_node or {}
@@ -332,7 +357,7 @@ def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
         if not topic_node:
             return []
         else:
-            path = topic_node[0]['path']
+            path = topic_node['path']
 
     topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
@@ -381,7 +406,7 @@ def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
     if not possible_videos:
         possible_videos = []
         for topic in (topics or get_node_cache('Topic').values()):
-            possible_videos += get_topic_videos(topic_id=topic[0]['id'])
+            possible_videos += get_topic_videos(topic_id=topic['id'])
 
     # Get exercises from videos
     exercise_ids = [ex["id"] for ex in exercises]
@@ -407,11 +432,11 @@ def get_related_videos(exercise, limit_to_available=True):
     # Find related videos
     related_videos = {}
     for slug in exercise["related_video_slugs"]:
-        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
+        video_node = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), {})
 
         # Make sure the IDs are recognized, and are available.
-        if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
-            related_videos[slug] = find_most_related_video(video_nodes, exercise)
+        if video_node and (not limit_to_available or video_node.get("available", False)):
+            related_videos[slug] = find_most_related_video(video_node, exercise)
 
     return related_videos
 
@@ -428,7 +453,7 @@ def is_base_leaf(node, is_base_leaf=True):
 def is_sibling(node1, node2):
     """
     """
-    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
+    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])
 
     parent_path1 = parse_path(node1)
     parent_path2 = parse_path(node2)
@@ -473,13 +498,14 @@ def get_exercise_page_paths(video_id=None):
         return []
 
 def get_exercise_data(request, exercise_id=None):
-    exercise = get_node_cache()["Exercise"][exercise_id][0]
+    exercise = get_exercise_cache().get(exercise_id, None)
 
-    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
+    if not exercise:
+        return None
+
     exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
-    exercise_localized_template = os.path.join(lang, exercise_file)
 
     # Get the language codes for exercise templates that exist
     exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
@@ -496,16 +522,16 @@ def get_exercise_data(request, exercise_id=None):
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
 
-    exercise["related_videos"] = get_related_videos(exercise, limit_to_available=True).values()
-
     return exercise
 
 
 def get_video_data(request, video_id=None):
 
-    topictree = get_flat_topic_tree(alldata=True)
-    videos_dict = video_dict_by_video_id(topictree)
-    video = videos_dict.get(video_id)
+    video_cache = get_video_cache()
+    video = video_cache.get(video_id, None)
+
+    if not video:
+        return None
 
     # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
     from kalite.updates import stamp_availability_on_video
@@ -539,6 +565,17 @@ def get_video_data(request, video_id=None):
     video["video_id"] = video["id"]
 
     return video
+
+def get_assessment_item_data(request, assessment_item_id=None):
+    assessment_item = get_assessment_item_cache().get(assessment_item_id, None)
+
+    if not assessment_item:
+        return None
+
+    # TODO (rtibbles): Enable internationalization for the assessment_items.
+
+    return assessment_item
+
 
 
 def video_dict_by_video_id(flat_topic_tree=None):

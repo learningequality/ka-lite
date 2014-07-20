@@ -54,7 +54,7 @@ defaulticon = "default"
 attribute_whitelists = {
     "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data"],
     "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "v_position", "h_position", "all_assessment_items"],
+    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "v_position", "h_position", "all_assessment_items", "uses_assessment_items"],
     "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"]
 }
 
@@ -65,7 +65,7 @@ denormed_attribute_list = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "hour-of-code"]
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
 temp_ok_atts = ["x_pos", "y_pos", "in_knowledge_map", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
@@ -143,7 +143,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[]):
     node["id"] = node[id_key[kind]]  # these used to be the same; now not. Easier if they stay the same (issue #233)
 
     node["path"] = path + kind_slugs[kind] + node["slug"] + "/"
-    node["title"] = node[title_key[kind]].strip()
+    node["title"] = (node[title_key[kind]] or "").strip()
 
     # Add some attribute that should have been on there to start with.
     node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
@@ -228,7 +228,7 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
                 else:
                     child_denormed_data = None
                 if child_denormed_data:
-                    node["children"].append(copy.deepcopy(child_denormed_data))
+                    node["children"].append(copy.deepcopy(dict(child_denormed_data)))
             except KeyError as e:
                 logging.warn("%(kind)s %(id)s does not exist in lookup table" % child_datum)
 
@@ -308,6 +308,10 @@ def build_full_cache(items, id_key="id"):
     for item in items:
         for attribute in item._API_attributes:
             dummy_variable_to_force_fetch = item.__getattr__(attribute)
+            if item[attribute].has_key("kind"):
+                item[attribute] = whitewash_node_data(
+                    {key: value for key, value in item.attribute.items()
+                    if key in denormed_attribute_list[item[attribute]["kind"]]})
     return {item["id"]: whitewash_node_data(item) for item in items}
 
 
@@ -327,7 +331,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
         Eliminate them from the knowledge map here.
         """
         for slug in knowledge_map["topics"].keys():
-            nodecache_node = node_cache["Topic"].get(slug, [{}])[0]
+            nodecache_node = node_cache["Topic"].get(slug, {})
             topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topic_tree)
 
             if not nodecache_node or not topictree_node:
@@ -520,7 +524,7 @@ def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PAT
                 "v_position": topic["y"],
                 "icon_url": topic["icon_url"],
             }
-        root_node = node_cache["Topic"]["root"][0]
+        root_node = node_cache["Topic"]["root"]
         root_node["knowledge_map"] = {
             "nodes": root_map,
             "polylines": knowledge_map["polylines"],
