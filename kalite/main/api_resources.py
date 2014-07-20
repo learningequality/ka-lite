@@ -7,7 +7,7 @@ from django.conf.urls import url
 
 from .models import ExerciseLog, AttemptLog
 
-from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id, get_assessment_item_cache
+from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id, get_exercise_data, get_assessment_item_cache
 from kalite.updates.api_views import annotate_topic_tree
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -152,6 +152,99 @@ class VideoResource(Resource):
 
     def rollback(self, request):
         raise NotImplementedError
+
+
+class Exercise():
+
+    def __init__(self, **kwargs):
+        self.ancestor_ids = kwargs.get('ancestor_ids')
+        self.lang = kwargs.get('lang')
+        self.kind = kwargs.get('kind')
+        self.all_assessment_items = kwargs.get('all_assessment_items')
+        self.display_name = kwargs.get('display_name')
+        self.description = kwargs.get('description')
+        self.v_position = kwargs.get('v_position')
+        self.title = kwargs.get('title')
+        self.prerequisites = kwargs.get('prerequisites')
+        self.name = kwargs.get('name')
+        self.id = kwargs.get('id')
+        self.seconds_per_fast_problem = kwargs.get('seconds_per_fast_problem')
+        self.parent_id = kwargs.get('parent_id')
+        self.template = kwargs.get('template')
+        self.path = kwargs.get('path')
+        self.h_position = kwargs.get('h_position')
+        self.slug = kwargs.get('slug')
+        self.exercise_id = kwargs.get('exercise_id')
+
+class ExerciseResource(Resource):
+
+    ancestor_ids = fields.CharField(attribute='ancestor_ids')
+    lang = fields.CharField(attribute='lang', default='en')
+    kind = fields.CharField(attribute='kind')
+    all_assessment_items = fields.ListField(attribute='all_assessment_items')
+    display_name = fields.CharField(attribute='display_name')
+    description = fields.CharField(attribute='description')
+    v_position = fields.IntegerField(attribute='v_position')
+    title = fields.CharField(attribute='title')
+    prerequisites = fields.ListField(attribute='prerequisites')
+    name = fields.CharField(attribute='name')
+    id = fields.CharField(attribute='id')
+    seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
+    parent_id = fields.CharField(attribute='parent_id', null=True)
+    template = fields.CharField(attribute='template')
+    path = fields.CharField(attribute='path')
+    h_position = fields.IntegerField(attribute='h_position')
+    slug = fields.CharField(attribute='slug')
+    exercise_id = fields.CharField(attribute='exercise_id')
+
+
+    class Meta:
+        resource_name = 'exercise'
+        object_class = Exercise
+
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
+        ]
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if getattr(bundle_or_obj, 'obj', None):
+            kwargs['pk'] = bundle_or_obj.obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.id
+        return kwargs
+
+    def obj_get_list(self, bundle, **kwargs):
+        """
+        Get the list of exercises based from a request.
+        """
+        raise NotImplemented("Operation not implemented yet for tests.")
+
+    def obj_get(self, bundle, **kwargs):
+        id = kwargs.get("id", None)
+        exercise = get_exercise_data(bundle.request, id)
+        if exercise:
+            return Exercise(**exercise)
+        else:
+            raise NotFound('Exercise with id %s not found' % id)
+
+    def obj_create(self, request):
+        raise NotImplemented("Operation not implemented yet for exercises.")
+
+    def obj_update(self, bundle, **kwargs):
+        raise NotImplemented("Operation not implemented yet for exercises.")
+
+    def obj_delete_list(self, request):
+        raise NotImplemented("Operation not implemented yet for exercises.")
+
+    def obj_delete(self, request):
+        raise NotImplemented("Operation not implemented yet for exercises.")
+
+    def rollback(self, request):
+        raise NotImplemented("Operation not implemented yet for exercises.")
 
 
 class AssessmentItem():
