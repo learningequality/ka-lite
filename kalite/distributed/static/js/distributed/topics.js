@@ -119,6 +119,8 @@ window.SidebarView = Backbone.View.extend({
         this.toggle_sidebar();
         if (this.model.get("has_parent")){
             this.$(".back-to-parent").show();
+        } else {
+            this.$(".back-to-parent").hide();
         }
         return this;
     },
@@ -206,7 +208,7 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.model =  new TopicNode();
         this.model.fetch().then(this.render);
         this.content_view = new ContentAreaView({
-            el: this.$el
+            el: "#content-area"
         });
     },
 
@@ -254,18 +256,18 @@ window.TopicContainerOuter = Backbone.View.extend({
     },
 
     entry_requested: function(entry) {
-        switch(entry.get("entity_kind")) {
+        switch(entry.get("kind")) {
 
             case "Exercise":
                 var view = new ExercisePracticeView({
-                    exercise_id: entry.get("entity_id")
+                    exercise_id: entry.get("id")
                 });
                 this.content_view.show_view(view);
                 break;
 
             case "Video":
                 var view = new VideoWrapperView({
-                    video_id: entry.get("entity_id")
+                    video_id: entry.get("id")
                 });
                 this.content_view.show_view(view);
                 break;

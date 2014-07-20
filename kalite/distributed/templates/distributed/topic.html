@@ -8,8 +8,20 @@
     <script type="text/javascript">
         var ALL_TOPICS_URL = '{% static "data/topics.json" %}';
     </script>
-
+    <!--[if !IE]> -->
+    <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
+    <!-- <![endif]-->
     <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
+    <!--[if !IE]> -->
+    <script src="{% static "video-js/video.js" %}"></script>
+    <script src="{% static "video-js/video-speed.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
+    </script>
+    <!-- <![endif]-->
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
+    <script src="{% static "js/distributed/videoplayer.js" %}"></script>
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
     <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
     <script src="{% static 'js/distributed/bigSlide.js' %}"></script>
@@ -29,5 +41,7 @@
     <div id="topic-container"> 
         <div class="sidebar-wrapper">
         </div>
+    </div>
+    <div id="content-area">
     </div>
 {% endblock content %}
