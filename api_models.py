@@ -203,7 +203,7 @@ def api_call(target_version, target_api_url, session, debug=False, authenticate=
             response = requests.get(session.SERVER_URL + resource_url).content
         json_object = json.loads(response)
     except Exception as e:
-        print e
+        print e, "for target: %(target)s " % {"target": target_api_url}
         return {}
     if(debug):
         print json_object
