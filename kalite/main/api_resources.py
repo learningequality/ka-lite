@@ -1,11 +1,13 @@
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
+from tastypie.exceptions import NotFound
 
 from django.utils.translation import ugettext as _
+from django.conf.urls import url
 
 from .models import ExerciseLog, AttemptLog
 
-from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id
+from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id, get_assessment_item_cache
 from kalite.updates.api_views import annotate_topic_tree
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -150,3 +152,75 @@ class VideoResource(Resource):
 
     def rollback(self, request):
         raise NotImplementedError
+
+
+class AssessmentItem():
+
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id')
+        self.kind = kwargs.get('kind')
+        self.name = kwargs.get('name')
+        self.item_data = kwargs.get('item_data')
+        self.tags = kwargs.get('tags')
+        self.author_names = kwargs.get('author_names')
+        self.sha = kwargs.get('sha')
+
+
+class AssessmentItemResource(Resource):
+
+    kind = fields.CharField(attribute='kind')
+    name = fields.CharField(attribute='name')
+    item_data = fields.CharField(attribute='item_data')
+    tags = fields.CharField(attribute='tags')
+    author_names = fields.CharField(attribute='author_names')
+    sha = fields.CharField(attribute='sha')
+    id = fields.CharField(attribute='id')
+
+
+    class Meta:
+        resource_name = 'assessment_item'
+        object_class = AssessmentItem
+
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
+        ]
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if getattr(bundle_or_obj, 'obj', None):
+            kwargs['pk'] = bundle_or_obj.obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.id
+        return kwargs
+
+    def obj_get_list(self, bundle, **kwargs):
+        """
+        Get the list of assessment_items based from a request.
+        """
+        raise NotImplemented("Operation not implemented yet for tests.")
+
+    def obj_get(self, bundle, **kwargs):
+        id = kwargs.get("id", None)
+        assessment_item = get_assessment_item_cache().get(id, None)
+        if assessment_item:
+            return AssessmentItem(**assessment_item)
+        else:
+            raise NotFound('AssessmentItem with id %s not found' % id)
+
+    def obj_create(self, request):
+        raise NotImplemented("Operation not implemented yet for assessment_items.")
+
+    def obj_update(self, bundle, **kwargs):
+        raise NotImplemented("Operation not implemented yet for assessment_items.")
+
+    def obj_delete_list(self, request):
+        raise NotImplemented("Operation not implemented yet for assessment_items.")
+
+    def obj_delete(self, request):
+        raise NotImplemented("Operation not implemented yet for assessment_items.")
+
+    def rollback(self, request):
+        raise NotImplemented("Operation not implemented yet for assessment_items.")
