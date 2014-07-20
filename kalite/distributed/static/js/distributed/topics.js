@@ -6,9 +6,151 @@ window.TopicNode = Backbone.Model.extend({
 // Collections 
 window.TopicCollection = Backbone.Collection.extend({
     model: TopicNode
-}); 
+});
 
 // Views
+
+window.SidebarView = Backbone.View.extend({
+
+    el: ".sidebar-wrapper",
+
+    template: HB.template("distributed/sidebar"),
+
+    events: {
+        "click .sidebar-tab": "toggle_sidebar"
+    },
+
+    initialize: function() {
+
+        var self = this;
+
+        _.bindAll(this);
+
+        this._entry_views = [];
+
+        this.model.set(this.entries_key, new this.EntryCollection(this.model.get(this.entries_key)));
+
+        this.listenTo(this.model.get(this.entries_key), 'add', this.add_new_entry);
+        this.listenTo(this.model.get(this.entries_key), 'reset', this.add_all_entries);
+
+        this.state_model = new Backbone.Model({
+            open: false
+        });
+
+        this.render();
+
+        this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
+
+        this.listenTo(this.model, 'change', this.render);
+
+        // this.$(".sidebar-tab").hide();
+        // setTimeout(function() { self.$(".sidebar-tab").show(); }, 5000);
+
+        this.add_all_entries();
+
+    },
+
+    render: function() {
+        var self = this;
+        this.$el.html(this.template(this.model.attributes));
+        this.sidebar = this.$('').bigSlide({
+            menu: this.$(".panel"),
+            // push: "#page-container, #footer, .sidebar-tab",
+            push: ".sidebar-tab",
+            menuWidth: "220px"
+        });
+
+        this.$(".sidebar").slimScroll({
+            height: "auto",
+            color: "#033000",
+            size: "8px",
+            distance: "2px",
+            disableFadeOut: true
+        });
+
+        // resize the scrollable part of sidebar to the page height
+        $(window).resize(_.throttle(function() {
+            var height = $(window).height() - self.$(".slimScrollDiv").position().top;
+            self.$(".slimScrollDiv, .sidebar").height(height);
+        }, 200));
+        $(window).resize();
+
+
+        this._entry_views.forEach(function(entry_view) {
+            self.$(".sidebar").append(entry_view.render().$el);
+            self.listenTo(entry_view, "clicked", self.item_clicked);
+        });
+        this.show_sidebar();
+        return this;
+    },
+
+    toggle_sidebar: function(ev) {
+        // this.$(".sidebar-tab").css("color", this.state_model.get("open") ? "red" : "blue")
+        this.state_model.set("open", !this.state_model.get("open"));
+        ev.preventDefault();
+        return false;
+    },
+
+    update_sidebar_visibility: function() {
+        if (this.state_model.get("open")) {
+            this.sidebar.open();
+        } else {
+            this.sidebar.close();
+        }
+    },
+
+    show_sidebar: function() {
+        this.state_model.set("open", true);
+    },
+
+    hide_sidebar: function() {
+        this.state_model.set("open", false);
+    },
+
+    add_new_entry: function(entry) {
+        var view = new SidebarEntryView({model: entry});
+        this._entry_views.push(view);
+    },
+
+    add_all_entries: function() {
+        this.render();
+        this.model.get(this.entries_key).map(this.add_new_entry);
+    }
+
+});
+
+window.SidebarEntryView = Backbone.View.extend({
+
+    tagName: "li",
+
+    template: HB.template("distributed/sidebar-entry"),
+
+    events: {
+        "click": "clicked"
+    },
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.listenTo(this.model, "change:active", this.render);
+
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+
+    clicked: function(ev) {
+        ev.preventDefault();
+        this.trigger("clicked", this);
+        return false;
+    },
+
+});
+
+
 window.TopicContainerOuter = Backbone.View.extend({
 
     class: "topic-container-outer",
@@ -30,12 +172,11 @@ window.TopicContainerOuter = Backbone.View.extend({
         var new_topic = new TopicContainerInner({
             model: node
         });
-        new_topic.model.set("has_parent", true);
-        new_topic.model.set("blah", "Something");
+
         // Only hide after we have the first one!
-        if (this.inner_views.length > 0) {
-            this.inner_views[0].$el.hide();
-        }
+        // if (this.inner_views.length > 0) {
+        //     this.inner_views[0].$el.hide();
+        // }
         // Only show back button for nodes that have parents
         if (this.inner_views.length === 0){
             new_topic.model.set("has_parent", false);
@@ -43,7 +184,7 @@ window.TopicContainerOuter = Backbone.View.extend({
             new_topic.model.set("has_parent", true);
         }
         this.$el.append(new_topic.el);
-        this.inner_views.unshift(new_topic); 
+        this.inner_views.unshift(new_topic);
 
         // Listeners
         this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
@@ -58,41 +199,40 @@ window.TopicContainerOuter = Backbone.View.extend({
     }
 });
 
-window.TopicContainerInner = Backbone.View.extend({
+window.TopicContainerInner = SidebarView.extend({
 
-    class: "topic-container-inner",
+    entries_key: "children",
 
-    template: HB.template("topics/topic_container_inner"),
+    EntryCollection: TopicCollection,
 
-    initialize: function() { 
-        this.model.set("children", new TopicCollection(this.model.get("children")));
-        this.render();
-        this.listenTo(this.model, 'change', this.render);
+    events: function(){
+       return _.extend({},SidebarView.prototype.events,{
+           'click .back-to-parent' : 'backToParent'
+       });
+    },
+
+    item_clicked: function(view) {
+        this.trigger('topic_node_clicked', view.model);
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
-        var self = this;
-        
-        self.node_views = [];
-        this.model.get("children").each(function(node) {
-            var node_view = new TopicNodeView({ model: node });
-            self.$('.topic-container-node-list').append(node_view.el);
-            self.listenTo(node_view, 'topic_node_clicked', self.topic_node_clicked)
-        });
-    }, 
-
-    events: {
-        'click a.back-to-parent': 'backToParent'
+        SidebarView.prototype.render.call(this);
+        if (this.model.get("has_parent")){
+            this.$(".sidebar-navbar").append("<a href='#' class='back-to-parent'>&larr;&nbsp;Back</a>");
+        }
     },
+
+    // events: {
+    //     'click a.back-to-parent': 'backToParent'
+    // },
 
     backToParent: function(ev) {
         this.trigger('back_button_clicked', this.model);
-    },
-
-    topic_node_clicked: function(node) {
-        this.trigger('topic_node_clicked', node);
     }
+
+    // topic_node_clicked: function(node) {
+    //     this.trigger('topic_node_clicked', node);
+    // }
 });
 
 window.TopicNodeView = Backbone.View.extend({
@@ -100,7 +240,7 @@ window.TopicNodeView = Backbone.View.extend({
     template: HB.template("topics/topic_node"),
 
     initialize: function() {
-        this.render()
+        this.render();
     },
 
     render: function() {
