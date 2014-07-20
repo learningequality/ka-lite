@@ -19,6 +19,7 @@
 	line-height: 1;
 	font-size: 130%;
 	vertical-align: sub;
+	padding-right: 2px;
 
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
