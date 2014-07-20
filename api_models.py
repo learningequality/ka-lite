@@ -397,7 +397,7 @@ class Khan():
             # Add the video to the video nodes
             kind = node["kind"]
             
-            if node["id"] not in video_nodes:
+            if node["id"] not in video_nodes and kind=="Video":
                 video_nodes[node["id"]] = node
 
             # Do the recursion
