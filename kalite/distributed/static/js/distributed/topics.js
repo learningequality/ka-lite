@@ -298,7 +298,7 @@ window.TopicContainerOuter = Backbone.View.extend({
             this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
         }
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
-        this.listenTo(new_topic, 'hide_sidebar', this.hide_sidebar)
+        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar)
     },
 
     back_to_parent: function() {
