@@ -89,7 +89,7 @@ window.SidebarView = Backbone.View.extend({
         this.state_model.set("open", !this.state_model.get("open"));
 
         // TODO (rtibbles): Get render to only run after all listenTos have been bound and remove this.
-        if (ev !== null) {
+        if (ev !== undefined) {
             ev.preventDefault();
         }
         return false;
@@ -173,9 +173,13 @@ window.TopicContainerOuter = Backbone.View.extend({
     },
 
     show_new_topic: function(node) {
+        // switch (node) {
+        //     case 
+        // }
         var new_topic = new TopicContainerInner({
             model: node
         });
+        console.log(node.kind);
 
         // Only hide after we have the first one!
         // if (this.inner_views.length > 0) {
