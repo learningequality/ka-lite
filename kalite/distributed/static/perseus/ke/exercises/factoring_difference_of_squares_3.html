@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+    <meta charset="UTF-8">
+    <title>Factoring difference of squares 3</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div>
+                <div class="vars" data-ensure="getGCD(A, B) === 1">
+                    <var id="A">randRange(2, 6)</var>
+                    <var id="B">randRange(1, 6)</var>
+                    <var id="F">randFromArray([2, 3, 5])</var>
+                    <var id="SQUARE">A * A</var>
+                    <var id="CONSTANT">-B * B</var>
+                </div>
+                
+                <p class="question">
+                    Factor the expression below completely. All coefficients should be integers.
+                </p>
+                <p class="problem"><code><var>F * SQUARE</var>x^2 + <var>F * CONSTANT</var></code></p>
+
+                <div class="solution" data-type="expression" data-same-form>
+                    <var>F</var>(<var>A</var>x + <var>B</var>)(<var>A</var>x - <var>B</var>)
+                </div>
+
+                <div class="hints">
+                    <div>
+                        <p>We can start by factoring a <code>\green{<var>F</var>}</code> out of each term:</p>
+                        <code>\qquad \green{<var>F</var>}(\pink{<var>SQUARE</var>x^2} - \blue{<var>abs(CONSTANT)</var>})</code>
+                    </div>
+                    <p>
+                        The second term is of the form <code>\pink{a^2} - \blue{b^2}</code>,
+                        which is a difference of two squares so we can factor it as
+                        <code>\green{<var>F</var>}(\pink{a} + \blue{b})(\pink{a} - \blue{b})</code>.
+                    </p>
+                   <p>What are the values of <code>\pink{a}</code> and <code>\blue{b}</code>?</p>
+                    <div>
+                        <p><code>\qquad \pink{a = \sqrt{<var>SQUARE</var>x^2} = <var>A</var>x}</code></p>
+                        <p><code>\qquad \blue{b = \sqrt{<var>B * B</var>} = <var>B</var>}</code></p>
+                    </div>
+                    <p>
+                        Use the values we found for <code>\pink{a}</code> and <code>\blue{b}</code>
+                        to complete the factored expression,
+                        <code>\green{<var>F</var>}(\pink{a} + \blue{b})(\pink{a} - \blue{b})</code>.
+                    </p>
+                    <p>
+                        So we can factor the expression as:
+                        <code>\green{<var>F</var>}(\pink{<var>A</var>x} + \blue{<var>B</var>})
+                        (\pink{<var>A</var>x} - \blue{<var>B</var>})</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

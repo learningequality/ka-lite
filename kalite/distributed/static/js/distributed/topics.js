@@ -3,7 +3,7 @@ window.TopicNode = Backbone.Model.extend({
     url: ALL_TOPICS_URL
 });
 
-// Collections 
+// Collections
 window.TopicCollection = Backbone.Collection.extend({
     model: TopicNode
 });
