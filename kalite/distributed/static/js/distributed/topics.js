@@ -37,6 +37,8 @@ window.SidebarView = Backbone.View.extend({
             open: false
         });
 
+        this.render();
+
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
 
         this.listenTo(this.model, 'change', this.render);
@@ -45,8 +47,6 @@ window.SidebarView = Backbone.View.extend({
         // setTimeout(function() { self.$(".sidebar-tab").show(); }, 5000);
 
         this.add_all_entries();
-
-        this.render();
 
     },
 
@@ -226,7 +226,7 @@ window.TopicContainerInner = SidebarView.extend({
     render: function() {
         SidebarView.prototype.render.call(this);
         if (this.model.get("has_parent")){
-            this.$(".sidebar-navbar").append("<a href='#' class='back-to-parent'>&larr;&nbsp;Back</a>");
+            this.$(".sidebar-navbar").append("<a href='#' title='Back' class='back-to-parent'><span class='glyphicon glyphicon-chevron-left'></span></a>");
         }
     },
 

@@ -16,7 +16,7 @@ Icon Font
     font-style: normal;
 }
 
-[class*="icon-"] {
+/*[class*="icon-"] {
     font-family: 'icomoon';
     speak: none;
     font-style: normal;
@@ -27,7 +27,7 @@ Icon Font
   /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
+}*/
 
 .icon-github:before {
     content: "\e601";
@@ -82,23 +82,12 @@ Nav Panel
     margin: 2px 5px 2px 0;
 }
 
-.panel a.sidebar-entry-link:hover {
+.panel a.sidebar-entry-link:hover, .back-to-parent:hover {
     background: #8dc63f;
 }
 
 .panel .active {
     background: #77AA31;
-}
-
-/*.nav-icon {
-    margin-right: 6px;
-}*/
-
-.title {
-    padding: 1em;
-    font-size: 16px;
-    font-weight: bold;
-    color: #CCC;
 }
 
 .sidebar-divider {
@@ -132,4 +121,24 @@ Nav Panel
 .sidebar-tab a {
   display: block;
   text-decoration: none;
+}
+
+.sidebar-nav-container .title {
+    padding-left: 22px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #CCC;
+}
+
+.back-to-parent {
+    margin: 0;
+    float: left;
+    height: 60px;
+    border-right: 2px solid #587448;
+    position: relative;
+    padding-left: 20px;
+    padding-top: 21px;
+    padding-right: 14px;
 }
