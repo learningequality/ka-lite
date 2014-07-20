@@ -1,664 +1,4 @@
 
-window.ExerciseParams = {
-    STREAK_CORRECT_NEEDED: 8,
-    STREAK_WINDOW: 10,
-    FIXED_BLOCK_EXERCISES: window.FIXED_BLOCK_EXERCISES || 0
-};
-
-window.ExerciseDataModel = Backbone.Model.extend({
-    /*
-    Contains data about an exercise itself, with no user-specific data.
-    */
-
-    defaults: {
-        basepoints: 0,
-        description: "",
-        title: "",
-        name: "",
-        seconds_per_fast_problem: 0,
-        author_name: "",
-        related_videos: [],
-        file_name: ""
-    },
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        // store the provided seed as an object attribute, so it will be available after a fetch
-        this.listenTo(this, "change:seed", function() { this.seed = this.get("seed") || this.seed; });
-
-    },
-
-    url: function () {
-        return "/api/exercise/" + this.get("exercise_id");
-    },
-
-    update_if_needed_then: function(callback) {
-        if (this.get("exercise_id") !== this.get("name")) {
-            this.fetch().then(callback);
-        } else {
-            _.defer(callback);
-        }
-    },
-
-    // convert this data into the structure needed by khan-exercises
-    as_user_exercise: function () {
-        return {
-            "basepoints": this.get("basepoints"),
-            "description": this.get("description"),
-            "title": this.get("display_name"),
-            "seed": this.seed,
-            "lastCountHints": 0, // TODO: could store and pass down number of hints used
-            "exerciseModel": {
-                "displayName": this.get("display_name"),
-                "name": this.get("name"),
-                "secondsPerFastProblem": this.get("seconds_per_fast_problem"),
-                "authorName": this.get("author_name"),
-                "relatedVideos": this.get("related_videos"),
-                "fileName": this.get("file_name")
-            },
-            "exerciseProgress": {
-                "level": "" // needed to keep khan-exercises from blowing up
-            }
-        };
-    }
-});
-
-
-window.ExerciseLogModel = Backbone.Model.extend({
-    /*
-    Contains summary data about the user's history of interaction with the current exercise.
-    */
-
-    defaults: {
-        streak_progress: 0,
-        points: 0,
-        attempts: 0
-    },
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-    },
-
-    save: function() {
-
-        var self = this;
-
-        var already_complete = this.get("complete");
-
-        if (this.get("attempts") > 20 && !this.get("complete")) {
-            this.set("struggling", true);
-        }
-
-        this.set("complete", this.get("streak_progress") >= 100);
-
-        if (!already_complete && this.get("complete")) {
-            this.set("struggling", false);
-            this.set("completion_timestamp", window.statusModel.get_server_time());
-            this.set("attempts_before_completion", this.get("attempts"));
-        }
-
-        // call the super method that will actually do the saving
-        return Backbone.Model.prototype.save.call(this);
-    },
-
-    attempts_since_completion: function() {
-        if (!this.get("complete")) {
-            return 0;
-        }
-        return this.get("attempts") - this.get("attempts_before_completion");
-    },
-
-    urlRoot: "/api/exerciselog/"
-
-});
-
-window.ExerciseLogCollection = Backbone.Collection.extend({
-
-    model: ExerciseLogModel,
-
-    initialize: function(models, options) {
-        this.exercise_id = options.exercise_id;
-    },
-
-    url: function() {
-        return "/api/exerciselog/?" + $.param({
-            "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id")
-        });
-    },
-
-    get_first_log_or_new_log: function() {
-        if (this.length > 0) {
-            return this.at(0);
-        } else { // create a new exercise log if none existed
-            return new ExerciseLogModel({
-                "exercise_id": this.exercise_id,
-                "user": window.statusModel.get("user_uri")
-            });
-        }
-    }
-
-});
-
-
-window.AttemptLogModel = Backbone.Model.extend({
-    /*
-    Contains data about the user's response to a particular exercise instance.
-    */
-
-    urlRoot: "/api/attemptlog/",
-
-    defaults: {
-        complete: false,
-        points: 0,
-        context_type: "",
-        context_id: "",
-        response_count: 0,
-        response_log: "[]"
-    },
-
-    initialize: function(options) {
-
-    },
-
-    add_response_log_event: function(ev) {
-
-        // inflate the stored JSON if needed
-        if (!this._response_log_cache) {
-            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
-        }
-
-        // set the timestamp to the current time
-        ev.timestamp = window.statusModel.get_server_time();
-
-        // add the event to the response log list
-        this._response_log_cache.push(ev);
-
-        // deflate the response log list so it will be saved along with the model later
-        this.set("response_log", JSON.stringify(this._response_log_cache));
-
-    }
-
-});
-
-
-window.AttemptLogCollection = Backbone.Collection.extend({
-
-    model: AttemptLogModel,
-
-    initialize: function(models, options) {
-        this.exercise_id = options.exercise_id;
-        this.context_type = options.context_type;
-    },
-
-    url: function() {
-        return "/api/attemptlog/?" + $.param({
-            "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id"),
-            "limit": ExerciseParams.STREAK_WINDOW,
-            "context_type": this.context_type
-        });
-    },
-
-    add_new: function(attemptlog) {
-        if (this.length == ExerciseParams.STREAK_WINDOW) {
-            this.pop();
-        }
-        this.unshift(attemptlog);
-    },
-
-    get_streak_progress: function() {
-        var count = 0;
-        this.forEach(function(model) {
-            count += model.get("correct") ? 1 : 0;
-        });
-        return count;
-    },
-
-    get_streak_progress_percent: function() {
-        var streak_progress = this.get_streak_progress();
-        return Math.min((streak_progress / ExerciseParams.STREAK_CORRECT_NEEDED) * 100, 100);
-    },
-
-    get_streak_points: function() {
-        // only include attempts that were correct (others won't have points)
-        var filtered_attempts = this.filter(function(attempt) { return attempt.get("correct"); });
-        // add up and return the total number of points represented by these attempts
-        // (only include the latest STREAK_CORRECT_NEEDED attempts, so the user doesn't get too many points)
-        var total = 0;
-        for (var i = 0; i < Math.min(ExerciseParams.STREAK_CORRECT_NEEDED, filtered_attempts.length); i++) {
-            total += filtered_attempts[i].get("points");
-        }
-        return total;
-    },
-
-    calculate_points_per_question: function(basepoints) {
-        // for comparability with the original algorithm (when a streak of 10 was needed),
-        // we calibrate the points awarded for each question (note that there are no random bonuses now)
-        return Math.round((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
-    }
-
-});
-
-window.TestDataModel = Backbone.Model.extend({
-    /*
-    Contains data about a particular student test.
-    */
-
-    url: function() {
-        return "/test/api/test/" + this.get("test_id") + "/";
-    }
-});
-
-window.TestLogModel = Backbone.Model.extend({
-    /*
-    Contains summary data about the user's history of interaction with the current test.
-    */
-
-    defaults: {
-        index: 0,
-        complete: false,
-        started: false
-    },
-
-    init: function(options) {
-
-        _.bindAll(this);
-
-        var self = this;
-
-    },
-
-    get_item_data: function(test_data_model) {
-        /*
-        This function is designed to give a deterministic test sequence for an individual, based
-        on their userModel URI. As such, each individual will always have the same generated test
-        sequence, but it is, for all intents and purposes, randomized across individuals.
-        */
-
-        /*
-        Seed random generator here so that it increments all seed randomization blocks.
-        If seeded inside each call to the function, then the blocks of seeds for each user
-        would be identically shuffled.
-        */
-        if(typeof(test_data_model)==="object"){
-
-            var random = new Math.seedrandom(this.get("user"));
-
-            var items = $.parseJSON(test_data_model.get("ids"));
-
-            var initial_seed = test_data_model.get("seed");
-
-            var repeats = test_data_model.get("repeats");
-
-            var block_seeds = [];
-
-            // Create list of seeds incremented from initial_seed, one for every repeat.
-            for(i=0; i < repeats; i++){
-                block_seeds.push(initial_seed + i);
-            }
-
-            // Cache random shuffling of block seeds for each exercise_id.
-            var shuffled_block_seeds_gen = {};
-
-            // Final seed and item sequences.
-            this.seed_sequence = [];
-
-            this.item_sequence = [];
-
-            /*
-            Loop over every repeat, adding each exercise_id in turn to item_sequence.
-            On first loop, create shuffled copy of block_seeds for each exercise_id.
-            Add seed from shuffled block_seeds copy to seed_sequence.
-            This will have the net effect of a fixed sequence of exercise_ids, repeating
-            'repeats' times, with each exercise_id having a shuffled sequence of seeds across blocks.
-            */
-            for(j=0; j < repeats; j++){
-                for(i=0; i < items.length; i++){
-                    if(j===0){
-                        shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
-                    }
-                    this.item_sequence.push(items[i]);
-                    this.seed_sequence.push(shuffled_block_seeds_gen[i][j]);
-                }
-            }
-        }
-        return {
-            seed: this.seed_sequence[this.get("index")],
-            exercise_id: this.item_sequence[this.get("index")]
-        };
-    },
-
-    save: function() {
-
-        var self = this;
-
-        var already_complete = this.get("complete");
-
-        if(this.item_sequence){
-
-            if(!this.get("total_number")){
-                this.set({
-                    total_number: this.item_sequence.length
-                });
-            }
-
-            if((this.get("index") == this.item_sequence.length) && !already_complete){
-                this.set({
-                    complete: true
-                });
-                this.trigger("complete");
-            }
-        }
-
-        Backbone.Model.prototype.save.call(this);
-    },
-
-    urlRoot: "/test/api/testlog/"
-
-});
-
-window.TestLogCollection = Backbone.Collection.extend({
-
-    model: TestLogModel,
-
-    initialize: function(models, options) {
-        this.test_id = options.test_id;
-    },
-
-    url: function() {
-        return "/test/api/testlog/?" + $.param({
-            "test": this.test_id,
-            "user": window.statusModel.get("user_id")
-        });
-    },
-
-    get_first_log_or_new_log: function() {
-        if (this.length > 0) {
-            return this.at(0);
-        } else { // create a new exercise log if none existed
-            return new TestLogModel({
-                "user": window.statusModel.get("user_uri"),
-                "test": this.test_id
-            });
-        }
-    }
-
-});
-
-var QuizDataModel = Backbone.Model.extend({
-
-    defaults: {
-        repeats: 3
-    },
-
-    initialize: function() {
-        this.set({
-            ids: this.get_exercise_ids_from_playlist_entry(this.get("entry")),
-            quiz_id: this.get("entry").get("entity_id"),
-            seed: this.get("entry").get("seed") || null
-        });
-    },
-
-    get_exercise_ids_from_playlist_entry: function(entry) {
-        var temp_collection = entry.collection.slice(0, _.indexOf(entry.collection, entry));
-        var left_index = _.reduceRight(entry.collection.slice(0, _.indexOf(entry.collection, entry)), function(memo, value, index){
-                if(!memo && value.get("entity_kind")==="Quiz"){
-                    return index;
-                } else {
-                    return memo;
-                }
-            }, 0);
-        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id");});
-    }
-});
-
-window.QuizLogModel = Backbone.Model.extend({
-    /*
-    Contains summary data about the user's history of interaction with the current test.
-    */
-
-    defaults: {
-        index: 0,
-        complete: false,
-        attempts: 0
-    },
-
-    init: function(options) {
-
-        _.bindAll(this);
-
-        var self = this;
-
-    },
-
-    get_item_data: function(quiz_data_model) {
-        /*
-        This function is designed to give a deterministic quiz sequence for an individual, based
-        on their userModel URI. As such, each individual will always have the same generated quiz
-        sequence, but it is, for all intents and purposes, randomized across individuals.
-        */
-
-        /*
-        Seed random generator here so that it increments all seed randomization blocks.
-        If seeded inside each call to the function, then the blocks of seeds for each user
-        would be identically shuffled.
-        */
-        if(typeof(quiz_data_model)==="object"){
-
-            var random = new Math.seedrandom(this.get("user") + this.get("attempts"));
-
-            var items = quiz_data_model.get("ids");
-
-            var repeats = quiz_data_model.get("repeats");
-
-            this.item_sequence = [];
-
-            for(j=0; j < repeats; j++){
-                this.item_sequence.push(items);
-            }
-
-            this.item_sequence = _.flatten(this.item_sequence);
-
-            this.item_sequence = seeded_shuffle(this.item_sequence, random);
-        }
-        return {
-            exercise_id: this.item_sequence[this.get("index")]
-        };
-    },
-
-    save: function() {
-
-        var self = this;
-
-        var already_complete = this.get("complete");
-
-        if(this.item_sequence){
-
-            if(!this.get("total_number")){
-                this.set({
-                    total_number: this.item_sequence.length
-                });
-            }
-
-            if((this.get("index") == this.item_sequence.length)){
-
-                this.set({
-                    index: 0,
-                    attempts: this.get("attempts") + 1
-                });
-
-                if(!already_complete) {
-                    this.set({
-                        complete: true
-
-                    });
-                }
-
-                this.trigger("complete");
-            }
-        }
-
-        Backbone.Model.prototype.save.call(this);
-    },
-
-    add_response_log_item: function(data) {
-
-        // inflate the stored JSON if needed
-        if (!this._response_log_cache) {
-            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
-        }
-
-        if(this._response_log_cache[this.get("attempts")]){
-            this._response_log_cache.push(0);
-        }
-        // add the event to the response log list
-        if(data.correct){
-            this._response_log_cache[this.get("attempts")] += 1;
-            if(this.get("attempts")==0) {
-                this.set({
-                    total_correct: this.get("total_correct") + 1
-                });
-            }
-        }
-
-        // deflate the response log list so it will be saved along with the model later
-        this.set("response_log", JSON.stringify(this._response_log_cache));
-
-    },
-
-    urlRoot: "/api/playlists/quizlog/"
-
-});
-
-window.QuizLogCollection = Backbone.Collection.extend({
-
-    model: QuizLogModel,
-
-    initialize: function(models, options) {
-        this.quiz = options.quiz;
-    },
-
-    url: function() {
-        return "/api/playlists/quizlog/?" + $.param({
-            "quiz": this.quiz,
-            "user": window.statusModel.get("user_id")
-        });
-    },
-
-    get_first_log_or_new_log: function() {
-        if (this.length > 0) {
-            return this.at(0);
-        } else { // create a new exercise log if none existed
-            return new QuizLogModel({
-                "user": window.statusModel.get("user_uri")
-            });
-        }
-    }
-
-});
-
-
-window.ExerciseHintView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-hint"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.render();
-
-    },
-
-    render: function() {
-        this.$el.html(this.template());
-    }
-
-});
-
-
-window.ExerciseProgressView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-progress"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.render();
-
-        this.listenTo(this.model, "change", this.update_streak_bar);
-        this.listenTo(this.collection, "add", this.update_attempt_display);
-
-    },
-
-    render: function() {
-        // this.$el.html(this.template(this.data_model.attributes));
-        this.$el.html(this.template());
-        this.update_streak_bar();
-        this.update_attempt_display();
-
-    },
-
-    update_streak_bar: function() {
-        // update the streak bar UI
-        this.$(".progress-bar")
-            .css("width", this.model.get("streak_progress") + "%")
-            .toggleClass("completed", this.model.get("complete"));
-        this.$(".progress-points").html(this.model.get("points") > 0 ? "(" + this.model.get("points") + " " + gettext("points") + ")" : "");
-    },
-
-    update_attempt_display: function() {
-
-        var attempt_text = "";
-
-        this.collection.forEach(function(model) {
-            attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
-        });
-
-        this.$(".attempts").html(attempt_text);
-        this.$(".attempts span:last").css("font-size", "1.1em");
-    }
-});
-
-
-window.ExerciseRelatedVideoView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-related-videos"),
-
-    render: function(data) {
-
-        var self = this;
-
-        this.$el.html(this.template(data));
-
-        // the following is adapted from khan-exercises/related-videos.js to recreate thumbnail hover effect
-        // TODO(jamalex): this can all probably be replaced by a simple CSS3 rule
-        var captionHeight = 45;
-        var marginTop = 23;
-        var options = {duration: 150, queue: false};
-        this.$(".related-video-box")
-            .delegate(".thumbnail", "mouseenter mouseleave", function(e) {
-                var isMouseEnter = e.type === "mouseenter";
-                self.$(e.currentTarget).find(".thumbnail_label").animate(
-                        {marginTop: marginTop + (isMouseEnter ? 0 : captionHeight)},
-                        options)
-                    .end()
-                    .find(".thumbnail_teaser").animate(
-                        {height: (isMouseEnter ? captionHeight : 0)},
-                        options);
-            });
-
-    }
-
-});
-
-
 window.ExerciseView = Backbone.View.extend({
 
     template: HB.template("exercise/exercise"),
@@ -709,7 +49,11 @@ window.ExerciseView = Backbone.View.extend({
 
     initialize_khan_exercises_listeners: function() {
 
-        Khan.loaded.then(this.khan_loaded);
+        // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
+        _.defer(this.khan_loaded);
+        if (Khan.loaded) {
+            Khan.loaded.then(this.khan_loaded);
+        }
 
         $(Exercises).bind("checkAnswer", this.check_answer);
 
@@ -737,7 +81,8 @@ window.ExerciseView = Backbone.View.extend({
         var self = this;
 
         var defaults = {
-            seed: Math.floor(Math.random() * 1000)
+            seed: Math.floor(Math.random() * 1000),
+            framework: "khan-exercises"
         };
 
         var question_data = $.extend(defaults, question_data);
@@ -747,14 +92,62 @@ window.ExerciseView = Backbone.View.extend({
         this.$("#workarea").html("<center>" + gettext("Loading...") + "</center>");
 
         this.data_model.update_if_needed_then(function() {
-            var userExercise = self.data_model.as_user_exercise();
-            $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
+
+            var framework = self.data_model.get_framework();
+
+            Exercises.setCurrentFramework(framework);
+
+            if (framework == "khan-exercises") {
+
+                // TODO-BLOCKER(jamalex): this is a broken attempt to get khan-exercises loading in same page as perseus
+                if (Khan.loaded === undefined) {
+                    $.getScript(KHAN_EXERCISES_SCRIPT_URL);
+                }
+
+                Khan.loaded.then(function() {
+
+                    var userExercise = self.data_model.as_user_exercise();
+                    $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
+
+                    // $(Exercises).trigger("newProblem", {
+                    //     userExercise: userExercise
+                    // });
+                });
+
+            } else if (framework == "perseus") {
+
+                $(Exercises).trigger("clearExistingProblem");
+
+                var i = Math.floor(Math.random() * self.data_model.get("all_assessment_items").length);
+                var item = new AssessmentItemModel({id: self.data_model.get("all_assessment_items")[i].id});
+
+                item.fetch().then(function() {
+                    Exercises.PerseusBridge.load().then(function() {
+                        Exercises.PerseusBridge.render_item(item.get_item_data());
+                        // Exercises.PerseusBridge.render_item(item_data);
+                        $(Exercises).trigger("newProblem", {
+                            userExercise: null,
+                            numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+                        });
+                    });
+                });
+
+            } else {
+                throw "Unknown framework: " + framework;
+            }
+
         });
+
     },
+
 
     check_answer: function() {
 
-        var data = Khan.scoreInput();
+        if (this.data_model.get_framework() == "khan-exercises") {
+            var data = Khan.scoreInput();
+        } else {
+            var data = Exercises.PerseusBridge.scoreInput();
+        }
 
         this.trigger("check_answer", data);
 
@@ -773,6 +166,7 @@ window.ExerciseView = Backbone.View.extend({
     answer_form_submitted: function(e) {
         e.preventDefault();
         this.$("#check-answer-button").click();
+        $(Exercises).trigger("clearExistingProblem");
     },
 
     update_title: function() {
@@ -807,140 +201,6 @@ window.ExerciseView = Backbone.View.extend({
 });
 
 
-window.ExercisePerseusView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        // this.exercise_view = new ExerciseView({el: this.el, model: this.model});
-
-        this.render();
-
-        // _.defer(this.initialize_khan_exercises_listeners);
-
-    },
-
-    events: {
-        // "submit .answer-form": "answer_form_submitted"
-    },
-
-    render: function() {
-
-        // this.$el.html(this.template(this.data_model.attributes));
-        this.$el.html(this.template());
-
-        // this.initialize_listeners();
-
-        if ($("#exercise-inline-style").length === 0) {
-            // dummy style container that khan-exercises uses to dynamically add styling to an exercise
-            $("head").append("<style id='exercise-inline-style'></style>");
-        }
-
-    },
-
-    initialize_khan_exercises_listeners: function() {
-
-        // Khan.loaded.then(this.khan_loaded);
-
-        $(Exercises).bind("checkAnswer", this.check_answer);
-
-        $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
-
-        // TODO (rtibbles): Make this nice, not horrible.
-        $(Exercises).bind("newProblem", function (ev, data) {
-            if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
-                window.softwareKeyboardView = new SoftwareKeyboardView({
-                    el: $("#solutionarea")
-                });
-            }
-        });
-
-        // some events we only care about if the user is logged in
-        if (statusModel.get("is_logged_in")) {
-            $(Exercises).bind("hintUsed", this.hint_used);
-            $(Exercises).bind("newProblem", this.problem_loaded);
-        }
-
-    },
-
-    load_question: function(question_data) {
-
-        var self = this;
-
-        var defaults = {
-            seed: Math.floor(Math.random() * 1000)
-        };
-
-        var question_data = $.extend(defaults, question_data);
-
-        this.data_model.set(question_data);
-
-        this.$("#workarea").html("<center>" + gettext("Loading...") + "</center>");
-
-        this.data_model.update_if_needed_then(function() {
-            var userExercise = self.data_model.as_user_exercise();
-            $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
-        });
-    },
-
-    check_answer: function() {
-
-        var data = Khan.scoreInput();
-
-        this.trigger("check_answer", data);
-
-    },
-
-    next_question_clicked: function() {
-
-        this.trigger("ready_for_next_question");
-
-    },
-
-    problem_loaded: function(ev, data) {
-        this.trigger("problem_loaded", data);
-    },
-
-    answer_form_submitted: function(e) {
-        e.preventDefault();
-        this.$("#check-answer-button").click();
-    },
-
-    update_title: function() {
-        this.$(".exercise-title").text(this.data_model.get("title"));
-    },
-
-    hint_used: function() {
-        this.trigger("hint_used");
-    },
-
-    goto_next_problem: function() {
-
-    },
-
-    // khan_loaded: function() {
-    //     $(Exercises).trigger("problemTemplateRendered");
-    //     this.trigger("ready_for_next_question");
-    // },
-
-    render_related_videos: function() {
-        if (!this.related_video_view) {
-            this.related_video_view = new ExerciseRelatedVideoView({el: this.$(".exercise-related-video-wrapper")});
-        }
-        var related_videos = this.data_model.get("related_videos");
-        this.related_video_view.render({
-            has_related_videos: related_videos.length > 0,
-            first_video: related_videos[0],
-            other_videos: related_videos.slice(1)
-        });
-    }
-
-});
-
-
 window.ExercisePracticeView = Backbone.View.extend({
 
     initialize: function() {
@@ -948,7 +208,6 @@ window.ExercisePracticeView = Backbone.View.extend({
         var self = this;
 
         _.bindAll(this);
-
 
         window.statusModel.loaded.then(function() {
 
@@ -1190,7 +449,6 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         }
 
-
     }
 
 });
@@ -1237,7 +495,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
         // get the test log model from the queried collection
         if(!this.log_model){
-            this.log_model = this.log_collection.get_first_log_or_new_log();
+            this.log_model = this.log_colaection.get_first_log_or_new_log();
         }
 
         if(!this.log_model.get("started")){
@@ -1379,6 +637,7 @@ window.ExerciseTestView = Backbone.View.extend({
     }
 
 });
+
 
 window.ExerciseQuizView = Backbone.View.extend({
 
@@ -1537,6 +796,101 @@ window.ExerciseQuizView = Backbone.View.extend({
 
 });
 
+
+window.ExerciseHintView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-hint"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.render();
+
+    },
+
+    render: function() {
+            this.$el.html(this.template());
+    }
+
+});
+
+
+window.ExerciseProgressView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-progress"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.render();
+
+        this.listenTo(this.model, "change", this.update_streak_bar);
+        this.listenTo(this.collection, "add", this.update_attempt_display);
+
+    },
+
+    render: function() {
+            // this.$el.html(this.template(this.data_model.attributes));
+        this.$el.html(this.template());
+        this.update_streak_bar();
+        this.update_attempt_display();
+
+    },
+
+    update_streak_bar: function() {
+            // update the streak bar UI
+        this.$(".progress-bar")
+            .css("width", this.model.get("streak_progress") + "%")
+            .toggleClass("completed", this.model.get("complete"));
+        this.$(".progress-points").html(this.model.get("points") > 0 ? "(" + this.model.get("points") + " " + gettext("points") + ")" : "");
+    },
+
+    update_attempt_display: function() {
+
+        var attempt_text = "";
+
+        this.collection.forEach(function(model) {
+                attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
+        });
+
+        this.$(".attempts").html(attempt_text);
+        this.$(".attempts span:last").css("font-size", "1.1em");
+    }
+});
+
+
+window.ExerciseRelatedVideoView = Backbone.View.extend({
+
+    template: HB.template("exercise/exercise-related-videos"),
+
+    render: function(data) {
+
+        var self = this;
+
+        this.$el.html(this.template(data));
+
+        // the following is adapted from khan-exercises/related-videos.js to recreate thumbnail hover effect
+        // TODO(jamalex): this can all probably be replaced by a simple CSS3 rule
+        var captionHeight = 45;
+        var marginTop = 23;
+        var options = {duration: 150, queue: false};
+        this.$(".related-video-box")
+            .delegate(".thumbnail", "mouseenter mouseleave", function(e) {
+                    var isMouseEnter = e.type === "mouseenter";
+                self.$(e.currentTarget).find(".thumbnail_label").animate(
+                        {marginTop: marginTop + (isMouseEnter ? 0 : captionHeight)},
+                        options)
+                    .end()
+                    .find(".thumbnail_teaser").animate(
+                        {height: (isMouseEnter ? captionHeight : 0)},
+                        options);
+            });
+
+    }
+
+});
 
 function seeded_shuffle(source_array, random) {
     var array = source_array.slice(0);

@@ -156,6 +156,7 @@ class Exercise():
         self.h_position = kwargs.get('h_position')
         self.slug = kwargs.get('slug')
         self.exercise_id = kwargs.get('exercise_id')
+        self.uses_assessment_items = kwargs.get('uses_assessment_items')
 
 class ExerciseResource(Resource):
 
@@ -177,7 +178,7 @@ class ExerciseResource(Resource):
     h_position = fields.IntegerField(attribute='h_position')
     slug = fields.CharField(attribute='slug')
     exercise_id = fields.CharField(attribute='exercise_id')
-
+    uses_assessment_items = fields.BooleanField(attribute='uses_assessment_items')
 
     class Meta:
         resource_name = 'exercise'
@@ -233,7 +234,6 @@ class AssessmentItem():
     def __init__(self, **kwargs):
         self.id = kwargs.get('id')
         self.kind = kwargs.get('kind')
-        self.name = kwargs.get('name')
         self.item_data = kwargs.get('item_data')
         self.tags = kwargs.get('tags')
         self.author_names = kwargs.get('author_names')
@@ -243,7 +243,6 @@ class AssessmentItem():
 class AssessmentItemResource(Resource):
 
     kind = fields.CharField(attribute='kind')
-    name = fields.CharField(attribute='name')
     item_data = fields.CharField(attribute='item_data')
     tags = fields.CharField(attribute='tags')
     author_names = fields.CharField(attribute='author_names')
