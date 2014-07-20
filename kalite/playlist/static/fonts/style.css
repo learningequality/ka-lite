@@ -17,6 +17,8 @@
 	font-variant: normal;
 	text-transform: none;
 	line-height: 1;
+	font-size: 130%;
+	vertical-align: sub;
 
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
