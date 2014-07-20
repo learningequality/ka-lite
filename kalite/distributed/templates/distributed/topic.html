@@ -30,8 +30,8 @@
 
     <script type="text/javascript">
         $(function() {
-            window.topic_node_view = new TopicContainerOuter();
-            $("#topic-container").append(topic_node_view.el);
+            window.sidebar_view = new SidebarView();
+            $("#topic-container").append(sidebar_view.el);
         });
     </script>
 
@@ -39,8 +39,6 @@
 
 {% block content %}
     <div id="topic-container"> 
-        <div class="sidebar-wrapper">
-        </div>
     </div>
     <div id="content-area">
     </div>

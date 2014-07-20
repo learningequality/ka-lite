@@ -48,7 +48,7 @@ window.ContentAreaView = Backbone.View.extend({
 
 window.SidebarView = Backbone.View.extend({
 
-    el: ".sidebar-wrapper",
+    el: "#topic-container",
 
     template: HB.template("distributed/sidebar"),
 
@@ -62,13 +62,6 @@ window.SidebarView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this._entry_views = [];
-
-        this.model.set(this.entries_key, new this.EntryCollection(this.model.get(this.entries_key)));
-
-        this.listenTo(this.model.get(this.entries_key), 'add', this.add_new_entry);
-        this.listenTo(this.model.get(this.entries_key), 'reset', this.add_all_entries);
-
         this.state_model = new Backbone.Model({
             open: false
         });
@@ -77,18 +70,18 @@ window.SidebarView = Backbone.View.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
 
-        this.listenTo(this.model, 'change', this.render);
+        this.topic_node_view = new TopicContainerOuter();
 
-        // this.$(".sidebar-tab").hide();
-        // setTimeout(function() { self.$(".sidebar-tab").show(); }, 5000);
-
-        this.add_all_entries();
+        this.$('.sidebar-content').append(this.topic_node_view.el);
+        this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
 
     },
 
     render: function() {
         var self = this;
-        this.$el.html(this.template(this.model.attributes));
+        
+        this.$el.html(this.template());
+
         this.sidebar = this.$('').bigSlide({
             menu: this.$(".panel"),
             // push: "#page-container, #footer, .sidebar-tab",
@@ -96,32 +89,8 @@ window.SidebarView = Backbone.View.extend({
             menuWidth: "220px"
         });
 
-        this.$(".sidebar").slimScroll({
-            height: "auto",
-            color: "#033000",
-            size: "8px",
-            distance: "2px",
-            disableFadeOut: true
-        });
-
-        // resize the scrollable part of sidebar to the page height
-        $(window).resize(_.throttle(function() {
-            var height = $(window).height() - self.$(".slimScrollDiv").position().top;
-            self.$(".slimScrollDiv, .sidebar").height(height);
-        }, 200));
-        $(window).resize();
-
-
-        this._entry_views.forEach(function(entry_view) {
-            self.$(".sidebar").append(entry_view.render().$el);
-            self.listenTo(entry_view, "clicked", self.item_clicked);
-        });
         this.toggle_sidebar();
-        if (this.model.get("has_parent")){
-            this.$(".back-to-parent").show();
-        } else {
-            this.$(".back-to-parent").hide();
-        }
+
         return this;
     },
 
@@ -150,6 +119,73 @@ window.SidebarView = Backbone.View.extend({
 
     hide_sidebar: function() {
         this.state_model.set("open", false);
+    }
+
+});
+
+window.SidebarContentView = Backbone.View.extend({
+
+    template: HB.template("distributed/sidebar-content"),
+
+    events: {
+        'click .back-to-parent' : 'backToParent'
+    },
+
+    initialize: function() {
+
+        var self = this;
+
+        _.bindAll(this);
+
+        this._entry_views = [];
+
+        this.has_parent = this.options.has_parent;
+
+        if (!(this.model.get("children") instanceof TopicCollection)) {
+
+            this.model.set("children", new TopicCollection(this.model.get("children")));
+        }
+
+        this.listenTo(this.model.get("children"), 'add', this.add_new_entry);
+        this.listenTo(this.model.get("children"), 'reset', this.add_all_entries);
+
+        this.add_all_entries();
+
+        this.render();
+
+    },
+
+    render: function() {
+        var self = this;
+
+        this.$el.html(this.template(this.model.attributes));
+        
+        this._entry_views.forEach(function(entry_view) {
+            self.$(".sidebar").append(entry_view.render().$el);
+            self.listenTo(entry_view, "clicked", self.item_clicked);
+        });
+
+        this.$(".sidebar").slimScroll({
+            height: "auto",
+            color: "#033000",
+            size: "8px",
+            distance: "2px",
+            disableFadeOut: true
+        });
+
+        // resize the scrollable part of sidebar to the page height
+        $(window).resize(_.throttle(function() {
+            var height = $(window).height() - self.$(".slimScrollDiv").position().top;
+            self.$(".slimScrollDiv, .sidebar").height(height);
+        }, 200));
+        $(window).resize();
+
+        if (this.has_parent){
+            this.$(".back-to-parent").show();
+        } else {
+            this.$(".back-to-parent").hide();
+        }
+        return this;
     },
 
     add_new_entry: function(entry) {
@@ -159,7 +195,23 @@ window.SidebarView = Backbone.View.extend({
 
     add_all_entries: function() {
         this.render();
-        this.model.get(this.entries_key).map(this.add_new_entry);
+        this.model.get("children").map(this.add_new_entry);
+    },
+
+    show: function() {
+        this.$el.show();
+    },
+
+    hide: function() {
+        this.$el.hide();
+    },
+
+    hide_sidebar: function() {
+        this.trigger("hideSidebar");
+    },
+
+    backToParent: function(ev) {
+        this.trigger('back_button_clicked', this.model);
     }
 
 });
@@ -198,8 +250,6 @@ window.SidebarEntryView = Backbone.View.extend({
 
 window.TopicContainerOuter = Backbone.View.extend({
 
-    class: "topic-container-outer",
-
     initialize: function() {
 
         _.bindAll(this);
@@ -223,7 +273,8 @@ window.TopicContainerOuter = Backbone.View.extend({
             ItemWrapper = TopicContainerInner;
         }
         var new_topic = new ItemWrapper({
-            model: node
+            model: node,
+            has_parent: this.inner_views.length >= 1
         });
 
         // Only hide after we have the first one!
@@ -234,8 +285,9 @@ window.TopicContainerOuter = Backbone.View.extend({
         if (this.inner_views.length === 0){
             new_topic.model.set("has_parent", false);
         } else if (this.inner_views.length >= 1) {
-            new_topic.model.set("has_parent", true);
+            this.inner_views[0].hide();
         }
+
         this.$el.append(new_topic.el);
         this.inner_views.unshift(new_topic);
 
@@ -246,13 +298,14 @@ window.TopicContainerOuter = Backbone.View.extend({
             this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
         }
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
+        this.listenTo(new_topic, 'hide_sidebar', this.hide_sidebar)
     },
 
     back_to_parent: function() {
         // Simply pop the first in the stack and show the next one
-        this.inner_views[0].$el.hide();
+        this.inner_views[0].remove();
         this.inner_views.shift();
-        this.inner_views[0].$el.show();
+        this.inner_views[0].show();
     },
 
     entry_requested: function(entry) {
@@ -279,28 +332,14 @@ window.TopicContainerOuter = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
         }
+    },
+
+    hide_sidebar: function() {
+        this.trigger("hideSidebar");
     }
 });
 
-window.PlaylistSidebarView = SidebarView.extend({
-
-    entries_key: "children",
-
-    EntryCollection: TopicCollection,
-
-    events: function(){
-       return _.extend({},SidebarView.prototype.events,{
-           'click .back-to-parent' : 'backToParent'
-       });
-    },
-
-    render: function() {
-        var self = this;
-        SidebarView.prototype.render.call(this);
-        _.defer(function() {
-            self.$("li:first").click();
-        });
-    },
+window.PlaylistSidebarView = SidebarContentView.extend({
 
     item_clicked: function(view) {
         this.hide_sidebar();
@@ -315,29 +354,11 @@ window.PlaylistSidebarView = SidebarView.extend({
     }
 });
 
-window.TopicContainerInner = SidebarView.extend({
+window.TopicContainerInner = SidebarContentView.extend({
 
-    entries_key: "children",
-
-    EntryCollection: TopicCollection,
-
-    events: function(){
-       return _.extend({},SidebarView.prototype.events,{
-           'click .back-to-parent' : 'backToParent'
-       });
-    },
 
     item_clicked: function(view) {
         this.trigger('topic_node_clicked', view.model);
-    },
-
-    render: function() {
-        SidebarView.prototype.render.call(this);
-
-    },
-
-    backToParent: function(ev) {
-        this.trigger('back_button_clicked', this.model);
     }
 
 });
