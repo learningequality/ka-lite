@@ -18,6 +18,7 @@ and more.
 * get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
+import json
 import os
 import re
 from functools import partial
@@ -333,7 +334,6 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
     """
     Return hierarchical list of topics for main nav
     """
-    # import pdb; pdb.set_trace()
     topic_hierarchy = {
         "id": topic_node['id'],
         "title": topic_node['title'],
@@ -346,6 +346,12 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
                 topic_hierarchy["children"].append(get_topic_hierarchy(child))
 
     return topic_hierarchy
+
+def dump_topic_hierarchy():
+    """Dump topic hierarchy to JSON"""
+    topic_hierarchy = get_topic_hierarchy()
+    with open('topic_hierarchy.json', 'w') as outfile:
+        json.dump(topic_hierarchy, outfile, indent=4, sort_keys=True)
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
