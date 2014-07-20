@@ -3,7 +3,7 @@ window.TopicNode = Backbone.Model.extend({
     url: ALL_TOPICS_URL
 });
 
-// Collections 
+// Collections
 window.TopicCollection = Backbone.Collection.extend({
     model: TopicNode
 });
@@ -297,9 +297,6 @@ window.PlaylistSidebarView = SidebarView.extend({
     render: function() {
         var self = this;
         SidebarView.prototype.render.call(this);
-        _.defer(function() {
-            self.$("li:first").click();
-        });
     },
 
     item_clicked: function(view) {
