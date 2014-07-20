@@ -20,7 +20,8 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     url(r'^', include(ExerciseLogResource().urls)),
     url(r'^', include(AttemptLogResource().urls)),
-    # url(r'^', include(VideoResource().urls)),
+    # Retrieve video data to render a front-end video player
+    url(r'^', include(VideoResource().urls)),
     # Retrieve exercise data to render a front-end exercise
     url(r'^', include(ExerciseResource().urls)),
     # Retrieve assessment item data to render front-end Perseus Exercises
@@ -33,8 +34,5 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     # For building a graphical knowledge map
     url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
-
-    # Retrieve video data to render a front-end video player
-    url(r'^video/(?P<video_id>[^/]+)$', 'video', {}, 'video'),
 
 )

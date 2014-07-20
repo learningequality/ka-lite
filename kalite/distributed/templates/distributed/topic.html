@@ -9,18 +9,25 @@
         var ALL_TOPICS_URL = '{% static "data/topic_hierarchy.json" %}';
     </script>
 
+    <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
+    <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
+    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'js/distributed/bigSlide.js' %}"></script>
+    <script src="{% static 'js/distributed/topics.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='distributed' %}"></script>
+
     <script type="text/javascript">
         $(function() {
             window.topic_node_view = new TopicContainerOuter();
             $("#topic-container").append(topic_node_view.el);
         });
     </script>
-    <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
-    <script src="{% static 'js/distributed/topics.js' %}"></script>
 
 {% endblock headjs %}
 
 {% block content %}
     <div id="topic-container"> 
+        <div class="sidebar-wrapper">
+        </div>
     </div>
 {% endblock content %}
