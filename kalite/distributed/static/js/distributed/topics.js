@@ -37,6 +37,8 @@ window.SidebarView = Backbone.View.extend({
             open: false
         });
 
+        this.render();
+
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
 
         this.listenTo(this.model, 'change', this.render);
@@ -45,8 +47,6 @@ window.SidebarView = Backbone.View.extend({
         // setTimeout(function() { self.$(".sidebar-tab").show(); }, 5000);
 
         this.add_all_entries();
-
-        this.render();
 
     },
 
