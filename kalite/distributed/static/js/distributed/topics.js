@@ -226,7 +226,7 @@ window.TopicContainerInner = SidebarView.extend({
     render: function() {
         SidebarView.prototype.render.call(this);
         if (this.model.get("has_parent")){
-            this.$(".sidebar-navbar").append("<a href='#' class='back-to-parent'>&larr;&nbsp;Back</a>");
+            this.$(".sidebar-navbar").append("<a href='#' title='Back' class='back-to-parent'><span class='glyphicon glyphicon-chevron-left'></span></a>");
         }
     },
 
