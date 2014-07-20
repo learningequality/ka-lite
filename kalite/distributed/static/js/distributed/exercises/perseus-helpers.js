@@ -1,6 +1,42 @@
 // $(Exercises).trigger("clearExistingProblem");
 
-$.extend(Exercises.PerseusBridge, {
+var KhanUtil = {
+    debugLog: function() {}
+};
+
+var Khan = {
+    Util: KhanUtil,
+    error: function() {},
+    query: {debug: ""},
+    imageBase: STATIC_URL + "perseus/ke/images/",
+    scratchpad: {
+        disable: function() {},
+        enable: function() {},
+        clear: function() {}
+    },
+    cleanupProblem: function() {}
+};
+
+window.Exercises = {
+    localMode: true,
+    useKatex: true,
+    khanExercisesUrlBase: STATIC_URL + "perseus/ke/",
+    _current_framework: "khan-exercises",
+    getCurrentFramework: function() {
+        return Exercises._current_framework;
+    },
+    setCurrentFramework: function(framework) {
+        Exercises._current_framework = framework;
+    }
+};
+
+// React.initializeTouchEvents(true);
+
+Exercises.PerseusBridge = {
+
+    cleanupProblem: function() {
+        return false;
+    },
 
     // this one needs to be here for khan-exercises
     scoreInput: function() {
@@ -30,8 +66,8 @@ $.extend(Exercises.PerseusBridge, {
 
         // Load khan-exercises modules, then perseus
         require([
-                STATIC_URL + "perseus/ke-deps.js",
-                STATIC_URL + "perseus/ke/interface.js"
+                STATIC_URL + "perseus/ke-deps.js"
+                // STATIC_URL + "perseus/ke/main.js",
             ], function() {
                 require([STATIC_URL + "perseus/build/perseus-1.js"], Exercises.PerseusBridge._initialize);
             }
@@ -65,9 +101,9 @@ $.extend(Exercises.PerseusBridge, {
                 //useMathQuill: true
             },
             apiOptions: {
-                interceptInputFocus: function() {}, // do nothing here; prevent keyboard from popping up
-                fancyDropdowns: true, // needed?
-                staticRender: true // needed?
+                // interceptInputFocus: function() {}, // do nothing here; prevent keyboard from popping up
+                fancyDropdowns: true // needed?
+                // staticRender: true // needed?
             },
         }, null);
         zk = React.renderComponent(
@@ -78,4 +114,4 @@ $.extend(Exercises.PerseusBridge, {
 
     }
 
-});
+};

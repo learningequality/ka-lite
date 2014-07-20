@@ -175,6 +175,7 @@ class Exercise():
         self.h_position = kwargs.get('h_position')
         self.slug = kwargs.get('slug')
         self.exercise_id = kwargs.get('exercise_id')
+        self.uses_assessment_items = kwargs.get('uses_assessment_items')
 
 class ExerciseResource(Resource):
 
@@ -196,7 +197,7 @@ class ExerciseResource(Resource):
     h_position = fields.IntegerField(attribute='h_position')
     slug = fields.CharField(attribute='slug')
     exercise_id = fields.CharField(attribute='exercise_id')
-
+    uses_assessment_items = fields.BooleanField(attribute='uses_assessment_items')
 
     class Meta:
         resource_name = 'exercise'

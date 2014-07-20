@@ -91,6 +91,9 @@
          var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
          var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
          var CURRENT_LANGUAGE = "{{ current_language }}";
+
+         var ALL_ASSESSMENT_ITEMS_URL = "{% url 'api_dispatch_list' resource_name='assessment_item' %}";
+
         </script>
         <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>

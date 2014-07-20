@@ -91,17 +91,35 @@ window.ExerciseView = Backbone.View.extend({
 
         this.data_model.update_if_needed_then(function() {
 
-            if (self.data_model.get_framework() == "khan-exercises") {
+            var framework = self.data_model.get_framework();
+
+            Exercises.setCurrentFramework(framework);
+
+            if (framework == "khan-exercises") {
+
                 var userExercise = self.data_model.as_user_exercise();
                 $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
-            } else { // perseus
-                Exercises.PerseusBridge.load().then(function() {
-                    Exercises.PerseusBridge.render_item(item_data);
-                })
-                $(Exercises).trigger("newProblem", {
-                    userExercise: null,
-                    numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+
+            } else if (framework == "perseus") {
+
+                $(Exercises).trigger("clearExistingProblem");
+
+                var i = Math.floor(Math.random() * self.data_model.get("all_assessment_items").length);
+                var item = new AssessmentItemModel({id: self.data_model.get("all_assessment_items")[i].id});
+
+                item.fetch().then(function() {
+                    Exercises.PerseusBridge.load().then(function() {
+                        Exercises.PerseusBridge.render_item(item.get_item_data());
+                        // Exercises.PerseusBridge.render_item(item_data);
+                        $(Exercises).trigger("newProblem", {
+                            userExercise: null,
+                            numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+                        });
+                    });
                 });
+
+            } else {
+                throw "Unknown framework: " + framework;
             }
 
         });
@@ -114,7 +132,7 @@ window.ExerciseView = Backbone.View.extend({
         if (this.data_model.get_framework() == "khan-exercises") {
             var data = Khan.scoreInput();
         } else {
-            var data = PerseusBridge.scoreInput();
+            var data = Exercises.PerseusBridge.scoreInput();
         }
 
         this.trigger("check_answer", data);
@@ -134,6 +152,7 @@ window.ExerciseView = Backbone.View.extend({
     answer_form_submitted: function(e) {
         e.preventDefault();
         this.$("#check-answer-button").click();
+        $(Exercises).trigger("clearExistingProblem");
     },
 
     update_title: function() {
@@ -462,7 +481,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
         // get the test log model from the queried collection
         if(!this.log_model){
-            this.log_model = this.log_collection.get_first_log_or_new_log();
+            this.log_model = this.log_colaection.get_first_log_or_new_log();
         }
 
         if(!this.log_model.get("started")){

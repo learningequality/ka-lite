@@ -67,14 +67,19 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
     get_framework: function() {
         return this.has("uses_assessment_items") ? "perseus" : "khan-exercises";
-    },
-
-    load_assessment_item: function(item_id) {
-
     }
 
 });
 
+window.AssessmentItemModel = Backbone.Model.extend({
+
+    urlRoot: ALL_ASSESSMENT_ITEMS_URL,
+
+    get_item_data: function() {
+        return JSON.parse(this.get("item_data"));
+    }
+
+});
 
 window.ExerciseLogModel = Backbone.Model.extend({
     /*
