@@ -71,9 +71,10 @@ window.SidebarView = Backbone.View.extend({
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
 
         this.topic_node_view = new TopicContainerOuter();
+        this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
+        this.listenTo(this.topic_node_view, "showSidebar", this.show_sidebar);
 
         this.$('.sidebar-content').append(this.topic_node_view.el);
-        this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
 
     },
 
@@ -89,7 +90,9 @@ window.SidebarView = Backbone.View.extend({
             menuWidth: "220px"
         });
 
-        this.toggle_sidebar();
+        _.defer(function() {
+            self.show_sidebar();
+        });
 
         return this;
     },
@@ -115,6 +118,7 @@ window.SidebarView = Backbone.View.extend({
 
     show_sidebar: function() {
         this.state_model.set("open", true);
+        console.log("SHOWING!");
     },
 
     hide_sidebar: function() {
@@ -185,6 +189,7 @@ window.SidebarContentView = Backbone.View.extend({
         } else {
             this.$(".back-to-parent").hide();
         }
+        
         return this;
     },
 
@@ -208,6 +213,10 @@ window.SidebarContentView = Backbone.View.extend({
 
     hide_sidebar: function() {
         this.trigger("hideSidebar");
+    },
+
+    show_sidebar: function() {
+        this.trigger("showSidebar");
     },
 
     backToParent: function(ev) {
@@ -298,7 +307,8 @@ window.TopicContainerOuter = Backbone.View.extend({
             this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
         }
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
-        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar)
+        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
+        this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
     },
 
     back_to_parent: function() {
@@ -336,6 +346,10 @@ window.TopicContainerOuter = Backbone.View.extend({
 
     hide_sidebar: function() {
         this.trigger("hideSidebar");
+    },
+
+    show_sidebar: function() {
+        this.trigger("showSidebar");
     }
 });
 
