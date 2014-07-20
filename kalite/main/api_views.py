@@ -27,7 +27,7 @@ from .models import VideoLog, ExerciseLog, AttemptLog
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data, get_assessment_item_data
 
 
 class student_log_api(object):
@@ -240,13 +240,21 @@ def flat_topic_tree(request, lang_code):
 @api_handle_error_with_json
 @backend_cache_page
 def exercise(request, exercise_id):
-    return JsonResponse(get_exercise_data(request, exercise_id))
+    exercise = get_exercise_data(request, exercise_id)
+    if exercise:
+        return JsonResponse(exercise)
+    else:
+        return JsonResponseMessageError("Exercise with id %(exercise_id)s not found" % {"exercise_id": exercise_id}, status=404)
 
 
 @api_handle_error_with_json
 @backend_cache_page
 def video(request, video_id):
-    return JsonResponse(get_video_data(request, video_id))
+    video = get_video_data(request, video_id)
+    if video:
+        return JsonResponse(video)
+    else:
+        return JsonResponseMessageError("Video with id %(video_id)s not found" % {"video_id": video_id}, status=404)
 
 
 @api_handle_error_with_json

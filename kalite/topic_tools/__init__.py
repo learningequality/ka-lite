@@ -18,6 +18,7 @@ and more.
 * get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
+import json
 import os
 import re
 from functools import partial
@@ -343,7 +344,6 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
     """
     Return hierarchical list of topics for main nav
     """
-    # import pdb; pdb.set_trace()
     topic_hierarchy = {
         "id": topic_node['id'],
         "title": topic_node['title'],
@@ -356,6 +356,12 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
                 topic_hierarchy["children"].append(get_topic_hierarchy(child))
 
     return topic_hierarchy
+
+def dump_topic_hierarchy():
+    """Dump topic hierarchy to JSON"""
+    topic_hierarchy = get_topic_hierarchy()
+    with open('topic_hierarchy.json', 'w') as outfile:
+        json.dump(topic_hierarchy, outfile, indent=4, sort_keys=True)
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
@@ -508,13 +514,14 @@ def get_exercise_page_paths(video_id=None):
         return []
 
 def get_exercise_data(request, exercise_id=None):
-    exercise = get_node_cache()["Exercise"][exercise_id]
+    exercise = get_exercise_cache().get(exercise_id, None)
 
-    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
+    if not exercise:
+        return None
+
     exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
-    exercise_localized_template = os.path.join(lang, exercise_file)
 
     # Get the language codes for exercise templates that exist
     exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
@@ -531,16 +538,16 @@ def get_exercise_data(request, exercise_id=None):
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
 
-    exercise["related_videos"] = get_related_videos(exercise, limit_to_available=True).values()
-
     return exercise
 
 
 def get_video_data(request, video_id=None):
 
-    topictree = get_flat_topic_tree(alldata=True)
-    videos_dict = video_dict_by_video_id(topictree)
-    video = videos_dict.get(video_id)
+    video_cache = get_video_cache()
+    video = video_cache.get(video_id, None)
+
+    if not video:
+        return None
 
     # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
     from kalite.updates import stamp_availability_on_video
@@ -574,6 +581,17 @@ def get_video_data(request, video_id=None):
     video["video_id"] = video["id"]
 
     return video
+
+def get_assessment_item_data(request, assessment_item_id=None):
+    assessment_item = get_assessment_item_cache().get(assessment_item_id, None)
+
+    if not assessment_item:
+        return None
+
+    # TODO (rtibbles): Enable internationalization for the assessment_items.
+
+    return assessment_item
+
 
 
 def video_dict_by_video_id(flat_topic_tree=None):
