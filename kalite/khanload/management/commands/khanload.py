@@ -52,7 +52,7 @@ iconextension = "-40x40.png"
 defaulticon = "default"
 
 attribute_whitelists = {
-    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data"],
+    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type"],
     "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id"],
     "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "v_position", "h_position", "all_assessment_items", "uses_assessment_items"],
     "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"]
@@ -65,7 +65,7 @@ denormed_attribute_list = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "hour-of-code"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
 temp_ok_atts = ["x_pos", "y_pos", "in_knowledge_map", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
@@ -164,7 +164,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[]):
 
         # compute base points
         # Minimum points per exercise: 5
-        # node["basepoints"] = ceil(7 * log(max(exp(5./7), node.get("seconds_per_fast_problem", 0))));
+        node["basepoints"] = ceil(7 * log(max(exp(5./7), node.get("seconds_per_fast_problem", 0))));
 
     return node
 
