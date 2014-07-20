@@ -37,8 +37,6 @@ window.SidebarView = Backbone.View.extend({
             open: false
         });
 
-        this.render();
-
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
 
         this.listenTo(this.model, 'change', this.render);
@@ -47,6 +45,8 @@ window.SidebarView = Backbone.View.extend({
         // setTimeout(function() { self.$(".sidebar-tab").show(); }, 5000);
 
         this.add_all_entries();
+
+        this.render();
 
     },
 
@@ -80,14 +80,18 @@ window.SidebarView = Backbone.View.extend({
             self.$(".sidebar").append(entry_view.render().$el);
             self.listenTo(entry_view, "clicked", self.item_clicked);
         });
-        this.show_sidebar();
+        this.toggle_sidebar();
         return this;
     },
 
     toggle_sidebar: function(ev) {
         // this.$(".sidebar-tab").css("color", this.state_model.get("open") ? "red" : "blue")
         this.state_model.set("open", !this.state_model.get("open"));
-        ev.preventDefault();
+
+        // TODO (rtibbles): Get render to only run after all listenTos have been bound and remove this.
+        if (ev !== null) {
+            ev.preventDefault();
+        }
         return false;
     },
 
