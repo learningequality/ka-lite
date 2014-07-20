@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+    <meta charset="UTF-8">
+    <title>Imaginary unit powers</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="less-than-4" data-weight="2">
+            <div class="vars">
+                <var id="EXP">randRange(1, 4)</var>
+                <var id="SOLUTION">['1', 'i', '-1', '-i'][EXP % 4]</var>
+            </div>
+
+            <p class="question"><code>\large{i ^ {<var>EXP</var>} = ?}</code></p>
+            <div class="solution"><code><var>SOLUTION</var></code></div>
+            <ul class="choices" data-category="true">
+                <li><code>1</code></li>
+                <li><code>i</code></li>
+                <li><code>-1</code></li>
+                <li><code>-i</code></li>
+            </ul>
+            <div class="hints">
+                <p data-if="EXP === 1">
+                    Anything to the first power is the number itself.
+                </p>
+                <p data-if="EXP >= 2">
+                    The most important property of the imaginary unit <code>i</code> is
+                    that <code>\blue{i ^ 2} = \pink{-1}</code>.
+                </p>
+                <p data-if="EXP === 3"><code>
+                    \qquad \begin{eqnarray}
+                    i ^ 3 &amp;=&amp; (\pink{i ^ 2}) \cdot i \\
+                    &amp;=&amp; (\blue{-1}) \cdot i \\
+                    &amp;=&amp; -i
+                    \end{eqnarray}
+                </code></p>
+                <p data-if="EXP === 4"><code>
+                    \qquad \begin{eqnarray}
+                    i ^ 4 &amp;=&amp; (\pink{i ^ 2}) ^ 2 \\
+                    &amp;=&amp; (\blue{-1}) ^ 2 \\
+                    &amp;=&amp; 1
+                    \end{eqnarray}
+                </code></p>
+                <p><code>\qquad i ^ <var>EXP</var> = <var>SOLUTION</var></code></p>
+            </div>
+        </div>
+        <div id="more-than-4" data-weight="5">
+            <div class="vars">
+                <var id="EXP">4 + randRange(1, 30)</var>
+                <var id="SOLUTION">['1', 'i', '-1', '-i'][EXP % 4]</var>
+                <var id="WHOLES">floor(EXP / 4)</var>
+                <var id="REMAINDER">EXP % 4</var>
+                <var id="REMAINDER_TEXT">$._("remainder")</var>
+            </div>
+
+            <p class="question"><code>\large{i ^ {<var>EXP</var>} = ?}</code></p>
+            <div class="solution"><code><var>SOLUTION</var></code></div>
+            <ul class="choices" data-category="true">
+                <li><code>1</code></li>
+                <li><code>i</code></li>
+                <li><code>-1</code></li>
+                <li><code>-i</code></li>
+            </ul>
+            <div class="hints">
+                <p>
+                    The most important property of the imaginary unit <code>i</code> is:<br>
+                    <code>\qquad \blue{i ^ 2} = \pink{-1}</code>
+                </p>
+                <p>
+                    Therefore:<br>
+                    <code>\qquad i ^ 4 = (\blue{i ^ 2}) ^ 2 = (\pink{-1}) ^ 2 = 1</code>
+                </p>
+                <p>So, we can simplify the expression by rewriting it in terms of <code>i^4</code>.</p>
+                <div>
+                    <p>
+                        Because <code><var>EXP</var> \div \blue{4} = \green{<var>WHOLES</var>}
+                        <span data-if="REMAINDER">\text{ <var>REMAINDER_TEXT</var> } \red{<var>REMAINDER</var>}</span></code>,
+                    </p>
+                    <p><code>
+                        \qquad \begin{eqnarray}
+                        i ^ {<var>EXP</var>} &amp;=&amp; (i^\blue{4})^\green{<var>WHOLES</var>}
+                        <span data-if="REMAINDER"> \cdot i^\red{<var>REMAINDER</var>}</span> \\
+                        &amp;=&amp; (1)^\green{<var>WHOLES</var>}
+                        <span data-if="REMAINDER">\cdot i^\red{<var>REMAINDER</var>}</span> \\
+                        &amp;=&amp; <span data-if="REMAINDER">i^\red{<var>REMAINDER</var>}</span>
+                        <span data-else="">1</span>
+                        \end{eqnarray}
+                    </code></p>
+                </div>
+
+                <p data-if="REMAINDER === 1">
+                    Anything to the first power is the number itself.<br>
+                    <code>\qquad i ^ \red{1} = i</code>
+                </p>
+                <p data-if="REMAINDER >= 2">
+                    As stated above, <code>\blue{i ^ 2} = \pink{-1}</code>.
+                </p>
+                <p data-if="REMAINDER === 3">
+                    <code>\qquad \begin{eqnarray}
+                        i ^ \red{3} &amp;=&amp; (\blue{i ^ 2}) \cdot i \\
+                        &amp;=&amp; (\pink{-1}) \cdot i \\
+                        &amp;=&amp; -i
+                        \end{eqnarray}
+                    </code>
+                </p>
+                <p>
+                    <code>i ^ {<var>EXP</var>} = <span data-if="REMAINDER">i ^ {<var>REMAINDER</var>} =</span> <var>SOLUTION</var></code>
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

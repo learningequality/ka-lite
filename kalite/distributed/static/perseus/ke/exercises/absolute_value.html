@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Finding absolute values</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars" data-ensure='SIGN === "" || INT !== 0 || FRAC !== ""'>
+        <var id="INT">rand(5) &gt; 0 ? randRange( 1, 9 ) : 0</var>
+        <var id="FRAC">rand(3) &gt; 0 ? "." + randRange(1, 9) : ""</var>
+        <var id="SIGN">randFromArray(["", "-"])</var>
+        <var id="NUMBER">Number(SIGN + INT + FRAC)</var>
+        <var id="ABSOLUTE_NUMBER">abs(NUMBER)</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <div class="question">
+                <p>What is <code>\lvert <var>commafy(NUMBER)</var> \rvert</code>?</p>
+            </div>
+            <div class="solution"><var>ABSOLUTE_NUMBER</var></div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div class="graphie">
+            init({
+                range: [ [-1, 11], [-1, 1] ]
+            });
+            var start = 0;
+            var end = 10;
+            var originX = 0;
+            var x = ABSOLUTE_NUMBER;
+            if ( SIGN === "-" ) {
+                start = -10;
+                end = 0;
+                originX = 10;
+                x = 10 - x;
+            }
+            numberLine( start, end );
+            style({ stroke: BLUE, fill: BLUE });
+            graph.pt = circle( [ x, 0 ], 0.15 );
+            style({ stroke: ORANGE, fill: ORANGE, strokeWidth: 3.5, arrows: "-&gt;" });
+            path( [ [ originX, 0 ], [ x, 0 ] ] );
+            circle( [ originX, 0 ], 0.10 );
+            graph.pt.toFront();
+        </div>
+        <p>The distance from <code>0</code> to <code><var>commafy(NUMBER)</var></code> is <code><var>commafy(ABSOLUTE_NUMBER)</var></code>, which equals the absolute value.</p>
+        <p data-if='SIGN !== ""'>In other words, <code><var>commafy(ABSOLUTE_NUMBER)</var></code> is the non-negative version of <code><var>commafy(NUMBER)</var></code>.</p>
+    </div>
+    </div>
+</body>
+</html>
