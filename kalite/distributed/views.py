@@ -215,14 +215,15 @@ def watch_home(request):
     # return topic_handler(request)
 
 
-@check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-@backend_cache_page
-@render_to("distributed/homepage.html")
-@refresh_topic_cache
-def homepage(request, topics):
+# @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
+# @backend_cache_page
+# @render_to("distributed/homepage.html")
+# @refresh_topic_cache
+def homepage(request):
     """
     Homepage.
     """
+    return HttpResponseRedirect("/watch/")
     context = topic_handler(topics)
     context.update({
         "title": "Home",

@@ -79,8 +79,8 @@ urlpatterns += patterns('',
 
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
-    # url(r'^$', 'homepage', {}, 'homepage'),
-    url(r'^$', 'watch_home', {}, 'watch_home'),
+    url(r'^$', 'homepage', {}, 'homepage'),
+    # url(r'^$', 'watch_home', {}, 'watch_home'),
     url(r'^watch/$', 'watch_home', {}, 'watch_home'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
