@@ -7,7 +7,7 @@ from django.conf.urls import url
 
 from .models import ExerciseLog, AttemptLog
 
-from kalite.topic_tools import get_flat_topic_tree, video_dict_by_video_id, get_exercise_data, get_assessment_item_cache
+from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache
 from kalite.updates.api_views import annotate_topic_tree
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -86,57 +86,38 @@ class VideoResource(Resource):
         resource_name = 'video'
         object_class = Video
 
-    @staticmethod
-    def _retrieve_id_from_path(video):
-        # Note: same as _clean_playlist_entry_id in playlist/api_resources.py.
-        # Unify both implementations!
-        video = video.copy()
-        path = video['path']
-        # strip any trailing whitespace
-        name = path.strip()
-
-        # try to extract only the actual entity id
-        name_breakdown = name.split('/')
-        name_breakdown = [
-            component for component
-            in name.split('/')
-            if component  # make sure component has something in it
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
         ]
-        name = name_breakdown[-1]
-
-        video['id'] = name
-        return video
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
-        if isinstance(bundle_or_obj, Video):
-            kwargs['pk'] = bundle_or_obj.id
-        else:
+        if getattr(bundle_or_obj, 'obj', None):
             kwargs['pk'] = bundle_or_obj.obj.id
-
+        else:
+            kwargs['pk'] = bundle_or_obj.id
         return kwargs
 
     def get_object_list(self, request):
-        topictree = get_flat_topic_tree(alldata=True)
-
-        videos = [Video(**self._retrieve_id_from_path(videodict))
-                  for videodict in topictree['Video'].itervalues()]
-
-        return videos
+        """
+        Get the list of videos.
+        """
+        raise NotImplemented("Operation not implemented yet for videos.")
 
     def obj_get_list(self, bundle, **kwargs):
         return self.get_object_list(bundle.request)
 
     def obj_get(self, bundle, **kwargs):
-        topictree = get_flat_topic_tree(alldata=True)
-        pk = kwargs['pk']
-        videos_dict = video_dict_by_video_id(topictree)
-        videodict = videos_dict.get(pk)
+        id = kwargs.get("id", None)
+        video = get_video_data(bundle.request, id)
 
-        if videodict:
-            return Video(**self._retrieve_id_from_path(videodict))
+        if video:
+            return Video(**video)
         else:
-            return None
+            raise NotFound('Video with id %s not found' % id)
 
     def obj_create(self, request):
         raise NotImplementedError
@@ -219,9 +200,9 @@ class ExerciseResource(Resource):
 
     def obj_get_list(self, bundle, **kwargs):
         """
-        Get the list of exercises based from a request.
+        Get the list of exercises.
         """
-        raise NotImplemented("Operation not implemented yet for tests.")
+        raise NotImplemented("Operation not implemented yet for videos.")
 
     def obj_get(self, bundle, **kwargs):
         id = kwargs.get("id", None)
@@ -291,9 +272,9 @@ class AssessmentItemResource(Resource):
 
     def obj_get_list(self, bundle, **kwargs):
         """
-        Get the list of assessment_items based from a request.
+        Get the list of assessment_items.
         """
-        raise NotImplemented("Operation not implemented yet for tests.")
+        raise NotImplemented("Operation not implemented yet for assessment_items.")
 
     def obj_get(self, bundle, **kwargs):
         id = kwargs.get("id", None)
