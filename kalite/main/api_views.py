@@ -259,16 +259,6 @@ def video(request, video_id):
 
 @api_handle_error_with_json
 @backend_cache_page
-def assessment_item(request, assessment_item_id):
-    assessment_item = get_assessment_item_data(request, assessment_item_id)
-    if assessment_item:
-        return JsonResponse(assessment_item)
-    else:
-        return JsonResponseMessageError("Assessment Item with id %(assessment_item_id)s not found" % {"assessment_item_id": assessment_item_id}, status=404)
-
-
-@api_handle_error_with_json
-@backend_cache_page
 def knowledge_map_json(request, topic_id):
     """
     Topic nodes can now have a "knowledge_map" stamped on them.

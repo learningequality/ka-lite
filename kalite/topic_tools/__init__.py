@@ -18,6 +18,7 @@ and more.
 * get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import glob
+import json
 import os
 import re
 from functools import partial
@@ -291,9 +292,19 @@ def get_topic_by_path(path, root_node=None):
     parts = path_noslash[len(root_node["path"]):].split("/")
     cur_node = root_node
     for part in parts:
-        cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
-        if not cur_node:
+        out_node = None
+        for child in cur_node["children"]:
+            if child["slug"]==part:
+                out_node = child
+        if not out_node:
+            logging.warn("No topic found for slug %(part)s in path %(path)s"
+                % {
+                    "part": part,
+                    "path": "/".join(parts),
+                })
             break
+        else:
+            cur_node = out_node
 
     return cur_node or {}
 
@@ -333,7 +344,6 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
     """
     Return hierarchical list of topics for main nav
     """
-    # import pdb; pdb.set_trace()
     topic_hierarchy = {
         "id": topic_node['id'],
         "title": topic_node['title'],
@@ -346,6 +356,12 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
                 topic_hierarchy["children"].append(get_topic_hierarchy(child))
 
     return topic_hierarchy
+
+def dump_topic_hierarchy():
+    """Dump topic hierarchy to JSON"""
+    topic_hierarchy = get_topic_hierarchy()
+    with open('topic_hierarchy.json', 'w') as outfile:
+        json.dump(topic_hierarchy, outfile, indent=4, sort_keys=True)
 
 
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):

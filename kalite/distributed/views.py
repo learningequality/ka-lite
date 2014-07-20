@@ -174,6 +174,7 @@ def splat_handler(request, splat):
     # render topic list or playlist of base node
     if not topic_tools.is_base_leaf(current_node):
         return topic_handler(request, cached_nodes={"topic_tree": topic_tree})
+        # return topic_handler(request)
     else: 
         return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
 
@@ -211,17 +212,18 @@ def exercise_dashboard(request):
 def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""
     return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
+    # return topic_handler(request)
 
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-# @backend_cache_page
+@backend_cache_page
 @render_to("distributed/homepage.html")
 @refresh_topic_cache
 def homepage(request, topics):
     """
     Homepage.
     """
-    context = topic_context(topics)
+    context = topic_handler(topics)
     context.update({
         "title": "Home",
     })
