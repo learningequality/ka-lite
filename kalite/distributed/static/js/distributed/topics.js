@@ -27,7 +27,6 @@ window.TopicContainerOuter = Backbone.View.extend({
     },
 
     show_new_topic: function(node) {
-        console.log('clciked')
         var new_topic = new TopicContainerInner({
             model: node
         });
@@ -36,7 +35,17 @@ window.TopicContainerOuter = Backbone.View.extend({
             this.inner_views[0].$el.hide();     
         }
         this.inner_views.unshift(new_topic); 
+
+        // Listeners
         this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
+        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
+    },
+
+    back_to_parent: function() {
+        // Simply pop the first in the stack and show the next one
+        this.inner_views[0].$el.hide();
+        this.inner_views.shift();
+        this.inner_views[0].$el.show();
     }
 });
 
@@ -63,8 +72,16 @@ window.TopicContainerInner = Backbone.View.extend({
         });
     }, 
 
+    events: {
+        'click a.back-to-parent': 'backToParent'
+    },
+
+    backToParent: function(ev) {
+        this.trigger('back_button_clicked', this.model);
+    },
+
     topic_node_clicked: function(node) {
-        this.trigger('topic_node_clicked', node)
+        this.trigger('topic_node_clicked', node);
     }
 });
 
