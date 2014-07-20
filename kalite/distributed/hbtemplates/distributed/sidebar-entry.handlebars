@@ -2,7 +2,8 @@
 <span class="sidebar-entry sidebar-divider">{{ entity_id }}</span>
 {{else}}
 <a class="sidebar-entry sidebar-entry-link {{#if active }}active{{/if}}" href="#" title="{{ description }}">
-    {{!-- <span class="icon-{{ entity_kind }}"></span> --}}
-    {{ title }}
+    <span class="icon-{{ kind }}"></span>
+    <span class="sidebar-entry-title">{{ title }}</span>
+    <div style="clear: both;"></div>
 </a>
 {{/ifcond}}

@@ -10,7 +10,7 @@
 *~
 *.sublime-*
 *.zip
-build/
+/build/
 locale/
 node_modules/
 tmp/

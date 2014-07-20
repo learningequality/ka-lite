@@ -3,7 +3,43 @@
 
 {% block watch_active %}active{% endblock watch_active %}
 
+{% block headcss %}{{ block.super }}
+
+    <!-- START PERSEUS STUFF -->
+    <link rel="stylesheet" type="text/css" href="{% static 'perseus/ke/css/khan-exercise.css' True %}">
+    <style id="exercise-inline-style"></style> <!-- Used by KA to dynamically add styling to the exercise -->
+    <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/katex/fonts/fonts.css" %}" />
+    <link rel="stylesheet/less" type="text/css" href="{% static "perseus/lib/katex/katex.less" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/mathquill/mathquill.css" %}" />
+    <link rel="stylesheet/less" type="text/css" href="{% static "perseus/stylesheets/exercise-content-package/perseus.less" %}" />
+    <!-- END PERSEUS STUFF -->
+
+{% endblock headcss %}
+
+
 {% block headjs %}{{ block.super }}
+    <!-- START PERSEUS STUFF -->
+    <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+    <script src="{% static "perseus/lib/marked.js" %}"></script>
+    <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
+    <!-- // <script src="{% static "mathjax/MathJax.js" %}"></script> -->
+    <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full&amp;delayStartupUntil=configured"></script>
+    <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
+    <script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
+    <script src="{% static "perseus/lib/kas.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
+    <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
+    <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
+    <script src="{% static 'perseus/ke/interface.js' %}"></script>
+    <!-- END PERSEUS STUFF -->
 
     <script type="text/javascript">
         var ALL_TOPICS_URL = '{% static "data/topics.json" %}';
@@ -13,6 +49,7 @@
     <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
     <!-- <![endif]-->
     <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
     <!--[if !IE]> -->
     <script src="{% static "video-js/video.js" %}"></script>
     <script src="{% static "video-js/video-speed.js" %}"></script>
