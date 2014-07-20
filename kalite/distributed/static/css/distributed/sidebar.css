@@ -102,9 +102,13 @@ Nav Panel
 }
 
 .sidebar-nav-container .title {
-    padding-left: 22px;
+    display: block;
+    float: left;
+    width: 160px;
+    padding-left: 26px;
     padding-top: 20px;
     padding-bottom: 20px;
+    border-left: 2px solid #587448;
     font-size: 18px;
     font-weight: bold;
     color: #CCC;
@@ -114,7 +118,6 @@ Nav Panel
     margin: 0;
     float: left;
     height: 60px;
-    border-right: 2px solid #587448;
     position: relative;
     padding-left: 20px;
     padding-top: 21px;

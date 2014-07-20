@@ -5,6 +5,21 @@
 
 {% block headcss %}{{ block.super }}
 
+    <style type="text/css">
+        /* Overridding bootstrap back to defaults to make perseus looking good */
+        ul {
+            list-style-type: none;
+            margin-left: -8px;
+        }
+        .checkbox, .checkbox > input {
+            padding-left: 0;
+            float: none !important;
+        }
+        #workarea .perseus-widget-container ul.blank-background {
+            background-color: #F7F7F7 !important;
+        }
+    </style>
+
     <!-- START PERSEUS STUFF -->
     <link rel="stylesheet" type="text/css" href="{% static 'perseus/ke/css/khan-exercise.css' True %}">
     <style id="exercise-inline-style"></style> <!-- Used by KA to dynamically add styling to the exercise -->
