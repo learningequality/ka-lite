@@ -30,10 +30,19 @@ window.TopicContainerOuter = Backbone.View.extend({
         var new_topic = new TopicContainerInner({
             model: node
         });
-        this.$el.append(new_topic.el);
+        new_topic.model.set("has_parent", true);
+        new_topic.model.set("blah", "Something");
+        // Only hide after we have the first one!
         if (this.inner_views.length > 0) {
-            this.inner_views[0].$el.hide();     
+            this.inner_views[0].$el.hide();
         }
+        // Only show back button for nodes that have parents
+        if (this.inner_views.length === 0){
+            new_topic.model.set("has_parent", false);
+        } else if (this.inner_views.length >= 1) {
+            new_topic.model.set("has_parent", true);
+        }
+        this.$el.append(new_topic.el);
         this.inner_views.unshift(new_topic); 
 
         // Listeners
@@ -58,10 +67,11 @@ window.TopicContainerInner = Backbone.View.extend({
     initialize: function() { 
         this.model.set("children", new TopicCollection(this.model.get("children")));
         this.render();
+        this.listenTo(this.model, 'change', this.render);
     },
 
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template(this.model.attributes));
         var self = this;
         
         self.node_views = [];
