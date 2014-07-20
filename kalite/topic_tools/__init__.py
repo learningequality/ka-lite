@@ -292,9 +292,19 @@ def get_topic_by_path(path, root_node=None):
     parts = path_noslash[len(root_node["path"]):].split("/")
     cur_node = root_node
     for part in parts:
-        cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
-        if not cur_node:
+        out_node = None
+        for child in cur_node["children"]:
+            if child["slug"]==part:
+                out_node = child
+        if not out_node:
+            logging.warn("No topic found for slug %(part)s in path %(path)s"
+                % {
+                    "part": part,
+                    "path": "/".join(parts),
+                })
             break
+        else:
+            cur_node = out_node
 
     return cur_node or {}
 
