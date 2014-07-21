@@ -12,9 +12,9 @@ function getSelectedItems(select) {
 function setActionButtonState(select) {
     // argument to allow conditional selection of action buttons.
     if($(select).find("tr.selectable.selected").length) {
-        $('button[value="'+select+'"]').removeAttr("disabled");
+        $('div.action button[value="'+select+'"]').removeAttr("disabled");
     } else {
-        $('button[value="'+select+'"]').attr("disabled", "disabled");
+        $('div.action button[value="'+select+'"]').attr("disabled", "disabled");
     }
 }
 
@@ -27,17 +27,17 @@ $(function() {
     });
 
     $(".all").click(function(event){
-        // Select all users within local table
-        $(event.target.value).find("tr").addClass("selected");
-        // Only set action button state on related action buttons.
-        setActionButtonState(event.target.value);
+        // Select all checkboxes within local table
+        var el = $(event.target.value);
+        el.find("tbody").find("input:checkbox:not(:checked)").mousedown();
+        el.find("table").find("input.select-all").attr("checked", true);
     });
 
     $(".none").click(function(event){
-        // Unselect all users within local table
-        $(event.target.value).find("tr").removeClass("selected");
-        // Only set action button state on related action buttons.
-        setActionButtonState(event.target.value);
+        // Unselect all checkboxes within local table
+        var el = $(event.target.value);
+        el.find("tbody").find("input:checkbox").mousedown();
+        el.find("table").find("input.select-all").attr("checked", false);
     });
 
     $(".movegroup").click(function(event) {
