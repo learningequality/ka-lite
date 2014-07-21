@@ -181,7 +181,13 @@
     <div id="map_canvas"></div>
     <form id="facility_form" method="post" class="basic-form">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% for field in form %}
+          <p>
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+            <span class="helptext">{{ field.help_text }}</span>
+          </p>
+        {% endfor %}
         {% trans "Save facility" as value %}
         <input type="submit" value="{{ value }}" class="submit btn btn-default btn-sm"/>
     </form>
