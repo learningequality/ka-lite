@@ -29,15 +29,15 @@ $(function() {
     $(".all").click(function(event){
         // Select all checkboxes within local table
         var el = $(event.target.value);
-        el.find("tbody").find("input:checkbox:not(:checked)").mousedown();
-        el.find("table").find("input.select-all").attr("checked", true);
+        el.find("thead").find("input.select-all").prop("checked", true);
+        el.find("tbody").find("tr").not(".selected").mousedown();
     });
 
     $(".none").click(function(event){
         // Unselect all checkboxes within local table
         var el = $(event.target.value);
-        el.find("tbody").find("input:checkbox").mousedown();
-        el.find("table").find("input.select-all").attr("checked", false);
+        el.find("thead").find("input.select-all").prop("checked", false);
+        el.find("tbody").find("tr.selected").mousedown();
     });
 
     $(".movegroup").click(function(event) {
