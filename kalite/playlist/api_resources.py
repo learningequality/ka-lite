@@ -4,7 +4,7 @@ from tastypie.resources import ModelResource, Resource
 
 from .models import PlaylistToGroupMapping, QuizLog, KAPlaylist, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
-from kalite.topic_tools import video_dict_by_video_id
+from kalite.topic_tools import get_video_cache
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -60,7 +60,7 @@ class PlaylistResource(Resource):
     def obj_get(self, bundle, **kwargs):
         playlists = Playlist.all()
         pk = kwargs['pk']
-        video_dict = video_dict_by_video_id()
+        video_dict = get_video_cache()
         for playlist in playlists:
             if str(playlist.id) == pk:
                 playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]

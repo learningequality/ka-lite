@@ -32,11 +32,6 @@ var Playlist = Backbone.Model.extend({
             }));
             response.groups_assigned = groupList;
 
-            // initialize the playlists's entries list
-            var playlistEntryList = new PlaylistEntryList(response.entries.map(function(entrydata) {
-                return new PlaylistEntry(entrydata);
-            }));
-            response.entries = playlistEntryList;
         }
 
         return response;
@@ -58,45 +53,3 @@ var PlaylistList = Backbone.Collection.extend({
         return response.objects;
     }
 });
-
-
-var KAPlaylistEntry = Backbone.Model;
-
-var KAPlaylistEntryList = Backbone.Collection.extend({
-
-    model: KAPlaylistEntry
-});
-
-var KAPlaylist = Backbone.Model.extend({
-
-    urlRoot: ALL_PLAYLISTS_URL,
-
-    parse: function(response) {
-        // initialize the assigned groups list
-
-        if(response) {
-            // initialize the playlists's entries list
-            var playlistEntryList = new PlaylistEntryList(response.entries.map(function(entrydata) {
-                return new KAPlaylistEntry(entrydata);
-            }));
-            response.entries = playlistEntryList;
-        }
-
-        return response;
-    }
-});
-
-var KAPlaylistList = Backbone.Collection.extend({
-
-    model: KAPlaylist,
-
-    url: function() { return ALL_PLAYLISTS_URL; },
-
-    // we make our own parsing mechanism since tastypie includes some metadata in its model list responses
-    parse: function(response) {
-        return response.objects;
-    }
-});
-
-
-

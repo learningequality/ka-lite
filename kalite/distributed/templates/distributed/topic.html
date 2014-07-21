@@ -76,21 +76,21 @@
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
     <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
-    <script src="{% static 'js/distributed/bigSlide.js' %}"></script>
-    <script src="{% static 'js/distributed/topics.js' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='distributed' %}"></script>
+    <script src="{% static 'js/distributed/topics/bigSlide.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/models.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/views.js' %}"></script>
 
     <script type="text/javascript">
         $(function() {
             window.sidebar_view = new SidebarView();
-            $("#topic-container").append(sidebar_view.el);
+            $("#sidebar-container").append(sidebar_view.el);
         });
     </script>
 
 {% endblock headjs %}
 
 {% block content %}
-    <div id="topic-container"> 
+    <div id="sidebar-container"> 
     </div>
     <div id="content-area">
     </div>
