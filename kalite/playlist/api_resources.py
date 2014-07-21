@@ -2,7 +2,7 @@ from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistToGroupMapping, QuizLog, KAPlaylist, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
+from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
 from kalite.topic_tools import get_video_cache
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
@@ -108,74 +108,3 @@ class QuizLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
-
-
-
-class KAPlaylistResource(Resource):
-
-    description = fields.CharField(attribute='description')
-    tag = fields.CharField(attribute='tag', null=True)
-    id = fields.CharField(attribute='id')
-    title = fields.CharField(attribute='title')
-    entries = fields.ListField(attribute='entries')
-
-    class Meta:
-        resource_name = 'ka_playlist'
-        object_class = KAPlaylist
-
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if isinstance(bundle_or_obj, KAPlaylist):
-            kwargs['pk'] = bundle_or_obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.obj.id
-
-        return kwargs
-
-    def get_object_list(self, request):
-        '''Get the list of playlists based from a request'''
-        # All users get to see all playlists
-        playlists = KAPlaylist.all()
-
-        return playlists
-
-    def obj_get_list(self, bundle, **kwargs):
-        return self.get_object_list(bundle.request)
-
-    def obj_get(self, bundle, **kwargs):
-        playlists = KAPlaylist.all()
-        pk = kwargs['pk']
-        video_dict = video_dict_by_video_id()
-        for playlist in playlists:
-            if str(playlist.id) == pk:
-                playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
-                return playlist
-        else:
-            raise NotFound('Playlist with pk %s not found' % pk)
-
-    def obj_create(self, request):
-        raise NotImplemented("Operation not implemented yet for playlists.")
-
-    def obj_update(self, bundle, **kwargs):
-        new_group_ids = set([group['id'] for group in bundle.data['groups_assigned']])
-        playlist = KAPlaylist(**bundle.data)
-
-        # hack because playlist isn't a model yet: clear the
-        # playlist's groups, then read each one according to what was
-        # given in the request. The proper way is to just change the
-        # many-to-many relation in the ORM.
-        with inside_transaction():
-            PlaylistToGroupMapping.objects.filter(playlist=playlist.id).delete()
-            new_mappings = ([PlaylistToGroupMapping(group_id=group_id, playlist=playlist.id) for group_id in new_group_ids])
-            PlaylistToGroupMapping.objects.bulk_create(new_mappings)
-
-        return bundle
-
-    def obj_delete_list(self, request):
-        raise NotImplemented("Operation not implemented yet for playlists.")
-
-    def obj_delete(self, request):
-        raise NotImplemented("Operation not implemented yet for playlists.")
-
-    def rollback(self, request):
-        raise NotImplemented("Operation not implemented yet for playlists.")

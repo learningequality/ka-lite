@@ -80,7 +80,8 @@ window.SidebarView = Backbone.View.extend({
 
         this.topic_node_view = new TopicContainerOuter({
             model: this.model,
-            entity_key: this.options.entity_key
+            entity_key: this.options.entity_key,
+            entity_collection: this.options.entity_collection
         });
         this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
         this.listenTo(this.topic_node_view, "showSidebar", this.show_sidebar);
@@ -133,9 +134,9 @@ window.SidebarContentView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this.entity_key = this.options.entity_key || "children";
+        this.entity_key = this.options.entity_key;
 
-        this.entity_collection = this.options.entity_collection || TopicCollection;
+        this.entity_collection = this.options.entity_collection;
 
         this._entry_views = [];
 
@@ -279,12 +280,10 @@ window.TopicContainerOuter = Backbone.View.extend({
         }
         var data = {
             model: node,
-            has_parent: this.inner_views.length >= 1
+            has_parent: this.inner_views.length >= 1,
+            entity_key: this.options.entity_key,
+            entity_collection: this.options.entity_collection
         };
-
-        if (this.options.entity_key){
-            data["entity_key"] = this.options.entity_key;
-        }
 
         var new_topic = new ItemWrapper(data);
 

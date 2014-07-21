@@ -1,6 +1,6 @@
 from django.conf.urls import include, patterns, url
 
-from .api_resources import PlaylistResource, QuizLogResource, KAPlaylistResource
+from .api_resources import PlaylistResource, QuizLogResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -8,6 +8,4 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(PlaylistResource().urls)),	
     # For QuizLogs in playlists
     url(r'^', include(QuizLogResource().urls)),
-    # For normal playlists
-    url(r'^', include(KAPlaylistResource().urls)),
 )

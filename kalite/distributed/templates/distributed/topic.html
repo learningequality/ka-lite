@@ -82,7 +82,10 @@
 
     <script type="text/javascript">
         $(function() {
-            window.sidebar_view = new SidebarView();
+            window.sidebar_view = new SidebarView({
+                entity_key: "children",
+                entity_collection: TopicCollection
+            });
             $("#sidebar-container").append(sidebar_view.el);
         });
     </script>
