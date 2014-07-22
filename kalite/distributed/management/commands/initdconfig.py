@@ -44,38 +44,15 @@ if sys.platform == 'darwin':
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>KA Lite Daemon</string>
+        <string>org.learningequality.kalite</string>
         <key>Program</key>
         <string>%(script_path)s/start.sh</string>
-        <key>RunAtLoad</key>
-        <true/>
         <key>StandardOutPath</key>
         <string>/tmp/kalite.out</string>
         <key>StandardErrorPath</key>
         <string>/tmp/kalite.err</string>
         <key>WorkingDirectory</key>
-        <string>%(repo_path)s</string>
-    </dict>
-</plist>
-    """
-
-    script_template = """
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-    <dict>
-        <key>Label</key>
-        <string>KA Lite Daemon</string>
-        <key>Program</key>
-        <string>su `stat -f "%%Su" "%(repo_path)s"` -c "%(script_path)s/start.sh"</string>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>StandardOutPath</key>
-        <string>/tmp/kalite.out</string>
-        <key>StandardErrorPath</key>
-        <string>/tmp/kalite.err</string>
-        <key>WorkingDirectory</key>
-        <string>%(repo_path)s</string>
+        <string>%(script_path)s</string>
     </dict>
 </plist>
     """

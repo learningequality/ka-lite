@@ -36,7 +36,7 @@ if [[ $we_are_rpi = "True" ]]; then
 fi
 
 # Check if we have init.d for Linux or LaunchAgents for OSX so we can setup auto-start services.
-if [ -d "/etc/init.d" ] || [ -d "/Library/LaunchAgents/" ]; then
+if [ -d "/etc/init.d" ] || [ -d "/Library/LaunchAgents" ]; then
     while true
     do
         echo
@@ -47,7 +47,8 @@ if [ -d "/etc/init.d" ] || [ -d "/Library/LaunchAgents/" ]; then
             y|Y)
                 echo
                 sudo "$SCRIPT_DIR/runatboot.sh"
-                echo
+                launchctl load -w /$HOME/Library/LaunchAgents/org.learningequality.kalite.plist
+                echo "KA Lite server will now run automatically on login."
                 break
                 ;;
             n|N)
