@@ -62,8 +62,6 @@ class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
-        # if [item for item in args if item.lower() == 'start']:
-        #     print '==> args', args, ' ==> options', options
         repo_path = os.path.join(settings.PROJECT_PATH, "..")
         script_path = os.path.join(repo_path, "scripts")
         self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path})
