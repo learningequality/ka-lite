@@ -271,9 +271,8 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if group.id %}
                                     {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                    <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}">
+                                    <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={% if group.id %}{{ group.id }}{% else %}Ungrouped{% endif %}">
                                     <div class="sparklines" sparkType="bar" sparkBarColor="green">
                                     <!--
                                         {{ group.total_logins }},
@@ -281,7 +280,7 @@
                                         {{ group.total_exercises }}
                                     -->
                                     </div></a>
-                                    {% endif %}
+                                    
                                 </td>
                                 <td>{{ group.total_users }}</td>
                                 <td>{{ group.total_logins }}</td>

@@ -103,6 +103,9 @@
                                     {% for group in groupobject.groups %}
                                     <option value="{{ group.id }}">{{ group }}</option>
                                     {% endfor %}
+                                    {% if ungrouped_available %}
+                                    <option value="Ungrouped">{% trans "Ungrouped" %}</option>
+                                    {% endif %}
                             {% else %}
                                 <option value="" selected>[{% trans "no groups" %}]</option>
                             {% endif %}

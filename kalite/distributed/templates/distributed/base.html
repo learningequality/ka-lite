@@ -87,9 +87,10 @@
          var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
          var CURRENT_LANGUAGE = "{{ current_language }}";
         </script>
-        <script type="text/javascript" src="{% static 'js/less.js"></script>
+        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/modernizr.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' True %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' True %}"></script>
@@ -103,17 +104,18 @@
 
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
 
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-
-                <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
-                    <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
-                    <div class="pull-right visible-xs" id="sitepoints-xs"></div>
-                </a>
+                    <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
+                        <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
+                        <div class="pull-right visible-xs" id="sitepoints-xs"></div>
+                    </a>
+                </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {% block sitewide_navigation %}
