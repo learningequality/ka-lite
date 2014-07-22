@@ -38,6 +38,10 @@ esac
 """
 
 if sys.platform == 'darwin':
+    # TODO(cpauya): Set the StandardOutPath key so that /dev/stdout or /dev/tty can be used.  Reason is if user runs:
+    # `launchctl load -w $HOME/Library/LaunchAgents/org.learningequality.kalite.plist`
+    # then the output of the `start.sh` script are not shown on the terminal but instead on
+    # `/tmp/kalite.out`.  There must be a way to set it to display on the user's terminal.
     script_template = """
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
