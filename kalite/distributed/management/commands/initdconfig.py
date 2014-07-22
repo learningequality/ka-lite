@@ -1,10 +1,10 @@
 """
 """
 import os
+import sys
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-
 
 script_template = """
 #! /bin/sh
@@ -37,10 +37,56 @@ esac
 
 """
 
+if sys.platform == 'darwin':
+    script_template = """
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>KA Lite Daemon</string>
+        <key>Program</key>
+        <string>%(script_path)s/start.sh</string>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardOutPath</key>
+        <string>/tmp/kalite.out</string>
+        <key>StandardErrorPath</key>
+        <string>/tmp/kalite.err</string>
+        <key>WorkingDirectory</key>
+        <string>%(repo_path)s</string>
+    </dict>
+</plist>
+    """
+
+    script_template = """
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>KA Lite Daemon</string>
+        <key>Program</key>
+        <string>su `stat -f "%%Su" "%(repo_path)s"` -c "%(script_path)s/start.sh"</string>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardOutPath</key>
+        <string>/tmp/kalite.out</string>
+        <key>StandardErrorPath</key>
+        <string>/tmp/kalite.err</string>
+        <key>WorkingDirectory</key>
+        <string>%(repo_path)s</string>
+    </dict>
+</plist>
+    """
+
+
 class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
+        # if [item for item in args if item.lower() == 'start']:
+        #     print '==> args', args, ' ==> options', options
         repo_path = os.path.join(settings.PROJECT_PATH, "..")
         script_path = os.path.join(repo_path, "scripts")
-        self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path })
+        self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path})

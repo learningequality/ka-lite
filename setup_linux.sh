@@ -35,7 +35,8 @@ if [[ $we_are_rpi = "True" ]]; then
     done
 fi
 
-if [ -d "/etc/init.d" ]; then
+# Check if we have init.d for Linux or LaunchAgents for OSX so we can setup auto-start services.
+if [ -d "/etc/init.d" ] || [ -d "/Library/LaunchAgents/" ]; then
     while true
     do
         echo
