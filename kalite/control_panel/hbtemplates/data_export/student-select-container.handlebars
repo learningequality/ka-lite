@@ -1,0 +1,16 @@
+<div class="form-group">
+    <label class="sr-only" for="facility-name">Facility</label>
+    <select class="form-control" id="facility-name">
+        {{#each facilities}}
+            <option>{{ name }}</option>    
+        {{/each}}
+    </select>
+</div>
+<div class="form-group">
+    <label class="sr-only" for="group-name">Group</label>
+    <select class="form-control" id="group-name">
+        {{#each group}}
+            <option>{{ name }}</option>    
+        {{/each}}
+    </select>
+</div>

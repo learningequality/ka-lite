@@ -6,46 +6,28 @@
 {% block title %}{{ zone.name }} - {% trans "Data Export" %} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/control_panel/export_data.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
+    <script>
+        var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
+        console.log(ALL_FACILITIES_URL);
+    </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.container_view = new DataExportView({
+                el: $("#data-export-container")
+            });
+        });
+    </script>
+
 {% endblock headjs %}
 
 {% block control_panel_content %}
 
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            {% if facilities %}
-            <form class="form-inline">
-                <div class="form-group">
-                    <label class="sr-only" for="facility-name">Facility</label>
-                    <select class="form-control" id="facility-name">
-                        {% for f in facilities %}
-                            <option>{{ f.name }}</option>    
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="sr-only" for="group-name">Group</label>
-                    <select class="form-control" id="group-name" disabled>
-                        <option></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="sr-only" for="test-name">Test</label>
-                    <select class="form-control" id="test-name" disabled>
-                        <option></option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    Export
-                </button>
-            </form>
-            
-            {% else %}
-
-            <p>You currently have no facilities.</p>
-
-            {% endif %}
+        <div id="data-export-container" class="col-md-12">
         </div>
     </div>
 </div> <!-- End container -->
