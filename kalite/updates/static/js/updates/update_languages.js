@@ -235,7 +235,7 @@ function update_server_status() {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            updatesStart("update", 1000, languagepack_callbacks);
+            updatesStart("languagepackdownload", 1000, languagepack_callbacks);
         } else {
             clear_messages();
             show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));

@@ -19,7 +19,8 @@ INSTALLED_APPS = (
     "fle_utils.django_utils",  # templatetags
     "kalite.caching",  # to get local_install_context
     "kalite.control_panel",  # to get local_install_context
-    "kalite.distributed",  # to access caching
+    # Following line was commented out because it led to distributed app being imported by central server indirectly
+    # "kalite.distributed",  # to access caching
     "kalite.i18n",  # language pack updates
     "kalite.main",  # TODO: remove (MainTestCase should be KALiteTestCase)
     "kalite.topic_tools",  # topic tools

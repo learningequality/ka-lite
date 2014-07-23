@@ -219,7 +219,7 @@ class SyncedModel(ExtendedModel):
         self.save()
 
     def full_clean(self, exclude=None, imported=False):
-        """Django method for validating uniqueness contraints.
+        """Django method for validating uniqueness constraints.
         We can have uniqueness constraints that can't be expressed as a tuple of fields,
         so need to override this to implement.
 
@@ -373,7 +373,9 @@ class SyncedModel(ExtendedModel):
 
             if sign:
                 assert self.counter is not None, "Only sign data where count is set"
-                # Always sign on the central server.
+                # if we are a trusted (zoneless) device, i.e. the central server, then set the zone fallback
+                if own_device.is_trusted():
+                    self.zone_fallback = self.get_zone()
                 self.sign(device=own_device)
             else:
                 self.set_id()
@@ -443,7 +445,8 @@ class SyncedModel(ExtendedModel):
 
 class DeferredSignSyncedModel(SyncedModel):
     """
-    Synced model that we defer signing until it's time to sync.
+    Synced model that defers signing until it's time to sync. This helps with CPU efficency because
+    we don't need to recalculate the model signature every time the model is updated and saved.
     """
     def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
         super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
@@ -455,7 +458,8 @@ class DeferredSignSyncedModel(SyncedModel):
 
 class DeferredCountSyncedModel(DeferredSignSyncedModel):
     """
-    Defer incrementing counters until syncing.
+    Defer incrementing counters until syncing. This helps with IO efficiency because we don't need to
+    update the counter_position on our device's metadata model everytime this model is saved.
     """
     def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
         """

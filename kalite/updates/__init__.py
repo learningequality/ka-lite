@@ -3,11 +3,9 @@ import shutil
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
-from .models import UpdateProgressLog
+from .models import UpdateProgressLog, VideoFile
 from .videos import *
 from fle_utils.chronograph.models import Job
-
-from .models import VideoFile
 from fle_utils.internet import invalidate_web_cache
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
 

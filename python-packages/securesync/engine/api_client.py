@@ -37,9 +37,15 @@ class SyncClient(BaseClient):
     def start_session(self):
         """A 'session' to exchange data"""
 
+        if self.verbose:
+            print "\nCLIENT: start_session"
+
         if self.session:
             self.close_session()
         self.session = SyncSession()
+
+        if self.verbose:
+            print "CLIENT: start_session, request #1"
 
         # Request one: validate me as a sessionable partner
         (self.session.client_nonce,
@@ -69,6 +75,9 @@ class SyncClient(BaseClient):
         self.session.ip = self.parsed_url.netloc
 
         self.session.save()
+
+        if self.verbose:
+            print "CLIENT: start_session, request #2"
 
         # Request two: create your own session, and
         #   report the result back to me for validation
@@ -125,6 +134,10 @@ class SyncClient(BaseClient):
 
 
     def close_session(self):
+
+        if self.verbose:
+            print "\nCLIENT: close_session"
+
         if not self.session:
             return
         self.post("session/destroy", {
@@ -140,11 +153,19 @@ class SyncClient(BaseClient):
     def get_client_device_counters(self):
         return get_device_counters(zone=self.session.client_device.get_zone())
 
-
     def sync_device_records(self):
+
+        if self.verbose:
+            print "\nCLIENT: sync_device_records"
 
         server_counters = self.get_server_device_counters()
         client_counters = self.get_client_device_counters()
+
+        if self.verbose:
+            print client_counters, server_counters
+            print "COUNTERS: ([D]istributed, [C]entral)"
+            for device in set(server_counters.keys()).union(client_counters.keys()):
+                print "\t", device[0:5], "D%d" % client_counters.get(device, 0), "C%d" % server_counters.get(device, 0)
 
         devices_to_download = []
         devices_to_upload = []
@@ -152,6 +173,7 @@ class SyncClient(BaseClient):
         counters_to_download = {}
         counters_to_upload = {}
 
+        # loop through the devices we have locally
         for device_id in client_counters:
             if device_id not in server_counters:
                 devices_to_upload.append(device_id)
@@ -159,6 +181,7 @@ class SyncClient(BaseClient):
             elif client_counters[device_id] > server_counters[device_id]:
                 counters_to_upload[device_id] = server_counters[device_id]
 
+        # loop through the devices the server has told us about
         for device_id in server_counters:
             if device_id not in client_counters:
                 devices_to_download.append(device_id)
@@ -166,11 +189,16 @@ class SyncClient(BaseClient):
             elif server_counters[device_id] > client_counters[device_id]:
                 counters_to_download[device_id] = client_counters[device_id]
 
+        if self.verbose:
+            print "CLIENT: devices_to_upload = %r" % devices_to_upload
+            print "CLIENT: devices_to_download = %r" % devices_to_download
+
         response = json.loads(self.post("device/download", {"devices": devices_to_download}).content)
         # As usual, we're deserializing from the central server, so we assume that what we're getting
         #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
         #   pre-cleaned for us.
-        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False)
+
+        download_results = save_serialized_models(response.get("devices", "[]"), increment_counters=False, verbose=self.verbose)
 
         # BUGFIX(bcipolli) metadata only gets created if models are
         #   streamed; if a device is downloaded but no models are downloaded,
@@ -186,7 +214,7 @@ class SyncClient(BaseClient):
                 d.set_counter_position(counters_to_download[device_id])
 
         self.session.models_downloaded += download_results["saved_model_count"]
-        self.session.errors += download_results.has_key("error")
+        self.display_and_count_errors(download_results, context_name="downloading devices")
 
         self.session.save()
 
@@ -194,6 +222,15 @@ class SyncClient(BaseClient):
 
         return (counters_to_download, counters_to_upload)
 
+    def display_and_count_errors(self, data, context_name="syncing data"):
+
+        if "error" in data:
+            print "Server error(s) in %s: %s" % (context_name, data["error"])
+            self.session.errors += 1
+
+        if "exceptions" in data:
+            print "Server exceptions(s) in %s: %s" % (context_name, data["exceptions"])
+            self.session.errors += 1
 
     def sync_models(self):
         """
@@ -208,6 +245,9 @@ class SyncClient(BaseClient):
         is called in a loop elsewhere)
         """
 
+        if self.verbose:
+            print "\nCLIENT: sync_models"
+
         counters_to_download, counters_to_upload = self.sync_device_records()
 
         # Download (but prepare for errors--both thrown and unthrown!)
@@ -216,16 +256,19 @@ class SyncClient(BaseClient):
             "unsaved_model_count" : 0,
         }
         try:
+
+            if self.verbose:
+                print "CLIENT: sync_models, downloading"
+
             response = json.loads(self.post("models/download", {"device_counters": counters_to_download}).content)
             # As usual, we're deserializing from the central server, so we assume that what we're getting
             #   is "smartly" dumbed down for us.  We don't need to specify the src_version, as it's
             #   pre-cleanaed for us.
-            download_results = save_serialized_models(response.get("models", "[]"))
+            download_results.update(save_serialized_models(response.get("models", "[]"), verbose=self.verbose))
             self.session.models_downloaded += download_results["saved_model_count"]
-            self.session.errors += download_results.has_key("error")
-            self.session.errors += download_results.has_key("exceptions")
+            self.display_and_count_errors(download_results, context_name="downloading models")
         except Exception as e:
-            logging.debug("Exception downloading models: %s" % e)
+            print "Exception downloading models (in api_client): %s, %s, %s" % (e.__class__.__name__, e.message, e.args)
             download_results["error"] = e
             self.session.errors += 1
 
@@ -234,16 +277,21 @@ class SyncClient(BaseClient):
             "saved_model_count" : 0,
             "unsaved_model_count" : 0,
         }
+
         try:
+
+            if self.verbose:
+                print "CLIENT: sync_models, uploading"
+
             # By not specifying a dest_version, we're sending everything.
             #   Again, this is OK because we're sending to the central server.
-            response = self.post("models/upload", {"models": get_serialized_models(counters_to_upload)})
-            upload_results = json.loads(response.content)
+            response = self.post("models/upload", {"models": get_serialized_models(counters_to_upload, verbose=self.verbose)})
+
+            upload_results.update(json.loads(response.content))
             self.session.models_uploaded += upload_results["saved_model_count"]
-            self.session.errors += upload_results.has_key("error")
-            self.session.errors += upload_results.has_key("exceptions")
+            self.display_and_count_errors(upload_results, context_name="uploading models")
         except Exception as e:
-            logging.debug("Exception uploading models: %s" % e)
+            print "Exception uploading models (in api_client): %s, %s, %s" % (e.__class__.__name__, e.message, e.args)
             upload_results["error"] = e
             self.session.errors += 1
 
