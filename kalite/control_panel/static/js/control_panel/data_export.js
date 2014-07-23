@@ -30,7 +30,15 @@ var FacilityCollection = Backbone.Collection.extend({
     }
 });
 
-var GroupCollection = Backbone.Collection.extend({ model: GroupModel });
+var GroupCollection = Backbone.Collection.extend({ 
+    model: GroupModel,
+    url: ALL_GROUPS_URL,
+
+    initialize: function() {
+        console.log("A new GroupCollection was born!");
+    }
+
+});
 var TestCollection = Backbone.Collection.extend({ model: TestModel });
 
 
@@ -73,13 +81,18 @@ var StudentSelectView = Backbone.View.extend({
 
         // Listen for dem changez
         this.listenTo(this.facility_list, 'reset', this.render);
+        this.listenTo(this.group_list, 'reset', this.render);
 
         // Fetch collections 
         this.facility_list.fetch({reset: true}).then(function() { self.render() });
+        this.group_list.fetch({reset: true}).then(function() { self.render() });
     },
 
     render: function() {
-        this.$el.html(this.template({facilities: this.facility_list.toJSON()}));
+        this.$el.html(this.template({
+            facilities: this.facility_list.toJSON(),
+            groups: this.group_list.toJSON()
+        }));
     }
 });
 

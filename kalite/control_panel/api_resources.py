@@ -23,6 +23,22 @@ class FacilityResource(ModelResource):
         return facility_list
 
 
+class GroupResource(ModelResource):
+    class Meta:
+        queryset = FacilityGroup.objects.all()
+        resource_name = 'group'
+
+    def obj_get_list(self, bundle, **kwargs):
+        # Allow filtering groups by facility
+        facility_id = bundle.request.GET.get('facility_id')
+        if facility_id:
+            group_list = FacilityGroup.objects.filter(facility__id=facility_id)
+        else:
+            group_list = FacilityGroup.objects.all()
+
+        return group_list
+
+
 # class PlaylistResource(Resource):
 
 #     description = fields.CharField(attribute='description')

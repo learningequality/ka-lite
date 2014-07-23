@@ -9,7 +9,7 @@
     <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
     <script>
         var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
-        console.log(ALL_FACILITIES_URL);
+        var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
 
