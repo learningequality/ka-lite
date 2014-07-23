@@ -46,6 +46,7 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
+            <button href="{% url 'zone_data_export' zone_id=zone_id %}" class="btn btn-primary">Export Data</button>
 {% endblock buttons %}
 
 {% block control_panel_content %}

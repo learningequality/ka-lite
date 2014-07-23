@@ -147,6 +147,21 @@ def zone_management(request, zone_id="None"):
 
 
 @require_authorized_admin
+@render_to("control_panel/data_export.html")
+def zone_data_export(request, zone_id=None):
+    context = control_panel_context(request, zone_id=zone_id)
+
+    if zone_id:
+        facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+    else:
+        facilities = Facility.objects.all()
+
+    context.update({"facilities": facilities})
+
+    return context
+
+
+@require_authorized_admin
 @render_to("control_panel/device_management.html")
 def device_management(request, device_id, zone_id=None, per_page=None, cur_page=None):
     context = control_panel_context(request, zone_id=zone_id, device_id=device_id)
