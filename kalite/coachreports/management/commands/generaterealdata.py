@@ -459,9 +459,9 @@ def generate_fake_coachreport_logs(password="hellothere"):
             facility=Facility.objects.all()[0],
             username=random.choice(firstnames),
         )
-        # t.set_password(password)
-        t.set_password(raw_password=password)
-        t.save()
+        t.set_password(password)
+        # t.set_password(raw_password=password)
+        # t.save()
 
     # TODO: create flags later
     num_logs = 20
