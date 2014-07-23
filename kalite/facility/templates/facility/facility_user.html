@@ -24,8 +24,8 @@
         {# Allow admins to add a new group #}
         {% if request.is_admin %}
             {% trans "Add a new group" as add_new_group %}
-            $('#id_group').parent().find(".helptext").html('(<a href="{% url 'add_group' %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
-        {% elif num_groups == 0 %}
+            $('#id_group').parent().find(".helptext").html('(<a href="{% url 'add_group' %}?facility={{facility.id}}&next={{ request.get_full_path|urlencode }}">{{add_new_group}}</a>)');
+        {% elif form.fields.group.choices.queryset.count == 0 %}
             $('#id_group').parent().hide();
         {% endif %}
 
@@ -36,7 +36,7 @@
         {% endif %}
 
         {# Show facility info #}
-        {% if not singlefacility %}
+        {% if request.session.facility_count == 1 %}
             // Show the dropdown
             $("#id_facility").show();
         {% else %}
@@ -55,6 +55,6 @@
 
         {{ form.as_p }}
 
-        <input type="submit" class="submit" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
+        <input type="submit" class="submit" value="{% if new_user %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
     </form>
 {% endblock content %}

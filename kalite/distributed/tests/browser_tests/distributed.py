@@ -91,7 +91,6 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
     def test_login_mixed(self):
         """Tests that a user can login with the uppercased version of the email address that was registered"""
-
         # Register user in one case
         self.browser_register_user(username=self.username.lower(), password=self.password)
 
