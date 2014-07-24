@@ -65,6 +65,16 @@ var DataExportView = Backbone.View.extend({
         // append facility & group select views
         this.$('#student-select-container').append(this.facility_select_view.$el);
         this.$('#student-select-container').append(this.group_select_view.$el);
+    },
+
+    events: {
+        "click #export-button": "exportData"
+    },
+
+    exportData: function(ev) {
+        console.log("Exporting CSV for: ");
+        console.log("Facility: " + this.model.get("facility_id"));
+        console.log("Group: " + this.model.get("group_id"));  
     }
 
 });
@@ -127,7 +137,6 @@ var GroupSelectView = Backbone.View.extend({
         this.render();
 
         // Listen for any changes on the state model, when it happens, re-fetch self
-        window.that = this;
         this.listenTo(this.model, 'change', this.stateModelChanged);
     },
 
@@ -135,6 +144,15 @@ var GroupSelectView = Backbone.View.extend({
         this.$el.html(this.template({
             groups: this.group_list.toJSON()
         }));
+    },
+
+    events: {
+        "change": "groupChanged"
+    },
+
+    groupChanged: function(ev) {
+        var groupID = $("#" + ev.target.id).find(":selected").attr("data-group-id");
+        this.model.set({ group_id: groupID });
     },
 
     stateModelChanged: function() {
