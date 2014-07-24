@@ -10,8 +10,6 @@ from django.utils import unittest
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 
-logging = settings.LOG
-
 __all__ = ('DjangoTestSuiteRunner')
 
 # The module name for tests outside models.py
@@ -23,7 +21,6 @@ doctestOutputChecker = OutputChecker()
 def get_tests(app_module):
     parts = app_module.__name__.split('.')
     prefix, last = parts[:-1], parts[-1]
-    logging.info('==> get_tests() BEFORE import_module() parts == %s' % (parts,))
     try:
         test_module = import_module('.'.join(prefix + [TEST_MODULE]))
     except ImportError:
@@ -31,21 +28,17 @@ def get_tests(app_module):
         # due to an import error in a tests.py that actually exists?
         # app_module either points to a models.py file, or models/__init__.py
         # Tests are therefore either in same directory, or one level up
-        logging.info('==> get_tests() ImportError -> BEFORE import_module() test_module == %s' % (app_module,))
         if last == 'models':
             app_root = import_module('.'.join(prefix))
         else:
             app_root = app_module
 
-        logging.info('==> get_tests() BEFORE module_has_submodule() app_root == %s' % (app_root,))
         if not module_has_submodule(app_root, TEST_MODULE):
             test_module = None
         else:
             # The module exists, so there must be an import error in the test
             # module itself.
-            logging.info('==> get_tests() BEFORE raise TEST_MODULE == %s' % (TEST_MODULE,))
             raise
-    logging.info('==> get_tests() BEFORE out test_module == %s' % (test_module,))
     return test_module
 
 
@@ -55,41 +48,30 @@ def build_suite(app_module):
     """
     suite = unittest.TestSuite()
 
-    logging.info('==> build_suite() -> BEFORE app_module %s' % (app_module,))
-
     # Load unit and doctests in the models.py module. If module has
     # a suite() method, use it. Otherwise build the test suite ourselves.
     if hasattr(app_module, 'suite'):
-        logging.info('==> build_suite() -> BEFORE addTest 1...')
         suite.addTest(app_module.suite())
     else:
-        logging.info('==> build_suite() -> BEFORE addTest 2...')
         suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(
             app_module))
         try:
-            logging.info('==> build_suite() -> BEFORE addTest 2a...')
             suite.addTest(doctest.DocTestSuite(app_module,
                                                checker=doctestOutputChecker,
                                                runner=DocTestRunner))
-        except ValueError as exc:
+        except ValueError:
             # No doc tests in models.py
-            logging.info('==> build_suite() -> EXCEPTION addTest 2b... %s' % (exc,))
             pass
 
     # Check to see if a separate 'tests' module exists parallel to the
     # models module
-    logging.info('==> build_suite() -> BEFORE get_tests(app_module) app_module == %s' % (app_module,))
     test_module = get_tests(app_module)
-    logging.info('==> build_suite() -> AFTER get_tests(app_module) test_module == %s' % (test_module,))
-
     if test_module:
         # Load unit and doctests in the tests.py module. If module has
         # a suite() method, use it. Otherwise build the test suite ourselves.
         if hasattr(test_module, 'suite'):
-            logging.info('==> build_suite() -> BEFORE addTest 3...')
             suite.addTest(test_module.suite())
         else:
-            logging.info('==> build_suite() -> BEFORE addTest 4...')
             suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(
                 test_module))
             try:
@@ -99,9 +81,6 @@ def build_suite(app_module):
             except ValueError:
                 # No doc tests in tests.py
                 pass
-
-    logging.info('==> build_suite() -> BEFORE out %s' % (suite,))
-
     return suite
 
 
@@ -277,18 +256,13 @@ class DjangoTestSuiteRunner(object):
                     app = get_app(label)
                     suite.addTest(build_suite(app))
         else:
-            logging.info('==> DjangoTestSuiteRunner.build_suite() -> get_apps() BEFORE %s' % (get_apps(),))
             for app in get_apps():
                 suite.addTest(build_suite(app))
-            logging.info('==> DjangoTestSuiteRunner.build_suite() -> get_apps() AFTER %s' % (suite,))
 
         if extra_tests:
-            logging.info('==> DjangoTestSuiteRunner.build_suite() -> extra_tests BEFORE %s' % (extra_tests,))
             for test in extra_tests:
                 suite.addTest(test)
-            logging.info('==> DjangoTestSuiteRunner.build_suite() -> extra_tests AFTER %s' % (suite,))
 
-        logging.info('==> DjangoTestSuiteRunner.build_suite() -> BEFORE out %s' % (suite,))
         return reorder_suite(suite, (unittest.TestCase,))
 
     def setup_databases(self, **kwargs):
@@ -347,8 +321,6 @@ class DjangoTestSuiteRunner(object):
             connections[alias].settings_dict['NAME'] = (
                 connections[mirror_alias].settings_dict['NAME'])
 
-        logging.info("==> DjangoTestSuiteRunner.setup_databases()... mirrors == %s; connections == %s" % (mirrors, connections,))
-
         return old_names, mirrors
 
     def run_suite(self, suite, **kwargs):
@@ -390,13 +362,9 @@ class DjangoTestSuiteRunner(object):
 
         Returns the number of tests that failed.
         """
-        logging.info("==> DjangoTestSuiteRunner.run_tests()... test_labels == %s, kwargs == %s" % (test_labels, kwargs))
         self.setup_test_environment()
-        logging.info("==> DjangoTestSuiteRunner.build_suite() BEFORE...")
         suite = self.build_suite(test_labels, extra_tests)
-        logging.info("==> DjangoTestSuiteRunner.setup_databases() BEFORE...")
         old_config = self.setup_databases()
-        logging.info("==> DjangoTestSuiteRunner.run_suite()...")
         result = self.run_suite(suite)
         self.teardown_databases(old_config)
         self.teardown_test_environment()
