@@ -2,10 +2,10 @@
     <label class="sr-only" for="group-name">Group</label>
     <select class="form-control" id="group-name">
         {{#if groups }}
+            <option>All</option>
             {{#each groups}}
                 <option data-group-id="{{id}}">{{ name }}</option>
             {{/each}}
-            <option>All</option>
         {{else}}
             <option disabled>All</option>
         {{/if}}

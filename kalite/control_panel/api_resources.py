@@ -34,6 +34,7 @@ class GroupResource(ModelResource):
         if facility_id:
             group_list = FacilityGroup.objects.filter(facility__id=facility_id)
         else:
+            # TODO(dylan): this needs to be restricted to a zone?
             group_list = FacilityGroup.objects.all()
 
         return group_list

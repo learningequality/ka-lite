@@ -15,6 +15,14 @@ var GroupModel = Backbone.Model.extend({
 
 var StudentSelectStateModel = Backbone.Model.extend({
     // a model for storing the state of the currently selected Facility and Group
+    defaults: {
+        "facility_id": "all",
+        "group_id": "all"
+    },
+    initialize: function() {
+        console.log("A new StudentSelectStateModel was born");
+        console.log(this);
+    }
 });  
 
 
@@ -72,9 +80,28 @@ var DataExportView = Backbone.View.extend({
     },
 
     exportData: function(ev) {
-        console.log("Exporting CSV for: ");
-        console.log("Facility: " + this.model.get("facility_id"));
-        console.log("Group: " + this.model.get("group_id"));  
+        var self = this;
+        console.log("Exporting CSV for: "); 
+        var facility_id = this.model.get("facility_id") ? this.model.get("facility_id") : "all";
+        var group_id = this.model.get("group_id") ? this.model.get("group_id") : "all";
+        console.log("Facility: " + facility_id);
+        console.log("Group: " + group_id);
+        console.log(document.URL);
+        $.ajax({
+            url: document.URL,
+            type: 'POST',
+            data: {
+                "facility_id": facility_id,
+                "group_id": group_id 
+            },
+            success: function(data) {
+                console.log("success");
+                console.log(data)
+            },
+            error: function(err) { 
+                console.log(err) 
+            }
+        });
     }
 
 });
@@ -103,6 +130,9 @@ var FacilitySelectView = Backbone.View.extend({
         this.$el.html(this.template({
             facilities: this.facility_list.toJSON()
         }));
+
+        // When we re-render this view, "All" is selected by default
+        this.model.set({facility_id: "all"});
     },
 
     events: {
@@ -110,6 +140,7 @@ var FacilitySelectView = Backbone.View.extend({
     },
 
     facilityChanged: function(ev) {
+        // update the state model
         var facilityID = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
         this.model.set({ facility_id: facilityID });
     }
@@ -137,13 +168,16 @@ var GroupSelectView = Backbone.View.extend({
         this.render();
 
         // Listen for any changes on the state model, when it happens, re-fetch self
-        this.listenTo(this.model, 'change', this.stateModelChanged);
+        this.listenTo(this.model, 'change:facility_id', this.stateModelChanged);
     },
 
     render: function() {
         this.$el.html(this.template({
             groups: this.group_list.toJSON()
         }));
+
+        // When we re-render this view, "All" is selected by default
+        this.model.set({group_id: "all"});
     },
 
     events: {
@@ -157,6 +191,7 @@ var GroupSelectView = Backbone.View.extend({
 
     stateModelChanged: function() {
         var facilityID = this.model.get("facility_id");
+        // TODO(dylan): are we handling pagination??
         this.group_list.fetch({
             data: $.param({ "facility_id": facilityID })
         })
