@@ -98,8 +98,8 @@ var DataExportView = Backbone.View.extend({
                 console.log("success");
                 console.log(data)
             },
-            error: function(err) { 
-                console.log(err) 
+            error: function(err) {
+                show_message("error", err.responseText);
             }
         });
     }

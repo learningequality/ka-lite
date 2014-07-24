@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -178,16 +178,14 @@ def zone_data_export(request, zone_id=None):
             facility_users = FacilityUser.objects.filter(group__id=group_id)
         
         if len(facility_users) == 0:
-            messages.error(request, _("No students exist for this facility and group combination."))
-            raise Http404
+            return HttpResponseNotFound(_("No students exist for this facility and group combination."), content_type="application/json")
 
         # TestLogs
         user_ids = [u.id for u in facility_users]
         test_logs = TestLog.objects.filter(user__id__in=user_ids)
 
         if len(test_logs) == 0:
-            messages.error(request, _("No test logs exist for these students."))
-            raise Http404
+            return HttpResponseNotFound(_("No test logs exist for these students."), content_type="application/json")
 
         ## Build CSV 
         csv_response = HttpResponse(content_type="text/csv")
@@ -210,8 +208,7 @@ def zone_data_export(request, zone_id=None):
 
         return csv_response
     else:
-        messages.error(request, _("Invalid request method '%s'." % request.method))
-        raise Http404
+        return HttpResponseNotFound(_("Invalid request method '%s'." % request.method), content_type="application/json")
 
 
 @require_authorized_admin
