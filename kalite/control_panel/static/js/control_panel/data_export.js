@@ -13,11 +13,9 @@ var GroupModel = Backbone.Model.extend({
     }
 });
 
-var TestModel = Backbone.Model.extend({
-    initialize: function() {
-        console.log("A new test was born!");
-    }
-});
+var StudentSelectStateModel = Backbone.Model.extend({
+    // a model for storing the state of the currently selected Facility and Group
+});  
 
 
 // Collections
@@ -39,7 +37,6 @@ var GroupCollection = Backbone.Collection.extend({
     }
 
 });
-var TestCollection = Backbone.Collection.extend({ model: TestModel });
 
 
 // Views 
@@ -48,51 +45,103 @@ var DataExportView = Backbone.View.extend({
     template: HB.template('data_export/data-export-container'),
 
     initialize: function() {
-        console.log("A new DataExportView was born!");        
+        console.log("A new DataExportView was born!");
+        this.model = new StudentSelectStateModel();    
         this.render();
     },
 
     render: function() {
-        this.student_select_view  = new StudentSelectView();
+        this.facility_select_view  = new FacilitySelectView({
+            model: this.model
+        });
+
+        this.group_select_view = new GroupSelectView({
+            model: this.model
+        })
         
         // render container     
         this.$el.html(this.template());
 
-        // append student select view
-        this.$('#student-select-container').html(this.student_select_view.$el);
+        // append facility & group select views
+        this.$('#student-select-container').append(this.facility_select_view.$el);
+        this.$('#student-select-container').append(this.group_select_view.$el);
     }
 
-})
+});
 
-var StudentSelectView = Backbone.View.extend({
-    // inner view containing the facility and group select boxes 
-    
-    template: HB.template('data_export/student-select-container'),
+
+var FacilitySelectView = Backbone.View.extend({
+    template: HB.template('data_export/facility-select'),
 
     initialize: function() {
-
-        var self = this;
-
-        console.log("A new SelectView was born!");
+        console.log("A new FacilitySelectView was born!");
         
         // Create collections
         this.facility_list = new FacilityCollection();
-        this.group_list = new GroupCollection();
 
-        // Listen for dem changez
-        this.listenTo(this.facility_list, 'reset', this.render);
-        this.listenTo(this.group_list, 'reset', this.render);
+        // Re-render self when the fetch returns 
+        this.listenTo(this.facility_list, 'sync', this.render);
 
-        // Fetch collections 
-        this.facility_list.fetch({reset: true}).then(function() { self.render() });
-        this.group_list.fetch({reset: true}).then(function() { self.render() });
+        // Fetch collection 
+        this.facility_list.fetch();
+
+        // Render
+        this.render()
     },
 
     render: function() {
         this.$el.html(this.template({
-            facilities: this.facility_list.toJSON(),
+            facilities: this.facility_list.toJSON()
+        }));
+    },
+
+    events: {
+        "change": "facilityChanged"
+    },
+
+    facilityChanged: function(ev) {
+        var facilityID = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
+        this.model.set({ facility_id: facilityID });
+    }
+});
+
+
+var GroupSelectView = Backbone.View.extend({
+    // inner view containing the facility and group select boxes 
+    
+    template: HB.template('data_export/group-select'),
+
+    initialize: function() {
+        console.log("A new GroupSelectView was born!");
+        
+        // Create collections
+        this.group_list = new GroupCollection();
+
+        // Re-render self when the fetch returns 
+        this.listenTo(this.group_list, 'sync', this.render);
+
+        // Fetch collection
+        this.group_list.fetch();
+
+        // Render
+        this.render();
+
+        // Listen for any changes on the state model, when it happens, re-fetch self
+        window.that = this;
+        this.listenTo(this.model, 'change', this.stateModelChanged);
+    },
+
+    render: function() {
+        this.$el.html(this.template({
             groups: this.group_list.toJSON()
         }));
+    },
+
+    stateModelChanged: function() {
+        var facilityID = this.model.get("facility_id");
+        this.group_list.fetch({
+            data: $.param({ "facility_id": facilityID })
+        })
     }
 });
 
