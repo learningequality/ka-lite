@@ -23,6 +23,7 @@ doctestOutputChecker = OutputChecker()
 def get_tests(app_module):
     parts = app_module.__name__.split('.')
     prefix, last = parts[:-1], parts[-1]
+    logging.info('==> get_tests() BEFORE import_module() parts == %s' % (parts,))
     try:
         test_module = import_module('.'.join(prefix + [TEST_MODULE]))
     except ImportError:
@@ -30,17 +31,21 @@ def get_tests(app_module):
         # due to an import error in a tests.py that actually exists?
         # app_module either points to a models.py file, or models/__init__.py
         # Tests are therefore either in same directory, or one level up
+        logging.info('==> get_tests() ImportError -> BEFORE import_module() test_module == %s' % (app_module,))
         if last == 'models':
             app_root = import_module('.'.join(prefix))
         else:
             app_root = app_module
 
+        logging.info('==> get_tests() BEFORE module_has_submodule() app_root == %s' % (app_root,))
         if not module_has_submodule(app_root, TEST_MODULE):
             test_module = None
         else:
             # The module exists, so there must be an import error in the test
             # module itself.
+            logging.info('==> get_tests() BEFORE raise TEST_MODULE == %s' % (TEST_MODULE,))
             raise
+    logging.info('==> get_tests() BEFORE out test_module == %s' % (test_module,))
     return test_module
 
 
