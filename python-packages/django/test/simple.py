@@ -258,6 +258,7 @@ class DjangoTestSuiteRunner(object):
                     app = get_app(label)
                     suite.addTest(build_suite(app))
         else:
+            logging.info('==> build_suite() -> get_apps() BEFORE %s' % (get_apps(),))
             for app in get_apps():
                 suite.addTest(build_suite(app))
 
@@ -265,6 +266,7 @@ class DjangoTestSuiteRunner(object):
             for test in extra_tests:
                 suite.addTest(test)
 
+        logging.info('==> build_suite() -> BEFORE out %s' % (suite,))
         return reorder_suite(suite, (unittest.TestCase,))
 
     def setup_databases(self, **kwargs):
