@@ -166,6 +166,15 @@ nav {
     display: none;
 }
 
+#logged-in-name {
+    display: inline-block;
+    min-width: 10px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+}
+
 /********** End of Top Navigation bar ***********/
 
 h2 {
