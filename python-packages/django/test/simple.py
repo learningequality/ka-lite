@@ -50,11 +50,15 @@ def build_suite(app_module):
     """
     suite = unittest.TestSuite()
 
+    logging.info('==> build_suite() -> BEFORE hasattr %s' % (app_module,))
+
     # Load unit and doctests in the models.py module. If module has
     # a suite() method, use it. Otherwise build the test suite ourselves.
     if hasattr(app_module, 'suite'):
+        logging.info('==> build_suite() -> BEFORE addTest 1...')
         suite.addTest(app_module.suite())
     else:
+        logging.info('==> build_suite() -> BEFORE addTest 2...')
         suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(
             app_module))
         try:
@@ -68,12 +72,17 @@ def build_suite(app_module):
     # Check to see if a separate 'tests' module exists parallel to the
     # models module
     test_module = get_tests(app_module)
+
+    logging.info('==> build_suite() -> BEFORE get_tests %s' % (test_module,))
+
     if test_module:
         # Load unit and doctests in the tests.py module. If module has
         # a suite() method, use it. Otherwise build the test suite ourselves.
         if hasattr(test_module, 'suite'):
+            logging.info('==> build_suite() -> BEFORE addTest 3...')
             suite.addTest(test_module.suite())
         else:
+            logging.info('==> build_suite() -> BEFORE addTest 4...')
             suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(
                 test_module))
             try:
@@ -83,6 +92,9 @@ def build_suite(app_module):
             except ValueError:
                 # No doc tests in tests.py
                 pass
+
+    logging.info('==> build_suite() -> BEFORE out %s' % (suite,))
+
     return suite
 
 
@@ -258,18 +270,18 @@ class DjangoTestSuiteRunner(object):
                     app = get_app(label)
                     suite.addTest(build_suite(app))
         else:
-            logging.info('==> build_suite() -> get_apps() BEFORE %s' % (get_apps(),))
+            logging.info('==> DjangoTestSuiteRunner.build_suite() -> get_apps() BEFORE %s' % (get_apps(),))
             for app in get_apps():
                 suite.addTest(build_suite(app))
-            logging.info('==> build_suite() -> get_apps() AFTER %s' % (suite,))
+            logging.info('==> DjangoTestSuiteRunner.build_suite() -> get_apps() AFTER %s' % (suite,))
 
         if extra_tests:
-            logging.info('==> build_suite() -> extra_tests BEFORE %s' % (extra_tests,))
+            logging.info('==> DjangoTestSuiteRunner.build_suite() -> extra_tests BEFORE %s' % (extra_tests,))
             for test in extra_tests:
                 suite.addTest(test)
-            logging.info('==> build_suite() -> extra_tests AFTER %s' % (suite,))
+            logging.info('==> DjangoTestSuiteRunner.build_suite() -> extra_tests AFTER %s' % (suite,))
 
-        logging.info('==> build_suite() -> BEFORE out %s' % (suite,))
+        logging.info('==> DjangoTestSuiteRunner.build_suite() -> BEFORE out %s' % (suite,))
         return reorder_suite(suite, (unittest.TestCase,))
 
     def setup_databases(self, **kwargs):
