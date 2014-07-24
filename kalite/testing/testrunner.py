@@ -58,8 +58,11 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   older branch has been checked out
         logging.info("Purging pyc files")
         import logging as orig_logging
+        logging.info("==> orig_logging.getLogger BEFORE...")
         orig_logging.getLogger('django.request').setLevel('CRITICAL')
+        logging.info("==> orig_logging.getLogger setLevel BEFORE...")
         orig_logging.getLogger('kalite').setLevel('INFO')
+        logging.info("==> clean_pyc BEFORE...")
         management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
         logging.info("==> Overriding settings...")
