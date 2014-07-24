@@ -12,7 +12,7 @@ install:
 script:
   - python python-packages/fle_utils/tests.py
   - python kalite/manage.py syncdb --migrate --noinput --traceback # make sure database is all setup
-  - python kalite/manage.py test --traceback -v 3  # run django tests
+  - python kalite/manage.py test --traceback -v 2  # run django tests
   - grunt jshint  # run jshint
 notifications:
   email:
