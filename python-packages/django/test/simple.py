@@ -261,10 +261,13 @@ class DjangoTestSuiteRunner(object):
             logging.info('==> build_suite() -> get_apps() BEFORE %s' % (get_apps(),))
             for app in get_apps():
                 suite.addTest(build_suite(app))
+            logging.info('==> build_suite() -> get_apps() AFTER %s' % (suite,))
 
         if extra_tests:
+            logging.info('==> build_suite() -> extra_tests BEFORE %s' % (extra_tests,))
             for test in extra_tests:
                 suite.addTest(test)
+            logging.info('==> build_suite() -> extra_tests AFTER %s' % (suite,))
 
         logging.info('==> build_suite() -> BEFORE out %s' % (suite,))
         return reorder_suite(suite, (unittest.TestCase,))
