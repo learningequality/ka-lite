@@ -62,6 +62,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         orig_logging.getLogger('kalite').setLevel('INFO')
         management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
+        logging.info("==> Overriding settings...")
         @override_settings(DEBUG=settings.DEBUG or self.failfast)
         def run_tests_wrapper_fn():
             return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)

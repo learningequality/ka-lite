@@ -10,6 +10,8 @@ from django.utils import unittest
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 
+logging = settings.LOG
+
 __all__ = ('DjangoTestSuiteRunner')
 
 # The module name for tests outside models.py
@@ -321,6 +323,8 @@ class DjangoTestSuiteRunner(object):
             connections[alias].settings_dict['NAME'] = (
                 connections[mirror_alias].settings_dict['NAME'])
 
+        logging.info("==> DjangoTestSuiteRunner.setup_databases()... mirrors == %s; connections == %s" % (mirrors, connections,))
+
         return old_names, mirrors
 
     def run_suite(self, suite, **kwargs):
@@ -362,9 +366,17 @@ class DjangoTestSuiteRunner(object):
 
         Returns the number of tests that failed.
         """
+        logging.info("==> DjangoTestSuiteRunner.run_tests()... test_labels == %s, kwargs == %s" % (test_labels, kwargs))
+
         self.setup_test_environment()
         suite = self.build_suite(test_labels, extra_tests)
+
+        logging.info("==> DjangoTestSuiteRunner.setup_databases() BEFORE...")
+
         old_config = self.setup_databases()
+
+        logging.info("==> DjangoTestSuiteRunner.run_suite()...")
+
         result = self.run_suite(suite)
         self.teardown_databases(old_config)
         self.teardown_test_environment()
