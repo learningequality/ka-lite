@@ -50,7 +50,7 @@ def build_suite(app_module):
     """
     suite = unittest.TestSuite()
 
-    logging.info('==> build_suite() -> BEFORE hasattr %s' % (app_module,))
+    logging.info('==> build_suite() -> BEFORE app_module %s' % (app_module,))
 
     # Load unit and doctests in the models.py module. If module has
     # a suite() method, use it. Otherwise build the test suite ourselves.
@@ -62,18 +62,20 @@ def build_suite(app_module):
         suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(
             app_module))
         try:
+            logging.info('==> build_suite() -> BEFORE addTest 2a...')
             suite.addTest(doctest.DocTestSuite(app_module,
                                                checker=doctestOutputChecker,
                                                runner=DocTestRunner))
-        except ValueError:
+        except ValueError as exc:
             # No doc tests in models.py
+            logging.info('==> build_suite() -> EXCEPTION addTest 2b... %s' % (exc,))
             pass
 
     # Check to see if a separate 'tests' module exists parallel to the
     # models module
+    logging.info('==> build_suite() -> BEFORE get_tests(app_module) app_module == %s' % (app_module,))
     test_module = get_tests(app_module)
-
-    logging.info('==> build_suite() -> BEFORE get_tests %s' % (test_module,))
+    logging.info('==> build_suite() -> AFTER get_tests(app_module) test_module == %s' % (test_module,))
 
     if test_module:
         # Load unit and doctests in the tests.py module. If module has
