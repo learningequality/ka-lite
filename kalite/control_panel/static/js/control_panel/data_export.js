@@ -80,28 +80,20 @@ var DataExportView = Backbone.View.extend({
     },
 
     exportData: function(ev) {
-        var self = this;
-        console.log("Exporting CSV for: "); 
+        ev.preventDefault();
+
         var facility_id = this.model.get("facility_id") ? this.model.get("facility_id") : "all";
         var group_id = this.model.get("group_id") ? this.model.get("group_id") : "all";
-        console.log("Facility: " + facility_id);
-        console.log("Group: " + group_id);
-        console.log(document.URL);
-        $.ajax({
-            url: document.URL,
-            type: 'POST',
-            data: {
-                "facility_id": facility_id,
-                "group_id": group_id 
-            },
-            success: function(data) {
-                console.log("success");
-                console.log(data)
-            },
-            error: function(err) {
-                show_message("error", err.responseText);
-            }
-        });
+
+        // Get the form, append the data we care about, and submit it
+        var form = $('#data-export-form');
+        form
+            .attr("facility_id", facility_id)
+            .attr("group_id", group_id)
+            .attr("action", document.URL)
+            .append(CSRF_TOKEN)
+        console.log(form);
+        // form.submit();
     }
 
 });

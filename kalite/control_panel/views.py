@@ -188,12 +188,11 @@ def zone_data_export(request, zone_id=None):
             return HttpResponseNotFound(_("No test logs exist for these students."), content_type="application/json")
 
         ## Build CSV 
-        csv_response = HttpResponse(content_type="text/csv")
-
         # Nice filename for Sarojini
         filename = 'f_all__' if facility_id == 'all' else 'f_%s__' % facilities[0].name
         filename += 'g_all__' if group_id == 'all' else 'g_%s__' % facility_users[0].group.name
         filename += '%s' % datetime.datetime.today().strftime("%Y-%m-%d")
+        csv_response = HttpResponse(content_type="text/csv")
         csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
 
         # CSV header
