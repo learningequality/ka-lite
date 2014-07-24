@@ -367,16 +367,12 @@ class DjangoTestSuiteRunner(object):
         Returns the number of tests that failed.
         """
         logging.info("==> DjangoTestSuiteRunner.run_tests()... test_labels == %s, kwargs == %s" % (test_labels, kwargs))
-
         self.setup_test_environment()
+        logging.info("==> DjangoTestSuiteRunner.build_suite() BEFORE...")
         suite = self.build_suite(test_labels, extra_tests)
-
         logging.info("==> DjangoTestSuiteRunner.setup_databases() BEFORE...")
-
         old_config = self.setup_databases()
-
         logging.info("==> DjangoTestSuiteRunner.run_suite()...")
-
         result = self.run_suite(suite)
         self.teardown_databases(old_config)
         self.teardown_test_environment()
