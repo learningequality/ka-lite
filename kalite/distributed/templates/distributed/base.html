@@ -152,8 +152,8 @@
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'zone_redirect' %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a></li>
 
-                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}">{% trans "Users" %}</a></li>
+                        <!-- {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}">{% trans "Users" %}</a></li> -->
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a></li>
