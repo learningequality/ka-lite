@@ -84,7 +84,8 @@
                 {% csrf_token %}
                 <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" name="period_start" id="start_date_select" type="text" value=""></input>
                 <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" name="period_end" id="end_date_select" type="text" value=""></input>
-                <input type="button" class="btn btn-success" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
+
+                <input type="button" class="btn btn-success btn-action" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
@@ -137,7 +138,6 @@
                             {% trans "Action" %}:
                             <button class="btn btn-danger btn-sm delete" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
                         </h4>
-
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@
                             <td>{% if coach.id %}<input type="checkbox" value="#coaches">{% endif %}</td>
                             <td>
                                 {{ coach|format_name:"last_first" }}
-                                <a href="{% url 'edit_facility_user' id=coach.id %}?facility={{ facility_id }}">
+                                <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                                     <span class="glyphicon glyphicon-pencil" title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}"></span> 
                                 </a>
                             </td>
@@ -218,6 +218,7 @@
                             {% trans "You currently have no group data available." %}
                         </p>
                     {% else %}
+
                     {% if not request.is_teacher %}
                     <div class="action-bar">
                         <div class="select">
@@ -230,7 +231,7 @@
                         <div class="action action-groups">
                             <h4>
                                 {% trans "Action" %}:
-                                <button class="btn btn-danger btn-sm delete" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
+                                <button class="btn btn-danger btn-sm delete btn-action" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
                             </h4>
                         </div>
                     </div>
@@ -263,7 +264,7 @@
                                                     {% if group.id %}
                                                         href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
                                                     {% else %}
-                                                        href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped %}">
+                                                        href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped_id %}">
                                                     {% endif %}
                                                     {{ group.name }}
                                                 </a>
@@ -397,7 +398,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{% url 'edit_facility_user' id=student.id %}?facility={{ facility_id }}">
+                                    <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                                         <span class="glyphicon glyphicon-pencil" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student: {{ studentname }}{% endblocktrans %}"></span>
                                     </a>
                                 </td>

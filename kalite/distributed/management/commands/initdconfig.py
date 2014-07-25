@@ -1,10 +1,10 @@
 """
 """
 import os
+import sys
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-
 
 script_template = """
 #! /bin/sh
@@ -37,10 +37,35 @@ esac
 
 """
 
+if sys.platform == 'darwin':
+    # TODO(cpauya): Set the StandardOutPath key so that /dev/stdout or /dev/tty can be used.  Reason is if user runs:
+    # `launchctl load -w $HOME/Library/LaunchAgents/org.learningequality.kalite.plist`
+    # then the output of the `start.sh` script are not shown on the terminal but instead on
+    # `/tmp/kalite.out`.  There must be a way to set it to display on the user's terminal.
+    script_template = """
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>org.learningequality.kalite</string>
+        <key>Program</key>
+        <string>%(script_path)s/start.sh</string>
+        <key>StandardOutPath</key>
+        <string>/tmp/kalite.out</string>
+        <key>StandardErrorPath</key>
+        <string>/tmp/kalite.err</string>
+        <key>WorkingDirectory</key>
+        <string>%(script_path)s</string>
+    </dict>
+</plist>
+    """
+
+
 class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
         repo_path = os.path.join(settings.PROJECT_PATH, "..")
         script_path = os.path.join(repo_path, "scripts")
-        self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path })
+        self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path})

@@ -5,6 +5,7 @@ import re
 import tempfile
 
 from django.conf import settings
+from django.core.management import call_command
 from django.test import TestCase
 from django.utils import unittest
 
@@ -12,6 +13,9 @@ from .base import SecuresyncTestCase
 from .. import crypto
 from ..models import Device
 from fle_utils.django_utils import call_command_with_output
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from securesync import crypto
+from securesync.models import Device, Zone, DeviceZone
 
 
 @unittest.skipIf(not crypto.M2CRYPTO_EXISTS, "Skipping M2Crypto tests as it does not appear to be installed.")
@@ -211,3 +215,41 @@ class TestSignLargeFile(SecuresyncTestCase):
 
         # Single-byte chunking
         self.assertFalse(self.key.verify_large_file(self.filename, signature, chunk_size=1), "Should verify signature for file w/ %d bytes." % nchars)
+
+
+# TODO(jamalex): move this out of securesync, as securesync shouldn't depend on facilities
+@unittest.skipIf(not settings.CENTRAL_SERVER, "Skipping zone fallback tests as we're not on the central server.")
+class TestZoneFallbackSettingOnCentralSave(SecuresyncTestCase):
+    """Ensure that when synced models are saved on the central server, the zone_fallback is set successfully."""
+
+    def setUp(self):
+        call_command_with_output("initdevice", "MyCentralDevice", "")
+        self.zone = Zone.objects.create(name="MyZone")
+        key = crypto.Key()
+        self.remote_device = Device.objects.create(name="RemoteDevice", public_key=key.get_public_key_string())
+        self.remote_device.key = key
+        self.device_zone = DeviceZone.objects.create(zone=self.zone, device=self.remote_device)
+        self.facility = Facility.objects.create(name="MyFacility")
+        self.facility.sign(device=self.remote_device)
+        self.facility.save(imported=True)
+
+    def tearDown(self):
+        pass
+
+    def test_facility_user_save(self):
+
+        # only perform test if we are ourselves a trusted (i.e. central server) device
+        if Device.get_own_device().is_trusted():
+            user = FacilityUser(username="bobmcknob", facility=self.facility)
+            user.set_password("blahblah")
+            user.save()
+            assert user.zone_fallback is not None, "Centrally created FacilityUser was not assigned a zone."
+
+    def test_facility_group_save(self):
+
+        # only perform test if we are ourselves a trusted (i.e. central server) device
+        if Device.get_own_device().is_trusted():
+            group = FacilityGroup(name="MyGroup", facility=self.facility)
+            group.save()
+            assert group.zone_fallback is not None, "Centrally created FacilityGroup was not assigned a zone."
+

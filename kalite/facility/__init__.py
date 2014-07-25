@@ -8,7 +8,7 @@ def get_users_from_group(user_type, group_id, facility=None):
         user_list = FacilityUser.objects \
             .filter(is_teacher=True) \
             .filter(facility=facility)
-    elif _(group_id) == _("Ungrouped").split(" ")[0]:
+    elif group_id == "Ungrouped":
         user_list = FacilityUser.objects \
             .filter(is_teacher=False) \
             .filter(facility=facility, group__isnull=True)
