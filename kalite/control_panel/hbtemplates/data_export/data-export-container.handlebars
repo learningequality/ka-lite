@@ -1,4 +1,4 @@
-<form class="form-inline" id="data-export-form" method="POST">
+<form class="form-inline" id="data-export-form" method="GET">
     <div id="student-select-container">{{!insert student select template here}}</div>
     <div class="form-group">
         <label class="sr-only" for="test-name">Test</label>
@@ -12,7 +12,6 @@
             <option>CSV</option>
         </select>
     </div>
-    <input type="hidden" value="Please work" name="variable">
     <button id="export-button" type="submit" class="btn btn-primary">
         Export
     </button>

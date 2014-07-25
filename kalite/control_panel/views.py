@@ -151,13 +151,15 @@ def zone_management(request, zone_id="None"):
 @require_authorized_admin
 @render_to("control_panel/data_export.html")
 def zone_data_export(request, zone_id=None):
-    if request.method == 'GET':
-        context = control_panel_context(request, zone_id=zone_id)
+    # Normal page load if the GET request has no data
+    context = control_panel_context(request, zone_id=zone_id)
+    if not request.GET:
         return context
-    elif request.method == "POST":
+    # Form submitted TODO(dylan) is there a better way to check for this? (since both are get requests)
+    else:
         # Get the params 
-        facility_id = request.POST.get("facility_id")
-        group_id = request.POST.get("group_id")
+        facility_id = request.GET.get("facility_id")
+        group_id = request.GET.get("group_id")
 
         ## CSV File Specification
         # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
@@ -177,15 +179,18 @@ def zone_data_export(request, zone_id=None):
         else: # get the students for the specific group
             facility_users = FacilityUser.objects.filter(group__id=group_id)
         
+        ## A bit of error checking 
         if len(facility_users) == 0:
-            return HttpResponseNotFound(_("No students exist for this facility and group combination."), content_type="application/json")
+            messages.error(request, _("No students exist for this facility and group combination."))
+            return context 
 
         # TestLogs
         user_ids = [u.id for u in facility_users]
         test_logs = TestLog.objects.filter(user__id__in=user_ids)
 
         if len(test_logs) == 0:
-            return HttpResponseNotFound(_("No test logs exist for these students."), content_type="application/json")
+            messages.error(request, _("No test logs exist for these students."))
+            return context 
 
         ## Build CSV 
         # Nice filename for Sarojini
@@ -197,7 +202,7 @@ def zone_data_export(request, zone_id=None):
 
         # CSV header
         writer = csv.writer(csv_response)
-        writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test Name", "Test ID", "Num correct", "Total number completed"])
+        writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"])
         
         # CSV Body
         for t in test_logs:
@@ -206,9 +211,6 @@ def zone_data_export(request, zone_id=None):
             writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
 
         return csv_response
-    else:
-        return HttpResponseNotFound(_("Invalid request method '%s'." % request.method), content_type="application/json")
-
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")

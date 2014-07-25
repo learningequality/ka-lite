@@ -1,27 +1,15 @@
 // Handles the data export functionality of the control panel
 
 // Models 
-var FacilityModel = Backbone.Model.extend({
-    initialize: function() {
-        console.log("A new facility was was born!");
-    }
-});
+var FacilityModel = Backbone.Model.extend();
 
-var GroupModel = Backbone.Model.extend({
-    initialize: function() {
-        console.log("A new group was born!");
-    }
-});
+var GroupModel = Backbone.Model.extend();
 
 var StudentSelectStateModel = Backbone.Model.extend({
     // a model for storing the state of the currently selected Facility and Group
     defaults: {
         "facility_id": "all",
         "group_id": "all"
-    },
-    initialize: function() {
-        console.log("A new StudentSelectStateModel was born");
-        console.log(this);
     }
 });  
 
@@ -29,21 +17,12 @@ var StudentSelectStateModel = Backbone.Model.extend({
 // Collections
 var FacilityCollection = Backbone.Collection.extend({ 
     model: FacilityModel, 
-    url: ALL_FACILITIES_URL,
-
-    initialize: function() {
-        console.log("A new FacilityCollection was born!");
-    }
+    url: ALL_FACILITIES_URL
 });
 
 var GroupCollection = Backbone.Collection.extend({ 
     model: GroupModel,
-    url: ALL_GROUPS_URL,
-
-    initialize: function() {
-        console.log("A new GroupCollection was born!");
-    }
-
+    url: ALL_GROUPS_URL
 });
 
 
@@ -53,7 +32,6 @@ var DataExportView = Backbone.View.extend({
     template: HB.template('data_export/data-export-container'),
 
     initialize: function() {
-        console.log("A new DataExportView was born!");
         this.model = new StudentSelectStateModel();    
         this.render();
     },
@@ -82,18 +60,23 @@ var DataExportView = Backbone.View.extend({
     exportData: function(ev) {
         ev.preventDefault();
 
+        // Get the final ids
         var facility_id = this.model.get("facility_id") ? this.model.get("facility_id") : "all";
         var group_id = this.model.get("group_id") ? this.model.get("group_id") : "all";
 
-        // Get the form, append the data we care about, and submit it
+        // Format them for the form 
+        var facility_input = sprintf("<input type='hidden' value='%(facility_id)s' name='facility_id'>", {"facility_id": facility_id});
+        var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
+
+        // Append the data we care about, and submit it
+        // TODO(dylan) is this hacky? not sure what the right paradigm is 
         var form = $('#data-export-form');
         form
-            .attr("facility_id", facility_id)
-            .attr("group_id", group_id)
+            .append(facility_input)
+            .append(group_input)
             .attr("action", document.URL)
-            .append(CSRF_TOKEN)
-        console.log(form);
-        // form.submit();
+            .append(CSRF_TOKEN) // TODO(dylan) do we need a CSRF if we do a GET? 
+            .submit();
     }
 
 });
@@ -103,8 +86,6 @@ var FacilitySelectView = Backbone.View.extend({
     template: HB.template('data_export/facility-select'),
 
     initialize: function() {
-        console.log("A new FacilitySelectView was born!");
-        
         // Create collections
         this.facility_list = new FacilityCollection();
 
@@ -145,8 +126,6 @@ var GroupSelectView = Backbone.View.extend({
     template: HB.template('data_export/group-select'),
 
     initialize: function() {
-        console.log("A new GroupSelectView was born!");
-        
         // Create collections
         this.group_list = new GroupCollection();
 
