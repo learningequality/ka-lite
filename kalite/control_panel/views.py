@@ -28,7 +28,7 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 
@@ -374,7 +374,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(get_node_cache('Exercise'))
+    num_exercises = len(get_exercise_cache())
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -440,9 +440,11 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     for group in list(groups) + [None]*(group_id==None or group_id=="Ungrouped"):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
+        group_title = getattr(group, "title", _("Ungrouped"))
         group_data[group_pk] = {
             "id": group_pk,
             "name": group_name,
+            "title": group_title,
             "total_logins": 0,
             "total_hours": 0,
             "total_users": 0,

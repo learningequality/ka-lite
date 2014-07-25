@@ -7,7 +7,8 @@
 
 function toggle_state(state, status){
     $("." + (status ? "not-" : "") + state + "-only").hide();
-    $("." + (!status ? "not-" : "") + state + "-only").show();
+    // Use display block setting instead of inline to prevent misalignment of navbar items.
+    $("." + (!status ? "not-" : "") + state + "-only").css("display", "block");
 }
 
 function show_api_messages(messages) {
@@ -18,7 +19,7 @@ function show_api_messages(messages) {
     }
     switch (typeof messages) {
         case "object":
-            for (msg_type in messages) {
+            for (var msg_type in messages) {
                 show_message(msg_type, messages[msg_type]);
             }
             break;
@@ -47,15 +48,61 @@ function force_sync() {
         });
 }
 
+
 /**
-* Model that holds state about a user (username, points, admin status, etc)
+* Model that holds overall information about the server state or the current user.
 */
-var UserModel = Backbone.Model.extend({
+var StatusModel = Backbone.Model.extend({
+
     defaults: {
         points: 0,
-        newpoints: 0
+        newpoints: 0,
+        client_server_time_diff: 0
+    },
+
+    url: STATUS_URL,
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        // save the deferred object from the fetch, so we can run stuff after this model has loaded
+        this.loaded = this.fetch();
+
+        this.loaded.then(this.after_loading);
+
+    },
+
+    get_server_time: function () {
+        // Function to return time corrected to server clock based on status update.
+        return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
+    },
+
+    after_loading: function() {
+
+        var self = this;
+
+        // Add field that quantifies the time differential between client and server.
+        // This is the amount that needs to be taken away from client time to give server time.
+        // As the server sends its timestamp without a timezone (and we can't rely on timezones
+        // being set correctly, we need to do some finagling with the offset to get it to work out.
+        var time_stamp = new Date(this.get("status_timestamp"));
+        this.set("client_server_time_diff", new Date() - time_stamp.getTime());
+
+        $(function() {
+            toggle_state("logged-in", self.get("is_logged_in"));
+            toggle_state("registered", self.get("registered"));
+            toggle_state("super-user", self.get("is_django_user"));
+            toggle_state("teacher", self.get("is_admin") && !self.get("is_django_user"));
+            toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
+            toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
+            $('.navbar-right').show();
+        });
     }
 });
+
+// create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
+window.statusModel = new StatusModel();
 
 
 /**
@@ -81,8 +128,15 @@ var TotalPointView = Backbone.View.extend({
         // only display the points if they are greater than zero, and the user is logged in
         if (!this.model.get("is_logged_in")) {
             return;
-        } else if (points > 0) {
-            message = sprintf("%s | %s", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
+        }
+
+        // TODO-BLOCKER(jamalex): only include the hex user ID when Nalanda package is enabled
+        if (this.model.has("user_id")) {
+            username_span += sprintf(" (%s)", this.model.get("user_id").slice(0, 8));
+        }
+
+        if (points > 0) {
+            message = sprintf("%s<span class='motivational-feature'> | %s</span>", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
         } else {
             message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
         }
@@ -99,11 +153,12 @@ function sanitize_string(input_string) {
 
 // Related to showing elements on screen
 $(function(){
-    // global Backbone model instance to store state related to the user (username, points, admin status, etc)
-    window.userModel = new UserModel({el: "#sitepoints"});
 
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-    var totalPointView = new TotalPointView({model: userModel, el: "#sitepoints"});
+    var totalPointView = new TotalPointView({model: statusModel, el: "#sitepoints"});
+
+    // For mobile (Bootstrap xs) view
+    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#sitepoints-xs"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
@@ -116,27 +171,14 @@ $(function(){
 
     }
 
-    // Do the AJAX request to async-load user and message data
+    // Hide stuff with "-only" classes by default
     //$("[class$=-only]").hide();
-    doRequest(STATUS_URL)
-        .success(function(data){
-
-            // store the data on the global user model, so that info about the current user can be accessed and bound to by any view
-            // TODO(jamalex): not all of the data returned by "status" is specific to the user, so we should re-do the endpoint to
-            // separate data out by type, and have multiple client-side Backbone models to store these various types of state.
-            window.userModel.set(data);
-
-            toggle_state("logged-in", data.is_logged_in);
-            toggle_state("registered", data.registered);
-            toggle_state("super-user", data.is_django_user);
-            toggle_state("teacher", data.is_admin && !data.is_django_user);
-            toggle_state("student", !data.is_admin && !data.is_django_user && data.is_logged_in);
-            toggle_state("admin", data.is_admin); // combination of teachers & super-users
-        });
 });
 
+
 // Related to student log progress
-$(function(){
+$(function() {
+
     // load progress data for all videos linked on page, and render progress circles
     var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id"); });
     if (video_ids.length > 0) {
@@ -164,7 +206,8 @@ $(function(){
 });
 
 // Related to language bar function
-$(function(){
+$(function() {
+
     // If new language is selected, redirect after adding django_language session key
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
@@ -308,6 +351,25 @@ $(function() {
                 toggle_state(server_or_client + "-online", is_online);
 
             });
+        }
+    });
+
+});
+
+
+// Hides/shows nav bar search input field/button when user clicks on search glyphicon
+$(function() {
+
+    var glyphicon_search = $('#glyphicon-search-js'); // Search glyphicon
+    var search = $('.search-js'); // Search input field/button
+
+    search.hide(); // Search input field/button are hidden upon page load
+
+    glyphicon_search.click(function() { // When user clicks on search glyphicon,
+        if (search.is(':hidden')) { // if search input field/button are hidden,
+            search.show(); // search input field/button are displayed;
+        } else { // if user clicks on search glyphicon and search input field/button are displayed,
+            search.hide(); // search input field/button are hidden.
         }
     });
 

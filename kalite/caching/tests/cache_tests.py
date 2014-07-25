@@ -13,11 +13,11 @@ from django.utils import unittest
 from .. import caching
 from fle_utils.django_utils import call_command_with_output
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_video_cache
 
 
 class CachingTest(KALiteTestCase):
-    video_cache = get_node_cache("Video")
+    video_cache = get_video_cache()
 
     @unittest.skipIf(True, "Failing test that I'm tired of debugging.")  # TODO(bcipolli): re-enable when we need to be able to auto-cache
     @unittest.skipIf(settings.CACHE_TIME==0, "Test only relevant when caching is enabled")
@@ -28,7 +28,7 @@ class CachingTest(KALiteTestCase):
         n_videos = len(self.video_cache)
         video_id = self.video_cache.keys()[10]#random.choice(self.video_cache.keys())
         logging.debug("Testing on video_id = %s" % video_id)
-        video_path = self.video_cache[video_id][0]['path']
+        video_path = self.video_cache[video_id]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path, failure_ok=True)
@@ -53,7 +53,7 @@ class CachingTest(KALiteTestCase):
         n_videos = len(self.video_cache)
         video_id = random.choice(self.video_cache.keys())
         logging.debug("Testing on video_id = %s" % video_id)
-        video_path = self.video_cache[video_id][0]['path']
+        video_path = self.video_cache[video_id]['path']
 
         # Clean the cache for this item
         caching.expire_page(path=video_path, failure_ok=True)

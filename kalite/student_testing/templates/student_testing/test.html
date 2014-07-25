@@ -1,0 +1,47 @@
+{% extends base_template %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %}{% trans "Take Test" %}{{ block.super }}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}?{{ BUILD_ID }}"></link>
+
+    <!-- Used by KA to dynamically add styling to the exercise -->
+    <style id="exercise-inline-style"></style>
+
+    <style>
+        .return-link {
+            font-size: 13px;
+            padding-bottom: 4px;
+            opacity: 0.8;
+            margin-top: -2px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+<script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+<script src="{% static 'khan-exercises/khan-exercise.js' %}?{{ BUILD_ID }}"></script>
+<script src="{% static 'js/seedrandom.min.js' %}"></script>
+<!-- <script src="{% static 'js/student_testing/tests.js' %}"></script> !-->
+<script src="{% static 'js/distributed/exercises.js' %}"></script>
+<script>
+        $(function() {
+            statusModel.loaded.then(function() {
+                window.exerciseTestView = new ExerciseTestView({
+                    el: $(".exercise-wrapper"),
+                    test_id: "{{ test_id }}"
+                });
+            });
+        });
+
+</script>
+
+{% endblock headjs %}
+
+{% block content %}
+
+    <div class="exercise-wrapper"></div>
+
+{% endblock content %}

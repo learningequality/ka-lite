@@ -79,6 +79,8 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
+    # Translators: This is the description field of the Facility Group.
+    description = models.TextField(blank=True, verbose_name=_("Description"))
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
@@ -114,6 +116,14 @@ class FacilityGroup(DeferredCountSyncedModel):
             zone = self.facility.get_zone()
 
         return zone
+
+
+    @property
+    def title(self):
+        # Translators: This is the name and description of the Facility Group.
+        if self.description:
+            return _("%s - %s" % (self.name, self.description,))
+        return _(self.name)
 
 
 class FacilityUser(DeferredCountSyncedModel):

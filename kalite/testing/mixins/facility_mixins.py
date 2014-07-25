@@ -14,7 +14,8 @@ class CreateFacilityMixin(object):
         fields = CreateFacilityMixin.DEFAULTS.copy()
         fields.update(**kwargs)
 
-        return Facility.objects.create(**fields)
+        obj, created = Facility.objects.get_or_create(**fields)
+        return obj
 
 
 class CreateGroupMixin(CreateFacilityMixin):
@@ -27,7 +28,7 @@ class CreateGroupMixin(CreateFacilityMixin):
         fields = CreateGroupMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         fields['facility'] = (fields.get('facility') or
-                              cls.create_facility(name='%s-facility' % fields['name']))
+                              cls.create_facility())
         return FacilityGroup.objects.create(**fields)
 
 
@@ -36,7 +37,8 @@ class CreateStudentMixin(CreateFacilityMixin):
         'first_name': 'Cannon',
         'last_name': 'Fodder',
         'username': 'teststudent1',
-        'is_teacher': False,
+        'password': 'password',
+        'is_teacher': False
     }
 
     @classmethod
@@ -44,20 +46,21 @@ class CreateStudentMixin(CreateFacilityMixin):
         fields = CreateStudentMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         fields['facility'] = (fields.get('facility') or
-                              cls.create_facility(name='%s-facility' % fields['username']))
+                              cls.create_facility())
         user = FacilityUser(**fields)
         user.set_password(password)
+        user.real_password = password
         user.save()
         return user
 
 
 class CreateTeacherMixin(CreateStudentMixin):
     DEFAULTS = {
-        'first_name': 'terror',
-        'last_name': 'teacher',
-        'username': 'testteacher1',
+        'first_name': 'Teacher 1',
+        'last_name': 'Sample',
+        'username': 'teacher1',
         'password': 'password',
-        'is_teacher': True,
+        'is_teacher': True
     }
 
     @classmethod

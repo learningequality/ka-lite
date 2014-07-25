@@ -13,10 +13,13 @@ from django.http import HttpResponseRedirect
 
 from . import api_urls
 import kalite.coachreports.urls
+import kalite.playlist.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
 import securesync.urls
+
+import fle_utils.handlebars
 
 
 admin.autodiscover()
@@ -46,6 +49,9 @@ urlpatterns += patterns(__package__ + '.views',
     # For teachers
     url(r'^coachreports/', include(kalite.coachreports.urls)),
 
+    # For playlists
+    url(r'^playlists/', include(kalite.playlist.urls)),
+
     # For admins
     url(r'^update/', include(kalite.updates.urls)),
 
@@ -66,17 +72,32 @@ if "tests.loadtesting" in settings.INSTALLED_APPS:
         url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
     )
 
+# Handlebars
+urlpatterns += patterns('',
+    url(r'^handlebars/', include(fle_utils.handlebars.urls)),
+)
+
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
+    # url(r'^$', 'watch_home', {}, 'watch_home'),
     url(r'^watch/$', 'watch_home', {}, 'watch_home'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
+    url(r'^test/', include('student_testing.urls')),
     # the following pattern is a catch-all, so keep it last:
-    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
-
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+
+    url(r'^perseus/$', 'perseus', {}, 'perseus'),
+
+    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+)
+
+# css and js templates
+urlpatterns += patterns(__package__ + '.views',
+    url(r'_generated/ab_testing.css', 'ab_testing_css', {}, 'ab_testing_css'),
+    url(r'_generated/ab_testing.js', 'ab_testing_js', {}, 'ab_testing_js'),
 )
 
 handler403 = __package__ + '.views.handler_403'

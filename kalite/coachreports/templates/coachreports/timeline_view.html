@@ -4,12 +4,12 @@
 {% load my_filters %}
 {% load kalite_staticfiles %}
 
-{% block title %}{{ title }} {{ block.super }}{% endblock title %}
+{% block title %}{{ title }} | {{ block.super }}{% endblock title %}
 {% block report_title %}{{ title }}{% endblock report_title %}
 
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' True %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}

@@ -163,18 +163,11 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # 1. Student: #logged-in-name is username
         # 2. Admin: #logout contains username
         try:
-            sitepoints_text = self.browser.find_element_by_id("sitepoints").text.strip()
+            logged_in_name = self.browser.find_element_by_xpath("(//span[@id='logged-in-name'])[2]").text.strip()
             logout_text = self.browser.find_element_by_id("nav_logout").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
             return False
-
-        if sitepoints_text.startswith("Welcome, "):
-            logged_in_name = sitepoints_text[len("Welcome, "):sitepoints_text.index("!")].strip()
-        elif "|" in sitepoints_text:
-            logged_in_name = sitepoints_text[:sitepoints_text.index("|")].strip()
-        else:
-            logged_in_name = None
 
         username_text = logged_in_name or logout_text[0:-len(" (%s)" % _("Logout"))]
 

@@ -160,7 +160,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     student_username = 'test_student'
     student_password =  'socrates'
     EXERCISE_SLUG = 'addition_1'
-    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG][0]["basepoints"]
+    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG]["basepoints"]
     MAX_POINTS = 2 * MIN_POINTS
 
     def setUp(self):
@@ -171,7 +171,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.student = self.create_student(facility_name=self.facility_name)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG][0]["path"])
+        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
         self.browser_check_django_message(num_messages=0)  # make sure no messages
 
     def browser_get_current_points(self):

@@ -20,4 +20,4 @@ $(function () {
             show_message("warning", gettext("The facility has not been deleted. Did you spell the facility name correctly?"));
         }
     });
-})
+});

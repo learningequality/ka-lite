@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     "fle_utils.config",
     "fle_utils.chronograph",
     "fle_utils.django_utils",  # templatetags
+    "fle_utils.handlebars",
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
@@ -50,8 +51,10 @@ INSTALLED_APPS = (
     "kalite.khanload",  # khan academy interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
+    "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.student_testing",
     "kalite.caching",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
@@ -63,6 +66,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
+    "student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -91,6 +95,10 @@ CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http:/
 
 KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan-exercises")
 
+########################
+# Exercise AB-testing
+########################
+FIXED_BLOCK_EXERCISES = getattr(local_settings, 'FIXED_BLOCK_EXERCISES', 0)
 
 ########################
 # Ports & Accessibility
@@ -182,3 +190,9 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+#################################
+# Toggling motivational features
+#################################
+TURN_OFF_MOTIVATIONAL_FEATURES = getattr(local_settings, 'TURN_OFF_MOTIVATIONAL_FEATURES', False)
