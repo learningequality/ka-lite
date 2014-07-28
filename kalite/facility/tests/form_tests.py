@@ -197,7 +197,6 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.assertTrue(user_form.is_valid(),
             "Form must be valid; instead: errors (%s)" % user_form.errors)
 
-
     def test_form_duplicate_name_count(self):
         """Should have the proper duplicate user name count."""
 
