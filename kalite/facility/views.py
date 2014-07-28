@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
@@ -64,101 +64,124 @@ def facility_edit(request, id=None, zone_id=None):
 
 @require_authorized_admin
 def add_facility_teacher(request):
-    return edit_facility_user(request, id="new", is_teacher=True)
+    """
+    Admins and coaches can add teachers
+    If central, must be an org admin
+    If distributed, must be superuser or a coach
+    """
+    title = _("Add a new teacher")
+    return _facility_user(request, new_user=True, is_teacher=True, title=title)
 
 
+@require_authorized_admin
 def add_facility_student(request):
-    return edit_facility_user(request, id="new", is_teacher=False)
+    """
+    Admins and coaches can add students
+    If central, must be an org admin
+    If distributed, must be superuser or a coach
+    """
+    title = _("Add a new student")
+    return _facility_user(request, new_user=True, title=title)
+
+
+def facility_user_signup(request):
+    """
+    Anyone can sign up, unless we have set the restricted flag
+    """
+    if settings.DISABLE_SELF_ADMIN:
+        # Users cannot create/edit their own data when UserRestricted
+        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+    if settings.CENTRAL_SERVER:
+        raise Http404(_("You may not sign up as a facility user on the central server."))
+
+    title = _("Sign up for an account")
+    return _facility_user(request, new_user=True, title=title)
+
+
+@require_authorized_admin
+def edit_facility_user(request, facility_user_id):
+    """
+    If users have permission to add a user, they also can edit the user. Additionally,
+    a user may edit his/her own information, like in the case of a student.
+    """
+    user_being_edited = get_object_or_404(FacilityUser, id=facility_user_id) or None
+    title = _("Edit user %(username)s") % {"username": user_being_edited.username}
+    return _facility_user(request, user_being_edited=user_being_edited, is_teacher=user_being_edited.is_teacher, title=title)
 
 
 @facility_required
 @render_to("facility/facility_user.html")
-def edit_facility_user(request, facility, is_teacher=None, id=None):
-    """Different codepaths for the following:
-    * Django admin/teacher creates user, teacher
-    * Student creates self
+def _facility_user(request, facility, title, is_teacher=False, new_user=False, user_being_edited=None):
+    """
+    Different codepaths for the following:
+    * Django admin/teacher creates student (add_facility_student)
+    * Django admin creates teacher
+    * Django admin/edits a user, self, or student edits self (edit_facility_user)
+    * Student creates self (facility_user_signup)
 
     Each has its own message and redirect.
     """
+    next = request.next or request.get_full_path() or reverse("homepage")
+    # Data submitted to create/edit the user.
+    if request.method == "POST":
 
-    title = ""
-    user = (id != "new" and get_object_or_404(FacilityUser, id=id)) or None
-    is_teacher = user and user.is_teacher or is_teacher
-    is_editing_user = user is not None
-
-    # Check permissions
-    if user and not request.is_admin and user != request.session.get("facility_user"):
-        # Editing a user, user being edited is not self, and logged in user is not admin
-        raise PermissionDenied()
-
-    elif settings.DISABLE_SELF_ADMIN and not request.is_admin:
-        # Users cannot create/edit their own data when UserRestricted
-        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
-
-    # Data submitted to create the user.
-    if request.method == "POST":  # now, teachers and students can belong to a group, so all use the same form.
-
-        form = FacilityUserForm(facility, admin_access=request.is_admin, data=request.POST, instance=user)
+        form = FacilityUserForm(facility, data=request.POST, instance=user_being_edited)
         if not form.is_valid():
             messages.error(request, _("There was a problem saving the information provided; please review errors below."))
 
         else:
+            # In case somebody tries to check the hidden 'is_teacher' field
+            if form.cleaned_data["is_teacher"] and not request.is_admin:
+                raise PermissionDenied(_("You must be a teacher to edit or create a teacher."))
+
             if form.cleaned_data["password_first"]:
                 form.instance.set_password(form.cleaned_data["password_first"])
+
             form.save()
 
-            if getattr(request.session.get("facility_user"), "id", None) == form.instance.id:
-                # Edited: own account; refresh the facility_user setting
-                request.session["facility_user"] = form.instance
+            # Editing self
+            if request.session.get("facility_user") and request.session.get("facility_user").id == form.instance.id:
                 messages.success(request, _("You successfully updated your user settings."))
-                return HttpResponseRedirect(request.next or reverse("account_management"))
+                if form.instance.is_teacher:
+                    return HttpResponseRedirect(next)
+                else:
+                    return HttpResponseRedirect(next)
 
-            elif id != "new":
-                # Edited: by admin; someone else's ID
+            # Editing another user
+            elif not new_user:
                 messages.success(request, _("Changes saved for user '%(username)s'") % {"username": form.instance.get_name()})
                 if request.next:
-                    return HttpResponseRedirect(request.next)
+                    return HttpResponseRedirect(next)
 
+            # New user created by admin
             elif request.is_admin:
-                # Created: by admin
                 messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
-                return HttpResponseRedirect(request.next or request.get_full_path() or reverse("homepage"))  # allow them to add more of the same thing.
+                return HttpResponseRedirect(next)
 
+            # New student signed up
             else:
-                # Created: by self
+                # Double check permissions
                 messages.success(request, _("You successfully registered."))
-                return HttpResponseRedirect(request.next or "%s?facility=%s" % (reverse("login"), form.data["facility"]))
+                return HttpResponseRedirect(reverse("login"))
 
-    elif user:  # edit
-        form = FacilityUserForm(facility=facility, admin_access=request.is_admin, instance=user)
+    # render form for editicng
+    elif user_being_edited:
+        form = FacilityUserForm(facility=facility, instance=user_being_edited)
 
-    else:  # new
-        assert is_teacher is not None, "Must call this function with is_teacher set."
-        form = FacilityUserForm(facility, admin_access=request.is_admin, initial={
+    # in all other cases, we are creating a new user
+    else:
+        form = FacilityUserForm(facility, initial={
             "group": request.GET.get("group", None),
             "is_teacher": is_teacher,
             "default_language": get_default_language(),
         })
 
-    # Set the title
-    if is_editing_user: # editing a specific user
-        title = _("Edit user %(username)s") % {"username": user.username}
-    elif not request.is_admin:  # new student sign-up
-        title = _("Sign up for an account")
-    elif is_teacher:  # new admin teacher creation
-        title = _("Add a new teacher")
-    else:  # new admin student creation
-        title = _("Add a new student")
-
     return {
         "title": title,
-        "user_id": id,
+        "new_user": new_user,
         "form": form,
         "facility": facility,
-        "singlefacility": request.session["facility_count"] == 1,
-        "num_groups": form.fields["group"].choices.queryset.count(),
         "teacher": is_teacher,
-        "cur_url": request.path,
     }
 
 
@@ -200,7 +223,7 @@ def login(request, facility):
 
     #Fix for #2047: prompt user to create an admin account if none exists
     if not User.objects.exists():
-        messages.warning(request, _("No administrator account deteced. Please run 'python manage.py createsuperuser' from the terminal to create one."))
+        messages.warning(request, _("No administrator account detected. Please run 'python manage.py createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))
@@ -263,14 +286,6 @@ def login(request, facility):
 
 
 def logout(request):
-    if "facility_user" in request.session:
-        # Logout, ignore any errors.
-        try:
-            UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
-        except ValidationError as e:
-            logging.error("Failed to end_user_activity upon logout: %s" % e)
-        del request.session["facility_user"]
-
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":

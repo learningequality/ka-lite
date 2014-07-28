@@ -75,18 +75,20 @@
 {% endblock navbar_groups %}
 
 {% block content %}
-    {% block navbar %}{{ block.super }}{% endblock navbar %}
+{% block navbar %}{{ block.super }}{% endblock navbar %}
 
-    {% block student_report %}
-    <!-- {% blocktrans %}Last login time: {{ last_login_time }}{% endblocktrans %}-->
+{% block student_report %}
+<!-- {% blocktrans %}Last login time: {{ last_login_time }}{% endblocktrans %}-->
 
+<div class="container">
+  <div class="col-md-12">
     {% if no_data %}
-        {% if request.is_admin or is_central %}
-            {% trans "No data for this user." %}
-        {% else %}
-            {% trans "Welcome to KA Lite!" %}
-            {% trans "Please return to this page after watching videos or practicing exercises." %}
-        {% endif %}
+      {% if request.is_admin or is_central %}
+          {% trans "No data for this user." %}
+      {% else %}
+          {% trans "Welcome to KA Lite!" %}
+          {% trans "Please return to this page after watching videos or practicing exercises." %}
+      {% endif %}
     {% else %}
     <h3 class="table-title">{% trans "Progress Report" %}</h3>
     
@@ -150,5 +152,8 @@
         </table>
     </div>
     {% endif %}
-    {% endblock student_report %}
+  </div>
+</div>
+
+{% endblock student_report %}
 {% endblock content %}

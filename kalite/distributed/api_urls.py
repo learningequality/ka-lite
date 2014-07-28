@@ -9,6 +9,7 @@ from django.http import HttpResponseServerError
 
 import kalite.django_cherrypy_wsgiserver.api_urls
 import kalite.i18n.api_urls
+import kalite.playlist.api_urls
 import kalite.khanload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
@@ -41,6 +42,11 @@ urlpatterns += patterns('kalite.main.api_views',
 # Updates allows server-client interactions when downloading / updating content and software
 urlpatterns += patterns('kalite.updates.api_views',
     url(r'^', include(kalite.updates.api_urls)),
+)
+
+# Playlist endpoints for updating playlist info
+urlpatterns += patterns('kalite.playlist.api_views',
+    url(r'^playlists/', include(kalite.playlist.api_urls)),
 )
 
 # i18n allows changing default languages for users

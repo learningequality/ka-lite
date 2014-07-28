@@ -12,6 +12,7 @@ from dateutil import relativedelta
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.signals import user_logged_out
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
@@ -86,7 +87,6 @@ class VideoLog(DeferredCountSyncedModel):
         namespace = uuid.UUID(self.user.id)
         # can be video_id because that's set to the english youtube_id, to match past code.
         return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex
-
 
     @staticmethod
     def get_points_for_user(user):
@@ -241,7 +241,6 @@ class UserLogSummary(DeferredCountSyncedModel):
         else:
             raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
 
-
     @classmethod
     def get_period_end_datetime(cls, log_time, summary_freq):
         start_datetime = cls.get_period_start_datetime(log_time, summary_freq)
@@ -262,7 +261,6 @@ class UserLogSummary(DeferredCountSyncedModel):
 
         else:
             raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
-
 
     @classmethod
     def add_log_to_summary(cls, user_log, device=None):
@@ -468,6 +466,7 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log.save()  # total-seconds will be computed here.
         return cur_log
 
+
 class AttemptLog(DeferredCountSyncedModel):
     """
     Detailed instances of user exercise engagement.
@@ -479,19 +478,23 @@ class AttemptLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
-    random_seed = models.IntegerField(default=0)
-    answer_given = models.TextField()
-    points_awarded = models.IntegerField(blank=True, null=True)
-    correct = models.BooleanField(default=False)
-    context_type = models.CharField(max_length=20, blank=False)
-    context_id = models.CharField(max_length=100, blank=True)
+    seed = models.IntegerField(default=0)
+    answer_given = models.TextField(blank=True) # first answer given to the question
+    points = models.IntegerField(default=0)
+    correct = models.BooleanField(default=False) # indicates that the first answer given was correct
+    complete = models.BooleanField(default=False) # indicates that the question was eventually answered correctly
+    context_type = models.CharField(max_length=20, blank=False) # e.g. "exam", "quiz", "playlist", "topic"
+    context_id = models.CharField(max_length=100, blank=True) # e.g. the exam ID, quiz ID, playlist ID, topic ID, etc
     language = models.CharField(max_length=8, blank=True)
-    timestamp = models.DateTimeField(editable=False, default=datetime.now)
-    time_taken = models.IntegerField(blank=True, null=True)
-    exercise_version = models.CharField(blank=True, max_length=100)
+    timestamp = models.DateTimeField() # time at which the question was first loaded (that led to the initial response)
+    time_taken = models.IntegerField(blank=True, null=True) # time spent on exercise before initial response (in ms)
+    version = models.CharField(blank=True, max_length=100) # the version of KA Lite at the time the answer was given
+    response_log = models.TextField(default="[]")
+    response_count = models.IntegerField(default=0)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
+
 
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
@@ -524,6 +527,7 @@ def add_to_summary(sender, **kwargs):
         # Save only completed log items to the UserLogSummary
         UserLogSummary.add_log_to_summary(instance)
 
+
 @receiver(post_save, sender=UserLog)
 def cull_records(sender, **kwargs):
     """
@@ -537,3 +541,15 @@ def cull_records(sender, **kwargs):
             to_discard = current_models \
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
+
+def logout_endlog(sender, request, user, **kwargs):
+    if "facility_user" in request.session:
+        # Logout, ignore any errors.
+        try:
+            UserLog.end_user_activity(request.session["facility_user"], activity_type="login")
+        except ValidationError as e:
+            logging.error("Failed to end_user_activity upon logout: %s" % e)
+        del request.session["facility_user"]
+
+# End a log whenever a logout event is fired.
+user_logged_out.connect(logout_endlog)

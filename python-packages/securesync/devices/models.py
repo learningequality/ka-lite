@@ -15,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .. import ID_MAX_LENGTH, IP_MAX_LENGTH, VERSION
 from .. import crypto
-from ..engine.models import SyncedModel
+from ..engine.models import SyncedModel, SyncedModelManager
 from fle_utils.general import get_host_name
 from fle_utils.django_utils import validate_via_booleans, ExtendedModel
 
@@ -170,7 +170,7 @@ class DeviceZone(SyncedModel):
         return u"Device: %s, assigned to Zone: %s" % (self.device, self.zone)
 
 
-class DeviceManager(models.Manager):
+class DeviceManager(SyncedModelManager):
 
     class Meta:
         app_label = "securesync"
@@ -188,6 +188,8 @@ class Device(SyncedModel):
     version = models.CharField(max_length=len("10.10.100"), default="0.9.2", blank=True); version.minversion="0.9.3"  # default comes from knowing when this feature was implemented!
 
     objects = DeviceManager()
+    all_objects = DeviceManager(show_deleted=True)
+
     key = None
     own_device = None  # cached property, shared globally.
 
@@ -251,8 +253,7 @@ class Device(SyncedModel):
         metadata.save()
         return metadata.counter_position
 
-
-    def full_clean(self):
+    def full_clean(self, *args, **kwargs):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
         pass
 
@@ -315,7 +316,7 @@ class Device(SyncedModel):
 
     @validate_via_booleans
     def validate(self):
-        if self.signed_by_id != self.id:
+        if self.signed_by_id != self.id and not self.signed_by.get_metadata().is_trusted:
             raise ValidationError("Device is not self-signed.")
         return True
 

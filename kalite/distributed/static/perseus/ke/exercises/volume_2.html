@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-3d math-format interactive word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Volume word problems</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script type="text/javascript">
+        var makeSquare = function(left, width, bottom, height, color) {
+            KhanUtil.currentGraph.path([
+                    [left, bottom],
+                    [left, bottom + height],
+                    [left + width, bottom + height],
+                    [left + width, bottom],
+                    true
+                ],
+                { stroke: "black", strokeWidth: 1, fill: color }
+            );
+        };
+
+        var normalize = function(vect) {
+            var length = Math.sqrt(vect[0] * vect[0] +
+                                   vect[1] * vect[1] +
+                                   vect[2] * vect[2]);
+            return _.map(vect, function(e) { return e / length; });
+        };
+    </script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="sending-flour" >
+            <div class="vars">
+                <var id="LENGTH">randRange(2,7)</var>
+                <var id="WIDTH">randRange(2,7)</var>
+                <var id="HEIGHT">randRange(2,7)</var>
+                <var id="VOL">LENGTH * WIDTH * HEIGHT</var>
+                <var id="FACTORIZATION">getPrimeFactorization(VOL)</var>
+                <var id="REMAINING">_.map(FACTORIZATION, function(factor, step){
+                        var remain = VOL;
+                        _.each(FACTORIZATION.slice(0, step), function(n) { remain /= n; })
+                        return remain;
+                    })
+                </var>
+            </div>
+             <p>
+                 <var>person(1)</var> needs to ship a package of flour to a baker.
+                 <span data-if="isMale(1)">He has <code><var>VOL</var></code> cubic centimeters of flour to send.</span>
+                 <span data-else>She has <code><var>VOL</var></code> cubic centimeters of flour to send.</span>
+                 The post office will not ship any box which has an edge <code>10</code> centimeters or longer.
+             </p>
+            <p class="question">
+               What dimensions will hold exactly <code><var>VOL</var></code> cubic centimeters of flour,
+               but whose edge lengths are all integers less than <code>10</code> centimeters?
+            </p>
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                   Length <code>=</code> <input id="response1" type="text"/> cm <br/>
+                   Width <code>\hphantom{ }=</code> <input id="response2" type="text"/> cm <br/>
+                   Height <code> =</code> <input id="response3" type="text"/> cm
+                </div>
+                
+                <div class="guess">[$("input#response1").val(),$("input#response2").val(),$("input#response3").val()]</div>
+                <div class="validator-function">
+                    return guess[0]*guess[1]*guess[2] == VOL &amp;&amp; guess[0]&lt; 10 &amp;&amp; guess[1] &lt; 10 &amp;&amp; guess[2] &lt; 10
+                </div>
+                <div class="example">an integer, like <code>6</code></div>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <div class="graphie" id="factor-tree" style="float: left;">
+                        graph.cx = 0;
+                        graph.y = 0;
+                        graph.curr = VOL;
+                        init({
+                            range: [[-1, FACTORIZATION.length + 1], [-2 * FACTORIZATION.length - 0.5, 1]],
+                            scale: [30, 30]
+                        });
+                        label([graph.cx + 1, graph.y], graph.curr);
+                    </div>
+                    <p style="height: 60px">We can use a factor tree to break <code><var>VOL</var></code> into its prime
+                    factorization. Which of the prime numbers divides into <code><var>VOL</var></code>?</p>
+                </div>
+                <div data-each="FACTORIZATION.slice(0, -1) as I, FACTOR">
+                    <div class="graphie" data-update="factor-tree">
+                        path([[graph.cx + 1, graph.y - 0.5], [graph.cx, graph.y - 1.5]]);
+                        path([[graph.cx + 1, graph.y - 0.5], [graph.cx + 2, graph.y - 1.5]]);
+                        graph.y -= 2;
+                        graph.cx += 1;
+                        graph.curr = graph.curr / FACTOR;
+                        label([graph.cx - 1, graph.y], FACTOR, { color: BLUE });
+                        circle([graph.cx - 1, graph.y], 0.5);
+                        graph.lastLabel = label([graph.cx + 1, graph.y], graph.curr);
+                    </div>
+                    <p style="height: 38px">
+                        <code><var>REMAINING[I]</var></code> is divisible by <code>\blue{<var>FACTOR</var>}</code>,
+                        leaving us with <code><var>REMAINING[I] / FACTOR</var></code>.
+                    </p>
+                </div>
+                <div>
+                    <div class="graphie" data-update="factor-tree">
+                        circle([graph.cx + 1, graph.y], 0.5);
+                        graph.lastLabel.remove();
+                        label([graph.cx + 1, graph.y], graph.curr, { color: BLUE });
+                    </div>
+                    <p>
+                        <code>\blue{<var>FACTORIZATION[FACTORIZATION.length - 1]</var>}</code> is prime, so we're done factoring.
+                    </p>
+                </div>
+                <div>
+                    <p>So the prime factors of <code><var>VOL</var></code> are:</p>
+                    <p><code class="hint_blue">
+                        \qquad<var>FACTORIZATION.join("\\space\\color{black}{\\times}\\space")</var>
+                    </code></p>
+                </div>
+                <p data-if="FACTORIZATION.length === 3">
+                    So the dimensions of the package should be
+                    <code><var>FACTORIZATION[0]</var></code>,
+                    <code><var>FACTORIZATION[1]</var></code> and
+                    <code><var>FACTORIZATION[2]</var></code>.
+                </p>
+                <div data-else="" data-unwrap="">
+                    <p>We can find the dimensions of the package by arranging the factors into three groups of products, all less than <code>10</code>.</p>
+                    <p>
+                        One solution would be:
+                        (<code><var>getPrimeFactorization(WIDTH).join("\\space\\color{black}{\\times}\\space")</var></code>),
+                        (<code><var>getPrimeFactorization(LENGTH).join("\\space\\color{black}{\\times}\\space")</var></code>) and
+                        (<code><var>getPrimeFactorization(HEIGHT).join("\\space\\color{black}{\\times}\\space")</var></code>)
+                    </p>
+                    <p>
+                        So the dimensions of the package could be <code><var>WIDTH</var></code>,
+                        <code><var>LENGTH</var></code> and <code><var>HEIGHT</var></code>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div id="box-minus-box" >
+            <div class="vars">
+
+                <var id="L1">randRange(2,12)</var>
+                <var id="W1">randRange(2,12)</var>
+                <var id="H1">randRange(2,12)</var>
+                <var id="L2">randRange(1,L1-1)</var>
+                <var id="W2">randRange(1,W1-1)</var>
+                <var id="H2">randRange(1,H1-1)</var>
+                <var id="MAX">max(max(L1,W1),H1)</var>
+
+                <var id="COLOR">"#78D0EF"</var>
+
+                <var id="VERTICES">[
+                    [L1/MAX,W1/MAX,-H1/MAX],
+                    [-L1/MAX,W1/MAX,-H1/MAX],
+                    [-L1/MAX,-W1/MAX,-H1/MAX],
+                    [L1/MAX,-W1/MAX,-H1/MAX],
+                    [L1/MAX,W1/MAX,H1/MAX],
+                    [-L1/MAX,W1/MAX,H1/MAX],
+                    [-L1/MAX,-W1/MAX,H1/MAX],
+                    [L1/MAX,-W1/MAX,H1/MAX],
+                    [(-L1+2*L2)/MAX,-W1/MAX,-H1/MAX],
+                    [(2*L2-L1)/MAX,(2*W2-W1)/MAX,-H1/MAX],
+                    [-L1/MAX,(2*W2-W1)/MAX,-H1/MAX],
+                    [-L1/MAX,-W1/MAX,(2*H2-H1)/MAX],
+                    [(-L1+2*L2)/MAX,-W1/MAX,(2*H2-H1)/MAX],
+                    [(2*L2-L1)/MAX,(2*W2-W1)/MAX,(2*H2-H1)/MAX],
+                    [-L1/MAX,(2*W2-W1)/MAX,(2*H2-H1)/MAX]
+                ]</var>
+
+               <var id="SCALE">4.0</var>
+                <var id="FACES">[
+                    {
+                        verts: [0, 3, 2, 1],
+                        color: COLOR
+                    },
+                    {
+                        verts: [5, 6, 7, 4],
+                        color: COLOR
+                    },
+                    {
+                        verts: [4,7,3,0],
+                        color: COLOR
+                    },
+                    {
+                        verts: [5,1,2,6],
+                        color: COLOR
+                    },
+                    {
+                        verts: [5, 4, 0, 1],
+                        color: COLOR
+                    },
+                    {
+                        verts: [6, 2, 3, 7],
+                        color: COLOR
+                    }
+                ]</var>
+
+                <var id="UNIT, METERS">metricUnits[0]</var>
+            </div>
+            <p>
+                A water tank is <code><var>H1</var></code> <var>plural_form(METERS, H1)</var> high,
+                <code><var>L1</var></code> <var>plural_form(METERS, L1)</var> long,
+                and <code><var>W1</var></code> <var>plural_form(METERS, W1)</var> wide.
+                A solid metal box which is <code><var>H2</var></code> <var>plural_form(METERS, H2)</var> high,
+                <code><var>L2</var></code> <var>plural_form(METERS, L2)</var> long,
+                and <code><var>W2</var></code> <var>plural_form(METERS, W2)</var> wide is sitting inside the tank.
+                The tank is filled with water.
+            </p>
+            <p class="question">
+                What is the volume of the water in the tank?
+            </p>
+
+            <div class="solution" data-type="multiple">
+               <p> <span class="sol"><var>L1*W1*H1 - L2*W2*H2</var></span> <code>\text{m}^3</code></p>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <div class="graphie" id = "box">
+                        init({range: [[-2, 2], [-2, 2]], scale: [100, 100]});
+                        addMouseLayer();
+
+                         //  graphing the initial object
+                          graph.obj = make3dObject(VERTICES, { scale: SCALE });
+                        _.each(FACES, function(face) {
+                            graph.obj.addFace(face);
+                        });
+
+                        graph.obj.addSketch(
+                            {verts: [8,9,10,2]}
+                        );
+
+                        graph.obj.addSketch(
+                            {verts: [11,12,13,14,11]}
+                        );
+
+                        graph.obj.addSketch(
+                            {verts: [2,11]}
+                        );
+
+                        graph.obj.addSketch(
+                            {verts: [8,12]}
+                        );
+
+                        graph.obj.addSketch(
+                            {verts: [9,13]}
+                        );
+
+                        graph.obj.addSketch(
+                            {verts: [10,14]}
+                        );
+
+                        graph.obj.setPos([0, 0, 5]);
+                        graph.obj.rotate(1,0 , 0, PI/3);
+                        graph.obj.rotate(0, 1, 0, 0);
+                        graph.obj.rotate(0, 0, 1, PI/8);
+
+                        graph.obj.doDraw();
+
+                        GRAPH = graph;
+
+                        var spinner;
+                        setTimeout(function() {
+                            spinner = setInterval(function() {
+                                GRAPH.obj.rotate(0, 0, 1, 0);
+                                GRAPH.obj.doDraw();
+                            }, 50);
+                        }, 300);
+
+                        var mouseTarget = mouselayer.rect(0, 0, 400, 400).attr({
+                            fill: "#000", opacity: 0.0
+                        });
+                        $(mouseTarget[0]).bind("vmousedown", function(event) {
+                            event.preventDefault();
+
+                            GRAPH.lastX = event.pageX;
+                            GRAPH.lastY = event.pageY;
+
+                            clearInterval(spinner);
+
+                            $(document).bind("vmousemove vmouseup", function(event) {
+                                event.preventDefault();
+
+                                var dx = (event.pageX - GRAPH.lastX) / 200 * PI;
+                                var dy = (event.pageY - GRAPH.lastY) / 200 * PI;
+
+                                GRAPH.lastX = event.pageX;
+                                GRAPH.lastY = event.pageY;
+
+                                var xAxis = normalize(GRAPH.obj.perspective[1]);
+                                var yAxis = normalize(GRAPH.obj.perspective[0]);
+
+                                GRAPH.obj.rotate(xAxis[0], xAxis[1], xAxis[2], -dx / 2);
+                                GRAPH.obj.rotate(yAxis[0], yAxis[1], yAxis[2], -dy / 2);
+
+                                GRAPH.obj.doDraw();
+
+                                if (event.type === "vmouseup") {
+                                    $(document).unbind("vmousemove vmouseup");
+                                }
+                            })
+                        });
+                    </div>
+                    <p>
+                        The tank has a volume of <code><var>H1</var> \times <var>L1</var> \times <var>W1</var> = 
+                        <var>H1 * L1 * W1</var></code> cubic <var>plural_form(METERS, H1 * L1 * W1)</var>,
+                        and the metal box has a volume of <code><var>H2</var> \times <var>L2</var> \times <var>W2</var> = 
+                        <var>H2 * W2 * L2</var></code> cubic <var>plural_form(METERS, H2 * L2 * W2)</var>
+                    </p>
+                </div>
+                <p>
+                    Since there is no water in the box, the volume of the water in the tank is the volume of the tank minus the volume of the metal box.
+                </p>
+                <p>
+                    The volume of the water in the tank is 
+                    <code>
+                        <var>H1 * L1 * W1</var> \text{<var>UNIT</var>}^3 -
+                        <var>H2 * L2 * W2</var> \text{<var>UNIT</var>}^3 = 
+                        <var>H1 * L1 * W1 - H2 * L2 * W2</var>\text{<var>UNIT</var>}^3
+                    </code>
+                </p>
+            </div>
+        </div>
+        <div id="big-to-small-unit-conversion" >
+            <div class="vars">
+                <var id="CONVERSION">10</var>
+                <var id="CONVERSION_CUBED">CONVERSION * CONVERSION * CONVERSION</var>
+                <var id="UNITS">rand(2)</var>
+                <var id="FROM_TEXT, FROM">metricUnits[UNITS]</var>
+                <var id="TO_TEXT,TO">[
+                    [$._("dm"), new Plural(function(num) {
+                        return $.ngettext("decimeter", "decimeters", num);
+                    })],
+                    [$._("mm"), new Plural(function(num) {
+                        return $.ngettext("millimeter", "millimeters", num);
+                    })]
+                ][UNITS]</var>
+                <var id="VOL">randRangeExclude(2, 11,[3,10])</var>
+                <var id="LENGTH">CONVERSION</var>
+                <var id="WIDTH">CONVERSION</var>
+                <var id="HEIGHT">CONVERSION</var>
+                <var id="MAX">CONVERSION</var>
+                <var id="XBORD">LENGTH/MAX</var>
+                <var id="YBORD">WIDTH/MAX</var>
+                <var id="ZBORD">HEIGHT/MAX</var>
+                <var id="COLOR1">"#D7ED3A"</var>
+                <var id="COLOR2">"#38C77F"</var>
+                <var id="COLOR3">"#78D0EF"</var>
+                <var id="COLOR4">"#F0B63A"</var>
+                <var id="BASE">HEIGHT * 2</var>
+                <var id="VERTICES">[
+                    [LENGTH/MAX, WIDTH/MAX, HEIGHT/MAX],
+                    [LENGTH/MAX, WIDTH/MAX, -HEIGHT/MAX],
+                    [LENGTH/MAX, -WIDTH/MAX, -HEIGHT/MAX],
+                    [LENGTH/MAX, -WIDTH/MAX, HEIGHT/MAX],
+                    [-LENGTH/MAX, WIDTH/MAX, HEIGHT/MAX],
+                    [-LENGTH/MAX, WIDTH/MAX, -HEIGHT/MAX],
+                    [-LENGTH/MAX, -WIDTH/MAX, -HEIGHT/MAX],
+                    [-LENGTH/MAX, -WIDTH/MAX, HEIGHT/MAX]
+                ]</var>
+                <var id="SCALE">4.0</var>
+                <var id="FACES">[
+                    {
+                        verts: [3, 2, 1, 0],
+                        color: COLOR1,
+                        labels: [[[XBORD, 0, ZBORD], "1 \\text{" + FROM_TEXT + "} = " + CONVERSION + " \\text{" + TO_TEXT + "}"]]
+                    }, {
+                        verts: [4, 5, 6, 7],
+                        color: COLOR1,
+                        labels: [[[XBORD, 0, ZBORD], "1 \\text{" + FROM_TEXT + "} = " + CONVERSION + " \\text{" + TO_TEXT + "}"]]
+                    }, {
+                        verts: [0, 1, 5, 4],
+                        color: COLOR3
+                    }, {
+                        verts: [2, 3, 7, 6],
+                        color: COLOR3
+                    }, {
+                        verts: [1, 2, 6, 5],
+                        color: COLOR2
+                    }, {
+                        verts: [3, 0, 4, 7],
+                        color: COLOR2
+                    }
+                ]</var>
+
+                <var id="GRAPH">{}</var>
+                <var id="UNWRAPGRAPH">{}</var>
+
+                <var id="BASE_TEXT">$._("base")</var>
+                <var id="HEIGHT_TEXT">$._("height")</var>
+            </div>
+
+            <p class="question">
+                How many cubic <var>plural_form(TO)</var> fit in <code><var>VOL</var></code> cubic <var>plural_form(FROM, VOL)</var>?
+            </p>
+
+            <div class="solution"><var>VOL * CONVERSION_CUBED</var></div>
+
+            <div class="hints">
+                <p>First we will figure out how many cubic <var>plural_form(TO)</var> fit in one cubic <var>FROM</var>.</p>
+                <p>There are <code><var>CONVERSION</var></code> <var>plural_form(TO, CONVERSION)</var> in every <var>FROM</var>.</p>
+                <div>
+                    <p>
+                        So a cubic <var>FROM</var> is the same as a
+                        <code>
+                            <var>CONVERSION</var> \text{ <var>TO_TEXT</var>}
+                            \times <var>CONVERSION</var> \text{ <var>TO_TEXT</var>}
+                            \times<var>CONVERSION</var> \text{ <var>TO_TEXT</var>}
+                        </code>
+                        cube.
+                    </p>
+                    <div class="graphie" id = "box">
+                        init({range: [[-2, 2], [-2, 2]], scale: [100, 100]});
+                        addMouseLayer();
+
+                        //Adding verticies for the slabs
+                        for (var i = 1; i &lt; HEIGHT;i++ ){
+                            VERTICES.push( [LENGTH/MAX,WIDTH/MAX,(-HEIGHT+2*i)/MAX]);
+                            VERTICES.push([-LENGTH/MAX,WIDTH/MAX,(-HEIGHT+2*i)/MAX]);
+                            VERTICES.push([-LENGTH/MAX,-WIDTH/MAX,(-HEIGHT+2*i)/MAX]);
+                            VERTICES.push([LENGTH/MAX,-WIDTH/MAX,(-HEIGHT+2*i)/MAX]);
+                        };
+
+                        //Adding verticies for the cubes in one slab
+                        for (var i = 1; i &lt; LENGTH; i++ ){
+                            VERTICES.push( [(-LENGTH+2*i)/MAX,-WIDTH/MAX,(-HEIGHT)/MAX]);
+                        };
+                        for (var i = 1; i &lt; LENGTH; i++ ){
+                            VERTICES.push( [(-LENGTH+2*i)/MAX,WIDTH/MAX,(-HEIGHT)/MAX]);
+                        };
+                        for (var i = 1; i &lt; WIDTH; i++ ){
+                            VERTICES.push( [(-LENGTH)/MAX,(-WIDTH+2*i)/MAX,(-HEIGHT)/MAX]);
+                        };
+                        for (var i = 1; i &lt; WIDTH; i++ ){
+                            VERTICES.push( [(LENGTH)/MAX,(-WIDTH+2*i)/MAX,(-HEIGHT)/MAX]);
+                        };
+
+                        for (var i = 1; i &lt; LENGTH; i++ ){
+                            VERTICES.push( [(-LENGTH+2*i)/MAX,-WIDTH/MAX,(-HEIGHT+2)/MAX]);
+                        };
+                        for (var i = 1; i &lt; LENGTH; i++ ){
+                            VERTICES.push( [(-LENGTH+2*i)/MAX,WIDTH/MAX,(-HEIGHT+2)/MAX]);
+                        };
+                        for (var i = 1; i &lt; WIDTH; i++ ){
+                            VERTICES.push( [(-LENGTH)/MAX,(-WIDTH+2*i)/MAX,(-HEIGHT+2)/MAX]);
+                        };
+                        for (var i = 1; i &lt; WIDTH; i++ ){
+                            VERTICES.push( [(LENGTH)/MAX,(-WIDTH+2*i)/MAX,(-HEIGHT+2)/MAX]);
+                        };
+
+                        //  graphing the initial object
+                        graph.obj = make3dObject(VERTICES, { scale: SCALE });
+                        _.each(FACES, function(face) {
+                            graph.obj.addFace(face);
+                        });
+
+                        graph.obj.setPos([0, 0, 5]);
+                        graph.obj.rotate(1,0 , 0, PI/3);
+                        graph.obj.rotate(0, 1, 0, 0);
+                        graph.obj.rotate(0, 0, 1, PI/8);
+                        graph.obj.doDraw();
+
+                        GRAPH = graph;
+
+                        var spinner;
+                        setTimeout(function() {
+                            spinner = setInterval(function() {
+                                GRAPH.obj.rotate(0, 0, 1, 0);
+                                GRAPH.obj.doDraw();
+                            }, 50);
+                        }, 300);
+
+                        var mouseTarget = mouselayer.rect(0, 0, 400, 400).attr({
+                            fill: "#000", opacity: 0.0
+                        });
+                        $(mouseTarget[0]).bind("vmousedown", function(event) {
+                            GRAPH.lastX = event.pageX;
+                            GRAPH.lastY = event.pageY;
+
+                            clearInterval(spinner);
+
+                            $(document).bind("vmousemove vmouseup", function(event) {
+                                event.preventDefault();
+
+                                var dx = (event.pageX - GRAPH.lastX) / 200 * PI;
+                                var dy = (event.pageY - GRAPH.lastY) / 200 * PI;
+
+                                GRAPH.lastX = event.pageX;
+                                GRAPH.lastY = event.pageY;
+
+                                var xAxis = normalize(GRAPH.obj.perspective[1]);
+                                var yAxis = normalize(GRAPH.obj.perspective[0]);
+
+                                GRAPH.obj.rotate(xAxis[0], xAxis[1], xAxis[2], -dx / 2);
+                                GRAPH.obj.rotate(yAxis[0], yAxis[1], yAxis[2], -dy / 2);
+
+                                GRAPH.obj.doDraw();
+
+                                if (event.type === "vmouseup") {
+                                    $(document).unbind("vmousemove vmouseup");
+                                }
+                            })
+                        });
+                    </div>
+                </div>
+
+               <p>
+                   There are <code><var>CONVERSION</var> \times <var>CONVERSION</var>
+                    \times <var>CONVERSION</var> = <var>CONVERSION_CUBED</var> \text{ <var>TO_TEXT</var>}^3</code>
+                   in each cubic <var>FROM</var>, by the volume formula.
+               </p>
+               <p>
+                   Since we have <code><var>VOL</var></code> cubic <var>plural_form(FROM, VOL)</var>,
+                   and each cubic <var>FROM</var> holds <code><var>CONVERSION_CUBED</var></code> cubic
+                   <var>plural_form(TO, CONVERSION_CUBED)</var>, we have a total of
+                   <code><var>VOL</var> \times <var>CONVERSION_CUBED</var></code>
+                   cubic <var>plural_form(TO, VOL * CONVERSION_CUBED)</var>.
+               </p>
+               <p>
+                    So <code><var>VOL * CONVERSION_CUBED</var></code> cubic <var> plural_form(TO, VOL * CONVERSION_CUBED)</var>
+                    fit in <code><var>VOL</var></code> cubic <var>plural_form(FROM, VOL)</var>.
+               </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -13,6 +13,7 @@ from django.conf import settings; logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import unittest
+from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
 
 from .base import KALiteDistributedBrowserTestCase, KALiteDistributedWithFacilityBrowserTestCase
@@ -90,7 +91,6 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
 
     def test_login_mixed(self):
         """Tests that a user can login with the uppercased version of the email address that was registered"""
-
         # Register user in one case
         self.browser_register_user(username=self.username.lower(), password=self.password)
 
@@ -160,7 +160,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
     student_username = 'test_student'
     student_password =  'socrates'
     EXERCISE_SLUG = 'addition_1'
-    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG][0]["basepoints"]
+    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG]["basepoints"]
     MAX_POINTS = 2 * MIN_POINTS
 
     def setUp(self):
@@ -171,7 +171,7 @@ class StudentExerciseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.student = self.create_student(facility_name=self.facility_name)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG][0]["path"])
+        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
         self.browser_check_django_message(num_messages=0)  # make sure no messages
 
     def browser_get_current_points(self):
@@ -313,3 +313,28 @@ class MainEmptyFormSubmitCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
     def test_add_group_form(self):
         self.browser_login_admin()
         self.empty_form_test(url=self.reverse("add_group"), submission_element_id="id_name")
+
+
+@override_settings(SESSION_IDLE_TIMEOUT=1)
+class TestSessionTimeout(KALiteDistributedWithFacilityBrowserTestCase):
+    """
+    Test webpage for timing out user sessions
+    """
+
+    def test_facility_user_logout_after_interval(self):
+        student_username = 'test_student'
+        student_password =  'socrates'
+        self.student = self.create_student()
+        self.browser_login_student(student_username, student_password)
+        time.sleep(3)
+        self.browse_to(self.reverse("exercise_dashboard"))
+        self.browser_check_django_message(message_type="error", contains="Your session has been timed out.")
+
+    # Skip this test as currently fails due to unrelated reasons.
+    # Main functionality is to enforce student log out.
+    # def test_admin_user_logout_after_interval(self):
+    #     # Login as admin
+    #     self.browser_login_admin()
+    #     time.sleep(3)
+    #     self.browse_to(self.reverse("homepage"))
+    #     self.browser_check_django_message(message_type="error", contains="Your session has been timed out.")        

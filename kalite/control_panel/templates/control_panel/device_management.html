@@ -68,6 +68,28 @@
                 <p class="registered-only">{% trans "This device has never synced with the central server." %}</p>
                 <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
             {% else %}
+                <table class="table">
+                    <thead>
+                        <tr class="success">
+                            <th width="250px">{% trans "Sync Date" %}</th>
+                            <th width="250px">{% trans "Device IP Address" %}</th>
+                            <th width="200px">{% trans "# Models Uploaded" %}</th>
+                            <th width="200px">{% trans "# Models Downloaded" %}</th>
+                            <th width="200px">{% trans "# Errors" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for sync_session in session_pages %}
+                        <tr>
+                            <td>{{ sync_session.timestamp }}</td>
+                            <td>{{ sync_session.ip }}</td>
+                            <td>{{ sync_session.models_uploaded }}</td>
+                            <td>{{ sync_session.models_downloaded }}</td>
+                            <td>{{ sync_session.errors }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
                 {% if session_pages.num_listed_pages > 1 %}
                 <div class="pagination">
                         <a title="{% trans 'Browse to the previous page of sync sessions.' %}" {% if session_pages.has_previous %}href="{{ page_urls.prev_page }}"{% endif %}>&lt&lt</a>
@@ -84,9 +106,7 @@
                         {% endfor %}
                         <a title="{% trans 'Browse to the next page of sessions.' %}" {% if session_pages.has_next %}href="{{ page_urls.next_page }}"{% endif %}>&gt&gt</a>
                 </div>
-                <div class="clear"></div>
                 {% endif %}
-
                 <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
                 called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
                     <table class="simple-table">

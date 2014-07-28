@@ -28,7 +28,7 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 
@@ -255,6 +255,8 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @render_to("control_panel/facility_management.html")
 def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
 
+    ungrouped_id = "Ungrouped"
+
     if request.method == "POST" and request.GET.get("format") == "csv":
         try:
             return facility_management_csv(request, facility=facility, group_id=group_id, zone_id=zone_id)
@@ -288,19 +290,33 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
     period_end = form.data.get("period_end")
     (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
+    # Collate data for all groups
+    groups = group_data.values()
+
+    # If group_id exists, extract data for that group
+    if group_id:
+        if group_id == ungrouped_id:
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _("Ungrouped"))
+        else:
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
+        group_data = group_data.values()[group_id_index]
+    else:
+        group_data = {}
+
     context.update({
         "form": form,
         "date_range": [str(period_start), str(period_end)],
         "group": group,
         "group_id": group_id,
-        "groups": group_data.values(),
+        "group_data": group_data,
+        "groups": groups, # sends dict if group page, list of group data otherwise
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
         "page_urls": {
             "coaches": coach_urls,
             "students": student_urls,
         },
-        "ungrouped_id": _("Ungrouped").split(" ")[0]
+        "ungrouped_id": ungrouped_id
     })
     return context
 
@@ -358,7 +374,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(get_node_cache('Exercise'))
+    num_exercises = len(get_exercise_cache())
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -421,12 +437,14 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id==_("Ungrouped").split(" ")[0]):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None]*(group_id==None or group_id=="Ungrouped"):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
+        group_title = getattr(group, "title", _("Ungrouped"))
         group_data[group_pk] = {
             "id": group_pk,
             "name": group_name,
+            "title": group_title,
             "total_logins": 0,
             "total_hours": 0,
             "total_users": 0,
@@ -438,6 +456,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
+        if group_pk not in group_data:
+            logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))
+            continue
         group_data[group_pk]["total_users"] += 1
         group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]

@@ -17,7 +17,7 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import delete_downloaded_files, get_local_video_size, get_remote_video_size
+from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
@@ -207,10 +207,10 @@ def installed_language_packs(request):
 @require_admin
 @api_handle_error_with_json
 def start_languagepack_download(request):
-    if not request.POST:
+    if not request.method == 'POST':
         raise Exception(_("Must call API endpoint with POST verb."))
 
-    data = json.loads(request.body)  # Django has some weird post processing into request.POST, so use .body
+    data = json.loads(request.raw_post_data)  # Django has some weird post processing into request.POST, so use .body
     lang_code = lcode_to_ietf(data['lang'])
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
@@ -334,6 +334,10 @@ def start_update_kalite(request):
         mechanism = data['mechanism']
     except KeyError:
         raise KeyError(_("You did not select a valid choice for an update mechanism."))
+
+    # Clear any preexisting logs
+    if UpdateProgressLog.objects.count():
+        UpdateProgressLog.objects.all().delete()
 
     call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 

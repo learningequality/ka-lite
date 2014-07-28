@@ -7,6 +7,7 @@ from django.conf import settings; logging = settings.LOG
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
+
 from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_name
 from kalite.topic_tools import get_topic_tree, get_videos
 
@@ -127,8 +128,8 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
         return {"stream": stream_url, "thumbnail": thumbnail_url}
 
     video_availability = video.get("availability", {}) if not force else {}
-    en_youtube_id = get_youtube_id(video["id"], lang_code=None)  # get base ID
-    video_map = get_id2oklang_map(video["id"]) or {}
+    en_youtube_id = get_youtube_id(video["youtube_id"], lang_code=None)  # get base ID
+    video_map = get_id2oklang_map(video["youtube_id"]) or {}
 
     if not "on_disk" in video_availability:
         for lang_code in video_map.keys():

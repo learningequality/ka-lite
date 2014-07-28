@@ -10,7 +10,7 @@
 *~
 *.sublime-*
 *.zip
-build/
+/build/
 locale/
 node_modules/
 tmp/
@@ -43,3 +43,4 @@ writeup/
 /kalite/i18n/static/js/i18n
 /TAGS
 .tags
+/kalite/i18n/static/

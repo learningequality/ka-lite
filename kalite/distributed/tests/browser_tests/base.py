@@ -26,7 +26,8 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
     They will have different functions in here, for sure.
     """
 
-    default_username = "test_student"
+    default_student_username = "test_student"
+    default_teacher_username = "test_teacher"
     default_password = "socrates"
     default_facility_name = "middle of nowhere"
 
@@ -39,7 +40,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.browser_logout_user()
         super(KALiteDistributedBrowserTestCase, self).tearDown()
 
-    def create_student(self, username=default_username, password=default_password, facility_name=default_facility_name):
+    def create_student(self, username=default_student_username, password=default_password, facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
         student = FacilityUser(username=username, facility=facility)
@@ -47,6 +48,15 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         student.save()
 
         return student
+
+    def create_teacher(self, username=default_teacher_username, password=default_password, facility_name=default_facility_name):
+        facilities = Facility.objects.filter(name=facility_name)
+        facility = facilities[0] if facilities else self.create_facility()
+        teacher = FacilityUser(username=username, facility=facility, is_teacher=True)
+        teacher.set_password(raw_password=password)
+        teacher.save()
+
+        return teacher
 
     def create_facility(self, facility_name=default_facility_name):
         if Facility.objects.filter(name=facility_name):
@@ -62,7 +72,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         if not stay_logged_in:
             self.browser_logout_user()
 
-        register_url = self.reverse("add_facility_student")
+        register_url = self.reverse("facility_user_signup")
         self.browse_to(register_url) # Load page
         #self.assertIn(_("Sign up"), self.browser.title, "Register page title") # this depends on who is logged in.
 
@@ -97,7 +107,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
         if facility_name and self.browser.find_element_by_id("id_facility").is_displayed():
-            self.browser_activate_element("id_facility")
+            self.browser_activate_element(id="id_facility")
             self.browser_send_keys(facility_name)
 
         self.browser.find_element_by_id("id_username").clear() # clear any data
@@ -153,18 +163,11 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         # 1. Student: #logged-in-name is username
         # 2. Admin: #logout contains username
         try:
-            sitepoints_text = self.browser.find_element_by_id("sitepoints").text.strip()
+            logged_in_name = self.browser.find_element_by_xpath("(//span[@id='logged-in-name'])[2]").text.strip()
             logout_text = self.browser.find_element_by_id("nav_logout").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
             return False
-
-        if sitepoints_text.startswith("Welcome, "):
-            logged_in_name = sitepoints_text[len("Welcome, "):sitepoints_text.index("!")].strip()
-        elif "|" in sitepoints_text:
-            logged_in_name = sitepoints_text[:sitepoints_text.index("|")].strip()
-        else:
-            logged_in_name = None
 
         username_text = logged_in_name or logout_text[0:-len(" (%s)" % _("Logout"))]
 
@@ -186,6 +189,18 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 return username_text.lower() == user_obj[0].get_name().lower()
             else:
                 assert username_text == "", "Impossible for anybody to be logged in."
+
+
+    def fill_form(self, input_id_dict):
+        """
+        Fill the form with the values of the given a dictionary 
+        where the keys are the ids of the input fields
+        """
+        for key in input_id_dict.keys():
+            inputElement = self.browser.find_element_by_id(key)
+            inputElement.clear()
+            inputElement.send_keys(input_id_dict[key])
+            time.sleep(0.5)
 
 
 class KALiteDistributedWithFacilityBrowserTestCase(KALiteDistributedBrowserTestCase):

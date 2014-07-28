@@ -1,0 +1,36 @@
+#playlists .cell-content {
+    color: #305884;
+    margin-bottom: 10px;
+    height: 60px;
+}
+
+.pull-right {
+    float: right;
+}
+
+.pull-left {
+    float: left;
+}
+
+.playlist-list-item {
+    font-size: 15px;
+    display: inline-block;
+    width: 20%;
+    border: 1px solid black;
+    font-family: museosans500;
+    height: 100px;
+    padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.playlist-list-item:hover {
+    background-color: #D5D5D5;
+}
+
+.playlist-list-header {
+    padding: 10px;
+    background-color: #8FC475;
+    color: white;
+}

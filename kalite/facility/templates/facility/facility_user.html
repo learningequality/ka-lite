@@ -24,24 +24,24 @@
         {# Allow admins to add a new group #}
         {% if request.is_admin %}
             {% trans "Add a new group" as add_new_group %}
-            $('#id_group').parent().find(".helptext").html('(<a href="{% url 'add_group' %}?facility={{facility.id}}&prev={{cur_url|urlencode:''}}">{{add_new_group}}</a>)');
-        {% elif num_groups == 0 %}
+            $('#id_group').parent().find(".helptext").html('(<a href="{% url 'add_group' %}?facility={{facility.id}}&next={{ request.get_full_path|urlencode }}">{{add_new_group}}</a>)');
+        {% elif form.fields.group.choices.queryset.count == 0 %}
             $('#id_group').parent().hide();
         {% endif %}
 
-        {# Don't allow teacher accounts to be in a group. #}
+        {# Do not allow teacher accounts to be in a group. #}
         {% if request.is_admin and teacher %}
             $("#id_group").attr('disabled',true);
             $("#id_group").parent().hide();
         {% endif %}
 
         {# Show facility info #}
-        {% if not singlefacility %}
+        {% if request.session.facility_count == 1 %}
             // Show the dropdown
             $("#id_facility").show();
         {% else %}
             // Show that there's only one facility, and it's being selected.
-            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text()).insertAfter($("#id_facility"));
+            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text())).insertAfter($("#id_facility"));
         {% endif %}
         });
     </script>
@@ -56,7 +56,9 @@
 
             {{ form.as_p }}
 
-            <input type="submit" class="submit btn btn-default btn-sm" value="{% if user_id == 'new' %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
+            <input type="submit" class="submit btn btn-default btn-sm" value="{% if new_user %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
         </form>
+
     </div>
+
 {% endblock content %}
