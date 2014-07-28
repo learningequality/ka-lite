@@ -5,6 +5,8 @@ var FacilityModel = Backbone.Model.extend();
 
 var GroupModel = Backbone.Model.extend();
 
+var TestLogModel = Backbone.Model.extend();
+
 var StudentSelectStateModel = Backbone.Model.extend({
     // a model for storing the state of the currently selected Facility and Group
     defaults: {
@@ -17,13 +19,18 @@ var StudentSelectStateModel = Backbone.Model.extend({
 // Collections
 var FacilityCollection = Backbone.Collection.extend({ 
     model: FacilityModel, 
-    url: ALL_FACILITIES_URL
+    url: FACILITIES_URL // TODO(dylan) add in the zone id to this query 
 });
 
 var GroupCollection = Backbone.Collection.extend({ 
     model: GroupModel,
-    url: ALL_GROUPS_URL
+    url: GROUPS_URL
 });
+
+var TestLogCollection = Backbone.Collection.extend({
+    model: TestLogModel,
+    url: TEST_LOGS_URL
+})
 
 
 // Views 
@@ -170,3 +177,58 @@ var GroupSelectView = Backbone.View.extend({
 });
 
 
+// else:
+//         # Get the params 
+//         facility_id = request.GET.get("facility_id")
+//         group_id = request.GET.get("group_id")
+
+//         ## CSV File Specification
+//         # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
+        
+//         ## Fetch data for CSV
+//         # Facilities 
+//         if facility_id == 'all':
+//             # TODO(dylan): can this ever break? Will an admin always have at least one facility in a zone?
+//             facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+//         else:   
+//             facilities = Facility.objects.filter(id=facility_id)
+
+//         # Facility Users 
+//         if group_id == 'all': # get all students at the facility
+//             facility_ids = [facility.id for facility in facilities]
+//             facility_users = FacilityUser.objects.filter(facility__id__in=facility_ids)
+//         else: # get the students for the specific group
+//             facility_users = FacilityUser.objects.filter(group__id=group_id)
+        
+//         ## A bit of error checking 
+//         if len(facility_users) == 0:
+//             messages.error(request, _("No students exist for this facility and group combination."))
+//             return context 
+
+//         # TestLogs
+//         user_ids = [u.id for u in facility_users]
+//         test_logs = TestLog.objects.filter(user__id__in=user_ids)
+
+//         if len(test_logs) == 0:
+//             messages.error(request, _("No test logs exist for these students."))
+//             return context 
+
+//         ## Build CSV 
+//         # Nice filename for Sarojini
+//         filename = 'f_all__' if facility_id == 'all' else 'f_%s__' % facilities[0].name
+//         filename += 'g_all__' if group_id == 'all' else 'g_%s__' % facility_users[0].group.name
+//         filename += '%s' % datetime.datetime.today().strftime("%Y-%m-%d")
+//         csv_response = HttpResponse(content_type="text/csv")
+//         csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
+
+//         # CSV header
+//         writer = csv.writer(csv_response)
+//         writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"])
+        
+//         # CSV Body
+//         for t in test_logs:
+//             group_name = t.user.group.name if hasattr(t.user.group, "name") else "Ungrouped"
+//             group_id = t.user.group.id if hasattr(t.user.group, "id") else "None"
+//             writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
+
+//         return csv_response
