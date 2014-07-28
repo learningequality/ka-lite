@@ -68,7 +68,7 @@ a:hover {
 .nav-subheader a.active:after {
     content: url(/static/images/distributed/nav-selector.gif);
     position: relative;
-    top: -7px;
+    top: -6px;
     display: block;
     left: 50%;
     margin-left: -5px;

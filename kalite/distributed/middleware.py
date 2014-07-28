@@ -8,5 +8,5 @@ class LockdownCheck:
         """
         Whitelist only a few URLs, otherwise fail.
         """
-        if settings.LOCKDOWN and not request.is_logged_in and request.path not in [reverse("homepage"), reverse("login"), reverse("add_facility_student"), reverse("status")] and not request.path.startswith(settings.STATIC_URL):
+        if settings.LOCKDOWN and not request.is_logged_in and request.path not in [reverse("homepage"), reverse("login"), reverse("facility_user_signup"), reverse("status")] and not request.path.startswith(settings.STATIC_URL):
             raise PermissionDenied()

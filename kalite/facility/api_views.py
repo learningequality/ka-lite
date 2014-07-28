@@ -63,4 +63,4 @@ def group_delete(request, group_id=None):
     groups_to_delete = FacilityGroup.objects.filter(id__in=groups)
     count = groups_to_delete.count()
     groups_to_delete.soft_delete()
-    return JsonResponseMessageSuccess(_("Deleted %(num_groups)d groups successfully.") % {"num_groups": count})
+    return JsonResponseMessageSuccess(_("Deleted %(num_groups)d group(s) successfully.") % {"num_groups": count})
