@@ -20,9 +20,15 @@
         var URL_START_VIDEO_DOWNLOADS = "{% url 'start_video_download' %}?lang={{ current_language }}";
         var URL_DELETE_VIDEOS = "{% url 'delete_videos' %}";
         var URL_CANCEL_VIDEO_DOWNLOADS = "{% url 'cancel_video_download' %}";
+        var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
+        var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+        var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
+        var defaultLanguage = "{{ default_language }}";
     </script>
 
     <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
@@ -91,4 +97,63 @@
     <div style="clear: both;"></div>
 
     <div id="content_tree"><br/><h4>{% trans "Loading topic tree... Please wait!" %}</h4></div>
+
+
+
+    {% comment %} LANGUAGES {% endcomment %}
+    <div class="container">
+        
+        <div class="col-sm-8 download-actions-languages get-language vertical-shadow">            
+
+            <div class="row">
+                <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
+            </div>
+            
+            <div class="row">
+                <p class="button_text">
+                    {% trans "Language packs contain all available translations for the interface and video subtitles." %}
+                </p>
+            </div>
+
+            <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
+                Assume we are getting something like:
+                [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
+            -->
+            <div class="row">
+                <div id="langpacks">
+                    <span class= "button_style">
+                        <select id="language-packs"></select>
+                    </span>
+
+                    <button class="btn btn-default btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
+                </div>
+
+                <div id="langpack-details">
+                    <span id="lp-num-srts"></span><label>&nbsp;{% trans "subtitle(s)" %}</label>
+                    <span id="lp-pct-trans"></span><label>&nbsp;{% trans "translated" %}</label>
+                    <span id="lp-down-size"></span><label>&nbsp;({% trans "to download" %})</label>
+                    <br>
+                    <span id="lp-disk-size"></span><label>&nbsp;({% trans "on disk" %})</label>
+                    <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
+                </div>
+            </div>       
+ 
+        </div>
+
+        <div id="languagepackdownload-progressbar">
+            {% include "updates/progress-bar.html" %}
+        </div>
+        <div class="clear"></div>
+
+        <div id="installed-languages-div">
+            <div class="row">
+                <h4>{% trans "Installed Languages" %}</h4>
+            </div>
+            
+            <div class="row">
+                <div class="installed-languages"></div>
+            </div>
+        </div>
+
+    </div>
 {% endblock content %}

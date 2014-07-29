@@ -150,15 +150,15 @@
                         <li><a href="{% url 'exercise_dashboard' %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a></li> -->
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
+                        <li><a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only admin-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
+
+                        <!--{% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}">{% trans "Users" %}</a></li>-->
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}">{% trans "Manage" %}</a></li>
+                        <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Manage" %}</a></li> 
 
                         <!-- {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a></li>
-
-                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li><a href="{% url 'update_languages' %}" id="nav_languages" class="admin-only {% block languages_active %}{% endblock languages_active %}" title="{% trans 'Update this server with new languages' %}">{% trans "Languages" %}</a></li> 
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -201,6 +201,8 @@
                         {% endblock sitewide_navigation %}
                         </span>
 
+
+
                         <div class="hidden-xs" id="sitepoints"></div>
                     </ul>
                 </div>
@@ -208,6 +210,23 @@
         </div>
 
         <div class="container" id="wrapper">
+
+            {% block sitewide_sub_navigation %}
+                <div>
+                    <ul class="nav navbar-nav">
+                        <li><a href="{% url 'coach_reports' %}" class="teacher-only" title="{% trans 'Track the progress of your students' %}">{% trans "Reports" %}</a></li>
+                        <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a></li>
+                        <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
+                        <li><a class="admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+
+                        {% comment %}ADMIN ONLY{% endcomment %}
+                        <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Update" %}</a></li>
+                        <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only teacher-only" title="{% trans 'Manage Users' %}">{% trans "Users" %}</a></li>
+                        
+                    </ul>
+                </div>
+            {% endblock sitewide_sub_navigation %}
+
             {% block outer_content %}
                     {% block precontent %}
                     <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
