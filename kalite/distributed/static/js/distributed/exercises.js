@@ -90,6 +90,20 @@ $(function() {
             $(Exercises).trigger("readyForNextProblem", {userExercise: exerciseData});
         });
     });
+
+    $(Exercises).bind("newProblem", function (data) {
+        if (data.answerType=="number"){
+        var isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
+
+        // if(isAndroid) {
+            window.softwareKeyboardView = new SoftwareKeyboardView({
+                el: $("#solutionarea")
+            });
+        // }
+        }
+    });
+
+
     doRequest(GET_EXERCISE_LOGS_URL, [exerciseData.exerciseModel.name])
         .success(function(data) {
             if (data.length === 0) {
