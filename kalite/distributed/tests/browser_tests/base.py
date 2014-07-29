@@ -7,6 +7,9 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.browser import BrowserTestCase
@@ -68,7 +71,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
                 break
 
     def browser_register_user(self, username, password, first_name="firstname", last_name="lastname",
-                              facility_name=None, stay_logged_in=False, expect_success=True):
+                              facility_name=None, stay_logged_in=False):
         """Tests that a user can register"""
 
         # Expected results vary based on whether a user is logged in or not.
@@ -91,14 +94,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
         self.browser_form_fill(password)  # password (again)
         self.browser.find_element_by_id("id_username").submit()
 
-        # Make sure that the page changed to the admin homepage
-        if expect_success:
-            self.assertTrue(self.wait_for_page_change(register_url), "RETURN causes page to change")
-            self.assertIn(self.reverse("login"), self.browser.current_url, "Register browses to login page")
-            #self.browser_check_django_message(message_type="success", contains="You successfully registered.")
-            # uncomment message check when that code gets checked in
-
-    def browser_login_user(self, username, password, facility_name=None, expect_success=True):
+    def browser_login_user(self, username, password, facility_name=None):
         """
         Tests that an existing admin user can log in.
         """
@@ -113,55 +109,33 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.browser_activate_element(id="id_facility")
             self.browser_send_keys(facility_name)
 
-        self.browser.find_element_by_id("id_username").clear()  # clear any data
-        self.browser.find_element_by_id("id_username").click()  # explicitly set the focus, to start
+        username_field = self.browser.find_element_by_id("id_username")
+        username_field.clear()  # clear any data
+        username_field.click()  # explicitly set the focus, to start
         self.browser_form_fill(username)
         self.browser_form_fill(password)
-        self.browser.find_element_by_id("id_username").submit()
+        username_field.submit()
         # self.browser_send_keys(Keys.RETURN)
 
-        # Make sure that the page changed
-        if expect_success:
-            self.assertTrue(self.wait_for_page_change(login_url), "RETURN causes page to change")
-            time.sleep(0.5)  # allow async status to update
-            self.assertTrue(self.browser_is_logged_in(username), "make sure %s is logged in." % username)
+        # wait for 5 seconds for the page to refresh
+        WebDriverWait(self.browser, 5).until(EC.staleness_of(username_field))
 
-    def browser_login_admin(self, username=None, password=None, expect_success=True, expect_url=None):
+    def browser_login_admin(self, username=None, password=None):
         if username is None:
             username = self.admin_user.username
         if password is None:
             password = self.admin_pass
 
-        self.browser_login_user(username=username, password=password, expect_success=expect_success)
-        if expect_success:
-            self.assertIn(self.reverse("zone_management", kwargs={"zone_id": "None"}), self.browser.current_url,
-                          "Login browses to zone_management page")
+        self.browser_login_user(username=username, password=password)
 
-    def browser_login_teacher(self, username, password, facility_name=None, expect_success=True, expect_url=None):
-        self.browser_login_user(username=username, password=password, facility_name=facility_name,
-                                expect_success=expect_success)
-        if expect_success:
-            if not expect_url:
-                expect_url = self.reverse("coach_reports")
-            self.assertEqual(self.browser.current_url, expect_url)
-            self.browser_check_django_message("alert-success", contains="You've been logged in!")
+    def browser_login_teacher(self, username, password, facility_name=None):
+        self.browser_login_user(username=username, password=password, facility_name=facility_name)
 
-    def browser_login_student(self, username, password, facility_name=None, expect_success=True, expect_url=None,
-                              exam_mode_on=False):
+    def browser_login_student(self, username, password, facility_name=None, exam_mode_on=False):
         """
         Consider that student may be redirected to the exam page when Settings.EXAM_MODE_ON is set.
         """
-        self.browser_login_user(username=username, password=password, facility_name=facility_name,
-                                expect_success=expect_success)
-        if expect_success:
-            if not expect_url:
-                expect_url = self.reverse("homepage")
-            self.assertEqual(self.browser.current_url, expect_url)
-            if exam_mode_on:
-                has_elem = self.browser_wait_for_element("#start-test")
-                self.assertTrue(has_elem)
-            else:
-                self.browser_check_django_message("alert-success", contains="You've been logged in!")
+        self.browser_login_user(username=username, password=password, facility_name=facility_name)
 
     def browser_logout_user(self):
         if self.browser_is_logged_in():

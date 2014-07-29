@@ -108,7 +108,7 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser_register_user(username=self.username.lower(), password=self.password)
 
         # Try to register again in a different case
-        self.browser_register_user(username=self.username.upper(), password=self.password, expect_success=False)
+        self.browser_register_user(username=self.username.upper(), password=self.password)
 
         text_box = self.browser.find_element_by_id("id_username") # form element
         error    = text_box.parent.find_elements_by_class_name("errorlist")[-1]
@@ -144,14 +144,14 @@ class UserRegistrationCaseTest(KALiteDistributedWithFacilityBrowserTestCase):
         # First, make sure that user 1 can only log in with user 1's email/password
         self.browser_login_student(username=user1_uname, password=user1_password) # succeeds
         self.browser_logout_user()
-        self.browser_login_student(username=user2_uname, password=user1_password, expect_success=False) # fails
+        self.browser_login_student(username=user2_uname, password=user1_password) # fails
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
         # Now, check the same in the opposite direction.
         self.browser_login_student(username=user2_uname, password=user2_password) # succeeds
         self.browser_logout_user()
 
-        self.browser_login_student(username=user1_uname, password=user2_password, expect_success=False) # fails
+        self.browser_login_student(username=user1_uname, password=user2_password) # fails
         self.browser_check_django_message("error", contains="There was an error logging you in.")
 
 
