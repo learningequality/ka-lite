@@ -94,8 +94,6 @@ def get_dubbed_video_map(lang_code=None, force=False):
 
         DUBBED_VIDEO_MAP = {}
         for lang_name, video_map in DUBBED_VIDEO_MAP_RAW.iteritems():
-            if not lang_name:
-                continue
             logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
             DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
 
