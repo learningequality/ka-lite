@@ -111,29 +111,29 @@
                     {% for results in results_table.values %}
                         <tr>
                         {% for r in results %}
-                            {% if r.score %}
+                            {% if r.raw_score %}
                                 {% if not r.log.complete and r.log.started %}
                                     <td class="incomplete" title="Incomplete">
-                                        {{ r.score }}%*
+                                        {{ r.display_score }}*
                                     </td>
-                                {% elif r.score > 79 %}
+                                {% elif r.raw_score > 79 %}
                                     <td class="pass" title="Passed">
-                                        {{r.score}}%
+                                        {{r.display_score}}
                                     </td>    
-                                {% elif r.score > 59%}
+                                {% elif r.raw_score > 59%}
                                     <td class="borderline" title="Borderline">
-                                        {{r.score}}%
+                                        {{r.display_score}}
                                     </td>
-                                {% elif r.score >= 0 %}
+                                {% elif r.raw_score >= 0 %}
                                     <td class="fail" title="Failed">
-                                        {{r.score}}%
+                                        {{r.display_score}}
                                     </td>   
                                 {% else %}
                                     <td class="incomplete" title="Incomplete">
                                     </td>
                                 {% endif %}
                             {% elif r.stat %}
-                                <td>{{ r.stat }}%</td>
+                                <td>{{ r.stat }}</td>
                             {% else %}
                                 <td></td>
                             {% endif %}
@@ -144,7 +144,7 @@
                         <tr>
                             {% for stat in stats %}
                                 <td>
-                                    {{stat}}%
+                                    {{stat}}
                                 </td>
                             {% endfor %}
                         </tr>

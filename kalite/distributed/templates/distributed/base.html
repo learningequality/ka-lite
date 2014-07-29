@@ -68,14 +68,17 @@
          // the following variables are used by functions in distributed-server.js,
          //    khan-lite.js, and search_autocomplete.js.
          // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
+         var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
+         var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
+         var STATUS_URL                  = "{% url 'status' %}";
+         var FORCE_SYNC_URL              = "{% url 'api_force_sync' %}";
+         var GET_VIDEO_LOGS_URL          = "{% url 'get_video_logs' %}";
+         var GET_EXERCISE_LOGS_URL       = "{% url 'get_exercise_logs' %}";
+         var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
+         var USER_LOGIN_URL              = "{% url 'login' %}";
+         var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}"
          var DELETE_USERS_URL            = "{% url 'delete_users' %}";
          var DELETE_GROUPS_URL           = "{% url 'group_delete' %}";
-         var FORCE_SYNC_URL              = "{% url 'api_force_sync' %}";
-         var GET_EXERCISE_LOGS_URL       = "{% url 'get_exercise_logs' %}";
-         var GET_VIDEO_LOGS_URL          = "{% url 'get_video_logs' %}";
-         var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
-         var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
-         var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
          var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
@@ -84,11 +87,11 @@
          var STATUS_URL                  = "{% url 'status' %}";
          var USER_LOGIN_URL              = "{% url 'login' %}";
          var STATIC_URL                  = "{% static "" True %}"; // pass "True" to avoid build id being appended
+         var SERVER_INFO_PATH            = "{% url 'get_server_info' %}";
 
-         var SERVER_INFO_PATH    = "{% url 'get_server_info' %}";
-         var CENTRAL_SERVER_HOST = "{{ central_server_host }}";
-         var SECURESYNC_PROTOCOL = "{{ securesync_protocol }}";
-         var CURRENT_LANGUAGE = "{{ current_language }}";
+         var CENTRAL_SERVER_HOST         = "{{ central_server_host }}";
+         var SECURESYNC_PROTOCOL         = "{{ securesync_protocol }}";
+         var CURRENT_LANGUAGE            = "{{ current_language }}";
         </script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
@@ -150,7 +153,7 @@
 
                 {% if not restricted %}
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <a href="{% url 'add_facility_student' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
+                    <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
                 {% endif %}
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}

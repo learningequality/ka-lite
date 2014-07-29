@@ -1,15 +1,22 @@
 """
-Basic tests of coach reports, inside the browser
+Basic tests of control panel, inside the browser
 """
+import os
+import mock
+import urllib
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC  # available since 2.26.0
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from django.conf import settings
 from django.utils import unittest
+from django.core.management import call_command
+from django.core.urlresolvers import reverse
 
 from .base import KALiteDistributedWithFacilityBrowserTestCase
-from facility.models import FacilityGroup, FacilityUser
+from kalite.facility.models import FacilityGroup, FacilityUser
+from kalite.i18n import get_installed_language_packs, set_default_language
 
 
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
@@ -98,3 +105,31 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "students")))
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[1]/td[5]").text, "0", "Does not report no user for From Group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[2]/td[5]").text, "1", "Does not report one user for To Group.")
+
+
+    @mock.patch.object(urllib, 'urlretrieve')
+    def test_ungrouped_in_non_english(self, urlretrieve_method):
+        facility = self.facility
+        params = {
+            "zone_id": None,
+            "facility_id": facility.id,
+            "group_id": "Ungrouped"
+        }
+        test_zip_filepath = os.path.join(os.path.dirname(__file__), 'es.zip')
+        urlretrieve_method.return_value = [test_zip_filepath, open(test_zip_filepath)]
+        # Login as admin
+        self.browser_login_admin()
+
+        # Install the language pack
+        if not "es" in get_installed_language_packs(force=True):
+            call_command("languagepackdownload", lang_code="es")
+
+        self.register_device()
+        set_default_language("es")
+
+        user = FacilityUser(username="test_user", facility=self.facility, group=None)
+        user.set_password(raw_password="not-blank")
+        user.save()
+
+        self.browse_to(self.reverse("group_management", kwargs=params))
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div/dl/dd").text, "1", "Does not report one user for From Group.")        

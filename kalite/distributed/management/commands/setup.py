@@ -95,7 +95,7 @@ def get_hostname_and_description(hostname=None, description=None):
 
 
 class Command(BaseCommand):
-    help = "Create a zip file with all code, that can be unpacked anywhere."
+    help = "Initialize or update the database."
 
     option_list = BaseCommand.option_list + (
         # Basic options
@@ -130,8 +130,7 @@ class Command(BaseCommand):
             action='store_false',
             dest='interactive',
             default=True,
-            help='FILE to save zip to',
-            metavar="FILE"),
+            help='Run in non-interactive mode'),
     )
 
     def handle(self, *args, **options):
