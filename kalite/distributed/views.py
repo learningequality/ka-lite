@@ -154,42 +154,37 @@ def refresh_topic_cache(handler, force=False):
         return handler(request, *args, **kwargs)
     return refresh_topic_cache_wrapper_fn
 
-@backend_cache_page
-def splat_handler(request, splat):
-    slugs = filter(lambda x: x, splat.split("/"))
-    topic_tree = topic_tools.get_topic_tree()
-    current_node = topic_tree
-    
-    # Parse out actual current node
-    while current_node:
-        match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
-        if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
-            match = [m for m in match if request.path == m["path"]]
-        if not match:
-            raise Http404
-        current_node = match
-        if request.path == current_node["path"]:
-            break
+# @backend_cache_page
+# def splat_handler(request, splat):
+#     slugs = filter(lambda x: x, splat.split("/"))
+#     topic_tree = topic_tools.get_topic_tree()
+#     current_node = topic_tree
 
-    # render topic list or playlist of base node
-    if not topic_tools.is_base_leaf(current_node):
-        return topic_handler(request, cached_nodes={"topic_tree": topic_tree})
-        # return topic_handler(request)
-    else: 
-        return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
+#     # Parse out actual current node
+#     while current_node:
+#         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
+#         if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
+#             match = [m for m in match if request.path == m["path"]]
+#         if not match:
+#             raise Http404
+#         current_node = match
+#         if request.path == current_node["path"]:
+#             break
+
+#     # render topic list or playlist of base node
+#     if not topic_tools.is_base_leaf(current_node):
+#         return topic_handler(request, cached_nodes={"topic_tree": topic_tree})
+#         # return topic_handler(request)
+#     else:
+#         return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
 
 
-@backend_cache_page
-@render_to("distributed/topic.html")
-@refresh_topic_cache
-def topic_handler(request, topic):
+@render_to("distributed/topic.html") # TODO(jamalex): rename topic.html to learn.html
+def learn(request):
     """
-    Render the entire topic tree to the client to help with navigation UX
+    Render the all-in-one sidebar navigation/content-viewing app.
     """
-    context = {
-        "topics": topic_tools.get_topic_hierarchy(),
-    }
-    return context
+    return {}
 
 
 @backend_cache_page
@@ -209,32 +204,20 @@ def exercise_dashboard(request):
     return context
 
 
-def watch_home(request):
-    """Dummy wrapper function for topic_handler with url=/"""
-    return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
-    # return topic_handler(request)
-
-
-# @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-# @backend_cache_page
 # @render_to("distributed/homepage.html")
-# @refresh_topic_cache
 def homepage(request):
     """
     Homepage.
     """
-    return HttpResponseRedirect("/watch/")
-    context = topic_handler(topics)
-    context.update({
-        "title": "Home",
-    })
-    return context
+    return HttpResponseRedirect(reverse("learn"))
+
 
 def help(request):
     if request.is_admin:
         return help_admin(request)
     else:
         return help_student(request)
+
 
 @require_admin
 @render_to("distributed/help_admin.html")

@@ -80,18 +80,17 @@ urlpatterns += patterns('',
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
-    # url(r'^$', 'watch_home', {}, 'watch_home'),
-    url(r'^watch/$', 'watch_home', {}, 'watch_home'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
     url(r'^test/', include('student_testing.urls')),
-    # the following pattern is a catch-all, so keep it last:
+
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
     url(r'^perseus/$', 'perseus', {}, 'perseus'),
 
-    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+    # the following has no "$", and thus catches anything starting with "learn/"
+    url(r'^learn/', 'learn', {}, 'learn'),
 )
 
 # css and js templates
