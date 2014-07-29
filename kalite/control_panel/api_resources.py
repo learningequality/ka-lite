@@ -1,4 +1,5 @@
 from annoying.functions import get_object_or_None
+from tastypie import fields
 from tastypie.resources import ModelResource
 
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
@@ -39,7 +40,18 @@ class GroupResource(ModelResource):
         return group_list
 
 
+class FacilityUserResource(ModelResource):
+    facility = fields.ForeignKey(FacilityResource, 'facility', full=True)
+    group = fields.ForeignKey(GroupResource, 'group', null=True, full=True)
+
+    class Meta:
+        queryset = FacilityUser.objects.all()
+        resource_name = "facility_user"
+
+
 class TestLogResource(ModelResource):
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
+
     class Meta:
         queryset = TestLog.objects.all()
         resource_name = "test_log"
@@ -71,8 +83,6 @@ class TestLogResource(ModelResource):
         test_logs = TestLog.objects.filter(user__id__in=user_ids)
 
         return test_logs
-
-
 
 
 

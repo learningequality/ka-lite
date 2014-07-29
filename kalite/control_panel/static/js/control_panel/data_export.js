@@ -40,7 +40,11 @@ var DataExportView = Backbone.View.extend({
 
     initialize: function() {
         this.model = new StudentSelectStateModel();    
+        this.test_logs = new TestLogCollection();
         this.render();
+
+        // Trigger a data export when we finish fetching test logs
+        this.listenTo(this.test_logs, 'sync', this.exportCSV);
     },
 
     render: function() {
@@ -61,31 +65,55 @@ var DataExportView = Backbone.View.extend({
     },
 
     events: {
-        "click #export-button": "exportData"
+        "click #export-button": "getTestLogs"
     },
 
-    exportData: function(ev) {
+    getTestLogs: function(ev) {
         ev.preventDefault();
 
-        // Get the final ids
+        // Get the ids
         var facility_id = this.model.get("facility_id") ? this.model.get("facility_id") : "all";
         var group_id = this.model.get("group_id") ? this.model.get("group_id") : "all";
 
-        // Format them for the form 
-        var facility_input = sprintf("<input type='hidden' value='%(facility_id)s' name='facility_id'>", {"facility_id": facility_id});
-        var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
+        // Get the test logs we care about 
+        this.test_logs.fetch({
+            data: $.param({ "facility_id": facility_id, "group_id": group_id })
+        })
+    },
 
-        // Append the data we care about, and submit it
-        // TODO(dylan) is this hacky? not sure what the right paradigm is 
-        var form = $('#data-export-form');
-        form
-            .append(facility_input)
-            .append(group_input)
-            .attr("action", document.URL)
-            .append(CSRF_TOKEN) // TODO(dylan) do we need a CSRF if we do a GET? 
-            .submit();
+    exportCSV: function() {
+        if (this.test_logs.length === 0) {
+            show_message("error", gettext("No test logs exist the students specified."))
+        } else {
+            var test_log_data = []
+            
+            // Create header cols 
+            var header = ["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"];
+            test_log_data.push(header);
+
+            // Create body cols 
+            this.test_logs.each(function(test_log) {
+                log_attr = test_log.attributes;
+                group_name = log_attr.user.group ? log_attr.user.group.name : "Ungrouped";
+                group_id = log_attr.user.group ? log_attr.user.group.id : "None";
+                log_attr_array = [log_attr.user.facility.name, log_attr.user.facility.id, group_name, group_id, log_attr.user.id, log_attr.test, log_attr.total_correct, log_attr.total_number];
+                test_log_data.push(log_attr_array);
+            });
+
+            // Create CSV 
+            var csvContent = "data:text/csv;charset=utf-8,";
+            _.each(test_log_data, function(test_log, i) {
+                var dataString = test_log.join(",");
+                csvContent += i < test_log_data.length ? dataString + "\n" : dataString;
+            }); 
+
+            // Endcode and dump 
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
+
+            show_message("success", gettext("Your CSV will open a new window and download."))
+        }
     }
-
 });
 
 
@@ -175,60 +203,3 @@ var GroupSelectView = Backbone.View.extend({
         })
     }
 });
-
-
-// else:
-//         # Get the params 
-//         facility_id = request.GET.get("facility_id")
-//         group_id = request.GET.get("group_id")
-
-//         ## CSV File Specification
-//         # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
-        
-//         ## Fetch data for CSV
-//         # Facilities 
-//         if facility_id == 'all':
-//             # TODO(dylan): can this ever break? Will an admin always have at least one facility in a zone?
-//             facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
-//         else:   
-//             facilities = Facility.objects.filter(id=facility_id)
-
-//         # Facility Users 
-//         if group_id == 'all': # get all students at the facility
-//             facility_ids = [facility.id for facility in facilities]
-//             facility_users = FacilityUser.objects.filter(facility__id__in=facility_ids)
-//         else: # get the students for the specific group
-//             facility_users = FacilityUser.objects.filter(group__id=group_id)
-        
-//         ## A bit of error checking 
-//         if len(facility_users) == 0:
-//             messages.error(request, _("No students exist for this facility and group combination."))
-//             return context 
-
-//         # TestLogs
-//         user_ids = [u.id for u in facility_users]
-//         test_logs = TestLog.objects.filter(user__id__in=user_ids)
-
-//         if len(test_logs) == 0:
-//             messages.error(request, _("No test logs exist for these students."))
-//             return context 
-
-//         ## Build CSV 
-//         # Nice filename for Sarojini
-//         filename = 'f_all__' if facility_id == 'all' else 'f_%s__' % facilities[0].name
-//         filename += 'g_all__' if group_id == 'all' else 'g_%s__' % facility_users[0].group.name
-//         filename += '%s' % datetime.datetime.today().strftime("%Y-%m-%d")
-//         csv_response = HttpResponse(content_type="text/csv")
-//         csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
-
-//         # CSV header
-//         writer = csv.writer(csv_response)
-//         writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"])
-        
-//         # CSV Body
-//         for t in test_logs:
-//             group_name = t.user.group.name if hasattr(t.user.group, "name") else "Ungrouped"
-//             group_id = t.user.group.id if hasattr(t.user.group, "id") else "None"
-//             writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
-
-//         return csv_response
