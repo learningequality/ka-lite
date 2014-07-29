@@ -33,7 +33,7 @@ class KALiteDistributedBrowserTestCase(BrowserTestCase):
             self.browser_logout_user()
         super(KALiteDistributedBrowserTestCase, self).tearDown()
 
-    def create_student(self, username=default_username, password=default_password,
+    def create_student(self, username=default_student_username, password=default_password,
                        facility_name=default_facility_name):
         facilities = Facility.objects.filter(name=facility_name)
         facility = facilities[0] if facilities else self.create_facility()
