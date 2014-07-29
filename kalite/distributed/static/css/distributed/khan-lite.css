@@ -540,7 +540,7 @@ input#search {
 
 #software-keyboard div {
     display: inline-block;
-    min-width: 33%;
+    /*min-width: 33%;*/
     padding: 3px;
 }
 
@@ -555,10 +555,20 @@ input#search {
     font-size: 20px;
 }
 
+/* TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous css added here to make styling work without Bootstrap */
+
 #show-keyboard {
     font-size: 10px;
     width: 90px;
     float: right;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #816fba;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ffffff;
+    padding: 5px 20px;
+    border:0px;
 }
 
 /* END styles for software-keyboard */

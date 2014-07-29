@@ -58,10 +58,13 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
         // TODO-BLOCKER (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
 
-        this.$el.append("<button class='btn btn-info' id='show-keyboard'>" + gettext("Hide Keypad") + "</button>");
+        this.$el.append("<button id='show-keyboard'>" + gettext("Hide Keypad") + "</button>");
 
         this.$el.append("<div class='container-fluid' id='software-keyboard'></div>");
-        var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], ["/", "0", "-" ],[ ".", "c", "bs" ] ];
+
+        // TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous &nbsp; added here to make styling work without Bootstrap
+
+        var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], ["/&nbsp;", "0", "&nbsp;-" ],[ ".", "c", "bs" ] ];
         var corners = {
             "1": "ui-corner-tl",
             "3": "ui-corner-tr",
@@ -77,7 +80,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
                 .appendTo( self.software_keyboard );
 
             jQuery.each( row, function( j, key ) {
-                var keySpan = $("<div class='.col-xs-4'><button class='key btn btn-success " + (key === "bs" ? "key-bs" : "") + "' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo( rowDiv );
+                var keySpan = $("<div class='.col-xs-4'><button class='key green_button " + (key === "bs" ? "key-bs" : "") + "' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo( rowDiv );
 
             } );
         } );
