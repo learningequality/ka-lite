@@ -14,7 +14,7 @@ class FacilityTestCase(KALiteTestCase):
         super(FacilityTestCase, self).setUp()
         self.facility = Facility.objects.create(name='testfac')
         self.group = FacilityGroup.objects.create(name='testgroup', facility=self.facility)
-        self.admin = User.objects.create(username='testadmin',password=make_password('insecure'))
+        self.admin = User.objects.create(username='testadmin', password=make_password('insecure'))
         self.data = {
             'username': u'testuser',
             'first_name': u'fn',

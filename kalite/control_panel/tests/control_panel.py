@@ -28,6 +28,7 @@ class FacilityControlTests(FacilityMixins,
         facility_delete_link = facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]/span')
         facility_delete_link.click()
         alert = self.browser.switch_to_alert()
+        alert.send_keys("should-be-deleted")
         alert.accept()
         time.sleep(5)
 
@@ -74,7 +75,7 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
-        confirm_group_delete_button = self.browser.find_element_by_xpath('//button[@class="delete-group"]')
+        confirm_group_delete_button = self.browser.find_element_by_xpath('//button[contains(@class, "delete-group")]')
         confirm_group_delete_button.click()
 
         # there should be a confirm popup

@@ -27,10 +27,9 @@ class FacilityUserForm(forms.ModelForm):
     default_language = forms.ChoiceField(label=_("Default Language"))
     warned           = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
 
-    def __init__(self, facility, admin_access=False, *args, **kwargs):
+    def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
 
-        self.admin_access = admin_access
         self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
 
         # Select the initial default language,
@@ -74,23 +73,12 @@ class FacilityUserForm(forms.ModelForm):
         username = self.cleaned_data.get('username', '')
         zone = self.cleaned_data.get('zone_fallback')
 
-        ## check if given username is unique on both facility users and admins, whatever the casing
-        #
-        # Change: don't allow (only through the form) the same username either in the same facility,
-        #   or even in the same zone.
-        # Change: Use 'all_objects' instead of 'objects' in order to return soft deleted users as well.
-        users_with_same_username = FacilityUser.all_objects.filter(username__iexact=username, facility=facility) \
-            or FacilityUser.all_objects.filter(username__iexact=username) \
-                .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same zone
+        # Don't allow (only through the form) the same username within the same facility, or conflicting with the admin.
+        users_with_same_username = FacilityUser.objects.filter(username__iexact=username, facility=facility)
         username_taken = users_with_same_username.count() > 0
         username_changed = not self.instance or self.instance.username != username
-        if username_taken and username_changed:
-            error_message = _("A user with this username already exists. Please choose a new username and try again.")
-            self.set_field_error(field_name='username', message=error_message)
-
-        elif User.objects.filter(username__iexact=username).count() > 0:
-            # Admin (django) user exists with the same name; we don't want overlap there!
-            self.set_field_error(field_name='username', message=_("The specified username is unavailable. Please choose a new username and try again."))
+        if username_taken and username_changed or User.objects.filter(username__iexact=username).count() > 0:
+            self.set_field_error(field_name='username', message=_("A user with this username already exists. Please choose a new username and try again."))
 
         ## Check password
         password_first = self.cleaned_data.get('password_first', "")
@@ -138,6 +126,7 @@ class FacilityUserForm(forms.ModelForm):
 
 
 class FacilityForm(forms.ModelForm):
+    name = forms.CharField(label=_("Name (required)"))
 
     class Meta:
         model = Facility
@@ -154,6 +143,16 @@ class FacilityForm(forms.ModelForm):
 
         return user_count
 
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        matching = Facility.objects.by_zone(self.instance.get_zone()).filter(name__iexact=name)
+        for model in matching:
+            if model.id != self.instance.id:
+                raise ValidationError(_("There is already a facility with this name."), code='facility_name_exists')
+
+        return name
+
+
 class FacilityGroupForm(forms.ModelForm):
 
     def __init__(self, facility, *args, **kwargs):
@@ -169,7 +168,7 @@ class FacilityGroupForm(forms.ModelForm):
         fields = ("name", "description", "facility", "zone_fallback", )
         widgets = {
             "facility": forms.HiddenInput(),
-            "zone_fallback": forms.HiddenInput(),
+            "zone_fallback": forms.HiddenInput(), # TODO(jamalex): this shouldn't be in here
         }
 
     def clean_name(self):
@@ -178,6 +177,11 @@ class FacilityGroupForm(forms.ModelForm):
 
         if ungrouped.match(name):
             raise forms.ValidationError(_("This group name is reserved. Please choose one without 'ungrouped' in the name."))
+
+        matching = FacilityGroup.objects.filter(facility=self.fields["facility"].initial, name__iexact=name)
+        for model in matching:
+            if model.id != self.instance.id:
+                raise ValidationError(_("There is already a group with this name."), code='group_name_exists')
 
         return name
 
@@ -198,31 +202,36 @@ class LoginForm(forms.ModelForm):
             self.fields["facility"].widget = forms.HiddenInput()
 
     def clean(self):
-        # Don't call super; this isn't a proper where the model (FacilityUser) is being fully completed.
+        # Don't call super; this isn't a proper form where the model (FacilityUser) is being fully completed.
 
         username = self.cleaned_data.get('username', "")
         facility = self.cleaned_data.get('facility', "")
         password = self.cleaned_data.get('password', "")
 
-        # Coerce
-        users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
-        if users.count() == 1 and users[0].username != username:
-            username = users[0].username
-            self.cleaned_data['username'] = username
+        # Find all matching users
+        users = FacilityUser.objects.filter(username=username, facility=facility)
+        # If no exact matches were found, try a case-insensitive search
+        if users.count() == 0:
+            users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
 
-        try:
-            self.user_cache = FacilityUser.objects.get(username=username, facility=facility)
-        except FacilityUser.DoesNotExist as e:
+        if users.count() == 0:
             if self.fields["facility"].queryset.count() > 1:
                 error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
             else:
                 error_message = _("Username was not found. Did you type your username correctly?")
             raise forms.ValidationError(error_message)
 
-        if not self.user_cache.check_password(password):
-            self.user_cache = None
-            if password and "password" not in self._errors:
-                self._errors["password"] = self.error_class([_("The passwords do not match. Please try again.")])
+        for user in users:
+            # if we find a user whose password matches, stop looking
+            if user.check_password(password):
+                break
+            else:
+                user = None
+
+        if not user and "password" not in self._errors:
+            self._errors["password"] = self.error_class([_("Password was incorrect. Please try again.")])
+
+        self.user_cache = user
 
         return self.cleaned_data
 

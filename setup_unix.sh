@@ -35,9 +35,11 @@ if [[ $we_are_rpi = "True" ]]; then
     done
 fi
 
-if [ -d "/etc/init.d" ]; then
+# Check if we have init.d for Linux or LaunchAgents for OSX so we can setup auto-start services.
+if [ -d "/etc/init.d" ] || [ -d "/Library/LaunchAgents" ]; then
     while true
     do
+        PLIST=/$HOME/Library/LaunchAgents/org.learningequality.kalite.plist
         echo
         echo "Do you wish to set the KA Lite server to run in the background automatically"
         echo -n "when you start this computer (you will need root/sudo privileges) [Y/N]? "
@@ -46,11 +48,23 @@ if [ -d "/etc/init.d" ]; then
             y|Y)
                 echo
                 sudo "$SCRIPT_DIR/runatboot.sh"
-                echo
+                if [ -e $PLIST ]; then
+                    launchctl load -w $PLIST
+                    echo "KA Lite server will now run automatically on login."
+                fi
                 break
                 ;;
             n|N)
                 echo
+                # Make sure we unload so plist doesn't run on login.  This might throw an
+                # exception but cannot seem to suppress it even with a redirect to /dev/null
+                # so we use the `launchctl list` to check if the plist is loaded.
+                if [ -e $PLIST ]; then
+                    plist_loaded=`launchctl list | grep org.learningequality.kalite`;
+                    if [[ ! -z "$plist_loaded" ]]; then
+                        launchctl unload -w $PLIST
+                    fi
+                fi
                 break
                 ;;
         esac

@@ -53,10 +53,17 @@ def require_admin(handler):
     * Distributed server: any Django admin or teacher.
 
     Note: different behavior for api_request or not
+    Note2: we allow users to 'access themselves'
     """
 
+    @require_login
     def require_admin_wrapper_fn(request, *args, **kwargs):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
+            return handler(request, *args, **kwargs)
+
+        # Allow users to edit themselves 
+        facility_user_id = kwargs.get("facility_user_id", None)
+        if facility_user_id == request.session.get('facility_user').id:
             return handler(request, *args, **kwargs)
 
         # Only here if user is not authenticated.
