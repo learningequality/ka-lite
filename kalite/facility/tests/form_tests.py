@@ -52,7 +52,7 @@ class UserRegistrationTestCase(FacilityTestCase):
         response = self.client.post(reverse('facility_user_signup'), self.data, follow=True)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
         self.assertFormError(response, 'form', 'username',
-                             'The specified username is unavailable. Please choose a new username and try again.')
+                             'A user with this username already exists. Please choose a new username and try again.')
 
     def test_password_length_valid(self):
         response = self.client.post(reverse('facility_user_signup'), self.data)
