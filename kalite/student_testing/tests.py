@@ -197,7 +197,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         self.browser_login_student(username=self.client.student_data['username'],
                                    password=self.client.student_data['password'],
                                    facility_name=self.client.facility.name,
-                                   expect_url=expect_url, exam_mode_on=exam_mode_on)
+                                   exam_mode_on=exam_mode_on)
 
     def wait_for_element(self, by, elem):
         WebDriverWait(self.browser, 1).until(ec.element_to_be_clickable((by, elem)))
