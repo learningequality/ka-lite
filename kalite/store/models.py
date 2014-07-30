@@ -41,7 +41,10 @@ class StoreItem(DeferredCountSyncedModel):
     returnable = models.BooleanField(default=False) # can this item be returned to the store for a refund?
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
-    image = models.TextField(blank=True) # data URI for image of item
+    thumbnail = models.TextField(blank=True) # data URI for image of item
+    # Fields to map onto arbitrary resources like avatars, etc.
+    resource_id = models.CharField(max_length=100, blank=True)
+    resource_type = models.CharField(max_length=100, blank=True)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
