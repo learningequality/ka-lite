@@ -552,7 +552,7 @@ input#search {
 }
 
 #software-keyboard div .key-bs {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 /* TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous css added here to make styling work without Bootstrap */
@@ -569,6 +569,13 @@ input#search {
     color: #ffffff;
     padding: 5px 20px;
     border:0px;
+}
+
+div .row {
+    width: 100%;
+}
+div .col-xs-4 {
+    width: 33%;
 }
 
 /* END styles for software-keyboard */
