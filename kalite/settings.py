@@ -106,6 +106,7 @@ INSTALLED_APPS = (
     "fle_utils.testing",
     "kalite.testing",
     "kalite.distributed",
+    "kalite.store",
 ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
