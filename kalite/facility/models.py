@@ -79,8 +79,7 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    # Translators: This is the description field of the Facility Group.
-    description = models.TextField(blank=True, verbose_name=_("Description"))
+    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.12.0" # TODO-BLOCKER(jamalex): change this to 0.13.0 or whatever it is at the time it ships
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
