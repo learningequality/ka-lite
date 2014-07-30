@@ -105,14 +105,14 @@ class TestReportTests(FacilityMixins,
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
-        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
-        self.assertTrue(stat_max == '50.0%')
-        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
-        self.assertTrue(stat_min == '25.0%')
-        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
-        self.assertTrue(stat_avg == '37.5%')
-        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
-        self.assertTrue(stat_std == '12.5%')
+        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[1]').text
+        self.assertEqual(stat_max, '50%')
+        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
+        self.assertEqual(stat_min, '25%')
+        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
+        self.assertEqual(stat_avg, '37%')
+        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
+        self.assertEqual(stat_std, '12%')
 
     def test_student_detail_scores_display(self):
         """
