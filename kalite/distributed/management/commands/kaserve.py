@@ -75,11 +75,6 @@ class Command(BaseCommand):
             if Settings.get("private_key") and Device.objects.count():
                 # The only success case
                 pass
-
-            elif not Device.objects.count():
-                # Nothing we can do to recover
-                raise CommandError("You are screwed, buddy--you went through setup but you have no devices defined!  Call for help!")
-
             else:
                 # Force hitting recovery code, by raising a generic error
                 #   that gets us to the "except" clause
