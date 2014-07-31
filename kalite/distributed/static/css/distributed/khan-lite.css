@@ -166,6 +166,17 @@ nav {
     display: none;
 }
 
+#logged-in-name {
+    display: inline-block;
+    min-width: 10px;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    *vertical-align: middle; /*Hack to properly align Username in IE6 & IE7 */
+}
+
 /********** End of Top Navigation bar ***********/
 
 h2 {
@@ -522,3 +533,60 @@ a.disabled {
 input#search {
     width: 150px;
 }
+
+
+/* BEGIN styles for software-keyboard */
+
+#software-keyboard {
+    border: 2px solid #cfcfcf;
+    background: #c3c3c3;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 1);
+    text-align: center;
+    padding: 0px;
+    margin-top: 10px;
+}
+
+#software-keyboard div {
+    display: inline-block;
+    /*min-width: 33%;*/
+    padding: 3px;
+}
+
+#software-keyboard div .key {
+    width: 100%;
+    text-align: center;
+    line-height: 30px;
+    font-size: 26px;
+}
+
+#software-keyboard div .key-bs {
+    font-size: 16px;
+}
+
+/* TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous css added here to make styling work without Bootstrap */
+
+#show-keyboard {
+    font-size: 10px;
+    width: 90px;
+    float: right;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #816fba;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ffffff;
+    padding: 5px 20px;
+    border:0px;
+}
+
+div .row {
+    width: 100%;
+}
+div .col-xs-4 {
+    width: 33%;
+}
+
+/* END styles for software-keyboard */
