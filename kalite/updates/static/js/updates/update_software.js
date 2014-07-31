@@ -1,8 +1,9 @@
 function software_check_callback(progress_log, resp) {
 
-    if ((!progress_log &&
-         resp.status == 403) ||
-       progress_log.completed) {
+    // assume server is restarting if we fail to load progress (either
+    // the computer is too slow in loading) or if we get a 100%
+    // complete
+    if (!progress_log || progress_log.completed) {
         // server got brought down, we wait X seconds now and then
         // inform the user that their software may be up now
 

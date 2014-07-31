@@ -1,98 +1,21 @@
 {% extends base_template %}
 
 {% load i18n %}
-{% load staticfiles %}
+{% load kalite_staticfiles %}
 
 {% block home_active %}active{% endblock home_active %}
 
 {% block headcss %}{{ block.super }}
-    <style>
-        .suggested-action {
-            background-color: #F7F7F7;
-            color: #444!important;
-            display: block;
-            margin-bottom: 0;
-            padding: 14px;
-            position: relative;
-            width: 370px;
-            float: left;
-            margin-right: 25px;
-            min-height: 221px;
-        }
-
-        .suggested-actions {
-            padding-top: 124px;
-        }
-
-        .suggested-action:hover {
-            border-color: #C3CA7D;
-            -webkit-box-shadow: 0 0 10px #76A005;
-            -moz-box-shadow: 0 0 10px #76a005;
-            box-shadow: 0 0 10px #76A005;
-        }
-
-        .suggested-action a:hover {
-            text-decoration: none!important;
-            color: #005987;
-        }
-        .suggested-action-image-link {
-            background-size: cover;
-            background-repeat: no-repeat;
-            border-bottom: 1px solid #DCE0B3;
-            display: block;
-            height: 130px;
-            margin: -5px -14px -15px -14px;
-        }
-
-        .suggested-action-title {
-            color: #005987;
-            text-decoration: none;
-            font-size: 21px;
-        }
-
-        .message {
-            margin-left: 7px;
-        }
-
-        .main-headline {
-            font-size: 26px;
-            margin: 10px 0 20px 0;
-            padding: 0;
-        }
-
-        .topic-list {
-            padding: 7px 0 0 0;
-            margin: 0;
-            font-size: 24px;
-            font-family: "MuseoSans500", sans-serif;
-        }
-
-        .topic a {
-            padding: 0 0 8px 40px;
-            font-size: 18px;
-            line-height: 40px;
-        }
-
-        a:hover, a:hover .suggested-action-title {
-            color: #2F92A5!important;
-        }
-
-        .front-page {
-            padding-left: 7px;
-        }
-
-        .video-unavailable,
-        .topic-unavailable,
-        a:active.topic-unavailable,
-        a:hover.topic-unavailable,
-        a:link.topic-unavailable,
-        a:visited.topic-unavailable {
-            color: #ACBDD1;
-        }
-    </style>
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}?{{ BUILD_ID }}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+    <!-- import handlebars templates here -->
+    <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
+    <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dotdotdot.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -100,10 +23,33 @@
         }
     </script>
     {% endif %}
+
+    <script type="text/javascript">
+     var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+     var VIEW_PLAYLIST_TEMPLATE_URL = "/playlists/view/%(playlist_id)s/"
+    </script>
+
+    <script type="text/template" id="playlist-table">
+      <table class="table">
+        <tr>
+          <th colspan="5">
+            <div class="playlist-list-header-wrapper">
+              <h2 class="playlist-list-header"><%= title %></h2>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <ul id="playlists">
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </script>
 {% endblock headjs %}
 
 {% block content %}
-    <div class="front-page">
+    <div class="front-page" id="homepage">
 
         <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
 
@@ -133,5 +79,17 @@
     </div>
 
     <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
+
+    <div class="not-admin-only">
+        <div class="logged-in-only">
+
+            <img src="/static/images/loading.gif" class="float-center loading"/>
+
+            <div id="playlist-table-container">
+
+            </div>
+
+        </div>
+    </div>
 
 {% endblock content %}

@@ -1,0 +1,10 @@
+{{#ifcond entity_kind "==" "Divider"}}
+<span class="playlist-sidebar-entry playlist-sidebar-divider">{{ entity_id }}</span>
+{{else}}
+<a class="playlist-sidebar-entry playlist-sidebar-entry-link {{#if active }}active{{/if}}" href="#" title="{{ description }}">
+  	<span class="icon-{{ entity_kind }}"></span>
+<!--     {{#ifcond entity_kind "==" "Video"}}V: {{/ifcond}}
+    {{#ifcond entity_kind "==" "Exercise"}}E: {{/ifcond}} -->
+    {{ title }}
+</a>
+{{/ifcond}}

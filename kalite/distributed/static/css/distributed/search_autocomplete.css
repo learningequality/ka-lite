@@ -8,22 +8,22 @@ li.autocomplete {
     background-size: 25px 25px;
     cursor: pointer;
 }
-li.exercise.available {
+li.autocomplete-exercise.available {
     background-image:url(/static/images/distributed/search-exercise-available.png);
 }
-li.topic.available {
+li.autocomplete-topic.available {
     background-image:url(/static/images/distributed/search-topic-available.png);
 }
-li.video.available {
+li.autocomplete-video.available {
     background-image:url(/static/images/distributed/search-video-available.png);
 }
-li.exercise.unavailable {
+li.autocomplete-exercise.unavailable {
     background-image:url(/static/images/distributed/search-exercise-unavailable.png);
 }
-li.topic.unavailable {
+li.autocomplete-topic.unavailable {
     background-image:url(/static/images/distributed/search-topic-unavailable.png);
 }
-li.video.unavailable {
+li.autocomplete-video.unavailable {
     background-image:url(/static/images/distributed/search-video-unavailable.png);
 }
 .available {
