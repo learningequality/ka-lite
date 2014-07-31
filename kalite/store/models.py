@@ -1,9 +1,14 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.dispatch import receiver
+
+from student_testing.signals import exam_unset
 
 from kalite.facility.models import FacilityUser
 
 from securesync.models import DeferredCountSyncedModel
+
+from django.conf import settings; logging = settings.LOG
 
 # Create your models here.
 
@@ -48,3 +53,11 @@ class StoreTransactionLog(DeferredCountSyncedModel):
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
+
+
+@receiver(exam_unset)
+def handle_exam_unset(sender, **kwargs):
+    test_id = kwargs.get("test_id")
+    if test_id:
+        # TODO: Add logic here to update or create a transaction for the test_id for all FacilityUsers that credits them with their points, but only if in the output condition
+        logging.debug(test_id)
