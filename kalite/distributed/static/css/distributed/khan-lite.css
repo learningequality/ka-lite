@@ -166,6 +166,17 @@ nav {
     display: none;
 }
 
+#logged-in-name {
+    display: inline-block;
+    min-width: 10px;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    *vertical-align: middle; /*Hack to properly align Username in IE6 & IE7 */
+}
+
 /********** End of Top Navigation bar ***********/
 
 h2 {
@@ -523,8 +534,8 @@ input#search {
     width: 150px;
 }
 
-/* BEGIN styles for software-keyboard */
 
+/* BEGIN styles for software-keyboard */
 
 #software-keyboard {
     border: 2px solid #cfcfcf;
