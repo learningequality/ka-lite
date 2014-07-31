@@ -51,6 +51,8 @@ if sys.platform == 'darwin':
         <string>org.learningequality.kalite</string>
         <key>Program</key>
         <string>%(script_path)s/start.sh</string>
+        <key>RunAtLoad</key>
+        <true/>
         <key>StandardOutPath</key>
         <string>/tmp/kalite.out</string>
         <key>StandardErrorPath</key>
