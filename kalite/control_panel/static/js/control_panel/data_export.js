@@ -75,7 +75,7 @@ var DataExportView = Backbone.View.extend({
             .append(facility_input)
             .append(group_input)
             .attr("action", document.URL)
-            .append(CSRF_TOKEN) // TODO(dylan) do we need a CSRF if we do a GET? 
+            .append("<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />") 
             .submit();
     }
 

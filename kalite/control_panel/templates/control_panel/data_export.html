@@ -10,7 +10,6 @@
     <script>
         var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
-        var CSRF_TOKEN = "{% csrf_token %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
 
@@ -24,7 +23,7 @@
 
 {% endblock headjs %}
 
-{% block headcss %}
+{% block headcss %}{{ block.super }}
     <style>
         .form-group {
             float: left;

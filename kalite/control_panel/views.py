@@ -153,9 +153,10 @@ def zone_management(request, zone_id="None"):
 def zone_data_export(request, zone_id=None):
     # Normal page load if the GET request has no data
     context = control_panel_context(request, zone_id=zone_id)
-    if not request.GET:
+    # check as explicitly as possible whether or not the form has been submitted 
+    if not request.GET or not(request.GET.get("facility_id") and request.GET.get("group_id")):
         return context
-    # Form submitted TODO(dylan) is there a better way to check for this? (since both are get requests)
+    # Form submitted 
     else:
         # Get the params 
         facility_id = request.GET.get("facility_id")
