@@ -29,6 +29,9 @@ from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 class VideoLog(DeferredCountSyncedModel):
     POINTS_PER_VIDEO = 750
 
+    if "nalanda" in settings.CONFIG_PACKAGE:
+        POINTS_PER_VIDEO = 0
+
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
     youtube_id = models.CharField(max_length=20) # metadata only

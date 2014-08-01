@@ -14,4 +14,5 @@ def ab_testing_css(request):
 def ab_testing_js(request):
     return {
         'fixed_block_exercises': settings.FIXED_BLOCK_EXERCISES,
+        'quiz_repeats': settings.QUIZ_REPEATS,
     }
