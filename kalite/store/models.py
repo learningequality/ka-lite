@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 
@@ -54,6 +55,10 @@ class StoreTransactionLog(DeferredCountSyncedModel):
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
+
+    @staticmethod
+    def get_points_for_user(user):
+        return StoreTransactionLog.objects.filter(user=user).aggregate(Sum("value")).get("value__sum", 0) or 0
 
 
 @receiver(exam_unset)
