@@ -2,7 +2,7 @@ from fle_utils.config.models import Settings
 
 from .settings import SETTINGS_KEY_EXAM_MODE
 
-from .signals import exam_unset
+from kalite.student_testing.signals import exam_unset
 
 def get_exam_mode_on():
     """
@@ -21,5 +21,5 @@ def set_exam_mode_on(value):
     current_test_id = get_exam_mode_on()
     if current_test_id == value:
         value = ''
-        exam_unset.send(sender=None, test_id=current_test_id)
+        exam_unset.send(sender="None", test_id=current_test_id)
     return Settings.set(SETTINGS_KEY_EXAM_MODE, value)

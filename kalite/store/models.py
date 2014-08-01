@@ -2,7 +2,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 
-from student_testing.signals import exam_unset
+from kalite.student_testing.signals import exam_unset
+from kalite.student_testing.models import TestLog
 
 from kalite.facility.models import FacilityUser
 
@@ -59,5 +60,17 @@ class StoreTransactionLog(DeferredCountSyncedModel):
 def handle_exam_unset(sender, **kwargs):
     test_id = kwargs.get("test_id")
     if test_id:
-        # TODO: Add logic here to update or create a transaction for the test_id for all FacilityUsers that credits them with their points, but only if in the output condition
+        # TODO (rtibbles): Add logic here to update or create a transaction for the test_id for all FacilityUsers that credits them with their points, but only if in the output condition
         logging.debug(test_id)
+        testlogs = TestLog.objects.filter(test=test_id)
+        for testlog in testlogs:
+            # TODO-BLOCKER (rtibbles): Needs implementaton of unit_id settings module.
+            unit_id = "things and stuff for testing"
+            # TODO-BLOCKER (rtibbles): Dummy Store Item here - need to actually implement a gift card fixture
+            item = StoreItem.objects.all()[0]
+            transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item=item)
+            # TODO-BLOCKER (rtibbles): Needs setting of the overall points value for a unit
+            overall_points_value_for_a_unit = 1000
+            transaction_log.value = int(round(overall_points_value_for_a_unit*float(testlog.total_correct)/testlog.total_number))
+            transaction_log.save()
+            logging.debug(transaction_log.value)
