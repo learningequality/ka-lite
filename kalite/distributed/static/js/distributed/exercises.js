@@ -812,6 +812,13 @@ window.ExerciseView = Backbone.View.extend({
             first_video: related_videos[0],
             other_videos: related_videos.slice(1)
         });
+    },
+
+    close: function() {
+        if (this.related_video_view) {
+            this.related_video_view.remove();
+        }
+        this.remove();
     }
 
 });
@@ -833,9 +840,9 @@ window.ExercisePracticeView = Backbone.View.extend({
                 exercise_id: self.options.exercise_id
             });
 
-            self.exercise_view.on("ready_for_next_question", self.ready_for_next_question);
-            self.exercise_view.on("hint_used", self.hint_used);
-            self.exercise_view.on("problem_loaded", self.problem_loaded);
+            self.listenTo(self.exercise_view, "ready_for_next_question", self.ready_for_next_question);
+            self.listenTo(self.exercise_view, "hint_used", self.hint_used);
+            self.listenTo(self.exercise_view, "problem_loaded", self.problem_loaded);
 
             self.hint_view = new ExerciseHintView({
                 el: self.$(".exercise-hint-wrapper")
@@ -843,7 +850,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
             if (window.statusModel.get("is_logged_in")) {
 
-                self.exercise_view.on("check_answer", self.check_answer);
+                self.listenTo(self.exercise_view, "check_answer", self.check_answer);
 
                 // load the data about the user's overall progress on the exercise
                 self.log_collection = new ExerciseLogCollection([], {exercise_id: self.options.exercise_id});
@@ -1067,6 +1074,17 @@ window.ExercisePracticeView = Backbone.View.extend({
         }
 
 
+    },
+
+    close: function() {
+        this.exercise_view.close();
+        if (this.hint_view) {
+            this.hint_view.remove();
+        }
+        if (this.progress_view) {
+            this.progress_view.remove();
+        }
+        this.remove();
     }
 
 });
@@ -1141,9 +1159,9 @@ window.ExerciseTestView = Backbone.View.extend({
                 // don't render the related videos box on tests
                 this.exercise_view.stopListening(this.data_model, "change:related_videos");
 
-                this.exercise_view.on("check_answer", this.check_answer);
-                this.exercise_view.on("problem_loaded", this.problem_loaded);
-                this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+                this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+                this.listenTo(this.exercise_view, "problem_loaded", this.problem_loaded);
+                this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
             }
         }
 
@@ -1252,6 +1270,11 @@ window.ExerciseTestView = Backbone.View.extend({
 
         });
 
+    },
+
+    close: function() {
+        this.exercise_view.close();
+        this.remove();
     }
 
 });
@@ -1309,9 +1332,9 @@ window.ExerciseQuizView = Backbone.View.extend({
         this.exercise_view = new ExerciseView(data);
         this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
-        this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
+        this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+        this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
+        this.listenTo(this.exercise_view, "problem_loaded", this.problem_loaded);
 
     },
 
@@ -1409,6 +1432,11 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         });
 
+    },
+
+    close: function() {
+        this.exercise_view.close();
+        this.remove();
     }
 
 });
