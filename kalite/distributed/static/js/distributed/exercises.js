@@ -1435,7 +1435,9 @@ window.ExerciseQuizView = Backbone.View.extend({
     },
 
     close: function() {
-        this.exercise_view.close();
+        if (this.exercise_view) {
+            this.exercise_view.close();
+        }
         this.remove();
     }
 
