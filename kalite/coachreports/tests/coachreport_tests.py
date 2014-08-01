@@ -119,7 +119,7 @@ class TestReportTests(FacilityMixins,
         Test that we show results for an exercise cluster in the test detail view
         """
         test_log_defaults = {
-            'test': 685,  # this must be an actual test
+            'test': 'g3_t1',  # this must be an actual test
             'index': '0',
             'complete': True,
             'started': True,
@@ -129,7 +129,7 @@ class TestReportTests(FacilityMixins,
         attempt_log_default = {
             'exercise_id': 'number_line', # this must exist inside of the test
             'context_type': 'test',
-            'context_id': 685,
+            'context_id': 'g3_t1',
             'timestamp': datetime.now(),
             'correct': True,
         }
