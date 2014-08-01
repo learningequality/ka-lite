@@ -89,9 +89,7 @@ function initDynatree(treeData) {
 
     $('#content_tree').dynatree(dynatreeAttrs);
     console.log(treeData);
-    treeData.children.forEach(function(child) {
-        $('#content_tree').dynatree('getRoot').addChild(child);
-    });
+    $('#content_tree').dynatree('getRoot').addChild(treeData);
 }
 
 function downloadVideos() {
