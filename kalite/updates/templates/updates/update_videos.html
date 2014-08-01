@@ -23,6 +23,68 @@
     </script>
 
     <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
+    <script type="text/template" id="videos_view_template">
+        <div class="download-actions vertical-shadow">
+            <h4 class="videos">
+                <span id="language_choice_titlebar">
+                {% if num_language_choices == 1 %}
+                    {% blocktrans with lang_name=current_language_name %}Videos for language {{ lang_name }}{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with lang_name=current_language_name %}Videos for language <a href="#">{{ lang_name }}</a>{% endblocktrans %}
+                {% endif %}
+                </span>
+                <select id="download_language_selector">
+                {% for lang_code, lang_meta in language_choices.iteritems %}
+                    <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                        {{ lang_code|get_language_name }}
+                    </option>
+                {% endfor %}
+                </select>
+            </h4>
+
+            <h5 id="download-legend-unselected" class="button_text">
+                {% trans "Please select videos to download (below)" %}
+            </h5>
+
+            <button id="download-videos" type="button" class="enable-when-server-online">
+                <span id="download-videos-text" class="new-video-count"></span>
+            </button>
+
+            <button id="delete-videos" type="button">
+                <div id="modal_dialog">
+                </div>
+                <span id="delete-videos-text" class="old-video-count"></span>
+            </button>
+        </div>
+
+
+        <div class="download-actions vertical-shadow client-online-only">
+            <h4 class="videos">
+            {% trans "Help for downloading videos" %}
+            </h4>
+            <div id="help-info">
+                <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
+                    {% trans "Q: How do I bulk-download videos?" %}
+                </a>
+            </div>
+        </div>
+
+        <div style="clear: both;"></div>
+
+        <div>
+            <!-- note: id must match the "updates" app process name -->
+            <div id="videodownload-progressbar">
+                {% include "updates/progress-bar.html" %}
+                <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
+            </div>
+
+            <div>
+                <button class="btn btn-default btn-xs" id="cancel-download" type="button">{% trans "Cancel Video Downloads" %}</button>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+        <div id="content_tree"><br/><h4>{% trans "Loading topic tree... Please wait!" %}</h4></div>
+    </script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
@@ -30,65 +92,6 @@
 {% endblock ga_setmetrics %}
 
 {% block content %}
-    <div class="download-actions vertical-shadow">
-        <h4 class="videos">
-            <span id="language_choice_titlebar">
-            {% if num_language_choices == 1 %}
-                {% blocktrans with lang_name=current_language_name %}Videos for language {{ lang_name }}{% endblocktrans %}
-            {% else %}
-                {% blocktrans with lang_name=current_language_name %}Videos for language <a href="#">{{ lang_name }}</a>{% endblocktrans %}
-            {% endif %}
-            </span>
-            <select id="download_language_selector">
-            {% for lang_code, lang_meta in language_choices.iteritems %}
-                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                    {{ lang_code|get_language_name }}
-                </option>
-            {% endfor %}
-            </select>
-        </h4>
 
-        <h5 id="download-legend-unselected" class="button_text">
-            {% trans "Please select videos to download (below)" %}
-        </h5>
-
-        <button id="download-videos" type="button" class="enable-when-server-online">
-            <span id="download-videos-text" class="new-video-count"></span>
-        </button>
-
-        <button id="delete-videos" type="button">
-            <div id="modal_dialog">
-            </div>
-            <span id="delete-videos-text" class="old-video-count"></span>
-        </button>
-    </div>
-
-
-    <div class="download-actions vertical-shadow client-online-only">
-        <h4 class="videos">
-        {% trans "Help for downloading videos" %}
-        </h4>
-        <div id="help-info">
-            <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-                {% trans "Q: How do I bulk-download videos?" %}
-            </a>
-        </div>
-    </div>
-
-    <div style="clear: both;"></div>
-
-    <div>
-        <!-- note: id must match the "updates" app process name -->
-        <div id="videodownload-progressbar">
-            {% include "updates/progress-bar.html" %}
-            <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
-        </div>
-
-        <div>
-            <button class="btn btn-default btn-xs" id="cancel-download" type="button">{% trans "Cancel Video Downloads" %}</button>
-        </div>
-    </div>
-    <div style="clear: both;"></div>
-
-    <div id="content_tree"><br/><h4>{% trans "Loading topic tree... Please wait!" %}</h4></div>
+    <div id="videos_container" />
 {% endblock content %}

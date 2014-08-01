@@ -10,11 +10,17 @@
 {% block report_title %}{% trans "User report" %}{% endblock report_title %}
 
 {% block headcss %}{{ block.super }}
-    <style>    
+    <style>
+        .progress-col {
+            display: table;
+            position: relative;
+            top: 15px;
+            border: none;
+        }
         .client-online-only .btn-success {
             padding-bottom: 8px;
             padding-top: 8px;
-        } /* Makes right green button ("Download data from Khan Academy") 
+        } /* Makes right green button ("Download data from Khan Academy")
         the same height as left green button ("Edit account preferences") */
         table, th, td {
             border: 1px solid #ddd;
@@ -49,8 +55,8 @@
                 padding-left: 0;
             }
             .client-online-only .btn-success {
-                padding-top: 6px !important; /* Creates 2px of vertical space 
-                between green buttons - can't seem to figure out a better way */ 
+                padding-top: 6px !important; /* Creates 2px of vertical space
+                between green buttons - can't seem to figure out a better way */
             }
         }
         @media only screen and (max-width: 470px) {
@@ -89,8 +95,8 @@
         {% endif %}
     {% else %}
     <h3 class="table-title">{% trans "Progress Report" %}</h3>
-    
-    <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
+
+    <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class
         called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
         <table>
             <tr>
@@ -107,7 +113,7 @@
 
         {% for topic in topics %}
             <tr class="{% if exercise_logs|get_item:topic.id or video_logs|get_item:topic.id%}visible{% else %}invisible{% endif %}">
-                <td>
+                <td class="progress-col">
                     <div class="progress-circle {% if stats|get_item:topic.id|get_item:'pct_mastery' = 1.0 %}complete{% else %}partial{% endif %}">
                     &nbsp;
                     </div>
