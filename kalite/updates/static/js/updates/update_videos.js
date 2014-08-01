@@ -60,7 +60,7 @@ var VideosView = Backbone.View.extend({
     },
 
     getSelectedMetadata: function(vid_type, data_type) {
-        var videos = _.uniq(getSelectedVideos(vid_type), function(node) {
+        var videos = _.uniq(this.getSelectedVideos(vid_type), function(node) {
             return node.data.key;
         });
         var metadata = $.map(videos, function(node) {
@@ -72,6 +72,21 @@ var VideosView = Backbone.View.extend({
             }
         });
         return metadata;
+    },
+
+    getSelectedVideos: function(vid_type) {
+        var avoid_type = null;
+        switch (vid_type) {
+            case "started": avoid_type = "unstarted"; break;
+            case "incomplete": avoid_type ="complete"; break;
+            default: assert(false, sprintf("Unknown vid type: %s", vid_type)); break;
+        }
+
+        var arr = $("#content_tree").dynatree("getSelectedNodes");
+        var vids = _.uniq($.grep(arr, function(node) {
+            return node.data.addClass != avoid_type && node.childList == null;
+        }));
+        return vids;
     },
 
     getSelectedIncompleteMetadata: function(data_type) {
@@ -370,24 +385,6 @@ function show_language_selector() {
     $("#language_choice_titlebar a").hide();
 }
 
-/* script functions for doing stuff with the topic tree*/
-
-function getSelectedVideos(vid_type) {
-    var avoid_type = null;
-    switch (vid_type) {
-        case "started": avoid_type = "unstarted"; break;
-        case "incomplete": avoid_type ="complete"; break;
-        default: assert(false, sprintf("Unknown vid type: %s", vid_type)); break;
-    }
-
-    var arr = $("#content_tree").dynatree("getSelectedNodes");
-    var vids = _.uniq($.grep(arr, function(node) {
-        return node.data.addClass != avoid_type && node.childList == null;
-    }));
-    return vids;
-}
-
-
 function getSelectedIncompleteVideos() {
     return getSelectedVideos("incomplete");
 }
@@ -395,7 +392,3 @@ function getSelectedIncompleteVideos() {
 function getSelectedStartedVideos() {
     return getSelectedVideos("started");
 }
-
-
-
-
