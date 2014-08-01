@@ -797,6 +797,19 @@ window.ExerciseView = Backbone.View.extend({
 
     },
 
+    suppress_button_feedback: function() {
+        // hide the "Correct! Next question..." button
+        this.$("#next-question-button").hide();
+
+        // hide the "Next Question" button and prevent it from shaking
+        this.$("#check-answer-button")
+            .hide()
+            .stop(jumpedToEnd=true)
+            .css("width", "100%")
+                .parent()
+                .stop(jumpedToEnd=true);
+    },
+
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
         this.trigger("ready_for_next_question");
@@ -964,8 +977,6 @@ window.ExercisePracticeView = Backbone.View.extend({
     check_answer: function(data) {
 
         var check_answer_button = $("#check-answer-button");
-
-        check_answer_button.parent().stop(jumpedToEnd=true)
 
         check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
         // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
@@ -1207,11 +1218,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        this.$("#check-answer-button")
-            .stop(jumpedToEnd=true)
-            .attr("disabled", "disabled")
-            .val(gettext("Submit Answer"))
-            .css("width", "100%");
+        this.exercise_view.suppress_button_feedback();
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -1370,15 +1377,7 @@ window.ExerciseQuizView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        // hide the "Correct! Next question..." button
-        $("#next-question-button").hide();
-
-        // show the "Next Question" button and prevent it from shaking
-        $("#check-answer-button")
-            .val(gettext("Next Question"))
-            .show()
-            .parent()
-                .stop(jumpedToEnd=true);
+        this.exercise_view.suppress_button_feedback();
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
