@@ -1,5 +1,6 @@
 """
 """
+import csv 
 import copy
 import datetime
 import re
@@ -13,7 +14,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -143,6 +144,13 @@ def zone_management(request, zone_id="None"):
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
     })
     context.update(set_clock_context(request))
+    return context
+
+
+@require_authorized_admin
+@render_to("control_panel/data_export.html")
+def zone_data_export(request, zone_id=None):
+    context = control_panel_context(request, zone_id=zone_id)
     return context
 
 

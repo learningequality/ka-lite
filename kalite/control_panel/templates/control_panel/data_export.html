@@ -1,0 +1,45 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load include_block %}
+
+{% block title %}{% trans "Data Export" %} - {{ zone.name }} {{ block.super }}{% endblock title %}
+
+{% block headjs %}{{ block.super }}
+    <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
+    <script>
+        var FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
+        var GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var TEST_LOGS_URL = "{% url 'api_dispatch_list' resource_name='test_log' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.container_view = new DataExportView({
+                el: $("#data-export-container")
+            });
+        });
+    </script>
+
+{% endblock headjs %}
+
+{% block headcss %}
+    {{ block.super }}
+    <style>
+        .form-group {
+            float: left;
+            padding-right: 10px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block control_panel_content %}
+
+<div class="container">
+    <div class="row">
+        <div id="data-export-container" class="col-md-12">
+        </div>
+    </div>
+</div> <!-- End container -->
+{% endblock control_panel_content %}
