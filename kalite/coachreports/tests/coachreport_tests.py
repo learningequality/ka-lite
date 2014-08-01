@@ -19,7 +19,7 @@ class TestReportTests(FacilityMixins,
         and don't when they dont
         """
         test_log_defaults = {
-            'test': 685, # this must be an actual exercise
+            'test': 'g3_t1',  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -44,7 +44,7 @@ class TestReportTests(FacilityMixins,
         Test that we show correct stats for a test.
         """
         test_log_1 = {
-            'test': 685,  # this must be an actual exercise
+            'test': 'g3_t1',  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -52,7 +52,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 2,
         }
         test_log_2 = {
-            'test': 685,  # this must be an actual exercise
+            'test': 'g3_t1',  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -82,7 +82,7 @@ class TestReportTests(FacilityMixins,
         Test that we show correct stats for a test.
         """
         test_log_1 = {
-            'test': 685, # this must be an actual exercise
+            'test': 'g3_t1',  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -90,7 +90,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 2,
         }
         test_log_2 = {
-            'test': 685, # this must be an actual exercise
+            'test': 'g3_t1',  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -127,7 +127,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 1,
         }
         attempt_log_default = {
-            'exercise_id': 'number_line', # this must exist inside of the test
+            'exercise_id': 'place_value',  # this must exist inside of the test
             'context_type': 'test',
             'context_id': 'g3_t1',
             'timestamp': datetime.now(),
