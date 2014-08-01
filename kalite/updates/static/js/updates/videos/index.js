@@ -87,9 +87,8 @@ function initDynatree(treeData) {
         $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
     }
 
-    $('#content_tree').dynatree(dynatreeAttrs);
-    console.log(treeData);
     $('#content_tree').dynatree('getRoot').addChild(treeData);
+    $('#content_tree h4').hide();
 }
 
 function downloadVideos() {
