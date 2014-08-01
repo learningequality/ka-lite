@@ -116,13 +116,11 @@ class FacilityGroup(DeferredCountSyncedModel):
 
         return zone
 
-
     @property
     def title(self):
-        # Translators: This is the name and description of the Facility Group.
         if self.description:
-            return _("%s - %s" % (self.name, self.description,))
-        return _(self.name)
+            return "%s - %s" % (self.name, self.description,)
+        return self.name
 
 
 class FacilityUser(DeferredCountSyncedModel):
