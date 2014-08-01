@@ -71,6 +71,8 @@ var DataExportView = Backbone.View.extend({
     getTestLogs: function(ev) {
         ev.preventDefault();
 
+        console.log("Export button clicked. Fetching requested test log data.");
+
         // Get the ids
         var facility_id = this.model.get("facility_id") ? this.model.get("facility_id") : "all";
         var group_id = this.model.get("group_id") ? this.model.get("group_id") : "all";
@@ -81,9 +83,11 @@ var DataExportView = Backbone.View.extend({
         })
     },
 
-    exportCSV: function() {
+    exportCSV: function(ev) {
+
+        console.log(ev)
         if (this.test_logs.length === 0) {
-            show_message("error", gettext("No test logs exist the students specified."))
+            show_message("warning", gettext("No test logs exist for the students specified, so there is nothing to export."));
         } else {
             var test_log_data = []
             
@@ -107,11 +111,18 @@ var DataExportView = Backbone.View.extend({
                 csvContent += i < test_log_data.length ? dataString + "\n" : dataString;
             }); 
 
-            // Endcode and dump 
-            var encodedUri = encodeURI(csvContent);
-            window.open(encodedUri);
+            // Nice filename for Sarojini
+            window.test_logs = this.test_logs;
+            filename = this.model.facility_id === 'all' ? 'f_all__' : sprintf('f_%(facility_name)s__', {'facility_name': this.test_logs.models[0].attributes.user.facility.name});
+            today = new Date();
+            filename += sprintf('%(year)s-%(month)s-%(day)s', {'year': today.getFullYear(), 'month': today.getMonth()+1, 'day': today.getDate()});
 
-            show_message("success", gettext("Your CSV will open a new window and download."))
+            // Endcode csv and trigger download
+            var encodedUri = encodeURI(csvContent);
+            var link = $("<a href='" + encodedUri + "' download='" + filename + "'></a>");
+            link[0].click();
+
+            show_message("success", gettext("Your CSV download has started."));
         }
     }
 });

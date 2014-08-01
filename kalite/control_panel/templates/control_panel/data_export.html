@@ -3,7 +3,7 @@
 {% load staticfiles %}
 {% load include_block %}
 
-{% block title %}{{ zone.name }} - {% trans "Data Export" %} {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Data Export" %} - {{ zone.name }} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
     <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
@@ -25,6 +25,7 @@
 {% endblock headjs %}
 
 {% block headcss %}
+    {{ block.super }}
     <style>
         .form-group {
             float: left;
