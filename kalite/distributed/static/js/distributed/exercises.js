@@ -889,7 +889,7 @@ window.ExercisePracticeView = Backbone.View.extend({
         };
 
         if (!this.log_model.get("complete")) {
-            if (this.log_model.get("attempts") !== undefined) { // don't display a message if the user is already partway into the streak
+            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
                 var msg = "";
             } else {
                 var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
