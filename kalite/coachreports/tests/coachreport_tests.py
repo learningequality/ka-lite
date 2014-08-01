@@ -90,7 +90,7 @@ class TestReportTests(FacilityMixins,
             'total_correct': 2,
         }
         test_log_2 = {
-            'test': 'g3_t1',  # this must be an actual exercise
+            'test': 'g3_t2',  # this must be an actual exercise
             'index': '0',
             'complete': True,
             'started': True,
@@ -105,13 +105,13 @@ class TestReportTests(FacilityMixins,
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
-        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[1]').text
+        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
         self.assertEqual(stat_max, '50%')
-        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
+        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
         self.assertEqual(stat_min, '25%')
-        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
+        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
         self.assertEqual(stat_avg, '37%')
-        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
+        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[6]').text
         self.assertEqual(stat_std, '12%')
 
     def test_student_detail_scores_display(self):
@@ -141,15 +141,15 @@ class TestReportTests(FacilityMixins,
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_detail_view', kwargs={'test_id': self.test_log.test}))
-        student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[1]').text
+        student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
         self.assertEqual(student_score[0:4], '100%')
-        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[2]/td[1]').text
+        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[2]/td[3]').text
         self.assertEqual(stat_max[0:4], '100%')
-        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[3]/td[1]').text
+        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[3]/td[3]').text
         self.assertEqual(stat_min[0:4], '100%')
-        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[4]/td[1]').text
+        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[4]/td[3]').text
         self.assertEqual(stat_avg[0:4], '100%')
-        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[1]').text
-        self.assertEqual(stat_std, '0.0%')
-        overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[7]').text
-        self.assertEqual(overall, '100.0%')
+        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[3]').text
+        self.assertEqual(stat_std, '0%')
+        overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
+        self.assertEqual(overall[0:4], '100%')
