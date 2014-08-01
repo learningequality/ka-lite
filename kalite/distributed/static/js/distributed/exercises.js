@@ -861,9 +861,9 @@ window.ExercisePracticeView = Backbone.View.extend({
                 el: self.$(".exercise-hint-wrapper")
             });
 
-            if (window.statusModel.get("is_logged_in")) {
+            self.listenTo(self.exercise_view, "check_answer", self.check_answer);
 
-                self.listenTo(self.exercise_view, "check_answer", self.check_answer);
+            if (window.statusModel.get("is_logged_in")) {
 
                 // load the data about the user's overall progress on the exercise
                 self.log_collection = new ExerciseLogCollection([], {exercise_id: self.options.exercise_id});
@@ -981,19 +981,23 @@ window.ExercisePracticeView = Backbone.View.extend({
         check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
         // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
 
-        // increment the response count
-        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+        if (window.statusModel.get("is_logged_in")) {
 
-        this.current_attempt_log.add_response_log_event({
-            type: "answer",
-            answer: data.guess,
-            correct: data.correct
-        });
+            // increment the response count
+            this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
 
-        // update and save the exercise and attempt logs
-        this.update_and_save_log_models("answer_given", data);
+            this.current_attempt_log.add_response_log_event({
+                type: "answer",
+                answer: data.guess,
+                correct: data.correct
+            });
 
-        this.display_message();
+            // update and save the exercise and attempt logs
+            this.update_and_save_log_models("answer_given", data);
+
+            this.display_message();
+
+        }
 
     },
 
