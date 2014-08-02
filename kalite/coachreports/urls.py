@@ -19,8 +19,7 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^table/(?P<report_type>\w+)/$', 'tabular_view', {}, 'tabular_view'),
 
     url(r'^test/$', 'test_view', {}, 'test_view'),
-    url(r'^test/(?P<test_id>\d+)/$', 'test_detail_view', {}, 'test_detail_view'),
+    url(r'^test/(?P<test_id>\w+)/$', 'test_detail_view', {}, 'test_detail_view'),
 
     url(r'^api/', include(api_urls)),
 )
-

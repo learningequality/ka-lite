@@ -19,8 +19,9 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
-from fle_utils.internet import CsvResponse, render_to_csv
+from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
+from fle_utils.internet import CsvResponse, render_to_csv
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -162,6 +163,8 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     session_pages, page_urls = paginate_data(request, shown_sessions, page=cur_page, per_page=per_page)
 
+    sync_job = get_object_or_None(Job, command="syncmodels")
+
     context.update({
         "session_pages": session_pages,
         "page_urls": page_urls,
@@ -169,6 +172,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
         "device_version": total_sessions and all_sessions[0].client_version or None,
         "device_os": total_sessions and all_sessions[0].client_os or None,
         "is_own_device": not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id,
+        "sync_job": sync_job,
     })
 
     # If local (and, for security purposes, a distributed server), get device metadata
