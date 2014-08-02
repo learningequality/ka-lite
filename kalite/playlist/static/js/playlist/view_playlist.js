@@ -35,7 +35,9 @@ window.PlaylistView = Backbone.View.extend({
 
             case "Exercise":
                 var view = new ExercisePracticeView({
-                    exercise_id: entry.get("entity_id")
+                    exercise_id: entry.get("entity_id"),
+                    context_type: "playlist",
+                    context_id: this.model.get("id")
                 });
                 this.content_view.show_view(view);
                 break;
@@ -49,7 +51,8 @@ window.PlaylistView = Backbone.View.extend({
 
             case "Quiz":
                 var view = new ExerciseQuizView({
-                    quiz_model: new QuizDataModel({entry: entry})
+                    quiz_model: new QuizDataModel({entry: entry}),
+                    context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
                 });
                 this.content_view.show_view(view);
                 break;

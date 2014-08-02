@@ -575,7 +575,8 @@ window.QuizLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new QuizLogModel({
-                "user": window.statusModel.get("user_uri")
+                "user": window.statusModel.get("user_uri"),
+                "quiz": this.quiz
             });
         }
     }
@@ -746,7 +747,7 @@ window.ExerciseView = Backbone.View.extend({
         var self = this;
 
         var defaults = {
-            seed: Math.floor(Math.random() * 1000)
+            seed: Math.floor(Math.random() * 200)
         };
 
         var question_data = $.extend(defaults, question_data);
@@ -1173,7 +1174,7 @@ window.ExerciseTestView = Backbone.View.extend({
         var defaults = {
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
-            context_type: "test" || "",
+            context_type: "test",
             context_id: this.options.test_id || "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version")
@@ -1248,7 +1249,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
             self.exercise_view.load_question(self.log_model.get_item_data());
             self.initialize_new_attempt_log(self.log_model.get_item_data());
-            $("#next-question-button").remove()
+            $("#next-question-button").remove();
 
         });
 
@@ -1269,7 +1270,7 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.quiz_model = options.quiz_model;
 
             // load the data about the user's overall progress on the test
-            this.log_collection = new QuizLogCollection([], {quiz: this.quiz_model.get("quiz_id")});
+            this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
             var log_collection_deferred = this.log_collection.fetch();
 
             this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
@@ -1304,8 +1305,6 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         var data = $.extend({el: this.el}, question_data);
 
-        this.initialize_new_attempt_log(question_data);
-
         this.exercise_view = new ExerciseView(data);
         this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
@@ -1331,10 +1330,11 @@ window.ExerciseQuizView = Backbone.View.extend({
         var defaults = {
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
-            context_type: "quiz" || "",
-            context_id: this.options.title || "",
+            context_type: "quiz",
+            context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
-            version: window.statusModel.get("version")
+            version: window.statusModel.get("version"),
+            seed: this.exercise_view.data_model.seed
         };
 
         var data = $.extend(defaults, data);
