@@ -575,7 +575,8 @@ window.QuizLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new QuizLogModel({
-                "user": window.statusModel.get("user_uri")
+                "user": window.statusModel.get("user_uri"),
+                "quiz": this.quiz
             });
         }
     }
@@ -757,7 +758,7 @@ window.ExerciseView = Backbone.View.extend({
         var self = this;
 
         var defaults = {
-            seed: Math.floor(Math.random() * 1000)
+            seed: Math.floor(Math.random() * 200)
         };
 
         var question_data = $.extend(defaults, question_data);
@@ -808,6 +809,19 @@ window.ExerciseView = Backbone.View.extend({
 
     },
 
+    suppress_button_feedback: function() {
+        // hide the "Correct! Next question..." button
+        this.$("#next-question-button").hide();
+
+        // hide the "Next Question" button and prevent it from shaking
+        this.$("#check-answer-button")
+            .hide()
+            .stop(jumpedToEnd=true)
+            .css("width", "100%")
+                .parent()
+                .stop(jumpedToEnd=true);
+    },
+
     khan_loaded: function() {
         $(Exercises).trigger("problemTemplateRendered");
         this.trigger("ready_for_next_question");
@@ -823,6 +837,13 @@ window.ExerciseView = Backbone.View.extend({
             first_video: related_videos[0],
             other_videos: related_videos.slice(1)
         });
+    },
+
+    close: function() {
+        if (this.related_video_view) {
+            this.related_video_view.remove();
+        }
+        this.remove();
     }
 
 });
@@ -844,17 +865,17 @@ window.ExercisePracticeView = Backbone.View.extend({
                 exercise_id: self.options.exercise_id
             });
 
-            self.exercise_view.on("ready_for_next_question", self.ready_for_next_question);
-            self.exercise_view.on("hint_used", self.hint_used);
-            self.exercise_view.on("problem_loaded", self.problem_loaded);
+            self.listenTo(self.exercise_view, "ready_for_next_question", self.ready_for_next_question);
+            self.listenTo(self.exercise_view, "hint_used", self.hint_used);
+            self.listenTo(self.exercise_view, "problem_loaded", self.problem_loaded);
 
             self.hint_view = new ExerciseHintView({
                 el: self.$(".exercise-hint-wrapper")
             });
 
-            if (window.statusModel.get("is_logged_in")) {
+            self.listenTo(self.exercise_view, "check_answer", self.check_answer);
 
-                self.exercise_view.on("check_answer", self.check_answer);
+            if (window.statusModel.get("is_logged_in")) {
 
                 // load the data about the user's overall progress on the exercise
                 self.log_collection = new ExerciseLogCollection([], {exercise_id: self.options.exercise_id});
@@ -880,7 +901,7 @@ window.ExercisePracticeView = Backbone.View.extend({
         };
 
         if (!this.log_model.get("complete")) {
-            if (this.log_model.get("attempts") !== undefined) { // don't display a message if the user is already partway into the streak
+            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
                 var msg = "";
             } else {
                 var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
@@ -969,24 +990,26 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         var check_answer_button = $("#check-answer-button");
 
-        check_answer_button.parent().stop(jumpedToEnd=true)
-
         check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
         // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
 
-        // increment the response count
-        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+        if (window.statusModel.get("is_logged_in")) {
 
-        this.current_attempt_log.add_response_log_event({
-            type: "answer",
-            answer: data.guess,
-            correct: data.correct
-        });
+            // increment the response count
+            this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
 
-        // update and save the exercise and attempt logs
-        this.update_and_save_log_models("answer_given", data);
+            this.current_attempt_log.add_response_log_event({
+                type: "answer",
+                answer: data.guess,
+                correct: data.correct
+            });
 
-        this.display_message();
+            // update and save the exercise and attempt logs
+            this.update_and_save_log_models("answer_given", data);
+
+            this.display_message();
+
+        }
 
     },
 
@@ -1078,6 +1101,17 @@ window.ExercisePracticeView = Backbone.View.extend({
         }
 
 
+    },
+
+    close: function() {
+        this.exercise_view.close();
+        if (this.hint_view) {
+            this.hint_view.remove();
+        }
+        if (this.progress_view) {
+            this.progress_view.remove();
+        }
+        this.remove();
     }
 
 });
@@ -1152,9 +1186,9 @@ window.ExerciseTestView = Backbone.View.extend({
                 // don't render the related videos box on tests
                 this.exercise_view.stopListening(this.data_model, "change:related_videos");
 
-                this.exercise_view.on("check_answer", this.check_answer);
-                this.exercise_view.on("problem_loaded", this.problem_loaded);
-                this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
+                this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+                this.listenTo(this.exercise_view, "problem_loaded", this.problem_loaded);
+                this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
             }
         }
 
@@ -1184,7 +1218,7 @@ window.ExerciseTestView = Backbone.View.extend({
         var defaults = {
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
-            context_type: "test" || "",
+            context_type: "test",
             context_id: this.options.test_id || "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version")
@@ -1200,11 +1234,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        this.$("#check-answer-button")
-            .stop(jumpedToEnd=true)
-            .attr("disabled", "disabled")
-            .val(gettext("Submit Answer"))
-            .css("width", "100%");
+        this.exercise_view.suppress_button_feedback();
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -1259,10 +1289,15 @@ window.ExerciseTestView = Backbone.View.extend({
 
             self.exercise_view.load_question(self.log_model.get_item_data());
             self.initialize_new_attempt_log(self.log_model.get_item_data());
-            $("#next-question-button").remove()
+            $("#next-question-button").remove();
 
         });
 
+    },
+
+    close: function() {
+        this.exercise_view.close();
+        this.remove();
     }
 
 });
@@ -1280,7 +1315,7 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.quiz_model = options.quiz_model;
 
             // load the data about the user's overall progress on the test
-            this.log_collection = new QuizLogCollection([], {quiz: this.quiz_model.get("quiz_id")});
+            this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
             var log_collection_deferred = this.log_collection.fetch();
 
             this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
@@ -1315,14 +1350,12 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         var data = $.extend({el: this.el}, question_data);
 
-        this.initialize_new_attempt_log(question_data);
-
         this.exercise_view = new ExerciseView(data);
         this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
-        this.exercise_view.on("check_answer", this.check_answer);
-        this.exercise_view.on("ready_for_next_question", this.ready_for_next_question);
-        this.exercise_view.on("problem_loaded", this.problem_loaded);
+        this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+        this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
+        this.listenTo(this.exercise_view, "problem_loaded", this.problem_loaded);
 
     },
 
@@ -1342,10 +1375,11 @@ window.ExerciseQuizView = Backbone.View.extend({
         var defaults = {
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
-            context_type: "quiz" || "",
-            context_id: this.options.title || "",
+            context_type: "quiz",
+            context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
-            version: window.statusModel.get("version")
+            version: window.statusModel.get("version"),
+            seed: this.exercise_view.data_model.seed
         };
 
         var data = $.extend(defaults, data);
@@ -1358,15 +1392,7 @@ window.ExerciseQuizView = Backbone.View.extend({
 
     check_answer: function(data) {
 
-        // hide the "Correct! Next question..." button
-        $("#next-question-button").hide();
-
-        // show the "Next Question" button and prevent it from shaking
-        $("#check-answer-button")
-            .val(gettext("Next Question"))
-            .show()
-            .parent()
-                .stop(jumpedToEnd=true);
+        this.exercise_view.suppress_button_feedback();
 
         // increment the response count
         this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
@@ -1420,6 +1446,13 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         });
 
+    },
+
+    close: function() {
+        if (this.exercise_view) {
+            this.exercise_view.close();
+        }
+        this.remove();
     }
 
 });
