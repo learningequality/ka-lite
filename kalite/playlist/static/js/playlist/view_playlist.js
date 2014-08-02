@@ -87,9 +87,15 @@ window.PlaylistContentAreaView = Backbone.View.extend({
         clear_messages();
 
         // close the currently shown view, if possible
-        if (this.currently_shown_view && _.isFunction(this.currently_shown_view.close)) {
-            this.currently_shown_view.close();
+        if (this.currently_shown_view) {
+            // try calling the close method if available, otherwise remove directly
+            if (_.isFunction(this.currently_shown_view.close)) {
+                this.currently_shown_view.close();
+            } else {
+                this.currently_shown_view.remove();
+            }
         }
+
         // set the new view as the current view
         this.currently_shown_view = view;
         // show the view
