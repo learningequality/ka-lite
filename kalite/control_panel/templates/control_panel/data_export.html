@@ -29,15 +29,17 @@
             float: left;
             padding-right: 10px;
         }
+        select:disabled {
+            color: graytext;
+        }
     </style>
 {% endblock headcss %}
 
 {% block control_panel_content %}
-
-<div class="container">
-    <div class="row">
-        <div id="data-export-container" class="col-md-12">
-        </div>
+<div class="row">
+    <div id="data-export-container" class="col-md-12">
+        {# Backbone inserts stuff here #}
     </div>
-</div> <!-- End container -->
+</div>
+<!-- End container -->
 {% endblock control_panel_content %}
