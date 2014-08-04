@@ -35,10 +35,24 @@
     </style>
 {% endblock headcss %}
 
+{% block titlebar %}
+        <div class="titlebar">
+            <ul class="titlebar__title">
+            {% block titlebar_title %}
+                <li>
+                    <a href="{% url 'zone_management' zone_id=zone_id %}">{{ zone.name }}</a> > Test Data Export
+                </li>
+            {% endblock titlebar_title %}
+            </ul>
+        </div>
+    {% endblock titlebar %}
+
 {% block control_panel_content %}
 <div class="row">
-    <div id="data-export-container" class="col-md-12">
-        {# Backbone inserts stuff here #}
+    <div class="col-md-12">
+        <div id="data-export-container">
+            {# Backbone inserts stuff here #}
+        </div>
     </div>
 </div>
 <!-- End container -->

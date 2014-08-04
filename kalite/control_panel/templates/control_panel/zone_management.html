@@ -46,7 +46,7 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
-            <a href="{% url 'zone_data_export' zone_id=zone_id %}" class="btn btn-primary">Export Data</a>
+            <a href="{% url 'zone_data_export' zone_id=zone_id %}" class="btn btn-success">{% trans "Export Test Data" %}</a>
 {% endblock buttons %}
 
 {% block control_panel_content %}
@@ -165,8 +165,8 @@
                                 </td>
                                 <td>
                                     {% if device.is_own_device %}
-                                        <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
-                                        <a href="{% url 'update_software' %}" id="update-link" class="btn btn-primary registered-only"><button>{% trans "Update" %}</button></a>
+                                        <button id="force-sync" class="btn btn-success registered-only">{% trans "Sync Now!" %}</button>
+                                        <a href="{% url 'update_software' %}" id="update-link" class="btn btn-success registered-only">{% trans "Update" %}</a>
                                         <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
                                         {% if clock_set %}
                                         /

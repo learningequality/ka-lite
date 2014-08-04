@@ -119,24 +119,6 @@ ul, li {
     margin: 5px;
 }
 
-.top_export_button {
-    float: right;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #91ca7f;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    color: #ffffff;
-    border:0px;
-    vertical-align: middle;
-    min-width: 80px;
-}
-
-.top_export_button:hover {
-    background-color:#C0C0C0;
-}
-
 
 .pagination a, .pagination span {
     float: left;

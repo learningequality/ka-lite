@@ -184,7 +184,7 @@ def zone_data_export(request, zone_id=None):
         
         ## A bit of error checking 
         if len(facility_users) == 0:
-            messages.warning(request, _("No students exist for this facility and group combination."))
+            messages.error(request, _("No students exist for this facility and group combination."))
             return context 
 
         # TestLogs
@@ -192,7 +192,7 @@ def zone_data_export(request, zone_id=None):
         test_logs = TestLog.objects.filter(user__id__in=user_ids)
 
         if len(test_logs) == 0:
-            messages.warning(request, _("No test logs exist for these students."))
+            messages.error(request, _("No test logs exist for these students."))
             return context 
 
         ## Build CSV 
