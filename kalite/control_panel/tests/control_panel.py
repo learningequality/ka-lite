@@ -1,7 +1,7 @@
 import time
 
 from django.conf import settings
-from django.test import unittest
+from django.utils import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
