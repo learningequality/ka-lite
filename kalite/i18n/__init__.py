@@ -71,8 +71,9 @@ def get_dubbed_video_map(lang_code=None, force=False):
         try:
             if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
                 try:
-                    # Generate from the spreadsheet
-                    response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
+                    # Never call commands that could fail from the distributed server.
+                    #   Always create a central server API to abstract things
+                    response = requests.get("%s://%s/api/i18n/videos/dubbed_video_map" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST))
                     response.raise_for_status()
                     with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
                         fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.

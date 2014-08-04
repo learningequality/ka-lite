@@ -35,8 +35,6 @@ class Facility(DeferredCountSyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
-    _import_excluded_validation_fields = ["name"]  # don't enforce uniqueness constraint on name on import.
-
     class Meta:
         verbose_name_plural = _("Facilities")
         app_label = "securesync"  # for back-compat reasons
@@ -48,23 +46,6 @@ class Facility(DeferredCountSyncedModel):
 
     def is_default(self):
         return self.id == Settings.get("default_facility")
-
-    def validate_unique(self, exclude=None):
-        """Django method for validating uniqueness contraints.
-        We have uniqueness constraints that can't be expressed as a tuple of fields,
-        so need to override this to implement."""
-        rv = super(Facility, self).validate_unique(exclude=exclude)
-
-        if not exclude or "name" not in exclude:
-            # Has to have the same name, has to be within the same zone.
-            facilities_with_same_name = list(self.__class__.objects.filter(name=self.name) \
-                .filter(Q(signed_by__devicezone__zone=self.get_zone()) | Q(zone_fallback=self.get_zone())))
-            if self not in facilities_with_same_name and len(facilities_with_same_name) > 0:
-                assert facilities_with_same_name[0].get_zone() == self.get_zone(), "Make sure that the queries to match zone worked."
-                # Don't raise for facilities already with duplicate names, just for changes.
-                raise ValidationError({"name": [_("There is already a facility with this name.")]})
-
-        return rv
 
     @classmethod
     def from_zone(cls, zone):
@@ -98,10 +79,7 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    # Translators: This is the description field of the Facility Group.
-    description = models.TextField(blank=True, verbose_name=_("Description"))
-
-    _import_excluded_validation_fields = ["name"]  # don't enforce uniqueness constraint on name on import.
+    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.12.0" # TODO-BLOCKER(jamalex): change this to 0.13.0 or whatever it is at the time it ships
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
@@ -122,27 +100,22 @@ class FacilityGroup(DeferredCountSyncedModel):
 
         # This is not very robust, as it relies on explicitly calling the reverse relations to the model
         # and then clearing them. If anything else Foreign Keys onto groups here, it will have to be set here.
-        self.facilityuser_set.clear()
+        # Note that we cannot simply call .clear() on the reverse relation, as then the user models are not signed.
+        for user in self.facilityuser_set.all():
+            user.group = None
+            user.save()
 
         self.save()
 
+    def get_zone(self, *args, **kwargs):
+        zone = super(FacilityGroup, self).get_zone(*args, **kwargs)
 
+        # if we don't have a zone based on signed_by or zone_fallback, use zone of associated Facility
+        if not zone:
+            zone = self.facility.get_zone()
 
-    def validate_unique(self, exclude=None):
-        """Django method for validating uniqueness contraints.
-        We have uniqueness constraints that can't be expressed as a tuple of fields,
-        so need to override this to implement."""
-        rv = super(FacilityGroup, self).validate_unique(exclude=exclude)
+        return zone
 
-        if not exclude or "name" not in exclude:
-            # Has to have the same name, has to be within the same zone.
-            groups_with_same_name = list(self.__class__.objects.filter(name=self.name, facility=self.facility) \
-                .filter(Q(signed_by__devicezone__zone=self.get_zone()) | Q(zone_fallback=self.get_zone())))
-            if self not in groups_with_same_name and len(groups_with_same_name) > 0:
-                # Don't raise for facilities already with duplicate names, just for changes.
-                raise ValidationError({"name": [_("There is already a group with this name.")]})
-
-        return rv
 
     @property
     def title(self):
@@ -170,7 +143,6 @@ class FacilityUser(DeferredCountSyncedModel):
     default_language = models.CharField(max_length=8, blank=True, null=True); default_language.minversion="0.11.1"
 
     class Meta:
-        unique_together = ("facility", "username")
         app_label = "securesync"  # for back-compat reasons
 
     def __unicode__(self):
@@ -252,6 +224,15 @@ class FacilityUser(DeferredCountSyncedModel):
             return u"%s %s" % (self.first_name, self.last_name)
         else:
             return self.username
+
+    def get_zone(self, *args, **kwargs):
+        zone = super(FacilityUser, self).get_zone(*args, **kwargs)
+
+        # if we don't have a zone based on signed_by or zone_fallback, use zone of associated Facility
+        if not zone:
+            zone = self.facility.get_zone()
+
+        return zone
 
 
 class CachedPassword(models.Model):

@@ -67,9 +67,7 @@ class PlaylistToGroupMapping(ExtendedModel):
 
 class QuizLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
-    # test = models.ForeignKey(Test, blank=False, null=False, db_index=True)
-    quiz = models.CharField(blank=False, null=False, max_length=100)
-    # TODO: Field that stores the Test/playlist field.
+    quiz = models.CharField(blank=True, max_length=100)
     index = models.IntegerField(blank=False, null=False, default=0)
     complete = models.BooleanField(blank=False, null=False, default=False)
     # Attempts is the number of times the Quiz itself has been attempted.

@@ -34,7 +34,7 @@ Clone the repository into a directory of your choice. Use `cd` to navigate into 
 
 ### 4. Run the setup script
 
-Inside the `ka-lite` directory (that you cloned above) you should find a script called `setup_linux.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./setup_linux.sh` to initialize the server database.
+Inside the `ka-lite` directory (that you cloned above) you should find a script called `setup_unix.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./setup_unix.sh` to initialize the server database.
 
 ### 5. Run the server
 
