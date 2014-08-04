@@ -1,7 +1,7 @@
 {
   "id": "g5_t1_practice",
   "title": "Grade V - Unit Test 1 - Practice",
-  "seed": 3242,
+  "seed": 798,
   "playlist_ids": [ "g5_p1", "g5_p2", "g5_p3", "g5_p4" ],
   "repeats": "2",
   "ids": [
@@ -10,5 +10,6 @@
     "inequalities_on_a_number_line", "multiplication_0.5", "number_line",
     "place_value", "subtraction_1", "subtraction_2", "subtraction_3",
     "subtraction_4"
-  ]
+  ],
+  "is_practice": true
 }
