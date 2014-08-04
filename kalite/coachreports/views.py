@@ -435,7 +435,8 @@ def test_view(request, facility):
                 score = round(100 * float(log_object.total_correct) / float(log_object.total_number), 1)
                 results_table[s].append({
                     "log": log_object,
-                    "score": score,
+                    "raw_score": score,
+                    "display_score": "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': log_object.total_correct, 'attempts': log_object.total_number},
                 })
             else:
                 results_table[s].append({})
@@ -444,7 +445,7 @@ def test_view(request, facility):
         score_list = [round(100 * float(result.total_correct) / float(result.total_number), 1) for result in user_test_logs]
         for stat in SUMMARY_STATS:
             if score_list:
-                results_table[s].append({"stat": return_list_stat(score_list, stat)})
+                results_table[s].append({"stat": "%d%%" % return_list_stat(score_list, stat)})
             else:
                 results_table[s].append({})
 
@@ -455,7 +456,7 @@ def test_view(request, facility):
         for test_obj in test_objects:
             # get the logs for this test across all users and then add summary stats 
             log_scores = [round(100 * float(test_log.total_correct) / float(test_log.total_number), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
-            stats_dict[stat].append(return_list_stat(log_scores, stat))
+            stats_dict[stat].append("%d%%" % return_list_stat(log_scores, stat))
 
     context = plotting_metadata_context(request, facility=facility)
     context.update({
@@ -491,7 +492,7 @@ def test_detail_view(request, facility, test_id):
    
     results_table, scores_dict = OrderedDict(), OrderedDict()
     # build this up now to use in summary stats section
-    ex_ids = literal_eval(test_obj.ids)
+    ex_ids = set(literal_eval(test_obj.ids))
     for ex in ex_ids:
         scores_dict[ex] = [] 
     for s in users:
@@ -500,7 +501,6 @@ def test_detail_view(request, facility, test_id):
         results_table[s] = []
         attempts_count_total, attempts_count_correct_total = 0, 0
         for ex in ex_ids:
-
             attempts = [attempt for attempt in user_attempts if attempt.exercise_id == ex]
 
             attempts_count = len(attempts)
@@ -512,15 +512,28 @@ def test_detail_view(request, facility, test_id):
             if attempts_count:
                 score = round(100 * float(attempts_count_correct)/float(attempts_count), 1)
                 scores_dict[ex].append(score)
+                display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct, 'attempts': attempts_count}
             else:
                 score = ''
+                display_score = ''
 
-            results_table[s].append(score)
+            results_table[s].append({
+                'display_score': display_score,
+                'raw_score': score,
+            })
 
+        # Calc overall score
         if attempts_count_total:
-            results_table[s].append(round(float(attempts_count_correct_total)/float(attempts_count_total), 1))
-        else: 
-            results_table[s].append('')
+            score = round(100 * float(attempts_count_correct_total)/float(attempts_count_total), 1)
+            display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct_total, 'attempts': attempts_count_total}
+        else:
+            score = ''
+            display_score = ''
+
+        results_table[s].append({
+            'display_score': display_score,
+            'raw_score': score,
+        })
 
     # This retrieves stats for individual exercises
     stats_dict = OrderedDict()
@@ -529,7 +542,7 @@ def test_detail_view(request, facility, test_id):
         for ex in ex_ids:
             scores_list = scores_dict[ex]
             if scores_list:
-                stats_dict[stat].append(return_list_stat(scores_list, stat))
+                stats_dict[stat].append("%d%%" % return_list_stat(scores_list, stat))
             else:
                 stats_dict[stat].append('')
 

@@ -20,8 +20,9 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
-from fle_utils.internet import CsvResponse, render_to_csv
+from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
+from fle_utils.internet import CsvResponse, render_to_csv
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -229,6 +230,8 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     session_pages, page_urls = paginate_data(request, shown_sessions, page=cur_page, per_page=per_page)
 
+    sync_job = get_object_or_None(Job, command="syncmodels")
+
     context.update({
         "session_pages": session_pages,
         "page_urls": page_urls,
@@ -236,6 +239,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
         "device_version": total_sessions and all_sessions[0].client_version or None,
         "device_os": total_sessions and all_sessions[0].client_os or None,
         "is_own_device": not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id,
+        "sync_job": sync_job,
     })
 
     # If local (and, for security purposes, a distributed server), get device metadata
@@ -322,6 +326,8 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @render_to("control_panel/facility_management.html")
 def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
 
+    ungrouped_id = "Ungrouped"
+
     if request.method == "POST" and request.GET.get("format") == "csv":
         try:
             return facility_management_csv(request, facility=facility, group_id=group_id, zone_id=zone_id)
@@ -360,8 +366,8 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
 
     # If group_id exists, extract data for that group
     if group_id:
-        if group_id == "Ungrouped":
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == "Ungrouped")
+        if group_id == ungrouped_id:
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _("Ungrouped"))
         else:
             group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
         group_data = group_data.values()[group_id_index]
@@ -381,7 +387,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
             "coaches": coach_urls,
             "students": student_urls,
         },
-        "ungrouped_id": _("Ungrouped").split(" ")[0]
+        "ungrouped_id": ungrouped_id
     })
     return context
 
@@ -502,7 +508,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id==_("Ungrouped").split(" ")[0]):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None]*(group_id==None or group_id=="Ungrouped"):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _("Ungrouped"))
         group_title = getattr(group, "title", _("Ungrouped"))
@@ -521,6 +527,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     # Add group data.  Allow a fake group "Ungrouped"
     for user in users:
         group_pk = getattr(user.group, "pk", None)
+        if group_pk not in group_data:
+            logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))
+            continue
         group_data[group_pk]["total_users"] += 1
         group_data[group_pk]["total_logins"] += user_data[user.pk]["total_logins"]
         group_data[group_pk]["total_hours"] += user_data[user.pk]["total_hours"]

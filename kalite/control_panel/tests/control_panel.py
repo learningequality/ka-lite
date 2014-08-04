@@ -1,6 +1,7 @@
 import time
 
 from django.conf import settings
+from django.utils import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -23,6 +24,8 @@ class FacilityControlTests(FacilityMixins,
         self.setup_fake_device()
         super(FacilityControlTests, self).setUp()
 
+    # TODO (aron): find a way to handle the problem detailed in this skipIf
+    @unittest.skipIf(True, "Skipped for now until phantomjs headless tests can handle JS prompts")
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)

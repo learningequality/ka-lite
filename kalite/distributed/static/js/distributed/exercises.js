@@ -727,11 +727,22 @@ window.ExerciseView = Backbone.View.extend({
 
     initialize_khan_exercises_listeners: function() {
 
+        var self = this;
+
         Khan.loaded.then(this.khan_loaded);
 
         $(Exercises).bind("checkAnswer", this.check_answer);
 
         $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
+
+        // TODO (rtibbles): Make this nice, not horrible.
+        $(Exercises).bind("newProblem", function (ev, data) {
+            if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
+                self.software_keyboard_view = new SoftwareKeyboardView({
+                    el: self.$("#solutionarea")
+                });
+            }
+        });
 
         // some events we only care about if the user is logged in
         if (statusModel.get("is_logged_in")) {
