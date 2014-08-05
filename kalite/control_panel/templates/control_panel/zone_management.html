@@ -134,7 +134,7 @@
                             <tr class="{% if not device.is_registered %}warning {% endif %}{% if device.is_demo_device %}active{% endif %}">
                                 <td>
                                     {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
-                                        {{ device.name }}
+                                        {{ device.name|truncatechars:25 }}
                                     {% if device.is_demo_device %}[Demo data]{% endif %}
                                     {% if device.num_times_synced != None %}</a>{% endif %}
                                 </td>
@@ -165,8 +165,8 @@
                                 </td>
                                 <td>
                                     {% if device.is_own_device %}
-                                        <button id="force-sync" class="btn btn-success registered-only">{% trans "Sync Now!" %}</button>
-                                        <a href="{% url 'update_software' %}" id="update-link" class="btn btn-success registered-only">{% trans "Update" %}</a>
+                                        <a href="#" id="force-sync" class="registered-only">{% trans "Sync Now!" %}</a></br> 
+                                        <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">{% trans "Update" %}</a>
                                         <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
                                         {% if clock_set %}
                                         /
