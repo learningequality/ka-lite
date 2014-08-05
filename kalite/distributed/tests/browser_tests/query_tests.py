@@ -41,7 +41,7 @@ class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase)
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(FuzzyInt(25, 29) + 3 * UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(25, 30) + 3 * UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
