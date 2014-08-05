@@ -17,8 +17,10 @@
         $(function() {
             window.container_view = new DataExportView({
                 el: $("#data-export-container"),
-                facility_id: "{{ facility_id }}",
-                group_id: "{{ group_id }}"
+                model: new StudentSelectStateModel({
+                    group_id: "{{ group_id }}",
+                    facility_id: "{{ facility_id }}"
+                })
             });
         });
     </script>

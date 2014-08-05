@@ -5,14 +5,7 @@ var FacilityModel = Backbone.Model.extend();
 
 var GroupModel = Backbone.Model.extend();
 
-var StudentSelectStateModel = Backbone.Model.extend({
-    // a model for storing the state of the currently selected Facility and Group
-    defaults: {
-        "facility_id": "all",
-        "group_id": "all"
-    }
-});  
-
+var StudentSelectStateModel = Backbone.Model.extend();  
 
 // Collections
 var FacilityCollection = Backbone.Collection.extend({ 
@@ -32,22 +25,21 @@ var DataExportView = Backbone.View.extend({
     template: HB.template('data_export/data-export-container'),
 
     initialize: function() {
-        this.model = new StudentSelectStateModel();    
+
+        var self = this;
+
+        this.facility_select_view  = new FacilitySelectView({
+            model: this.model
+        });
+
+        this.group_select_view = new GroupSelectView({
+            model: this.model
+        });
 
         this.render();
     },
 
     render: function() {
-        this.facility_select_view  = new FacilitySelectView({
-            model: this.model,
-            selected: this.options.facility_id
-        });
-
-        this.group_select_view = new GroupSelectView({
-            model: this.model,
-            selected: this.options.group_id
-        });
-        
         // render container     
         this.$el.html(this.template());
 
@@ -81,7 +73,6 @@ var DataExportView = Backbone.View.extend({
             .append("<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />") 
             .submit();
     }
-
 });
 
 
@@ -92,25 +83,23 @@ var FacilitySelectView = Backbone.View.extend({
         // Create collections
         this.facility_list = new FacilityCollection();
 
-        // Re-render self when the fetch returns 
+        // Re-render self when the fetch returns or state model changes
         this.listenTo(this.facility_list, 'sync', this.render);
 
         // Fetch collection 
         this.facility_list.fetch();
 
         // Render
-        this.render()
+        this.render();
     },
 
     render: function() {
         this.$el.html(this.template({
-            facilities: this.facility_list.toJSON()
+            facilities: this.facility_list.toJSON(),
+            selection: this.model.attributes.facility_id
         }));
 
-        $('[data-facility-id=' + this.options.selected + ']').prop("selected", true);
-
-        // When we re-render this view, "All" is selected by default
-        this.model.set({facility_id: "all"});
+        return this;
     },
 
     events: {
@@ -121,7 +110,6 @@ var FacilitySelectView = Backbone.View.extend({
         // update the state model
         var facilityID = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
         this.model.set({ facility_id: facilityID });
-        this.options.selected = facilityID;
     }
 });
 
@@ -139,24 +127,23 @@ var GroupSelectView = Backbone.View.extend({
         this.listenTo(this.group_list, 'sync', this.render);
 
         // Fetch collection
-        this.group_list.fetch();
+        this.fetchByFacility();
 
         // Render
         this.render();
 
         // Listen for any changes on the state model, when it happens, re-fetch self
-        this.listenTo(this.model, 'change:facility_id', this.stateModelChanged);
+        this.listenTo(this.model, 'change:facility_id', this.fetchByFacility);
     },
 
     render: function() {
+        // TODO(dylan) this prevents reset of the group :( but how else to do it?
+        this.model.set({ group_id: undefined });
         this.$el.html(this.template({
             groups: this.group_list.toJSON()
         }));
 
-        $('[data-group-id=' + this.options.selected + ']').prop("selected", true);
-
-        // When we re-render this view, "All" is selected by default
-        this.model.set({group_id: "all"});
+        return this;
     },
 
     events: {
@@ -166,12 +153,11 @@ var GroupSelectView = Backbone.View.extend({
     groupChanged: function(ev) {
         var groupID = $("#" + ev.target.id).find(":selected").attr("data-group-id");
         this.model.set({ group_id: groupID });
-        this.options.selected = groupID;
     },
 
-    stateModelChanged: function() {
+    fetchByFacility: function() {
         var facilityID = this.model.get("facility_id");
-        // TODO(dylan): are we handling pagination??
+        // TODO(dylan): are we handling pagination from the API?
         this.group_list.fetch({
             data: $.param({ "facility_id": facilityID })
         })
