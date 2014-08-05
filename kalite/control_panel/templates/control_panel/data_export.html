@@ -16,7 +16,9 @@
     <script>
         $(function() {
             window.container_view = new DataExportView({
-                el: $("#data-export-container")
+                el: $("#data-export-container"),
+                facility_id: "{{ facility_id }}",
+                group_id: "{{ group_id }}"
             });
         });
     </script>

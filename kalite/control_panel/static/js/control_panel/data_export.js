@@ -33,17 +33,20 @@ var DataExportView = Backbone.View.extend({
 
     initialize: function() {
         this.model = new StudentSelectStateModel();    
+
         this.render();
     },
 
     render: function() {
         this.facility_select_view  = new FacilitySelectView({
-            model: this.model
+            model: this.model,
+            selected: this.options.facility_id
         });
 
         this.group_select_view = new GroupSelectView({
-            model: this.model
-        })
+            model: this.model,
+            selected: this.options.group_id
+        });
         
         // render container     
         this.$el.html(this.template());
@@ -104,6 +107,8 @@ var FacilitySelectView = Backbone.View.extend({
             facilities: this.facility_list.toJSON()
         }));
 
+        $('[data-facility-id=' + this.options.selected + ']').prop("selected", true);
+
         // When we re-render this view, "All" is selected by default
         this.model.set({facility_id: "all"});
     },
@@ -116,6 +121,7 @@ var FacilitySelectView = Backbone.View.extend({
         // update the state model
         var facilityID = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
         this.model.set({ facility_id: facilityID });
+        this.options.selected = facilityID;
     }
 });
 
@@ -147,6 +153,8 @@ var GroupSelectView = Backbone.View.extend({
             groups: this.group_list.toJSON()
         }));
 
+        $('[data-group-id=' + this.options.selected + ']').prop("selected", true);
+
         // When we re-render this view, "All" is selected by default
         this.model.set({group_id: "all"});
     },
@@ -158,6 +166,7 @@ var GroupSelectView = Backbone.View.extend({
     groupChanged: function(ev) {
         var groupID = $("#" + ev.target.id).find(":selected").attr("data-group-id");
         this.model.set({ group_id: groupID });
+        this.options.selected = groupID;
     },
 
     stateModelChanged: function() {

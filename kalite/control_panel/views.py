@@ -164,6 +164,12 @@ def zone_data_export(request, zone_id=None):
         facility_id = request.GET.get("facility_id")
         group_id = request.GET.get("group_id")
 
+        # If we error, pass this to the JS to reset the form nicely
+        context.update({
+            "facility_id": facility_id,
+            "group_id": group_id,
+        })
+
         ## CSV File Specification
         # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
         
