@@ -533,7 +533,7 @@ window.QuizLogModel = Backbone.Model.extend({
             this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
         }
 
-        if(this._response_log_cache[this.get("attempts")]){
+        if(!this._response_log_cache[this.get("attempts")]){
             this._response_log_cache.push(0);
         }
         // add the event to the response log list
