@@ -16,6 +16,9 @@ class DynamicSettingsModelsTests(TestCase):
                 'test_strsetting': models.StrField,
             })
 
+    def test_can_call_dynamic_settings_without_arguments(self):
+        models.DynamicSettings()
+
     def test_source_is_dict_gains_those_fields(self):
         source = {
             'intfield': 1,
