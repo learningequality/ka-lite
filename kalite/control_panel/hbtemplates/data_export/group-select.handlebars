@@ -4,7 +4,7 @@
         {{#if groups }}
             <option>All</option>
             {{#each groups}}
-                <option data-group-id="{{id}}">{{ name }}</option>
+                <option data-group-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
             {{/each}}
         {{else}}
             <option disabled>All</option>

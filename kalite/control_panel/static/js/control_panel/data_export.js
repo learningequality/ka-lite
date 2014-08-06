@@ -5,7 +5,12 @@ var FacilityModel = Backbone.Model.extend();
 
 var GroupModel = Backbone.Model.extend();
 
-var StudentSelectStateModel = Backbone.Model.extend();  
+var StudentSelectStateModel = Backbone.Model.extend({
+    defaults: {
+        "facility_id": "all",
+        "group_id": "all"
+    }
+});  
 
 // Collections
 var FacilityCollection = Backbone.Collection.extend({ 
@@ -64,7 +69,7 @@ var DataExportView = Backbone.View.extend({
         var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
 
         // Append the data we care about, and submit it
-        // TODO(dylan) is this hacky? not sure what the right paradigm is 
+        // TODO(dylan) make an API endpoint, this is lame 
         var form = $('#data-export-form');
         form
             .append(facility_input)
@@ -99,6 +104,7 @@ var FacilitySelectView = Backbone.View.extend({
             selection: this.model.attributes.facility_id
         }));
 
+
         return this;
     },
 
@@ -107,6 +113,9 @@ var FacilitySelectView = Backbone.View.extend({
     },
 
     facilityChanged: function(ev) {
+        // When facility is changed by the user, we reset groupID to be nothing
+        this.model.set({ group_id: "all" });
+
         // update the state model
         var facilityID = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
         this.model.set({ facility_id: facilityID });
@@ -137,11 +146,12 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     render: function() {
-        // TODO(dylan) this prevents reset of the group :( but how else to do it?
-        this.model.set({ group_id: undefined });
         this.$el.html(this.template({
-            groups: this.group_list.toJSON()
+            groups: this.group_list.toJSON(),
+            selection: this.model.attributes.group_id
         }));
+
+
 
         return this;
     },
@@ -156,7 +166,8 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     fetchByFacility: function() {
-        var facilityID = this.model.get("facility_id");
+        // pass undefined to the api for 'all'
+        var facilityID = this.model.get("facility_id") === "all" ? undefined : this.model.get("facility_id");
         // TODO(dylan): are we handling pagination from the API?
         this.group_list.fetch({
             data: $.param({ "facility_id": facilityID })
