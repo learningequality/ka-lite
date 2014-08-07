@@ -3,6 +3,23 @@
 VERSION = "0.12.0"
 VERSION_INFO = {
 
+    "0.12.4": {
+        "release_date": "2014/08/07",
+        "git_commit": "8c3c3",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Run setup when database is not initialized on startup"],
+            "students": ["Stop opening new tabs when opening related videos from exercises"],
+            "coaches": [],
+            "admins": [],
+        },
+    },
+
     "0.12.3": {
         "release_date": "2014/08/02",
         "git_commit": "90f88",
