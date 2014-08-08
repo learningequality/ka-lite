@@ -31,5 +31,6 @@
     "subtracting_fractions_with_common_denominators", "subtraction_1",
     "subtraction_2", "subtraction_3", "subtraction_4", "telling_time",
     "telling_time_0.5", "telling_time_2"
-  ]
+  ],
+  "is_practice": false
 }

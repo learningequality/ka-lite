@@ -1,7 +1,7 @@
 {
   "id": "g6_t6",
   "title": "Grade VI - Unit Test 6",
-  "seed": 3597,
+  "seed": 3030,
   "playlist_ids": [ "g6_p19", "g6_p20", "g6_p21", "g6_p22" ],
   "repeats": "2",
   "ids": [
@@ -15,5 +15,6 @@
     "recognizing_rays_lines_and_line_segments", "rounding_numbers",
     "understanding_moving_the_decimal", "vertical_angles",
     "vertical_angles_2"
-  ]
+  ],
+  "is_practice": false
 }

@@ -1,7 +1,7 @@
 {
   "id": "g4_t6",
   "title": "Grade IV - Unit Test 6",
-  "seed": 2774,
+  "seed": 1160,
   "playlist_ids": [ "g4_p13", "g4_p14", "g4_p15" ],
   "repeats": "3",
   "ids": [
@@ -13,5 +13,6 @@
     "ordering_improper_fractions_and_mixed_numbers", "recognizing_fractions",
     "recognizing_fractions_0.5",
     "subtracting_fractions_with_common_denominators"
-  ]
+  ],
+  "is_practice": false
 }
