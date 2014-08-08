@@ -81,8 +81,8 @@ class FacilityGroup(DeferredCountSyncedModel):
     name = models.CharField(max_length=30, verbose_name=_("Name"))
     description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.13.0" # TODO-BLOCKER(jamalex): change this to the specific version it is at the time it ships
 
-    def __init__(self):
-        super(FacilityGroup, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(FacilityGroup, self).__init__(*args, **kwargs)
         self._unhashable_fields.append("description") # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:
