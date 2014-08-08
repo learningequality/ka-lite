@@ -363,11 +363,13 @@
                     <ul class="pagination pagination-sm">
                         <li><a title="{% trans 'Browse to the previous page of students.' %}" {% if student_pages.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&laquo;</a></li>
                         {% for listed_page in student_pages.listed_pages %}
-                            <li {% if listed_page == student_pages.number %} class="active"><a disabled="disabled">{{student_pages.number}}</a>
-                                {% else %}>
-                                    <a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a>
-                                {% endif %}
-                            </li>
+                            {% if listed_page == -1 %}
+                            <li><a disabled="disabled">&hellip;</a></li>
+                            {% elif listed_page == student_pages.number %}
+                            <li class="active"><a disabled="disabled">{{student_pages.number}}</a></li>
+                            {% else %}
+                            <li><a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a></li>
+                            {% endif %}
                         {% endfor %}
                         <li><a title="{% trans 'Browse to the next page of students.' %}" {% if student_pages.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&raquo;</a></li>
                     </ul>
