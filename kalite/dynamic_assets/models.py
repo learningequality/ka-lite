@@ -24,6 +24,7 @@ class DynamicSettings(object):
         # create the namespace inside the class if it doesn't exist yet
         cls = self.__class__
         setattr(cls, namespace, getattr(self, namespace, Namespace()))
+        cls.NAMESPACES.append(namespace)
 
         # to make manipulations to the namespace easier
         namespace = self._current_namespace = getattr(cls, namespace)
