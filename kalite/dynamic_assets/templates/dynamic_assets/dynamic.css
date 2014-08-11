@@ -1,5 +1,4 @@
 /* Hide motivational features if disabled in settings */
-/* TODO-BLOCKER(aron): move to ab_testing app */
 {% if turn_off_motivational_features %}
 .motivational-feature {
   display: none;
