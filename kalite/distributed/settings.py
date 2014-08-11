@@ -50,15 +50,15 @@ INSTALLED_APPS = (
     "kalite.khanload",  # khan academy interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
-    "kalite.ab_testing",
     "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
     "kalite.student_testing",
-    "kalite.dynamic_assets",
     "kalite.caching",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
+    "kalite.ab_testing",
+    "kalite.dynamic_assets",
 )
 
 MIDDLEWARE_CLASSES = (
