@@ -1,4 +1,3 @@
-
 window.PlaylistView = Backbone.View.extend({
 
     initialize: function() {
@@ -31,6 +30,11 @@ window.PlaylistView = Backbone.View.extend({
     },
 
     entry_requested: function(entry) {
+
+        // TODO(jamalex): only load progress for the one that may have changed
+        // (or don't even call this at all; just have an event fire on the content view indicated status)
+        this.sidebar_view.load_entry_progress();
+
         switch(entry.get("entity_kind")) {
 
             case "Exercise":
@@ -199,12 +203,43 @@ window.PlaylistSidebarView = Backbone.View.extend({
         this._entry_views.push(view);
         this.$(".playlist-sidebar").append(view.render().$el);
         this.listenTo(view, "clicked", this.item_clicked);
+        this.load_entry_progress();
     },
 
     add_all_entries: function() {
         this.render();
         this.model.get('entries').map(this.add_new_entry);
     },
+
+    load_entry_progress: _.debounce(function() {
+
+        var self = this;
+
+        // load progress data for all videos
+        var video_ids = $.map(this.$("[data-video-id]"), function(el) { return $(el).data("video-id"); });
+        if (video_ids.length > 0) {
+            doRequest(GET_VIDEO_LOGS_URL, video_ids)
+                .success(function(data) {
+                    $.each(data, function(ind, video) {
+                        var newClass = video.complete ? "complete" : "partial";
+                        self.$("[data-video-id='" + video.video_id + "']").removeClass("complete partial").addClass(newClass);
+                    });
+                });
+        }
+
+        // load progress data for all exercises
+        var exercise_ids = $.map(this.$("[data-exercise-id]"), function(el) { return $(el).data("exercise-id"); });
+        if (exercise_ids.length > 0) {
+            doRequest(GET_EXERCISE_LOGS_URL, exercise_ids)
+                .success(function(data) {
+                    $.each(data, function(ind, exercise) {
+                        var newClass = exercise.complete ? "complete" : "partial";
+                        self.$("[data-exercise-id='" + exercise.exercise_id + "']").removeClass("complete partial").addClass(newClass);
+                    });
+                });
+        }
+
+    }, 100),
 
     item_clicked: function(view) {
         this.hide_sidebar();
@@ -234,7 +269,7 @@ window.PlaylistSidebarEntryView = Backbone.View.extend({
 
         _.bindAll(this);
 
-        this.listenTo(this.model, "change:active", this.render);
+        this.listenTo(this.model, "change:active", this.toggle_active);
 
     },
 
@@ -248,6 +283,10 @@ window.PlaylistSidebarEntryView = Backbone.View.extend({
         this.trigger("clicked", this);
         return false;
     },
+
+    toggle_active: function() {
+        this.$(".playlist-sidebar-entry").toggleClass("active", this.model.get("active"));
+    }
 
 });
 

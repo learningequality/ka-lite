@@ -4,20 +4,26 @@ Icon Font
 ======================================
 */
 
-.icon-Exercise:before {
+.icon-exercise:before {
     content: "\e600";
 }
-.icon-Video:before {
+.icon-video:before {
     content: "\e601";
 }
-.icon-Quiz:before {
+.icon-quiz:before {
     content: "\e602";
 }
 .icon-list:before {
     content: "\e603";
 }
 
+.playlist-icon.partial {
+    opacity: 0.5;
+}
 
+.playlist-icon.complete {
+    opacity: 0.2;
+}
 
 /*
 Nav Panel
