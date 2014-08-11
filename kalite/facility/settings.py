@@ -45,6 +45,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # Default facility name
 INSTALL_FACILITY_NAME = getattr(local_settings, "INSTALL_FACILITY_NAME", None)  # default to None, so can be translated to latest language at runtime.
 
+USE_ACTIVE_UNIT = getattr(local_settings, "USE_ACTIVE_UNIT", False)  # deactivated by default
+
 # None means, use full hashing locally--turn off the password cache
 PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", None)
 PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", None)

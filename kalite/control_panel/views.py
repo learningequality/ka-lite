@@ -130,6 +130,7 @@ def zone_management(request, zone_id="None"):
 
         facility_data[facility.id] = {
             "name": facility.name,
+            "object": facility,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
