@@ -1,0 +1,32 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block headcss %}{{ block.super }}
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+    </script>
+    <script src="{% static 'js/store/models.js' %}"></script>
+    <script src="{% static 'js/store/views.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='store' %}"></script>
+
+    <script>
+
+        $(function() {
+            window.store_view = new StoreView();
+            window.store_view.render();
+            $('.store-wrapper').append(window.store_view.el);
+        });
+
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+
+    <div class="store-wrapper"></div>
+
+{% endblock content %}
