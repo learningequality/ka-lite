@@ -70,9 +70,6 @@
                                 <th>{% trans "Facility Name" %}</th>
                                 <th>{% trans "# Users" %}</th>
                                 <th>{% trans "# Groups" %}</th>
-                                {% if settings.USE_ACTIVE_UNIT %}
-                                <th>{% trans "Active Unit" %}</th>
-                                {% endif %}
                                 <th>{% trans "Last Usage" %}</th>
                                 <th> {% if not request.is_teacher%}{% trans "Delete" %}{% endif %}</th>
                             </tr>
@@ -87,19 +84,6 @@
                                 </td>
                                 <td>{{ facility.num_users }}</td>
                                 <td>{{ facility.num_groups }}</td>
-                                {% if settings.USE_ACTIVE_UNIT %}
-                                <td>
-                                    {% if facility.object.is_on_first_unit %}
-                                        <span>&laquo; Prev</span>
-                                    {% else %}
-                                        <a href="#" title="{% trans "Click to set the previous Unit as active." %}">&laquo; Prev</a>
-                                    {% endif %}
-                                    &nbsp;
-                                    {{ facility.object.unit_title|default:'None' }}
-                                    &nbsp;
-                                    <a href="#" title="{% trans "Click to set the next Unit as active." %}">Next &raquo;</a>
-                                </td>
-                                {% endif %}
                                 <td>
                                     {% if not facility.last_time_used %}
                                         {% trans "Never" %}

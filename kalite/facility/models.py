@@ -34,7 +34,6 @@ class Facility(DeferredCountSyncedModel):
     contact_phone = models.CharField(max_length=60, verbose_name=_("Contact Phone"), blank=True)
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
-    active_unit = models.IntegerField(verbose_name=_("Active Unit"), help_text=_("(This is the active Unit for this Facility.)"), blank=True, null=True)
 
     class Meta:
         verbose_name_plural = _("Facilities")
@@ -75,22 +74,6 @@ class Facility(DeferredCountSyncedModel):
         elif Settings.get("default_facility") not in [fac.id for fac in facilities.all()]:
             # Use an existing facility as the default, if one of them isn't the default already.
             Settings.set("default_facility", facilities[0].id)
-
-    @property
-    def is_on_first_unit(self):
-        """
-        Determines if active unit is the first unit for the facility.
-        """
-        if settings.USE_ACTIVE_UNIT and self.active_unit == 1:
-            return True
-        return False
-
-    @property
-    def unit_title(self):
-        if settings.USE_ACTIVE_UNIT and self.active_unit:
-            s = "Unit %s" % self.active_unit
-            return s
-        return ''
 
 
 class FacilityGroup(DeferredCountSyncedModel):
