@@ -18,11 +18,15 @@ Icon Font
 }
 
 .playlist-icon.partial {
-    opacity: 0.5;
+    opacity: 0.45;
 }
 
 .playlist-icon.complete {
-    opacity: 0.2;
+    opacity: 0.15;
+}
+
+.playlist-text.complete {
+    opacity: 0.45;
 }
 
 /*

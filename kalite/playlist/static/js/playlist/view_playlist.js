@@ -239,6 +239,24 @@ window.PlaylistSidebarView = Backbone.View.extend({
                 });
         }
 
+        // load progress data for quiz; TODO(jamalex): since this is RESTful anyway, perhaps use a model here?
+        var quiz_ids = $.map(this.$("[data-quiz-id]"), function(el) { return $(el).data("quiz-id"); });
+        if (quiz_ids.length > 0) {
+            // TODO(jamalex): for now, we just hardcode the quiz id as being the playlist id, since we don't have a good independent quiz id
+            var quiz_id = this.model.get("id");
+            doRequest("/api/playlists/quizlog/?user=" + statusModel.get("user_id") + "&quiz=" + quiz_id)
+                .success(function(data) {
+                    $.each(data.objects, function(ind, quiz) {
+                        var newClass = quiz.complete ? "complete" : "partial";
+                        // TODO(jamalex): see above; just assume we only have 1 quiz
+                        self.$("[data-quiz-id]").removeClass("complete partial").addClass(newClass);
+                    });
+                });
+        }
+
+
+
+
     }, 100),
 
     item_clicked: function(view) {
