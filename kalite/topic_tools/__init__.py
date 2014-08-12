@@ -462,6 +462,15 @@ def get_exercise_data(request, exercise_id=None):
 
     exercise["related_videos"] = get_related_videos(exercise, limit_to_available=True).values()
 
+    if "nalanda" in settings.CONFIG_PACKAGE:
+        #TODO-BLOCKER (rtibbles): Hook into unit settings code to determine the current unit, and hence the total number of exercises the total points is being shared across
+        current_unit_exercises = ["addition_1"]
+        if exercise["exercise_id"] not in current_unit_exercises:
+            exercise["basepoints"] = 0
+        else:
+            # TODO-BLOCKER (rtibbles): Hook into unit settings/front end parameterization to replace '8'.
+            exercise["basepoints"] = settings.UNIT_POINTS/(len(current_unit_exercises)*(8 + settings.FIXED_BLOCK_EXERCISES + settings.QUIZ_REPEATS))
+
     return exercise
 
 

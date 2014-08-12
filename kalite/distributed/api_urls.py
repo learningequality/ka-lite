@@ -13,7 +13,7 @@ import kalite.playlist.api_urls
 import kalite.khanload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
-
+import kalite.store.api_urls
 
 urlpatterns = patterns(__package__ + '.api_views',
     # For manipulating the static webpage to show data based on user state
@@ -52,6 +52,11 @@ urlpatterns += patterns('kalite.playlist.api_views',
 # i18n allows changing default languages for users
 urlpatterns += patterns('kalite.i18n.api_views',
     url(r'^i18n/', include(kalite.i18n.api_urls)),
+)
+
+# store allows purchasing of user items with points
+urlpatterns += patterns('',
+    url(r'^store/', include(kalite.store.api_urls)),
 )
 
 
