@@ -172,7 +172,7 @@ $(function(){
 });
 
 
-// Related to student log progress
+// Download needed user data and add classes to indicate progress, as appropriate
 $(function() {
 
     // load progress data for all videos linked on page, and render progress circles

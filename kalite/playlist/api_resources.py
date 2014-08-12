@@ -4,7 +4,7 @@ from tastypie.resources import ModelResource, Resource
 
 from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
-from kalite.topic_tools import video_dict_by_video_id
+from kalite.topic_tools import video_dict_by_video_id, get_slug2id_map
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -65,7 +65,12 @@ class PlaylistResource(Resource):
         video_dict = video_dict_by_video_id()
         for playlist in playlists:
             if str(playlist.id) == pk:
+                # Add the full titles onto the playlist entries
                 playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
+
+                for entry in playlist.entries:
+                    if entry["entity_kind"] == "Video":
+                        entry["youtube_id"] = get_slug2id_map()[entry["entity_id"]]
                 return playlist
         else:
             raise NotFound('Playlist with pk %s not found' % pk)
