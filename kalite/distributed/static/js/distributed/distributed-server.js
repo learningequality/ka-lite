@@ -70,6 +70,9 @@ var StatusModel = Backbone.Model.extend({
 
         this.loaded.then(this.after_loading);
 
+        this.listenTo(this, "change:points", this.update_total_points);
+        this.listenTo(this, "change:newpoints", this.update_total_points);
+
     },
 
     get_server_time: function () {
@@ -98,8 +101,9 @@ var StatusModel = Backbone.Model.extend({
         });
     },
 
-    get_current_points: function() {
-        return this.get("points") + this.get("newpoints");
+    update_total_points: function() {
+        // add the points that existed at page load and the points earned since page load, to get the total current points
+        this.set("totalpoints", this.get("points") + this.get("newpoints"));
     }
 
 });
@@ -115,16 +119,14 @@ var TotalPointView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.model.bind("change:points", this.render);
-        this.model.bind("change:newpoints", this.render);
+        this.model.bind("change:totalpoints", this.render);
         this.model.bind("change:username", this.render);
         this.render();
     },
 
     render: function() {
 
-        // add the points that existed at page load and the points earned since page load, to get the total current points
-        var points = this.model.get("points") + this.model.get("newpoints");
+        var points = this.model.get("totalpoints");
         var username_span = sprintf("<span id='logged-in-name'>%s</span>", this.model.get("username"));
         var message = null;
 
