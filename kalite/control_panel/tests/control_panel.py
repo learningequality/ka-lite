@@ -24,8 +24,6 @@ class FacilityControlTests(FacilityMixins,
         self.setup_fake_device()
         super(FacilityControlTests, self).setUp()
 
-    # TODO (aron): find a way to handle the problem detailed in this skipIf
-    @unittest.skipIf(True, "Skipped for now until phantomjs headless tests can handle JS prompts")
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)
@@ -34,7 +32,7 @@ class FacilityControlTests(FacilityMixins,
 
         # assert that our facility exists
         selector = 'tr[facility-id="%s"] > td > a.facility-delete-link > span' % self.fac.id
-        self.browser_click_and_accept(selector)
+        self.browser_click_and_accept(selector, text=facility_name)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
