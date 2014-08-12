@@ -55,7 +55,6 @@ INSTALLED_APPS = (
     "kalite.testing",
     "kalite.updates",  #
     "kalite.student_testing",
-    "kalite.store",
     "kalite.caching",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
