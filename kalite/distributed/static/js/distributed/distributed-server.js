@@ -96,7 +96,12 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
         });
+    },
+
+    get_current_points: function() {
+        return this.get("points") + this.get("newpoints");
     }
+
 });
 
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call

@@ -16,10 +16,11 @@
 
     <script>
 
-        $(function() {
-            window.store_view = new StoreView();
-            window.store_view.render();
-            $('.store-wrapper').append(window.store_view.el);
+        window.statusModel.loaded.then(function() {
+            $(function() {
+                window.store_view = new StoreWrapperView();
+                $('.store-wrapper').append(window.store_view.el);
+            });
         });
 
     </script>
