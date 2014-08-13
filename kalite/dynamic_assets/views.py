@@ -1,7 +1,5 @@
 from annoying.decorators import render_to
 
-from django.conf import settings
-
 from kalite.dynamic_assets.decorators import dynamic_settings
 
 
