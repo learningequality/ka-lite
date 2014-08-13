@@ -1,4 +1,4 @@
-from .decorators import load_dynamic_settings
+from .utils import load_dynamic_settings
 
 
 def dynamic_settings(viewfn):
