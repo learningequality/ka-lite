@@ -1,19 +1,22 @@
-window.StoreItemModel = Backbone.Model.extend({
+window.AvailableStoreItemModel = Backbone.Model.extend({
 
 });
 
+window.PurchasedStoreItemModel = Backbone.Model.extend({
+    urlRoot: "/api/store/storetransactionlog/"
+});
 
 window.AvailableStoreItemCollection = Backbone.Collection.extend({
 
     url: "/api/store/storeitem/",
 
-    model: StoreItemModel
+    model: AvailableStoreItemModel
 });
 
 
 window.PurchasedStoreItemCollection = Backbone.Collection.extend({
 
-    model: StoreItemModel,
+    model: PurchasedStoreItemModel,
 
     url: function() {
         return "/api/store/storetransactionlog/?" + $.param({
@@ -22,10 +25,3 @@ window.PurchasedStoreItemCollection = Backbone.Collection.extend({
     }
 
 });
-
-
-window.StoreStateModel = Backbone.Collection.extend({
-    defaults: {
-        points_remaining: 0
-    }
-})

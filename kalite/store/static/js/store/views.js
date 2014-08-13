@@ -22,13 +22,16 @@ window.StoreWrapperView = Backbone.View.extend({
 
         this.purchased_item_view = new PurchasedStoreItemListView({
             collection: this.purchased_items,
-            el: this.$(".purchased-store-items")
+            el: this.$(".purchased-store-items"),
+            available_items: this.available_items
         });
 
         this.available_items.fetch();
         this.purchased_items.fetch();
 
         this.listenTo(statusModel, "change:totalpoints", this.update_points);
+
+        this.listenTo(this.available_item_view, "purchase_requested", this.make_purchase);
 
     },
 
@@ -41,6 +44,34 @@ window.StoreWrapperView = Backbone.View.extend({
 
     update_points: function() {
         this.$(".points-remaining").text(statusModel.get("totalpoints"));
+    },
+
+    make_purchase: function(item) {
+        var points_remaining = statusModel.get("totalpoints");
+        var cost = item.get("cost");
+
+        if (cost > points_remaining) {
+            alert("Sorry, you don't have enough points to purchase that right now.");
+            return;
+        }
+
+        var purchased_model = new PurchasedStoreItemModel({
+            item: item.id,
+            purchased_at: statusModel.get_server_time(),
+            reversible: item.get("returnable"),
+            context_id: 0, // TODO-BLOCKER: put the current unit in here
+            context_type: "unit",
+            user: statusModel.get("user_uri"),
+            value: -cost
+        });
+
+        purchased_model.save();
+
+        // add the item to the collection of purchased items so it will show in that list
+        this.purchased_items.add(purchased_model);
+
+        // decrement the visible number of remaining points
+        statusModel.set("newpoints", statusModel.get("newpoints") - cost);
     }
 
 });
@@ -59,11 +90,13 @@ window.AvailableStoreItemListView = Backbone.View.extend({
     },
 
     add_item: function(item) {
+        var self = this;
         var view = new AvailableStoreItemView({
             model: item
         });
         this.$el.append(view.render().el);
         this.item_views.push(view);
+        this.listenTo(view, "purchase_requested", function(item) { self.trigger("purchase_requested", item); })
     },
 
     add_all_items: function() {
@@ -90,7 +123,8 @@ window.PurchasedStoreItemListView = Backbone.View.extend({
 
     add_item: function(item) {
         var view = new PurchasedStoreItemView({
-            model: item
+            model: item,
+            available_items: this.options.available_items
         });
         this.$el.append(view.render().el);
         this.item_views.push(view);
@@ -110,9 +144,17 @@ window.AvailableStoreItemView = Backbone.View.extend({
 
     template: HB.template("store/available-store-item"),
 
+    events: {
+        "click .store-item-purchase-button": "purchase_button_clicked"
+    },
+
     render: function() {
         this.$el.html(this.template(this.model.attributes));
         return this;
+    },
+
+    purchase_button_clicked: function() {
+        this.trigger("purchase_requested", this.model);
     }
 
 });
@@ -122,7 +164,9 @@ window.PurchasedStoreItemView = Backbone.View.extend({
     template: HB.template("store/purchased-store-item"),
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
+        // retrieve the item object itself, for rendering
+        var item = this.options.available_items.get(this.model.get("item"));
+        this.$el.html(this.template(item.attributes));
         return this;
     }
 

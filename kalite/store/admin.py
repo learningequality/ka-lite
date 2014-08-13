@@ -9,5 +9,5 @@ admin.site.register(StoreItem, StoreItemAdmin)
 
 
 class StoreTransactionLogAdmin(admin.ModelAdmin):
-    list_display = ("item", "user", "purchased_at")
+    list_display = ("id", "item", "user", "purchased_at")
 admin.site.register(StoreTransactionLog, StoreTransactionLogAdmin)

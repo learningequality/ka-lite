@@ -99,6 +99,9 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
         });
+
+        this.update_total_points();
+
     },
 
     update_total_points: function() {
