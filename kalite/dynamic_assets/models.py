@@ -10,6 +10,8 @@ class DynamicSettings(object):
 
         # end validations
 
+        self.NAMESPACES = []
+
         if namespace:
             namespace = self.initialize_namespace(namespace)
 
@@ -20,14 +22,21 @@ class DynamicSettings(object):
         if source:
             self.add_source(source)
 
+    def __add__(self, other):
+        for ns in other.NAMESPACES:
+            setattr(self, ns, getattr(other, ns))
+
+        self.NAMESPACES.extend(other.NAMESPACES)
+
+        return self
+
     def initialize_namespace(self, namespace):
         # create the namespace inside the class if it doesn't exist yet
-        cls = self.__class__
-        setattr(cls, namespace, getattr(self, namespace, Namespace()))
-        cls.NAMESPACES.append(namespace)
+        setattr(self, namespace, getattr(self, namespace, Namespace()))
+        self.NAMESPACES.append(namespace)
 
         # to make manipulations to the namespace easier
-        namespace = self._current_namespace = getattr(cls, namespace)
+        namespace = self._current_namespace = getattr(self, namespace)
         return namespace
 
     def add_source(self, source):

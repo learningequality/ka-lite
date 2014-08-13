@@ -39,13 +39,13 @@ class DynamicSettingsModelsTests(TestCase):
 
     def test_can_define_multiple_namespaces(self):
 
-        models.DynamicSettings(
+        settings = models.DynamicSettings(
             namespace='namespace1',
             schema={'attr': models.IntField},
             source={'attr': 1},
         )
 
-        settings = models.DynamicSettings(
+        settings += models.DynamicSettings(
             namespace='namespace2',
             schema={'attr': models.IntField},
             source={'attr': 1},
