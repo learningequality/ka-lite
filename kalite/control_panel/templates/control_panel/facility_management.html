@@ -76,7 +76,7 @@
 
 {% block buttons %}{{ block.super }}
     <li>
-        <input class="top_export_button" id="top_export_button_id" type="button" value="{% trans 'Export data' %}"></input>
+        <button class="btn btn-success" id="top_export_button_id" value="{% trans 'Export data' %}">{% trans 'Export data' %}</button>
     </li>
     <li>
         <div id="export_csv_div_id" class="export_csv_div">
@@ -84,7 +84,7 @@
                 {% csrf_token %}
                 <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" name="period_start" id="start_date_select" type="text" value=""></input>
                 <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" name="period_end" id="end_date_select" type="text" value=""></input>
-                <input type="button" class="btn-action" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
+                <input type="button" class="btn btn-success" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
             </form>
         </div>
     </li>
@@ -93,70 +93,78 @@
 {% block control_panel_content %}
     <div class="container">
         <!-- Begin Coaches -->
-        <div class="row" id="coaches">
+        <div id="coaches">
             {% if not group_id %}
-                <div class="col-md-12">
-                    <h2>{% trans "Coaches" %}&nbsp;<small><a title="{% trans 'Add a new coach.' %}" href="{% url 'add_facility_teacher' %}?facility={{ facility_id }}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}</small></h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>{% trans "Coaches" %}&nbsp;<small><a title="{% trans 'Add a new coach.' %}" href="{% url 'add_facility_teacher' %}?facility={{ facility_id }}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}</small></h2>
+                    </div>
                 </div>
                 {% if not coach_pages %}
                     <div class="col-md-12">
                         <p class="no-data">{% trans "You currently have no coaches for this facility." %}</p>
                     </div>
                 {% else %}
-                <div class="col-md-2 pull-left">
-                    {% if not request.is_teacher %}
-                      <button class="btn-action action delete" id="delete-coaches" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
-                    {% endif %}
-                </div>
-                <div class="col-md-12">
-                    <div class="table-responsive">
-                        <table class="table selectable-table">
-                            <thead>
-                                <tr class="success">
-                                    <th><input class="select-all" type="checkbox" value="#coaches"></th>
-                                    <th>{% trans "Coach" %}</th>
-                                    <th>{% trans "Edit" %}</th>
-                                    <th>{% trans "Logins" %}</th>
-                                    <th>{% trans "Login Time" %}</th>
-                                    <th>{% trans "Coach Report Views" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for coach in coach_pages %}
-                                <tr class="selectable" value="{{ coach.id }}" type="coaches">
-                                    <td><input type="checkbox" value="#coaches"></td>
-                                    <td>
-                                        {{ coach|format_name:"last_first" }}
-
-                                    </td>
-                                    <td>
-                                        <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                            <span class="glyphicon glyphicon-pencil"></span>
-                                        </a>
-                                    </td>
-                                    <td>{{ coach.total_logins }}</td>
-                                    <td>{{ coach.total_hours|floatformat }}</td>
-                                    <td>{{ coach.total_report_views }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="row">
+                    <div class="col-md-2 pull-left">
+                        {% if not request.is_teacher %}
+                          <button class="btn btn-success action delete" id="delete-coaches" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="col-md-12">
-                    {% if coach_pages.num_listed_pages > 1 %}
-                        <ul class="pagination pagination-sm">
-                            <li><a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coach_pages.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&laquo;</a></li>
-                            {% for listed_page in coach_pages.listed_pages %}
-                                <li {% if listed_page == coach_pages.number %} class="active"><a disabled="disabled">{{coach_pages.number}}</a>
-                                    {% else %}>
-                                        <a title="{% blocktrans %}Browse to page # {{ listed_page }} of coaches.{% endblocktrans %}" href="{{ page_urls.coaches|get_item:listed_page }}#coaches">{{ listed_page }}</a>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                            <li><a title="{% trans 'Browse to the next page of coaches.' %}" {% if coach_pages.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&raquo;</a></li>
-                        </ul>
-                    {% endif %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table selectable-table">
+                                <thead>
+                                    <tr class="success">
+                                        <th><input class="select-all" type="checkbox" value="#coaches"></th>
+                                        <th>{% trans "Coach" %}</th>
+                                        <th>{% trans "Edit" %}</th>
+                                        <th>{% trans "Logins" %}</th>
+                                        <th>{% trans "Login Time" %}</th>
+                                        <th>{% trans "Coach Report Views" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for coach in coach_pages %}
+                                    <tr class="selectable" value="{{ coach.id }}" type="coaches">
+                                        <td><input type="checkbox" value="#coaches"></td>
+                                        <td>
+                                            {{ coach|format_name:"last_first" }}
+
+                                        </td>
+                                        <td>
+                                            <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </a>
+                                        </td>
+                                        <td>{{ coach.total_logins }}</td>
+                                        <td>{{ coach.total_hours|floatformat }}</td>
+                                        <td>{{ coach.total_report_views }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if coach_pages.num_listed_pages > 1 %}
+                            <ul class="pagination pagination-sm">
+                                <li><a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coach_pages.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&laquo;</a></li>
+                                {% for listed_page in coach_pages.listed_pages %}
+                                    <li {% if listed_page == coach_pages.number %} class="active"><a disabled="disabled">{{coach_pages.number}}</a>
+                                        {% else %}>
+                                            <a title="{% blocktrans %}Browse to page # {{ listed_page }} of coaches.{% endblocktrans %}" href="{{ page_urls.coaches|get_item:listed_page }}#coaches">{{ listed_page }}</a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                                <li><a title="{% trans 'Browse to the next page of coaches.' %}" {% if coach_pages.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&raquo;</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
 
                 {% endif %}
@@ -193,7 +201,7 @@
                         </p>
                     {% else %}
                         {% if not request.is_teacher %}
-                          <button class="delete-group btn-action" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
+                          <button class="delete-group btn btn-success" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
                         {% endif %}
 
                         <div class="table-responsive">
@@ -281,21 +289,29 @@
                 {% if not student_pages %}
                     <p class="no-data">{% trans "You currently have no student data available." %}</p>
                 {% else %}
+                    <div class="form-inline">
                     {% if groups %}
-                        <button class="movegroup btn-action" disabled="disabled" value="#students">{% trans "Change Student Groups" %}</button>
-                        <select class="movegrouplist" value="#students">
-                                <option selected>----</option>
-                                {% for group in groups %}
-                                    {% if not group_id == group.id and group.id %}
-                                        <option value="{{ group.id }}">{{ group.name }}</option>
+                        <div class="form-group">
+                            <button class="movegroup btn btn-success" disabled="disabled" value="#students">{% trans "Change Student Groups" %}</button>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control movegrouplist" value="#students">
+                                    <option selected>----</option>
+                                    {% for group in groups %}
+                                        {% if not group_id == group.id and group.id %}
+                                            <option value="{{ group.id }}">{{ group.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if group_id != ungrouped_id %}
+                                        <option value="">{{ ungrouped }}</option>
                                     {% endif %}
-                                {% endfor %}
-                                {% if group_id != ungrouped_id %}
-                                    <option value="">{{ ungrouped }}</option>
-                                {% endif %}
-                        </select>
+                            </select>
+                        </div>
                     {% endif %}
-                    <button class="delete btn-action" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                    <div class="form-group">
+                        <button class="delete btn btn-success" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                    </div>
+                    </div>
                 {% endif %}
                 <div class="table-responsive">
                     <table class="table selectable-table">
