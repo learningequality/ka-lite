@@ -72,6 +72,7 @@ window.StoreWrapperView = Backbone.View.extend({
 
         // decrement the visible number of remaining points
         statusModel.set("newpoints", statusModel.get("newpoints") - cost);
+
     }
 
 });
@@ -153,7 +154,10 @@ window.AvailableStoreItemView = Backbone.View.extend({
         return this;
     },
 
-    purchase_button_clicked: function() {
+    purchase_button_clicked: function(ev) {
+        $(ev.target)
+            .switchClass("btn-primary", "btn-success", 100)
+            .switchClass("btn-success", "btn-primary", 400);
         this.trigger("purchase_requested", this.model);
     }
 
