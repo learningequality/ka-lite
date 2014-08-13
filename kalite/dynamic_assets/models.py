@@ -1,6 +1,3 @@
-from .utils import load_dynamic_settings
-
-
 class DynamicSettings(object):
     NAMESPACES = []
 
@@ -60,6 +57,3 @@ for typ in FIELDTYPES:
         classname,
         (BaseField,),
         {'typeclass': typ})
-
-# load all dynamic settings models
-load_dynamic_settings()
