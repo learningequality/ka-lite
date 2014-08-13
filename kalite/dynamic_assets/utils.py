@@ -9,5 +9,6 @@ def load_dynamic_settings():
 
         try:
             importlib.import_module(module_name)
-        except ImportError:
+        except ImportError as e:
+            print 'error importing %s: %s' % (module_name, e)
             continue
