@@ -4,15 +4,28 @@ from django.conf import settings
 
 from . import models
 
+logging = settings.LOG
 
-def load_dynamic_settings():
-    for app in settings.INSTALLED_APPS:
+
+def load_dynamic_settings(request, **otherinfo):
+    ds = models.DynamicSettings()
+
+    apps = settings.INSTALLED_APPS + settings.DYNAMIC_SETTINGS_PRIORITY_APPS
+
+    for app in apps:
         module_name = '%s.dynamic_settings' % app
 
         try:
-            importlib.import_module(module_name)
-        except ImportError as e:
-            print 'error importing %s: %s' % (module_name, e)
+            mod = importlib.import_module(module_name)
+
+            if getattr(mod, 'define_dynamic_settings', None):
+                ds += mod.define_dynamic_settings(request, **otherinfo)
+            elif getattr(mod, 'provision_dynamic_settings', None):
+                mod.provision_dynamic_settings(ds, request, **otherinfo)
+        except ImportError:
+            continue
+        except AttributeError as e:
+            logging.warning('Error for module %s: %s' % (module_name, e))
             continue
 
-    return models.DynamicSettings()
+    return ds
