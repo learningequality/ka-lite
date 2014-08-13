@@ -1,0 +1,13 @@
+<div class="form-group">
+    <label class="sr-only" for="group-name">Group</label>
+    <select class="form-control" id="group-name">
+        {{#if groups }}
+            <option>All</option>
+            {{#each groups}}
+                <option data-group-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
+            {{/each}}
+        {{else}}
+            <option disabled>All</option>
+        {{/if}}
+    </select>
+</div>

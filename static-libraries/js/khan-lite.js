@@ -112,7 +112,6 @@ function handleSuccessAPI(obj) {
         }
     }
 
-    clear_messages("error");
     if (messages) {
         show_api_messages(messages);
     }

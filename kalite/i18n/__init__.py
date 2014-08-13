@@ -179,6 +179,9 @@ def get_file2lang_map(force=False):
         YT2LANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
             for dubbed_youtube_id in dic.values():
+                if dubbed_youtube_id.startswith("#") or len(dubbed_youtube_id) != 11:
+                    # Handle bad cells from the mapping spreadsheet by skipping them
+                    continue
                 if dubbed_youtube_id in YT2LANG_MAP and YT2LANG_MAP[dubbed_youtube_id] != lang_code:
                     # Sanity check, but must be failsafe, since we don't control these data
                     logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
