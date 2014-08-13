@@ -169,37 +169,83 @@ class TestResource(Resource):
 
 
 SETTINGS_CURRENT_UNIT_PREFIX = 'current_unit_'
+SETTINGS_FACILITY_ID_CHARS = 8
+SETTINGS_MAX_UNITS = 20  # TODO(cpauya): Maybe put to settings.py or Settings?
 
+
+# ==========================
+# Some helper functions
+# ==========================
+
+def get_current_unit_settings_name(facility_id):
+    name = SETTINGS_CURRENT_UNIT_PREFIX
+    if facility_id:
+        name = "%s%s" % (name, facility_id[:SETTINGS_FACILITY_ID_CHARS],)
+    return name
+
+
+def set_current_unit_settings_value(facility_id, value):
+    """
+    Set the value of the current unit on Settings based on the facility id.
+    """
+    name = get_current_unit_settings_name(facility_id)
+    s = Settings.set(name, value)
+    return s
+
+
+def get_current_unit_settings_value(facility_id):
+    """
+    Get value of current unit based on facility id.  If none, defaults to 1 and creates an
+    entry on the Settings.
+    """
+    value = 1
+    name = get_current_unit_settings_name(facility_id)
+    value = Settings.get(name, value)
+    return value
+
+
+# ==========================
+# TastyPie classes
+# ==========================
 
 class CurrentUnit():
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', '<id>')
-        self.facility_id = kwargs.get('facility_id', '<facility_id>')
+        self.facility_id = kwargs.get('facility_id', '')
         self.facility_name = kwargs.get('facility_name', '<facility_name>')
         self.facility_url = kwargs.get('facility_url', '<facility_url>')
         self.unit_list = kwargs.get('unit_list', self._get_unit_list())
         self.current_unit = kwargs.get('current_unit', self._get_current_unit())
-        self.is_on_first = self.current_unit == 1
-        if self.unit_list and self.current_unit and self.current_unit in self.unit_list:
-            is_on_last = self.unit_list[len(self.unit_list)-1] == self.current_unit
-        self.is_on_last = is_on_last
+        self.is_on_first = self.current_unit <= 1
+        if self.unit_list and self.current_unit:
+            is_on_last = self.unit_list[len(self.unit_list)-1] <= self.current_unit
+            self.is_on_last = is_on_last
 
     def __unicode__(self):
         return self.facility_name
 
+    def _get_settings_name(self):
+        name = get_current_unit_settings_name(self.facility_id)
+        return name
+
+    def _get_settings_value(self):
+        value = get_current_unit_settings_value(self.facility_id)
+        return value
+
     def _get_current_unit(self):
         # TODO(cpauya): get active unit for the Facility from Settings, randomize for now
-        if self.unit_list:
-            current_unit = randint(1, len(self.unit_list))
+        current_unit = 0
+        if self.facility_id:
+            current_unit = self._get_settings_value()
         else:
-            current_unit = 1
-        logging.warning('==> CurrentUnit._get_current_unit() %s' % current_unit)
+            if self.unit_list:
+                current_unit = randint(1, len(self.unit_list))
         return current_unit
 
     def _get_unit_list(self):
         # TODO(cpauya): Return list of units, facility_id can be passed later to determine list of units
         # for the facility.
-        l = [x for x in xrange(1, randint(3, 5))]
+        l = [x for x in xrange(1, SETTINGS_MAX_UNITS + 1)]
         return l
 
 
@@ -224,8 +270,8 @@ class CurrentUnitResource(Resource):
         """
         l = []
         if bundle.request.is_admin:
-            facilities = Facility.objects.all()
-            # logging.warning('==> obj_get_list %s' % facilities.count())
+            # TODO(cpauya): get facilities for current user
+            facilities = Facility.objects.order_by('name')
             for facility in facilities:
                 url = reverse('facility_management', args=[None, facility.id])
                 o = CurrentUnit(
@@ -234,32 +280,49 @@ class CurrentUnitResource(Resource):
                     facility_name=facility.name,
                     facility_url=url
                 )
-                logging.warning('==> CurrentUnitResource.obj_get_list() %s' % o.unit_list)
-                # logging.warning('====> obj_get_list facility_name == %s; o == %s' % (facility.name, o,))
                 l.append(o)
-        logging.warning('==> obj_get_list %d -- %s' % (len(l), l,))
-        return l
+            return l
+        raise Unauthorized(_("You cannot view these objects."))
 
     def get_object_list(self, request, force=False):
-        logging.warning('==> get_object_list')
-        raise NotImplemented("Operation not implemented.")
+        raise NotImplemented(_("Operation not implemented."))
 
     def obj_create(self, request):
-        logging.warning('==> obj_create')
-        raise NotImplemented("Operation not implemented.")
+        raise NotImplemented(_("Operation not implemented."))
 
     def obj_update(self, bundle, **kwargs):
-        logging.warning('==> obj_update')
-        raise NotImplemented("Operation not implemented.")
+        if not bundle.request.is_admin:
+            raise Unauthorized(_("You cannot update this object."))
+        try:
+            # logging.warning('==> obj_update kwargs == %s; bundle == %s' % (kwargs, bundle.data,))
+            is_next = bundle.data.get('is_next', False)
+            is_previous = bundle.data.get('is_previous', False)
+            facility_id = bundle.data.get('facility_id', '')
+            current_unit = bundle.data.get('current_unit', '')
+            selected_unit = int(bundle.data.get('selected_unit', '0'))
+            # logging.warning('==> obj_update %s -- %s -- %s' % (facility_id, current_unit, selected_unit,))
+            if current_unit:
+                current_unit = int(current_unit)
+                if selected_unit and selected_unit >= 1 and selected_unit <= SETTINGS_MAX_UNITS:
+                    current_unit = selected_unit
+                elif is_next and current_unit < SETTINGS_MAX_UNITS:
+                    current_unit += 1
+                elif is_previous and current_unit > 1:
+                    current_unit -= 1
+                else:
+                    current_unit = 1
+                set_current_unit_settings_value(facility_id, current_unit)
+            return bundle
+        except Exception as e:
+            logging.error("CurrentUnitResource exception: %s" % e)
+            pass
+        raise NotImplemented(_("Operation not implemented."))
 
     def obj_delete_list(self, request):
-        logging.warning('==> obj_delete_list')
-        raise NotImplemented("Operation not implemented.")
+        raise NotImplemented(_("Operation not implemented."))
 
     def obj_delete(self, request):
-        logging.warning('==> obj_delete')
-        raise NotImplemented("Operation not implemented.")
+        raise NotImplemented(_("Operation not implemented."))
 
     def rollback(self, request):
-        logging.warning('==> rollback')
-        raise NotImplemented("Operation not implemented.")
+        raise NotImplemented(_("Operation not implemented."))
