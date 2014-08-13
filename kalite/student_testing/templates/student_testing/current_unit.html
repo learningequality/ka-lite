@@ -1,0 +1,78 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block current_unit_active %}active{% endblock current_unit_active %}
+
+{% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        var ALL_CURRENT_UNIT_URL = "{% url 'api_dispatch_list' resource_name='current_unit' %}";
+    </script>
+
+    <script type="text/html" id="all-current-unit-entry-template">
+        <td facility-name="<%= facility_name %>"><a href="<%= facility_url %>"><%= facility_name %></a></td>
+        <td>
+            <span>Unit <%= current_unit %></span>
+            <span>is_on_first == <%= is_on_first %></span>
+            <button data-facility-name="<%= facility_name %>" data-facility-id="facility-<%= id %>"
+                    <% if (is_on_first) { %>
+                    disabled=disabled
+                    <% } %>
+                    class="btn btn-info test-row-button previous">Previous
+            </button>
+            <% _.each(unit_list, function(unit) { %>
+                <% if (unit == current_unit) { %>
+                    <span style="font-weight: bold;"><%= unit %></span>
+                <% } else { %>
+                    <a href="#"><%= unit %></a>
+                <% } %>
+                &nbsp;
+            <% }); %>
+            <button data-facility-name="<%= facility_name %>" data-facility-id="facility-<%= id %>"
+                    <% if (is_on_last) { %>
+                    disabled=disabled
+                    <% } %>
+                    class="btn btn-info test-row-button next">Next
+            </button>
+            <span>is_on_last == <%= is_on_last %></span>
+        </td>
+    </script>
+
+    <script src="{% static 'js/student_testing/models.js' %}"></script>
+    <script src="{% static 'js/student_testing/current_unit.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+    <h2 class="title-header">
+        <div class="facility-name">{% trans "Current Unit" %}</div>
+    </h2>
+    <p>This page shows the current Unit selected for each Facility.</p>
+    <br/>
+    <div class="row">
+        <div class="span12">
+            <table class="table table-hover table-bordered" id="current-units">
+                <thead>
+                <tr>
+                    <th>Facility</th>
+                    <th>Current Unit</th>
+                </tr>
+                </thead>
+{#                {% for facility in facilities %}#}
+{#                    <tr>#}
+{#                        <td>{{ facility.name }}</td>#}
+{#                        <td>Previous - - Next</td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+            </table>
+        </div>
+    </div>
+{% endblock content %}
+{% comment %}
+{% endcomment %}
