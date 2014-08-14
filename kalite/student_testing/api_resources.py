@@ -13,6 +13,7 @@ from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
 
 from fle_utils.config.models import Settings
+from fle_utils.internet import api_handle_error_with_json
 
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -249,6 +250,7 @@ class CurrentUnit():
         return l
 
 
+@api_handle_error_with_json
 class CurrentUnitResource(Resource):
 
     id = fields.CharField(attribute='id')
@@ -294,6 +296,7 @@ class CurrentUnitResource(Resource):
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot update this object."))
         try:
+            # raise Exception('==> TODO(cpauya): remove when done testing')
             # logging.warning('==> obj_update kwargs == %s; bundle == %s' % (kwargs, bundle.data,))
             is_next = bundle.data.get('is_next', False)
             is_previous = bundle.data.get('is_previous', False)
@@ -303,7 +306,7 @@ class CurrentUnitResource(Resource):
             # logging.warning('==> obj_update %s -- %s -- %s' % (facility_id, current_unit, selected_unit,))
             if current_unit:
                 current_unit = int(current_unit)
-                if selected_unit and selected_unit >= 1 and selected_unit <= SETTINGS_MAX_UNITS:
+                if selected_unit and 1 <= selected_unit <= SETTINGS_MAX_UNITS:
                     current_unit = selected_unit
                 elif is_next and current_unit < SETTINGS_MAX_UNITS:
                     current_unit += 1
