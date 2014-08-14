@@ -18,9 +18,9 @@ def load_dynamic_settings(request, **otherinfo):
         try:
             mod = importlib.import_module(module_name)
 
-            if getattr(mod, 'define_dynamic_settings', None):
+            if hasattr(mod, 'define_dynamic_settings'):
                 ds += mod.define_dynamic_settings(request, **otherinfo)
-            elif getattr(mod, 'provision_dynamic_settings', None):
+            elif hasattr(mod, 'provision_dynamic_settings'):
                 mod.provision_dynamic_settings(ds, request, **otherinfo)
         except ImportError:
             continue
