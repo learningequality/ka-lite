@@ -1,5 +1,6 @@
 """
 """
+import csv 
 import copy
 import datetime
 import re
@@ -13,7 +14,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -29,6 +30,7 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_node_cache
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
@@ -144,8 +146,80 @@ def zone_management(request, zone_id="None"):
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
     })
     context.update(set_clock_context(request))
+
     return context
 
+
+@require_authorized_admin
+@render_to("control_panel/data_export.html")
+def zone_data_export(request, zone_id=None):
+    # Normal page load if the GET request has no data
+    context = control_panel_context(request, zone_id=zone_id)
+    # check as explicitly as possible whether or not the form has been submitted 
+    if not request.GET or not(request.GET.get("facility_id") and request.GET.get("group_id")):
+        return context
+    # Form submitted 
+    else:
+        # Get the params 
+        facility_id = request.GET.get("facility_id")
+        group_id = request.GET.get("group_id")
+
+        # If we error, pass this to the JS to reset the form nicely
+        context.update({
+            "facility_id": facility_id,
+            "group_id": group_id,
+        })
+
+        ## CSV File Specification
+        # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
+        
+        ## Fetch data for CSV
+        # Facilities 
+        if facility_id == 'all':
+            # TODO(dylan): can this ever break? Will an admin always have at least one facility in a zone?
+            facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+        else:   
+            facilities = Facility.objects.filter(id=facility_id)
+
+        # Facility Users 
+        if group_id == 'all': # get all students at the facility
+            facility_ids = [facility.id for facility in facilities]
+            facility_users = FacilityUser.objects.filter(facility__id__in=facility_ids)
+        else: # get the students for the specific group
+            facility_users = FacilityUser.objects.filter(group__id=group_id)
+        
+        ## A bit of error checking 
+        if len(facility_users) == 0:
+            messages.error(request, _("No students exist for this facility and group combination."))
+            return context 
+
+        # TestLogs
+        user_ids = [u.id for u in facility_users]
+        test_logs = TestLog.objects.filter(user__id__in=user_ids)
+
+        if len(test_logs) == 0:
+            messages.error(request, _("No test logs exist for these students."))
+            return context 
+
+        ## Build CSV 
+        # Nice filename for Sarojini
+        filename = 'f_all__' if facility_id == 'all' else 'f_%s__' % facilities[0].name
+        filename += 'g_all__' if group_id == 'all' else 'g_%s__' % facility_users[0].group.name
+        filename += '%s' % datetime.datetime.today().strftime("%Y-%m-%d")
+        csv_response = HttpResponse(content_type="text/csv")
+        csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
+
+        # CSV header
+        writer = csv.writer(csv_response)
+        writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"])
+        
+        # CSV Body
+        for t in test_logs:
+            group_name = t.user.group.name if hasattr(t.user.group, "name") else "Ungrouped"
+            group_id = t.user.group.id if hasattr(t.user.group, "id") else "None"
+            writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
+
+        return csv_response
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")

@@ -79,7 +79,11 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.12.0" # TODO-BLOCKER(jamalex): change this to 0.13.0 or whatever it is at the time it ships
+    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.13.0" # TODO-BLOCKER(jamalex): change this to the specific version it is at the time it ships
+
+    def __init__(self, *args, **kwargs):
+        super(FacilityGroup, self).__init__(*args, **kwargs)
+        self._unhashable_fields.append("description") # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
@@ -116,13 +120,11 @@ class FacilityGroup(DeferredCountSyncedModel):
 
         return zone
 
-
     @property
     def title(self):
-        # Translators: This is the name and description of the Facility Group.
         if self.description:
-            return _("%s - %s" % (self.name, self.description,))
-        return _(self.name)
+            return "%s - %s" % (self.name, self.description,)
+        return self.name
 
 
 class FacilityUser(DeferredCountSyncedModel):

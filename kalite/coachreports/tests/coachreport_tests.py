@@ -5,10 +5,12 @@ from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowser
 from kalite.student_testing.models import TestLog
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class TestReportTests(FacilityMixins,
+                      StudentTestingMixins,
                       CreateAdminMixin,
                       CreateDeviceMixin,
                       KALiteDistributedBrowserTestCase):
@@ -18,19 +20,11 @@ class TestReportTests(FacilityMixins,
         Test that we show results for a test if they exist,
         and don't when they dont
         """
-        test_log_defaults = {
-            'test': 'g3_t1',  # this must be an actual exercise
-            'index': '0',
-            'complete': True,
-            'started': True,
-            'total_number': 4,
-            'total_correct': 2,
-        }
         self.setup_fake_device()
         self.facility = self.create_facility()
         self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
         self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
-        self.test_log = TestLog.objects.create(user=self.student1, **test_log_defaults)
+        self.test_log = self.create_test_log(user=self.student1)
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
@@ -43,28 +37,12 @@ class TestReportTests(FacilityMixins,
         """
         Test that we show correct stats for a test.
         """
-        test_log_1 = {
-            'test': 'g3_t1',  # this must be an actual exercise
-            'index': '0',
-            'complete': True,
-            'started': True,
-            'total_number': 4,
-            'total_correct': 2,
-        }
-        test_log_2 = {
-            'test': 'g3_t1',  # this must be an actual exercise
-            'index': '0',
-            'complete': True,
-            'started': True,
-            'total_number': 4,
-            'total_correct': 1,
-        }
         self.setup_fake_device()
         self.facility = self.create_facility()
         self.student1 = self.create_student(username="stu1", facility=self.facility)
         self.student2 = self.create_student(username="stu2", facility=self.facility)
-        self.test_log = TestLog.objects.create(user=self.student1, **test_log_1)
-        self.test_log = TestLog.objects.create(user=self.student2, **test_log_2)
+        self.test_log1 = self.create_test_log(user=self.student1, total_number=4, total_correct=2)
+        self.test_log2 = self.create_test_log(user=self.student2, total_number=4, total_correct=1)
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
@@ -81,51 +59,26 @@ class TestReportTests(FacilityMixins,
         """
         Test that we show correct stats for a test.
         """
-        test_log_1 = {
-            'test': 'g3_t1',  # this must be an actual exercise
-            'index': '0',
-            'complete': True,
-            'started': True,
-            'total_number': 4,
-            'total_correct': 2,
-        }
-        test_log_2 = {
-            'test': 'g3_t2',  # this must be an actual exercise
-            'index': '0',
-            'complete': True,
-            'started': True,
-            'total_number': 4,
-            'total_correct': 1,
-        }
         self.setup_fake_device()
         self.facility = self.create_facility()
         self.student1 = self.create_student(username="stu1", facility=self.facility)
-        self.test_log = TestLog.objects.create(user=self.student1, **test_log_1)
-        self.test_log = TestLog.objects.create(user=self.student1, **test_log_2)
+        self.test_log1 = self.create_test_log(user=self.student1, total_number=4, total_correct=2)
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
-        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
+        stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
         self.assertEqual(stat_max, '50%')
-        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
-        self.assertEqual(stat_min, '25%')
-        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
-        self.assertEqual(stat_avg, '37%')
-        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[6]').text
-        self.assertEqual(stat_std, '12%')
+        stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
+        self.assertEqual(stat_min, '50%')
+        stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
+        self.assertEqual(stat_avg, '50%')
+        stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
+        self.assertEqual(stat_std, '0%')
 
     def test_student_detail_scores_display(self):
         """
         Test that we show results for an exercise cluster in the test detail view
         """
-        test_log_defaults = {
-            'test': 'g3_t1',  # this must be an actual test
-            'index': '0',
-            'complete': True,
-            'started': True,
-            'total_number': 5,
-            'total_correct': 1,
-        }
         attempt_log_default = {
             'exercise_id': 'place_value',  # this must exist inside of the test
             'context_type': 'test',
@@ -137,7 +90,7 @@ class TestReportTests(FacilityMixins,
         self.facility = self.create_facility()
         self.student1 = self.create_student(facility=self.facility)
         self.attempt_log = AttemptLog.objects.create(user=self.student1, **attempt_log_default)
-        self.test_log = TestLog.objects.create(user=self.student1, **test_log_defaults)
+        self.test_log = self.create_test_log(user=self.student1, total_number=5, total_correct=1)
         self.admin = self.create_admin()
         self.browser_login_admin()
         self.browse_to(self.reverse('test_detail_view', kwargs={'test_id': self.test_log.test}))

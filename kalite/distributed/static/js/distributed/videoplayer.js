@@ -504,6 +504,12 @@ window.VideoWrapperView = Backbone.View.extend({
         // TODO(jamalex): allow this to be set dynamically, without reloading page?
         // this.model.set("selected_language", this.$(".video-language-selector").val());
         window.location = setGetParam(window.location.href, "lang", this.$(".video-language-selector").val());
+    },
+
+    close: function() {
+        this.videoPlayerView.remove();
+        this.videoPointView.remove();
+        this.remove();
     }
 
 });
