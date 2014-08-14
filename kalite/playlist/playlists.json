@@ -4,6 +4,7 @@
       "Playlist 1: Read/write 4 digit numbers, place value and face value, expanded form of numbers",
     "id": "g3_p1",
     "tag": "Grade 3",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 1",
@@ -47,6 +48,7 @@
       "Playlist 2: Identify numbers that are <, >, =- ascending and descending numbers",
     "id": "g3_p2",
     "tag": "Grade 3",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "/v/greater-than-and-less-than-symbols/",
@@ -103,6 +105,7 @@
       "Playlist 3: Write place value/face value and expanded form of 3/4 digit numbes",
     "id": "g3_p3",
     "tag": "Grade 3",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 4",
@@ -176,6 +179,7 @@
     "title": "Playlist 4: Addition without carryover",
     "id": "g3_p4",
     "tag": "Grade 3",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 5",
@@ -206,6 +210,7 @@
     "title": "Playlist 5: Write and retell multiplication tables",
     "id": "g3_p5",
     "tag": "Grade 3",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 6",
@@ -279,6 +284,7 @@
     "title": "Playlist 6: Identify sides, vertices, edges",
     "id": "g3_p6",
     "tag": "Grade 3",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 7",
@@ -365,6 +371,7 @@
     "title": "Playlist 7: Subtraction without borrowing",
     "id": "g3_p7",
     "tag": "Grade 3",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 9",
@@ -407,6 +414,7 @@
     "title": "Playlist 8: Addition with carryover",
     "id": "g3_p8",
     "tag": "Grade 3",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle: Week 15",
@@ -468,6 +476,7 @@
     "title": "Playlist 9: Subtraction with borowing",
     "id": "g3_p9",
     "tag": "Grade 3",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 19",
@@ -544,6 +553,7 @@
     "title": "Playlist 10: Word problems with one or more operations",
     "id": "g3_p10",
     "tag": "Grade 3",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "/v/subtraction-word-problem/",
@@ -563,6 +573,7 @@
     "title": "Playlist 11: Multi digit multiplication without carryover",
     "id": "g3_p11",
     "tag": "Grade 3",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 20",
@@ -641,6 +652,7 @@
     "title": "Playlist 12: Telling time",
     "id": "g3_p12",
     "tag": "Grade 3",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 21",
@@ -685,6 +697,7 @@
       "Playlist 13: Represent fractions using numerator/denominator format",
     "id": "g3_p13",
     "tag": "Grade 3",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 22",
@@ -733,6 +746,7 @@
     "title": "Playlist 1: Place values",
     "id": "g4_p1",
     "tag": "Grade 4",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 1",
@@ -794,6 +808,7 @@
       "Playlist 2: Understanding & regrouping whole numbers- counting and greater than/less than basics",
     "id": "g4_p2",
     "tag": "Grade 4",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "/v/regrouping-numbers-intro-various-place-values/\n",
@@ -898,6 +913,7 @@
     "title": "Playlist 3:  Addition & subtraction- addition with carrying",
     "id": "g4_p3",
     "tag": "Grade 4",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 3",
@@ -1008,6 +1024,7 @@
       "Playlist 4:  Subtraction with carrying- addition & subtraction word problems",
     "id": "g4_p4",
     "tag": "Grade 4",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 4",
@@ -1096,6 +1113,7 @@
     "title": "Playlist 5: Concept of multiplication- basic multiplication",
     "id": "g4_p5",
     "tag": "Grade 4",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 5",
@@ -1169,6 +1187,7 @@
     "title": "Playlist 6: Multi-digit multiplication- lattice multiplication",
     "id": "g4_p6",
     "tag": "Grade 4",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 6",
@@ -1290,6 +1309,7 @@
     "title": "Playlist 7: Multiplication word problems",
     "id": "g4_p7",
     "tag": "Grade 4",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 7",
@@ -1401,6 +1421,7 @@
     "title": "Playlist 8: Measuring segments- number patterns",
     "id": "g4_p8",
     "tag": "Grade 4",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 9",
@@ -1474,6 +1495,7 @@
     "title": "Playlist 9: Division",
     "id": "g4_p9",
     "tag": "Grade 4",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle: Week 10",
@@ -1602,6 +1624,7 @@
       "Playlist 10: Division word problems- revision of multiplication & division",
     "id": "g4_p10",
     "tag": "Grade 4",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle: Week 13",
@@ -1691,6 +1714,7 @@
     "title": "Playlist 11: Tables & bar graphs",
     "id": "g4_p11",
     "tag": "Grade 4",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 16",
@@ -1788,6 +1812,7 @@
     "title": "Playlist 12: Telling time",
     "id": "g4_p12",
     "tag": "Grade 4",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 19",
@@ -1842,6 +1867,7 @@
     "title": "Playlist 13: Understanding fractions",
     "id": "g4_p13",
     "tag": "Grade 4",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 21",
@@ -1915,6 +1941,7 @@
     "title": "Playlist 14: Visualizing, comparing & decomposing fractions",
     "id": "g4_p14",
     "tag": "Grade 4",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 22",
@@ -2007,6 +2034,7 @@
     "title": "Playlist 15: Adding & subtracting fractions",
     "id": "g4_p15",
     "tag": "Grade 4",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 23",
@@ -2140,6 +2168,7 @@
     "title": "Playlist 16: Non-standard shapes- angle basics & measurements",
     "id": "g4_p16",
     "tag": "Grade 4",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "Subtitle: Week 25",
@@ -2230,6 +2259,7 @@
     "title": "Playlist 17: Logical reasoning",
     "id": "g4_p17",
     "tag": "Grade 4",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "Subtitle: Week 26",
@@ -2280,6 +2310,7 @@
       "Playlist 18: Addition & subtraction word problems- circumference & area of circles",
     "id": "g4_p18",
     "tag": "Grade 4",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "Subtitle: Week 27",
@@ -2345,6 +2376,7 @@
     "title": "Playlist 1: Place values",
     "id": "g5_p1",
     "tag": "Grade 5",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle:Week 1",
@@ -2430,6 +2462,7 @@
       "Playlist 2: Understanding & regrouping whole numbers- counting and inequalities",
     "id": "g5_p2",
     "tag": "Grade 5",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle:Week 2",
@@ -2461,66 +2494,55 @@
         "is_essential": true
       },
       {
-        "entity_id": "/e/greater-than-less-than/",
+        "entity_id": "/v/plotting-inequalities-on-a-number-line/",
         "sort_order": 5,
-        "entity_kind": "Exercise",
-        "is_essential": true
+        "entity_kind": "Video",
+        "is_essential": false
       },
       {
-        "entity_id": "/v/plotting-inequalities-on-a-number-line/",
+        "entity_id": "/v/writing-numerical-inequalities-exercise/",
         "sort_order": 6,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/writing-numerical-inequalities-exercise/",
+        "entity_id": "/v/inequalities-in-one-variable-1-exercise/",
         "sort_order": 7,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/inequalities-in-one-variable-1-exercise/",
+        "entity_id": "/v/inequalities-on-a-number-line/",
         "sort_order": 8,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/inequalities-on-a-number-line/",
+        "entity_id": "/v/figuring-out-days-of-the-week/",
         "sort_order": 9,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/figuring-out-days-of-the-week/",
-        "sort_order": 10,
-        "entity_kind": "Video",
-        "is_essential": true
-      },
-      {
         "entity_id": "/e/comparing_whole_numbers/",
-        "sort_order": 11,
-        "entity_kind": "Exercise",
-        "is_essential": true
-      },
-      {
-        "entity_id": "/e/greater-than-less-than/e/comparing_whole_numbers/",
-        "sort_order": 12,
+        "sort_order": 10,
         "entity_kind": "Exercise",
         "is_essential": true
       },
       {
         "entity_id": "/e/inequalities_on_a_number_line/",
-        "sort_order": 13,
+        "sort_order": 11,
         "entity_kind": "Exercise",
         "is_essential": true
       },
-      { "entity_id": "Quiz", "sort_order": 14, "entity_kind": "Quiz" }
+      { "entity_id": "Quiz", "sort_order": 12, "entity_kind": "Quiz" }
     ]
   },
   {
     "title": "Playlist 3: Addition & subtraction- addition with carrying",
     "id": "g5_p3",
     "tag": "Grade 5",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 3",
@@ -2656,7 +2678,7 @@
         "is_essential": true
       },
       {
-        "entity_id": "/v/sub_borrowing/",
+        "entity_id": "/v/borrowing-once-example-1/",
         "sort_order": 22,
         "entity_kind": "Video",
         "is_essential": true
@@ -2699,6 +2721,7 @@
       "Playlist 4: Concept of multiplication- basics of multiplication",
     "id": "g5_p4",
     "tag": "Grade 5",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 5",
@@ -2771,6 +2794,7 @@
     "title": "Playlist 5: Multi-digit multiplication- lattice multiplication",
     "id": "g5_p5",
     "tag": "Grade 5",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 6",
@@ -2892,6 +2916,7 @@
     "title": "Playlist 6: Multiplication and division word problems",
     "id": "g5_p6",
     "tag": "Grade 5",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 7",
@@ -3002,6 +3027,7 @@
     "title": "Playlist 7: Points, lines and planes- number patterns",
     "id": "g5_p7",
     "tag": "Grade 5",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle:week 9",
@@ -3075,6 +3101,7 @@
     "title": "Playlist 8:Factors and multiples",
     "id": "g5_p8",
     "tag": "Grade 5",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: week 10",
@@ -3154,6 +3181,7 @@
     "title": "Playlist 9:Reading and interpreting data",
     "id": "g5_p9",
     "tag": "Grade 5",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: week 11",
@@ -3263,6 +3291,7 @@
     "title": "Playlist 10: Perimeter, area and volume- ratio and proportion",
     "id": "g5_p10",
     "tag": "Grade 5",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 12",
@@ -3355,6 +3384,7 @@
     "title": "Playlist 11- Quadrilaterals & telling time",
     "id": "g5_p11",
     "tag": "Grade 5",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 13",
@@ -3490,6 +3520,7 @@
     "title": "Playlist 12- Understanding fractions & equivalent fractions",
     "id": "g5_p12",
     "tag": "Grade 5",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: week 15",
@@ -3568,7 +3599,7 @@
         "entity_kind": "Divider"
       },
       {
-        "entity_id": "/v/visualizing-equivalent-fraction/",
+        "entity_id": "/v/visualizing-equivalent-fractions/",
         "sort_order": 13,
         "entity_kind": "Video",
         "is_essential": true
@@ -3641,6 +3672,7 @@
       "Playlist 13 - Comparing fractions, decomposing fractions, factors and multiples, adding and subtracting fractions",
     "id": "g5_p13",
     "tag": "Grade 5",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle week 17",
@@ -3842,6 +3874,7 @@
     "title": "Playlist 14 - Multiplying and dividing fractions",
     "id": "g5_p14",
     "tag": "Grade 5",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle week 19",
@@ -3937,7 +3970,7 @@
       {
         "entity_id": "/e/dividing_fractions_0.5/",
         "sort_order": 15,
-        "entity_kind": "Video",
+        "entity_kind": "Exercise",
         "is_essential": true
       },
       {
@@ -3994,6 +4027,7 @@
     "title": "Playlist 15 - Mixed fractions and improper fractions",
     "id": "g5_p15",
     "tag": "Grade 5",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: week 20",
@@ -4104,6 +4138,7 @@
       "Playlist 16- Mixed fractions and improper fractions- addition, subtraction, multiplication and division",
     "id": "g5_p16",
     "tag": "Grade 5",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 21",
@@ -4208,6 +4243,7 @@
       "Playlist 17 - Conceptualizing decimals and place notation, decimals and fractions, regrouping and comparing",
     "id": "g5_p17",
     "tag": "Grade 5",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle : Week 22",
@@ -4215,7 +4251,7 @@
         "entity_kind": "Divider"
       },
       {
-        "entity_id": "/v/decimal_place_value/",
+        "entity_id": "/v/decimal-place-value/",
         "sort_order": 1,
         "entity_kind": "Video",
         "is_essential": true
@@ -4269,6 +4305,7 @@
       "Playlist 18 - Decimal operations- addition, subtraction and multiplication of decimals \n",
     "id": "g5_p18",
     "tag": "Grade 5",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle : Week 23",
@@ -4372,6 +4409,7 @@
     "title": "Playlist 19 - Conversion of decimals",
     "id": "g5_p19",
     "tag": "Grade 5",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle : Week 24",
@@ -4477,7 +4515,7 @@
         "is_essential": true
       },
       {
-        "entity_id": "/v/regrouping-with-decimalsregrouping-with-decimals/",
+        "entity_id": "/v/regrouping-with-decimals/",
         "sort_order": 17,
         "entity_kind": "Video",
         "is_essential": true
@@ -4501,6 +4539,7 @@
     "title": "Playlist 20: Measuring angles",
     "id": "g5_p20",
     "tag": "Grade 5",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "/v/angle-basics/",
@@ -4562,6 +4601,7 @@
     "title": "Playlist 21: Circles",
     "id": "g5_p21",
     "tag": "Grade 5",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "Subtitle : Week 25",
@@ -4629,6 +4669,7 @@
     "title": "Playlist 1: Test of divisibility and prime numbers",
     "id": "g6_p1",
     "tag": "Grade 6",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 1",
@@ -4736,6 +4777,7 @@
     "title": "Playlist 2: LCM and GCF",
     "id": "g6_p2",
     "tag": "Grade 6",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 3",
@@ -4810,6 +4852,7 @@
     "title": "Playlist 3: Order of operations",
     "id": "g6_p3",
     "tag": "Grade 6",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 4",
@@ -4854,6 +4897,7 @@
       "Playlist 4: Commutative. distributive and associative properties",
     "id": "g6_p4",
     "tag": "Grade 6",
+    "unit": 1,
     "entries": [
       {
         "entity_id": "Subtitle: Week 5",
@@ -4916,6 +4960,7 @@
       "Playlist 5: Write and identify a number using the base/index notation",
     "id": "g6_p5",
     "tag": "Grade 6",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 6",
@@ -5006,6 +5051,7 @@
     "title": "Playlist 6: Square and square roots",
     "id": "g6_p6",
     "tag": "Grade 6",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 8",
@@ -5073,6 +5119,7 @@
     "title": "Playlist 7: Integer and integer operations",
     "id": "g6_p7",
     "tag": "Grade 6",
+    "unit": 2,
     "entries": [
       {
         "entity_id": "Subtitle: Week 8",
@@ -5231,6 +5278,7 @@
     "title": "Playlist 8: Interpret and draw bar graphs",
     "id": "g6_p8",
     "tag": "Grade 6",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 10",
@@ -5381,6 +5429,7 @@
     "title": "Playlist 9: Perimeter and area of triangles",
     "id": "g6_p9",
     "tag": "Grade 6",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 12",
@@ -5443,6 +5492,7 @@
     "title": "Playlist 10: Perimeter and area of quadrilaterals",
     "id": "g6_p10",
     "tag": "Grade 6",
+    "unit": 3,
     "entries": [
       {
         "entity_id": "Subtitle: Week 13",
@@ -5510,6 +5560,7 @@
     "title": "Playlist 11: Ratio and proportion",
     "id": "g6_p11",
     "tag": "Grade 6",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle: Week 14",
@@ -5612,6 +5663,7 @@
       "Playlist 12: Find the missing quantity, when 2 out of 3 quantities are given (principal, rate of interest, period)",
     "id": "g6_p12",
     "tag": "Grade 6",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle: Week 16",
@@ -5661,6 +5713,7 @@
     "title": "Playlist 13: Overview and history of algebra",
     "id": "g6_p13",
     "tag": "Grade 6",
+    "unit": 4,
     "entries": [
       {
         "entity_id": "Subtitle: Week 17",
@@ -5703,6 +5756,7 @@
     "title": "Playlist 14: The why of algebra",
     "id": "g6_p14",
     "tag": "Grade 6",
+    "unit": 5,
     "entries": [
       {
         "entity_id":
@@ -5787,6 +5841,7 @@
     "title": "Playlist 15: Algebra-variables and expressions",
     "id": "g6_p15",
     "tag": "Grade 6",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 19",
@@ -5853,6 +5908,7 @@
     "title": "Playlist 16: Determining length of a segment using algebra",
     "id": "g6_p16",
     "tag": "Grade 6",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 20",
@@ -5896,6 +5952,7 @@
     "title": "Playlist 17: Dividing decimals",
     "id": "g6_p17",
     "tag": "Grade 6",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "v/dividing-completely-to-get-decimal-answer/",
@@ -5958,6 +6015,7 @@
     "title": "Playlist 18: Converting between fractions and decimals",
     "id": "g6_p18",
     "tag": "Grade 6",
+    "unit": 5,
     "entries": [
       {
         "entity_id": "Subtitle: Week 21",
@@ -6001,31 +6059,31 @@
         "is_essential": true
       },
       {
-        "entity_id": "/v/converting-decimals-to-fractions-1-ex-1/",
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-1/",
         "sort_order": 7,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/converting-decimals-to-fractions-1-ex-2/",
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-2/",
         "sort_order": 8,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/converting-decimals-to-fractions-1-ex-3/",
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-3/",
         "sort_order": 9,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/converting-decimals-to-fractions-2-ex-1/",
+        "entity_id": "/v/converting-decimals-to-fractions-2--ex-1/",
         "sort_order": 10,
         "entity_kind": "Video",
         "is_essential": true
       },
       {
-        "entity_id": "/v/converting-decimals-to-fractions-2-ex-2/",
+        "entity_id": "/v/converting-decimals-to-fractions-2--ex-2/",
         "sort_order": 11,
         "entity_kind": "Video",
         "is_essential": true
@@ -6049,6 +6107,7 @@
     "title": "Playlist 19: Percentages",
     "id": "g6_p19",
     "tag": "Grade 6",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 22",
@@ -6197,6 +6256,7 @@
       "Playlist 20: Estimating and rounding decimals/decimal multiplication by 10",
     "id": "g6_p20",
     "tag": "Grade 6",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 23",
@@ -6264,6 +6324,7 @@
     "title": "Playlist 21: Introduction to geometry",
     "id": "g6_p21",
     "tag": "Grade 6",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 24",
@@ -6324,6 +6385,7 @@
     "title": "Playlist 22: Angles and types of angles",
     "id": "g6_p22",
     "tag": "Grade 6",
+    "unit": 6,
     "entries": [
       {
         "entity_id": "Subtitle: Week 25",
@@ -6449,6 +6511,7 @@
     "title": "Playlist 23: Angles, triangles and polygons-1",
     "id": "g6_p23",
     "tag": "Grade 6",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "Subtitle: Week 26",
@@ -6500,6 +6563,7 @@
     "title": "Playlist 24: Angles, triangles and polygons-2",
     "id": "g6_p24",
     "tag": "Grade 6",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "/v/finding-more-angles/",
@@ -6531,6 +6595,7 @@
     "title": "Playlist 25: Circles",
     "id": "g6_p25",
     "tag": "Grade 6",
+    "unit": 7,
     "entries": [
       {
         "entity_id": "Subtitle: Week 27",
