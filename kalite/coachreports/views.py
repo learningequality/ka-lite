@@ -2,6 +2,7 @@ import json
 import requests
 import datetime
 import re
+import os
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from ast import literal_eval
@@ -24,10 +25,11 @@ from fle_utils.internet import StatusException
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
+from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = ['Max', 'Min', 'Average', 'Std Dev']
@@ -256,6 +258,43 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
             #"childtopics": childtopics,     
         }
 
+    # Provide relevant playlist data to the context that can be looped easily in the template 
+    # TODO(dylan): this is Nalanda specific and will need to be changed for student reports once we do this more generally
+    all_playlists = json.load(open(os.path.join(settings.PROJECT_PATH, 'playlist/playlists.json')))
+    # all_playlists = Playlist.all()
+    id2slug_map = get_id2slug_map()
+    slug2id_map = get_slug2id_map()
+    exercise_ids = set([ex_log["exercise_id"] for ex_log in exercise_logs])
+    video_ids = set([id2slug_map.get(vid_log["video_id"]) for vid_log in video_logs])
+    flat_topic_tree = get_flat_topic_tree()
+    context_playlists = list()
+    for p in all_playlists:
+        for e in p.get("entries"):
+            # if there is an exercise log or video log completed by the student in any playlist, keep this playlist
+            if e.get("entity_kind") == "Video" or e.get("entity_kind") == "Exercise":
+                entity_id = convert_leaf_url_to_id(e.get("entity_id"))
+
+                if entity_id in exercise_ids or entity_id in video_ids:
+                    context_playlists.append(p)
+                    break
+
+    for i, p in enumerate(context_playlists):
+         # Add in all the exercise or video data we care about here so the template can easily access this data 
+        for j, entry in enumerate(p.get("entries")):
+            entity_kind = entry.get("entity_kind")
+            if entry.get("entity_kind") == "Video" or entry.get("entity_kind") == "Exercise":
+                entity_id = convert_leaf_url_to_id(entry.get("entity_id"))
+                if entity_kind == "Video":
+                    # Combine video info with student video log (if it exists)
+                    entry["data"] = flat_topic_tree["Video"][slug2id_map.get(entity_id)]
+                    entry["data"].update(next((v for v in video_logs if id2slug_map.get(v["video_id"]) == entity_id), {}))                    
+                elif entity_kind == "Exercise":
+                    entry["data"] = flat_topic_tree["Exercise"][entity_id]
+                    entry["data"].update(next((ex for ex in exercise_logs if ex["exercise_id"] == entity_id), {}))
+                
+                # Update the actual dict we pass to the context with this data            
+                context_playlists[i].get("entries")[j].update(entry)
+
     context = plotting_metadata_context(request)
 
     return {
@@ -272,6 +311,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         "video_logs": videos_by_topic,
         "exercise_sparklines": exercise_sparklines,
         "no_data": not exercise_logs and not video_logs,
+        "playlists": context_playlists,
         "stats": stats,
         "stat_defs": [  # this order determines the order of display
             {"key": "ex:pct_mastery",      "title": _("% Mastery"),        "type": "pct"},
