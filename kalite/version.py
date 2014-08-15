@@ -1,11 +1,11 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-# this is actually 0.12.2, but we need to update language pack version fallbacks before changing here
+# this is actually 0.12.5, but we need to update language pack version fallbacks before changing here
 VERSION = "0.12.0"
 VERSION_INFO = {
 
-    "0.12.4": {
-        "release_date": "2014/08/07",
-        "git_commit": "8c3c3",
+    "0.12.5": {
+        "release_date": "2014/08/08",
+        "git_commit": "19055bb",
         "new_features": {
             "all": [],
             "students": [],
@@ -13,16 +13,33 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": ["Run setup when database is not initialized on startup"],
-            "students": ["Stop opening new tabs when opening related videos from exercises"],
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],
+        },
+    },
+
+    "0.12.4": {
+        "release_date": "2014/08/07",
+        "git_commit": "8c3c331",
+        "new_features": {
+            "all": [],
+            "students": [],
             "coaches": [],
             "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": ["Stop opening new tabs when opening related videos from exercises"],
+            "coaches": [],
+            "admins": ["Run setup when database is not initialized on startup"],
         },
     },
 
     "0.12.3": {
         "release_date": "2014/08/02",
-        "git_commit": "90f88",
+        "git_commit": "90f8880",
         "new_features": {
             "all": [],
             "students": ["Numpad for student exercises"],
