@@ -482,7 +482,7 @@ class AttemptLog(DeferredCountSyncedModel):
     points = models.IntegerField(default=0)
     correct = models.BooleanField(default=False) # indicates that the first answer given was correct
     complete = models.BooleanField(default=False) # indicates that the question was eventually answered correctly
-    context_type = models.CharField(max_length=20, blank=False) # e.g. "exam", "quiz", "playlist", "topic"
+    context_type = models.CharField(max_length=20, blank=True) # e.g. "exam", "quiz", "playlist", "topic"
     context_id = models.CharField(max_length=100, blank=True) # e.g. the exam ID, quiz ID, playlist ID, topic ID, etc
     language = models.CharField(max_length=8, blank=True)
     timestamp = models.DateTimeField() # time at which the question was first loaded (that led to the initial response)
