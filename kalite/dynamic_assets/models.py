@@ -35,7 +35,7 @@ class DynamicSettings(object):
 
     def initialize_namespace(self, namespace):
         # create the namespace inside the class if it doesn't exist yet
-        setattr(self, namespace, getattr(self, namespace, Namespace()))
+        setattr(self, namespace, getattr(self, namespace, Namespace(name=namespace)))
         self.NAMESPACES.append(namespace)
 
         # to make manipulations to the namespace easier
@@ -43,6 +43,7 @@ class DynamicSettings(object):
         return namespace
 
     def add_source(self, source):
+        self._current_namespace._source.update(source)
         for field in self._current_namespace._schema:
             if field in source:
                 setattr(self._current_namespace, field, source[field])
