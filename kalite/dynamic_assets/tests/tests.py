@@ -53,3 +53,11 @@ class DynamicSettingsModelsTests(TestCase):
 
         self.assertTrue(settings.namespace1.attr, "namespace1 wasn't created properly")
         self.assertTrue(settings.namespace2.attr, "namespace2 wasn't created properly")
+
+
+class FieldValidationTests(TestCase):
+
+    def test_cant_instantiate_a_basefield(self):
+
+        with self.assertRaises(TypeError):
+            models.BaseField()

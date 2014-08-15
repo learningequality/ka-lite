@@ -1,3 +1,6 @@
+import abc
+
+
 class DynamicSettings(object):
     NAMESPACES = []
 
@@ -55,7 +58,17 @@ class Namespace(object):
 
 
 class BaseField(object):
-    typeclass = None.__class__  # make sure this does not pass
+    __metaclass__ = abc.ABCMeta
+
+    def _get_typeclass(self):
+        return self._typeclass
+
+    def _set_typeclass(self, val):
+        self._typeclass = val
+
+    # have to define this on subclasses
+    # to be able to instantiate it
+    typeclass = abc.abstractproperty(_get_typeclass, _set_typeclass)
 
 FIELDTYPES = [int, bool, str]
 
