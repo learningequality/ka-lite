@@ -551,6 +551,19 @@ window.QuizLogModel = Backbone.Model.extend({
 
     },
 
+    get_latest_response_log_item: function() {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        // add the event to the response log list
+
+        return this._response_log_cache[this.get("attempts")-1];
+
+    },
+
     urlRoot: "/api/playlists/quizlog/"
 
 });
@@ -1330,11 +1343,14 @@ window.ExerciseQuizView = Backbone.View.extend({
     },
 
     finish_quiz: function() {
-        this.$el.html(this.stop_template())
+        this.$el.html(this.stop_template({
+            correct: this.log_model.get_latest_response_log_item(),
+            total_number: this.log_model.get("total_number")
+        }));
 
         var self = this;
 
-        $("#stop-quiz").click(function(){self.trigger("complete");})
+        $("#stop-quiz").click(function(){self.trigger("complete");});
     },
 
     user_data_loaded: function() {
@@ -1459,7 +1475,7 @@ window.ExerciseQuizView = Backbone.View.extend({
 
 
 function seeded_shuffle(source_array, random) {
-    var array = source_array.slice(0)
+    var array = source_array.slice(0);
     var m = array.length, t, i;
 
     // While there remain elements to shuffle…
