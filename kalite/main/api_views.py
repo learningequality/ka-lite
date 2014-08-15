@@ -29,6 +29,9 @@ from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
 
+from kalite.student_testing.api_resources import get_current_unit_settings_value
+from kalite.playlist.models import VanillaPlaylist as Playlist
+
 
 class student_log_api(object):
     """
@@ -236,11 +239,36 @@ def get_video_logs(request):
 def flat_topic_tree(request, lang_code):
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
 
+UNIT_EXERCISES = {}
+
+from django.conf import settings; logging = settings.LOG
 
 @api_handle_error_with_json
 @backend_cache_page
 def exercise(request, exercise_id):
-    return JsonResponse(get_exercise_data(request, exercise_id))
+    exercise = get_exercise_data(request, exercise_id)
+    if "nalanda" in settings.CONFIG_PACKAGE:
+        if "facility_user" in request.session:
+            facility_id = request.session["facility_user"].facility.id
+            current_unit = get_current_unit_settings_value(facility_id)
+            if not UNIT_EXERCISES.has_key(current_unit):
+                exercise_id_match = re.compile("/e/([a-z0-9_]+)/")
+                for playlist in Playlist.all():
+                    if not UNIT_EXERCISES.has_key(playlist.unit):
+                        UNIT_EXERCISES[playlist.unit] = []
+                    for entry in playlist.entries:
+                        if entry["entity_kind"] == "Exercise":
+                            UNIT_EXERCISES[playlist.unit].append(
+                                entry["entity_id"]
+                                )
+            current_unit_exercises = UNIT_EXERCISES[current_unit]
+            if exercise["exercise_id"] in current_unit_exercises:
+                logging.debug("Setting basepoints" + str(current_unit))
+                # TODO-BLOCKER (rtibbles): Hook into unit settings/front end parameterization to replace '8'.
+                exercise["basepoints"] = settings.UNIT_POINTS/(len(current_unit_exercises)*(8 + settings.FIXED_BLOCK_EXERCISES + settings.QUIZ_REPEATS))
+            else:
+                exercise["basepoints"] = 0
+    return JsonResponse(exercise)
 
 
 @api_handle_error_with_json
