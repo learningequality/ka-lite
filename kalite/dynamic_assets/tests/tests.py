@@ -1,5 +1,6 @@
-from django.test import TestCase
+import json
 
+from django.test import TestCase
 
 from kalite.dynamic_assets import models
 
@@ -53,6 +54,13 @@ class DynamicSettingsModelsTests(TestCase):
 
         self.assertTrue(settings.namespace1.attr, "namespace1 wasn't created properly")
         self.assertTrue(settings.namespace2.attr, "namespace2 wasn't created properly")
+
+    def test_ds_must_be_json_serializable(self):
+        json.dumps(models.DynamicSettings(
+            namespace='namespace1',
+            schema={'attr': models.IntField},
+            source={'attr': 1},
+        ))
 
 
 class FieldValidationTests(TestCase):

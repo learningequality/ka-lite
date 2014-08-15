@@ -1,4 +1,5 @@
 import abc
+import json
 
 
 class DynamicSettings(object):
@@ -55,6 +56,13 @@ class DynamicSettings(object):
                 field = ns._schema[attrname]
                 field.validate(ns, attrname)
 
+    def to_json(self):
+        '''
+        Used by JSONEncoder for serializing an object into JSON. Return one
+        of the builtin python types serializable into json.
+        '''
+        return dict((nsname, ns.to_json()) for nsname, ns in self.__dict__.iteritems() if nsname in self.NAMESPACES)
+
 
 class Namespace(object):
 
@@ -65,6 +73,15 @@ class Namespace(object):
 
     def __repr__(self):
         return self.name
+
+    def __str__(self):
+        return self.name
+
+    def to_json(self):
+        '''
+        Return a dict that's ready for serialization by json.dump/s
+        '''
+        return dict((attr, val) for attr, val in self.__dict__.iteritems() if attr in self._schema)
 
 
 class BaseField(object):
@@ -98,3 +115,15 @@ for typ in MISC_FIELDTYPES:
         classname,
         (BaseField,),
         {'typeclass': typ})
+
+
+# NOTE: HACK OF ALL SEASONS INCOMING!  Python's json.JSONEncoder
+# class, which the jsonify filter calls, unfortunately doesn't look at
+# any of the object's methods unlike repr/str.  So we're gonna do some
+# monkey patching to add that functionality.
+# taken from:http://stackoverflow.com/questions/18478287/making-object-json-serializable-with-regular-encoder
+def _default(self, obj):
+    return getattr(obj.__class__, "to_json", _default.default)(obj)
+
+_default.default = json.JSONEncoder().default  # save unmodified default, which just raises TypeError
+json.JSONEncoder.default = _default  # replacement
