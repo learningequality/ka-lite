@@ -15,34 +15,7 @@
     <script>
         var ALL_CURRENT_UNIT_URL = "{% url 'api_dispatch_list' resource_name='current_unit' %}";
     </script>
-
-    <script type="text/html" id="all-current-unit-entry-template">
-        <td facility-name="<%= facility_name %>"><a href="<%= facility_url %>"><%= facility_name %></a></td>
-        <td>
-{#            <span>Unit <%= current_unit %></span>#}
-            <button data-facility-name="<%= facility_name %>" data-facility-id="facility-<%= id %>"
-                    <% if (is_on_first) { %>
-                    disabled=disabled
-                    <% } %>
-                    class="btn btn-info test-row-button previous">Previous
-            </button>
-            <% _.each(unit_list, function(unit) { %>
-                <% if (unit == current_unit) { %>
-                    <span style="font-weight: bold;"> Unit <%= unit %> </span>
-                <% } else { %>
-                    <a href="#" class="selected-unit" data-facility-id="<%= facility_id %>" data-selected-unit="<%= unit %>"><%= unit %></a>
-                <% } %>
-                &nbsp;
-            <% }); %>
-            <button data-facility-name="<%= facility_name %>" data-facility-id="facility-<%= id %>"
-                    <% if (is_on_last) { %>
-                    disabled=disabled
-                    <% } %>
-                    class="btn btn-info test-row-button next">Next
-            </button>
-        </td>
-    </script>
-
+    <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
     <script src="{% static 'js/student_testing/models.js' %}"></script>
     <script src="{% static 'js/student_testing/current_unit.js' %}"></script>
 {% endblock headjs %}
