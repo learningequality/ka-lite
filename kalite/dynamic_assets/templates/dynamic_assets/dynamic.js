@@ -1,3 +1,2 @@
-{% if ds.distributed.fixed_block_exercises %}
-window.FIXED_BLOCK_EXERCISES = {{ ds.distributed.fixed_block_exercises }};
-{% endif %}
+{% load my_filters %}
+var ds = {{ ds.to_json|jsonify }};
