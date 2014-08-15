@@ -61,3 +61,16 @@ class FieldValidationTests(TestCase):
 
         with self.assertRaises(TypeError):
             models.BaseField()
+
+    def test_invalid_intfield_raises_error(self):
+
+        s = models.DynamicSettings(namespace='test',
+                                   schema={
+                                       'intfield': models.IntField()
+                                   },
+                                   source={
+                                       'intfield': False
+                                   })
+
+        with self.assertRaises(ValueError):
+            s.validate()

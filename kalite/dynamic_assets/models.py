@@ -48,14 +48,23 @@ class DynamicSettings(object):
             if field in source:
                 setattr(self._current_namespace, field, source[field])
 
-    def is_valid(self):
-        return True
+    def validate(self):
+        for nsname in self.NAMESPACES:
+            ns = getattr(self, nsname)
+            for attrname in ns._source.iterkeys():
+                field = ns._schema[attrname]
+                field.validate(ns, attrname)
 
 
 class Namespace(object):
 
-    def __init__(self):
+    def __init__(self, name):
         self._schema = {}
+        self._source = {}
+        self.name = name
+
+    def __repr__(self):
+        return self.name
 
 
 class BaseField(object):
@@ -71,10 +80,19 @@ class BaseField(object):
     # to be able to instantiate it
     typeclass = abc.abstractproperty(_get_typeclass, _set_typeclass)
 
-FIELDTYPES = [int, bool, str]
+    def validate(self, namespace, fieldname):
+        val = getattr(namespace, fieldname)
+        if val.__class__ != self.typeclass:
+            raise ValueError("%s.%s didn't validate with value %s" % (namespace, fieldname, val))
+
+
+class IntField(BaseField):
+    typeclass = int
+
+MISC_FIELDTYPES = [bool, str]
 
 # define all field types
-for typ in FIELDTYPES:
+for typ in MISC_FIELDTYPES:
     classname = "%sField" % typ.__name__.capitalize()
     globals()[classname] = type(
         classname,
