@@ -53,6 +53,9 @@
             color: rgb(43, 43, 43);
             opacity: 0.9;
         }
+        .unavailable-content {
+            cursor: default;
+        }
         
     </style>
 {% endblock headcss %}
@@ -99,17 +102,33 @@
                     {% if e.entity_kind != "Divider" %}
                         <div class="col-xs-2 progress-wrapper">
                             {% if e.entity_kind == "Video" %}
-                                <div data-toggle="popover" title="{{ e.data.title }}" class="progress-indicator {% if e.data.complete %}completed" data-content="Status: Completed<br/>"{% elif e.data.total_seconds_watched > 0 %}inprogress" data-content="Status: In-Progress"{% else %}not-started" data-content="Status: Not Started"{% endif %}" >
-                                    <span class="indicator-icon glyphicon glyphicon-film"></span>
-                                </div>
+                                {% if e.data.available %}
+                                    <a href="{{ e.data.path }}">
+                                        <div class="progress-indicator {% if e.data.complete %}completed{% elif e.data.total_seconds_watched > 0 %}inprogress{% else %}not-started{% endif %}" title="{{ e.entity_kind }}: {{ e.data.title }}">
+                                            <span class="indicator-icon glyphicon glyphicon-film"></span>
+                                        </div>
+                                    </a>
+                                {% else %}
+                                    <div class="unavailable-content progress-indicator {% if e.data.complete %}completed{% elif e.data.total_seconds_watched > 0 %}inprogress{% else %}not-started{% endif %}" title="{{ e.entity_kind }}: {{ e.data.title }} (unavailable)">
+                                        <span class="indicator-icon glyphicon glyphicon-film"></span>
+                                    </div>
+                                {% endif %}
+                                <h5>
+                                    {{ e.data.title }}
+                                </h5>
                             {% elif e.entity_kind == "Exercise" %}
                                 <div class="progress-indicator {% if e.data.struggling%}struggling{% elif e.data.complete %}completed{% elif e.data.attempts > 0 %}inprogress{% else %}not-started{% endif %}" title="{{ e.entity_kind }}: {{ e.data.title }}">
                                     <span class="indicator-icon glyphicon glyphicon-pencil"></span>
                                 </div>
+                                <h6>
+                                    {% if e.data.available %}
+                                        <a href="{{ e.data.path }}">{{ e.data.title }}</a>
+                                    {% else %}
+                                        <span class="unavailable" title="Exercise unavailable">{{ e.data.title }}</span>
+                                    {% endif %}
+                                </h6>
                             {% endif %}
-                            <p>{{ e.title }}</p>
                         </div>
-                        <p>{{ e }}</p>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -117,16 +136,5 @@
         {% endfor %}
     {% endif %}
 </div>
-
-<script>
-$(function() {
-    $(".progress-indicator").popover({
-        trigger: "click",
-        placement: "right",
-        animation: false,
-        html: true
-    });
-})
-</script>
-    {% endblock student_report %}
+{% endblock student_report %}
 {% endblock content %}
