@@ -262,6 +262,7 @@ def exercise(request, exercise_id):
                                 entry["entity_id"]
                                 )
             current_unit_exercises = UNIT_EXERCISES[current_unit]
+            # TODO-BLOCKER (rtibbles): Also modify by a/b condition.
             if exercise["exercise_id"] in current_unit_exercises:
                 logging.debug("Setting basepoints" + str(current_unit))
                 # TODO-BLOCKER (rtibbles): Hook into unit settings/front end parameterization to replace '8'.
