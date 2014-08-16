@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "coachreports/landing_page.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
@@ -10,6 +10,11 @@
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
+    <style>
+        .teach-nav li {
+            display: inline-block;
+        }
+    </style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -35,6 +40,23 @@
 {% endblock headjs %}
 
 {% block content %}
+{% block teach_nav %}
+    <div class="teach-nav">
+        <ul class="nav navbar-nav">
+            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="teacher-only" title="{% trans 'Track the progress of your students' %}">{% trans "Reports" %}</a></li>
+            <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a></li>
+            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only active active-nav" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
+            <li><a class="admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+        </ul>
+    </div>
+{% endblock teach_nav %}
+    
+        <div>
+            <a class="changeable-link" href="{% url 'test_view' %}">  
+                <h2 class="suggested-action-title">{% trans "Exam Results" %}</h2>
+            </a>
+        </div>
+
     <h2 class="title-header">
         <div class="title">{% trans "Tests" %}</div>
     </h2>

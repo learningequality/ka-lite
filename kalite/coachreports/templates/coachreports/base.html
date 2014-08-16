@@ -36,7 +36,49 @@
         .group_div {
             margin-left: 20px;
         }
-        @media only screen and (max-width: 744px) {
+        .teach-nav {
+            display: inline-block;
+            width: 100%;
+            border-bottom: 4px solid #5C8547;
+            margin-bottom: 25px;
+        }
+        .teach-nav li {
+            background-color: #5C8547;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 17px;
+            border-top: 3px solid #5C8547;
+            border-right: 3px solid #5C8547;
+            border-left: 3px solid #5C8547;
+            width: 120px;
+            text-align: center;
+            vertical-align: center;
+            font-weight: bold;
+            display: inline-block !important;
+            margin: 0 2px -4px 0;
+        }
+        .teach-nav li a:hover {
+            background-color: white !important;
+            border-top-left-radius: 5px !important;
+            border-top-right-radius: 16px !important;
+            color: #405D32;
+            font-weight: bold;
+        }
+        .teach-nav li a {
+            color: white;
+            padding: 10px !important;
+        }
+        .active-nav {
+            color: #405D32 !important;
+            background-color: white !important;
+            border-top-left-radius: 5px !important;
+            border-top-right-radius: 16px !important;
+            font-weight: bold;
+            
+        }
+        .active {
+            background-color: #E9F1E4;           
+        }
+        @media only screen and (max-width: 744px) {+
             h4 { margin-top: 0; }
             .selection { padding-bottom: 0; }
             #link-box { float: left; padding-bottom: 10px; }
@@ -56,7 +98,20 @@
 {% endblock headjs %}
 
 {# sub-pages must embed the navbar within the content, to have it appear. #}
+
 {% block navbar %}
+
+{% block teach_nav %}
+    <div class="teach-nav">
+        <ul class="nav navbar-nav">
+            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="active-nav active " title="{% trans 'Track the progress of your students' %}">{% trans "Reports" %}</a></li>
+            <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a></li>
+            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
+            <li><a class="admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+        </ul>
+    </div>
+{% endblock teach_nav %}
+{% block subnavbar %}{% endblock subnavbar %}
 
     <div id="navbar" style="padding-bottom:25px">
         <div id="users_link">

@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "facility/facility.html" %}
 {% load i18n %}
 {% load my_filters %}
 
@@ -24,6 +24,7 @@
 
 
 {% block content %}
+{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
     {{ path_template }}
     <div id="facility_list_container">
         <section id="facility_list">

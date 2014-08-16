@@ -41,6 +41,31 @@
         .subtitle {
             float: left;
         }
+        .sub-active {
+            background-color: #7BAC5D;
+            border-radius: 8px;
+        }
+        .subnav {
+            text-align: center;
+            margin: 10px 0 50px 0;
+        }
+        .subnav li {
+            display: inline-block;
+            width: 150px;
+            text-align: center;
+            border-radius: 10px;
+            background-color: #C8DCBC;
+            border: 2px solid #7BAC5D;
+            margin: -25px 10px 0 10px;
+        }
+        .subnav li a {
+            color: black;
+            font-weight: bold;
+        }
+        .subnav li a:hover {
+            background-color: #7BAC5D !important;
+            border-radius: 10px !important;
+        }
         #summary {
             border: 1px black solid;
             position: absolute;
@@ -93,6 +118,8 @@
     <script type="text/javascript" src="{% static 'js/coachreports/base_d3_visualization.js' %}"></script>
 {% endblock headjs %}
 
+
+
 {% block navbar_topics %}
     <div class="container">
         <div class="row">
@@ -104,8 +131,14 @@
         </div>
 {% endblock navbar_topics %}
 
+
+
 {% block content %}
-    {% block navbar %}{{ block.super }}{% endblock navbar %}
+    
+    {% block navbar %}
+
+    {{ block.super }}{% endblock navbar %}
+    
 
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->

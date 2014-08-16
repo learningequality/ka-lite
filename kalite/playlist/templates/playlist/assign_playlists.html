@@ -1,4 +1,5 @@
-{% extends base_template %}
+ {% extends "coachreports/landing_page.html" %}
+
 
 {% load i18n %}
 {% load kalite_staticfiles %}
@@ -33,6 +34,18 @@
 {% endblock headjs %}
 
 {% block content %}
+
+{% block teach_nav %}
+    <div class="teach-nav">
+        <ul class="nav navbar-nav">
+            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="teacher-only" title="{% trans 'Track the progress of your students' %}">{% trans "Reports" %}</a></li>
+            <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only active-nav active" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a></li>
+            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
+            <li><a class="admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+        </ul>
+    </div>
+{% endblock teach_nav %}
+
   <div class="row">
     <table class="span3 table table-hover" id="student-groups">
       <tr>

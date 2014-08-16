@@ -393,7 +393,7 @@
                             <tr {% if student.id %}class="selectable"{% endif %} value="{{ student.id }}" type="students">
                                 <td>{% if student.id %}<input type="checkbox" value="#students">{% endif %}</td>
                                 <td>
-                                    <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' id=student.id %}?facility={{ facility_id }}">
+                                    <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}">
                                         {{ student|format_name:"last_first" }}
                                     </a>
                                 </td>

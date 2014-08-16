@@ -26,11 +26,57 @@
         ul.pagination > .active > a {
             color: gray;
         }
+        .manage-nav {
+            display: inline-block;
+            width: 100%;
+            border-bottom: 4px solid #5C8547;
+            margin-bottom: 25px;
+        }
+        .manage-nav li {
+            background-color: #5C8547;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 17px;
+            border-top: 3px solid #5C8547;
+            border-right: 3px solid #5C8547;
+            border-left: 3px solid #5C8547;
+            width: 120px;
+            text-align: center;
+            vertical-align: center;
+            font-weight: bold;
+            display: inline-block !important;
+            margin: 0 2px -4px 0;
+        }
+        .manage-nav li a {
+            color: white;
+        }
+        .manage-nav li a:hover {
+            background-color: white !important;
+            border-top-left-radius: 5px !important;
+            border-top-right-radius: 16px !important;
+            color: #405D32;
+            font-weight: bold;
+        }
+        .active-nav {
+            color: #405D32 !important;
+            background-color: white !important;
+            border-top-left-radius: 5px !important;
+            border-top-right-radius: 16px !important;
+            font-weight: bold;
+            
+        }
 
     </style>
 {% endblock headcss %}
 
 {% block content %}
+{% block manage_nav %}
+    <div class="manage-nav">
+        <ul class="nav">
+            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="admin-only teacher-only active active-nav" title="{% trans 'Manage Users' %}">{% trans "Network" %}</a></li>
+            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Update" %}</a></li>
+        </ul>
+    </div>
+{% endblock manage_nav %}
     {% block titlebar %}
         <div class="titlebar">
             <ul class="titlebar__title">
@@ -69,7 +115,7 @@
 
                 {% if facility %}
                 <li>
-                    &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
+                    &gt; {% if group_id %}<a href="{% url 'device_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
                     <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">

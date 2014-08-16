@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "facility/facility.html" %}
 {% load i18n %}
 
 {% block headcss %}{{ block.super }}
@@ -29,6 +29,7 @@
 {% endblock headjs %}
 
 {% block content %}
+{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
     <h3 class="no-margin-top">{{ title }}</h3>
 
     <form method="post" class="basic-form">

@@ -6,13 +6,18 @@
 {% block navbar_topics %}{% endblock navbar_topics %}
 {% block navbar_makelink %}{% endblock navbar_makelink %}
 
+{% block headcss %}{{ block.super }}{% endblock headcss %}
+
 {% block content %}
+
     <div>
         {% block navbar %}{{ block.super }}{% endblock navbar %}
 
         <div class="container">
-            
+
             <div class="row">
+
+                
                 
                 <div class="col-md-4">
                     <div class="vertical-shadow suggested-action">
@@ -41,14 +46,7 @@
                     </div>
                 </div>
 
-                <div class="separate">
-                    <div class="vertical-shadow suggested-action">
-                        <a class="changeable-link" href="{% url 'test_view' %}">
-                            <div class="suggested-action-image-link" style="background-image: url({% static 'images/coachreports/coach-report-test.png' %});"></div>
-                            <h2 class="suggested-action-title">{% trans "Exam Results" %}</h2>
-                        </a>
-                    </div>
-                </div>
+                
             </div>
 
         </div>

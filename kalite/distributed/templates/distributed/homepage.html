@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "coachreports/landing_page.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
@@ -7,6 +7,11 @@
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
+    <style>
+        .teach-nav li {
+            float: left;
+        }
+    </style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -48,6 +53,18 @@
 {% endblock headjs %}
 
 {% block content %}
+{% block teach_nav %}
+    <span class="admin-only">
+        <div class="teach-nav">
+            <ul class="nav navbar-nav">
+                <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="teacher-only" title="{% trans 'Track the progress of your students' %}">{% trans "Reports" %}</a></li>
+                <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a></li>
+                <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
+                <li><a class="admin-only teacher-only active active-nav" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+            </ul>
+        </div>
+    </span>
+{% endblock teach_nav %}
     <div class="container">
 
         <div class="row">

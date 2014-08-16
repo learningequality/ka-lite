@@ -1,4 +1,4 @@
-{% extends "coachreports/base_d3_visualization.html" %}
+{% extends "coachreports/timeline_view.html" %}
 {% load i18n %}
 {% load repeatblock %}
 {% load my_filters %}
@@ -18,11 +18,35 @@
     </script>
 {% endblock headjs %}
 
+{% block teach_nav %}
+    <div class="teach-nav">
+        <ul class="nav navbar-nav">
+            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="teacher-only active active-nav" title="{% trans 'Track the progress of your students' %}">{% trans "Reports" %}</a></li>
+            <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a></li>
+            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
+            <li><a class="admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+        </ul>
+    </div>
+{% endblock teach_nav %}
+
+{% block subnavbar %}
+ <div class="subnav">
+        <ul class="nav">
+            <li><a href="{% url 'tabular_view' %}">Progress<br>by Topic</a></li>
+            <li><a class="active sub-active" href="{% url 'scatter_view' %}">Effort versus<br>Achievement</a></li>
+            <li><a href="{% url 'timeline_view' %}">Mastery<br>over Time</a></li>
+        </ul>
+    </div>
+{% endblock subnavbar %}
+
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
 {% endblock headcss %}
 
+
+
 {% block axis_dropdown %}
+
     {% trans "X-Axis" %}:
     <select id="xaxis" name="xaxis">
         {% block data_options %}
@@ -38,4 +62,5 @@
     <select id="yaxis" name="yaxis">
         {% repeatblock data_options %}
     </select>
+    
 {% endblock axis_dropdown %}
