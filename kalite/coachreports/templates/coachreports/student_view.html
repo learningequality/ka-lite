@@ -9,6 +9,26 @@
 {% block title %}{% trans "User report" %} {{ block.super }}{% endblock title%}
 {% block report_title %}{% trans "User report" %}{% endblock report_title %}
 
+{% block headjs %}{{ block.super }}
+    <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
+    <script>
+        var PLAYLIST_PROGRESS_URL = "{% url 'api_dispatch_list' resource_name='playlist_progress' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/coachreports/student_progress.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.container_view = new StudentProgressView({
+                el: $("#student-progress-container")
+            });
+        });
+
+        console.log("asdfjadshfad")
+    </script>
+
+{% endblock headjs %}
+
+
 {% block headcss %}{{ block.super }}
     <style>
         .super-header {
@@ -77,64 +97,9 @@
 {% block navbar %}{{ block.super }}{% endblock navbar %}
 
 {% block student_report %}
-<!-- {% blocktrans %}Last login time: {{ last_login_time }}{% endblocktrans %}-->
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            {% if no_data %}
-                {% if request.is_admin or is_central %}
-                    {% trans "No data for this user." %}
-                {% else %}
-                    {% trans "Welcome to KA Lite!" %}
-                    {% trans "Please return to this page after watching videos or practicing exercises." %}
-                {% endif %}
-            {% else %}
-                <h2>{% trans "Playlist Progress" %}</h2>
-            {% endif %}
-        </div>
+    <div class="container">
+        <div id="student-progress-container"></div>
     </div>
-    {% if not no_data %}    
-        {% for p in playlists %}
-        <div class="row">
-            <div class="col-xs-12">
-                <p><strong>{{ p.title }} <small>{{ p.tag }}</small></strong></p>
-                {% for e in p.entries %}
-                    {% if e.entity_kind != "Divider" %}
-                        <div class="col-xs-2 progress-wrapper">
-                            {% if e.entity_kind == "Video" %}
-                                {% if e.data.available %}
-                                    <a href="{{ e.data.path }}">
-                                        <div class="progress-indicator {% if e.data.complete %}completed{% elif e.data.total_seconds_watched > 0 %}inprogress{% else %}not-started{% endif %}" title="{{ e.entity_kind }}: {{ e.data.title }}">
-                                            <span class="indicator-icon glyphicon glyphicon-film"></span>
-                                        </div>
-                                    </a>
-                                {% else %}
-                                    <div class="unavailable-content progress-indicator {% if e.data.complete %}completed{% elif e.data.total_seconds_watched > 0 %}inprogress{% else %}not-started{% endif %}" title="{{ e.entity_kind }}: {{ e.data.title }} (unavailable)">
-                                        <span class="indicator-icon glyphicon glyphicon-film"></span>
-                                    </div>
-                                {% endif %}
-                                <h5>
-                                    {{ e.data.title }}
-                                </h5>
-                            {% elif e.entity_kind == "Exercise" %}
-                                <div class="progress-indicator {% if e.data.struggling%}struggling{% elif e.data.complete %}completed{% elif e.data.attempts > 0 %}inprogress{% else %}not-started{% endif %}" title="{{ e.entity_kind }}: {{ e.data.title }}">
-                                    <span class="indicator-icon glyphicon glyphicon-pencil"></span>
-                                </div>
-                                <h6>
-                                    {% if e.data.available %}
-                                        <a href="{{ e.data.path }}">{{ e.data.title }}</a>
-                                    {% else %}
-                                        <span class="unavailable" title="Exercise unavailable">{{ e.data.title }}</span>
-                                    {% endif %}
-                                </h6>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-    {% endif %}
-</div>
+
 {% endblock student_report %}
 {% endblock content %}

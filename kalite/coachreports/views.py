@@ -22,6 +22,7 @@ from django.utils.translation import ugettext as _
 from .api_views import get_data_form, stats_dict
 from fle_utils.general import max_none
 from fle_utils.internet import StatusException
+from kalite.coachreports.models import PlaylistProgress
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
