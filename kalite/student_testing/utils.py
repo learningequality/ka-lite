@@ -1,8 +1,12 @@
+from django.conf import settings
+
 from fle_utils.config.models import Settings
 
 from .settings import SETTINGS_KEY_EXAM_MODE
+from .signals import exam_unset
 
-from kalite.student_testing.signals import exam_unset
+logging = settings.LOG
+
 
 def get_exam_mode_on():
     """
@@ -19,11 +23,19 @@ def set_exam_mode_on(test_object):
     """
 
     current_test_id = get_exam_mode_on()
-    if current_test_id == test_object.test_id:
+    test_id = getattr(test_object, 'test_id', test_object)
+    value = test_id
+
+    # do the import here to prevent circular import
+    from .api_resources import Test
+    is_test = isinstance(test_object, Test)
+
+    if current_test_id == test_id:
         value = ''
-        if test_object.practice:
+        if is_test and test_object.practice:
             exam_unset.send(sender="None", test_id=current_test_id)
-    else:
-        value = test_object.test_id
+
     Settings.set(SETTINGS_KEY_EXAM_MODE, value)
-    return test_object.set_exam_mode()
+
+    if is_test:
+        return test_object.set_exam_mode()

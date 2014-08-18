@@ -178,29 +178,29 @@ SETTINGS_MAX_UNITS = 20  # TODO(cpauya): Maybe put to settings.py or Settings?
 # Some helper functions
 # ==========================
 
-def get_current_unit_settings_name(facility_id):
+def _get_current_unit_settings_name(facility_id):
     name = SETTINGS_CURRENT_UNIT_PREFIX
     if facility_id:
         name = "%s%s" % (name, facility_id[:SETTINGS_FACILITY_ID_CHARS],)
     return name
 
 
-def set_current_unit_settings_value(facility_id, value):
+def _set_current_unit_settings_value(facility_id, value):
     """
     Set the value of the current unit on Settings based on the facility id.
     """
-    name = get_current_unit_settings_name(facility_id)
+    name = _get_current_unit_settings_name(facility_id)
     s = Settings.set(name, value)
     return s
 
 
-def get_current_unit_settings_value(facility_id):
+def _get_current_unit_settings_value(facility_id):
     """
     Get value of current unit based on facility id.  If none, defaults to 1 and creates an
     entry on the Settings.
     """
     value = 1
-    name = get_current_unit_settings_name(facility_id)
+    name = _get_current_unit_settings_name(facility_id)
     value = Settings.get(name, value)
     return value
 
@@ -226,11 +226,11 @@ class CurrentUnit():
         return self.facility_name
 
     def _get_settings_name(self):
-        name = get_current_unit_settings_name(self.facility_id)
+        name = _get_current_unit_settings_name(self.facility_id)
         return name
 
     def _get_settings_value(self):
-        value = get_current_unit_settings_value(self.facility_id)
+        value = _get_current_unit_settings_value(self.facility_id)
         return value
 
     def _get_current_unit(self):
@@ -314,7 +314,7 @@ class CurrentUnitResource(Resource):
                     current_unit -= 1
                 else:
                     current_unit = 1
-                set_current_unit_settings_value(facility_id, current_unit)
+                _set_current_unit_settings_value(facility_id, current_unit)
             return bundle
         except Exception as e:
             logging.error("CurrentUnitResource exception: %s" % e)
