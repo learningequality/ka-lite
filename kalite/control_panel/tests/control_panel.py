@@ -142,7 +142,8 @@ class CSVExportTests(FacilityMixins,
         resp = self.client.get(self.base_url + "?facility_id=all&group_id=all")
         self.assertEquals(len(resp._container), 4, "CSV file has wrong number of rows")
         first_row = resp._container[2].split(',')
-        self.assertEquals(self.group.name, first_row[2], "Data is malformed")
+        # self.assertEquals(self.group.name, first_row[2], "Data is malformed")
+        self.assertEquals(self.group.name, first_row[2])
 
     def test_export_grouped_students_only(self):
         resp = self.client.get(self.base_url + "?facility_id=all&group_id=%s" % self.group.id)
