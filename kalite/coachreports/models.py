@@ -55,6 +55,7 @@ class PlaylistProgress:
 
         exercise_ids = set([ex_log["exercise_id"] for ex_log in exercise_logs])
         video_ids = set([id2slug_map.get(vid_log["video_id"]) for vid_log in video_logs])
+        quiz_log_ids = QuizLog.objects.filter(user=user).values("quiz")
         
         # Build a list of playlists for which the user has at least one data point 
         ## TODO(dylan) this won't pick up playlists the user is assigned but has not started yet. 
@@ -67,6 +68,12 @@ class PlaylistProgress:
                     if entity_id in exercise_ids or entity_id in video_ids:
                         user_playlists.append(p)
                         break
+            # After checking for video & exercise log matches in a playlist, 
+            # do a final pass for quizzes in case the kid jumped right to the quiz 
+            for ql in quiz_log_ids:
+                if p.get("id") == ql["quiz"] and not next((pl for pl in user_playlists if pl.get("id") == p.get("id")), None):
+                    user_playlists.append(p)
+
 
         # Store stats for each playlist
         user_progress = list()
@@ -93,7 +100,7 @@ class PlaylistProgress:
             # Compute test stats
             quiz_exists = True if [entry for entry in p.get("entries") if entry["entity_kind"] == "Quiz"] else False
             quiz_result = None if not quiz_exists else QuizLog.objects.filter(user=user, quiz=p.get("id"))
-            quiz_pct_score = 0 if not quiz_result else float(quiz_result.total_correct) / float(quiz_result.total_number)
+            quiz_pct_score = 0 if not quiz_result else float(quiz_result[0].total_correct) / float(quiz_result[0].total_number)
 
             progress = {
                 "title": p.get("title"),
@@ -111,3 +118,113 @@ class PlaylistProgress:
             user_progress.append(cls(**progress))
                     
         return user_progress
+
+class PlaylistProgressDetail:
+    """Detailed progress on a specific playlist for a specific user"""
+
+    def __init__(self, **kwargs):
+        self.id = kwargs.get("id")
+        self.kind = kwargs.get("kind")
+        self.status = kwargs.get("status")
+        self.description = kwargs.get("description")
+
+    @classmethod
+    def user_progress_detail(cls, user_id, playlist_id):
+        """
+        Return a list of video, exercise, and quiz log progress associated with a specific user and playlist ID.
+            [
+                {
+                    "type": "Quiz/Exercise/Video",
+                    "regular_log_stuff".... 
+                }
+            ]
+        """
+
+        user = FacilityUser.objects.filter(id=user_id)
+        playlist = next((pl for pl in Playlist.all() if pl.id == playlist_id), None)
+        playlist = playlist.__dict__
+        flat_topic_tree = get_flat_topic_tree()
+        id2slug_map = get_id2slug_map()
+        slug2id_map = get_slug2id_map()
+
+        pl_video_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in playlist.get("entries") if entry.get("entity_kind") == "Video"])
+        pl_exercise_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in playlist.get("entries") if entry.get("entity_kind") == "Exercise"])
+
+        # Retrieve video, exercise, and quiz logs that appear in this playlist
+        ex_logs = list(ExerciseLog.objects \
+            .filter(user=user, exercise_id__in=pl_exercise_ids) \
+            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
+        vid_logs = list(VideoLog.objects \
+            .filter(user=user, video_id__in=pl_video_ids) \
+            .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+        quiz_exists = True if [entry for entry in playlist.get("entries") if entry["entity_kind"] == "Quiz"] else False
+        quiz_result = None if not quiz_exists else list(QuizLog.objects \
+            .filter(user=user, quiz=playlist.get("id"))
+            .values("complete", "quiz", "total_number", "attempts", "total_correct"))
+
+        detailed_progress = list()
+
+        # Format & append exercises
+        for log in ex_logs:
+            if log.get("struggling"):
+                status = "struggling"
+            elif log.get("complete"):
+                status = "complete"
+            elif log.get("attempts"):
+                status = "inprogress"
+            else:
+                status = "notstarted"
+
+            entry = {
+                "id": log.get("exercise_id"),
+                "kind": "Exercise",
+                "status": status,
+                "description": "Blah blah I'm an exercise",
+            }
+
+            detailed_progress.append(cls(**entry))
+
+        # Format & append videos
+        for log in vid_logs:
+            if log.get("complete"):
+                status = "complete"
+            elif log.get("total_seconds_watched"):
+                status = "inprogress"
+            else:
+                status = "notstarted"
+            entry = {
+                "id": log.get("video_id"),
+                "kind": "Video",
+                "status": status,
+                "description": "Blah blah I'm a video"
+            }
+
+            detailed_progress.append(cls(**entry))
+
+        # Format & append quizzes
+        if quiz_exists and quiz_result:
+            quiz_result = quiz_result[0] 
+            import pdb; pdb.set_trace()
+            if quiz_result.get("complete"):
+                pct_score = 100 * (float(quiz_result.get("total_correct")) / float(quiz_result.get("total_number")))  
+                if pct_score <= 59:
+                    status = "fail"
+                elif pct_score <= 79:
+                    status = "borderline"
+                else:
+                    status = "pass"    
+                status = "complete"
+            elif quiz_result.get("attempts"):
+                status = "inprogress"
+            else:
+                status = "notstarted"
+            entry = {
+                "id": quiz_result.get("quiz"),
+                "kind": "Quiz",
+                "status": status,
+                "description": "Blah blah I'm a quiz",
+            }
+
+            detailed_progress.append(cls(**entry))
+
+        return detailed_progress

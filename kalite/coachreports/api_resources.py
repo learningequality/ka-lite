@@ -2,7 +2,7 @@ from tastypie import fields
 from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
-from .models import PlaylistProgress
+from .models import PlaylistProgress, PlaylistProgressDetail
 
 class PlaylistProgressResource(Resource):
 
@@ -35,6 +35,37 @@ class PlaylistProgressResource(Resource):
         result = PlaylistProgress.user_progress(user_id=user_id)
         if not result:
             raise NotFound("User playlist progress with user ID '%s' not found." % user_id)        
+        return result
+
+    def obj_get_list(self, bundle, **kwargs):
+        return self.get_object_list(bundle.request)
+
+
+class PlaylistProgressDetailResource(Resource):
+
+    kind = fields.CharField(attribute='kind')
+    status = fields.CharField(attribute='status')
+    description = fields.CharField(attribute='description')
+
+    class Meta:
+        resource_name = "playlist_progress_detail"
+        object_class = PlaylistProgressDetail
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if isinstance(bundle_or_obj, PlaylistProgressDetail):
+            kwargs['pk'] = bundle_or_obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.obj.id
+
+        return kwargs
+
+    def get_object_list(self, request):
+        user_id = request.GET.get("user_id")
+        playlist_id = request.GET.get("playlist_id")
+        result = PlaylistProgressDetail.user_progress_detail(user_id=user_id, playlist_id=playlist_id)
+        if not result:
+            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (user_id, playlist_id))        
         return result
 
     def obj_get_list(self, bundle, **kwargs):

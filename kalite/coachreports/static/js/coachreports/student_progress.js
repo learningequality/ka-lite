@@ -42,9 +42,17 @@ var PlaylistProgressView = Backbone.View.extend({
 
     template: HB.template('student_progress/playlist-progress-container'),
 
+    events: {
+        "click .show-details": "showDetailedReport"
+    },
+
     render: function() {
         this.$el.html(this.template(this.model.toJSON()));
         return this;
+    },
+
+    showDetailedReport: function(e) {
+        console.log("showing detailed report for " + this.model.attributes.id)
     }
 });
 
