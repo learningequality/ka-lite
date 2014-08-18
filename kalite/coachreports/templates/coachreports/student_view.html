@@ -9,28 +9,27 @@
 {% block title %}{% trans "User report" %} {{ block.super }}{% endblock title%}
 {% block report_title %}{% trans "User report" %}{% endblock report_title %}
 
-{% block headjs %}{{ block.super }}
-    <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
+{% block student_report_js %}
+    <script src="{% url 'handlebars_templates' module_name='student_progress' %}"></script>
     <script>
         var PLAYLIST_PROGRESS_URL = "{% url 'api_dispatch_list' resource_name='playlist_progress' %}";
+        var STUDENT_ID = "{{ student.id }}";
+        console.log("Playlist progress api url: " + PLAYLIST_PROGRESS_URL);
+        console.log("Student ID: " + STUDENT_ID);
     </script>
     <script type="text/javascript" src="{% static 'js/coachreports/student_progress.js' %}"></script>
 
-    <script>
-        $(function() {
-            window.container_view = new StudentProgressView({
-                el: $("#student-progress-container")
-            });
-        });
-
-        console.log("asdfjadshfad")
-    </script>
-
-{% endblock headjs %}
+{% endblock student_report_js %}
 
 
 {% block headcss %}{{ block.super }}
     <style>
+        .border-me-red {
+            border: dotted red 1px;
+        }
+        .border-me-blue {
+            border: dotted blue 1px;
+        }
         .super-header {
             background-color: #ccc;
             font-weight: bold;
@@ -100,6 +99,5 @@
     <div class="container">
         <div id="student-progress-container"></div>
     </div>
-
 {% endblock student_report %}
 {% endblock content %}
