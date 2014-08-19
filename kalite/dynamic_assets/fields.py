@@ -18,6 +18,8 @@ class BaseField(object):
         return self._value
 
     def __init__(self, *args, **kwargs):
+        if self.__class__ == BaseField:
+            raise NotImplementedError("A BaseField cannot be instantiated directly, only subclasses can.")
         # set the value to the default provided by the instance argument, or else the field type default
         self._set_value(kwargs.get("default", self._default))
 
@@ -35,7 +37,7 @@ class IntegerField(BaseField):
             self._maximum = kwargs["maximum"]
 
     def validate(self):
-        if not isinstance(self._value, int):
+        if type(self._value) != int:
             raise ValidationError("IntegerField value must be of type 'int'.")
         if self._value < self._minimum:
             raise ValidationError("Value for this IntegerField must be greater than %d." % self._minimum)
@@ -50,7 +52,7 @@ class BooleanField(BaseField):
         super(BooleanField, self).__init__(*args, **kwargs)
 
     def validate(self):
-        if not isinstance(self._value, bool):
+        if type(self._value) != bool:
             raise ValidationError("BooleanField value must be of type 'bool'.")
 
 

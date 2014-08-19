@@ -1,84 +1,70 @@
-import json
+from fle_utils.django_utils.templatetags.my_filters import jsonify
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from kalite.dynamic_assets import models
+from kalite.dynamic_assets import DynamicSettingsBase, fields
 
 
 class DynamicSettingsModelsTests(TestCase):
 
     def test_can_define_new_dynamic_setting_instance(self):
 
-        models.DynamicSettings(
-            namespace='test',
-            schema={
-                'test_intsetting': models.IntField,
-                'test_boolsetting': models.BoolField,
-                'test_strsetting': models.StrField,
-            })
+        class DynamicSettings(DynamicSettingsBase):
+            test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
+            test_charsetting = fields.CharField(default="This is a test.")
+            test_boolsetting = fields.BooleanField(default=True)
 
-    def test_can_call_dynamic_settings_without_arguments(self):
-        models.DynamicSettings()
+        s = DynamicSettings()
 
-    def test_source_is_dict_gains_those_fields(self):
-        source = {
-            'intfield': 1,
-            'boolfield': True,
-            'strfield': 'hi there!',
-        }
+    def test_default_values_are_being_used(self):
 
-        settings = models.DynamicSettings(
-            namespace='test',
-            source=source,
-            schema={
-                'intfield': models.IntField,
-                'boolfield': models.BoolField,
-                'strfield': models.StrField,
-            })
+        class DynamicSettings(DynamicSettingsBase):
+            test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
+            test_charsetting = fields.CharField(default="This is a test.")
+            test_boolsetting = fields.BooleanField(default=True)
 
-        self.assertTrue(settings.test.intfield, 'Dynamic setting instance did not gain fields')
+        s = DynamicSettings()
 
-    def test_can_define_multiple_namespaces(self):
-
-        settings = models.DynamicSettings(
-            namespace='namespace1',
-            schema={'attr': models.IntField},
-            source={'attr': 1},
-        )
-
-        settings += models.DynamicSettings(
-            namespace='namespace2',
-            schema={'attr': models.IntField},
-            source={'attr': 1},
-        )
-
-        self.assertTrue(settings.namespace1.attr, "namespace1 wasn't created properly")
-        self.assertTrue(settings.namespace2.attr, "namespace2 wasn't created properly")
+        self.assertEqual(s.test_intsetting, 17)
+        self.assertEqual(s.test_charsetting, "This is a test.")
+        self.assertEqual(s.test_boolsetting, True)
 
     def test_ds_must_be_json_serializable(self):
-        json.dumps(models.DynamicSettings(
-            namespace='namespace1',
-            schema={'attr': models.IntField},
-            source={'attr': 1},
-        ))
+
+        class DynamicSettings(DynamicSettingsBase):
+            test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
+            test_charsetting = fields.CharField(default="This is a test.")
+            test_boolsetting = fields.BooleanField(default=True)
+
+        s = DynamicSettings()
+
+        self.assertTrue("This is a test." in jsonify(s))
 
 
 class FieldValidationTests(TestCase):
 
     def test_cant_instantiate_a_basefield(self):
 
-        with self.assertRaises(TypeError):
-            models.BaseField()
+        with self.assertRaises(NotImplementedError):
+            fields.BaseField()
 
     def test_invalid_intfield_raises_error(self):
 
-        s = models.DynamicSettings(namespace='test',
-                                   schema={
-                                       'intfield': models.IntField()
-                                   },
-                                   source={
-                                       'intfield': False
-                                   })
+        class DynamicSettings(DynamicSettingsBase):
+            test_intsetting = fields.IntegerField(default=True, minimum=0, maximum=20)
+            test_charsetting = fields.CharField(default=17)
+            test_boolsetting = fields.BooleanField(default="This is a test.")
 
-        with self.assertRaises(ValueError):
+        s = DynamicSettings()
+
+        try:
             s.validate()
+        except ValidationError as e:
+            self.assertTrue("test_intsetting" in e.message_dict, "Validation did not work for IntegerField.")
+            self.assertTrue("test_charsetting" in e.message_dict, "Validation did not work for CharField.")
+            self.assertTrue("test_boolsetting" in e.message_dict, "Validation did not work for BooleanField.")
+        else:
+            # exception wasn't thrown, so complain about that
+            with self.assertRaises(ValidationError):
+                s.validate()

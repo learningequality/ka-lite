@@ -5,7 +5,7 @@ from django.conf import settings
 logging = settings.LOG
 
 
-def load_dynamic_settings(request):
+def load_dynamic_settings(request=None):
 
     # load all the "dynamic_assets.py" files present in installed apps
     modules = []
@@ -24,9 +24,9 @@ def load_dynamic_settings(request):
             ds[key] = mod.DynamicSettings()
 
     # in the second pass, run the accumulated dynamic settings object through any middleware
-    for key, mod in modules:
-
-        if hasattr(mod, "modify_dynamic_settings"):
-            mod.modify_dynamic_settings(request, ds)
+    if request:
+        for key, mod in modules:
+            if hasattr(mod, "modify_dynamic_settings"):
+                mod.modify_dynamic_settings(request, ds)
 
     return ds

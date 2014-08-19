@@ -18,7 +18,6 @@ class DynamicSettingsMetaclass(type):
                 setattr(cls, name, property(field._get_value, field._set_value))
 
 
-
 class DynamicSettingsBase(object):
 
     __metaclass__ = DynamicSettingsMetaclass
@@ -36,4 +35,3 @@ class DynamicSettingsBase(object):
 
     def to_json(self):
         return dict([(key, getattr(self, key)) for key in self._fields.keys()])
-
