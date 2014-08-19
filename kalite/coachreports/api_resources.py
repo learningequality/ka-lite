@@ -9,13 +9,16 @@ class PlaylistProgressResource(Resource):
     title = fields.CharField(attribute='title')
     id = fields.CharField(attribute='id')
     tag = fields.CharField(attribute='tag', null=True)
-    vid_pct_complete = fields.FloatField(attribute='vid_pct_complete')
-    vid_pct_started = fields.FloatField(attribute='vid_pct_started')
-    ex_pct_mastered = fields.FloatField(attribute='ex_pct_mastered')
-    ex_pct_struggling = fields.FloatField(attribute='ex_pct_struggling')
-    ex_pct_started = fields.FloatField(attribute='ex_pct_started')
+    vid_pct_complete = fields.IntegerField(attribute='vid_pct_complete')
+    vid_pct_started = fields.IntegerField(attribute='vid_pct_started')
+    vid_status = fields.CharField(attribute='vid_status')
+    ex_pct_mastered = fields.IntegerField(attribute='ex_pct_mastered')
+    ex_pct_struggling = fields.IntegerField(attribute='ex_pct_struggling')
+    ex_pct_incomplete = fields.IntegerField(attribute='ex_pct_incomplete')
+    ex_status = fields.CharField(attribute='ex_status')
     quiz_exists = fields.BooleanField(attribute='quiz_exists')
-    quiz_pct_score = fields.FloatField(attribute='quiz_pct_score')
+    quiz_status = fields.CharField(attribute='quiz_status')
+    quiz_pct_score = fields.IntegerField(attribute='quiz_pct_score')
 
     class Meta:
         resource_name = "playlist_progress"

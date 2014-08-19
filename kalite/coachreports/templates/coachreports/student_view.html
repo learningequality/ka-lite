@@ -28,56 +28,40 @@
         .playlist-progress-details {
             display: none;
         }
-        .border-me-red {
-            border: dotted red 1px;
-        }
-        .border-me-blue {
-            border: dotted blue 1px;
-        }
-        .super-header {
-            background-color: #ccc;
-            font-weight: bold;
-        }
-        .progress-wrapper{
-            display: inline-block; 
-        }
         .progress-indicator{
-            width:30px;
-            height:30px;
+            width:60px;
+            height:60px;
             border-radius: 50%/50%;
-            border: 1px transparent solid;
-        }
-        .progress-indicator:hover {
             border: 1px gray solid;
-            cursor: pointer;
         }
-        .completed {
-            background:#338533;
-        }
-        .inprogress {
-            background:#B2D1B2;
-        }
-        .not-started {
-            background:#D5D5D5;
-        }
-        .struggling {
-            background:#FFCCCC;
-        }
-        .progressbox {
-        	width: 250px;
-            display: none;
-            position: absolute;
-            margin-top: 30px;
-            background: #FFFFFF;
-        }
-        .indicator-icon {
-            margin-top: 5px;
-            margin-left: 7px;
+        .icon-label {
+            font-size: 25px;
+            margin-top: 17px;
+            margin-left: 17px;
             color: rgb(43, 43, 43);
             opacity: 0.9;
         }
-        .unavailable-content {
-            cursor: default;
+        .playlist-progress-bar {
+            margin-top: 20px;
+        }
+        .playlist-progress-bar > .progress-bar {
+            /* Override KA progress bar to retain bootstrap style */
+            border: none;
+        }
+        .progress-block {
+            padding-bottom: 10px;
+        }
+        .complete {
+            background-color:#5cb85c;
+        }
+        .inprogress, .borderline {
+            background-color:#ADDFAD;
+        }
+        .notstarted {
+            background-color:#D5D5D5;
+        }
+        .struggling {
+            background-color:#E69999;
         }
         
     </style>

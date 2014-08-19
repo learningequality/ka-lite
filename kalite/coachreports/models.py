@@ -14,31 +14,19 @@ class PlaylistProgress:
         self.tag = kwargs.get("tag")
         self.vid_pct_complete = kwargs.get("vid_pct_complete")
         self.vid_pct_started = kwargs.get("vid_pct_started")
+        self.vid_status = kwargs.get("vid_status")
         self.ex_pct_mastered = kwargs.get("ex_pct_mastered")
+        self.ex_pct_incomplete = kwargs.get("ex_pct_incomplete")
         self.ex_pct_struggling = kwargs.get("ex_pct_struggling")
-        self.ex_pct_started = kwargs.get("ex_pct_started")
+        self.ex_status = kwargs.get("ex_status")
         self.quiz_exists = kwargs.get("quiz_exists")
+        self.quiz_status = kwargs.get("quiz_status")
         self.quiz_pct_score = kwargs.get("quiz_pct_score")
 
     @classmethod
     def user_progress(cls, user_id):
         """
         Return a list of PlaylistProgress objects associated with the user.
-            [
-                {
-                    "title": "...",
-                    "id": "...",
-                    "tag": "...",
-                    "vid_pct_complete": "...",
-                    "vid_pct_started": "...",
-                    "ex_pct_mastered": "...",
-                    "ex_pct_struggling": "...",
-                    "ex_pct_started": "...",
-                    "quiz_exists": "...",
-                    "quiz_pct_score": "...",
-                },
-                { ... etc ... }
-            ]
         """
         user = FacilityUser.objects.filter(id=user_id)
         all_playlists = [pl.__dict__ for pl in Playlist.all()]
@@ -89,18 +77,47 @@ class PlaylistProgress:
             vid_logs = [vid_log for vid_log in video_logs if id2slug_map.get(vid_log["video_id"]) in pl_video_ids]
 
             # Compute video stats 
-            vid_pct_complete = float(len([vid for vid in vid_logs if vid["complete"]])) / n_pl_videos
-            vid_pct_started = float(len([vid for vid in vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])) / n_pl_videos
+            n_vid_complete = len([vid for vid in vid_logs if vid["complete"]])
+            n_vid_started = len([vid for vid in vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])
+            vid_pct_complete = int(float(n_vid_complete) / n_pl_videos * 100)
+            vid_pct_started = int(float(n_vid_started) / n_pl_videos * 100) 
+            if vid_pct_complete == 100:
+                vid_status = "complete"
+            elif n_vid_started > 0:
+                vid_status = "inprogress"
+            else:
+                vid_status = "notstarted" 
 
             # Compute exercise stats 
-            ex_pct_mastered = float(len([ex for ex in ex_logs if ex["complete"]])) / n_pl_exercises
-            ex_pct_started = float(len([ex for ex in ex_logs if (ex["attempts"] > 0) and (not ex["complete"])])) / n_pl_exercises
-            ex_pct_struggling = float(len([ex for ex in ex_logs if ex["struggling"]])) / n_pl_exercises
+            n_ex_mastered = len([ex for ex in ex_logs if ex["complete"]])
+            n_ex_started = len([ex for ex in ex_logs if ex["attempts"] > 0])
+            n_ex_incomplete = len([ex for ex in ex_logs if (ex["attempts"] > 0 and not ex["complete"])])
+            n_ex_struggling = len([ex for ex in ex_logs if ex["struggling"]])
+            ex_pct_mastered = int(float(n_ex_mastered) / n_pl_exercises * 100) 
+            ex_pct_incomplete = int(float(n_ex_incomplete) / n_pl_exercises * 100) 
+            ex_pct_struggling = int(float(n_ex_struggling) / n_pl_exercises * 100) 
+            if not n_ex_started:
+                ex_status = "notstarted"
+            elif ex_pct_struggling > 30:
+                ex_status = "struggling" # TODO(dylan) are these ok limits?
+            elif ex_pct_mastered < 99:
+                ex_status = "inprogress"
+            else:
+                ex_status = "complete"
 
             # Compute test stats
             quiz_exists = True if [entry for entry in p.get("entries") if entry["entity_kind"] == "Quiz"] else False
             quiz_result = None if not quiz_exists else QuizLog.objects.filter(user=user, quiz=p.get("id"))
-            quiz_pct_score = 0 if not quiz_result else float(quiz_result[0].total_correct) / float(quiz_result[0].total_number)
+            quiz_pct_score = 0 if not quiz_result else int(float(quiz_result[0].total_correct) / float(quiz_result[0].total_number) * 100)
+            if quiz_result:
+                if quiz_pct_score <= 50:
+                    quiz_status = "struggling"
+                elif quiz_pct_score <= 79:
+                    quiz_status = "borderline"
+                else:
+                    quiz_status = "complete"
+            else:
+                quiz_status = "notstarted"
 
             progress = {
                 "title": p.get("title"),
@@ -108,9 +125,12 @@ class PlaylistProgress:
                 "tag": p.get("tag"),
                 "vid_pct_complete": vid_pct_complete,
                 "vid_pct_started": vid_pct_started,
+                "vid_status": vid_status,
                 "ex_pct_mastered": ex_pct_mastered,
+                "ex_pct_incomplete": ex_pct_incomplete,
                 "ex_pct_struggling": ex_pct_struggling,
-                "ex_pct_started": ex_pct_started,
+                "ex_status": ex_status,
+                "quiz_status": quiz_status,
                 "quiz_exists": quiz_exists,
                 "quiz_pct_score": quiz_pct_score,
             }
@@ -131,13 +151,7 @@ class PlaylistProgressDetail:
     @classmethod
     def user_progress_detail(cls, user_id, playlist_id):
         """
-        Return a list of video, exercise, and quiz log progress associated with a specific user and playlist ID.
-            [
-                {
-                    "type": "Quiz/Exercise/Video",
-                    "regular_log_stuff".... 
-                }
-            ]
+        Return a list of video, exercise, and quiz log PlaylistProgressDetail objects associated with a specific user and playlist ID.
         """
 
         user = FacilityUser.objects.filter(id=user_id)

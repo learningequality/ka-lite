@@ -1,6 +1,82 @@
-<h3>Playlist Progress Container</h3>
-<div class="border-me-blue">
-    {{title}}, {{id}}
-    <button class="show-details">Show Details</button>
-    <div class="playlist-progress-details">LOADING GIF GOES HERE</div>
+<div class="well">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="center-block" title="ID: {{id}}">
+                {{title}}
+            </h2>
+        </div>
+    </div>
+    {{!-- Videos --}}
+    <div class="row progress-block">
+        <div class="col-xs-2">
+            <div class="progress-indicator center-block {{vid_status}}">
+                <span class="glyphicon glyphicon-facetime-video icon-label"></span>
+            </div>
+        </div>
+        <div class="col-xs-10">
+            <div class="progress playlist-progress-bar">
+                {{#if vid_pct_complete}}
+                    <div class="progress-bar progress-bar-success" style="width: {{vid_pct_complete}}%">
+                        <span>{{vid_pct_complete}}%</span>
+                    </div>
+                {{/if}}
+                {{#if vid_pct_started}}
+                    <div class="progress-bar progress-bar-success progress-bar-striped" style="width: {{vid_pct_started}}%">
+                        <span>{{vid_pct_started}}%</span>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{!-- Exercises --}}
+    <div class="row progress-block">
+        <div class="col-xs-2">
+            <div class="progress-indicator center-block {{ex_status}}">
+                <span class="glyphicon glyphicon-pencil icon-label"></span>
+            </div>
+        </div>
+        <div class="col-xs-10">
+            <div class="progress playlist-progress-bar">
+                {{#if ex_pct_mastered}}
+                    <div class="progress-bar progress-bar-success" style="width: {{ex_pct_mastered}}%">
+                        <span>{{ex_pct_mastered}}%</span>
+                    </div>
+                {{/if}}
+                {{#if ex_pct_incomplete}}
+                    <div class="progress-bar progress-bar-success progress-bar-striped" style="width: {{ex_pct_incomplete}}%">
+                        <span>{{ex_pct_incomplete}}%</span>
+                    </div>
+                {{/if}}
+                {{#if ex_pct_struggling}}
+                    <div class="progress-bar progress-bar-danger" style="width: {{ex_pct_struggling}}%">
+                        <span>{{ex_pct_struggling}}%</span>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{!-- Quiz --}}
+    {{#if quiz_exists}}
+    <div class="row progress-block">
+        <div class="col-xs-2">
+            <div class="progress-indicator center-block {{quiz_status}}">
+                <span class="glyphicon glyphicon-ok icon-label"></span>
+            </div>
+        </div>
+        <div class="col-xs-10">
+            <div class="progress playlist-progress-bar">
+                {{#if quiz_pct_score}}
+                <div class="progress-bar {{quiz_status}}" style="width: {{quiz_pct_score}}%">
+                    <span>{{quiz_pct_score}}%</span>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="playlist-progress-details">LOADING GIF GOES HERE</div>
+        </div>
+    </div>
 </div>
