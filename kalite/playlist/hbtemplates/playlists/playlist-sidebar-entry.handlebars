@@ -2,9 +2,18 @@
 <span class="playlist-sidebar-entry playlist-sidebar-divider">{{ entity_id }}</span>
 {{else}}
 <a class="playlist-sidebar-entry playlist-sidebar-entry-link {{#if active }}active{{/if}}" href="#" title="{{ description }}">
-  	<span class="icon-{{ entity_kind }}"></span>
-<!--     {{#ifcond entity_kind "==" "Video"}}V: {{/ifcond}}
-    {{#ifcond entity_kind "==" "Exercise"}}E: {{/ifcond}} -->
-    {{ title }}
+    <!-- <span class="icon-{{ entity_kind }}"></span> -->
+    {{#ifcond entity_kind "==" "Video"}}
+    <span class="playlist-icon icon-video" data-video-id="{{ youtube_id }}"></span>
+    <span class="playlist-text" data-video-id="{{ youtube_id }}">{{ title }}</span>
+    {{/ifcond}}
+    {{#ifcond entity_kind "==" "Exercise"}}
+    <span class="playlist-icon icon-exercise" data-exercise-id="{{ entity_id }}"></span>
+    <span class="playlist-text" data-exercise-id="{{ entity_id }}">{{ title }}</span>
+    {{/ifcond}}
+    {{#ifcond entity_kind "==" "Quiz"}}
+    <span class="playlist-icon icon-quiz" data-quiz-id="{{ entity_id }}"></span>
+    <span class="playlist-text" data-quiz-id="{{ entity_id }}">{{ title }}</span>
+    {{/ifcond}}
 </a>
 {{/ifcond}}

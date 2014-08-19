@@ -17,7 +17,7 @@ from kalite.facility.api_resources import FacilityUserResource
 
 from .models import TestLog
 from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
-from .utils import get_exam_mode_on
+from .utils import get_exam_mode_on, set_exam_mode_on
 
 from django.conf import settings
 
@@ -34,6 +34,7 @@ class Test():
         self.playlist_ids = json.dumps(kwargs.get('playlist_ids'))
         self.seed = kwargs.get('seed')
         self.repeats = kwargs.get('repeats')
+        self.practice = kwargs.get('practice')
         self.test_id = test_id
         self.test_url = reverse('test', args=[test_id])
         self.set_exam_mode()
@@ -151,13 +152,7 @@ class TestResource(Resource):
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
             test_id = kwargs['test_id']
-            obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
-            if obj.value == test_id:
-                obj.value = ''
-            else:
-                obj.value = test_id
-            obj.save()
-            testscache[test_id].set_exam_mode()
+            set_exam_mode_on(testscache[test_id])
             return bundle
         except Exception as e:
             logging.error("==> TestResource exception: %s" % e)

@@ -68,30 +68,13 @@ class Command(BaseCommand):
     def setup_server_if_needed(self):
         """Run the setup command, if necessary."""
 
-        # Now, validate the server.
-        try:
-            if Settings.get("private_key") and Device.objects.count():
-                # The only success case
-                pass
-
-            elif not Device.objects.count():
-                # Nothing we can do to recover
-                raise CommandError("You are screwed, buddy--you went through setup but you have no devices defined!  Call for help!")
-
-            else:
-                # Force hitting recovery code, by raising a generic error
-                #   that gets us to the "except" clause
-                raise DatabaseError
-
-        except DatabaseError:
+        try: # Ensure that the database has been synced and a Device has been created
+            assert Settings.get("private_key") and Device.objects.count()
+        except (DatabaseError, AssertionError): # Otherwise, run the setup command
             self.stdout.write("Setting up KA Lite; this may take a few minutes; please wait!\n")
-
-            call_command("setup", interactive=False)  # show output to the user
-            #out = call_command_with_output("setup", interactive=False)
-            #if out[1] or out[2]:
-            #    # Failed; report and exit
-            #    self.stderr.write(out[1])
-            #    raise CommandError("Failed to setup/recover.")
+            call_command("setup", interactive=False)
+        # Double check that the setup process successfully created a Device
+        assert Settings.get("private_key") and Device.objects.count(), "There was an error configuring the server. Please report the output of this command to Learning Equality."
 
     def reinitialize_server(self):
         """Reset the server state."""
