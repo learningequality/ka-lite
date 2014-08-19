@@ -2,30 +2,31 @@ import importlib
 
 from django.conf import settings
 
-from . import models
-
 logging = settings.LOG
 
 
-def load_dynamic_settings(request, **otherinfo):
-    ds = models.DynamicSettings()
+def load_dynamic_settings(request):
 
-    apps = settings.INSTALLED_APPS + settings.DYNAMIC_SETTINGS_PRIORITY_APPS
-
-    for app in apps:
-        module_name = '%s.dynamic_settings' % app
-
+    # load all the "dynamic_assets.py" files present in installed apps
+    modules = []
+    for app in settings.INSTALLED_APPS:
         try:
-            mod = importlib.import_module(module_name)
-
-            if hasattr(mod, 'define_dynamic_settings'):
-                ds += mod.define_dynamic_settings(request, **otherinfo)
-            elif hasattr(mod, 'provision_dynamic_settings'):
-                mod.provision_dynamic_settings(ds, request, **otherinfo)
+            modules.append((app.split(".")[-1], importlib.import_module('%s.dynamic_assets' % app)))
         except ImportError:
-            continue
-        except AttributeError as e:
-            logging.warning('Error for module %s: %s' % (module_name, e))
-            continue
+            pass
+
+    ds = {}
+
+    # in the first pass, load all app-specific dynamic settings
+    for key, mod in modules:
+
+        if hasattr(mod, "DynamicSettings"):
+            ds[key] = mod.DynamicSettings()
+
+    # in the second pass, run the accumulated dynamic settings object through any middleware
+    for key, mod in modules:
+
+        if hasattr(mod, "modify_dynamic_settings"):
+            mod.modify_dynamic_settings(request, ds)
 
     return ds

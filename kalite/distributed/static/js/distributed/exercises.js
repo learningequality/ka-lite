@@ -413,7 +413,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: window.QUIZ_REPEATS || 3
+        repeats: ds.distributed.quiz_repeats || 3
     },
 
     initialize: function() {
