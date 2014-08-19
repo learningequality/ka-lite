@@ -13,6 +13,7 @@
     <script src="{% url 'handlebars_templates' module_name='student_progress' %}"></script>
     <script>
         var PLAYLIST_PROGRESS_URL = "{% url 'api_dispatch_list' resource_name='playlist_progress' %}";
+        var PLAYLIST_PROGRESS_DETAIL_URL = "{% url 'api_dispatch_list' resource_name='playlist_progress_detail' %}";
         var STUDENT_ID = "{{ student.id }}";
         console.log("Playlist progress api url: " + PLAYLIST_PROGRESS_URL);
         console.log("Student ID: " + STUDENT_ID);
