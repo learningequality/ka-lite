@@ -70,6 +70,9 @@ var StatusModel = Backbone.Model.extend({
 
         this.loaded.then(this.after_loading);
 
+        this.listenTo(this, "change:points", this.update_total_points);
+        this.listenTo(this, "change:newpoints", this.update_total_points);
+
     },
 
     get_server_time: function () {
@@ -96,7 +99,16 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
         });
+
+        this.update_total_points();
+
+    },
+
+    update_total_points: function() {
+        // add the points that existed at page load and the points earned since page load, to get the total current points
+        this.set("totalpoints", this.get("points") + this.get("newpoints"));
     }
+
 });
 
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
@@ -110,16 +122,14 @@ var TotalPointView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.model.bind("change:points", this.render);
-        this.model.bind("change:newpoints", this.render);
+        this.model.bind("change:totalpoints", this.render);
         this.model.bind("change:username", this.render);
         this.render();
     },
 
     render: function() {
 
-        // add the points that existed at page load and the points earned since page load, to get the total current points
-        var points = this.model.get("points") + this.model.get("newpoints");
+        var points = this.model.get("totalpoints");
         var username_span = sprintf("<span id='logged-in-name'>%s</span>", this.model.get("username"));
         var message = null;
 
@@ -172,7 +182,7 @@ $(function(){
 });
 
 
-// Related to student log progress
+// Download needed user data and add classes to indicate progress, as appropriate
 $(function() {
 
     // load progress data for all videos linked on page, and render progress circles

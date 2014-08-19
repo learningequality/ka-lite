@@ -106,6 +106,7 @@ INSTALLED_APPS = (
     "fle_utils.testing",
     "kalite.testing",
     "kalite.distributed",
+    "kalite.store",
 ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
@@ -201,6 +202,8 @@ if package_selected("Nalanda"):
     LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
     FIXED_BLOCK_EXERCISES = 5
+    QUIZ_REPEATS = 3
+    UNIT_POINTS = 2000
 
 
 if package_selected("UserRestricted"):

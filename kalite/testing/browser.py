@@ -345,7 +345,7 @@ class BrowserTestCase(KALiteTestCase):
         # how to wait for page change?  Will reload the same page.
         self.assertNotEqual(self.browser_wait_for_element(".errorlist"), None, "Make sure there's an error.")
 
-    def browser_accept_alert(self, sleep=1):
+    def browser_accept_alert(self, sleep=1, text=None):
         """
         PhantomJS still have no support for modal dialogs (alert, confirm, prompt) javascript functions.
 
@@ -356,6 +356,8 @@ class BrowserTestCase(KALiteTestCase):
         try:
             if not self.is_phantomjs:
                 alert = self.browser.switch_to_alert()
+                if text:
+                    alert.send_keys(text)
                 alert.accept()
             # set some delay to allow browser to process / reload the page
             if sleep:
@@ -384,7 +386,7 @@ class BrowserTestCase(KALiteTestCase):
             elem = browser.find_element_by_css_selector(selector)
             elem.click()
 
-    def browser_click_and_accept(self, selector, sleep=1):
+    def browser_click_and_accept(self, selector, sleep=1, text=None):
         """
         Shorthand to click on a link/button, show a modal dialog, then accept it.
 
@@ -393,7 +395,7 @@ class BrowserTestCase(KALiteTestCase):
         See comment on `hacks_for_phantomjs()` method above.
         """
         self.browser_click(selector)
-        alert = self.browser_accept_alert(sleep=sleep)
+        alert = self.browser_accept_alert(sleep=sleep, text=text)
         return alert
 
     @property

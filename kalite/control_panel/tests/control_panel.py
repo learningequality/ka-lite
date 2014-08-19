@@ -2,6 +2,7 @@ import time
 
 from django.conf import settings
 from django.utils import unittest
+from django.test import Client
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -10,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
+from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 logging = settings.LOG
@@ -24,8 +26,6 @@ class FacilityControlTests(FacilityMixins,
         self.setup_fake_device()
         super(FacilityControlTests, self).setUp()
 
-    # TODO (aron): find a way to handle the problem detailed in this skipIf
-    @unittest.skipIf(True, "Skipped for now until phantomjs headless tests can handle JS prompts")
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)
@@ -34,7 +34,7 @@ class FacilityControlTests(FacilityMixins,
 
         # assert that our facility exists
         selector = 'tr[facility-id="%s"] > td > a.facility-delete-link > span' % self.fac.id
-        self.browser_click_and_accept(selector)
+        self.browser_click_and_accept(selector, text=facility_name)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
@@ -110,3 +110,42 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
+
+
+class CSVExportTests(FacilityMixins,
+                     StudentTestingMixins,
+                     CreateDeviceMixin,
+                     CreateAdminMixin,
+                     KALiteDistributedBrowserTestCase):
+    
+    def setUp(self):
+        self.setup_fake_device()
+        self.facility = self.create_facility()
+        self.base_url = self.reverse("zone_data_export", kwargs={"zone_id": None})
+
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.empty_group = self.create_group(name='empty_group', facility=self.facility)
+
+        self.stu1 = self.create_student(username='stu1', facility=self.facility, group=self.group)
+        self.stu2 = self.create_student(username='stu2', facility=self.facility)
+
+        self.test_log_1 = self.create_test_log(user=self.stu1)
+        self.test_log_2 = self.create_test_log(user=self.stu2)
+
+        self.admin = self.create_admin()
+        self.client = Client()
+        self.client.login(username='admin', password='admin')
+
+        super(CSVExportTests, self).setUp()
+
+    def test_export_all(self):
+        resp = self.client.get(self.base_url + "?facility_id=all&group_id=all")
+        self.assertEquals(len(resp._container), 4, "CSV file has wrong number of rows")
+        first_row = resp._container[2].split(',')
+        self.assertEquals(self.group.name, first_row[2], "Data is malformed")
+
+    def test_export_grouped_students_only(self):
+        resp = self.client.get(self.base_url + "?facility_id=all&group_id=%s" % self.group.id)
+        self.assertEquals(len(resp._container), 3, "CSV file has wrong number of rows")
+        first_row = resp._container[2].split(',')
+        self.assertEquals(self.group.name, first_row[2], "Returned data for wrong group")

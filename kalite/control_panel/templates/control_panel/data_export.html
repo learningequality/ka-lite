@@ -1,0 +1,63 @@
+{% extends "control_panel/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load include_block %}
+
+{% block title %}{{ zone.name }} - {% trans "Data Export" %} {{ block.super }}{% endblock title %}
+
+{% block headjs %}{{ block.super }}
+    <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
+    <script>
+        var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
+        var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+    </script>
+    <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.container_view = new DataExportView({
+                el: $("#data-export-container"),
+                model: new StudentSelectStateModel({
+                    group_id: "{{ group_id }}",
+                    facility_id: "{{ facility_id }}"
+                })
+            });
+        });
+    </script>
+
+{% endblock headjs %}
+
+{% block headcss %}{{ block.super }}
+    <style>
+        .form-group {
+            float: left;
+            padding-right: 10px;
+        }
+        select:disabled {
+            color: graytext;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block titlebar %}
+        <div class="titlebar">
+            <ul class="titlebar__title">
+            {% block titlebar_title %}
+                <li>
+                    <a href="{% url 'zone_management' zone_id=zone_id %}">{{ zone.name }}</a> > Test Data Export
+                </li>
+            {% endblock titlebar_title %}
+            </ul>
+        </div>
+    {% endblock titlebar %}
+
+{% block control_panel_content %}
+<div class="row">
+    <div class="col-md-12">
+        <div id="data-export-container">
+            {# Backbone inserts stuff here #}
+        </div>
+    </div>
+</div>
+<!-- End container -->
+{% endblock control_panel_content %}
