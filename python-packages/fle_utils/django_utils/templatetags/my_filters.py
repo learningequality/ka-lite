@@ -1,12 +1,13 @@
 """
 based on: http://www.djangosnippets.org/snippets/1926/
 """
+import json
+
 from django import template
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.template import Library, Node, TemplateSyntaxError
 from django.template.defaultfilters import floatformat
-from django.utils import simplejson
 from django.utils.safestring import mark_safe
 
 from fle_utils.django_utils.serializers import serialize
@@ -93,9 +94,9 @@ def jsonify(object):
     except:
         pass
 
-    str = mark_safe(simplejson.dumps(object, default=_dthandler))
+    str = mark_safe(json.dumps(object, default=_dthandler))
     if str == "null":
-        str = mark_safe("[%s]" % (",".join([simplejson.dumps(o, default=_dthandler) for o in object])))
+        str = mark_safe("[%s]" % (",".join([json.dumps(o, default=_dthandler) for o in object])))
     return str
 
 @register.filter
