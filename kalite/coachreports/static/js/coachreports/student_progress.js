@@ -15,18 +15,14 @@ var PlaylistProgressDetailCollection = Backbone.Collection.extend({
     model: PlaylistProgressDetailModel,
 
     initialize: function(models, options) {
-        console.log("A new PlaylistProgressDetailCollection was born!");
         this.playlist_id = options.playlist_id;
     },
 
     url: function() {
-        var base = sprintf("%(playlist_url)s?user_id=%(user_id)s&playlist_id=", {"playlist_url": PLAYLIST_PROGRESS_URL, "user_id": STUDENT_ID});
-        window.dat = this;
+        var base = sprintf("%(playlist_url)s?user_id=%(user_id)s&playlist_id=", {"playlist_url": PLAYLIST_PROGRESS_DETAIL_URL, "user_id": STUDENT_ID});
         return base + this.playlist_id;
     }
 });
-
-var Playlists = new PlaylistProgressCollection;
 
 // Views 
 var StudentProgressContainerView = Backbone.View.extend({
@@ -34,20 +30,19 @@ var StudentProgressContainerView = Backbone.View.extend({
     template: HB.template('student_progress/student-progress-container'),
 
     initialize: function() {
-        // handle changes to the playlist collection
-        this.listenTo(Playlists, 'add', this.addOne);
+        this.listenTo(this.collection, 'add', this.add_one);
 
         this.render();
 
-        Playlists.fetch();
+        this.collection.fetch();
     },
 
     render: function() {
-        // Render container once
+        // Only render container once
         this.$el.html(this.template());
     },
 
-    addOne: function(playlist) {
+    add_one: function(playlist) {
         var view  = new PlaylistProgressView({
             model: playlist
         });
@@ -60,7 +55,19 @@ var PlaylistProgressView = Backbone.View.extend({
     template: HB.template('student_progress/playlist-progress-container'),
 
     events: {
-        "click .show-details": "showDetailedReport"
+        "click .show-details": "toggle_details"
+    },
+
+    initialize: function() {
+        this.details_fetched = false;
+        
+        this.detailed_view = new PlaylistProgressDetailView({
+            collection: new PlaylistProgressDetailCollection([], {
+                playlist_id: this.model.attributes.id 
+            })
+        });
+
+        this.listenTo(this.detailed_view.collection, "sync", this.render_details);
     },
 
     render: function() {
@@ -68,14 +75,24 @@ var PlaylistProgressView = Backbone.View.extend({
         return this;
     },
 
-    showDetailedReport: function(e) {
-        console.log("button click for " + this.model.attributes.id)
-        var self = this; // TODO(dylan): is this needed? 
-        var view = new PlaylistProgressDetailView({
-            collection: new PlaylistProgressDetailCollection([], {
-                playlist_id: this.model.attributes.id 
-            })
-        });
+    render_details: function() {
+        console.log("Rendering details!");
+        this.$(".playlist-progress-details").html(this.detailed_view.render().el).show();
+    },
+
+    toggle_details: function() {
+        // Fetch data if we don't have it yet
+        var self = this;
+        if (!this.details_fetched) {
+            this.detailed_view.collection.fetch({
+                success: function() {
+                    self.details_fetched = true;
+                }
+            });
+        }
+
+        // Show or hide details 
+        this.$(".playlist-progress-details").toggle();
     }
 });
 
@@ -84,23 +101,22 @@ var PlaylistProgressDetailView = Backbone.View.extend({
     template: HB.template('student_progress/playlist-progress-details'),
 
     initialize: function() {
-        console.log("A new PlaylistProgressDetailView was born!")
-
-        this.listenTo(this.collection, 'sync', this.render)
-
-        this.collection.fetch();
-
-        window.dat = this;
+        this.listenTo(this.collection, 'sync', this.render);
     },
 
     render: function() {
-        console.log("Le render de le progress details is le happening.");
+        this.$el.html(this.template({
+            data: this.collection.models
+        }));
+
+        return this;
     }
 })
 
 // Start the app on page load
 $(function() {
     var container_view = new StudentProgressContainerView({
-        el: $("#student-progress-container")
+        el: $("#student-progress-container"),
+        collection: new PlaylistProgressCollection
     });
 });

@@ -15,7 +15,7 @@
         var PLAYLIST_PROGRESS_URL = "{% url 'api_dispatch_list' resource_name='playlist_progress' %}";
         var PLAYLIST_PROGRESS_DETAIL_URL = "{% url 'api_dispatch_list' resource_name='playlist_progress_detail' %}";
         var STUDENT_ID = "{{ student.id }}";
-        console.log("Playlist progress api url: " + PLAYLIST_PROGRESS_URL);
+        console.log("Playlist progress detail api url: " + PLAYLIST_PROGRESS_DETAIL_URL);
         console.log("Student ID: " + STUDENT_ID);
     </script>
     <script type="text/javascript" src="{% static 'js/coachreports/student_progress.js' %}"></script>
@@ -25,6 +25,9 @@
 
 {% block headcss %}{{ block.super }}
     <style>
+        .playlist-progress-details {
+            display: none;
+        }
         .border-me-red {
             border: dotted red 1px;
         }

@@ -204,7 +204,6 @@ class PlaylistProgressDetail:
         # Format & append quizzes
         if quiz_exists and quiz_result:
             quiz_result = quiz_result[0] 
-            import pdb; pdb.set_trace()
             if quiz_result.get("complete"):
                 pct_score = 100 * (float(quiz_result.get("total_correct")) / float(quiz_result.get("total_number")))  
                 if pct_score <= 59:
