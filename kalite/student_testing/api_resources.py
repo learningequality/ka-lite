@@ -199,9 +199,14 @@ def _get_current_unit_settings_value(facility_id):
     Get value of current unit based on facility id.  If none, defaults to 1 and creates an
     entry on the Settings.
     """
-    value = 1
     name = _get_current_unit_settings_name(facility_id)
-    value = Settings.get(name, value)
+    value = Settings.get(name, 0)
+    if value == 0:
+        # This may be the first time this facility`s current unit is queried so
+        # make sure it has a value at Settings so we can either change it on
+        # the admin page or at front-end code later.
+        value = 1
+        _set_current_unit_settings_value(facility_id, value)
     return value
 
 
@@ -234,13 +239,10 @@ class CurrentUnit():
         return value
 
     def _get_current_unit(self):
-        # TODO(cpauya): get active unit for the Facility from Settings, randomize for now
-        current_unit = 0
+        # get active unit for the Facility from Settings
+        current_unit = 1
         if self.facility_id:
             current_unit = self._get_settings_value()
-        else:
-            if self.unit_list:
-                current_unit = randint(1, len(self.unit_list))
         return current_unit
 
     def _get_unit_list(self):
@@ -250,14 +252,13 @@ class CurrentUnit():
         return l
 
 
-@api_handle_error_with_json
 class CurrentUnitResource(Resource):
 
     id = fields.CharField(attribute='id')
     facility_id = fields.CharField(attribute='facility_id')
     facility_name = fields.CharField(attribute='facility_name')
     facility_url = fields.CharField(attribute='facility_url')
-    current_unit = fields.CharField(attribute='current_unit')
+    current_unit = fields.CharField(attribute='current_unit', default=1)
     is_on_first = fields.BooleanField(attribute='is_on_first', default=False)
     is_on_last = fields.BooleanField(attribute='is_on_last', default=False)
     unit_list = fields.ListField(attribute='unit_list')
@@ -266,22 +267,30 @@ class CurrentUnitResource(Resource):
         resource_name = 'current_unit'
         object_class = CurrentUnit
 
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if isinstance(bundle_or_obj, CurrentUnit):
+            kwargs['pk'] = bundle_or_obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.obj.id
+        return kwargs
+
     def obj_get_list(self, bundle, **kwargs):
         """
         Get the list of facilities based from a request.
         """
         l = []
         if bundle.request.is_admin:
-            # TODO(cpauya): get facilities for current user
             facilities = Facility.objects.order_by('name')
             for facility in facilities:
                 url = reverse('facility_management', args=[None, facility.id])
-                o = CurrentUnit(
-                    id=facility.id,
-                    facility_id=facility.id,
-                    facility_name=facility.name,
-                    facility_url=url
-                )
+                data = {
+                    'id': facility.id,
+                    'facility_id': facility.id,
+                    'facility_name': facility.name,
+                    'facility_url': url
+                }
+                o = CurrentUnit(**data)
                 l.append(o)
             return l
         raise Unauthorized(_("You cannot view these objects."))
@@ -296,14 +305,11 @@ class CurrentUnitResource(Resource):
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot update this object."))
         try:
-            # raise Exception('==> TODO(cpauya): remove when done testing')
-            # logging.warning('==> obj_update kwargs == %s; bundle == %s' % (kwargs, bundle.data,))
             is_next = bundle.data.get('is_next', False)
             is_previous = bundle.data.get('is_previous', False)
             facility_id = bundle.data.get('facility_id', '')
             current_unit = bundle.data.get('current_unit', '')
             selected_unit = int(bundle.data.get('selected_unit', '0'))
-            # logging.warning('==> obj_update %s -- %s -- %s' % (facility_id, current_unit, selected_unit,))
             if current_unit:
                 current_unit = int(current_unit)
                 if selected_unit and 1 <= selected_unit <= SETTINGS_MAX_UNITS:
@@ -317,7 +323,7 @@ class CurrentUnitResource(Resource):
                 _set_current_unit_settings_value(facility_id, current_unit)
             return bundle
         except Exception as e:
-            logging.error("CurrentUnitResource exception: %s" % e)
+            logging.error("CurrentUnitResource.obj_update() exception: %s" % e)
             pass
         raise NotImplemented(_("Operation not implemented."))
 

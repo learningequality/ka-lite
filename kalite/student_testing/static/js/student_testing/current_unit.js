@@ -2,19 +2,14 @@ var units = new CurrentUnitList();
 
 
 var error_func = function (model, resp) {
-//    console.log('==> error_func', 'model==', model, 'resp==', resp);
     handleFailedAPI(resp);
-//    units.fetch();
-    units.fetch({data: {'force': true}});
+    units.fetch();
 };
 
 
 var success_func = function (model, resp) {
-    // force to render the list
-//    console.log('==> success_func', 'model==', model, 'resp==', resp);
     handleSuccessAPI(resp);
-//    units.fetch();
-    units.fetch({data: {'force': true}});
+    units.fetch();
 };
 
 
@@ -23,15 +18,11 @@ var CurrentUnitView = Backbone.View.extend({
     className: "current-unit",
     template: HB.template("student_testing/current-unit-row"),
     initialize: function (options) {
-        this.listenTo(this.model, 'change', this.render);
-//        console.log('======> CurrentUnitView initialize', this);
-//        _.bindAll(this);
         this.render();
     },
     render: function () {
         var variables = this.model.toJSON();
-        var template = this.$el.html(this.template(variables));
-//        console.log('======> CurrentUnitView render', this, 'template==', template);
+        this.$el.html(this.template(variables));
         return this;
     },
     events: {
@@ -65,25 +56,17 @@ var CurrentUnitView = Backbone.View.extend({
 
 var AppView = Backbone.View.extend({
     initialize: function () {
-        this.listenTo(units, 'add', this.add_new_unit);
-        this.listenTo(units, 'reset', this.add_all_units);
-//        this.listenTo(units, 'sync', this.add_all_units);
+        this.listenTo(units, 'sync', this.add_all_units);
         units.fetch();
-//        console.log('==> AppView.initialize', units);
     },
-    add_new_unit: function (unit) {
-        console.log('==> add_new_unit', unit);
+    add_unit: function (unit, collection, options) {
         var view = new CurrentUnitView({model: unit});
         $("#current-units").append(view.render().el);
     },
-    add_all_units: function () {
-        console.log('==> add_all_units', units, this);
-//        var self = this;
-//        _.each(units, function(unit, index) {
-//            console.log('==> add_all_units each', unit);
-//            self.add_new_unit(unit);
-//        });
-        units.each(this.add_new_unit);
+    add_all_units: function (model, response, options) {
+        // clear the rows
+        $("#current-units").find("tr.current-unit").remove();
+        units.each(this.add_unit);
     }
 });
 
