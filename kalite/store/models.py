@@ -88,6 +88,19 @@ class StoreTransactionLog(DeferredCountSyncedModel):
     def get_points_for_user(user):
         return StoreTransactionLog.objects.filter(user=user).aggregate(Sum("value")).get("value__sum", 0) or 0
 
+    def save(self, *args, **kwargs):
+        if not kwargs.get("imported", False):
+            self.full_clean()
+            storeitem_id = kwargs.get("item")
+            item = StoreItem.all().get(storeitem_id, None)
+            if not item:
+                raise ValidationError("Store Item does not exist")
+            elif item.has_key("cost"):
+                if item["cost"] != -kwargs.get("value", None):
+                    raise ValidationError("Store Item cost different from transaction_log value")
+
+        super(StoreTransactionLog, self).save(*args, **kwargs)
+
 
 @receiver(exam_unset)
 def handle_exam_unset(sender, **kwargs):
