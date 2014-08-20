@@ -51,24 +51,35 @@
             border-left: 3px solid #5C8547;
             width: 120px;
             text-align: center;
-            vertical-align: center;
+            bottom: 0;
             font-weight: bold;
-            display: inline-block !important;
+            display: inline !important;
             margin: 0 2px -4px 0;
+        }
+        .teach-nav li span {
+            line-height: 7.7;
         }
         .teach-nav li a:hover {
             background-color: white !important;
             border-top-left-radius: 5px !important;
             border-top-right-radius: 16px !important;
-            color: #405D32;
+            color: #5C8547;
             font-weight: bold;
         }
         .teach-nav li a {
             color: white;
             padding: 10px !important;
+            text-align: center;
+        }
+        .teach-nav li img {
+            height: 35px;
+            width: auto;
+            display: block;
+            margin: auto;
+            margin-bottom: 5px;
         }
         .active-nav {
-            color: #405D32 !important;
+            color: #5C8547 !important;
             background-color: white !important;
             border-top-left-radius: 5px !important;
             border-top-right-radius: 16px !important;
@@ -77,6 +88,16 @@
         }
         .active {
             background-color: #E9F1E4;           
+        }
+        #reports {
+            background: url("{%  static "images/coachreports/reports-icon.png" %}") no-repeat;
+            background-position: center 7px;
+            height: 80px;
+        }
+        #reports:hover {
+            background: url("{% static "images/coachreports/reports-active-icon.png" %}") no-repeat;
+            background-position: center 7px;
+            height: 80px;
         }
         @media only screen and (max-width: 744px) {+
             h4 { margin-top: 0; }
