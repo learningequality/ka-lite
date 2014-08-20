@@ -5,8 +5,7 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
-from .models import StoreTransactionLog
-from .data.items import STORE_ITEMS
+from .models import StoreItem, StoreTransactionLog
 
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -21,22 +20,6 @@ from kalite.facility.api_resources import FacilityUserResource
 #             "id": ('exact', ),
 #             "resource_type": ('exact', ),
 #         }
-
-storeitemcache = {}
-
-
-class StoreItem():
-    def __init__(self, **kwargs):
-        storeitem_id = kwargs.get('storeitem_id')
-        self.storeitem_id = storeitem_id
-        self.cost = kwargs.get("cost", None)
-        self.returnable = kwargs.get("returnable", None)
-        self.title = kwargs.get("title", None)
-        self.description = kwargs.get("description", None)
-        self.thumbnail = kwargs.get("thumbnail", None)
-        self.resource_id = kwargs.get("resource_id", None)
-        self.resource_type = kwargs.get("resource_type", None)
-        self.shown = kwargs.get("shown", True)
 
 
 class StoreItemResource(Resource):
@@ -54,21 +37,12 @@ class StoreItemResource(Resource):
         resource_name = 'storeitem'
         object_class = StoreItem
 
-    #TODO(aron): refactor reading of storeitems json files
-    def _refresh_storeitems_cache(self):
-        for key, value in STORE_ITEMS.items():
-            # Coerce each storeitem dict into a StoreItem object
-            value["storeitem_id"] = key
-            storeitemcache[key] = (StoreItem(**value))
-
     def _read_storeitem(self, storeitem_id, force=False):
-        if not storeitemcache or force:
-            self._refresh_storeitems_cache()
+        storeitemcache = StoreItem.all(force=force)
         return storeitemcache.get(storeitem_id, None)
 
     def _read_storeitems(self, storeitem_id=None, force=False):
-        if not storeitemcache or force:
-            self._refresh_storeitems_cache()
+        storeitemcache = StoreItem.all(force=force)
         return sorted(storeitemcache.values(), key=lambda storeitem: storeitem.title)
 
     def prepend_urls(self):

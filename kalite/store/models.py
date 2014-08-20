@@ -12,6 +12,8 @@ from securesync.models import DeferredCountSyncedModel
 
 from django.conf import settings; logging = settings.LOG
 
+from .data.items import STORE_ITEMS
+
 # Create your models here.
 
 # class StoreItem(DeferredCountSyncedModel):
@@ -34,6 +36,31 @@ from django.conf import settings; logging = settings.LOG
 
 #     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
 #         pass
+
+class StoreItem():
+
+    storeitemcache = {}
+
+    def __init__(self, **kwargs):
+        storeitem_id = kwargs.get('storeitem_id')
+        self.storeitem_id = storeitem_id
+        self.cost = kwargs.get("cost", None)
+        self.returnable = kwargs.get("returnable", None)
+        self.title = kwargs.get("title", None)
+        self.description = kwargs.get("description", None)
+        self.thumbnail = kwargs.get("thumbnail", None)
+        self.resource_id = kwargs.get("resource_id", None)
+        self.resource_type = kwargs.get("resource_type", None)
+        self.shown = kwargs.get("shown", True)
+
+    @classmethod
+    def all(cls, force=False):
+        if not cls.storeitemcache or force:
+            for key, value in STORE_ITEMS.items():
+                # Coerce each storeitem dict into a StoreItem object
+                value["storeitem_id"] = key
+                cls.storeitemcache[key] = (StoreItem(**value))
+        return cls.storeitemcache
 
 
 class StoreTransactionLog(DeferredCountSyncedModel):
