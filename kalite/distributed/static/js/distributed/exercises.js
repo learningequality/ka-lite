@@ -1362,11 +1362,8 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         if(this.log_model.get("attempts")==1){
             if(this.points > 0){
-                // Fixed IDs for 'Gift card items'
-                // Change over store item models to fixed Python data structure thingummies.
-                save_to_server(
-                {
-                    item: "gift-card",
+                var purchased_model = new PurchasedStoreItemModel({
+                    item: "/api/store/storeitem/gift_card/",
                     purchased_at: window.statusModel.get_server_time(),
                     reversible: false,
                     context_id: 0, // TODO-BLOCKER: put the current unit in here
@@ -1374,6 +1371,9 @@ window.ExerciseQuizView = Backbone.View.extend({
                     user: window.statusModel.get("user_uri"),
                     value: this.points
                 });
+                purchased_model.save();
+
+                statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
             }
         }
 
