@@ -132,7 +132,12 @@ function handleFailedAPI(resp, error_prefix) {
             break;
 
         case 200:  // return JSON messages
+        case 201:
         case 500:  // also currently return JSON messages
+
+            // handle empty responses gracefully
+            resp.responseText = resp.responseText || "{}";
+
             try {
                 messages = $.parseJSON(resp.responseText);
             } catch (e) {
