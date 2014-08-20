@@ -1333,6 +1333,8 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         _.bindAll(this);
 
+        this.points = 0;
+
         if (window.statusModel.get("is_logged_in")) {
 
             this.quiz_model = options.quiz_model;
@@ -1357,6 +1359,23 @@ window.ExerciseQuizView = Backbone.View.extend({
             correct: this.log_model.get_latest_response_log_item(),
             total_number: this.log_model.get("total_number")
         }));
+
+        if(this.log_model.get("attempts")==1){
+            if(this.points > 0){
+                // Fixed IDs for 'Gift card items'
+                // Change over store item models to fixed Python data structure thingummies.
+                save_to_server(
+                {
+                    item: "gift-card",
+                    purchased_at: window.statusModel.get_server_time(),
+                    reversible: false,
+                    context_id: 0, // TODO-BLOCKER: put the current unit in here
+                    context_type: "unit",
+                    user: window.statusModel.get("user_uri"),
+                    value: this.points
+                });
+            }
+        }
 
         var self = this;
 
@@ -1448,6 +1467,10 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.log_model.set({
                 index: this.log_model.get("index") + 1
             });
+
+            if((!this.log_model.get("complete")) && data.correct){
+                this.points += this.exercise_view.data_model.get("basepoints");
+            }
 
             this.log_model.add_response_log_item(data);
 
