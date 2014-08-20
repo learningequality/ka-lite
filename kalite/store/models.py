@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 
 from kalite.student_testing.signals import exam_unset
 from kalite.student_testing.models import TestLog
@@ -91,12 +92,15 @@ class StoreTransactionLog(DeferredCountSyncedModel):
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
-            storeitem_id = kwargs.get("item")
+            storeitem_id = self.item
+            if storeitem_id:
+                # TODO (rtibbles): Cleanup! Hackity hack to deal with not using tastypie resource URI for item id.
+                storeitem_id = storeitem_id.split("/")[-2]
             item = StoreItem.all().get(storeitem_id, None)
             if not item:
-                raise ValidationError("Store Item does not exist")
-            elif item.has_key("cost"):
-                if item["cost"] != -kwargs.get("value", None):
+                raise ValidationError("Store Item does not exist" + storeitem_id)
+            elif item.cost:
+                if item.cost != -self.value:
                     raise ValidationError("Store Item cost different from transaction_log value")
 
         super(StoreTransactionLog, self).save(*args, **kwargs)

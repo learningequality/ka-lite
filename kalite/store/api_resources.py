@@ -103,7 +103,6 @@ class StoreItemResource(Resource):
 class StoreTransactionLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
-    item = fields.ForeignKey(StoreItemResource, 'item')
 
     class Meta:
         queryset = StoreTransactionLog.objects.all()
