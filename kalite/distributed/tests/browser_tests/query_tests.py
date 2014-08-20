@@ -52,7 +52,7 @@ class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase)
         student.save()
 
         expected_num_queries = 25 + 3*UserLog.is_enabled()
-        with self.assertNumQueries(FuzzyInt(expected_num_queries - 3, expected_num_queries + 4)):
+        with self.assertNumQueries(FuzzyInt(expected_num_queries - 3, expected_num_queries + 5)):
             self.browser_login_student("s1", passwd, self.facility)
 
     def test_query_status_admin(self):
