@@ -55,7 +55,7 @@ var PlaylistProgressView = Backbone.View.extend({
     template: HB.template('student_progress/playlist-progress-container'),
 
     events: {
-        "click .show-details": "toggle_details"
+        "click .toggle-details": "toggle_details"
     },
 
     initialize: function() {
@@ -76,8 +76,10 @@ var PlaylistProgressView = Backbone.View.extend({
     },
 
     render_details: function() {
-        console.log("Rendering details!");
         this.$(".playlist-progress-details").html(this.detailed_view.render().el).show();
+
+        // opt in bootstrap tooltip functionality
+        $('.progress-indicator-sm').tooltip();
     },
 
     toggle_details: function() {
@@ -92,7 +94,7 @@ var PlaylistProgressView = Backbone.View.extend({
         }
 
         // Show or hide details 
-        this.$(".playlist-progress-details").toggle();
+        this.$(".playlist-progress-details").slideToggle();
     }
 });
 

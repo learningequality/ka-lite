@@ -1,6 +1,20 @@
 <h4>Playlist Progress Details Template</h4>
 {{#each data}}
-<div class="border-me-red">
-    {{attributes.description}}, {{attributes.kind}}, {{attributes.status}}
+<div class="col-xs-1 progress-block">
+    <div class="progress-indicator progress-indicator-sm {{attributes.status}}"
+        data-toggle="tooltip" data-placement="top" title="{{attributes.title}}, {{attributes.score}}%"
+    >
+        <span class="icon-label icon-label-sm glyphicon 
+            {{#ifcond attributes.kind "===" "Video"}}
+                glyphicon-facetime-video
+            {{/ifcond}}
+            {{#ifcond attributes.kind "===" "Exercise"}}
+                glyphicon-pencil
+            {{/ifcond}}
+            {{#ifcond attributes.kind "===" "Quiz"}}
+                glyphicon-ok
+            {{/ifcond}}
+        "></span>
+    </div>
 </div>
 {{/each}}

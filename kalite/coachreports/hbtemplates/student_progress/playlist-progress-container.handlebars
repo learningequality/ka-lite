@@ -9,8 +9,8 @@
     {{!-- Videos --}}
     <div class="row progress-block">
         <div class="col-xs-2">
-            <div class="progress-indicator center-block {{vid_status}}">
-                <span class="glyphicon glyphicon-facetime-video icon-label"></span>
+            <div class="progress-indicator progress-indicator-lg center-block {{vid_status}}">
+                <span class="glyphicon glyphicon-facetime-video icon-label icon-label-lg"></span>
             </div>
         </div>
         <div class="col-xs-10">
@@ -31,8 +31,8 @@
     {{!-- Exercises --}}
     <div class="row progress-block">
         <div class="col-xs-2">
-            <div class="progress-indicator center-block {{ex_status}}">
-                <span class="glyphicon glyphicon-pencil icon-label"></span>
+            <div class="progress-indicator progress-indicator-lg center-block {{ex_status}}">
+                <span class="glyphicon glyphicon-pencil icon-label icon-label-lg"></span>
             </div>
         </div>
         <div class="col-xs-10">
@@ -59,8 +59,8 @@
     {{#if quiz_exists}}
     <div class="row progress-block">
         <div class="col-xs-2">
-            <div class="progress-indicator center-block {{quiz_status}}">
-                <span class="glyphicon glyphicon-ok icon-label"></span>
+            <div class="progress-indicator progress-indicator-lg center-block {{quiz_status}}">
+                <span class="glyphicon glyphicon-ok icon-label icon-label-lg"></span>
             </div>
         </div>
         <div class="col-xs-10">
@@ -76,7 +76,12 @@
     {{/if}}
     <div class="row">
         <div class="col-xs-12">
-            <div class="playlist-progress-details">LOADING GIF GOES HERE</div>
+            <button class="btn btn-md btn-primary center-block toggle-details"><span class="glyphicon glyphicon-chevron-down"></span></button>
+        </div>
+    </div>
+    <div class="row playlist-progress-details">
+        <div class="col-xs-12">
+            <img class="center-block" src="/static/images/loading.gif"/>    
         </div>
     </div>
 </div>

@@ -48,7 +48,9 @@ class PlaylistProgressDetailResource(Resource):
 
     kind = fields.CharField(attribute='kind')
     status = fields.CharField(attribute='status')
-    description = fields.CharField(attribute='description')
+    title = fields.CharField(attribute='title')
+    score = fields.IntegerField(attribute='score')
+    path = fields.CharField(attribute='path')
 
     class Meta:
         resource_name = "playlist_progress_detail"
