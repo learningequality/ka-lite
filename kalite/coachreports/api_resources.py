@@ -1,10 +1,41 @@
 from tastypie import fields
-from tastypie.exceptions import NotFound
+from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
 
+from django.utils.translation import ugettext as _
+
+from kalite.shared.decorators import get_user_from_request
 from .models import PlaylistProgress, PlaylistProgressDetail
 
-class PlaylistProgressResource(Resource):
+
+class PlaylistParentResource(Resource):
+    """
+    A parent resource that houses shared code between the two resources we actually use 
+    in the API
+    """
+
+    @classmethod
+    def permission_check(self, request):
+        """
+        Require that the users are logged in, and that the user is the same student 
+        whose data is being requested, an admin, or a teacher in that facility
+        """
+        if getattr(request, "is_logged_in", False):  
+            pass
+        else:
+            raise Unauthorized(_("You must be logged in to access this page."))
+
+        if getattr(request, "is_admin", False):
+            pass
+        else:
+            user = get_user_from_request(request=request)
+            if request.GET.get("user_id") == user.id:
+                pass
+            else:
+                raise Unauthorized(_("You requested information for a user that you are not authorized to view."))
+
+
+class PlaylistProgressResource(PlaylistParentResource):
 
     title = fields.CharField(attribute='title')
     id = fields.CharField(attribute='id')
@@ -41,10 +72,11 @@ class PlaylistProgressResource(Resource):
         return result
 
     def obj_get_list(self, bundle, **kwargs):
+        self.permission_check(bundle.request)
         return self.get_object_list(bundle.request)
 
 
-class PlaylistProgressDetailResource(Resource):
+class PlaylistProgressDetailResource(PlaylistParentResource):
 
     kind = fields.CharField(attribute='kind')
     status = fields.CharField(attribute='status')
@@ -74,4 +106,5 @@ class PlaylistProgressDetailResource(Resource):
         return result
 
     def obj_get_list(self, bundle, **kwargs):
+        self.permission_check(bundle.request)
         return self.get_object_list(bundle.request)
