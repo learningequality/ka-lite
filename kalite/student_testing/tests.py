@@ -338,6 +338,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
 
     CSS_CURRENT_UNIT_NEXT_BUTTON = '.current-unit-button.next'
     CSS_CURRENT_UNIT_PREV_BUTTON = '.current-unit-button.previous'
+    CSS_CURRENT_UNIT_ACTIVE = 'span.current-unit-'
     NEXT = 'Next'
     PREV = 'Previous'
 
@@ -383,12 +384,22 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click next and test that Setting was incremented
         btn = self.get_button(is_next=True)
         btn.click()
+
+        # wait until ajax call is done
+        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit + 1,)
+        self.wait_for_element(By.CSS_SELECTOR, sel)
+
         unit_next = get_current_unit_settings_value(facility_id)
         self.assertNotEqual(unit, unit_next)
 
         # click previous and test that Setting was decremented
         btn = self.get_button(is_next=False)
         btn.click()
+
+        # wait until ajax call is done
+        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
+        self.wait_for_element(By.CSS_SELECTOR, sel)
+
         unit_prev = get_current_unit_settings_value(facility_id)
         self.assertEqual(unit, unit_prev)
 
@@ -420,11 +431,21 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click previous and test that Setting was decremented
         btn = self.get_button(is_next=False)
         btn.click()
+
+        # wait until ajax call is done
+        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit - 1,)
+        self.wait_for_element(By.CSS_SELECTOR, sel)
+
         unit_prev = get_current_unit_settings_value(facility_id)
         self.assertNotEqual(unit, unit_prev)
 
         # click next and test that Setting was incremented
         btn = self.get_button(is_next=True)
         btn.click()
+
+        # wait until ajax call is done
+        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
+        self.wait_for_element(By.CSS_SELECTOR, sel)
+
         unit_next = get_current_unit_settings_value(facility_id)
         self.assertEqual(unit, unit_next)
