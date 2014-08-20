@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
+from kalite.control_panel.views import UNGROUPED
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
@@ -141,9 +142,18 @@ class CSVExportTests(FacilityMixins,
     def test_export_all(self):
         resp = self.client.get(self.base_url + "?facility_id=all&group_id=all")
         self.assertEquals(len(resp._container), 4, "CSV file has wrong number of rows")
-        first_row = resp._container[2].split(',')
-        # self.assertEquals(self.group.name, first_row[2], "Data is malformed")
-        self.assertEquals(self.group.name, first_row[2])
+        # Because the CSV result does not guarantee sorting - we loop thru the results here
+        # and check if the grouped and ungrouped users exist.
+        ungrouped_ok = False
+        grouped_ok = False
+        for row in resp._container[2:]:
+            values = row.split(',')
+            if values[2] == self.group.name:
+                grouped_ok = True
+            elif values[2] == UNGROUPED:
+                ungrouped_ok = True
+        self.assertTrue(grouped_ok, "Grouped user data not exported.")
+        self.assertTrue(ungrouped_ok, "Ungrouped user data not exported.")
 
     def test_export_grouped_students_only(self):
         resp = self.client.get(self.base_url + "?facility_id=all&group_id=%s" % self.group.id)
