@@ -1,16 +1,61 @@
 """Classes used by the student progress tastypie API"""
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
 from kalite.topic_tools import get_slug2id_map, get_id2slug_map, get_flat_topic_tree, convert_leaf_url_to_id
 
-class PlaylistProgress:
+
+FLAT_TOPIC_TREE = get_flat_topic_tree()
+ID2SLUG_MAP = get_id2slug_map()
+SLUG2ID_MAP = get_slug2id_map()
+
+class PlaylistProgressParent:
+    """Parent class for helpful class methods"""
+
+    @classmethod
+    def get_playlist_entry_ids(cls, playlist):
+        """Return a tuple of the playlist's video ids and exercise ids as sets"""
+        playlist_entries = playlist.get("entries")
+        pl_video_ids = set([SLUG2ID_MAP.get(convert_leaf_url_to_id(entry["entity_id"])) for entry in playlist_entries if entry.get("entity_kind") == "Video"])
+        pl_exercise_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in playlist_entries if entry.get("entity_kind") == "Exercise"])
+        return (pl_video_ids, pl_exercise_ids)
+
+    @classmethod
+    def get_user_logs(cls, user, pl_video_ids=None, pl_exercise_ids=None):
+        user_ex_logs = list(ExerciseLog.objects \
+            .filter(user=user) \
+            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
+        user_vid_logs = list(VideoLog.objects \
+            .filter(user=user) \
+            .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+        
+        if pl_video_ids and pl_exercise_ids:
+            user_ex_logs = [ex_log for ex_log in user_ex_logs if ex_log.get("exercise_id") in pl_exercise_ids]
+            user_vid_logs = [vid_log for vid_log in user_vid_logs if vid_log.get("video_id") in pl_video_ids]
+
+        return (user_vid_logs, user_ex_logs)
+
+    @classmethod 
+    def get_quiz_log(cls, user, playlist_entries, playlist_id):
+        exists = True if [entry for entry in playlist_entries if entry["entity_kind"] == "Quiz"] else False
+        try:
+            quiz = QuizLog.objects.get(user=user, quiz=playlist_id)
+        except ObjectDoesNotExist:
+            quiz = None
+
+        score = 0 if not quiz else int(float(quiz.total_correct) / float(quiz.total_number) * 100)
+
+        return (exists, quiz, score)
+
+class PlaylistProgress(PlaylistProgressParent):
     """Users progress on playlists"""
 
     def __init__(self, **kwargs):
-        self.title = kwargs.get("title")
         self.id = kwargs.get("id")
+        self.title = kwargs.get("title")
         self.tag = kwargs.get("tag")
         self.vid_pct_complete = kwargs.get("vid_pct_complete")
         self.vid_pct_started = kwargs.get("vid_pct_started")
@@ -28,21 +73,14 @@ class PlaylistProgress:
         """
         Return a list of PlaylistProgress objects associated with the user.
         """
-        user = FacilityUser.objects.filter(id=user_id)
+        user = FacilityUser.objects.get(id=user_id)
         all_playlists = [pl.__dict__ for pl in Playlist.all()]
-        flat_topic_tree = get_flat_topic_tree()
-        id2slug_map = get_id2slug_map()
-        slug2id_map = get_slug2id_map()
 
-        exercise_logs = list(ExerciseLog.objects \
-            .filter(user=user) \
-            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
-        video_logs = list(VideoLog.objects \
-            .filter(user=user) \
-            .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+        # Retrieve video, exercise, and quiz logs that appear in this playlist
+        user_vid_logs, user_ex_logs = cls.get_user_logs(user)
 
-        exercise_ids = set([ex_log["exercise_id"] for ex_log in exercise_logs])
-        video_ids = set([id2slug_map.get(vid_log["video_id"]) for vid_log in video_logs])
+        exercise_ids = set([ex_log["exercise_id"] for ex_log in user_ex_logs])
+        video_ids = set([ID2SLUG_MAP.get(vid_log["video_id"]) for vid_log in user_vid_logs])
         quiz_log_ids = QuizLog.objects.filter(user=user).values("quiz")
         
         # Build a list of playlists for which the user has at least one data point 
@@ -67,18 +105,17 @@ class PlaylistProgress:
         user_progress = list()
         for i, p in enumerate(user_playlists):
             # Playlist entry totals
-            pl_video_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in p.get("entries") if entry.get("entity_kind") == "Video"])
-            pl_exercise_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in p.get("entries") if entry.get("entity_kind") == "Exercise"])
+            pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(p) 
             n_pl_videos = float(len(pl_video_ids))
             n_pl_exercises = float(len(pl_exercise_ids))
 
             # Vid & exercise logs in this playlist
-            ex_logs = [ex_log for ex_log in exercise_logs if ex_log["exercise_id"] in pl_exercise_ids]
-            vid_logs = [vid_log for vid_log in video_logs if id2slug_map.get(vid_log["video_id"]) in pl_video_ids]
+            pl_ex_logs = [ex_log for ex_log in user_ex_logs if ex_log["exercise_id"] in pl_exercise_ids]
+            pl_vid_logs = [vid_log for vid_log in user_vid_logs if vid_log["video_id"] in pl_video_ids]
 
             # Compute video stats 
-            n_vid_complete = len([vid for vid in vid_logs if vid["complete"]])
-            n_vid_started = len([vid for vid in vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])
+            n_vid_complete = len([vid for vid in pl_vid_logs if vid["complete"]])
+            n_vid_started = len([vid for vid in pl_vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])
             vid_pct_complete = int(float(n_vid_complete) / n_pl_videos * 100)
             vid_pct_started = int(float(n_vid_started) / n_pl_videos * 100) 
             if vid_pct_complete == 100:
@@ -89,27 +126,26 @@ class PlaylistProgress:
                 vid_status = "notstarted" 
 
             # Compute exercise stats 
-            n_ex_mastered = len([ex for ex in ex_logs if ex["complete"]])
-            n_ex_started = len([ex for ex in ex_logs if ex["attempts"] > 0])
-            n_ex_incomplete = len([ex for ex in ex_logs if (ex["attempts"] > 0 and not ex["complete"])])
-            n_ex_struggling = len([ex for ex in ex_logs if ex["struggling"]])
+            n_ex_mastered = len([ex for ex in pl_ex_logs if ex["complete"]])
+            n_ex_started = len([ex for ex in pl_ex_logs if ex["attempts"] > 0])
+            n_ex_incomplete = len([ex for ex in pl_ex_logs if (ex["attempts"] > 0 and not ex["complete"])])
+            n_ex_struggling = len([ex for ex in pl_ex_logs if ex["struggling"]])
             ex_pct_mastered = int(float(n_ex_mastered) / n_pl_exercises * 100) 
             ex_pct_incomplete = int(float(n_ex_incomplete) / n_pl_exercises * 100) 
             ex_pct_struggling = int(float(n_ex_struggling) / n_pl_exercises * 100) 
             if not n_ex_started:
                 ex_status = "notstarted"
             elif ex_pct_struggling > 30:
-                ex_status = "struggling" # TODO(dylan) are these ok limits?
+                # TODO(dylan) are these ok limits? red progress bar if struggling with 30% or more  
+                ex_status = "struggling" 
             elif ex_pct_mastered < 99:
                 ex_status = "inprogress"
             else:
                 ex_status = "complete"
 
-            # Compute test stats
-            quiz_exists = True if [entry for entry in p.get("entries") if entry["entity_kind"] == "Quiz"] else False
-            quiz_result = None if not quiz_exists else QuizLog.objects.filter(user=user, quiz=p.get("id"))
-            quiz_pct_score = 0 if not quiz_result else int(float(quiz_result[0].total_correct) / float(quiz_result[0].total_number) * 100)
-            if quiz_result:
+            # Compute quiz stats
+            quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, p.get("entries"), p.get("id"))
+            if quiz_log:
                 if quiz_pct_score <= 50:
                     quiz_status = "struggling"
                 elif quiz_pct_score <= 79:
@@ -139,13 +175,13 @@ class PlaylistProgress:
                     
         return user_progress
 
-class PlaylistProgressDetail:
+class PlaylistProgressDetail(PlaylistProgressParent):
     """Detailed progress on a specific playlist for a specific user"""
 
     def __init__(self, **kwargs):
         self.id = kwargs.get("id")
-        self.kind = kwargs.get("kind")
         self.title = kwargs.get("title")
+        self.kind = kwargs.get("kind")
         self.status = kwargs.get("status")
         self.score = kwargs.get("score")
         self.path = kwargs.get("path")
@@ -153,38 +189,23 @@ class PlaylistProgressDetail:
     @classmethod
     def user_progress_detail(cls, user_id, playlist_id):
         """
-        Return a list of video, exercise, and quiz log PlaylistProgressDetail objects associated with a specific user and playlist ID.
+        Return a list of video, exercise, and quiz log PlaylistProgressDetail 
+        objects associated with a specific user and playlist ID.
         """
-        user = FacilityUser.objects.filter(id=user_id)
+        user = FacilityUser.objects.get(id=user_id)
         playlist = next((pl for pl in Playlist.all() if pl.id == playlist_id), None)
         playlist = playlist.__dict__
-        playlist_entries = playlist.get("entries")
-        flat_topic_tree = get_flat_topic_tree()
-        id2slug_map = get_id2slug_map()
-        slug2id_map = get_slug2id_map()
 
-        pl_video_ids = set([slug2id_map.get(convert_leaf_url_to_id(entry["entity_id"])) for entry in playlist_entries if entry.get("entity_kind") == "Video"])
-        pl_exercise_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in playlist_entries if entry.get("entity_kind") == "Exercise"])
+        pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist) 
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
-        ex_logs = list(ExerciseLog.objects \
-            .filter(user=user, exercise_id__in=pl_exercise_ids) \
-            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
-        vid_logs = list(VideoLog.objects \
-            .filter(user=user, video_id__in=pl_video_ids) \
-            .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
-        
-        quiz_exists = True if [entry for entry in playlist_entries if entry["entity_kind"] == "Quiz"] else False
-        quiz_result = None if not quiz_exists else list(QuizLog.objects \
-            .filter(user=user, quiz=playlist.get("id"))
-            .values("complete", "quiz", "total_number", "attempts", "total_correct"))
+        user_vid_logs, user_ex_logs = cls.get_user_logs(user, pl_video_ids, pl_exercise_ids)
 
-        # Format and create a look up dictionary so that we can substitute them into the list
-        # for the response 
+        # Used to store any progress the student has made on this playlist
         detailed_progress = dict()
 
         # Format & append exercises
-        for log in ex_logs:
+        for log in user_ex_logs:
             if log.get("struggling"):
                 status = "struggling"
             elif log.get("complete"):
@@ -195,7 +216,7 @@ class PlaylistProgressDetail:
                 status = "notstarted"
 
             log_id = log.get("exercise_id")
-            log_entry = flat_topic_tree["Exercise"].get(log["exercise_id"])
+            log_entry = FLAT_TOPIC_TREE["Exercise"].get(log["exercise_id"])
 
             entry = {
                 "id": log_id,
@@ -209,7 +230,7 @@ class PlaylistProgressDetail:
             detailed_progress[log_id] = cls(**entry)
 
         # Format & append videos
-        for log in vid_logs:
+        for log in user_vid_logs:
             if log.get("complete"):
                 status = "complete"
             elif log.get("total_seconds_watched"):
@@ -218,7 +239,7 @@ class PlaylistProgressDetail:
                 status = "notstarted"
 
             log_id = log.get("video_id")
-            log_entry = flat_topic_tree["Video"].get(log["video_id"])
+            log_entry = FLAT_TOPIC_TREE["Video"].get(log["video_id"])
 
             entry = {
                 "id": log_id,
@@ -231,29 +252,30 @@ class PlaylistProgressDetail:
 
             detailed_progress[log_id] = cls(**entry)
 
+        # Format & append quiz
+        quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, playlist.get("entries"), playlist.get("id"))
+
         # Format & append quizzes
-        if quiz_exists and quiz_result:
-            quiz_result = quiz_result[0] 
-            if quiz_result.get("complete"):
-                pct_score = int(float(quiz_result.get("total_correct")) / float(quiz_result.get("total_number")) * 100)  
-                if pct_score <= 59:
+        if quiz_exists and quiz_log:
+            if quiz_log.complete:
+                if quiz_pct_score <= 59:
                     status = "fail"
-                elif pct_score <= 79:
+                elif quiz_pct_score <= 79:
                     status = "borderline"
                 else:
                     status = "pass"
-            elif quiz_result.get("attempts"):
+            elif quiz_log.attempts:
                 status = "inprogress"
             else:
                 status = "notstarted"
 
-            log_id = quiz_result.get("quiz")
+            log_id = quiz_log.quiz
 
             entry = {
                 "id": log_id,
                 "kind": "Quiz",
                 "status": status,
-                "score": pct_score,
+                "score": quiz_pct_score,
                 "title": playlist.get("title"),
                 "path": "",
             }
@@ -262,32 +284,28 @@ class PlaylistProgressDetail:
 
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists. 
-
         ordered_progress = list()
-        for ent in playlist_entries:
-            kind = ent.get("entity_kind")
-            entity_id = ent.get("entity_id")
-
-            # Check if we have a log for this, otherwise create an empty one
-            # TODO(dylan) this whole block can be refactored 
+        for ent in playlist.get("entries"):
+            kind = ent.get("entity_kind") 
             if kind == "Divider":
                 continue
             elif kind == "Video":
-                entry = detailed_progress.get(slug2id_map[(ent["entity_id"])])
+                entity_id = SLUG2ID_MAP[(ent["entity_id"])]
             elif kind == "Exercise":
-                entry = detailed_progress.get(ent["entity_id"])
+                entity_id = ent["entity_id"]
             elif kind == "Quiz":
-                # (sadpanda)(Dylan): why did we not just give the quizzes an ID too?  
-                entry = detailed_progress.get(playlist["id"]) 
-            
+                entity_id = playlist["id"]
+            entry = detailed_progress.get(entity_id)   
+
+            # Use the log if we have it, otherwise create an empty one.         
             if entry:
                 ordered_progress.append(entry)
             else:
                 if kind != "Quiz":
                     if kind == "Video":
-                        topic_node = flat_topic_tree[kind].get(slug2id_map[entity_id])
+                        topic_node = FLAT_TOPIC_TREE[kind].get(SLUG2ID_MAP[entity_id])
                     elif kind == "Exercise":
-                        topic_node = flat_topic_tree[kind].get(entity_id)
+                        topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
                     title = topic_node["title"] 
                     path = topic_node["path"]
                 else:
