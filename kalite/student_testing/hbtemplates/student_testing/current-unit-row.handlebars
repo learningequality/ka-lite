@@ -4,7 +4,7 @@
         {{#if is_on_first}}
             disabled=disabled
         {{/if}}
-            class="btn btn-info test-row-button previous">{{_ "Previous" }}
+            class="btn btn-info current-unit-button previous">{{_ "Previous" }}
     </button>
     {{#each unit_list}}
         {{#ifcond this '==' ../current_unit}}
@@ -19,6 +19,6 @@
         {{#if is_on_last}}
             disabled=disabled
         {{/if}}
-            class="btn btn-info test-row-button next">{{_ "Next" }}
+            class="btn btn-info current-unit-button next">{{_ "Next" }}
     </button>
 </td>

@@ -21,7 +21,9 @@ from kalite.facility.models import Facility
 
 from .models import TestLog
 from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
-from .utils import get_exam_mode_on, set_exam_mode_on
+from .utils import get_exam_mode_on, set_exam_mode_on, \
+    get_current_unit_settings_name, get_current_unit_settings_value, set_current_unit_settings_value,\
+    SETTINGS_MAX_UNITS
 
 from django.conf import settings
 
@@ -169,47 +171,6 @@ class TestResource(Resource):
         raise NotImplemented("Operation not implemented yet for tests.")
 
 
-SETTINGS_CURRENT_UNIT_PREFIX = 'current_unit_'
-SETTINGS_FACILITY_ID_CHARS = 8
-SETTINGS_MAX_UNITS = 20  # TODO(cpauya): Maybe put to settings.py or Settings?
-
-
-# ==========================
-# Some helper functions
-# ==========================
-
-def _get_current_unit_settings_name(facility_id):
-    name = SETTINGS_CURRENT_UNIT_PREFIX
-    if facility_id:
-        name = "%s%s" % (name, facility_id[:SETTINGS_FACILITY_ID_CHARS],)
-    return name
-
-
-def _set_current_unit_settings_value(facility_id, value):
-    """
-    Set the value of the current unit on Settings based on the facility id.
-    """
-    name = _get_current_unit_settings_name(facility_id)
-    s = Settings.set(name, value)
-    return s
-
-
-def _get_current_unit_settings_value(facility_id):
-    """
-    Get value of current unit based on facility id.  If none, defaults to 1 and creates an
-    entry on the Settings.
-    """
-    name = _get_current_unit_settings_name(facility_id)
-    value = Settings.get(name, 0)
-    if value == 0:
-        # This may be the first time this facility`s current unit is queried so
-        # make sure it has a value at Settings so we can either change it on
-        # the admin page or at front-end code later.
-        value = 1
-        _set_current_unit_settings_value(facility_id, value)
-    return value
-
-
 # ==========================
 # TastyPie classes
 # ==========================
@@ -231,11 +192,11 @@ class CurrentUnit():
         return self.facility_name
 
     def _get_settings_name(self):
-        name = _get_current_unit_settings_name(self.facility_id)
+        name = get_current_unit_settings_name(self.facility_id)
         return name
 
     def _get_settings_value(self):
-        value = _get_current_unit_settings_value(self.facility_id)
+        value = get_current_unit_settings_value(self.facility_id)
         return value
 
     def _get_current_unit(self):
@@ -320,7 +281,7 @@ class CurrentUnitResource(Resource):
                     current_unit -= 1
                 else:
                     current_unit = 1
-                _set_current_unit_settings_value(facility_id, current_unit)
+                set_current_unit_settings_value(facility_id, current_unit)
             return bundle
         except Exception as e:
             logging.error("CurrentUnitResource.obj_update() exception: %s" % e)
