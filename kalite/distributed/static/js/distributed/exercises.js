@@ -476,18 +476,28 @@ window.QuizLogModel = Backbone.Model.extend({
 
             var repeats = quiz_data_model.get("repeats");
 
+            var initial_seed = new Math.seedrandom(this.get("user") + this.get("attempts"))()*1000;
+
             this.item_sequence = [];
+
+            this.seed_sequence = [];
 
             for(j=0; j < repeats; j++){
                 this.item_sequence.push(items);
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(initial_seed);
+                    initial_seed+=1;
+                }
             }
 
             this.item_sequence = _.flatten(this.item_sequence);
 
             this.item_sequence = seeded_shuffle(this.item_sequence, random);
+
         }
         return {
-            exercise_id: this.item_sequence[this.get("index")]
+            exercise_id: this.item_sequence[this.get("index")],
+            seed: this.seed_sequence[this.get("index")]
         };
     },
 
