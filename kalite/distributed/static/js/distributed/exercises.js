@@ -445,7 +445,8 @@ window.QuizLogModel = Backbone.Model.extend({
     defaults: {
         index: 0,
         complete: false,
-        attempts: 0
+        attempts: 0,
+        total_correct: 0
     },
 
     init: function(options) {
@@ -545,7 +546,6 @@ window.QuizLogModel = Backbone.Model.extend({
                 });
             }
         }
-
         // deflate the response log list so it will be saved along with the model later
         this.set("response_log", JSON.stringify(this._response_log_cache));
 
