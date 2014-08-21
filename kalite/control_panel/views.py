@@ -36,6 +36,9 @@ from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 
 
+UNGROUPED = "Ungrouped"
+
+
 def set_clock_context(request):
     return {
         "clock_set": getattr(settings, "ENABLE_CLOCK_SET", False),
@@ -215,7 +218,7 @@ def zone_data_export(request, zone_id=None):
         
         # CSV Body
         for t in test_logs:
-            group_name = t.user.group.name if hasattr(t.user.group, "name") else "Ungrouped"
+            group_name = t.user.group.name if hasattr(t.user.group, "name") else UNGROUPED
             group_id = t.user.group.id if hasattr(t.user.group, "id") else "None"
             writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
 
@@ -333,7 +336,7 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @render_to("control_panel/facility_management.html")
 def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
 
-    ungrouped_id = "Ungrouped"
+    ungrouped_id = UNGROUPED
 
     if request.method == "POST" and request.GET.get("format") == "csv":
         try:
@@ -374,7 +377,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
     # If group_id exists, extract data for that group
     if group_id:
         if group_id == ungrouped_id:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _("Ungrouped"))
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _(UNGROUPED))
         else:
             group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
         group_data = group_data.values()[group_id_index]
@@ -515,10 +518,10 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id=="Ungrouped"):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None]*(group_id==None or group_id==UNGROUPED):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
-        group_name = getattr(group, "name", _("Ungrouped"))
-        group_title = getattr(group, "title", _("Ungrouped"))
+        group_name = getattr(group, "name", _(UNGROUPED))
+        group_title = getattr(group, "title", _(UNGROUPED))
         group_data[group_pk] = {
             "id": group_pk,
             "name": group_name,
@@ -531,7 +534,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             "pct_mastery": 0,
         }
 
-    # Add group data.  Allow a fake group "Ungrouped"
+    # Add group data.  Allow a fake group UNGROUPED
     for user in users:
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:
