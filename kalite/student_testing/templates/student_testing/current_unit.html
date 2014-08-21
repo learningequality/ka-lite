@@ -1,0 +1,42 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block current_unit_active %}active{% endblock current_unit_active %}
+
+{% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        var ALL_CURRENT_UNIT_URL = "{% url 'api_dispatch_list' resource_name='current_unit' %}";
+    </script>
+    <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
+    <script src="{% static 'js/student_testing/models.js' %}"></script>
+    <script src="{% static 'js/student_testing/current_unit.js' %}"></script>
+{% endblock headjs %}
+
+{% block content %}
+    <h2 class="title-header">
+        <div class="facility-name">{% trans "Current Units" %}</div>
+    </h2>
+    <p>{% trans 'This page shows the current unit selected for each Facility.' %}</p>
+    <p>{% trans 'Click on the "Previous" or "Next" buttons or the number links to select the current unit for the facility.' %}</p>
+    <br/>
+    <div class="row">
+        <div class="span12">
+            <table class="table table-hover table-bordered" id="current-units">
+                <thead>
+                <tr>
+                    <th>{% trans "Facility" %}</th>
+                    <th>{% trans "Current Unit" %}</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+{% endblock content %}
