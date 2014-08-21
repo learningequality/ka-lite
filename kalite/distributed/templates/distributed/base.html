@@ -20,8 +20,8 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' %}">
 
-        <!-- CSS to control AB testing -->
-        <link rel="stylesheet" type="text/css" href="{% url 'ab_testing_css' %}">
+        <!-- CSS for dynamic settings -->
+        <link rel="stylesheet" type="text/css" href="{% url 'dynamic_css' %}">
 
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/distributed/favicon.ico" %}">
@@ -30,7 +30,7 @@
             window.console = window.console || {log: function() {}};
         </script>
 
-        <script type="text/javascript" src="{% url 'ab_testing_js' %}"></script>
+        <script type="text/javascript" src="{% url 'dynamic_js' %}"></script>
 
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
