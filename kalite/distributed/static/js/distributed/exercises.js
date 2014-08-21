@@ -305,6 +305,8 @@ window.TestLogModel = Backbone.Model.extend({
         If seeded inside each call to the function, then the blocks of seeds for each user
         would be identically shuffled.
         */
+
+        // TODO (rtibbles): qUnit or other javascript unit testing to set up tests for this code.
         if(typeof(test_data_model)==="object"){
 
             var random = new Math.seedrandom(this.get("user"));
@@ -315,35 +317,39 @@ window.TestLogModel = Backbone.Model.extend({
 
             var repeats = test_data_model.get("repeats");
 
-            var block_seeds = [];
-
-            // Create list of seeds incremented from initial_seed, one for every repeat.
-            for(i=0; i < repeats; i++){
-                block_seeds.push(initial_seed + i);
-            }
-
-            // Cache random shuffling of block seeds for each exercise_id.
-            var shuffled_block_seeds_gen = {}
-
             // Final seed and item sequences.
-            this.seed_sequence = []
+            this.seed_sequence = [];
 
-            this.item_sequence = []
+            this.item_sequence = [];
 
             /*
             Loop over every repeat, adding each exercise_id in turn to item_sequence.
-            On first loop, create shuffled copy of block_seeds for each exercise_id.
-            Add seed from shuffled block_seeds copy to seed_sequence.
+            Increment initial_seed on each inner iteration to give unique seeds across
+            all exercises. This will prevent similarly generated exercises from appearing identical.
             This will have the net effect of a fixed sequence of exercise_ids, repeating
-            'repeats' times, with each exercise_id having a shuffled sequence of seeds across blocks.
+            'repeats' times. Build seed sequences per item, so that sequence of seeds can be shuffled
+            per item, giving the net result that across tests, the seed/item pairs are matched, but the
+            order the seeds appear in within the item repeat blocks is different for each test taker.
             */
+            var item_seed_sequence = [];
+
             for(j=0; j < repeats; j++){
                 for(i=0; i < items.length; i++){
-                    if(j==0){
-                        shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
+                    if(j===0){
+                        item_seed_sequence[i] = [];
                     }
                     this.item_sequence.push(items[i]);
-                    this.seed_sequence.push(shuffled_block_seeds_gen[i][j]);
+                    item_seed_sequence[i].push(initial_seed);
+                    initial_seed+=1;
+                }
+            }
+            for(i=0; i < items.length; i++){
+                item_seed_sequence[i] = seeded_shuffle(item_seed_sequence[i], random);
+            }
+
+            for(j=0; j < repeats; j++){
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(item_seed_sequence[i][j]);
                 }
             }
         }
