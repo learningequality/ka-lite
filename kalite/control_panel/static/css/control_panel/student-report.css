@@ -55,3 +55,8 @@
 .struggling, .fail {
     background-color:#E69999;
 }
+
+/* Khan site css override */
+#container h3 {
+    font-size: 24px;
+}

@@ -1,5 +1,6 @@
 """Classes used by the student progress tastypie API"""
 
+from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 from kalite.facility.models import FacilityUser
@@ -57,6 +58,7 @@ class PlaylistProgress(PlaylistProgressParent):
         self.id = kwargs.get("id")
         self.title = kwargs.get("title")
         self.tag = kwargs.get("tag")
+        self.url = kwargs.get("url")
         self.vid_pct_complete = kwargs.get("vid_pct_complete")
         self.vid_pct_started = kwargs.get("vid_pct_started")
         self.vid_status = kwargs.get("vid_status")
@@ -159,6 +161,7 @@ class PlaylistProgress(PlaylistProgressParent):
                 "title": p.get("title"),
                 "id": p.get("id"),
                 "tag": p.get("tag"),
+                "url": reverse("view_playlist", kwargs={"playlist_id": p.get("id")}),
                 "vid_pct_complete": vid_pct_complete,
                 "vid_pct_started": vid_pct_started,
                 "vid_status": vid_status,

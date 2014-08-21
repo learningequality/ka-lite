@@ -40,6 +40,7 @@ class PlaylistProgressResource(PlaylistParentResource):
     title = fields.CharField(attribute='title')
     id = fields.CharField(attribute='id')
     tag = fields.CharField(attribute='tag', null=True)
+    url = fields.CharField(attribute='url')
     vid_pct_complete = fields.IntegerField(attribute='vid_pct_complete')
     vid_pct_started = fields.IntegerField(attribute='vid_pct_started')
     vid_status = fields.CharField(attribute='vid_status')

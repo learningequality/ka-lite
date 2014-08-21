@@ -9,7 +9,7 @@
  * Config saved to config.json and https://gist.github.com/fc8ec1b0d9a6c3d596dd
  */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
-/*html {
+html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -263,7 +263,7 @@ th {
   font-family: 'Glyphicons Halflings';
   src: url('../../fonts/control_panel/glyphicons-halflings-regular.eot');
   src: url('../../fonts/control_panel/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../../fonts/control_panel/glyphicons-halflings-regular.woff') format('woff'), url('../../fonts/control_panel/glyphicons-halflings-regular.ttf') format('truetype'), url('../../fonts/control_panel/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
-}*/
+}
 .glyphicon {
   position: relative;
   top: 1px;
@@ -875,7 +875,7 @@ th {
 .glyphicon-tree-deciduous:before {
   content: "\e200";
 }
-/** {
+* {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -885,8 +885,8 @@ th {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-}*/
-/*html {
+}
+html {
   font-size: 10px;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -4097,4 +4097,22 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .hidden-print {
     display: none !important;
   }
+}
+
+/* Override bootstrap here to fix up search bar */
+button, .btn, select {
+  margin-bottom: 7px;
+}
+a.btn {
+  color: white;
+}
+input#search {
+  font: -webkit-small-control;
+  margin: 0em;
+}
+#search-button {
+  height: 18px;
+}
+.container {
+  max-width: 1030px;
 }
