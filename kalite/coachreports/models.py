@@ -204,7 +204,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         # Used to store any progress the student has made on this playlist
         detailed_progress = dict()
 
-        # Format & append exercises
+        # Format & store exercise logs from this playlist
         for log in user_ex_logs:
             if log.get("struggling"):
                 status = "struggling"
@@ -229,7 +229,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
 
             detailed_progress[log_id] = cls(**entry)
 
-        # Format & append videos
+        # Format & store videos logs from this playlist
         for log in user_vid_logs:
             if log.get("complete"):
                 status = "complete"
@@ -252,10 +252,9 @@ class PlaylistProgressDetail(PlaylistProgressParent):
 
             detailed_progress[log_id] = cls(**entry)
 
-        # Format & append quiz
+        # Format & append quiz the quiz log, if it exists
         quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, playlist.get("entries"), playlist.get("id"))
 
-        # Format & append quizzes
         if quiz_exists and quiz_log:
             if quiz_log.complete:
                 if quiz_pct_score <= 59:
@@ -303,7 +302,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
             else:
                 if kind != "Quiz":
                     if kind == "Video":
-                        topic_node = FLAT_TOPIC_TREE[kind].get(SLUG2ID_MAP[entity_id])
+                        topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
                     elif kind == "Exercise":
                         topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
                     title = topic_node["title"] 
