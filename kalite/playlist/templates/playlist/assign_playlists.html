@@ -38,10 +38,10 @@
 {% block teach_nav %}
     <div class="teach-nav">
         <ul class="nav navbar-nav">
-            <li class="teacher-only"><a href="{% url 'coach_reports' %}" id="reports" class="teacher-only" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
+            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="reports teacher-only" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
             <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only active-nav active" title="{% trans 'Assign playlists to student groups' %}"><img src="{% static "images/coachreports/playlist-active-icon.png" %}">{% trans "Playlists" %}</a></li>
-            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only" title="{% trans 'See list of available tests.' %}">{% trans "Exams" %}</a></li>
-            <li><a class="admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}">{% trans "Learn" %}</a></li>
+            <li><a href="{% url 'test_list' %}" class="exams admin-only teacher-only" title="{% trans 'See list of available tests.' %}"><span>{% trans "Exams" %}</span></a></li>
+            <li><a class="learn admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>
         </ul>
     </div>
 {% endblock teach_nav %}
