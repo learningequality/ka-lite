@@ -72,6 +72,7 @@ def save_video_log(request):
     user = request.session["facility_user"]
     try:
         videolog = VideoLog.update_video_log(
+            request=request,
             facility_user=user,
             video_id=data["video_id"],
             youtube_id=data["youtube_id"],
@@ -245,7 +246,7 @@ UNIT_EXERCISES = {}
 @dynamic_settings
 @api_handle_error_with_json
 @backend_cache_page
-def exercise(request, exercise_id, ds):
+def exercise(request, ds, exercise_id):
     exercise = get_exercise_data(request, exercise_id)
     if "nalanda" in settings.CONFIG_PACKAGE:
         if "facility_user" in request.session:

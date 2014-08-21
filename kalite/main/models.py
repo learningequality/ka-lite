@@ -23,14 +23,11 @@ from fle_utils.django_utils import ExtendedModel
 from fle_utils.general import datediff, isnumeric
 from kalite import i18n
 from kalite.facility.models import FacilityUser
+from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 
 
 class VideoLog(DeferredCountSyncedModel):
-    POINTS_PER_VIDEO = 750
-
-    if "nalanda" in settings.CONFIG_PACKAGE:
-        POINTS_PER_VIDEO = 0
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
@@ -100,8 +97,10 @@ class VideoLog(DeferredCountSyncedModel):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, points=0, new_points=0):
+    def update_video_log(cls, request, facility_user, video_id, youtube_id, total_seconds_watched, language, points=0):
         assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
+
+        ds = load_dynamic_settings(request)
 
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, video_id=video_id)
@@ -111,7 +110,7 @@ class VideoLog(DeferredCountSyncedModel):
         # Set total_seconds_watched directly, rather than incrementally, for robustness
         #   as sometimes an update request fails, and we'd miss the time update!
         videolog.total_seconds_watched = total_seconds_watched
-        videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
+        videolog.points = min(max(points, videolog.points), ds["distributed"].points_per_video)
         videolog.language = language
         videolog.youtube_id = youtube_id
 
