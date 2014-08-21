@@ -79,7 +79,10 @@ var PlaylistProgressView = Backbone.View.extend({
         this.$(".playlist-progress-details").html(this.detailed_view.render().el).show();
 
         // opt in bootstrap tooltip functionality
-        $('.progress-indicator-sm').tooltip();
+        $('.progress-indicator-sm').popover({
+            trigger: 'click hover',
+            animation: false
+        });
     },
 
     toggle_details: function() {
@@ -94,6 +97,7 @@ var PlaylistProgressView = Backbone.View.extend({
         }
 
         // Show or hide details 
+        this.$(".expand-collapse").toggleClass("glyphicon-chevron-down glyphicon-chevron-up");
         this.$(".playlist-progress-details").slideToggle();
     }
 });

@@ -69,6 +69,8 @@ class PlaylistProgress(PlaylistProgressParent):
         self.quiz_exists = kwargs.get("quiz_exists")
         self.quiz_status = kwargs.get("quiz_status")
         self.quiz_pct_score = kwargs.get("quiz_pct_score")
+        self.n_pl_videos = kwargs.get("n_pl_videos")
+        self.n_pl_exercises = kwargs.get("n_pl_exercises")
 
     @classmethod
     def user_progress(cls, user_id):
@@ -172,6 +174,8 @@ class PlaylistProgress(PlaylistProgressParent):
                 "quiz_status": quiz_status,
                 "quiz_exists": quiz_exists,
                 "quiz_pct_score": quiz_pct_score,
+                "n_pl_videos": n_pl_videos,
+                "n_pl_exercises": n_pl_exercises,
             }
 
             user_progress.append(cls(**progress))
@@ -309,7 +313,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     elif kind == "Exercise":
                         topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
                     title = topic_node["title"] 
-                    path = topic_node["path"]
+                    path = topic_node["path"][1:] # remove pre-prended slash
                 else:
                     title = playlist["title"]
                     path = ""
@@ -319,7 +323,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     "status": "notstarted",
                     "score": 0,
                     "title": title,
-                    "path": path,
+                    "path": path, 
                 }
 
                 ordered_progress.append(cls(**entry))

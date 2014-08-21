@@ -51,6 +51,8 @@ class PlaylistProgressResource(PlaylistParentResource):
     quiz_exists = fields.BooleanField(attribute='quiz_exists')
     quiz_status = fields.CharField(attribute='quiz_status')
     quiz_pct_score = fields.IntegerField(attribute='quiz_pct_score')
+    n_pl_videos = fields.IntegerField(attribute='n_pl_videos')
+    n_pl_exercises = fields.IntegerField(attribute='n_pl_exercises')
 
     class Meta:
         resource_name = "playlist_progress"

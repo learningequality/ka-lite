@@ -1,8 +1,8 @@
 <div class="well">
     <div class="row">
         <div class="col-xs-12">
-            <h3 class="center-block" title="ID: {{id}}">
-                {{!-- TODO(dylan) not clickable for Nalanda, but url is being passed in for future --}}
+            <h3 class="playlist-title center-block" title="{{tag}}">
+                {{!-- TODO(dylan) after RCT3 this can be used to direct link to the playlist --}}
                 {{!-- <a href="{{url}}">{{title}}</a> --}}
                 {{title}}
             </h3>
@@ -12,18 +12,18 @@
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{vid_status}}">
-                <span class="glyphicon glyphicon-facetime-video icon-label icon-label-lg"></span>
+                <span class="glyphicon glyphicon-facetime-video icon-label icon-label-lg"></span><span class="progress-indicator content-counter">x{{n_pl_videos}}</span>
             </div>
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
                 {{#if vid_pct_complete}}
-                    <div class="progress-bar progress-bar-success" style="width: {{vid_pct_complete}}%">
+                    <div class="progress-bar progress-bar-success" title="% Completed" style="width: {{vid_pct_complete}}%">
                         <span>{{vid_pct_complete}}%</span>
                     </div>
                 {{/if}}
                 {{#if vid_pct_started}}
-                    <div class="progress-bar progress-bar-success progress-bar-striped" style="width: {{vid_pct_started}}%">
+                    <div class="progress-bar inprogress" title="% In-Progress" style="width: {{vid_pct_started}}%">
                         <span>{{vid_pct_started}}%</span>
                     </div>
                 {{/if}}
@@ -34,23 +34,23 @@
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{ex_status}}">
-                <span class="glyphicon glyphicon-pencil icon-label icon-label-lg"></span>
+                <span class="glyphicon glyphicon-pencil icon-label icon-label-lg"></span><span class="progress-indicator content-counter">x{{n_pl_exercises}}</span>
             </div>
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
                 {{#if ex_pct_mastered}}
-                    <div class="progress-bar progress-bar-success" style="width: {{ex_pct_mastered}}%">
+                    <div class="progress-bar progress-bar-success" title="% Mastered" style="width: {{ex_pct_mastered}}%">
                         <span>{{ex_pct_mastered}}%</span>
                     </div>
                 {{/if}}
                 {{#if ex_pct_incomplete}}
-                    <div class="progress-bar progress-bar-success progress-bar-striped" style="width: {{ex_pct_incomplete}}%">
+                    <div class="progress-bar inprogress" title="% In-Progress" style="width: {{ex_pct_incomplete}}%">
                         <span>{{ex_pct_incomplete}}%</span>
                     </div>
                 {{/if}}
                 {{#if ex_pct_struggling}}
-                    <div class="progress-bar progress-bar-danger" style="width: {{ex_pct_struggling}}%">
+                    <div class="progress-bar progress-bar-danger" title="% Struggling" style="width: {{ex_pct_struggling}}%">
                         <span>{{ex_pct_struggling}}%</span>
                     </div>
                 {{/if}}
@@ -68,7 +68,7 @@
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
                 {{#if quiz_pct_score}}
-                <div class="progress-bar {{quiz_status}}" style="width: {{quiz_pct_score}}%">
+                <div class="progress-bar {{quiz_status}}" title="% Score" style="width: {{quiz_pct_score}}%">
                     <span>{{quiz_pct_score}}%</span>
                 </div>
                 {{/if}}
@@ -78,7 +78,7 @@
     {{/if}}
     <div class="row">
         <div class="col-xs-12">
-            <button class="btn btn-md btn-primary center-block toggle-details"><span class="glyphicon glyphicon-chevron-down"></span></button>
+            <button class="btn btn-sm btn-primary center-block toggle-details"><span class="expand-collapse glyphicon glyphicon-chevron-down"></span></button>
         </div>
     </div>
     <div class="row playlist-progress-details">
