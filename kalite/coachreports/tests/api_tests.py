@@ -66,6 +66,7 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
 
     def setUp(self):
         # Create fake accounts and data
+        super(PlaylistProgressAPITest, self).setUp()
         self.setup_fake_device()
         self.facility = self.create_facility()
         self.admin = self.create_admin()
