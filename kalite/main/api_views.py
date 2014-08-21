@@ -28,6 +28,7 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonRes
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
+from kalite.dynamic_assets.decorators import dynamic_settings
 
 from kalite.student_testing.api_resources import get_current_unit_settings_value
 from kalite.playlist.models import VanillaPlaylist as Playlist
@@ -241,11 +242,10 @@ def flat_topic_tree(request, lang_code):
 
 UNIT_EXERCISES = {}
 
-from django.conf import settings; logging = settings.LOG
-
+@dynamic_settings
 @api_handle_error_with_json
 @backend_cache_page
-def exercise(request, exercise_id):
+def exercise(request, exercise_id, ds):
     exercise = get_exercise_data(request, exercise_id)
     if "nalanda" in settings.CONFIG_PACKAGE:
         if "facility_user" in request.session:
@@ -262,11 +262,11 @@ def exercise(request, exercise_id):
                                 entry["entity_id"]
                                 )
             current_unit_exercises = UNIT_EXERCISES[current_unit]
-            # TODO-BLOCKER (rtibbles): Also modify by a/b condition.
-            if exercise["exercise_id"] in current_unit_exercises:
-                logging.debug("Setting basepoints" + str(current_unit))
-                # TODO-BLOCKER (rtibbles): Hook into unit settings/front end parameterization to replace '8'.
-                exercise["basepoints"] = settings.UNIT_POINTS/(len(current_unit_exercises)*(8 + settings.FIXED_BLOCK_EXERCISES + settings.QUIZ_REPEATS))
+            if (exercise["exercise_id"] in current_unit_exercises) and not ds["distributed"].turn_off_points_for_exercises:
+                exercise["basepoints"] = settings.UNIT_POINTS/(
+                    len(current_unit_exercises)*(ds["distributed"].streak_correct_needed +
+                        ds["distributed"].fixed_block_exercises +
+                        ds["distributed"].quiz_repeats))
             else:
                 exercise["basepoints"] = 0
     return JsonResponse(exercise)

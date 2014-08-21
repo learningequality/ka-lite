@@ -10,3 +10,4 @@ class DynamicSettings(DynamicSettingsBase):
     turn_off_points_for_videos = fields.BooleanField(default=False)
     turn_off_points_for_exercises = fields.BooleanField(default=False)
     front_page_welcome_message = fields.CharField(default="")
+    streak_correct_needed = fields.IntegerField(default=getattr(settings, "STREAK_CORRECT_NEEDED", 0), minimum=5, maximum=10)
