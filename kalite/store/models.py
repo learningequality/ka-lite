@@ -52,6 +52,7 @@ class StoreTransactionLog(DeferredCountSyncedModel):
     # can this transaction be undone by user actions? Initially set by 'returnable' on StoreItem, but can be changed subsequently
     reversible = models.BooleanField(default=False)
     item = models.ForeignKey(StoreItem, db_index=True)
+    purchased_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass

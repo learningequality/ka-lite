@@ -22,7 +22,7 @@ window.Exercises = {
 window.ExerciseParams = {
     STREAK_CORRECT_NEEDED: 8,
     STREAK_WINDOW: 10,
-    FIXED_BLOCK_EXERCISES: window.FIXED_BLOCK_EXERCISES || 0
+    FIXED_BLOCK_EXERCISES: ds.distributed.fixed_block_exercises || 0
 };
 
 window.ExerciseDataModel = Backbone.Model.extend({
@@ -413,7 +413,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: window.QUIZ_REPEATS || 3
+        repeats: ds.distributed.quiz_repeats || 3
     },
 
     initialize: function() {
