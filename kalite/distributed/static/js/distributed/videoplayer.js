@@ -16,7 +16,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         seconds_watched_since_save: 0.0,
         total_seconds_watched: 0.0,
         points: 0,
-        possible_points: 750,
+        possible_points: ds.distributed.points_per_video || 750,
         starting_points: 0,
         youtube_id: "",
         video_id: "",
@@ -151,6 +151,10 @@ window.VideoPlayerModel = Backbone.Model.extend({
         }
 
         var estimate = Math.floor(this.get("possible_points") * percentTotal);
+
+        if(ds.distributed.turn_off_points_for_videos){
+            estimate = 0;
+        }
 
         this.set({ points: estimate });
     },
@@ -444,9 +448,11 @@ window.VideoPointView = Backbone.View.extend({
 
         this.model = this.options.model || new VideoPlayerModel(this.options);
 
-        this.model.whenPointsIncrease(this._updatePoints);
+        if(!ds.distributed.turn_off_points_for_videos){
+            this.model.whenPointsIncrease(this._updatePoints);
 
-        this._updatePoints();
+            this._updatePoints();
+        }
 
     },
 
