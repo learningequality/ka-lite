@@ -64,12 +64,6 @@ class VideoLog(DeferredCountSyncedModel):
         if not kwargs.get("imported", False):
             self.full_clean()
 
-            # Compute learner status
-            already_complete = self.complete
-            self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
-            if not already_complete and self.complete:
-                self.completion_timestamp = datetime.now()
-
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
             if update_userlog:
@@ -97,10 +91,10 @@ class VideoLog(DeferredCountSyncedModel):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, request, facility_user, video_id, youtube_id, total_seconds_watched, language, points=0):
+    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, complete, completion_timestamp, points=0):
         assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
 
-        ds = load_dynamic_settings(request)
+        ds = load_dynamic_settings(user=facility_user)
 
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, video_id=video_id)
@@ -113,6 +107,8 @@ class VideoLog(DeferredCountSyncedModel):
         videolog.points = min(max(points, videolog.points), ds["distributed"].points_per_video)
         videolog.language = language
         videolog.youtube_id = youtube_id
+        videolog.complete = complete
+        videolog.completion_timestamp = completion_timestamp
 
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)

@@ -16,7 +16,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         seconds_watched_since_save: 0.0,
         total_seconds_watched: 0.0,
         points: 0,
-        possible_points: ds.distributed.points_per_video || 750,
+        possible_points: ds.distributed.turn_off_points_for_videos ? 0 : ds.distributed.points_per_video || 750,
         starting_points: 0,
         youtube_id: "",
         video_id: "",
@@ -78,6 +78,11 @@ window.VideoPlayerModel = Backbone.Model.extend({
             total_seconds_watched: this.get("total_seconds_watched"),
             points: this.get("points")
         };
+
+        if(this.getPercentWatched() > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
+            data.complete = true;
+            data.completion_timestamp = window.statusModel.get_server_time();
+        }
 
         var xhr = doRequest(SAVE_VIDEO_LOG_URL, data)
             .success(function(data) {
