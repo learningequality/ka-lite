@@ -30,7 +30,7 @@ from fle_utils.testing.decorators import allow_api_profiling
 from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
 from kalite.dynamic_assets.decorators import dynamic_settings
 
-from kalite.student_testing.api_resources import get_current_unit_settings_value
+from kalite.student_testing.utils import get_current_unit_settings_value
 from kalite.playlist.models import VanillaPlaylist as Playlist
 
 
@@ -71,14 +71,17 @@ def save_video_log(request):
     data = form.data
     user = request.session["facility_user"]
     try:
+        complete = data.get("complete", False)
+        completion_timestamp = data.get("completion_timestamp", None)
         videolog = VideoLog.update_video_log(
-            request=request,
             facility_user=user,
             video_id=data["video_id"],
             youtube_id=data["youtube_id"],
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
             language=data.get("language") or request.language,
+            complete=complete,
+            completion_timestamp=completion_timestamp,
         )
 
     except ValidationError as e:
@@ -248,21 +251,25 @@ UNIT_EXERCISES = {}
 @backend_cache_page
 def exercise(request, ds, exercise_id):
     exercise = get_exercise_data(request, exercise_id)
-    if "nalanda" in settings.CONFIG_PACKAGE:
-        if "facility_user" in request.session:
-            facility_id = request.session["facility_user"].facility.id
-            current_unit = get_current_unit_settings_value(facility_id)
+    if "facility_user" in request.session:
+        facility_id = request.session["facility_user"].facility.id
+        current_unit = get_current_unit_settings_value(facility_id)
+        student_grade = ds["ab_testing"].student_grade_level
+        if student_grade:
             if not UNIT_EXERCISES.has_key(current_unit):
-                exercise_id_match = re.compile("/e/([a-z0-9_]+)/")
                 for playlist in Playlist.all():
                     if not UNIT_EXERCISES.has_key(playlist.unit):
-                        UNIT_EXERCISES[playlist.unit] = []
+                        UNIT_EXERCISES[playlist.unit] = {}
+                    # Assumes gx_pyy id for playlist.
+                    grade = int(playlist.id[1])
+                    if not UNIT_EXERCISES[playlist.unit].has_key(grade):
+                        UNIT_EXERCISES[playlist.unit][grade] = []
                     for entry in playlist.entries:
                         if entry["entity_kind"] == "Exercise":
-                            UNIT_EXERCISES[playlist.unit].append(
+                            UNIT_EXERCISES[playlist.unit][grade].append(
                                 entry["entity_id"]
                                 )
-            current_unit_exercises = UNIT_EXERCISES[current_unit]
+            current_unit_exercises = UNIT_EXERCISES[current_unit][student_grade]
             if (exercise["exercise_id"] in current_unit_exercises) and not ds["distributed"].turn_off_points_for_exercises:
                 exercise["basepoints"] = settings.UNIT_POINTS/(
                     len(current_unit_exercises)*(ds["distributed"].streak_correct_needed +
