@@ -12,6 +12,7 @@ from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.student_testing.api_resources import Test
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
     get_current_unit_settings_value, set_current_unit_settings_value, SETTINGS_MAX_UNITS
