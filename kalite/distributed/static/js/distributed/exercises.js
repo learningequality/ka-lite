@@ -20,7 +20,7 @@ window.Exercises = {
 };
 
 window.ExerciseParams = {
-    STREAK_CORRECT_NEEDED: 8,
+    STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
     STREAK_WINDOW: 10,
     FIXED_BLOCK_EXERCISES: ds.distributed.fixed_block_exercises || 0
 };
