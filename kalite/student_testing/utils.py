@@ -21,19 +21,21 @@ def set_exam_mode_on(test_object):
     Sets the value of the EXAM_MODE_ON.
     TODO(cpauya): check if user is admin/teacher
     """
+    is_test = False
+    value = test_object
+    if test_object:
+        current_test_id = get_exam_mode_on()
+        test_id = getattr(test_object, 'test_id', test_object)
+        value = test_id
 
-    current_test_id = get_exam_mode_on()
-    test_id = getattr(test_object, 'test_id', test_object)
-    value = test_id
+        # do the import here to prevent circular import
+        from .api_resources import Test
+        is_test = isinstance(test_object, Test)
 
-    # do the import here to prevent circular import
-    from .api_resources import Test
-    is_test = isinstance(test_object, Test)
-
-    if current_test_id == test_id:
-        value = ''
-        if is_test and test_object.practice:
-            exam_unset.send(sender="None", test_id=current_test_id)
+        if current_test_id == test_id:
+            value = ''
+            if is_test and test_object.practice:
+                exam_unset.send(sender="None", test_id=current_test_id)
 
     Settings.set(SETTINGS_KEY_EXAM_MODE, value)
 

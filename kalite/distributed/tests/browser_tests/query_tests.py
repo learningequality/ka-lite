@@ -51,7 +51,7 @@ class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase)
         student.set_password(passwd)
         student.save()
 
-        expected_num_queries = 25 + 3*UserLog.is_enabled()
+        expected_num_queries = 26 + 3*UserLog.is_enabled()
         with self.assertNumQueries(FuzzyInt(expected_num_queries - 3, expected_num_queries + 5)):
             self.browser_login_student("s1", passwd, self.facility)
 
@@ -102,5 +102,5 @@ class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase)
         """Check the # of queries when browsing to the "Math" topic page"""
 
         self.test_query_login_student()
-        with self.assertNumQueries(FuzzyInt(0, 4)):
+        with self.assertNumQueries(FuzzyInt(0, 5)):
             self.browse_to(self.live_server_url + "/math/")
