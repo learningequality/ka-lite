@@ -8,8 +8,6 @@ from kalite.student_testing.signals import exam_unset, unit_switch
 from kalite.student_testing.models import TestLog
 from kalite.student_testing.utils import get_current_unit_settings_value
 
-from kalite.distributed.api_views import compute_total_points
-
 from kalite.dynamic_assets.utils import load_dynamic_settings
 
 from kalite.facility.models import FacilityUser, Facility
@@ -132,6 +130,8 @@ def handle_unit_switch(sender, **kwargs):
     new_unit = kwargs.get("new_unit")
     facility_id = kwargs.get("facility_id")
     facility = Facility.objects.get(pk=facility_id)
+    # Import here to avoid circular import
+    from kalite.distributed.api_views import compute_total_points
     if facility:
         users = FacilityUser.objects.filter(facility=facility_id)
         for user in users:

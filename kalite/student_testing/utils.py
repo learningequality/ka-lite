@@ -3,7 +3,7 @@ from django.conf import settings
 from fle_utils.config.models import Settings
 
 from .settings import SETTINGS_KEY_EXAM_MODE
-from kalite.student_testing.signals import exam_unset, unit_switch
+from .signals import exam_unset, unit_switch
 
 logging = settings.LOG
 
