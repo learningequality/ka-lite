@@ -41,6 +41,20 @@ class DynamicSettingsModelsTests(TestCase):
 
         self.assertTrue("This is a test." in jsonify(s))
 
+    def test_ds_fields_are_not_leaky_across_instances(self):
+
+        class DynamicSettings(DynamicSettingsBase):
+            test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
+            test_charsetting = fields.CharField(default="This is a test.")
+            test_boolsetting = fields.BooleanField(default=True)
+
+        s1 = DynamicSettings()
+        s1.test_charsetting = "My personal value."
+
+        s2 = DynamicSettings()
+
+        self.assertEqual(s2.test_charsetting, "This is a test.")
+
 
 class FieldValidationTests(TestCase):
 
