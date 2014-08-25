@@ -210,10 +210,14 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
     def get_button(self, is_on=False):
         if is_on:
             self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
+            WebDriverWait(self.browser,1).until(ec.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON), self.TEXT_DISABLE))
             btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
             self.assertEqual(btn.text, self.TEXT_DISABLE)
         else:
             self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
+            WebDriverWait(self.browser,1).until(ec.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON), self.TEXT_ENABLE))
             btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
             self.assertEqual(btn.text, self.TEXT_ENABLE)
         return btn
