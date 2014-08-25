@@ -24,7 +24,7 @@ def load_dynamic_settings(request=None, user=None):
             ds[key] = mod.DynamicSettings()
 
     # in the second pass, run the accumulated dynamic settings object through any middleware
-    if request:
+    if request or user:
         for key, mod in modules:
             if hasattr(mod, "modify_dynamic_settings"):
                 mod.modify_dynamic_settings(ds, request=request, user=user)
