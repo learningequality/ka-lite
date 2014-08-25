@@ -15,3 +15,9 @@ CONDITION_BY_FACILITY_AND_UNIT = {
         "3": "nalanda_control",
     }
 }
+
+GRADE_BY_FACILITY = {
+    "facility1": 4,
+    "facility2": 5,
+    "facility3": 6,
+}
