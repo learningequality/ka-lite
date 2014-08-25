@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 
 from kalite.student_testing.signals import exam_unset
 from kalite.student_testing.models import TestLog
+from kalite.student_testing.utils import get_current_unit_settings_value
 
 from kalite.facility.models import FacilityUser
 
@@ -94,8 +95,10 @@ class StoreTransactionLog(DeferredCountSyncedModel):
             self.full_clean()
             storeitem_id = self.item
             if storeitem_id:
-                # TODO (rtibbles): Cleanup! Hackity hack to deal with not using tastypie resource URI for item id.
-                storeitem_id = storeitem_id.split("/")[-2]
+                item = StoreItem.all().get(storeitem_id, None)
+                if not item:
+                    # TODO (rtibbles): Cleanup! Hackity hack to deal with not using tastypie resource URI for item id.
+                    storeitem_id = storeitem_id.split("/")[-2]
             item = StoreItem.all().get(storeitem_id, None)
             if not item:
                 raise ValidationError("Store Item does not exist" + storeitem_id)
@@ -116,9 +119,7 @@ def handle_exam_unset(sender, **kwargs):
         for testlog in testlogs:
             # TODO-BLOCKER (rtibbles): Needs implementaton of unit_id settings module.
             unit_id = "things and stuff for testing"
-            # TODO-BLOCKER (rtibbles): Dummy Store Item here - need to actually implement a gift card fixture
-            item = StoreItem.objects.all()[0]
-            transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item=item)
+            transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item="gift_card")
             # TODO-BLOCKER (rtibbles): Needs setting of the overall points value for a unit
             overall_points_value_for_a_unit = 1000
             transaction_log.value = int(round(overall_points_value_for_a_unit*float(testlog.total_correct)/testlog.total_number))
