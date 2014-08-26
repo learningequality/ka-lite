@@ -68,7 +68,7 @@ class UnitSwitchTest(KALiteDistributedBrowserTestCase):
         """
         self.set_unit_navigate_to_exercise(2, "number_line")
         time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 25, "Basepoints should be 12 in input condition")
+        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 36, "Basepoints should be 36 in input condition")
 
     def test_nalanda_output_exercise(self):
         """
