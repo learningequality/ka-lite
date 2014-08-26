@@ -29,9 +29,9 @@ def set_exam_mode_on(test_object):
         value = test_id
 
         # do the import here to prevent circular import
-        from .api_resources import Test
-        is_test = isinstance(test_object, Test)
+        from .models import Test
 
+        is_test = isinstance(test_object, Test)
         if current_test_id == test_id:
             value = ''
             if is_test and test_object.practice:
@@ -82,5 +82,5 @@ def get_current_unit_settings_value(facility_id):
         # make sure it has a value at Settings so we can either change it on
         # the admin page or at front-end code later.
         value = 1
-        set_current_unit_settings_value(facility_id, value)
+        Settings.set(name, value)
     return value
