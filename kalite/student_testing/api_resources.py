@@ -114,6 +114,7 @@ class TestResource(Resource):
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
             test_id = kwargs['test_id']
+            testscache = Test.all()
             set_exam_mode_on(testscache[test_id])
             return bundle
         except Exception as e:
