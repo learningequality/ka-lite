@@ -111,20 +111,22 @@ class StoreTransactionLog(DeferredCountSyncedModel):
         super(StoreTransactionLog, self).save(*args, **kwargs)
 
 
-@receiver(exam_unset)
+@receiver(exam_unset, dispatch_uid="exam_unset")
 def handle_exam_unset(sender, **kwargs):
     test_id = kwargs.get("test_id")
     if test_id:
         testlogs = TestLog.objects.filter(test=test_id)
         for testlog in testlogs:
-            unit_id = get_current_unit_settings_value()
+            facility_user = testlog.user
+            facility = facility_user.facility
+            unit_id = get_current_unit_settings_value(facility.id)
             ds = load_dynamic_settings(user=facility_user)
             if ds["student_testing"].turn_on_points_for_practice_exams:
                 transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item="gift_card")
                 transaction_log.value = int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number))
                 transaction_log.save()
 
-@receiver(unit_switch)
+@receiver(unit_switch, dispatch_uid="unit_switch")
 def handle_unit_switch(sender, **kwargs):
     old_unit = kwargs.get("old_unit")
     new_unit = kwargs.get("new_unit")
@@ -132,12 +134,13 @@ def handle_unit_switch(sender, **kwargs):
     facility = Facility.objects.get(pk=facility_id)
     # Import here to avoid circular import
     from kalite.distributed.api_views import compute_total_points
-    if facility:
-        users = FacilityUser.objects.filter(facility=facility_id)
-        for user in users:
-            old_unit_points = compute_total_points(user)
-            old_unit_transaction_log = StoreTransactionLog(user=user, context_id=old_unit, context_type="unit_points_reset", item="gift_card")
-            old_unit_transaction_log.value = - old_unit_points
-            old_unit_transaction_log.save()
-            new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
-            new_unit_transaction_log.delete()
+    if old_unit != new_unit:
+        if facility:
+            users = FacilityUser.objects.filter(facility=facility_id)
+            for user in users:
+                old_unit_points = compute_total_points(user) or 0
+                old_unit_transaction_log = StoreTransactionLog(user=user, context_id=old_unit, context_type="unit_points_reset", item="gift_card")
+                old_unit_transaction_log.value = - old_unit_points
+                old_unit_transaction_log.save()
+                new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
+                new_unit_transaction_log.soft_delete()
