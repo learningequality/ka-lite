@@ -11,7 +11,7 @@ def get_exam_mode_on():
     return ret
 
 
-def set_exam_mode_on(value):
+def set_exam_mode_on(test_object):
     """
     Sets the value of the EXAM_MODE_ON.
     TODO(cpauya): check if user is admin/teacher

@@ -114,13 +114,8 @@ class TestResource(Resource):
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
             test_id = kwargs['test_id']
-            obj, created = Settings.objects.get_or_create(name=SETTINGS_KEY_EXAM_MODE)
-            if obj.value == test_id:
-                obj.value = ''
-            else:
-                obj.value = test_id
-            obj.save()
-            testscache[test_id].set_exam_mode()
+            testscache = Test.all()
+            set_exam_mode_on(testscache[test_id])
             return bundle
         except Exception as e:
             logging.error("==> TestResource exception: %s" % e)
