@@ -34,6 +34,8 @@ class CreatePlaylistProgressMixin(object):
             "user": user,
             "quiz": default_playlist,
             "complete": True,
+            "attempts": 1,
+            "response_log": "[4]",
             "total_correct": 4,
             "total_number": 6,
         }).save()

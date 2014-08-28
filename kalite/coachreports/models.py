@@ -257,7 +257,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     else:
                         status = "notstarted"
 
-                    leaf_node = FLAT_TOPIC_TREE["Video"].get(log["video_id"])
+                    leaf_node = FLAT_TOPIC_TREE["Video"].get(vid_log["video_id"])
 
                     entry = {
                         "id": entity_id,
@@ -306,10 +306,10 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     else:
                         status = "notstarted"
 
-                    log_id = quiz_log.quiz
+                    quiz_log_id = quiz_log.quiz
 
                     entry = {
-                        "id": log_id,
+                        "id": quiz_log_id,
                         "kind": "Quiz",
                         "status": status,
                         "score": quiz_pct_score,
