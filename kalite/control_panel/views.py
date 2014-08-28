@@ -179,7 +179,7 @@ def zone_data_export(request, zone_id=None):
         ## Fetch data for CSV
         # Facilities 
         if facility_id == 'all':
-            # TODO(dylan): can this ever break? Will an admin always have at least one facility in a zone?
+            # TODO(dylanjbarth): can this ever break? Will an admin always have at least one facility in a zone?
             facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
         else:   
             facilities = Facility.objects.filter(id=facility_id)

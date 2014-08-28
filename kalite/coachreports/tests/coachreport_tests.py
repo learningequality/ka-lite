@@ -3,10 +3,13 @@ from datetime import datetime
 from kalite.main.models import AttemptLog
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.student_testing.models import TestLog
+from kalite.testing import KALiteTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
 from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+
 
 
 class TestReportTests(FacilityMixins,
@@ -106,3 +109,37 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(stat_std, '0%')
         overall = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
         self.assertEqual(overall[0:4], '100%')
+
+
+
+class PlaylistProgressTest(FacilityMixins,
+                      StudentTestingMixins,
+                      CreateAdminMixin,
+                      CreateDeviceMixin,
+                      CreatePlaylistProgressMixin,
+                      KALiteDistributedBrowserTestCase):
+
+    def setUp(self):
+        super(PlaylistProgressTest, self).setUp()
+        self.setup_fake_device()
+        self.facility = self.create_facility()
+        self.admin = self.create_admin()
+        self.student = self.create_student()
+        self.playlist = self.create_playlist_progress(user=self.student)
+
+    def test_student_playlist_progress(self):        
+        self.browser_login_student(username=self.student.username, password="password", facility_name=self.facility.name)
+        self.browse_to(self.reverse('account_management'))
+
+        # Confirm high level progress appears
+        progress_bar = self.browser_wait_for_element(css_selector='.progress-bar')
+        progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
+        self.assertTrue(progress_bar_success, "Playlist progress rendering incorrectly.") 
+        self.assertTrue(progress_bar, "Playlist progress rendering incorrectly.") 
+
+        # Trigger API call
+        self.browser.find_elements_by_class_name('toggle-details')[0].click()
+
+        # Confirm lower-level progress appears 
+        playlist_details = self.browser_wait_for_element(css_selector='.progress-indicator-sm')
+        self.assertTrue(playlist_details, "Didn't load details") 

@@ -87,7 +87,7 @@ footer.short {
 #top-header #logo {
     position: absolute;
     top: 5px;
-    z-index: 50; /*TODO(dylan): stopgap solution;*/
+    z-index: 50; /*TODO(dylanjbarth): stopgap solution;*/
 }
 
 #logo-image-small img {

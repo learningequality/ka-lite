@@ -69,7 +69,7 @@ var DataExportView = Backbone.View.extend({
         var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
 
         // Append the data we care about, and submit it
-        // TODO(dylan) make an API endpoint, this is lame 
+        // TODO(dylanjbarth) make an API endpoint, this is lame 
         var form = $('#data-export-form');
         form
             .append(facility_input)
@@ -168,7 +168,7 @@ var GroupSelectView = Backbone.View.extend({
     fetchByFacility: function() {
         // pass undefined to the api for 'all'
         var facilityID = this.model.get("facility_id") === "all" ? undefined : this.model.get("facility_id");
-        // TODO(dylan): are we handling pagination from the API?
+        // TODO(dylanjbarth): are we handling pagination from the API?
         this.group_list.fetch({
             data: $.param({ "facility_id": facilityID })
         })

@@ -1,0 +1,40 @@
+{{#each data}}
+<div class="col-xs-1 progress-block">
+    <div 
+        class="progress-indicator progress-indicator-sm {{attributes.status}}"
+        data-toggle="popover" data-placement="top" 
+        
+        {{!-- Video --}}
+        {{#ifcond attributes.kind "===" "Video"}}
+            title="{{attributes.title}}"
+            data-content="% Complete: {{attributes.score}}"
+        {{/ifcond}}
+
+        {{!-- Exercise --}}
+        {{#ifcond attributes.kind "===" "Exercise"}}
+            title="{{attributes.title}}"
+            data-content="Streak: {{attributes.score}}%"
+        {{/ifcond}}
+
+        {{!-- Quiz --}}
+        {{#ifcond attributes.kind "===" "Quiz"}}
+            title="Quiz for {{attributes.title}}"
+            data-content="Score: {{attributes.score}}%"
+        {{/ifcond}}
+    > {{!-- Close starting div --}}
+        <span class="icon-label icon-label-sm glyphicon 
+            {{#ifcond attributes.kind "===" "Video"}}
+                glyphicon-facetime-video
+            {{/ifcond}}            
+            {{#ifcond attributes.kind "===" "Exercise"}}
+                glyphicon-pencil
+            {{/ifcond}}
+            {{#ifcond attributes.kind "===" "Quiz"}}
+                glyphicon-ok
+            {{/ifcond}}
+        "></span>
+    </div>
+    {{!-- TODO(dylanjbarth): post RCT3, this path can be used to direct link to videos and exercises --}}
+    {{!-- <a href="/{{attributes.path}}">{{attributes.title}}</a> --}}
+</div>
+{{/each}}
