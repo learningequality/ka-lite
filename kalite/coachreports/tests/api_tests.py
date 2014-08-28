@@ -84,12 +84,12 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
 
         # Get our playlist
         pl_response = next((entry for entry in json_resp["objects"] if entry["id"] == self.playlist.id), None)
-        self.assertTrue(pl_response), "No playlist response found"
+        self.assertTrue(pl_response, "No playlist response found")
 
         # Sample to check that we are getting what we expect
-        self.assertEqual(pl_response["ex_pct_struggling"], 50), "Incorrect value returned by API"
-        self.assertEqual(pl_response["vid_pct_complete"], 20), "Incorrect value returned by API"
-        self.assertEqual(pl_response["quiz_status"], "borderline"), "Incorrect value returned by API"
+        self.assertEqual(pl_response["ex_pct_struggling"], 50, "Incorrect value returned by API")
+        self.assertEqual(pl_response["vid_pct_complete"], 20, "Incorrect value returned by API")
+        self.assertEqual(pl_response["quiz_status"], "borderline", "Incorrect value returned by API")
 
         self.client.logout()
         
@@ -101,11 +101,11 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
         pl_response = json.loads(resp.content)["objects"]
 
         # Sample to check that we are getting what we expect
-        self.assertEqual(len(pl_response), 8), "Incorrect value returned by API"
-        self.assertEqual(pl_response[0]["status"], "complete"), "Incorrect value returned by API"
-        self.assertEqual(pl_response[0]["score"], 100), "Incorrect value returned by API"
-        self.assertEqual(pl_response[1]["status"], "struggling"), "Incorrect value returned by API"
-        self.assertEqual(pl_response[1]["score"], 50), "Incorrect value returned by API"
+        self.assertEqual(len(pl_response), 8, "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["status"], "complete", "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["score"], 100, "Incorrect value returned by API")
+        self.assertEqual(pl_response[1]["status"], "struggling", "Incorrect value returned by API")
+        self.assertEqual(pl_response[1]["score"], 50, "Incorrect value returned by API")
 
         self.client.logout()
 
