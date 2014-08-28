@@ -21,6 +21,7 @@ class PlaylistProgressParent:
     def get_playlist_entry_ids(cls, playlist):
         """Return a tuple of the playlist's video ids and exercise ids as sets"""
         playlist_entries = playlist.get("entries")
+        # TODO(dylanjbarth): 0.13 playlist entities shouldn't have the /v or /e in them at all.
         pl_video_ids = set([SLUG2ID_MAP.get(convert_leaf_url_to_id(entry["entity_id"])) for entry in playlist_entries if entry.get("entity_kind") == "Video"])
         pl_exercise_ids = set([convert_leaf_url_to_id(entry["entity_id"]) for entry in playlist_entries if entry.get("entity_kind") == "Exercise"])
         return (pl_video_ids, pl_exercise_ids)
@@ -91,7 +92,7 @@ class PlaylistProgress(PlaylistProgressParent):
         video_ids = set([ID2SLUG_MAP.get(vid_log["video_id"]) for vid_log in user_vid_logs])
         quiz_log_ids = [ql_id["quiz"] for ql_id in QuizLog.objects.filter(user=user).values("quiz")]
         # Build a list of playlists for which the user has at least one data point 
-        ## TODO(dylan) this won't pick up playlists the user is assigned but has not started yet. 
+        ## TODO(dylanjbarth) this won't pick up playlists the user is assigned but has not started yet. 
         user_playlists = list()
         for p in all_playlists:
             for e in p.get("entries"):

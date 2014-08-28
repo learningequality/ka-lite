@@ -260,7 +260,7 @@ def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
         }
 
     # Provide relevant playlist data to the context that can be looped easily in the template 
-    # TODO(dylan): this is Nalanda specific and will need to be changed for student reports once we do this more generally
+    # TODO-BLOCKER(dylanjbarth): 0.13 this is Nalanda specific and will need to be changed for student reports once we do this more generally
     all_playlists = json.load(open(os.path.join(settings.PROJECT_PATH, 'playlist/playlists.json')))
     # all_playlists = Playlist.all()
     id2slug_map = get_id2slug_map()
