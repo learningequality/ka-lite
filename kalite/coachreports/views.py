@@ -124,209 +124,25 @@ def scatter_view(request, facility, xaxis="", yaxis=""):
 
 @require_authorized_access_to_student_data
 @render_to("coachreports/student_view.html")
-def student_view(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+def student_view(request):
     """
     Student view: data generated on the back-end.
 
     Student view lists a by-topic-summary of their activity logs.
     """
-    return student_view_context(request=request, xaxis=xaxis, yaxis=yaxis)
+    return student_view_context(request=request)
 
 
 @require_authorized_access_to_student_data
-def student_view_context(request, xaxis="pct_mastery", yaxis="ex:attempts"):
+def student_view_context(request):
     """
     Context done separately, to be importable for similar pages.
     """
     user = get_user_from_request(request=request)
     if not user:
         raise Http404("User not found.")
-
-    node_cache = get_node_cache()
-    topic_ids = get_knowledgemap_topics()
-    topic_ids = topic_ids + [ch["id"] for node in get_topic_tree()["children"] for ch in node["children"] if node["id"] != "math"]
-    topics = [node_cache["Topic"][id][0] for id in topic_ids]
-
-    user_id = user.id
-    exercise_logs = list(ExerciseLog.objects \
-        .filter(user=user) \
-        .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
-    video_logs = list(VideoLog.objects \
-        .filter(user=user) \
-        .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
-
-    exercise_sparklines = dict()
-    stats = dict()
-    topic_exercises = dict()
-    topic_videos = dict()
-    exercises_by_topic = dict()
-    videos_by_topic = dict()
-    subtopics = dict()
-    subtopic_ids = list()
-
-    for id in topic_ids:
-        subtopics[id] = get_live_topics(node_cache["Topic"][id][0])
-        subtopic_ids.extend([subtopic["id"] for subtopic in subtopics[id]])
-
-    # Categorize every exercise log into a "midlevel" exercise
-    for elog in exercise_logs:
-        if not elog["exercise_id"] in node_cache["Exercise"]:
-            # Sometimes KA updates their topic tree and eliminates exercises;
-            #   we also want to support 3rd party switching of trees arbitrarily.
-            logging.debug("Skip unknown exercise log for %s/%s" % (user_id, elog["exercise_id"]))
-            continue
-
-        parent_ids = [topic for ex in node_cache["Exercise"][elog["exercise_id"]] for topic in ex["ancestor_ids"]]
-        topic = set(parent_ids).intersection(set(topic_ids))
-        if not topic:
-            logging.error("Could not find a topic for exercise %s (parents=%s)" % (elog["exercise_id"], parent_ids))
-            continue
-        topic = topic.pop()
-        if not topic in topic_exercises:
-            topic_exercises[topic] = get_topic_exercises(path=node_cache["Topic"][topic][0]["path"])
-        subtopic = set(parent_ids).intersection(set([subtopic["id"] for subtopic in subtopics[topic]]))
-        subtopic = subtopic.pop()
-        if not subtopic in topic_exercises:
-            topic_exercises[subtopic] = get_topic_exercises(path=node_cache["Topic"][subtopic][0]["path"])
-        exercises_by_topic[topic] = exercises_by_topic.get(topic, []) + [elog]
-        exercises_by_topic[subtopic] = exercises_by_topic.get(subtopic, []) + [elog]
-
-    # Categorize every video log into a "midlevel" exercise.
-    for vlog in video_logs:
-        if not vlog["video_id"] in node_cache["Video"]:
-            # Sometimes KA updates their topic tree and eliminates videos;
-            #   we also want to support 3rd party switching of trees arbitrarily.
-            logging.debug("Skip unknown video log for %s/%s" % (user_id, vlog["video_id"]))
-            continue
-
-        parent_ids = [topic for vid in node_cache["Video"][vlog["video_id"]] for topic in vid["ancestor_ids"]]
-        topic = set(parent_ids).intersection(set(topic_ids))
-        if not topic:
-            logging.error("Could not find a topic for video %s (parents=%s)" % (vlog["video_id"], parent_ids))
-            continue
-        topic = topic.pop()
-        if not topic in topic_videos:
-            topic_videos[topic] = get_topic_videos(path=node_cache["Topic"][topic][0]["path"])
-        subtopic = set(parent_ids).intersection(set([subtopic["id"] for subtopic in subtopics[topic]]))
-        subtopic = subtopic.pop()
-        if not subtopic in topic_videos:
-            topic_videos[subtopic] = get_topic_videos(path=node_cache["Topic"][subtopic][0]["path"])
-        videos_by_topic[topic] = videos_by_topic.get(topic, []) + [vlog]
-        videos_by_topic[subtopic] = videos_by_topic.get(subtopic, []) + [vlog]
-
-
-    # Now compute stats
-    for id in topic_ids + subtopic_ids:#set(topic_exercises.keys()).union(set(topic_videos.keys())):
-
-        n_exercises = len(topic_exercises.get(id, []))
-        n_videos = len(topic_videos.get(id, []))
-
-        exercises = exercises_by_topic.get(id, [])
-        videos = videos_by_topic.get(id, [])
-        n_exercises_touched = len(exercises)
-        n_videos_touched = len(videos)
-        #childtopics = get_live_topics(node_cache["Topic"][id])
-        #for child in get_live_topics(id):
-        #    childtopics.append(child["id"])
-
-        exercise_sparklines[id] = [el["completion_timestamp"] for el in filter(lambda n: n["complete"], exercises)]
-
-        # total streak currently a pct, but expressed in max 100; convert to
-        # proportion (like other percentages here)
-        stats[id] = {
-            "ex:pct_mastery":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]) / float(n_exercises),
-            "ex:total_mastered":      0 if not n_exercises_touched else sum([el["complete"] for el in exercises]),
-            "ex:pct_started":      0 if not n_exercises_touched else n_exercises_touched / float(n_exercises),
-            "ex:average_points":   0 if not n_exercises_touched else sum([el["points"] for el in exercises]) / float(n_exercises_touched),
-            "ex:average_attempts": 0 if not n_exercises_touched else sum([el["attempts"] for el in exercises]) / float(n_exercises_touched),
-            "ex:average_streak":   0 if not n_exercises_touched else sum([el["streak_progress"] for el in exercises]) / float(n_exercises_touched) / 100.,
-            "ex:total_struggling": 0 if not n_exercises_touched else sum([el["struggling"] for el in exercises]),
-            "ex:last_completed": None if not n_exercises_touched else max_none([el["completion_timestamp"] or None for el in exercises]),
-            "ex:inprogress": False if not n_exercises_touched else any([not el["complete"] for el in exercises]),
-            "ex:nextexercise": next((exercise for exercise in topic_exercises.get(id, []) if exercise["name"] not in [el["exercise_id"] for el in exercises]), {}),
-
-            "vid:pct_started":      0 if not n_videos_touched else n_videos_touched / float(n_videos),
-            "vid:pct_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]) / float(n_videos),
-            "vid:total_completed":    0 if not n_videos_touched else sum([vl["complete"] for vl in videos]),
-            "vid:total_minutes":      0 if not n_videos_touched else sum([vl["total_seconds_watched"] for vl in videos]) / 60.,
-            "vid:average_points":   0. if not n_videos_touched else float(sum([vl["points"] for vl in videos]) / float(n_videos_touched)),
-            "vid:last_completed": None if not n_videos_touched else max_none([vl["completion_timestamp"] or None for vl in videos]),
-            "vid:inprogress": False if not n_videos_touched else any([not vl["complete"] for vl in videos]),
-            "vid:nextvideo": next((video for video in topic_videos.get(id, []) if video["id"] not in [vl["video_id"] for vl in videos]), {}),
-
-        
-            "exandvid:last_completed": None if not (n_exercises_touched or n_videos_touched) else max_none([l["completion_timestamp"] or None for l in exercises + videos]),
-            #"childtopics": childtopics,     
-        }
-
-    # Provide relevant playlist data to the context that can be looped easily in the template 
-    # TODO-BLOCKER(dylanjbarth): 0.13 this is Nalanda specific and will need to be changed for student reports once we do this more generally
-    all_playlists = json.load(open(os.path.join(settings.PROJECT_PATH, 'playlist/playlists.json')))
-    # all_playlists = Playlist.all()
-    id2slug_map = get_id2slug_map()
-    slug2id_map = get_slug2id_map()
-    exercise_ids = set([ex_log["exercise_id"] for ex_log in exercise_logs])
-    video_ids = set([id2slug_map.get(vid_log["video_id"]) for vid_log in video_logs])
-    flat_topic_tree = get_flat_topic_tree()
-    context_playlists = list()
-    for p in all_playlists:
-        for e in p.get("entries"):
-            # if there is an exercise log or video log completed by the student in any playlist, keep this playlist
-            if e.get("entity_kind") == "Video" or e.get("entity_kind") == "Exercise":
-                entity_id = convert_leaf_url_to_id(e.get("entity_id"))
-
-                if entity_id in exercise_ids or entity_id in video_ids:
-                    context_playlists.append(p)
-                    break
-
-    for i, p in enumerate(context_playlists):
-         # Add in all the exercise or video data we care about here so the template can easily access this data 
-        for j, entry in enumerate(p.get("entries")):
-            entity_kind = entry.get("entity_kind")
-            if entry.get("entity_kind") == "Video" or entry.get("entity_kind") == "Exercise":
-                entity_id = convert_leaf_url_to_id(entry.get("entity_id"))
-                if entity_kind == "Video":
-                    # Combine video info with student video log (if it exists)
-                    entry["data"] = flat_topic_tree["Video"][slug2id_map.get(entity_id)]
-                    entry["data"].update(next((v for v in video_logs if id2slug_map.get(v["video_id"]) == entity_id), {}))                    
-                elif entity_kind == "Exercise":
-                    entry["data"] = flat_topic_tree["Exercise"][entity_id]
-                    entry["data"].update(next((ex for ex in exercise_logs if ex["exercise_id"] == entity_id), {}))
-                
-                # Update the actual dict we pass to the context with this data            
-                context_playlists[i].get("entries")[j].update(entry)
-
-    context = plotting_metadata_context(request)
-
     return {
-        "form": context["form"],
-        "groups": context["groups"],
-        "facilities": context["facilities"],
         "student": user,
-        "topics": topics,
-        "subtopics": subtopics,
-        "subtopic_ids": subtopic_ids,
-        "exercises": topic_exercises,
-        "exercise_logs": exercises_by_topic,
-        "videos": topic_videos,
-        "video_logs": videos_by_topic,
-        "exercise_sparklines": exercise_sparklines,
-        "no_data": not exercise_logs and not video_logs,
-        "playlists": context_playlists,
-        "stats": stats,
-        "stat_defs": [  # this order determines the order of display
-            {"key": "ex:pct_mastery",      "title": _("% Mastery"),        "type": "pct"},
-            {"key": "ex:pct_started",      "title": _("% Started"),        "type": "pct"},
-            {"key": "ex:average_points",   "title": _("Average Points"),   "type": "float"},
-            {"key": "ex:average_attempts", "title": _("Average Attempts"), "type": "float"},
-            {"key": "ex:average_streak",   "title": _("Average Streak"),   "type": "pct"},
-            {"key": "ex:total_struggling", "title": _("Struggling"),       "type": "int"},
-            {"key": "vid:pct_completed",   "title": _("% Completed"),      "type": "pct"},
-            {"key": "vid:pct_started",     "title": _("% Started"),        "type": "pct"},
-            {"key": "vid:total_minutes",   "title": _("Average Minutes Watched"),"type": "float"},
-            {"key": "vid:average_points",  "title": _("Average Points"),   "type": "float"},
-            {"key": "exandvid:last_completed", "title": _("Topic Last Completed"), "type":"date"}
-        ]
     }
 
 
