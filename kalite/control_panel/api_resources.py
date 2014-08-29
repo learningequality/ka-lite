@@ -2,7 +2,7 @@ from annoying.functions import get_object_or_None
 from tastypie.resources import ModelResource
 
 from kalite.facility.models import Facility, FacilityGroup
-from kalite.shared.api_auth import ZoneAdminAuthorization
+from kalite.shared.api_auth import ObjectAdminAuthorization
 from securesync.models import Zone
 
 
@@ -14,7 +14,7 @@ class FacilityResource(ModelResource):
             "facility_id": ('exact',),
             "zone_id": ('exact',),
         }
-        authorization = ZoneAdminAuthorization()
+        authorization = ObjectAdminAuthorization()
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering facilities by zone
@@ -31,7 +31,7 @@ class GroupResource(ModelResource):
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
-        authorization = ZoneAdminAuthorization()
+        authorization = ObjectAdminAuthorization()
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering groups by facility
