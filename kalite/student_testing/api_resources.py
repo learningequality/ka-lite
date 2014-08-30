@@ -16,12 +16,11 @@ from fle_utils.internet import api_handle_error_with_json
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.facility.models import Facility
+from kalite.playlist import UNITS
 
 from .models import Test, TestLog
 from .settings import SETTINGS_KEY_EXAM_MODE
-from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_name, get_current_unit_settings_value, set_current_unit_settings_value,\
-    SETTINGS_MAX_UNITS
+from .utils import get_exam_mode_on, set_exam_mode_on, get_current_unit_settings_value, set_current_unit_settings_value
 
 from django.conf import settings
 
@@ -142,36 +141,20 @@ class CurrentUnit():
         self.facility_id = kwargs.get('facility_id', '')
         self.facility_name = kwargs.get('facility_name', '<facility_name>')
         self.facility_url = kwargs.get('facility_url', '<facility_url>')
-        self.unit_list = kwargs.get('unit_list', self._get_unit_list())
+        self.unit_list = kwargs.get('unit_list', UNITS)
         self.current_unit = kwargs.get('current_unit', self._get_current_unit())
-        self.is_on_first = self.current_unit <= 1
-        if self.unit_list and self.current_unit:
-            is_on_last = self.unit_list[len(self.unit_list)-1] <= self.current_unit
-            self.is_on_last = is_on_last
+        self.max_unit = max(UNITS)
+        self.min_unit = min(UNITS)
 
     def __unicode__(self):
         return self.facility_name
-
-    def _get_settings_name(self):
-        name = get_current_unit_settings_name(self.facility_id)
-        return name
-
-    def _get_settings_value(self):
-        value = get_current_unit_settings_value(self.facility_id)
-        return value
 
     def _get_current_unit(self):
         # get active unit for the Facility from Settings
         current_unit = 1
         if self.facility_id:
-            current_unit = self._get_settings_value()
+            current_unit = get_current_unit_settings_value(self.facility_id)
         return current_unit
-
-    def _get_unit_list(self):
-        # TODO(cpauya): Return list of units, facility_id can be passed later to determine list of units
-        # for the facility.
-        l = [x for x in xrange(1, SETTINGS_MAX_UNITS + 1)]
-        return l
 
 
 class CurrentUnitResource(Resource):
@@ -180,9 +163,9 @@ class CurrentUnitResource(Resource):
     facility_id = fields.CharField(attribute='facility_id')
     facility_name = fields.CharField(attribute='facility_name')
     facility_url = fields.CharField(attribute='facility_url')
-    current_unit = fields.CharField(attribute='current_unit', default=1)
-    is_on_first = fields.BooleanField(attribute='is_on_first', default=False)
-    is_on_last = fields.BooleanField(attribute='is_on_last', default=False)
+    current_unit = fields.IntegerField(attribute='current_unit', default=1)
+    min_unit = fields.IntegerField(attribute='min_unit', default=1)
+    max_unit = fields.IntegerField(attribute='max_unit', default=8)
     unit_list = fields.ListField(attribute='unit_list')
 
     class Meta:
@@ -201,21 +184,22 @@ class CurrentUnitResource(Resource):
         """
         Get the list of facilities based from a request.
         """
-        l = []
-        if bundle.request.is_admin:
-            facilities = Facility.objects.order_by('name')
-            for facility in facilities:
-                url = reverse('facility_management', args=[None, facility.id])
-                data = {
-                    'id': facility.id,
-                    'facility_id': facility.id,
-                    'facility_name': facility.name,
-                    'facility_url': url
-                }
-                o = CurrentUnit(**data)
-                l.append(o)
-            return l
-        raise Unauthorized(_("You cannot view these objects."))
+        if not bundle.request.is_admin:
+            raise Unauthorized(_("You cannot view these objects."))
+
+        objects = []
+        for facility in Facility.objects.order_by('name'):
+            url = reverse('facility_management', args=[None, facility.id])
+            data = {
+                'id': facility.id,
+                'facility_id': facility.id,
+                'facility_name': facility.name,
+                'facility_url': url
+            }
+            o = CurrentUnit(**data)
+            objects.append(o)
+        return objects
+
 
     def get_object_list(self, request, force=False):
         raise NotImplemented(_("Operation not implemented."))
@@ -227,27 +211,14 @@ class CurrentUnitResource(Resource):
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot update this object."))
         try:
-            is_next = bundle.data.get('is_next', False)
-            is_previous = bundle.data.get('is_previous', False)
             facility_id = bundle.data.get('facility_id', '')
-            current_unit = bundle.data.get('current_unit', '')
-            selected_unit = int(bundle.data.get('selected_unit', '0'))
-            if current_unit:
-                current_unit = int(current_unit)
-                if selected_unit and 1 <= selected_unit <= SETTINGS_MAX_UNITS:
-                    current_unit = selected_unit
-                elif is_next and current_unit < SETTINGS_MAX_UNITS:
-                    current_unit += 1
-                elif is_previous and current_unit > 1:
-                    current_unit -= 1
-                else:
-                    current_unit = 1
-                set_current_unit_settings_value(facility_id, current_unit)
+            current_unit = int(bundle.data.get('current_unit', '0'))
+            assert current_unit in UNITS
+            set_current_unit_settings_value(facility_id, current_unit)
             return bundle
         except Exception as e:
             logging.error("CurrentUnitResource.obj_update() exception: %s" % e)
-            pass
-        raise NotImplemented(_("Operation not implemented."))
+            raise
 
     def obj_delete_list(self, request):
         raise NotImplemented(_("Operation not implemented."))

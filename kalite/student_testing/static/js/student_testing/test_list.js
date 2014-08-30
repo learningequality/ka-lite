@@ -1,4 +1,4 @@
-var tests = new TestList;
+var tests = new TestCollection;
 
 var TestView = Backbone.View.extend({
     tagName: "tr",
