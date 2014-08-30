@@ -1,58 +1,76 @@
-var tests = new TestCollection;
+window.TestListRowView = Backbone.View.extend({
 
-var TestView = Backbone.View.extend({
     tagName: "tr",
     className: "test-row",
-    template: _.template($("#all-tests-list-entry-template").html()),
+    template: HB.template("student_testing/test-list-row"),
+
     initialize: function(options) {
-        this.title = this.model.get('title');
         this.listenTo(this.model, 'change', this.render);
     },
+
     render: function() {
-        var dict = this.model.toJSON();
-        this.$el.html(this.template(dict));
+        this.$el.html(this.template(this.model.attributes));
         return this;
     },
+
     events: {
-        'click button': 'setExamMode'
+        'click button': 'exam_mode_toggle_button_clicked'
     },
-    setExamMode: function(ev) {
-        ev.preventDefault();
 
-        // toggle exam_mode state of the selected test
-        var isExamMode = ! this.model.get('is_exam_mode');
-        var errorFunc = function() {
-            // force to render the list of tests with the one set to exam mode
-            tests.fetch({data: {'force': true}});
-            alert("Did not successfully set the test into exam mode.  Try to reload the page.");
-        };
-        var successFunc = function() {
-            // force to render the list of tests with the one set to exam mode
-            tests.fetch({data: {'force': true}});
-        };
-        this.model.save({is_exam_mode: isExamMode}, {error: errorFunc, success: successFunc});
+    exam_mode_toggle_button_clicked: function(ev) {
+
+        this.trigger("exam_mode_toggle", this.model);
+
     }
 
 });
 
 
-var AppView = Backbone.View.extend({
+window.TestSettingAppView = Backbone.View.extend({
+
+    template: HB.template("student_testing/test-setting-container"),
+
     initialize: function() {
-        this.listenTo(tests, 'add', this.addNewTest);
-        this.listenTo(tests, 'reset', this.addAllTests);
-        tests.fetch();
+        this.render();
+        this.tests = new TestCollection;
+        this.listenTo(this.tests, 'add', this.add_new_test);
+        this.listenTo(this.tests, 'reset', this.add_all_tests);
+        this.tests.fetch();
     },
-    addNewTest: function(test) {
-        var view = new TestView({model: test});
-        $("#tests").append(view.render().el);
+
+    render: function() {
+        this.$el.html(this.template());
+        return this;
     },
-    addAllTests: function() {
-        tests.each(this.addNewTest);
+
+    add_new_test: function(test) {
+        var view = new TestListRowView({model: test});
+        this.listenTo(view, "exam_mode_toggle", this.exam_mode_toggle);
+        this.$("#tests").append(view.render().el);
+    },
+
+    add_all_tests: function() {
+        this.tests.each(this.add_new_test);
+    },
+
+    exam_mode_toggle: function(test) {
+
+        // check exam_mode state of the selected test
+        var is_exam_mode = test.get('is_exam_mode');
+
+        // clear exam mode for all other tests
+        // (no need to save since toggling current test will overwrite Setting)
+        this.tests.each(function(t) {
+            if (t.get("is_exam_mode")) {
+                t.set("is_exam_mode", false);
+            }
+        });
+
+        // toggle the exam state of the current test (and save)
+        test.set("is_exam_mode", !is_exam_mode);
+        test.save();
     }
+
 });
 
 
-$(function() {
-    $("tr.title+tr").hide();
-    var app = new AppView;
-});
