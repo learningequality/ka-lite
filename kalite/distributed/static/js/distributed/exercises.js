@@ -20,7 +20,7 @@ window.Exercises = {
 };
 
 window.ExerciseParams = {
-    STREAK_CORRECT_NEEDED: 8,
+    STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
     STREAK_WINDOW: 10,
     FIXED_BLOCK_EXERCISES: ds.distributed.fixed_block_exercises || 0
 };
@@ -305,6 +305,8 @@ window.TestLogModel = Backbone.Model.extend({
         If seeded inside each call to the function, then the blocks of seeds for each user
         would be identically shuffled.
         */
+
+        // TODO (rtibbles): qUnit or other javascript unit testing to set up tests for this code.
         if(typeof(test_data_model)==="object"){
 
             var random = new Math.seedrandom(this.get("user"));
@@ -315,35 +317,39 @@ window.TestLogModel = Backbone.Model.extend({
 
             var repeats = test_data_model.get("repeats");
 
-            var block_seeds = [];
-
-            // Create list of seeds incremented from initial_seed, one for every repeat.
-            for(i=0; i < repeats; i++){
-                block_seeds.push(initial_seed + i);
-            }
-
-            // Cache random shuffling of block seeds for each exercise_id.
-            var shuffled_block_seeds_gen = {}
-
             // Final seed and item sequences.
-            this.seed_sequence = []
+            this.seed_sequence = [];
 
-            this.item_sequence = []
+            this.item_sequence = [];
 
             /*
             Loop over every repeat, adding each exercise_id in turn to item_sequence.
-            On first loop, create shuffled copy of block_seeds for each exercise_id.
-            Add seed from shuffled block_seeds copy to seed_sequence.
+            Increment initial_seed on each inner iteration to give unique seeds across
+            all exercises. This will prevent similarly generated exercises from appearing identical.
             This will have the net effect of a fixed sequence of exercise_ids, repeating
-            'repeats' times, with each exercise_id having a shuffled sequence of seeds across blocks.
+            'repeats' times. Build seed sequences per item, so that sequence of seeds can be shuffled
+            per item, giving the net result that across tests, the seed/item pairs are matched, but the
+            order the seeds appear in within the item repeat blocks is different for each test taker.
             */
+            var item_seed_sequence = [];
+
             for(j=0; j < repeats; j++){
                 for(i=0; i < items.length; i++){
-                    if(j==0){
-                        shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
+                    if(j===0){
+                        item_seed_sequence[i] = [];
                     }
                     this.item_sequence.push(items[i]);
-                    this.seed_sequence.push(shuffled_block_seeds_gen[i][j]);
+                    item_seed_sequence[i].push(initial_seed);
+                    initial_seed+=1;
+                }
+            }
+            for(i=0; i < items.length; i++){
+                item_seed_sequence[i] = seeded_shuffle(item_seed_sequence[i], random);
+            }
+
+            for(j=0; j < repeats; j++){
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(item_seed_sequence[i][j]);
                 }
             }
         }
@@ -477,18 +483,28 @@ window.QuizLogModel = Backbone.Model.extend({
 
             var repeats = quiz_data_model.get("repeats");
 
+            var initial_seed = new Math.seedrandom(this.get("user") + this.get("attempts"))()*1000;
+
             this.item_sequence = [];
+
+            this.seed_sequence = [];
 
             for(j=0; j < repeats; j++){
                 this.item_sequence.push(items);
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(initial_seed);
+                    initial_seed+=1;
+                }
             }
 
             this.item_sequence = _.flatten(this.item_sequence);
 
             this.item_sequence = seeded_shuffle(this.item_sequence, random);
+
         }
         return {
-            exercise_id: this.item_sequence[this.get("index")]
+            exercise_id: this.item_sequence[this.get("index")],
+            seed: this.seed_sequence[this.get("index")]
         };
     },
 
@@ -548,6 +564,19 @@ window.QuizLogModel = Backbone.Model.extend({
         }
         // deflate the response log list so it will be saved along with the model later
         this.set("response_log", JSON.stringify(this._response_log_cache));
+
+    },
+
+    get_latest_response_log_item: function() {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        // add the event to the response log list
+
+        return this._response_log_cache[this.get("attempts")-1];
 
     },
 
@@ -1310,6 +1339,8 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         _.bindAll(this);
 
+        this.points = 0;
+
         if (window.statusModel.get("is_logged_in")) {
 
             this.quiz_model = options.quiz_model;
@@ -1330,11 +1361,31 @@ window.ExerciseQuizView = Backbone.View.extend({
     },
 
     finish_quiz: function() {
-        this.$el.html(this.stop_template())
+        this.$el.html(this.stop_template({
+            correct: this.log_model.get_latest_response_log_item(),
+            total_number: this.log_model.get("total_number")
+        }));
+
+        if(this.log_model.get("attempts")==1){
+            if(this.points > 0){
+                var purchased_model = new PurchasedStoreItemModel({
+                    item: "/api/store/storeitem/gift_card/",
+                    purchased_at: window.statusModel.get_server_time(),
+                    reversible: false,
+                    context_id: 0, // TODO-BLOCKER: put the current unit in here
+                    context_type: "unit",
+                    user: window.statusModel.get("user_uri"),
+                    value: this.points
+                });
+                purchased_model.save();
+
+                statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
+            }
+        }
 
         var self = this;
 
-        $("#stop-quiz").click(function(){self.trigger("complete");})
+        $("#stop-quiz").click(function(){self.trigger("complete");});
     },
 
     user_data_loaded: function() {
@@ -1423,6 +1474,10 @@ window.ExerciseQuizView = Backbone.View.extend({
                 index: this.log_model.get("index") + 1
             });
 
+            if((!this.log_model.get("complete")) && data.correct){
+                this.points += this.exercise_view.data_model.get("basepoints");
+            }
+
             this.log_model.add_response_log_item(data);
 
             this.log_model.save();
@@ -1459,7 +1514,7 @@ window.ExerciseQuizView = Backbone.View.extend({
 
 
 function seeded_shuffle(source_array, random) {
-    var array = source_array.slice(0)
+    var array = source_array.slice(0);
     var m = array.length, t, i;
 
     // While there remain elements to shuffle…
