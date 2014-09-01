@@ -10,11 +10,6 @@
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
-    <style>
-        .teach-nav li {
-            display: inline-block;
-        }
-    </style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}

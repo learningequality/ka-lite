@@ -164,7 +164,11 @@
                         <li><a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}">{% trans "Users" %}</a></li>-->
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                        <li><a href="{% url 'zone_redirect' %}" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Manage" %}</a></li> 
+                        <li class="not-teacher-only"><a href="{% url 'zone_redirect' %}" class="not-teacher-only admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Manage" %}</a></li> 
+
+                        {% if request.session.facility_user.facility %}
+                        <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only" title="{% trans 'Manage Users' %}"><span>{% trans "Manage" %}</span></a></li>
+                        {% endif %}
 
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                         <li class="not-teacher-only"><a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only {% block playlists_active %}{% endblock playlists_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>

@@ -39,12 +39,19 @@
 
 {% block manage_nav %}
     <div class="manage-nav">
-        <ul class="nav">
-            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="admin-only teacher-only" title="{% trans 'Manage Users' %}">{% trans "Network" %}</a></li>
-            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only active active-nav" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Update" %}</a></li>
+        <ul class="nav navbar-nav">
+            <!-- TODO(jtamiace): Have this link fall back to default facility if there is no current facility -->
+            {% if request.session.facility_user.facility %}
+            <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="users admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
+            {% endif %}
+            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
+            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only active active-nav" title="{% trans 'Update this server with new videos and languages' %}"><img src="{% static "images/control_panel/videos_active_icon.png" %}">{% trans "Videos" %}</a></li>
+            <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
         </ul>
     </div>
 {% endblock manage_nav %}
+
+
     <div class="download-actions vertical-shadow">
         <h4 class="videos">
             <span id="language_choice_titlebar">
@@ -107,62 +114,4 @@
 
     <div id="content_tree"><br/><h4>{% trans "Loading topic tree... Please wait!" %}</h4></div>
 
-
-
-    {% comment %} LANGUAGES {% endcomment %}
-    <div class="container">
-        
-        <div class="col-sm-8 download-actions-languages get-language vertical-shadow">            
-
-            <div class="row">
-                <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
-            </div>
-            
-            <div class="row">
-                <p class="button_text">
-                    {% trans "Language packs contain all available translations for the interface and video subtitles." %}
-                </p>
-            </div>
-
-            <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
-                Assume we are getting something like:
-                [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
-            -->
-            <div class="row">
-                <div id="langpacks">
-                    <span class= "button_style">
-                        <select id="language-packs"></select>
-                    </span>
-
-                    <button class="btn btn-default btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
-                </div>
-
-                <div id="langpack-details">
-                    <span id="lp-num-srts"></span><label>&nbsp;{% trans "subtitle(s)" %}</label>
-                    <span id="lp-pct-trans"></span><label>&nbsp;{% trans "translated" %}</label>
-                    <span id="lp-down-size"></span><label>&nbsp;({% trans "to download" %})</label>
-                    <br>
-                    <span id="lp-disk-size"></span><label>&nbsp;({% trans "on disk" %})</label>
-                    <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
-                </div>
-            </div>       
- 
-        </div>
-
-        <div id="languagepackdownload-progressbar">
-            {% include "updates/progress-bar.html" %}
-        </div>
-        <div class="clear"></div>
-
-        <div id="installed-languages-div">
-            <div class="row">
-                <h4>{% trans "Installed Languages" %}</h4>
-            </div>
-            
-            <div class="row">
-                <div class="installed-languages"></div>
-            </div>
-        </div>
-
-    </div>
 {% endblock content %}

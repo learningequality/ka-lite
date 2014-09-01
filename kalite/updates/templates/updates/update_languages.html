@@ -1,4 +1,4 @@
-{% extends "updates/base.html" %}
+{% extends "control_panel/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -22,6 +22,20 @@
 {% endblock headjs %}
 
 {% block content %}
+
+{% block manage_nav %}
+    <div class="manage-nav">
+        <ul class="nav navbar-nav">
+            {% if request.session.facility_user.facility %}
+            <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="users admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
+            {% endif %}
+            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
+            <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
+            <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only active active-nav"><img src="{% static "images/control_panel/language_active_icon.png" %}">{% trans "Language" %}</a></li>
+        </ul>
+    </div>
+{% endblock manage_nav %}
+
     <div class="container">
         
         <div class="col-sm-8 download-actions-languages get-language vertical-shadow">            

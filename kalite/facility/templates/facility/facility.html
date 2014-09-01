@@ -168,14 +168,7 @@
 {% endblock headjs %}
 
 {% block content %}
-{% block manage_nav %}
-    <div class="manage-nav">
-        <ul class="nav navbar-nav">
-            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="admin-only teacher-only active active-nav" title="{% trans 'Manage Users' %}">{% trans "Network" %}</a></li>
-            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Update" %}</a></li>
-        </ul>
-    </div>
-{% endblock manage_nav %}
+ 
     <h3 class="no-margin-top">{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
     <div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>
     <div id="id_direc_map">
