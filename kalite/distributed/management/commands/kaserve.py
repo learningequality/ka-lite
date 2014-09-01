@@ -100,6 +100,11 @@ class Command(BaseCommand):
         for opt in BaseCommand.option_list:
             del options[opt.dest]
 
+        # In case any chronograph threads were interrupted the last time
+        # the server was stopped, clear their is_running flags to allow
+        # them to be started up again as needed.
+        Job.objects.update(is_running=False)
+
         # Parse the crappy way that runcherrypy takes args,
         #   or the host/port
         for arg in args:
