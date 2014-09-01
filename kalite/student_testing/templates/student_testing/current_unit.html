@@ -18,25 +18,17 @@
     <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
     <script src="{% static 'js/student_testing/models.js' %}"></script>
     <script src="{% static 'js/student_testing/current_unit.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.current_unit_app_view = new CurrentUnitAppView({
+                el: $("#current-unit-container")
+            });
+        });
+    </script>
+
 {% endblock headjs %}
 
 {% block content %}
-    <h2 class="title-header">
-        <div class="facility-name">{% trans "Current Units" %}</div>
-    </h2>
-    <p>{% trans 'This page shows the current unit selected for each Facility.' %}</p>
-    <p>{% trans 'Click on the "Previous" or "Next" buttons or the number links to select the current unit for the facility.' %}</p>
-    <br/>
-    <div class="row">
-        <div class="span12">
-            <table class="table table-hover table-bordered" id="current-units">
-                <thead>
-                <tr>
-                    <th>{% trans "Facility" %}</th>
-                    <th>{% trans "Current Unit" %}</th>
-                </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
+    <div id="current-unit-container"></div>
 {% endblock content %}

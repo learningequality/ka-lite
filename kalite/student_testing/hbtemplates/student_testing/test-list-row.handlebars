@@ -1,0 +1,12 @@
+<td test-title="{{ title }}"> <a href="{{ test_url }}">{{ title }}</a> </td>
+<td>
+    {{#if is_exam_mode }}
+        <button data-exam-title="{{ title }}" data-test-id="test-{{ test_id }}" class="btn btn-info test-row-button">
+            {{_ "Disable Exam Mode" }}
+        </button>
+    {{else}}
+        <button data-exam-title="{{ title }}" data-test-id="test-{{ test_id }}" class="btn test-row-button">
+            {{_ "Enable Exam Mode" }}
+        </button>
+    {{/if}}
+</td>
