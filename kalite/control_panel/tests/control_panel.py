@@ -82,7 +82,7 @@ class GroupControlTests(FacilityMixins,
         alert = self.browser.switch_to_alert()
         alert.accept()
 
-        time.sleep(5)
+        time.sleep(8)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
