@@ -37,6 +37,12 @@ class TestLog(DeferredCountSyncedModel):
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
+    def get_test_object(self):
+        '''
+        Returns the Test object associated with this TestLog.
+        '''
+        return Test.testscache[self.test]
+
 
 class Test():
 
@@ -52,6 +58,8 @@ class Test():
         self.practice = kwargs.get('is_practice')
         self.test_id = test_id
         self.test_url = reverse('test', args=[test_id])
+
+        self.total_questions = len(kwargs.get('ids')) * int(self.repeats)
         self.set_exam_mode()
 
     def set_exam_mode(self):
