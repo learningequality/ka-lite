@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _
 
+from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
