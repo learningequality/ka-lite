@@ -8,25 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'StoreItem'
-        db.create_table(u'store_storeitem', (
-            ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
-            ('counter', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
-            ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True, blank=True)),
-            ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
-            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
-            ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('cost', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('returnable', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('thumbnail', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('resource_id', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('resource_type', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-        ))
-        db.send_create_signal(u'store', ['StoreItem'])
-
         # Adding model 'StoreTransactionLog'
         db.create_table(u'store_storetransactionlog', (
             ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
@@ -41,15 +22,13 @@ class Migration(SchemaMigration):
             ('context_id', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
             ('context_type', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
             ('reversible', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['store.StoreItem'])),
+            ('item', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
+            ('purchased_at', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'store', ['StoreTransactionLog'])
 
 
     def backwards(self, orm):
-        # Deleting model 'StoreItem'
-        db.delete_table(u'store_storeitem')
-
         # Deleting model 'StoreTransactionLog'
         db.delete_table(u'store_storetransactionlog')
 
@@ -134,23 +113,6 @@ class Migration(SchemaMigration):
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
-        u'store.storeitem': {
-            'Meta': {'object_name': 'StoreItem'},
-            'cost': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
-            'resource_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'resource_type': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'returnable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
-            'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),
-            'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'thumbnail': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
-        },
         u'store.storetransactionlog': {
             'Meta': {'object_name': 'StoreTransactionLog'},
             'context_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
@@ -158,7 +120,8 @@ class Migration(SchemaMigration):
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
-            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['store.StoreItem']"}),
+            'item': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
+            'purchased_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'reversible': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),
             'signed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Device']"}),

@@ -101,6 +101,12 @@ KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan
 # Exercise AB-testing
 ########################
 FIXED_BLOCK_EXERCISES = getattr(local_settings, 'FIXED_BLOCK_EXERCISES', 0)
+STREAK_CORRECT_NEEDED = getattr(local_settings, 'STREAK_CORRECT_NEEDED', 8)
+
+########################
+# Video AB-testing
+########################
+POINTS_PER_VIDEO = getattr(local_settings, 'POINTS_PER_VIDEO', 750)
 
 ########################
 # Ports & Accessibility

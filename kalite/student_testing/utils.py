@@ -3,7 +3,7 @@ from django.conf import settings
 from fle_utils.config.models import Settings
 
 from .settings import SETTINGS_KEY_EXAM_MODE
-from .signals import exam_unset
+from .signals import exam_unset, unit_switch
 
 logging = settings.LOG
 
@@ -29,9 +29,9 @@ def set_exam_mode_on(test_object):
         value = test_id
 
         # do the import here to prevent circular import
-        from .api_resources import Test
-        is_test = isinstance(test_object, Test)
+        from .models import Test
 
+        is_test = isinstance(test_object, Test)
         if current_test_id == test_id:
             value = ''
             if is_test and test_object.practice:
@@ -63,8 +63,10 @@ def set_current_unit_settings_value(facility_id, value):
     """
     Set the value of the current unit on Settings based on the facility id.
     """
+    old_unit = get_current_unit_settings_value(facility_id)
     name = get_current_unit_settings_name(facility_id)
     s = Settings.set(name, value)
+    unit_switch.send(sender="None", old_unit=old_unit, new_unit=value, facility_id=facility_id)
     return s
 
 
@@ -80,5 +82,5 @@ def get_current_unit_settings_value(facility_id):
         # make sure it has a value at Settings so we can either change it on
         # the admin page or at front-end code later.
         value = 1
-        set_current_unit_settings_value(facility_id, value)
+        Settings.set(name, value)
     return value
