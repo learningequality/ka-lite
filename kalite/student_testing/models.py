@@ -59,7 +59,7 @@ class Test():
         self.test_id = test_id
         self.test_url = reverse('test', args=[test_id])
 
-        self.total_questions = len(kwargs.get('ids')) * int(self.repeats)
+        self.total_questions = len(kwargs.get('ids', [])) * int(self.repeats or 0)
         self.set_exam_mode()
 
     def set_exam_mode(self):
