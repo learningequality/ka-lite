@@ -42,9 +42,8 @@
             border-top: 3px solid #5C8547;
             border-right: 3px solid #5C8547;
             border-left: 3px solid #5C8547;
-            width: 120px;
+            width: 110px;
             text-align: center;
-            bottom: 0;
             font-weight: bold;
             display: inline-block !important;
             margin: 0 2px -4px 0;
@@ -80,68 +79,55 @@
         }
         .active {
             background-color: #E9F1E4;
+            height: 89px;
         }
         .users {
             background: url("{% static "images/control_panel/users-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .users:hover {
             background: url("{% static "images/control_panel/users-active-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
-        }
-        #user a {
             height: 87px;
         }
         .video {
             background: url("{% static "images/control_panel/videos_icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .video:hover {
             background: url("{% static "images/control_panel/videos_active_icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .languages {
             background: url("{% static "images/control_panel/language_icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .languages:hover {
             background: url("{% static "images/control_panel/language_active_icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .facility {
             background: url("{% static "images/control_panel/facility-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .facility:hover {
             background: url("{% static "images/control_panel/facility-active-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
-
     </style>
 {% endblock headcss %}
 
 {% block content %}
-{% block manage_nav %}
 
-    <div class="manage-nav">
-        <ul class="nav">
-            {% if request.session.facility_user.facility %}
-            <li id="user"><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="active active-nav admin-only" title="{% trans 'Manage Users' %}"><img src="{% static "images/control_panel/users-active-icon.png"%}">{% trans "Users" %}</a></li>
-            {% endif %}
-            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Facilities' %}"><span>{% trans "Facilities" %}</span></a></li>
-            <li><a href="{% url 'update_videos' %}" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
-            <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
-        </ul>
-    </div>
-{% endblock manage_nav %}
+{% block manage_nav %}{% endblock manage_nav %}
+
     {% block titlebar %}
         <div class="titlebar">
             <ul class="titlebar__title">

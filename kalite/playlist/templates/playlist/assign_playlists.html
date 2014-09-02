@@ -7,7 +7,6 @@
 {% block home_active %}active{% endblock home_active %}
 
 {% block headcss %}{{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' %}">
 {% endblock headcss %}
 
@@ -52,10 +51,12 @@
         <th>Student Groups</th>
       </tr>
     </table>
+    <div class="col-md-10 col-sm-8">
     <table class="span10 table table-hover" id="playlists">
       <tr>
         <th>Playlists</th>
       </tr>
     </table>
+  </div>
   </div>
 {% endblock content %}
