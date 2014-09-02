@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
@@ -141,6 +143,7 @@ def handle_unit_switch(sender, **kwargs):
                 old_unit_points = compute_total_points(user) or 0
                 old_unit_transaction_log = StoreTransactionLog(user=user, context_id=old_unit, context_type="unit_points_reset", item="gift_card")
                 old_unit_transaction_log.value = - old_unit_points
+                old_unit_transaction_log.purchased_at = datetime.datetime.now()
                 old_unit_transaction_log.save()
                 new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
                 new_unit_transaction_log.soft_delete()
