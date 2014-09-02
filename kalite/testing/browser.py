@@ -3,6 +3,8 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
@@ -352,6 +354,8 @@ class BrowserTestCase(KALiteTestCase):
         See comment on `hacks_for_phantomjs()` method above.
         """
         alert = None
+
+        WebDriverWait(self.browser, 5).until(EC.alert_is_present())
         alert = self.browser.switch_to_alert()
         try:
             if not self.is_phantomjs:
