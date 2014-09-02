@@ -32,7 +32,7 @@ window.TestSettingAppView = Backbone.View.extend({
 
     initialize: function() {
         this.render();
-        this.tests = new TestCollection;
+        this.tests = new TestCollection();
         this.listenTo(this.tests, 'add', this.add_new_test);
         this.listenTo(this.tests, 'reset', this.add_all_tests);
         this.tests.fetch();
