@@ -32,9 +32,9 @@
 {% block subnavbar %}
  <div class="subnav">
         <ul class="nav">
-            <li><a href="{% url 'tabular_view' %}">Progress<br>by Topic</a></li>
-            <li><a class="active sub-active" href="{% url 'scatter_view' %}">Effort versus<br>Achievement</a></li>
-            <li><a href="{% url 'timeline_view' %}">Mastery<br>over Time</a></li>
+            <li class="progress-tab"><a href="{% url 'tabular_view' %}"><img src="{% static "images/coachreports/progress.png" %}"/><span>Progress<br>by Topic</span></a></li>
+            <li class="effort-tab"><a class="active sub-active" href="{% url 'scatter_view' %}"><img src="{% static "images/coachreports/effort.png" %}"><span>Effort versus<br>Achievement</span></a></li>
+            <li class="mastery-tab"><a href="{% url 'timeline_view' %}"><img src="{% static "images/coachreports/mastery.png" %}"><span>Mastery<br>over Time</span></a></li>
         </ul>
     </div>
 {% endblock subnavbar %}
