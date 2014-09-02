@@ -8,14 +8,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from fle_utils.config.models import Settings
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
+from kalite.playlist import UNITS
+from kalite.student_testing.api_resources import Test
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
-from kalite.student_testing.api_resources import Test
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_value, set_current_unit_settings_value, SETTINGS_MAX_UNITS
+    get_current_unit_settings_value, set_current_unit_settings_value
 
 logging = settings.LOG
 
@@ -418,7 +419,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         facility_id = self.client.facility.id
 
         # set to max units and check the previous and next buttons
-        set_current_unit_settings_value(facility_id, SETTINGS_MAX_UNITS)
+        set_current_unit_settings_value(facility_id, max(UNITS))
 
         # go to current unit page
         self.browse_to(self.current_unit_url)
@@ -427,7 +428,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         unit = get_current_unit_settings_value(facility_id)
 
         # must have been successfully set to max unit
-        self.assertEqual(SETTINGS_MAX_UNITS, unit)
+        self.assertEqual(max(UNITS), unit)
 
         # check that next button is disabled
         btn = self.get_button(is_next=True)
