@@ -1,5 +1,5 @@
 """
-These use a web-browser, along selenium, to simulate user actions.
+These use a web-browser, along with selenium, to simulate user actions.
 """
 import re
 import time
@@ -87,4 +87,4 @@ class UnitSwitchTest(KALiteDistributedBrowserTestCase):
             self.live_server_url +
             reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
         time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.playlist_view.content_view.currently_shown_view.model.get('possible_points')"), 0, "Basepoints should be zero in output")
+        self.assertEqual(self.browser.execute_script("return window.playlist_view.content_view.currently_shown_view.model.get('possible_points')"), 0, "Video points should be zero")

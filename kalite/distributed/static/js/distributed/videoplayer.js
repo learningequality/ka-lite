@@ -16,7 +16,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
         seconds_watched_since_save: 0.0,
         total_seconds_watched: 0.0,
         points: 0,
-        possible_points: ds.distributed.turn_off_points_for_videos ? 0 : ds.distributed.points_per_video || 750,
+        possible_points: ds.distributed.turn_off_points_for_videos ? 0 : ds.distributed.points_per_video,
         starting_points: 0,
         youtube_id: "",
         video_id: "",

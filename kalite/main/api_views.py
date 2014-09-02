@@ -271,6 +271,7 @@ def exercise(request, ds, exercise_id):
                                 )
             current_unit_exercises = UNIT_EXERCISES[current_unit][student_grade]
             if (exercise["exercise_id"] in current_unit_exercises) and not ds["distributed"].turn_off_points_for_exercises:
+                # TODO-BLOCK (rtibbles): Revisit this, pending determination of quiz in every playlist.
                 exercise["basepoints"] = settings.UNIT_POINTS/(
                     len(current_unit_exercises)*(ds["distributed"].streak_correct_needed +
                         ds["distributed"].fixed_block_exercises +
