@@ -1,4 +1,4 @@
- {% extends base_template %}
+{% extends base_template %}
 {% load staticfiles %}
 {% load i18n %}
 {% load my_filters %}
@@ -44,6 +44,7 @@
         }
         .teach-nav ul {
             padding-left: 1%;
+            display: inline-block;
         }
         .teach-nav li {
             background-color: #5C8547;
@@ -56,7 +57,7 @@
             text-align: center;
             bottom: 0;
             font-weight: bold;
-            display: inline !important;
+            display: inline-block !important;
             margin: 0 2px -4px 0;
         }
         .teach-nav li span {
@@ -86,51 +87,59 @@
             background-color: white !important;
             border-top-left-radius: 5px !important;
             border-top-right-radius: 16px !important;
-            font-weight: bold;
-            
+            font-weight: bold;      
+            display: inline-block;      
         }
         .active {
-            background-color: #E9F1E4;           
+            background-color: #E9F1E4; 
+            height: 50px;       
+            display: inline-block;   
+        }
+        .active-tab {
+            background-color: #E9F1E4; 
+            height: 89px;
+            display: inline-block;
         }
         .reports {
             background: url("{%  static "images/coachreports/reports-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
+            display: inline-block;
         }
         .reports:hover {
             background: url("{% static "images/coachreports/reports-active-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .playlist {
             background: url("{% static "images/coachreports/playlist-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .playlist:hover {
             background: url("{% static "images/coachreports/playlist-active-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .exams {
             background: url("{% static "images/coachreports/exam-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .exams:hover {
             background: url("{% static "images/coachreports/exam-active-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .learn {
             background: url("{% static "images/coachreports/learn-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         .learn:hover {
             background: url("{% static "images/coachreports/learn-active-icon.png" %}") no-repeat;
             background-position: center 7px;
-            height: 85px;
+            height: 87px;
         }
         @media only screen and (max-width: 744px) {+
             h4 { margin-top: 0; }
@@ -157,8 +166,8 @@
 
 {% block teach_nav %}
     <div class="teach-nav">
-        <ul class="nav navbar-nav">
-            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="active-nav active" title="{% trans 'Track the progress of your students' %}"><img src="{% static "images/coachreports/reports-active-icon.png" %}">{% trans "Reports" %}</a></li>
+        <ul class="nav">
+            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="active-nav active-tab" title="{% trans 'Track the progress of your students' %}"><img src="{% static "images/coachreports/reports-active-icon.png" %}">{% trans "Reports" %}</a></li>
             <li><a href="{% url 'assign_playlists' %}" class="playlist admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}"><span>{% trans "Playlists" %}</span></a></li>
             <li><a href="{% url 'test_list' %}" class="exams admin-only teacher-only" title="{% trans 'See list of available tests.' %}"><span>{% trans "Exams" %}</span></a></li>
             <li><a class="learn admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>

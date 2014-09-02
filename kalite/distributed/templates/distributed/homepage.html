@@ -51,11 +51,11 @@
 {% block teach_nav %}
     <span class="admin-only">
         <div class="teach-nav">
-            <ul class="nav navbar-nav">
+            <ul class="nav">
                 <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="reports teacher-only" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
                 <li><a href="{% url 'assign_playlists' %}" class="playlist admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}"><span>{% trans "Playlists" %}</span></a></li>
                 <li><a href="{% url 'test_list' %}" class="exams admin-only teacher-only" title="{% trans 'See list of available tests.' %}"><span>{% trans "Exams" %}</span></a></li>
-                <li><a class="admin-only teacher-only active active-nav" href="/" title="{% trans 'KA Lite Home' %}"><img src="{% static "images/coachreports/learn-active-icon.png" %}">{% trans "Learn" %}</a></li>
+                <li><a class="admin-only teacher-only active-tab active-nav" href="/" title="{% trans 'KA Lite Home' %}"><img src="{% static "images/coachreports/learn-active-icon.png" %}">{% trans "Learn" %}</a></li>
             </ul>
         </div>
     </span>

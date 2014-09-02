@@ -4,6 +4,7 @@
 {% load i18n_filters %}
 
 {% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock %}
 
 {% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
@@ -42,7 +43,7 @@
         <ul class="nav">
             <!-- TODO(jtamiace): Have this link fall back to default facility if there is no current facility -->
             <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
-            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only active active-nav" title="{% trans 'Update this server with new videos and languages' %}"><img src="{% static "images/control_panel/videos_active_icon.png" %}">{% trans "Videos" %}</a></li>
+            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only active-tab active-nav" title="{% trans 'Update this server with new videos and languages' %}"><img src="{% static "images/control_panel/videos_active_icon.png" %}">{% trans "Videos" %}</a></li>
             <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
         </ul>
     </div>
@@ -53,7 +54,7 @@
             <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="users admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
             {% endif %}
             <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
-            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only active active-nav" title="{% trans 'Update this server with new videos and languages' %}"><img src="{% static "images/control_panel/videos_active_icon.png" %}">{% trans "Videos" %}</a></li>
+            <li><a href="{% url 'update_videos' %}" id="nav_update" class="admin-only teacher-only active-tab active-nav" title="{% trans 'Update this server with new videos and languages' %}"><img src="{% static "images/control_panel/videos_active_icon.png" %}">{% trans "Videos" %}</a></li>
             <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
         </ul>
     </div>

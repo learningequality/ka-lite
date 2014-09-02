@@ -8,7 +8,6 @@
 {% block title %}{% trans "Tests" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
 {% endblock headcss %}
 
@@ -37,10 +36,10 @@
 {% block content %}
 {% block teach_nav %}
     <div class="teach-nav">
-        <ul class="nav navbar-nav">
+        <ul class="nav">
             <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="reports teacher-only" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
             <li><a href="{% url 'assign_playlists' %}" class="playlist admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}"><span>{% trans "Playlists" %}</span></a></li>
-            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only active active-nav" title="{% trans 'See list of available tests.' %}"><img src="{% static "images/coachreports/exam-active-icon.png" %}">{% trans "Exams" %}</a></li>
+            <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only active-tab active-nav" title="{% trans 'See list of available tests.' %}"><img src="{% static "images/coachreports/exam-active-icon.png" %}">{% trans "Exams" %}</a></li>
             <li><a class="learn admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>
         </ul>
     </div>

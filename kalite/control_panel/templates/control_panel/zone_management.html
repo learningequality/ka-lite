@@ -5,6 +5,10 @@
 
 {% block title %}{{ zone.name }} - {% trans "Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
 
+{% block control_panel_active %}active{% endblock control_panel_active %}
+{% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock %}
+
 {% block headcss %}{{ block.super }}
     {% if clock_set %}
         {% include_block "control_panel/snippets/clock_set.html" "headcss" %}
@@ -63,7 +67,7 @@
 {% block manage_nav %}
     <div class="manage-nav not-teacher-only">
         <ul class="nav">
-            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="active active-nav admin-only" title="{% trans 'Manage Facilities' %}"><img src="{% static "images/control_panel/facility-active-icon.png" %}">{% trans "Facilities" %}</a></li>
+            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="active-tab active-nav admin-only" title="{% trans 'Manage Facilities' %}"><img src="{% static "images/control_panel/facility-active-icon.png" %}">{% trans "Facilities" %}</a></li>
             <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
             <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
         </ul>
@@ -73,7 +77,7 @@
             {% if request.session.facility_user.facility %}
             <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="users admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
             {% endif %}
-            <li id="facility-tab"><a href="{% url 'zone_management' zone_id=zone_id %}" class="active active-nav admin-only" title="{% trans 'Manage Facilities' %}"><img src="{% static "images/control_panel/facility-active-icon.png" %}">{% trans "Facilities" %}</a></li>
+            <li id="facility-tab"><a href="{% url 'zone_management' zone_id=zone_id %}" class="active-tab active-nav admin-only" title="{% trans 'Manage Facilities' %}"><img src="{% static "images/control_panel/facility-active-icon.png" %}">{% trans "Facilities" %}</a></li>
             <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
             <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
         </ul>
@@ -282,4 +286,5 @@
         {% endif %}
     </div><!-- devices -->
 </div><!-- zone_container -->
+
 {% endblock control_panel_content %}

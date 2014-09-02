@@ -3,6 +3,8 @@
 {% load staticfiles %}
 
 {% block languages_active %}active{% endblock languages_active %}
+{% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock %}
 
 {% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
@@ -28,7 +30,7 @@
         <ul class="nav">
             <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
             <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
-            <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only active active-nav"><img src="{% static "images/control_panel/language_active_icon.png" %}">{% trans "Language" %}</a></li>
+            <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only active-tab active-nav"><img src="{% static "images/control_panel/language_active_icon.png" %}">{% trans "Language" %}</a></li>
         </ul>
     </div>
     <div class="manage-nav teacher-only">
@@ -38,7 +40,7 @@
             {% endif %}
             <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
             <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
-            <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only active active-nav"><img src="{% static "images/control_panel/language_active_icon.png" %}">{% trans "Language" %}</a></li>
+            <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only active-tab active-nav"><img src="{% static "images/control_panel/language_active_icon.png" %}">{% trans "Language" %}</a></li>
         </ul>
     </div>
 {% endblock manage_nav %}
