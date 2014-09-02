@@ -136,6 +136,7 @@ header nav {
     color: #263500;
     height: 20px;
     display: block;
+    line-height: 18px;
 }
 
 .nav-subheader a:hover {
@@ -150,7 +151,6 @@ header nav {
 .nav-subheader a.active:after {
     content: url(/static/images/distributed/nav-selector.gif);
     position: relative;
-    top: -6px;
     display: block;
     left: 50%;
     margin-left: -5px;
@@ -532,8 +532,10 @@ a.disabled {
 
 #search-box input {
     position: relative;
-    top: -1px;
+    top: -2px;
     float: right;
+    padding: 2px 5px;
+    font-size: 12px;
 }
 
 #search-button {

@@ -50,7 +50,6 @@ def set_exam_mode_on(test_object):
 SETTINGS_CURRENT_UNIT_PREFIX = 'current_unit_'
 SETTINGS_FACILITY_ID_CHARS = 8
 
-
 def get_current_unit_settings_name(facility_id):
     name = SETTINGS_CURRENT_UNIT_PREFIX
     if facility_id:

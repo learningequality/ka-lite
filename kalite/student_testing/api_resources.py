@@ -83,7 +83,7 @@ class TestResource(Resource):
         Get the list of tests based from a request.
         """
         if not request.is_admin:
-            return [] 
+            return []
         return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):

@@ -289,7 +289,8 @@ def test_view(request, facility):
             log_object = next((log for log in user_test_logs if log.test == t.test_id), '')
             # check if student has completed test
             if log_object:
-                score = round(100 * float(log_object.total_correct) / float(log_object.total_number), 1)
+                test_object = log_object.get_test_object()
+                score = round(100 * float(log_object.total_correct) / float(test_object.total_questions), 1)
                 results_table[s].append({
                     "log": log_object,
                     "raw_score": score,
@@ -299,7 +300,7 @@ def test_view(request, facility):
                 results_table[s].append({})
 
         # This retrieves stats for students
-        score_list = [round(100 * float(result.total_correct) / float(result.total_number), 1) for result in user_test_logs if result.total_number]
+        score_list = [round(100 * float(result.total_correct) / float(result.get_test_object().total_questions), 1) for result in user_test_logs]
         for stat in SUMMARY_STATS:
             if score_list:
                 results_table[s].append({"stat": "%d%%" % return_list_stat(score_list, stat)})
@@ -312,7 +313,7 @@ def test_view(request, facility):
         stats_dict[stat] = []
         for test_obj in test_objects:
             # get the logs for this test across all users and then add summary stats
-            log_scores = [round(100 * float(test_log.total_correct) / float(test_log.total_number), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
+            log_scores = [round(100 * float(test_log.total_correct) / float(test_log.get_test_object().total_questions), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
             stats_dict[stat].append("%d%%" % return_list_stat(log_scores, stat))
 
     context = plotting_metadata_context(request, facility=facility)
