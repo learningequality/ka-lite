@@ -5,8 +5,10 @@ from django.utils import unittest
 from django.test import Client
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.control_panel.views import UNGROUPED
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
@@ -82,6 +84,8 @@ class GroupControlTests(FacilityMixins,
 
         self.browser_click_and_accept('button.delete-group')
 
+        WebDriverWait(self.browser, 8).until(EC.staleness_of(group_row))
+
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
 
@@ -118,7 +122,7 @@ class CSVExportTests(FacilityMixins,
                      CreateDeviceMixin,
                      CreateAdminMixin,
                      KALiteDistributedBrowserTestCase):
-    
+
     def setUp(self):
         self.setup_fake_device()
         self.facility = self.create_facility()
