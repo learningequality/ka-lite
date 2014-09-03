@@ -1,18 +1,20 @@
 // Handles the data export functionality of the control panel
 
 // Models 
+var ZoneModel = Backbone.Model.extend();
+
 var FacilityModel = Backbone.Model.extend();
 
 var GroupModel = Backbone.Model.extend();
 
-var StudentSelectStateModel = Backbone.Model.extend({
-    defaults: {
-        "facility_id": "all",
-        "group_id": "all"
-    }
-});  
+var StudentSelectStateModel = Backbone.Model.extend();  
 
 // Collections
+var ZoneCollection = Backbone.Collection.extend({ 
+    model: ZoneModel, 
+    url: ALL_ZONES_URL
+});
+
 var FacilityCollection = Backbone.Collection.extend({ 
     model: FacilityModel, 
     url: ALL_FACILITIES_URL
@@ -31,7 +33,10 @@ var DataExportView = Backbone.View.extend({
 
     initialize: function() {
 
-        var self = this;
+        this.zone_select_view = new ZoneSelectView({
+            org_id: this.options.org_id,
+            model: this.model
+        });
 
         this.facility_select_view  = new FacilitySelectView({
             model: this.model
@@ -41,6 +46,9 @@ var DataExportView = Backbone.View.extend({
             model: this.model
         });
 
+        console.log("bloasdf")
+        window.dat = this.model
+
         this.render();
     },
 
@@ -48,7 +56,12 @@ var DataExportView = Backbone.View.extend({
         // render container     
         this.$el.html(this.template());
 
-        // append facility & group select views
+        // append zone, facility & group select views. hide zone select if not central.
+        if (this.options.is_central) {
+            this.$('#student-select-container').append(this.zone_select_view.$el);    
+        } else { 
+            this.$('#student-select-container').append(this.zone_select_view.$el).hide();
+        }
         this.$('#student-select-container').append(this.facility_select_view.$el);
         this.$('#student-select-container').append(this.group_select_view.$el);
     },
@@ -81,17 +94,66 @@ var DataExportView = Backbone.View.extend({
 });
 
 
+var ZoneSelectView = Backbone.View.extend({
+    template: HB.template('data_export/zone-select'),
+
+    initialize: function() {
+        console.log("A new ZoneSelectView was born!");
+
+        // Create collections 
+        this.zone_list = new ZoneCollection();
+
+        // Re-render self when fetch returns or model state changes
+        this.listenTo(this.zone_list, 'sync', this.render);
+
+        // Fetch collection by zone_id
+        this.zone_list.fetch({
+            data: $.param({ "org_id": this.options.org_id })
+        });
+
+        // Render 
+        this.render();
+    },
+
+    render: function() {
+        console.log("Rendering zone select view");
+        console.log("Zone id " + this.model.attributes.zone_id)
+
+        this.$el.html(this.template({
+            zones: this.zone_list.toJSON(),
+            selection: this.model.attributes.zone_id
+        }));
+    },
+
+    events: {
+        "change": "zone_changed"
+    },
+
+    zone_changed: function(ev) {
+        // When zone is changed by the user, we reset facility_id to be nothing
+        this.model.set({ facility_id: "all" });
+
+        // update the state model
+        var zone_id = $("#" + ev.target.id).find(":selected").attr("data-zone-id");
+        this.model.set({ zone_id: zone_id });
+    }
+})
+
+
 var FacilitySelectView = Backbone.View.extend({
     template: HB.template('data_export/facility-select'),
 
     initialize: function() {
+
+        console.log("A new FacilitySelectView was born!");
+        
         // Create collections
         this.facility_list = new FacilityCollection();
 
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.facility_list, 'sync', this.render);
 
-        // Fetch collection 
+        // Fetch collection, by zone if org id exists
         this.facility_list.fetch();
 
         // Render
@@ -99,26 +161,36 @@ var FacilitySelectView = Backbone.View.extend({
     },
 
     render: function() {
+
+        console.log("Rendering facility select view")
+        console.log("Facility id " + this.model.attributes.facility_id);
+
         this.$el.html(this.template({
             facilities: this.facility_list.toJSON(),
             selection: this.model.attributes.facility_id
         }));
 
-
         return this;
     },
 
     events: {
-        "change": "facilityChanged"
+        "change": "facility_changed"
     },
 
-    facilityChanged: function(ev) {
-        // When facility is changed by the user, we reset groupID to be nothing
+    facility_changed: function(ev) {
+        // When facility is changed by the user, we reset group_id to be nothing
         this.model.set({ group_id: "all" });
 
         // update the state model
-        var facilityID = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
-        this.model.set({ facility_id: facilityID });
+        var facility_id = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
+        this.model.set({ facility_id: facility_id });
+    },
+
+    fetch_by_zone: function() {
+        var zoneID = this.model.get("facility_id") === "all" ? undefined : this.model.get("facility_id");
+        this.group_list.fetch({
+            data: $.param({ "facility_id": facility_id })
+        })
     }
 });
 
@@ -129,6 +201,9 @@ var GroupSelectView = Backbone.View.extend({
     template: HB.template('data_export/group-select'),
 
     initialize: function() {
+
+        console.log("A new GroupSelectView was born!");
+
         // Create collections
         this.group_list = new GroupCollection();
 
@@ -146,31 +221,32 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     render: function() {
+
+        console.log("Rendering group select view");
+        console.log("Group id " + this.model.attributes.group_id);
+
         this.$el.html(this.template({
             groups: this.group_list.toJSON(),
             selection: this.model.attributes.group_id
         }));
 
-
-
         return this;
     },
 
     events: {
-        "change": "groupChanged"
+        "change": "group_changed"
     },
 
-    groupChanged: function(ev) {
-        var groupID = $("#" + ev.target.id).find(":selected").attr("data-group-id");
-        this.model.set({ group_id: groupID });
+    group_changed: function(ev) {
+        var group_id = $("#" + ev.target.id).find(":selected").attr("data-group-id");
+        this.model.set({ group_id: group_id });
     },
 
     fetchByFacility: function() {
         // pass undefined to the api for 'all'
-        var facilityID = this.model.get("facility_id") === "all" ? undefined : this.model.get("facility_id");
-        // TODO(dylan): are we handling pagination from the API?
+        var facility_id = this.model.get("facility_id") === "all" ? undefined : this.model.get("facility_id");
         this.group_list.fetch({
-            data: $.param({ "facility_id": facilityID })
+            data: $.param({ "facility_id": facility_id })
         })
     }
 });

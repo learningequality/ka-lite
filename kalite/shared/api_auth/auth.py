@@ -1,7 +1,7 @@
 from django.conf import settings
 
 from tastypie.exceptions import NotFound, Unauthorized
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, ReadOnlyAuthorization
 
 
 class UserObjectsOnlyAuthorization(Authorization):
@@ -112,7 +112,7 @@ class UserObjectsOnlyAuthorization(Authorization):
         raise Unauthorized("Sorry, that operation is restricted.")
 
 
-class ObjectAdminAuthorization(Authorization):
+class ObjectAdminAuthorization(ReadOnlyAuthorization):
     """
     On distributed: Only allow teachers or admins affiliated with the zone
     On central: only allow central server admins affiliated with that zone

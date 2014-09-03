@@ -8,6 +8,8 @@
 {% block headjs %}{{ block.super }}
     <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
     <script>
+        // Pass in zones api endpoint from context because it is only applicable on central server
+        var ALL_ZONES_URL = "{{ all_zones_url }}";
         var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
     </script>
@@ -18,11 +20,23 @@
             window.container_view = new DataExportView({
                 el: $("#data-export-container"),
                 model: new StudentSelectStateModel({
+                    zone_id: "{{ zone_id }}",
                     group_id: "{{ group_id }}",
                     facility_id: "{{ facility_id }}"
-                })
+                }),
+                org_id: "{{ org_id }}",
+                is_central: "{{ is_central }}"
             });
         });
+
+        console.log("is_central = " + "{{is_central}}");
+        console.log("ALL_ZONES_URL = " + ALL_ZONES_URL);
+        console.log("ALL_FACILITIES_URL = " + ALL_FACILITIES_URL);
+        console.log("ALL_GROUPS_URL = " + ALL_GROUPS_URL);
+        console.log("org_id = " + "{{org_id}}");
+        console.log("zone_id = " + "{{zone_id}}");
+        console.log("group_id = " + "{{group_id}}");
+        console.log("facility_id = " + "{{facility_id}}");
     </script>
 
 {% endblock headjs %}
@@ -43,9 +57,7 @@
         <div class="titlebar">
             <ul class="titlebar__title">
             {% block titlebar_title %}
-                <li>
-                    <a href="{% url 'zone_management' zone_id=zone_id %}">{{ zone.name }}</a> > Test Data Export
-                </li>
+                <li>TODO(dylanjbarth) fix up the breadcrumb type things that go here</li>
             {% endblock titlebar_title %}
             </ul>
         </div>

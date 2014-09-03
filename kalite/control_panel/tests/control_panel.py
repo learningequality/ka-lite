@@ -122,7 +122,8 @@ class CSVExportTests(FacilityMixins,
     def setUp(self):
         self.setup_fake_device()
         self.facility = self.create_facility()
-        self.base_url = self.reverse("zone_data_export", kwargs={"zone_id": None})
+        #TODO(dylanjbarth) these are going to break! 
+        self.base_url = "%s%s" % (self.reverse("zone_data_export"), "?zone_id=None")
 
         self.group = self.create_group(name='group1', facility=self.facility)
         self.empty_group = self.create_group(name='empty_group', facility=self.facility)

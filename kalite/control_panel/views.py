@@ -155,74 +155,98 @@ def zone_management(request, zone_id="None"):
 
 @require_authorized_admin
 @render_to("control_panel/data_export.html")
-def zone_data_export(request, zone_id=None):
-    # Normal page load if the GET request has no data
-    context = control_panel_context(request, zone_id=zone_id)
-    # check as explicitly as possible whether or not the form has been submitted 
-    if not request.GET or not(request.GET.get("facility_id") and request.GET.get("group_id")):
-        return context
-    # Form submitted 
+def data_export(request):
+
+    org_id = request.GET.get("org_id", "")
+    zone_id = request.GET.get("zone_id", "")
+    facility_id = request.GET.get("facility_id", "")
+    group_id = request.GET.get("group_id", "")
+
+    if settings.CENTRAL_SERVER:
+        all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
+        if zone_id and not org_id:
+            org_id = Zone.objects.get(id=zone_id).get_org().id
+        
     else:
-        # Get the params 
-        facility_id = request.GET.get("facility_id")
-        group_id = request.GET.get("group_id")
+        all_zones_url = ""
 
-        # If we error, pass this to the JS to reset the form nicely
-        context.update({
-            "facility_id": facility_id,
-            "group_id": group_id,
-        })
+    context = {
+        "is_central": settings.CENTRAL_SERVER,
+        "org_id": org_id,
+        "zone_id": zone_id,
+        "facility_id": facility_id,
+        "group_id": group_id,
+        "all_zones_url": all_zones_url,
+    }
 
-        ## CSV File Specification
-        # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
+    return context
+    # Normal page load if the GET request has no data
+    # context = control_panel_context(request, zone_id=zone_id)
+    # # check as explicitly as possible whether or not the form has been submitted 
+    # if not request.GET or not(request.GET.get("facility_id") and request.GET.get("group_id")):
+    #     return context
+    # # Form submitted 
+    # else:
+    #     # Get the params 
+    #     facility_id = request.GET.get("facility_id")
+    #     group_id = request.GET.get("group_id")
+
+    #     # If we error, pass this to the JS to reset the form nicely
+    #     context.update({
+    #         "facility_id": facility_id,
+    #         "group_id": group_id,
+    #     })
+
+    #     ## CSV File Specification
+    #     # CSV Cols Facility Name | Facility ID* | Group Name | Group ID | Student User ID* | Test ID | Num correct | Total number completed
         
-        ## Fetch data for CSV
-        # Facilities 
-        if facility_id == 'all':
-            # TODO(dylan): can this ever break? Will an admin always have at least one facility in a zone?
-            facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
-        else:   
-            facilities = Facility.objects.filter(id=facility_id)
+    #     ## Fetch data for CSV
+    #     # Facilities 
+    #     if facility_id == 'all':
+    #         # TODO(dylan): can this ever break? Will an admin always have at least one facility in a zone?
+    #         facilities = Facility.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+    #     else:   
+    #         facilities = Facility.objects.filter(id=facility_id)
 
-        # Facility Users 
-        if group_id == 'all': # get all students at the facility
-            facility_ids = [facility.id for facility in facilities]
-            facility_users = FacilityUser.objects.filter(facility__id__in=facility_ids)
-        else: # get the students for the specific group
-            facility_users = FacilityUser.objects.filter(group__id=group_id)
+    #     # Facility Users 
+    #     if group_id == 'all': # get all students at the facility
+    #         facility_ids = [facility.id for facility in facilities]
+    #         facility_users = FacilityUser.objects.filter(facility__id__in=facility_ids)
+    #     else: # get the students for the specific group
+    #         facility_users = FacilityUser.objects.filter(group__id=group_id)
         
-        ## A bit of error checking 
-        if len(facility_users) == 0:
-            messages.error(request, _("No students exist for this facility and group combination."))
-            return context 
+    #     ## A bit of error checking 
+    #     if len(facility_users) == 0:
+    #         messages.error(request, _("No students exist for this facility and group combination."))
+    #         return context 
 
-        # TestLogs
-        user_ids = [u.id for u in facility_users]
-        test_logs = TestLog.objects.filter(user__id__in=user_ids)
+    #     # TestLogs
+    #     user_ids = [u.id for u in facility_users]
+    #     test_logs = TestLog.objects.filter(user__id__in=user_ids)
 
-        if len(test_logs) == 0:
-            messages.error(request, _("No test logs exist for these students."))
-            return context 
+    #     if len(test_logs) == 0:
+    #         messages.error(request, _("No test logs exist for these students."))
+    #         return context 
 
-        ## Build CSV 
-        # Nice filename for Sarojini
-        filename = 'f_all__' if facility_id == 'all' else 'f_%s__' % facilities[0].name
-        filename += 'g_all__' if group_id == 'all' else 'g_%s__' % facility_users[0].group.name
-        filename += '%s' % datetime.datetime.today().strftime("%Y-%m-%d")
-        csv_response = HttpResponse(content_type="text/csv")
-        csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
+    #     ## Build CSV 
+    #     # Nice filename for Sarojini
+    #     filename = 'f_all__' if facility_id == 'all' else 'f_%s__' % facilities[0].name
+    #     filename += 'g_all__' if group_id == 'all' else 'g_%s__' % facility_users[0].group.name
+    #     filename += '%s' % datetime.datetime.today().strftime("%Y-%m-%d")
+    #     csv_response = HttpResponse(content_type="text/csv")
+    #     csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
 
-        # CSV header
-        writer = csv.writer(csv_response)
-        writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"])
+    #     # CSV header
+    #     writer = csv.writer(csv_response)
+    #     writer.writerow(["Facility Name", "Facility ID", "Group Name", "Group ID", "Student User ID", "Test ID", "Num correct", "Total number completed"])
         
-        # CSV Body
-        for t in test_logs:
-            group_name = t.user.group.name if hasattr(t.user.group, "name") else UNGROUPED
-            group_id = t.user.group.id if hasattr(t.user.group, "id") else "None"
-            writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
+    #     # CSV Body
+    #     for t in test_logs:
+    #         group_name = t.user.group.name if hasattr(t.user.group, "name") else UNGROUPED
+    #         group_id = t.user.group.id if hasattr(t.user.group, "id") else "None"
+    #         writer.writerow([t.user.facility.name, t.user.facility.id, group_name, group_id, t.user.id, t.test, t.total_correct, t.total_number])
 
-        return csv_response
+    #     return csv_response
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
