@@ -67,22 +67,32 @@ var DataExportView = Backbone.View.extend({
         ev.preventDefault();
 
         // Get the final ids
-        var facility_id = this.model.get("facility_id") ? this.model.get("facility_id") : "all";
-        var group_id = this.model.get("group_id") ? this.model.get("group_id") : "all";
+        var zone_id = this.model.get("zone_id");
+        var facility_id = this.model.get("facility_id");
+        var group_id = this.model.get("group_id");
+
+        // Get resource type
+        var resource_id = $("#resource-id").find(":selected").attr("data-resource-id");
+
+        console.log("Export Data clicked! Exporting:");
+        console.log("   Zone ID: " + zone_id);
+        console.log("   Facility ID: " + facility_id);
+        console.log("   Group ID: " + group_id);
+        console.log("   Resource ID: " + resource_id);
 
         // Format them for the form 
-        var facility_input = sprintf("<input type='hidden' value='%(facility_id)s' name='facility_id'>", {"facility_id": facility_id});
-        var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
+        // var facility_input = sprintf("<input type='hidden' value='%(facility_id)s' name='facility_id'>", {"facility_id": facility_id});
+        // var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
 
-        // Append the data we care about, and submit it
-        // TODO(dylan) make an API endpoint, this is lame 
-        var form = $('#data-export-form');
-        form
-            .append(facility_input)
-            .append(group_input)
-            .attr("action", document.URL)
-            .append("<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />") 
-            .submit();
+        // // Append the data we care about, and submit it
+        // // TODO(dylan) make an API endpoint, this is lame 
+        // var form = $('#data-export-form');
+        // form
+        //     .append(facility_input)
+        //     .append(group_input)
+        //     .attr("action", document.URL)
+        //     .append("<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />") 
+        //     .submit();
     }
 });
 
@@ -135,8 +145,8 @@ var ZoneSelectView = Backbone.View.extend({
         var zone_id = $("#" + ev.target.id).find(":selected").attr("data-zone-id");
 
         this.model.set({ 
-            facility_id: null,
-            group_id: null,
+            facility_id: undefined,
+            group_id: undefined,
             zone_id: zone_id
         });
     }
@@ -153,17 +163,17 @@ var FacilitySelectView = Backbone.View.extend({
         
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.facility_list, 'sync', this.render);
-        this.listenTo(this.model, 'change:facility_id', this.render);
+        this.listenTo(this.model, 'change', this.render);
 
         // on central, facilities depend on the zone selected
         // on distributed, zone is fixed 
         if (this.model.attributes.is_central) {
             // Listen for any changes on the zone model, when it happens, re-fetch self
             this.listenTo(this.model, 'change:zone_id', this.fetch_by_zone);
-        } else {
-            // Fetch collection, by fixed zone 
-            this.facility_list.fetch_by_zone();            
         }
+        
+        // Fetch collection, by fixed zone 
+        this.fetch_by_zone();
 
         // Render
         this.render();
@@ -191,7 +201,7 @@ var FacilitySelectView = Backbone.View.extend({
         // Update state model 
         var facility_id = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
         this.model.set({ 
-            group_id: null ,
+            group_id: undefined ,
             facility_id: facility_id
         });
     },
@@ -218,7 +228,7 @@ var GroupSelectView = Backbone.View.extend({
 
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.group_list, 'sync', this.render);
-        this.listenTo(this.model, 'change:group_id', this.render);       
+        this.listenTo(this.model, 'change', this.render);       
 
         // on central, groups depend on facilities which depend on the zone selected
         // on distributed, zone is fixed, so groups just depend on facilities 
