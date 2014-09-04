@@ -166,7 +166,6 @@ def data_export(request):
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id and not org_id:
             org_id = Zone.objects.get(id=zone_id).get_org().id
-        
     else:
         all_zones_url = ""
 

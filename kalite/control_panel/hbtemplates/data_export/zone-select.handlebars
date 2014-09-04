@@ -1,9 +1,9 @@
 <div class="form-group">
-    <label class="sr-only" for="zone-name">Zone</label>
+    <label for="zone-name">Zone</label>
     <select class="form-control" id="zone-name">
         <option>All</option>{{!-- Default to all --}} 
         {{#each zones}}
-            <option data-facility-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
+            <option data-zone-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
         {{/each}}
     </select>
 </div>

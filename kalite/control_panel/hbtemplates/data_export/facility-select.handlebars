@@ -1,6 +1,6 @@
 <div class="form-group">
-    <label class="sr-only" for="facility-name">Facility</label>
-    <select class="form-control" id="facility-name">
+    <label for="facility-name">Facility</label>
+    <select class="form-control" id="facility-name" {{#if is_disabled}}disabled{{/if}}>
         <option>All</option>{{!-- Default to all --}} 
         {{#each facilities}}
             <option data-facility-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>

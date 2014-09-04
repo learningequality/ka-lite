@@ -20,12 +20,9 @@ class FacilityResource(ModelResource):
         else:
             facility_list = Facility.objects.all()
 
-        kwargs.update({"object_list": facility_list})
-
         # call super to trigger auth
-        super(FacilityResource, self).obj_get_list(bundle, **kwargs)
+        return super(FacilityResource, self).authorized_read_list(facility_list, bundle)
         
-        return facility_list
 
 class GroupResource(ModelResource):
     class Meta:
@@ -41,9 +38,5 @@ class GroupResource(ModelResource):
         else:
             group_list = FacilityGroup.objects.all()
 
-        kwargs.update({"object_list": group_list})
-
         # call super to trigger auth
-        super(GroupResource, self).obj_get_list(bundle, **kwargs)
-
-        return group_list
+        return super(GroupResource, self).authorized_read_list(group_list, bundle)
