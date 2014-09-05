@@ -85,7 +85,7 @@ class FacilityUserResource(ParentFacilityUserResource):
 
     class Meta:
         queryset = FacilityUser.objects.all()
-        resource_name = 'facility_user'
+        resource_name = 'facility_user_csv'
         authorization = ObjectAdminAuthorization()
         excludes = ['password', 'signature', 'deleted', 'signed_version', 'counter']
         serializer = CSVSerializer()
@@ -100,17 +100,18 @@ class TestLogResource(ParentFacilityUserResource):
 
     class Meta:
         queryset = TestLog.objects.all()
-        resource_name = 'test_log'
+        resource_name = 'test_log_csv'
         authorization = ObjectAdminAuthorization()
         excludes = []
-        serializer = Serializer()
-        # serializer = CSVSerializer()
+        serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering based on zone, facility, group
         facility_user_list = self._get_facility_user_list(bundle)
         facility_user_ids = [facility_user.id for facility_user in facility_user_list]
         test_logs = TestLog.objects.filter(user__id__in=facility_user_ids)
+        if not test_logs:
+            raise NotFound("No test logs found.")
         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
 
 
@@ -118,17 +119,18 @@ class AttemptLogResource(ParentFacilityUserResource):
 
     class Meta:
         queryset = AttemptLog.objects.all()
-        resource_name = 'attempt_log'
+        resource_name = 'attempt_log_csv'
         authorization = ObjectAdminAuthorization()
         excludes = []
-        # serializer = CSVSerializer()
-        serializer = Serializer()
+        serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering based on zone, facility, group
         facility_user_list = self._get_facility_user_list(bundle)
         facility_user_ids = [facility_user.id for facility_user in facility_user_list]
         attempt_logs = AttemptLog.objects.filter(user__id__in=facility_user_ids)
+        if not attempt_logs:
+            raise NotFound("No attempt logs found.")
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
 
 

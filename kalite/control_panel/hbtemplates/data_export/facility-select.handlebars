@@ -1,9 +1,11 @@
 <div class="form-group">
-    <label for="facility-name">Facility</label>
-    <select class="form-control" id="facility-name" {{#if is_disabled}}disabled{{/if}}>
-        <option>All</option>{{!-- Default to all --}} 
-        {{#each facilities}}
-            <option data-facility-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
-        {{/each}}
-    </select>
+    <label for="facility-name" class="col-xs-2">Facility</label>
+    <div class="col-xs-8">
+        <select class="form-control" id="facility-name" {{#if is_disabled}}disabled{{/if}}>
+            <option>All</option>{{!-- Default to all --}} 
+            {{#each facilities}}
+                <option data-facility-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
+            {{/each}}
+        </select>
+    </div>
 </div>

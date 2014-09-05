@@ -1,22 +1,29 @@
-<form class="form" id="data-export-form" method="GET">
+<form class="form-horizontal" role="form" id="data-export-form" method="GET">
     <div id="student-select-container">{{!insert student select template here}}</div>
     <div class="form-group">
-        <label for="resource-name">Resource</label>
-        <select class="form-control" id="resource-id">
-            <option data-resource-id="facility_user">Facility User Logs</option>
-            <option data-resource-id="test_log">Test Logs</option>
-            <option data-resource-id="attempt_log">Attempt Logs</option>
-        </select>
+        <label for="resource-name" class="col-xs-2">Resource</label>
+        <div class="col-xs-8">
+            <select class="form-control" id="resource-id">
+                <option data-resource-id="facility_user">Facility User Logs</option>
+                <option data-resource-id="test_log">Test Logs</option>
+                <option data-resource-id="attempt_log">Attempt Logs</option>
+            </select>
+        </div>
     </div>
     <div class="form-group">
-        <label for="data-type">Data Type</label>
-        <select class="form-control" id="test-name" disabled>
-            <option>CSV</option>
-        </select>
+        <label for="data-type" class="col-xs-2">Data Type</label>
+        <div class="col-xs-8">
+            <select class="form-control" id="test-name" disabled>
+                <option>CSV</option>
+            </select>
+        </div>
     </div>
     <div class="form-group">
-        <button id="export-button" type="submit" class="btn btn-success">
-            Export
-        </button>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+            <button id="export-button" class="btn btn-success">
+                Export
+            </button>
+        </div>
     </div>
 </form>

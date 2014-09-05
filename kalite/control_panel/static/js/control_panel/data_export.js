@@ -49,6 +49,10 @@ var DataExportView = Backbone.View.extend({
         this.render();
     },
 
+    events: {
+        "click #export-button": "export_data"
+    },  
+
     render: function() {
         // render container     
         this.$el.html(this.template());
@@ -59,43 +63,60 @@ var DataExportView = Backbone.View.extend({
         this.$('#student-select-container').append(this.group_select_view.$el);
     },
 
-    events: {
-        "click #export-button": "exportData"
+    resource_id: function() {
+        // Returns the currently selected resource id
+        return $("#resource-id").find(":selected").attr("data-resource-id");
     },
 
-    exportData: function(ev) {
+    resource_endpoint: function() {
+        // Return the API url endpoint for the current resource id
+        var resource_id = this.resource_id();
+        switch  (resource_id) {
+            case "facility_user":
+                return FACILITY_USER_CSV_URL;
+            case "test_log":
+                return TEST_LOG_CSV_URL;
+            case "attempt_log":
+                return ATTEMPT_LOG_CSV_URL;
+        }
+    },
+
+    export_data: function(ev) {
         ev.preventDefault();
 
-        // Get the final ids
+        // Update export link based on currently selected paramters 
         var zone_id = this.model.get("zone_id");
         var facility_id = this.model.get("facility_id");
         var group_id = this.model.get("group_id");
+        var resource_endpoint = this.resource_endpoint();
 
-        // Get resource type
-        var resource_id = $("#resource-id").find(":selected").attr("data-resource-id");
-
-        console.log("Export Data clicked! Exporting:");
-        console.log("   Zone ID: " + zone_id);
-        console.log("   Facility ID: " + facility_id);
-        console.log("   Group ID: " + group_id);
-        console.log("   Resource ID: " + resource_id);
-        // If no zone_id, all is selected, so compile a list of zone ids to pass to endpoint
+        // If no zone_id, all is selected, so compile a comma seperated string
+        // of zone ids to pass to endpoint
         if (!zone_id) {
-            console.log("Zone ID not specified, requesting all");
-            var zone_id_list = []
+            var zone_ids_string = ""
             var zone_ids = $("#zone-name").find("option");
             for (var i = 0; i < zone_ids.length; i++) {
                 var zone_id = $(zone_ids[i]).attr("data-zone-id");
                 if (zone_id) {
-                    zone_id_list.push(zone_id)
+                    zone_ids_string += "," + zone_id;
                 }
+            }
+        }
 
-            };
-            console.log(zone_id_list);
-        };
+        var export_data_url = this.resource_endpoint();
+        if (group_id) {
+            export_data_url += "?group_id=" + group_id;
+        } else if (facility_id) {
+            export_data_url += "?facility_id=" + facility_id;
+        } else if (zone_id) {
+            export_data_url += "?zone_id=" + zone_id;
+        } else if (zone_ids_string) {
+            export_data_url += "?zone_ids=" + zone_ids_string;
+        }
 
-        // Based on resource type, pass them to an endpoint
-        // TODO(dylanjbarth): actually maybe better, when they change the select option, update the link to match the endpoint
+        export_data_url += "&format=csv"
+
+        window.location = export_data_url;
     }
 });
 

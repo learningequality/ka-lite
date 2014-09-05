@@ -1,13 +1,15 @@
 <div class="form-group">
-    <label for="group-name">Group</label>
-    <select class="form-control" id="group-name" {{#if is_disabled}}disabled{{/if}}>
-        {{#if groups }}
-            <option>All</option>
-            {{#each groups}}
-                <option data-group-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
-            {{/each}}
-        {{else}}
-            <option disabled>All</option>
-        {{/if}}
-    </select>
+    <label for="group-name" class="col-xs-2">Group</label>
+    <div class="col-xs-8">
+        <select class="form-control" id="group-name" {{#if is_disabled}}disabled{{/if}}>
+            {{#if groups }}
+                <option>All</option>
+                {{#each groups}}
+                    <option data-group-id="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
+                {{/each}}
+            {{else}}
+                <option disabled>All</option>
+            {{/if}}
+        </select>
+    </div>
 </div>

@@ -12,6 +12,9 @@
         var ALL_ZONES_URL = "{{ all_zones_url }}";
         var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var FACILITY_USER_CSV_URL = "{% url 'api_dispatch_list' resource_name='facility_user_csv' %}";
+        var TEST_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='test_log_csv' %}";
+        var ATTEMPT_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='attempt_log_csv' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
 
@@ -34,12 +37,11 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .form-group {
-            float: left;
-            padding-right: 10px;
-        }
         select:disabled {
             color: graytext;
+        }
+        label {
+            text-align: right;
         }
     </style>
 {% endblock headcss %}
@@ -56,7 +58,7 @@
 
 {% block control_panel_content %}
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-12">
         <div id="data-export-container">
             {# Backbone inserts stuff here #}
         </div>
