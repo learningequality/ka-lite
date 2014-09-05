@@ -140,7 +140,7 @@
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <span class="motivational-feature">
-                    <a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
+                    <a href="{% url 'account_management' %}" id="nav_progress" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
                 </span>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
@@ -161,7 +161,7 @@
                 <a href="{% url 'current_unit' %}" id="nav_current_unit" class="admin-only teacher-only {% block current_unit_active %}{% endblock current_unit_active %}" title="{% trans 'See list of current units for the facilities.' %}">{% trans "Units" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'assign_playlists' %}" id="nav_manage_zone" class="admin-only teacher-only" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a>
+                <a href="{% url 'assign_playlists' %}" id="nav_playlists" class="admin-only teacher-only {% block assign_playlists_active %}{% endblock assign_playlists_active %}" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a>
@@ -173,7 +173,7 @@
                 <a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a>
+                <a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_users" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url 'zone_redirect' %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a>
