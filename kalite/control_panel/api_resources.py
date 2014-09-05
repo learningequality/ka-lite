@@ -1,7 +1,6 @@
 from annoying.functions import get_object_or_None
 from tastypie.exceptions import NotFound, BadRequest
 from tastypie.resources import Resource, ModelResource
-from tastypie.serializers import Serializer
 
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog

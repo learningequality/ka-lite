@@ -37,7 +37,7 @@
             {% block titlebar_title %}
                 {% comment "Draw the top navigation bar" %}{% endcomment %}
                 {% if org %}
-                <li><a href="{% url 'org_management' %}"> {{ org.name }}</a> > </li>
+                <li><a href="{% url 'org_management' %}">{{ org.name }}</a></li>
                 {% endif %}
 
                 <li>
