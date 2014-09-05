@@ -51,8 +51,8 @@ class FacilityGroupResource(ModelResource):
 class ParentFacilityUserResource(ModelResource):
     """A class with helper methods for getting facility users for data export requests"""
 
-    def _get_facility_user_list(self, bundle):
-        """Return a list of facility users specified by the zone id(s), facility_id, or group_id"""
+    def _get_facility_users(self, bundle):
+        """Return a list of facility users and their ids specified by the zone id(s), facility_id, or group_id"""
         zone_id = bundle.request.GET.get('zone_id')
         zone_ids = bundle.request.GET.get('zone_ids')
         facility_id = bundle.request.GET.get('facility_id')
@@ -60,26 +60,28 @@ class ParentFacilityUserResource(ModelResource):
 
         # They must have a zone_id, and may have a facility_id and group_id.
         # Try to filter from most specific, to least 
-        facility_user_list = []
+        facility_user_objects = []
         if group_id:
-            facility_user_list = FacilityUser.objects.filter(group__id=group_id)
+            facility_user_objects = FacilityUser.objects.filter(group__id=group_id)
         elif facility_id:
-            facility_user_list = FacilityUser.objects.filter(facility__id=facility_id)
+            facility_user_objects = FacilityUser.objects.filter(facility__id=facility_id)
         elif zone_id:
-            facility_user_list = FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+            facility_user_objects = FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
         elif zone_ids:
             # Assume 'all' selected for zone, and a list of zone ids has been passed
             zone_ids = zone_ids.split(",")
-            facility_user_list = []
+            facility_user_objects = []
             for zone_id in zone_ids:
-                facility_user_list += FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+                facility_user_objects += FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
         else:
             raise BadRequest("Invalid request.")
 
-        if not facility_user_list:
+        if not facility_user_objects:
             raise NotFound("Student not found.")
 
-        return facility_user_list
+        facility_user_ids = [facility_user.id for facility_user in facility_user_objects]
+        return facility_user_ids, facility_user_objects
+
 
 class FacilityUserResource(ParentFacilityUserResource):
 
@@ -87,13 +89,20 @@ class FacilityUserResource(ParentFacilityUserResource):
         queryset = FacilityUser.objects.all()
         resource_name = 'facility_user_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = ['password', 'signature', 'deleted', 'signed_version', 'counter']
+        excludes = ['password', 'signature', 'deleted', 'signed_version', 'counter', 'notes']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
-        facility_user_list = self._get_facility_user_list(bundle)
-        # call super to trigger auth
-        return super(FacilityUserResource, self).authorized_read_list(facility_user_list, bundle)
+        facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
+        return super(FacilityUserResource, self).authorized_read_list(facility_user_objects, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        for bundle in to_be_serialized["objects"]:
+            user_facility = FacilityUser.objects.get(id=bundle.data["id"]).facility
+            bundle.data["facility_name"] = user_facility.name
+            bundle.data["facility_id"] = user_facility.id
+
+        return to_be_serialized
 
 
 class TestLogResource(ParentFacilityUserResource):
@@ -106,10 +115,8 @@ class TestLogResource(ParentFacilityUserResource):
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
-        # Allow filtering based on zone, facility, group
-        facility_user_list = self._get_facility_user_list(bundle)
-        facility_user_ids = [facility_user.id for facility_user in facility_user_list]
-        test_logs = TestLog.objects.filter(user__id__in=facility_user_ids)
+        facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
+        test_logs = TestLog.objects.filter(user__id__in=self.facility_user_ids)
         if not test_logs:
             raise NotFound("No test logs found.")
         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
@@ -125,10 +132,8 @@ class AttemptLogResource(ParentFacilityUserResource):
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
-        # Allow filtering based on zone, facility, group
-        facility_user_list = self._get_facility_user_list(bundle)
-        facility_user_ids = [facility_user.id for facility_user in facility_user_list]
-        attempt_logs = AttemptLog.objects.filter(user__id__in=facility_user_ids)
+        facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
+        attempt_logs = AttemptLog.objects.filter(user__id__in=self.facility_user_ids)
         if not attempt_logs:
             raise NotFound("No attempt logs found.")
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
