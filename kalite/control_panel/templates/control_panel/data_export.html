@@ -50,7 +50,19 @@
         <div class="titlebar">
             <ul class="titlebar__title">
             {% block titlebar_title %}
-                <li>TODO(dylanjbarth) fix up the breadcrumb type things that go here</li>
+                {% if org %}
+                    <li>
+                        <a href="{% url 'org_management' %}"> {{ org.name }}</a> > 
+                    </li>
+                {% endif %}
+                {% if zone %}
+                    <li>
+                        <a href="{% url 'zone_management' zone_id=zone.id %}"> {{ zone.name }}</a> > 
+                    </li>
+                {% endif %}
+                <li>
+                    Data Export
+                </li>
             {% endblock titlebar_title %}
             </ul>
         </div>

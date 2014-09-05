@@ -35,6 +35,10 @@ from kalite.topic_tools import get_node_cache
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
 
+# TODO(dylanjbarth): this looks awful
+if settings.CENTRAL_SERVER:
+    from central.models import Organization
+
 
 UNGROUPED = "Ungrouped"
 
@@ -157,17 +161,30 @@ def zone_management(request, zone_id="None"):
 @render_to("control_panel/data_export.html")
 def data_export(request):
 
-    org_id = request.GET.get("org_id", "")
     zone_id = request.GET.get("zone_id", "")
     facility_id = request.GET.get("facility_id", "")
     group_id = request.GET.get("group_id", "")
 
+    if zone_id:
+        zone = Zone.objects.get(id=zone_id)
+    else:
+        zone = ""
+
     if settings.CENTRAL_SERVER:
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
-        if zone_id and not org_id:
-            org_id = Zone.objects.get(id=zone_id).get_org().id
+        if zone_id:
+            org = Zone.objects.get(id=zone_id).get_org()
+            org_id = org.id
+        else:
+            org_id = request.GET.get("org_id", "")
+            if not org_id:
+                return HttpResponseNotFound()
+            else:
+                org = Organization.objects.get(id=org_id)
     else:
         all_zones_url = ""
+        org = ""
+        org_id = ""
 
     context = {
         "is_central": settings.CENTRAL_SERVER,
@@ -176,6 +193,8 @@ def data_export(request):
         "facility_id": facility_id,
         "group_id": group_id,
         "all_zones_url": all_zones_url,
+        "org": org,
+        "zone": zone,
     }
 
     return context
