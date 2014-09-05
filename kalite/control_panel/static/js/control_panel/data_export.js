@@ -79,20 +79,23 @@ var DataExportView = Backbone.View.extend({
         console.log("   Facility ID: " + facility_id);
         console.log("   Group ID: " + group_id);
         console.log("   Resource ID: " + resource_id);
+        // If no zone_id, all is selected, so compile a list of zone ids to pass to endpoint
+        if (!zone_id) {
+            console.log("Zone ID not specified, requesting all");
+            var zone_id_list = []
+            var zone_ids = $("#zone-name").find("option");
+            for (var i = 0; i < zone_ids.length; i++) {
+                var zone_id = $(zone_ids[i]).attr("data-zone-id");
+                if (zone_id) {
+                    zone_id_list.push(zone_id)
+                }
 
-        // Format them for the form 
-        // var facility_input = sprintf("<input type='hidden' value='%(facility_id)s' name='facility_id'>", {"facility_id": facility_id});
-        // var group_input = sprintf("<input type='hidden' value='%(group_id)s' name='group_id'>", {"group_id": group_id});
+            };
+            console.log(zone_id_list);
+        };
 
-        // // Append the data we care about, and submit it
-        // // TODO(dylan) make an API endpoint, this is lame 
-        // var form = $('#data-export-form');
-        // form
-        //     .append(facility_input)
-        //     .append(group_input)
-        //     .attr("action", document.URL)
-        //     .append("<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />") 
-        //     .submit();
+        // Based on resource type, pass them to an endpoint
+        // TODO(dylanjbarth): actually maybe better, when they change the select option, update the link to match the endpoint
     }
 });
 
