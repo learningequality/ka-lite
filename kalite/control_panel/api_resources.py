@@ -114,7 +114,7 @@ class TestLogResource(ParentFacilityUserResource):
         queryset = TestLog.objects.all()
         resource_name = 'test_log_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = []
+        excludes = ['counter', 'signature', 'deleted', 'signed_version', 'index']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
@@ -131,7 +131,7 @@ class AttemptLogResource(ParentFacilityUserResource):
         queryset = AttemptLog.objects.all()
         resource_name = 'attempt_log_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = []
+        excludes = ['signed_version', 'language', 'deleted', 'response_log', 'answer_given', 'signature', 'version', 'timestamp']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
