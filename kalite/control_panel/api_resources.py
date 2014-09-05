@@ -73,11 +73,14 @@ class ParentFacilityUserResource(ModelResource):
             facility_user_objects = []
             for zone_id in zone_ids:
                 facility_user_objects += FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
-        else:
-            raise BadRequest("Invalid request.")
+        # TODO(dylanjbarth) errors commented out so we can pass a blank CSV if not found.
+        # in future, should handle these more gracefully, with a redirect, an AJAX warning,
+        # and reset the fields. see: https://gist.github.com/1116962/58b7db0364de837ce229cdd8ef524bc9ff6da19f
+        # else:
+        #     raise BadRequest("Invalid request.")
 
-        if not facility_user_objects:
-            raise NotFound("Student not found.")
+        # if not facility_user_objects:
+        #     raise NotFound("Student not found.")
 
         facility_user_ids = [facility_user.id for facility_user in facility_user_objects]
         return facility_user_ids, facility_user_objects
@@ -116,9 +119,9 @@ class TestLogResource(ParentFacilityUserResource):
 
     def obj_get_list(self, bundle, **kwargs):
         facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
-        test_logs = TestLog.objects.filter(user__id__in=self.facility_user_ids)
-        if not test_logs:
-            raise NotFound("No test logs found.")
+        test_logs = TestLog.objects.filter(user__id__in=facility_user_ids)
+        # if not test_logs:
+        #     raise NotFound("No test logs found.")
         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
 
 
@@ -133,9 +136,9 @@ class AttemptLogResource(ParentFacilityUserResource):
 
     def obj_get_list(self, bundle, **kwargs):
         facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
-        attempt_logs = AttemptLog.objects.filter(user__id__in=self.facility_user_ids)
-        if not attempt_logs:
-            raise NotFound("No attempt logs found.")
+        attempt_logs = AttemptLog.objects.filter(user__id__in=facility_user_ids)
+        # if not attempt_logs:
+        #     raise NotFound("No attempt logs found.")
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
 
 

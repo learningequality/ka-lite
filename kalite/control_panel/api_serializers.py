@@ -1,6 +1,5 @@
 import csv 
 import StringIO
-from tastypie.exceptions import NotFound
 from tastypie.serializers import Serializer 
 
 
@@ -17,9 +16,13 @@ class CSVSerializer(Serializer):
         raw_data = StringIO.StringIO()
 
         objects = data.get("objects")
-
         if not objects:
-            raise NotFound("No objects provided for serialization")
+            empty_file = [""]
+            writer = csv.writer(raw_data, empty_file)
+            writer.writerow(empty_file)
+            raw_data.seek(0)
+            return raw_data.read()  
+
 
         header = objects[0].keys()
         writer = csv.writer(raw_data, header)
