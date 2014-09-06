@@ -1,4 +1,5 @@
 from annoying.functions import get_object_or_None
+from tastypie import fields
 from tastypie.exceptions import NotFound, BadRequest
 from tastypie.resources import Resource, ModelResource
 
@@ -99,21 +100,24 @@ class FacilityUserResource(ParentFacilityUserResource):
         return super(FacilityUserResource, self).authorized_read_list(facility_user_objects, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
-            user_facility = FacilityUser.objects.get(id=bundle.data["id"]).facility
-            bundle.data["facility_name"] = user_facility.name
-            bundle.data["facility_id"] = user_facility.id
+            user = FacilityUser.objects.get(id=bundle.data["id"])
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
 
         return to_be_serialized
 
 
 class TestLogResource(ParentFacilityUserResource):
 
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
+
     class Meta:
         queryset = TestLog.objects.all()
         resource_name = 'test_log_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = ['counter', 'signature', 'deleted', 'signed_version', 'index']
+        excludes = ['user', 'counter', 'signature', 'deleted', 'signed_version']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
@@ -123,14 +127,28 @@ class TestLogResource(ParentFacilityUserResource):
         #     raise NotFound("No test logs found.")
         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
 
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add username, facility name, and facility ID to responses"""
+        for bundle in to_be_serialized["objects"]:
+            user_id = bundle.data["user"].data["id"]
+            user = FacilityUser.objects.get(id=user_id)
+            bundle.data["username"] = user.username
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
+            bundle.data.pop("user")
+
+        return to_be_serialized
+
 
 class AttemptLogResource(ParentFacilityUserResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
 
     class Meta:
         queryset = AttemptLog.objects.all()
         resource_name = 'attempt_log_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = ['signed_version', 'language', 'deleted', 'response_log', 'answer_given', 'signature', 'version', 'timestamp']
+        excludes = ['user', 'signed_version', 'language', 'deleted', 'response_log', 'signature', 'version', 'counter']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
@@ -139,5 +157,17 @@ class AttemptLogResource(ParentFacilityUserResource):
         # if not attempt_logs:
         #     raise NotFound("No attempt logs found.")
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add username, facility name, and facility ID to responses"""
+        for bundle in to_be_serialized["objects"]:
+            user_id = bundle.data["user"].data["id"]
+            user = FacilityUser.objects.get(id=user_id)
+            bundle.data["username"] = user.username
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
+            bundle.data.pop("user")
+
+        return to_be_serialized
 
 
