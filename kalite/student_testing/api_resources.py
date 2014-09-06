@@ -26,6 +26,39 @@ from django.conf import settings
 
 logging = settings.LOG
 
+class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
+
+    def check_test(self, bundle):
+
+        test_id = bundle.request.GET.get("test", "")
+
+        if not self._user_is_admin(bundle) and test_id != get_exam_mode_on():
+            raise Unauthorized("Sorry, the test is not currently active.")
+
+    def create_list(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        super(UserTestObjectsOnlyAuthorization, self).create_list(object_list, bundle)
+
+    def create_detail(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        super(UserTestObjectsOnlyAuthorization, self).create_detail(object_list, bundle)
+
+    def update_list(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        super(UserTestObjectsOnlyAuthorization, self).update_list(object_list, bundle)
+
+    def update_detail(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
+
 class TestLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
@@ -37,7 +70,7 @@ class TestLogResource(ModelResource):
             "test": ('exact', ),
             "user": ('exact', ),
         }
-        authorization = UserObjectsOnlyAuthorization()
+        authorization = UserTestObjectsOnlyAuthorization()
 
 
 class TestResource(Resource):
