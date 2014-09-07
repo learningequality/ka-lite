@@ -1,0 +1,26 @@
+[
+    {
+        "user_types": "guest",
+        "slug": "login",
+        "start_url": "/securesync/login/",
+        "inputs": [],
+        "end_url": "/",
+        "page": 5
+    },
+    {
+        "user_types": "admin",
+        "slug": "home",
+        "start_url": "/",
+        "inputs": [],
+        "end_url": "/",
+        "page": 5
+    },
+    {
+        "user_types": "admin",
+        "slug": "register",
+        "start_url": "/register/?",
+        "inputs": [],
+        "end_url": "/",
+        "page": 5
+    }
+]
