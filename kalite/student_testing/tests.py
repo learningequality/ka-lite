@@ -299,6 +299,22 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         self.assertEqual(testlog.started, True)
         self.assertEqual(testlog.index, 0)
 
+        # logout the student and login a teacher to check they can access the exam.
+        self.browser_logout_user()
+        self.login_teacher_in_browser()
+        self.browse_to(self.exam_page_url)
+
+        # Start the quiz to create a test log
+
+        self.wait_for_element(By.ID, 'start-test')
+
+        self.browser.find_element_by_id("start-test").click()
+
+        testlog = TestLog.objects.get(user=self.client.student, test=self.exam_id)
+
+        # Check that the Test Log is started.
+        self.assertEqual(testlog.started, True)
+
 
 class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 

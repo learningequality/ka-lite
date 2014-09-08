@@ -32,10 +32,6 @@ class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
 
         test_id = bundle.obj.test or bundle.request.GET.get("test", "")
 
-        logging.info(test_id)
-
-        logging.info(get_exam_mode_on())
-
         if (not self._user_is_admin(bundle)) and test_id != get_exam_mode_on():
             logging.info("Not saving")
             raise Unauthorized("Sorry, the test is not currently active.")
