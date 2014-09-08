@@ -24,13 +24,8 @@ class FacilityControlTests(FacilityMixins,
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
 
         # assert that our facility exists
-        facility_row = self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
-        facility_delete_link = facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]/span')
-        facility_delete_link.click()
-        alert = self.browser.switch_to_alert()
-        alert.send_keys("should-be-deleted")
-        alert.accept()
-        time.sleep(5)
+        selector = 'tr[facility-id="%s"] > td > a.facility-delete-link > span' % self.fac.id
+        self.browser_click_and_accept(selector, text=facility_name)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
@@ -75,14 +70,8 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
-        confirm_group_delete_button = self.browser.find_element_by_xpath('//button[contains(@class, "delete-group")]')
-        confirm_group_delete_button.click()
-
-        # there should be a confirm popup
-        alert = self.browser.switch_to_alert()
-        alert.accept()
-
-        time.sleep(5)
+        confirm_group_selector = ".delete-group"
+        self.browser_click_and_accept(confirm_group_selector)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
@@ -90,10 +79,11 @@ class GroupControlTests(FacilityMixins,
     def test_teachers_have_no_group_delete_button(self):
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.facility)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=self.facility.name)
 
         self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
