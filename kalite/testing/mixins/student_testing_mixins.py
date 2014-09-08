@@ -1,4 +1,4 @@
-from kalite.student_testing.models import TestLog
+from kalite.student_testing.models import TestLog, Test
 
 
 class CreateTestLogMixin(object):
@@ -7,17 +7,16 @@ class CreateTestLogMixin(object):
         'index': '0',
         'complete': True,
         'started': True,
-        'total_number': 4,
-        'total_correct': 2,
-    }
+ }
     @classmethod
     def create_test_log(cls, **kwargs):
         fields = CreateTestLogMixin.DEFAULTS.copy()
+        test_object = Test.all()[kwargs.get("test", fields["test"])]
+        total_questions = test_object.total_questions
         fields['user'] = kwargs.get("user")
         # allow specification of totals and total correct, otherwise use default
-        fields['total_number'] = kwargs.get("total_number", fields['total_number'])
-        fields['total_correct'] = kwargs.get("total_correct", fields["total_correct"])
-
+        fields['total_number'] = kwargs.get("total_number", total_questions)
+        fields['total_correct'] = kwargs.get("total_correct", total_questions / 2)
         return TestLog.objects.create(**fields)
 
 
