@@ -70,14 +70,8 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
-        confirm_group_delete_button = self.browser.find_element_by_xpath('//button[contains(@class, "delete-group")]')
-        confirm_group_delete_button.click()
-
-        # there should be a confirm popup
-        alert = self.browser.switch_to_alert()
-        alert.accept()
-
-        time.sleep(8)
+        confirm_group_selector = ".delete-group"
+        self.browser_click_and_accept(confirm_group_selector)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
