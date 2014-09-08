@@ -3,6 +3,8 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
@@ -283,3 +285,62 @@ class BrowserTestCase(KALiteTestCase):
         self.browser_send_keys(Keys.RETURN)
         # how to wait for page change?  Will reload the same page.
         self.assertNotEqual(self.browser_wait_for_element(".errorlist"), None, "Make sure there's an error.")
+
+    def browser_accept_alert(self, sleep=1, text=None):
+        """
+        PhantomJS still have no support for modal dialogs (alert, confirm, prompt) javascript functions.
+
+        See comment on `hacks_for_phantomjs()` method above.
+        """
+        alert = None
+
+        WebDriverWait(self.browser, 5).until(EC.alert_is_present())
+        alert = self.browser.switch_to_alert()
+        try:
+            if not self.is_phantomjs:
+                alert = self.browser.switch_to_alert()
+                if text:
+                    alert.send_keys(text)
+                alert.accept()
+            # set some delay to allow browser to process / reload the page
+            if sleep:
+                time.sleep(sleep)
+        except Exception as exc:
+            logging.warn('==> Exception at browser.browser_set_alert(): %s' % exc)
+        return alert
+
+    def browser_click(self, selector):
+        """
+        PhantomJS does not support the click fully, specially on anchor tags so we use the hack script from
+        `hacks_for_phantomjs()` method above.
+
+        REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
+        """
+        browser = self.browser
+        if self.is_phantomjs:
+            # MUST: Make sure we re-inject the script hacks because the browser may have been reloaded.
+            hacks_for_phantomjs(browser)
+            js = """
+                var el = $('%s')[0];
+                window.simulateClick(el);
+            """ % selector
+            browser.execute_script("%s" % js)
+        else:
+            elem = browser.find_element_by_css_selector(selector)
+            elem.click()
+
+    def browser_click_and_accept(self, selector, sleep=1, text=None):
+        """
+        Shorthand to click on a link/button, show a modal dialog, then accept it.
+
+        Use the fixed quirks on PhantomJS/GhostDriver on modal dialogs and clicking on anchor tags.
+
+        See comment on `hacks_for_phantomjs()` method above.
+        """
+        self.browser_click(selector)
+        alert = self.browser_accept_alert(sleep=sleep, text=text)
+        return alert
+
+    @property
+    def is_phantomjs(self):
+        return isinstance(self.browser, webdriver.PhantomJS)

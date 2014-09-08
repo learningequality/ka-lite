@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _
 
+from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
@@ -99,6 +100,11 @@ class Command(BaseCommand):
         # Eliminate irrelevant settings
         for opt in BaseCommand.option_list:
             del options[opt.dest]
+
+        # In case any chronograph threads were interrupted the last time
+        # the server was stopped, clear their is_running flags to allow
+        # them to be started up again as needed.
+        Job.objects.update(is_running=False)
 
         # Parse the crappy way that runcherrypy takes args,
         #   or the host/port
