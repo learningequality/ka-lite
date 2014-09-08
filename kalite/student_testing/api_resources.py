@@ -5,7 +5,6 @@ from random import randint
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import csrf_exempt
 
 from tastypie import fields
 from tastypie.exceptions import NotFound, Unauthorized
@@ -66,7 +65,6 @@ class TestLogResource(ModelResource):
         """
         Wraps views to return custom error codes instead of generic 500's
         """
-        @csrf_exempt
         def wrapper(request, *args, **kwargs):
             try:
                 callback = getattr(self, view)
@@ -76,7 +74,7 @@ class TestLogResource(ModelResource):
                 # to change it to your needs before you return it.
                 # https://docs.djangoproject.com/en/dev/ref/request-response/
                 return response
-            except Exception, e:
+            except Exception as e:
                 # Rather than re-raising, we're going to things similar to
                 # what Django does. The difference is returning a serialized
                 # error message.
