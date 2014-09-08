@@ -266,18 +266,21 @@ def exercise(request, ds, exercise_id):
                         UNIT_EXERCISES[playlist.unit][grade] = []
                     for entry in playlist.entries:
                         if entry["entity_kind"] == "Exercise":
-                            UNIT_EXERCISES[playlist.unit][grade].append(
-                                entry["entity_id"]
-                                )
+                            UNIT_EXERCISES[playlist.unit][grade].append(entry["entity_id"])
+
             current_unit_exercises = UNIT_EXERCISES[current_unit][student_grade]
-            if (exercise["exercise_id"] in current_unit_exercises) and not ds["distributed"].turn_off_points_for_exercises:
-                # TODO-BLOCK (rtibbles): Revisit this, pending determination of quiz in every playlist.
-                exercise["basepoints"] = settings.UNIT_POINTS/(
+
+            if ds["distributed"].turn_off_points_for_exercises:
+                exercise["basepoints"] = 0
+            elif ds["distributed"].turn_off_points_for_noncurrent_unit and exercise["exercise_id"] not in current_unit_exercises:
+                exercise["basepoints"] = 0
+            else:
+                # TODO-BLOCKER(rtibbles): Revisit this, pending determination of quiz in every playlist.
+                exercise["basepoints"] = settings.UNIT_POINTS / (
                     len(current_unit_exercises)*(ds["distributed"].streak_correct_needed +
                         ds["distributed"].fixed_block_exercises +
                         ds["distributed"].quiz_repeats))
-            else:
-                exercise["basepoints"] = 0
+
     return JsonResponse(exercise)
 
 

@@ -294,7 +294,7 @@ def test_view(request, facility):
                 results_table[s].append({
                     "log": log_object,
                     "raw_score": score,
-                    "display_score": "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': log_object.total_correct, 'attempts': log_object.total_number},
+                    "display_score": "%(score)d%% (%(correct)d/%(total_questions)d)" % {'score': score, 'correct': log_object.total_correct, 'total_questions': test_object.total_questions},
                 })
             else:
                 results_table[s].append({})

@@ -207,7 +207,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
                                    exam_mode_on=exam_mode_on)
 
     def wait_for_element(self, by, elem):
-        WebDriverWait(self.browser, 2).until(ec.element_to_be_clickable((by, elem)))
+        WebDriverWait(self.browser, 5).until(ec.element_to_be_clickable((by, elem)))
 
     def get_button(self, is_on=False):
         if is_on:
