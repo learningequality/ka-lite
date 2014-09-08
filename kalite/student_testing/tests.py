@@ -438,6 +438,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         btn = self.get_button(is_next=True)
         btn.click()
 
+        self.browser_accept_alert(sleep=2)
+
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit + 1,)
         self.wait_for_element(By.CSS_SELECTOR, sel)
@@ -448,6 +450,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click previous and test that Setting was decremented
         btn = self.get_button(is_next=False)
         btn.click()
+
+        self.browser_accept_alert()
 
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
@@ -485,6 +489,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         btn = self.get_button(is_next=False)
         btn.click()
 
+        self.browser_accept_alert()
+
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit - 1,)
         self.wait_for_element(By.CSS_SELECTOR, sel)
@@ -495,6 +501,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click next and test that Setting was incremented
         btn = self.get_button(is_next=True)
         btn.click()
+
+        self.browser_accept_alert()
 
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
