@@ -90,10 +90,11 @@ class GroupControlTests(FacilityMixins,
     def test_teachers_have_no_group_delete_button(self):
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.facility)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=self.facility.name)
 
         self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
