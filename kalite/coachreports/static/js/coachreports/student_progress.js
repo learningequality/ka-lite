@@ -1,6 +1,6 @@
 // Handles the data export functionality of the control panel
 
-// Models 
+// Models
 var PlaylistProgressModel = Backbone.Model.extend();
 
 var PlaylistProgressDetailModel = Backbone.Model.extend();
@@ -24,7 +24,7 @@ var PlaylistProgressDetailCollection = Backbone.Collection.extend({
     }
 });
 
-// Views 
+// Views
 var StudentProgressContainerView = Backbone.View.extend({
     // The containing view
     template: HB.template('student_progress/student-progress-container'),
@@ -46,7 +46,7 @@ var StudentProgressContainerView = Backbone.View.extend({
         var view  = new PlaylistProgressView({
             model: playlist
         });
-        this.$("#playlists-container").append(view.render().el); 
+        this.$("#playlists-container").append(view.render().el);
     }
 });
 
@@ -60,10 +60,10 @@ var PlaylistProgressView = Backbone.View.extend({
 
     initialize: function() {
         this.details_fetched = false;
-        
+
         this.detailed_view = new PlaylistProgressDetailView({
             collection: new PlaylistProgressDetailCollection([], {
-                playlist_id: this.model.attributes.id 
+                playlist_id: this.model.attributes.id
             })
         });
 
@@ -96,7 +96,7 @@ var PlaylistProgressView = Backbone.View.extend({
             });
         }
 
-        // Show or hide details 
+        // Show or hide details
         this.$(".expand-collapse").toggleClass("glyphicon-chevron-down glyphicon-chevron-up");
         this.$(".playlist-progress-details").slideToggle();
     }
@@ -123,6 +123,6 @@ var PlaylistProgressDetailView = Backbone.View.extend({
 $(function() {
     var container_view = new StudentProgressContainerView({
         el: $("#student-progress-container"),
-        collection: new PlaylistProgressCollection
+        collection: new PlaylistProgressCollection()
     });
 });
