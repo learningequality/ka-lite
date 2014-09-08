@@ -30,34 +30,39 @@ class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
 
     def check_test(self, bundle):
 
-        test_id = bundle.request.GET.get("test", "")
+        test_id = bundle.obj.test or bundle.request.GET.get("test", "")
 
-        if not self._user_is_admin(bundle) and test_id != get_exam_mode_on():
+        logging.info(test_id)
+
+        logging.info(get_exam_mode_on())
+
+        if (not self._user_is_admin(bundle)) and test_id != get_exam_mode_on():
+            logging.info("Not saving")
             raise Unauthorized("Sorry, the test is not currently active.")
 
     def create_list(self, object_list, bundle):
 
         self.check_test(bundle)
 
-        super(UserTestObjectsOnlyAuthorization, self).create_list(object_list, bundle)
+        return super(UserTestObjectsOnlyAuthorization, self).create_list(object_list, bundle)
 
     def create_detail(self, object_list, bundle):
 
         self.check_test(bundle)
 
-        super(UserTestObjectsOnlyAuthorization, self).create_detail(object_list, bundle)
+        return super(UserTestObjectsOnlyAuthorization, self).create_detail(object_list, bundle)
 
     def update_list(self, object_list, bundle):
 
         self.check_test(bundle)
 
-        super(UserTestObjectsOnlyAuthorization, self).update_list(object_list, bundle)
+        return super(UserTestObjectsOnlyAuthorization, self).update_list(object_list, bundle)
 
     def update_detail(self, object_list, bundle):
 
         self.check_test(bundle)
 
-        super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
+        return super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
 
 class TestLogResource(ModelResource):
 

@@ -10,6 +10,7 @@ from fle_utils.config.models import Settings
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.playlist import UNITS
 from kalite.student_testing.api_resources import Test
+from kalite.student_testing.models import TestLog
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 from kalite.testing.mixins.facility_mixins import FacilityMixins
@@ -206,7 +207,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
                                    exam_mode_on=exam_mode_on)
 
     def wait_for_element(self, by, elem):
-        WebDriverWait(self.browser, 1).until(ec.element_to_be_clickable((by, elem)))
+        WebDriverWait(self.browser, 2).until(ec.element_to_be_clickable((by, elem)))
 
     def get_button(self, is_on=False):
         if is_on:
@@ -267,6 +268,36 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         self.browser_logout_user()
         self.login_student_in_browser()
         self.assertEqual(self.reverse("homepage"), self.browser.current_url)
+
+    def test_exam_mode_shut_out(self):
+
+        set_exam_mode_on(self.exam_id)
+
+        self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True)
+
+        # Start the quiz to create a test log
+
+        self.wait_for_element(By.ID, 'start-test')
+
+        self.browser.find_element_by_id("start-test").click()
+
+        # Answer one question
+
+        self.wait_for_element(By.ID, 'check-answer-button')
+
+        # Turn off the exam
+
+        set_exam_mode_on('')
+
+        self.browser.find_element_by_css_selector("input").click()
+
+        self.browser.find_element_by_id("check-answer-button").click()
+
+        testlog = TestLog.objects.get(user=self.client.student, test=self.exam_id)
+
+        # Check that the Test Log is started, but not advanced.
+        self.assertEqual(testlog.started, True)
+        self.assertEqual(testlog.index, 0)
 
 
 class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
