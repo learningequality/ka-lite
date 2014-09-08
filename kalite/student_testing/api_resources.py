@@ -5,6 +5,7 @@ from random import randint
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
 
 from tastypie import fields
 from tastypie.exceptions import NotFound, Unauthorized
@@ -33,7 +34,6 @@ class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
         test_id = bundle.obj.test or bundle.request.GET.get("test", "")
 
         if (not self._user_is_admin(bundle)) and test_id != get_exam_mode_on():
-            logging.info("Not saving")
             raise Unauthorized("Sorry, the test is not currently active.")
 
     def create_list(self, object_list, bundle):
@@ -61,6 +61,28 @@ class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
         return super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
 
 class TestLogResource(ModelResource):
+
+    def wrap_view(self, view):
+        """
+        Wraps views to return custom error codes instead of generic 500's
+        """
+        @csrf_exempt
+        def wrapper(request, *args, **kwargs):
+            try:
+                callback = getattr(self, view)
+                response = callback(request, *args, **kwargs)
+
+                # response is a HttpResponse object, so follow Django's instructions
+                # to change it to your needs before you return it.
+                # https://docs.djangoproject.com/en/dev/ref/request-response/
+                return response
+            except Exception, e:
+                # Rather than re-raising, we're going to things similar to
+                # what Django does. The difference is returning a serialized
+                # error message.
+                return self._handle_500(request, e)
+
+        return wrapper
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
 
