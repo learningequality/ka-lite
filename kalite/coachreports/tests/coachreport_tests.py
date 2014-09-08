@@ -50,13 +50,13 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[3]/td[1]').text
-        self.assertEqual(stat_max, '50%')
+        self.assertEqual(stat_max, '10%')
         stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[4]/td[1]').text
-        self.assertEqual(stat_min, '25%')
+        self.assertEqual(stat_min, '5%')
         stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[5]/td[1]').text
-        self.assertEqual(stat_avg, '37%')
+        self.assertEqual(stat_avg, '7%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[6]/td[1]').text
-        self.assertEqual(stat_std, '12%')
+        self.assertEqual(stat_std, '2%')
 
     def test_student_stats_display(self):
         """
@@ -70,11 +70,11 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
-        self.assertEqual(stat_max, '50%')
+        self.assertEqual(stat_max, '10%')
         stat_min = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
-        self.assertEqual(stat_min, '50%')
+        self.assertEqual(stat_min, '10%')
         stat_avg = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[4]').text
-        self.assertEqual(stat_avg, '50%')
+        self.assertEqual(stat_avg, '10%')
         stat_std = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[5]').text
         self.assertEqual(stat_std, '0%')
 
@@ -127,19 +127,19 @@ class PlaylistProgressTest(FacilityMixins,
         self.student = self.create_student()
         self.playlist = self.create_playlist_progress(user=self.student)
 
-    def test_student_playlist_progress(self):        
+    def test_student_playlist_progress(self):
         self.browser_login_student(username=self.student.username, password="password", facility_name=self.facility.name)
         self.browse_to(self.reverse('account_management'))
 
         # Confirm high level progress appears
         progress_bar = self.browser_wait_for_element(css_selector='.progress-bar')
         progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
-        self.assertTrue(progress_bar_success, "Playlist progress rendering incorrectly.") 
-        self.assertTrue(progress_bar, "Playlist progress rendering incorrectly.") 
+        self.assertTrue(progress_bar_success, "Playlist progress rendering incorrectly.")
+        self.assertTrue(progress_bar, "Playlist progress rendering incorrectly.")
 
         # Trigger API call
         self.browser.find_elements_by_class_name('toggle-details')[0].click()
 
-        # Confirm lower-level progress appears 
+        # Confirm lower-level progress appears
         playlist_details = self.browser_wait_for_element(css_selector='.progress-indicator-sm')
-        self.assertTrue(playlist_details, "Didn't load details") 
+        self.assertTrue(playlist_details, "Didn't load details")
