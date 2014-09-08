@@ -111,7 +111,7 @@ samp {
   font-family: monospace, monospace;
   font-size: 1em;
 }
-button,
+/*button,
 input,
 optgroup,
 select,
@@ -119,7 +119,7 @@ textarea {
   color: inherit;
   font: inherit;
   margin: 0;
-}
+}*/
 button {
   overflow: visible;
 }
@@ -897,14 +897,14 @@ body {
   color: #333333;
   background-color: #ffffff;
 }
-input,
+/*input,
 button,
 select,
 textarea {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-}
+}*/
 a {
   color: #428bca;
   text-decoration: none;

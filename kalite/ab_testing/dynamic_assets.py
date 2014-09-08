@@ -13,7 +13,7 @@ def modify_dynamic_settings(ds, request=None, user=None):
 
     user = user or request.session.get('facility_user')
 
-    if user:
+    if user and not user.is_teacher:
 
         # determine the facility and unit for the current user
         facility = user.facility
