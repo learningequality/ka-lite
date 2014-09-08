@@ -26,7 +26,61 @@ from django.conf import settings
 
 logging = settings.LOG
 
+class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
+
+    def check_test(self, bundle):
+
+        test_id = bundle.obj.test or bundle.request.GET.get("test", "")
+
+        if (not self._user_is_admin(bundle)) and test_id != get_exam_mode_on():
+            raise Unauthorized("Sorry, the test is not currently active.")
+
+    def create_list(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).create_list(object_list, bundle)
+
+    def create_detail(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).create_detail(object_list, bundle)
+
+    def update_list(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).update_list(object_list, bundle)
+
+    def update_detail(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
+
 class TestLogResource(ModelResource):
+
+    def wrap_view(self, view):
+        """
+        Wraps views to return custom error codes instead of generic 500's
+        """
+        def wrapper(request, *args, **kwargs):
+            try:
+                callback = getattr(self, view)
+                response = callback(request, *args, **kwargs)
+
+                # response is a HttpResponse object, so follow Django's instructions
+                # to change it to your needs before you return it.
+                # https://docs.djangoproject.com/en/dev/ref/request-response/
+                return response
+            except Exception as e:
+                # Rather than re-raising, we're going to things similar to
+                # what Django does. The difference is returning a serialized
+                # error message.
+                return self._handle_500(request, e)
+
+        return wrapper
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
 
@@ -37,7 +91,7 @@ class TestLogResource(ModelResource):
             "test": ('exact', ),
             "user": ('exact', ),
         }
-        authorization = UserObjectsOnlyAuthorization()
+        authorization = UserTestObjectsOnlyAuthorization()
 
 
 class TestResource(Resource):
