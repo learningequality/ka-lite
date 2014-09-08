@@ -3,6 +3,23 @@
 VERSION = "0.12.0"
 VERSION_INFO = {
 
+    "0.12.6": {
+        "release_date": "2014/09/08",
+        "git_commit": "9cf2f05",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer runningwhen server starts"],
+            "students": [],
+            "coaches": [],
+            "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],
+        },
+    },
+
     "0.12.5": {
         "release_date": "2014/08/08",
         "git_commit": "19055bb",
