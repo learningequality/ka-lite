@@ -25,8 +25,7 @@ window.CurrentUnitRowView = Backbone.View.extend({
     unit_number_clicked: function(ev) {
         ev.preventDefault();
         var selected_unit = $(ev.target).data("selected-unit");
-        this.model.set("current_unit", selected_unit);
-        this.model.save();
+        this.set_unit(selected_unit);
     },
 
     previous_button_clicked: function(ev) {
@@ -40,9 +39,17 @@ window.CurrentUnitRowView = Backbone.View.extend({
     increment_current_unit: function(amount) {
         var new_unit = this.model.get("current_unit") + amount;
         if ((new_unit >= this.model.get("min_unit")) && (new_unit <= this.model.get("max_unit"))) {
-            this.model.set("current_unit", new_unit);
-            this.model.save();
+            this.set_unit(new_unit);
         }
+    },
+
+    set_unit: function(unit) {
+        var check = confirm(gettext("Before changing units, make sure all students have finished purchasing items in the store, etc. Are you sure you want to change the current unit?"));
+        if (!check) {
+            return;
+        }
+        this.model.set("current_unit", unit);
+        this.model.save();
     }
 
 });
