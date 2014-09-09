@@ -1,3 +1,4 @@
+import json
 import time
 
 from django.conf import settings
@@ -7,13 +8,15 @@ from django.test import Client
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from tastypie.http import HttpUnauthorized
 
 from kalite.control_panel.views import UNGROUPED
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
+from kalite.testing import KALiteTestCase, KALiteClient
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
-from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
+from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin, CreateZoneMixin
 
 logging = settings.LOG
 
@@ -113,51 +116,188 @@ class GroupControlTests(FacilityMixins,
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
 
 
-#TODO(dylanjbarth) write tests for CSV exporter!!! 
-# class CSVExportTests(FacilityMixins,
-#                      StudentTestingMixins,
-#                      CreateDeviceMixin,
-#                      CreateAdminMixin,
-#                      KALiteDistributedBrowserTestCase):
+class CSVExportTestSetup(FacilityMixins,
+                     StudentProgressMixin,
+                     CreateDeviceMixin,
+                     CreateZoneMixin,
+                     CreateAdminMixin,
+                     KALiteDistributedBrowserTestCase):
+
+    def setUp(self):
+        self.setup_fake_device()
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.facility = self.create_facility()
+
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.empty_group = self.create_group(name='empty_group', facility=self.facility)
+
+        self.teacher = self.create_teacher(username="teacher", password="password", facility=self.facility)
+
+        self.stu1 = self.create_student(username='stu1', facility=self.facility, group=self.group)
+        self.stu2 = self.create_student(username='stu2', facility=self.facility)
+
+        self.test_log_1 = self.create_test_log(user=self.stu1)
+        self.test_log_2 = self.create_test_log(user=self.stu2)
+
+        self.attempt_log_1 = self.create_attempt_log(user=self.stu1)
+        self.attempt_log_2 = self.create_attempt_log(user=self.stu2)
+
+        self.admin = self.create_admin()
+
+        # base urls
+        self.distributed_data_export_url = "%s%s%s" % (self.reverse("data_export"), "?zone_id=", self.facility.get_zone().id)
+        self.api_facility_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "facility"})
+        self.api_group_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "group"})
+        self.api_facility_user_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "facility_user_csv"})
+        self.api_test_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "test_log_csv"})
+        self.api_attempt_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "attempt_log_csv"})
+
+        super(CSVExportTestSetup, self).setUp()
+
+
+class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
     
-#     def setUp(self):
-#         self.setup_fake_device()
-#         self.facility = self.create_facility()
-#         self.base_url = "%s%s" % (self.reverse("zone_data_export"), "?zone_id=None")
+    def setUp(self):
+        self.client = KALiteClient()
+        super(CSVExportAPITests, self).setUp()
 
-#         self.group = self.create_group(name='group1', facility=self.facility)
-#         self.empty_group = self.create_group(name='empty_group', facility=self.facility)
+    def test_api_auth_super_admin(self):
+        # Super admin can access everything 
+        self.client.login(username='admin', password='admin')
+        facility_resp = json.loads(self.client.get(self.api_facility_url).content)
+        self.assertTrue(facility_resp.get("objects"), "Authorization error")
+        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
+        self.assertTrue(group_resp.get("objects"), "Authorization error")
+        csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(csv_resp.get("objects"), "Authorization error")
+        self.client.logout()
 
-#         self.stu1 = self.create_student(username='stu1', facility=self.facility, group=self.group)
-#         self.stu2 = self.create_student(username='stu2', facility=self.facility)
+    def test_api_auth_teacher(self):
+        # Teacher can access everything on zone
+        self.client.login(username='teacher', password='password', facility=self.facility.id)
+        facility_resp = json.loads(self.client.get(self.api_facility_url).content)
+        self.assertTrue(facility_resp.get("objects"), "Authorization error")
+        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
+        self.assertTrue(group_resp.get("objects"), "Authorization error")
+        csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(csv_resp.get("objects"), "Authorization error")
+        self.client.logout()
 
-#         self.test_log_1 = self.create_test_log(user=self.stu1)
-#         self.test_log_2 = self.create_test_log(user=self.stu2)
+    def test_api_auth_student(self):
+        # Student can't
+        self.client.login(username='stu1', password='password', facility=self.facility.id)
+        facility_resp = self.client.get(self.api_facility_url)
+        self.assertFalse(facility_resp.content, "Authorization error")
+        group_resp = self.client.get(self.api_group_url + "?facility_id=" + self.facility.id)
+        self.assertFalse(group_resp.content, "Authorization error")
+        csv_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(csv_resp.content, "Authorization error")
+        self.client.logout()
 
-#         self.admin = self.create_admin()
-#         self.client = Client()
-#         self.client.login(username='admin', password='admin')
+    def test_api_auth_not_logged_in(self):
+        # Not logged in can't 
+        facility_resp = self.client.get(self.api_facility_url)
+        self.assertFalse(facility_resp.content, "Authorization error")
+        group_resp = self.client.get(self.api_group_url + "?facility_id=" + self.facility.id)
+        self.assertFalse(group_resp.content, "Authorization error")
+        csv_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(csv_resp.content, "Authorization error")
 
-#         super(CSVExportTests, self).setUp()
+    def test_facility_endpoint(self):
+        self.client.login(username='admin', password='admin')
+        facility_resp = json.loads(self.client.get(self.api_facility_url + "?zone_id=" + self.zone.id).content)
+        objects = facility_resp.get("objects")
+        self.assertEqual(len(objects), 1, "API response incorrect")
+        self.assertEqual(objects[0]["name"], "facility0", "API response incorrect")
+        self.client.logout()
 
-#     def test_export_all(self):
-#         resp = self.client.get(self.base_url + "?facility_id=all&group_id=all")
-#         self.assertEquals(len(resp._container), 4, "CSV file has wrong number of rows")
-#         # Because the CSV result does not guarantee sorting - we loop thru the results here
-#         # and check if the grouped and ungrouped users exist.
-#         ungrouped_ok = False
-#         grouped_ok = False
-#         for row in resp._container[2:]:
-#             values = row.split(',')
-#             if values[2] == self.group.name:
-#                 grouped_ok = True
-#             elif values[2] == UNGROUPED:
-#                 ungrouped_ok = True
-#         self.assertTrue(grouped_ok, "Grouped user data not exported.")
-#         self.assertTrue(ungrouped_ok, "Ungrouped user data not exported.")
+    def test_group_endpoint(self):
+        self.client.login(username='admin', password='admin')
+        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
+        objects = group_resp.get("objects")
+        self.assertEqual(len(objects), 2, "API response incorrect")
+        self.assertEqual(objects[0]["name"], "group1", "API response incorrect")
+        self.assertEqual(objects[1]["name"], "empty_group", "API response incorrect")
+        self.client.logout()
 
-#     def test_export_grouped_students_only(self):
-#         resp = self.client.get(self.base_url + "?facility_id=all&group_id=%s" % self.group.id)
-#         self.assertEquals(len(resp._container), 3, "CSV file has wrong number of rows")
-#         first_row = resp._container[2].split(',')
-#         self.assertEquals(self.group.name, first_row[2], "Returned data for wrong group")
+    def test_facility_user_csv_endpoint(self):
+        # Test filtering by facility
+        self.client.login(username='admin', password='admin')
+        facility_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        rows = filter(None, facility_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 4, "API response incorrect")
+        self.assertEqual(rows[3][0:4], "stu2", "API response incorrect")
+
+        # Test filtering by group
+        group_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        rows = filter(None, group_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 2, "API response incorrect")
+        self.assertEqual(rows[1][0:4], "stu1", "API response incorrect")
+        self.client.logout()
+
+
+    def test_test_log_csv_endpoint(self):
+        # Test filtering by facility
+        self.client.login(username='admin', password='admin')
+        facility_filtered_resp = self.client.get(self.api_test_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        rows = filter(None, facility_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 3, "API response incorrect")
+        self.assertEqual(rows[1][0:4], "stu2", "API response incorrect")
+
+        # Test filtering by group
+        group_filtered_resp = self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        rows = filter(None, group_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 2, "API response incorrect")
+        self.assertEqual(rows[1][0:4], "stu1", "API response incorrect")
+        self.client.logout()
+
+
+    def test_attempt_log_csv_endpoint(self):
+        # Test filtering by facility
+        self.client.login(username='admin', password='admin')
+        facility_filtered_resp = self.client.get(self.api_attempt_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        rows = filter(None, facility_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 3, "API response incorrect")
+        self.assertEqual(rows[1][0:4], "stu2", "API response incorrect")
+
+        # Test filtering by group
+        group_filtered_resp = self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        rows = filter(None, group_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 2, "API response incorrect")
+        self.assertEqual(rows[1][0:4], "stu1", "API response incorrect")
+        self.client.logout()
+
+
+class CSVExportBrowserTests(CSVExportTestSetup):
+
+    def setUp(self):
+        super(CSVExportBrowserTests, self).setUp()
+
+    def test_something(self):
+        self.browser_login_admin() 
+        self.browse_to(self.distributed_data_export_url)
+
+        self.browser_wait_for_ajax_calls_to_finish()
+
+        # Check that group is disabled until facility is selected
+        group_select = self.browser.find_element_by_id("group-name")
+        self.assertFalse(group_select.is_enabled(), "UI error")
+        
+        # Select facility, wait, and ensure group is enabled
+        facility_select = self.browser.find_element_by_id("facility-name")
+        for option in facility_select.find_elements_by_tag_name('option'):
+            if option.text == 'facility0':
+                option.click() # select() in earlier versions of webdriver
+                break
+
+        self.browser_wait_for_ajax_calls_to_finish()
+
+        # Check that group is enabled now
+        group_select = self.browser.find_element_by_id("group-name")
+        self.assertTrue(group_select.is_enabled(), "UI error")
+
+        # Click and make sure something happens
+        # note: not actually clicking the download since selenium cannot handle file save dialogs
+        export = self.browser.find_element_by_id("export-button")
+        self.assertTrue(export.is_enabled(), "UI error")

@@ -5,12 +5,12 @@ from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowser
 from kalite.student_testing.models import TestLog
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
+from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class TestReportTests(FacilityMixins,
-                      StudentTestingMixins,
+                      StudentProgressMixin,
                       CreateAdminMixin,
                       CreateDeviceMixin,
                       KALiteDistributedBrowserTestCase):
