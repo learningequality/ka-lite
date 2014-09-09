@@ -72,10 +72,10 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
         self.admin = self.create_admin()
         self.test_student = self.create_student()
         self.hacker_student = self.create_student(username="hacker", password="hacker")
-        self.playlist = self.create_playlist_progress(self.test_student)
         self.client = KALiteClient()
 
     def test_playlist_progress_resource(self, auth_test=False):
+        self.playlist = self.create_playlist_progress(self.test_student)
         # Playlist Progress (high-level)
         if not auth_test:
             self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)
@@ -94,6 +94,25 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
         self.client.logout()
         
     def test_playlist_progress_detail_resource(self, auth_test=False):
+        self.playlist = self.create_playlist_progress(self.test_student)
+        # Playlist Progress Details
+        if not auth_test:
+            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)        
+        resp = self.client.get("%s?user_id=%s&playlist_id=%s" % (reverse("api_dispatch_list", kwargs={"resource_name": "playlist_progress_detail"}), self.test_student.id, self.playlist.id))
+        pl_response = json.loads(resp.content)["objects"]
+
+        # Sample to check that we are getting what we expect
+        self.assertEqual(len(pl_response), 8, "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["status"], "complete", "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["score"], 100, "Incorrect value returned by API")
+        self.assertEqual(pl_response[1]["status"], "struggling", "Incorrect value returned by API")
+        self.assertEqual(pl_response[1]["score"], 50, "Incorrect value returned by API")
+
+        self.client.logout()
+
+    def test_playlist_progress_detail_resource_no_quiz(self, auth_test=False):
+        # Regression test for error during missing entry PlayListProgressDetail function call.
+        self.playlist = self.create_playlist_progress(self.test_student, quiz=False)
         # Playlist Progress Details
         if not auth_test:
             self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)        

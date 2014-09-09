@@ -198,7 +198,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.path = kwargs.get("path")
 
     @classmethod
-    def create_empty_entry(cls, entity_id, kind):
+    def create_empty_entry(cls, entity_id, kind, playlist):
         if kind != "Quiz":
             if kind == "Video":
                 topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
@@ -318,7 +318,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     }
 
             if not entry:
-                entry = cls.create_empty_entry(entity_id, kind)
+                entry = cls.create_empty_entry(entity_id, kind, playlist)
 
             progress_details.append(cls(**entry))
 

@@ -5,7 +5,7 @@ class CreatePlaylistProgressMixin(object):
     """Helper to create progress for a student on a playlist"""
 
     @classmethod
-    def create_playlist_progress(cls, user):
+    def create_playlist_progress(cls, user, quiz=True):
         default_playlist = "g3_p2"
         playlist = Playlist.all()[1]
         assert(playlist.id == default_playlist), "Unexpected playlist ID. Update tests to match new playlists.json"
@@ -30,15 +30,16 @@ class CreatePlaylistProgressMixin(object):
             "struggling": True,
         }).save()
 
-        QuizLog(**{
-            "user": user,
-            "quiz": default_playlist,
-            "complete": True,
-            "attempts": 1,
-            "response_log": "[4]",
-            "total_correct": 4,
-            "total_number": 6,
-        }).save()
+        if quiz:
+            QuizLog(**{
+                "user": user,
+                "quiz": default_playlist,
+                "complete": True,
+                "attempts": 1,
+                "response_log": "[4]",
+                "total_correct": 4,
+                "total_number": 6,
+            }).save()
 
         return playlist
 
