@@ -1,4 +1,5 @@
 // Handles the data export functionality of the control panel
+// TODO-blocker(dylanjbarth) 0.13: limit requests and handle pagination
 
 // Models 
 var ZoneModel = Backbone.Model.extend();
@@ -114,7 +115,7 @@ var DataExportView = Backbone.View.extend({
             export_data_url += "?zone_ids=" + zone_ids_string;
         }
 
-        export_data_url += "&format=csv"
+        export_data_url += "&format=csv&limit=0"
 
         window.location = export_data_url;
     }
@@ -137,7 +138,10 @@ var ZoneSelectView = Backbone.View.extend({
 
             // Fetch collection by org_id
             this.zone_list.fetch({
-                data: $.param({ "org_id": this.options.org_id })
+                data: $.param({ 
+                    "org_id": this.options.org_id,
+                    "limit": 0
+                })
             });
         }
 
@@ -235,7 +239,10 @@ var FacilitySelectView = Backbone.View.extend({
         // only fetch if a zone ID has been set 
         if (zone_id) {
             this.facility_list.fetch({
-                data: $.param({ "zone_id": zone_id })
+                data: $.param({ 
+                    "zone_id": zone_id,
+                    "limit": 0
+                })
             });
         }
     }
@@ -290,7 +297,10 @@ var GroupSelectView = Backbone.View.extend({
         // only fetch if facility ID has been set 
         if (facility_id) {
             this.group_list.fetch({
-                data: $.param({ "facility_id": facility_id })
+                data: $.param({ 
+                    "facility_id": facility_id,
+                    "limit": 0
+                })
             });
         }
     }
