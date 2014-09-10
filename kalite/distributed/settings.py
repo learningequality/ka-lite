@@ -182,3 +182,7 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+# JSON file for screenshots
+SCREENSHOTS_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
