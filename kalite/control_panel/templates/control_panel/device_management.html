@@ -4,8 +4,10 @@
 {% load my_filters %}
 
 {% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
-{% block update_active %}active{% endblock update_active %}
-{% block users_active %}active{% endblock %}
+
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
 
 {% block headcss %}{{ block.super }}
     <style>
@@ -27,25 +29,7 @@
     {% endif %}
 {% endblock buttons %}
 
-{% block manage_nav %}
-    <div class="manage-nav not-teacher-only">
-        <ul class="nav">
-            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="teacher-only active-tab active-nav" title="{% trans 'Manage Users' %}"><img src="{% static "images/control_panel/facility-active-icon.png" %}">{% trans "Facilities" %}</a></li>
-            <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
-            <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
-        </ul>
-    </div>
-    <div class="manage-nav teacher-only">
-        <ul class="nav">
-            {% if request.session.facility_user.facility %}
-            <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="users admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
-            {% endif %}
-            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="teacher-only active-tab active-nav" title="{% trans 'Manage Users' %}"><img src="{% static "images/control_panel/facility-active-icon.png" %}">{% trans "Facilities" %}</a></li>
-            <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
-            <li><a href="{% url 'update_languages' %}" class="languages admin-only teacher-only"><span>{% trans "Language" %}</span></a></li>
-        </ul>
-    </div>
-{% endblock manage_nav %}
+{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
 
 {% block control_panel_content %}
     <div id="zone_container">

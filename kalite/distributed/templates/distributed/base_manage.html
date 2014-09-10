@@ -1,0 +1,20 @@
+{% extends base_template %}
+
+{% load staticfiles %}
+{% load i18n %}
+{% load my_filters %}
+
+{% block headcss %}{{block.super}}{% endblock headcss %}
+
+{% block manage_nav %}
+	<div class="manage-nav admin-only">
+        <ul>
+        	{% if request.session.facility_user.facility.id %}
+            <li class="teacher-only"><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="users admin-only {% block user_active %}{% endblock user_active %}" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
+            {% endif %}
+            <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility admin-only {% block facility_active %}{% endblock facility_active %}" title="{% trans 'Manage Users' %}"><span>{% trans "Facilities" %}</span></a></li>
+            <li><a href="{% url 'update_videos' %}" id="nav_update" class="video admin-only teacher-only {% block video_active %}{% endblock video_active %}" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
+            <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only languages {% block languages_active %}{% endblock languages_active %}"><span>{% trans "Language" %}</span></a></li>
+        </ul>
+    </div>
+{% endblock manage_nav %}

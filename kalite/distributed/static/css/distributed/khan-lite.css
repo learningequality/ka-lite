@@ -202,7 +202,112 @@ a:hover {
 
 
 /********* "Admin" Sub-Navigation bar **********/
-
+.manage-nav {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 4px solid #5C8547;
+    margin-bottom: 25px;
+}
+.manage-nav ul {
+    padding-left: 1%;
+    margin-bottom: 0;
+}
+.manage-nav li {
+    background-color: #5C8547;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    border-top: 3px solid #5C8547;
+    border-right: 3px solid #5C8547;
+    border-left: 3px solid #5C8547;
+    width: 110px;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block !important;
+    margin: 0 2px -4px 0;
+}
+.manage-nav li a {
+    color: white;
+    padding: 10px !important;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    -webkit-transition: all 100ms ease-out !important;
+    -moz-transition: all 100ms ease-out !important;
+    -o-transition: all 100ms ease-out !important;
+    transition: all 100ms ease-out !important;
+}
+.manage-nav li span {
+    line-height: 7.7;
+}
+.manage-nav li a:hover {
+    background-color: white !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 16px !important;
+    color: #5C8547;
+    font-weight: bold;
+}
+.manage-nav li img {
+    height: 40px;
+    width: auto;
+    display: block;
+    margin: auto;
+    margin-bottom: 5px;
+}
+.active-nav {
+    color: #405D32 !important;
+    background-color: white !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 16px !important;
+    font-weight: bold;            
+}
+.active {
+    background-color: #E9F1E4;
+    height: 50px;
+}
+.active-tab {
+    background-color: #E9F1E4;
+    height: 89px;
+}
+.users {
+    background: url("../../images/distributed/users-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.users:hover, .users-active {
+    background: url("../../images/distributed/users-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.video {
+    background: url("../../images/distributed/videos_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.video:hover, .video-active {
+    background: url("../../images/distributed/videos_active_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.languages {
+    background: url("../../images/distributed/language_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.languages:hover, .languages-active {
+    background: url("../../images/distributed/language_active_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.facility {
+    background: url("../../images/distributed/facility-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.facility:hover, .facility-active {
+    background: url("../../images/distributed/facility-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
 /********* End "Admin" Sub-Navigation bar **********/
 
  
