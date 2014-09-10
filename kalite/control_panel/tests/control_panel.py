@@ -169,8 +169,12 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         self.assertTrue(facility_resp.get("objects"), "Authorization error")
         group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
         self.assertTrue(group_resp.get("objects"), "Authorization error")
-        csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
-        self.assertTrue(csv_resp.get("objects"), "Authorization error")
+        user_csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(user_csv_resp.get("objects"), "Authorization error")
+        attempt_log_csv_resp = json.loads(self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(attempt_log_csv_resp.get("objects"), "Authorization error")
+        test_log_csv_resp = json.loads(self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(test_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_teacher(self):
@@ -180,8 +184,12 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         self.assertTrue(facility_resp.get("objects"), "Authorization error")
         group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
         self.assertTrue(group_resp.get("objects"), "Authorization error")
-        csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
-        self.assertTrue(csv_resp.get("objects"), "Authorization error")
+        user_csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(user_csv_resp.get("objects"), "Authorization error")
+        attempt_log_csv_resp = json.loads(self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(attempt_log_csv_resp.get("objects"), "Authorization error")
+        test_log_csv_resp = json.loads(self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id).content)
+        self.assertTrue(test_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_student(self):
@@ -191,8 +199,12 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         self.assertFalse(facility_resp.content, "Authorization error")
         group_resp = self.client.get(self.api_group_url + "?facility_id=" + self.facility.id)
         self.assertFalse(group_resp.content, "Authorization error")
-        csv_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id)
-        self.assertFalse(csv_resp.content, "Authorization error")
+        user_csv_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(user_csv_resp.content, "Authorization error")
+        attempt_log_csv_resp = self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(attempt_log_csv_resp.content, "Authorization error")
+        test_log_csv_resp = self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(test_log_csv_resp.content, "Authorization error")
         self.client.logout()
 
     def test_api_auth_not_logged_in(self):
@@ -201,8 +213,13 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         self.assertFalse(facility_resp.content, "Authorization error")
         group_resp = self.client.get(self.api_group_url + "?facility_id=" + self.facility.id)
         self.assertFalse(group_resp.content, "Authorization error")
-        csv_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id)
-        self.assertFalse(csv_resp.content, "Authorization error")
+        user_csv_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(user_csv_resp.content, "Authorization error")
+        attempt_log_csv_resp = self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(attempt_log_csv_resp.content, "Authorization error")
+        test_log_csv_resp = self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id)
+        self.assertFalse(test_log_csv_resp.content, "Authorization error")
+
 
     def test_facility_endpoint(self):
         self.client.login(username='admin', password='admin')
@@ -227,7 +244,7 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         facility_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 4, "API response incorrect")
-        self.assertEqual(rows[3][0:4], "stu2", "API response incorrect")
+        self.assertEqual(rows[2][0:4], "stu2", "API response incorrect")
 
         # Test filtering by group
         group_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id + "&format=csv").content

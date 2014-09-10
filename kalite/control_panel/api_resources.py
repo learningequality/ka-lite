@@ -169,7 +169,7 @@ class AttemptLogResource(ParentFacilityUserResource):
         """Add username, facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
-            user = self.cached_user_dict.get(user_id)
+            user = self._facility_users.get(user_id)
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
