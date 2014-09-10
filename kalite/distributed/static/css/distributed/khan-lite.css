@@ -154,7 +154,7 @@ a:hover {
 }
 .active-tab {
     background-color: #E9F1E4; 
-    height: 89px;
+    height: 87px;
     display: inline-block;
 }
 .reports {
@@ -245,6 +245,7 @@ a:hover {
     border-top-right-radius: 16px !important;
     color: #5C8547;
     font-weight: bold;
+    text-decoration: none;
 }
 .manage-nav li img {
     height: 40px;
@@ -266,7 +267,7 @@ a:hover {
 }
 .active-tab {
     background-color: #E9F1E4;
-    height: 89px;
+    height: 87px;
 }
 .users {
     background: url("../../images/distributed/users-icon.png") no-repeat;

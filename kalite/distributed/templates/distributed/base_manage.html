@@ -6,7 +6,7 @@
 
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
-{% block manage_nav %}
+{% block subnavbar %}
 	<div class="manage-nav admin-only">
         <ul>
         	{% if request.session.facility_user.facility.id %}
@@ -17,4 +17,4 @@
             <li><a href="{% url 'update_languages' %}" class="admin-only teacher-only languages {% block languages_active %}{% endblock languages_active %}"><span>{% trans "Language" %}</span></a></li>
         </ul>
     </div>
-{% endblock manage_nav %}
+{% endblock subnavbar %}

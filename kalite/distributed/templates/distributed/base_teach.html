@@ -6,7 +6,7 @@
 
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
-{% block teach_nav %}
+{% block subnavbar %}
 	<div class="teach-nav admin-only">
         <ul>
             <li><a href="{% url 'coach_reports' %}" class="reports teacher-only {% block reports_active %}{% endblock reports_active %}" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
@@ -15,15 +15,6 @@
             <li><a class="learn admin-only teacher-only {% block learn_active %}{% endblock learn_active %}" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>
         </ul>
     </div>
-{% endblock teach_nav %}
-
-{% block subnavbar %}
-<div class="subnav">
-    <ul class="nav">
-        <li class="progress-tab {% block coachnav %}{% endblock coachnav %}"><a class="{% block progress_active %}{% endblock progress_active %}" href="{% url 'tabular_view' %}"><img src="{% static "images/coachreports/progress.png" %}"><span>Progress<br>by Topic</span></a></li>
-        <li class="effort-tab"><a class="{% block effort_active %}{% endblock effort_active %}" href="{% url 'scatter_view' %}"><img src="{% static "images/coachreports/effort.png" %}"><span>Effort versus Achievement</span></a></li>
-        <li class="mastery-tab"><a class="{% block mastery_active %}{% endblock mastery_active %}" href="{% url 'timeline_view' %}"><img src="{% static "images/coachreports/mastery.png" %}"><span>Mastery<br>over Time</span></a></li>
-    </ul>
-</div>
 {% endblock subnavbar %}
+
 
