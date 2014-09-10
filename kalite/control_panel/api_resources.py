@@ -52,7 +52,7 @@ class ParentFacilityUserResource(ModelResource):
     """A class with helper methods for getting facility users for data export requests"""
 
     def _get_facility_users(self, bundle):
-        """Return a list of facility users and their ids specified by the zone id(s), facility_id, or group_id"""
+        """Return a dict mapping facility_user_ids to facility user objs, filtered by the zone id(s), facility_id, or group_id"""
         zone_id = bundle.request.GET.get('zone_id')
         zone_ids = bundle.request.GET.get('zone_ids')
         facility_id = bundle.request.GET.get('facility_id')
@@ -81,12 +81,15 @@ class ParentFacilityUserResource(ModelResource):
 
         # if not facility_user_objects:
         #     raise NotFound("Student not found.")
-
-        facility_user_ids = [facility_user.id for facility_user in facility_user_objects]
-        return facility_user_ids, facility_user_objects
+        facility_user_dict = {}
+        for user in facility_user_objects:
+            facility_user_dict[user.id] = user
+        return facility_user_dict
 
 
 class FacilityUserResource(ParentFacilityUserResource):
+
+    _facility_users = {}
 
     class Meta:
         queryset = FacilityUser.objects.all()
@@ -96,13 +99,13 @@ class FacilityUserResource(ParentFacilityUserResource):
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
-        facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
-        return super(FacilityUserResource, self).authorized_read_list(facility_user_objects, bundle)
+        self._facility_users = self._get_facility_users(bundle)
+        return super(FacilityUserResource, self).authorized_read_list(self._facility_users.values(), bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
         """Add facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
-            user = FacilityUser.objects.get(id=bundle.data["id"])
+            user = self._facility_users.get(bundle.data["id"])
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
 
@@ -110,6 +113,8 @@ class FacilityUserResource(ParentFacilityUserResource):
 
 
 class TestLogResource(ParentFacilityUserResource):
+
+    _facility_users = {}
 
     user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
 
@@ -121,8 +126,8 @@ class TestLogResource(ParentFacilityUserResource):
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
-        facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
-        test_logs = TestLog.objects.filter(user__id__in=facility_user_ids)
+        self._facility_users = self._get_facility_users(bundle)
+        test_logs = TestLog.objects.filter(user__id__in=self._facility_users.keys())
         # if not test_logs:
         #     raise NotFound("No test logs found.")
         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
@@ -131,7 +136,7 @@ class TestLogResource(ParentFacilityUserResource):
         """Add username, facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
-            user = FacilityUser.objects.get(id=user_id)
+            user = self._facility_users.get(user_id)
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
@@ -141,6 +146,8 @@ class TestLogResource(ParentFacilityUserResource):
 
 
 class AttemptLogResource(ParentFacilityUserResource):
+
+    _facility_users = {}
 
     user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
 
@@ -152,8 +159,8 @@ class AttemptLogResource(ParentFacilityUserResource):
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
-        facility_user_ids, facility_user_objects = self._get_facility_users(bundle)
-        attempt_logs = AttemptLog.objects.filter(user__id__in=facility_user_ids)
+        self._facility_users = self._get_facility_users(bundle)
+        attempt_logs = AttemptLog.objects.filter(user__id__in=self._facility_users.keys())
         # if not attempt_logs:
         #     raise NotFound("No attempt logs found.")
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
@@ -162,7 +169,7 @@ class AttemptLogResource(ParentFacilityUserResource):
         """Add username, facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
-            user = FacilityUser.objects.get(id=user_id)
+            user = self.cached_user_dict.get(user_id)
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id

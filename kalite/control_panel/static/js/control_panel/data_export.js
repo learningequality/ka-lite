@@ -66,7 +66,7 @@ var DataExportView = Backbone.View.extend({
 
     resource_id: function() {
         // Returns the currently selected resource id
-        return $("#resource-id").find(":selected").attr("data-resource-id");
+        return $("#resource-id").find(":selected").attr("value");
     },
 
     resource_endpoint: function() {
@@ -94,28 +94,21 @@ var DataExportView = Backbone.View.extend({
         // If no zone_id, all is selected, so compile a comma seperated string
         // of zone ids to pass to endpoint
         if (!zone_id) {
-            var zone_ids_string = ""
-            var zone_ids = $("#zone-name").find("option");
-            for (var i = 0; i < zone_ids.length; i++) {
-                var zone_id = $(zone_ids[i]).attr("data-zone-id");
-                if (zone_id) {
-                    zone_ids_string += "," + zone_id;
-                }
-            }
+            var zone_ids = _.map(this.zone_select_view.zone_list.models, function(zone) { return zone.get("id"); }); 
         }
 
         var export_data_url = this.resource_endpoint();
         if (group_id) {
-            export_data_url += "?group_id=" + group_id;
+            export_data_url += $.param({group_id: group_id});
         } else if (facility_id) {
-            export_data_url += "?facility_id=" + facility_id;
+            export_data_url += $.param({facility_id: facility_id});
         } else if (zone_id) {
-            export_data_url += "?zone_id=" + zone_id;
-        } else if (zone_ids_string) {
-            export_data_url += "?zone_ids=" + zone_ids_string;
+            export_data_url += $.param({zone_id: zone_id});
+        } else if (zone_ids) {
+            export_data_url += $.param({zone_ids: zone_ids.join()});
         }
 
-        export_data_url += "&format=csv&limit=0"
+        export_data_url += $.param({format:"csv", limit:0});
 
         window.location = export_data_url;
     }
@@ -132,7 +125,7 @@ var ZoneSelectView = Backbone.View.extend({
 
         // on central, this is a dynamic view
         // on distributed, this is a placeholder view,
-        if (this.model.attributes.is_central) {
+        if (this.model.get("is_central")) {
             // Re-render self when fetch returns or model state changes
             this.listenTo(this.zone_list, 'sync', this.render);
 
@@ -145,23 +138,20 @@ var ZoneSelectView = Backbone.View.extend({
             });
         }
 
-        // Render 
         this.render();
     },
 
     render: function() {
         var rendered_html = this.template({
             zones: this.zone_list.toJSON(),
-            selection: this.model.attributes.zone_id
+            selection: this.model.get("zone_id")
         });
 
-        // TODO(dylanjbarth): perhaps hide this using css rather than JS?
-        if (this.model.attributes.is_central) {
+        if (this.model.get("is_central")) {
             this.$el.html(rendered_html);    
         } else {
             this.$el.html(rendered_html).hide();
         }
-        
     },
 
     events: {
@@ -170,7 +160,7 @@ var ZoneSelectView = Backbone.View.extend({
 
     zone_changed: function(ev) {
         // Update state model
-        var zone_id = $("#" + ev.target.id).find(":selected").attr("data-zone-id");
+        var zone_id = this.$el.find(":selected").attr("value");
 
         this.model.set({ 
             facility_id: undefined,
@@ -191,11 +181,10 @@ var FacilitySelectView = Backbone.View.extend({
         
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.facility_list, 'sync', this.render);
-        this.listenTo(this.model, 'change', this.render);
 
         // on central, facilities depend on the zone selected
         // on distributed, zone is fixed 
-        if (this.model.attributes.is_central) {
+        if (this.model.get("is_central")) {
             // Listen for any changes on the zone model, when it happens, re-fetch self
             this.listenTo(this.model, 'change:zone_id', this.fetch_by_zone);
         }
@@ -211,14 +200,23 @@ var FacilitySelectView = Backbone.View.extend({
 
         var template_context = { 
             facilities: this.facility_list.toJSON(),
-            selection: this.model.attributes.facility_id,
+            selection: this.model.get("facility_id"),
             // Facility select is enabled only if zone_id has been set 
-            is_disabled: this.model.attributes.zone_id ? false : true
+            is_disabled: !this.model.get("zone_id")
         };
 
         this.$el.html(this.template(template_context));
 
         return this;
+    },
+
+    render_disabled: function() {
+        var template_context = {
+            is_disabled: true,
+            loading: true
+        };
+
+        this.$el.html(this.template(template_context));
     },
 
     events: {
@@ -227,14 +225,17 @@ var FacilitySelectView = Backbone.View.extend({
 
     facility_changed: function(ev) {
         // Update state model 
-        var facility_id = $("#" + ev.target.id).find(":selected").attr("data-facility-id");
+        var facility_id = this.$el.find(":selected").attr("value");
         this.model.set({ 
-            group_id: undefined ,
+            group_id: undefined,
             facility_id: facility_id
         });
     },
 
     fetch_by_zone: function() {
+        // First disable the select
+        this.render_disabled(); 
+
         var zone_id = this.model.get("zone_id");
         // only fetch if a zone ID has been set 
         if (zone_id) {
@@ -259,7 +260,6 @@ var GroupSelectView = Backbone.View.extend({
 
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.group_list, 'sync', this.render);
-        this.listenTo(this.model, 'change', this.render);       
 
         // on central, groups depend on facilities which depend on the zone selected
         // on distributed, zone is fixed, so groups just depend on facilities 
@@ -273,9 +273,9 @@ var GroupSelectView = Backbone.View.extend({
     render: function() {
         var template_context = { 
             groups: this.group_list.toJSON(),
-            selection: this.model.attributes.group_id,
+            selection: this.model.get("group_id"),
             // Group select is enabled only if facility_id has been set 
-            is_disabled: this.model.attributes.facility_id ? false : true
+            is_disabled: !this.model.get("facility_id")
         };
 
         this.$el.html(this.template(template_context));
@@ -283,16 +283,27 @@ var GroupSelectView = Backbone.View.extend({
         return this;
     },
 
+    render_disabled: function() {
+        var template_context = {
+            is_disabled: true,
+            loading: true
+        };
+
+        this.$el.html(this.template(template_context));
+    },
+
     events: {
         "change": "group_changed"
     },
 
     group_changed: function(ev) {
-        var group_id = $("#" + ev.target.id).find(":selected").attr("data-group-id");
+        var group_id = this.$el.find(":selected").attr("value");
         this.model.set({ group_id: group_id });
     },
 
     fetch_by_facility: function() {
+        this.render_disabled();
+
         var facility_id = this.model.get("facility_id");
         // only fetch if facility ID has been set 
         if (facility_id) {
