@@ -6,6 +6,9 @@
 
 {% block title %}{{ title }} | {{ block.super }}{% endblock title %}
 {% block report_title %}{{ title }}{% endblock report_title %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+{% block effort_active %}sub-active{% endblock effort_active %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
@@ -22,19 +25,9 @@
     </script>
 {% endblock headjs %}
 
-{% block teach_nav %}
-    {{block.super}}
-{% endblock teach_nav %}
+{% block teach_nav %}{{block.super}}{% endblock teach_nav %}
 
-{% block subnavbar %}
- <div class="subnav">
-        <ul class="nav">
-            <li class="progress-tab"><a href="{% url 'tabular_view' %}"><img src="{% static "images/coachreports/progress.png" %}"/><span>Progress<br>by Topic</span></a></li>
-            <li class="effort-tab"><a class="active sub-active" href="{% url 'scatter_view' %}"><img src="{% static "images/coachreports/effort.png" %}"><span>Effort versus<br>Achievement</span></a></li>
-            <li class="mastery-tab"><a href="{% url 'timeline_view' %}"><img src="{% static "images/coachreports/mastery.png" %}"><span>Mastery<br>over Time</span></a></li>
-        </ul>
-    </div>
-{% endblock subnavbar %}
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
 
 

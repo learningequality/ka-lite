@@ -95,6 +95,7 @@ a:hover {
 .teach-nav ul {
     padding-left: 1%;
     display: inline-block;
+    margin-bottom: 0;
 }
 .teach-nav li {
     background-color: #5C8547;
@@ -216,7 +217,7 @@ a:hover {
 }
 .subnav {
     text-align: center;
-    margin: 10px 0 50px 0;
+    margin: 40px 0 50px 0;
 }
 .subnav li {
     display: inline-block;
@@ -244,8 +245,8 @@ a:hover {
 .subnav span {
     line-height: 1.6;
     font-size: 17px;
-}
-.progress-tab, 
+} 
+.progress-tab img,
 .effort-tab img,
 .mastery-tab img {
     margin: -10px -30px 0 -15px;
@@ -254,9 +255,7 @@ a:hover {
     opacity: 0.18;
     position: absolute;
 }
-.progress-tab {
-    background: url("../../images/coachreports/progress.png") no-repeat;
-}
+
 /********* End Coach Reports Sub-Navigation bar **********/
 
 /*h2 {
