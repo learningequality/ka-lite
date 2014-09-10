@@ -236,8 +236,29 @@
                     {% endblock precontent %}
                     {% block content %}
 
-                    {% block teach_nav %}{% endblock teach_nav %}
-                    {% block manage_nav %}{% endblock manage_nav %}
+                    {% block teach_nav %}
+                        <div class="teach-nav admin-only">
+                            <ul>
+                                <li><a href="{% url 'coach_reports' %}" class="reports teacher-only {% block reports_active %}{% endblock reports_active %}" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
+                                <li><a href="{% url 'assign_playlists' %}" class="playlist admin-only teacher-only {% block playlist_active %}{% endblock playlist_active %}" title="{% trans 'Assign playlists to student groups' %}"><span>{% trans "Playlists" %}</span></a></li>
+                                <li><a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only exams {% block exams-active %}{% endblock exams-active %}" title="{% trans 'See list of available tests.' %}"><span>{% trans "Exams" %}</span></a></li>
+                                <li><a class="learn admin-only teacher-only {% block learn_active %}{% endblock learn_active %}" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>
+                            </ul>
+                        </div>
+                    {% endblock teach_nav %}
+                    {% block manage_nav %}
+
+                    {% endblock manage_nav %}
+
+                    {% block subnavbar %}
+                         <div class="subnav">
+                                <ul class="nav">
+                                    <li class="progress-tab"><a class="sub-active" href="{% url 'tabular_view' %}"><span>Progress<br>by Topic</span></a></li>
+                                    <li class="effort-tab"><a href="{% url 'scatter_view' %}"><img src="{% static "images/coachreports/effort.png" %}"><span>Effort versus Achievement</span></a></li>
+                                    <li class="mastery-tab"><a href="{% url 'timeline_view' %}"><img src="{% static "images/coachreports/mastery.png" %}"><span>Mastery<br>over Time</span></a></li>
+                                </ul>
+                            </div>
+                    {% endblock subnavbar %}
                     
                     {% endblock content %}
             {% endblock outer_content %}

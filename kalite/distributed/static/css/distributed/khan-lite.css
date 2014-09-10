@@ -85,6 +85,180 @@ a:hover {
 
 /********** End of Top Navigation bar ***********/
 
+/********** "Teacher" Sub-Navigation bar ***********/
+.teach-nav {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 4px solid #5C8547;
+    margin-bottom: 25px;
+}
+.teach-nav ul {
+    padding-left: 1%;
+    display: inline-block;
+}
+.teach-nav li {
+    background-color: #5C8547;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    border-top: 3px solid #5C8547;
+    border-right: 3px solid #5C8547;
+    border-left: 3px solid #5C8547;
+    width: 110px;
+    text-align: center;
+    bottom: 0;
+    font-weight: bold;
+    display: inline-block;
+    margin: 0 2px -4px 0;
+}
+.teach-nav li span {
+    line-height: 7.7;
+}
+.teach-nav li a:hover {
+    background-color: white !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 16px !important;
+    color: #5C8547;
+    font-weight: bold;
+}
+.teach-nav li a {
+    color: white;
+    padding: 10px !important;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    -webkit-transition: all 100ms ease-out !important;
+    -moz-transition: all 100ms ease-out !important;
+    -o-transition: all 100ms ease-out !important;
+    transition: all 100ms ease-out !important;
+}
+.teach-nav li img {
+    height: 40px;
+    width: auto;
+    display: block;
+    margin: auto;
+    margin-bottom: 5px;
+}
+.active-nav {
+    color: #5C8547 !important;
+    background-color: white !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 16px !important;
+    font-weight: bold;      
+    display: inline-block;      
+}
+.active {
+    background-color: #E9F1E4; 
+    height: 50px;       
+    display: inline-block;   
+}
+.active-tab {
+    background-color: #E9F1E4; 
+    height: 89px;
+    display: inline-block;
+}
+.reports {
+    background: url("../../images/distributed/reports-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+    display: inline-block;
+}
+.reports:hover, .reports-active {
+    background: url("../../images/distributed/reports-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.playlist {
+    background: url("../../images/distributed/playlist-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.playlist:hover, .playlists-active {
+    background: url("../../images/distributed/playlist-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.exams {
+    background: url("../../images/distributed/exam-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.exams:hover, .exams-active {
+    background: url("../../images/distributed/exam-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.learn {
+    background: url("../../images/distributed/learn-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.learn:hover, .learn-active {
+    background: url("../../images/distributed/learn-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+/********* End Sub-Navigation bar **********/
+
+
+/********* "Admin" Sub-Navigation bar **********/
+
+/********* End "Admin" Sub-Navigation bar **********/
+
+ 
+/********* Coach Reports Sub-Navigation bar *********/
+.active {
+    border: none !important;
+}
+.sub-active {
+    background-color: #5C8547;
+    color: white !important;
+    border-radius: 6px;
+}
+.subnav {
+    text-align: center;
+    margin: 10px 0 50px 0;
+}
+.subnav li {
+    display: inline-block;
+    text-align: center;
+    border-radius: 10px;
+    border: 2px solid #5C8547;
+    margin: -25px 10px 0 10px;
+}
+.subnav li a {
+    width: 150px;
+    height: 80px;
+    text-decoration: none;
+    color: #5C8547;
+    font-weight: bold;
+    -webkit-transition: all 100ms ease-out !important;
+    -moz-transition: all 100ms ease-out !important;
+    -o-transition: all 100ms ease-out !important;
+    transition: all 100ms ease-out !important;
+}
+.subnav li a:hover {
+    background-color: #5C8547 !important;
+    border-radius: 6px !important;
+    color: white;
+}
+.subnav span {
+    line-height: 1.6;
+    font-size: 17px;
+}
+.progress-tab, 
+.effort-tab img,
+.mastery-tab img {
+    margin: -10px -30px 0 -15px;
+    border-radius: 8px;
+    left: 15px;
+    opacity: 0.18;
+    position: absolute;
+}
+.progress-tab {
+    background: url("../../images/coachreports/progress.png") no-repeat;
+}
+/********* End Coach Reports Sub-Navigation bar **********/
+
 /*h2 {
     margin-bottom: 10px;
 }*/

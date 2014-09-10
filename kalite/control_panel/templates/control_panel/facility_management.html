@@ -104,7 +104,7 @@
     <div class="manage-nav teacher-only">
         <ul class="nav">
             {% if request.session.facility_user.facility %}
-            <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="active-tab active-nav admin-only" title="{% trans 'Manage Users' %}"><img src="{% static "images/control_panel/users-active-icon.png"%}">{% trans "Users" %}</a></li>
+            <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="active-tab active-nav users-active admin-only" title="{% trans 'Manage Users' %}"><span>{% trans "Users" %}</span></a></li>
             {% endif %}
             <li><a href="{% url 'zone_management' zone_id=zone_id %}" class="facility teacher-only" title="{% trans 'Manage Facilities' %}"><span>{% trans "Facilities" %}</span></a></li>
             <li><a href="{% url 'update_videos' %}" class="video admin-only teacher-only" title="{% trans 'Update this server with new videos and languages' %}"><span>{% trans "Videos" %}</span></a></li>
@@ -462,4 +462,5 @@
         {% endif %}
 
     </div> <!-- End Container -->
+</div>
 {% endblock control_panel_content %}

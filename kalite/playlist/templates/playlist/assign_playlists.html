@@ -1,11 +1,11 @@
- {% extends "coachreports/landing_page.html" %}
+ {% extends base_template %}
 
 
 {% load i18n %}
 {% load kalite_staticfiles %}
 
 {% block home_active %}active{% endblock home_active %}
-{% block playlists_active %}active{% endblock playlists_active %}
+{% block playlist_active %}playlists-active active-tab active-nav{% endblock playlist_active %}
 
 {% block headcss %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' %}">
@@ -35,23 +35,7 @@
 
 {% block content %}
 
-{% block teach_nav %}
-    <div class="teach-nav not-teacher-only">
-        <ul class="nav">
-            <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only active-nav active-tab" title="{% trans 'Assign playlists to student groups' %}"><img src="{% static "images/coachreports/playlist-active-icon.png" %}">{% trans "Playlists" %}</a></li>
-            <li><a href="{% url 'test_list' %}" class="exams admin-only teacher-only" title="{% trans 'See list of available tests.' %}"><span>{% trans "Exams" %}</span></a></li>
-            <li><a class="learn admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>
-        </ul>
-    </div>
-    <div class="teach-nav teacher-only">
-        <ul class="nav">
-            <li class="teacher-only"><a href="{% url 'coach_reports' %}" class="reports teacher-only" title="{% trans 'Track the progress of your students' %}"><span>{% trans "Reports" %}</span></a></li>
-            <li><a href="{% url 'assign_playlists' %}" class="admin-only teacher-only active-nav active-tab" title="{% trans 'Assign playlists to student groups' %}"><img src="{% static "images/coachreports/playlist-active-icon.png" %}">{% trans "Playlists" %}</a></li>
-            <li><a href="{% url 'test_list' %}" class="exams admin-only teacher-only" title="{% trans 'See list of available tests.' %}"><span>{% trans "Exams" %}</span></a></li>
-            <li><a class="learn admin-only teacher-only" href="/" title="{% trans 'KA Lite Home' %}"><span>{% trans "Learn" %}</span></a></li>
-        </ul>
-    </div>
-{% endblock teach_nav %}
+{% block teach_nav %}{{block.super}}{% endblock teach_nav %}
 
   <div class="row">
     <table class="span3 table table-hover" id="student-groups">
