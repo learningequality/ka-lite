@@ -53,8 +53,8 @@ defaulticon = "default"
 
 attribute_whitelists = {
     "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type"],
-    "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "v_position", "h_position", "all_assessment_items", "uses_assessment_items"],
+    "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "y_pos", "x_pos", "in_knowledge_map"],
+    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "v_position", "h_position", "all_assessment_items", "uses_assessment_items"],
     "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"]
 }
 
@@ -68,57 +68,7 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
-temp_ok_atts = ["x_pos", "y_pos", "in_knowledge_map", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
-
-
-def download_khan_data(url, debug_cache_file=None, debug_cache_dir=KHANLOAD_CACHE_DIR):
-    """Download data from the given url.
-
-    In DEBUG mode, these downloads are slow.  So for the sake of faster iteration,
-    save the download to disk and re-serve it up again, rather than download again,
-    if the file is less than a day old.
-    """
-    # Get the filename
-    if not debug_cache_file:
-        debug_cache_file = url.split("/")[-1] + ".json"
-
-    # Create a directory to store these cached json files
-    if not os.path.exists(debug_cache_dir):
-        os.mkdir(debug_cache_dir)
-    debug_cache_file = os.path.join(debug_cache_dir, debug_cache_file)
-    data = None
-
-    # Use the cache file if:
-    # a) We're in DEBUG mode
-    # b) The debug cache file exists
-    # c) It's less than 7 days old.
-    if settings.DEBUG and os.path.exists(debug_cache_file) and datediff(datetime.datetime.now(), datetime.datetime.fromtimestamp(os.path.getctime(debug_cache_file)), units="days") <= 1E6:
-        # Slow to debug, so keep a local cache in the debug case only.
-        #sys.stdout.write("Using cached file: %s\n" % debug_cache_file)
-        try:
-            with open(debug_cache_file, "r") as fp:
-                data = json.load(fp)
-        except Exception as e:
-            sys.stderr.write("Error loading cached document %s: %s\n" % (debug_cache_file, e))
-
-    if data is None:  # Failed to get a cached copy
-        sys.stdout.write("Downloading data from %s..." % url)
-        sys.stdout.flush()
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            data = json.loads(response.content)
-            sys.stdout.write("done.\n")
-        except requests.HTTPError as e:
-            sys.stderr.write("Error downloading %s: %s\n" % (url, e))
-            return None
-
-        # In DEBUG mode, store the debug cache file.
-        if settings.DEBUG:
-            with open(debug_cache_file, "w") as fh:
-                fh.write(json.dumps(data))
-
-    return data
+temp_ok_atts = ["icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
 
 
 def whitewash_node_data(node, path="", ancestor_ids=[]):
