@@ -1,4 +1,4 @@
-div#map-container {
+div#map {
     position: relative;
     top: 0;
     left: 0;
@@ -34,12 +34,6 @@ a.topic-button {
 
 a.topic-button:visited {
     color: white;
-}
-
-div#map {
-    position: absolute;
-    left: 0;
-    top: 0;
 }
 
 div.exercise {

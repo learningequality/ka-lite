@@ -6,18 +6,28 @@
 
 {% block headcss %}{{ block.super }}
     <link rel='stylesheet' type='text/css' href='{% static "css/distributed/kmap_editor.css" %}' />
+    <link rel='stylesheet' type='text/css' href='{% static "css/leaflet.css" %}' />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type='text/javascript' src='{% static "khan-exercises/third_party/raphael.js" %}'></script>
-    <script type='text/javascript' src='{% static "js/distributed/kmap-editor.js" %}'></script>
+    <script src="{% url 'handlebars_templates' module_name='map' %}"></script>
+    <script type='text/javascript' src='{% static "js/leaflet.js" %}'></script>
+    <script type="text/javascript">
+        var ALL_TOPICS_URL = '{% static "data/topics.json" %}';
+    </script>
+    <script src="{% static 'js/distributed/map/models.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/models.js' %}"></script>
+    <script src="{% static 'js/distributed/map/views.js' %}"></script>
+    <script type="text/javascript">
+        $(function() {
+            window.map_view = new KnowledgeMapView({
+                el: "#map-container"
+            });
+        });
+    </script>
 {% endblock headjs %}
 
 {% block content %}
-    <div id="map-edit-container">
-        <div id="map-container">
-            <div id="map"></div>
-            <a class="topic-button" href="{% url 'exercise_dashboard' %}">{% trans "Back to topics" %}</a>
-        </div>
+    <div id="map-container">
     </div>
 {% endblock content %}
