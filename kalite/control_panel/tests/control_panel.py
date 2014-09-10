@@ -82,9 +82,8 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
-        self.browser_click_and_accept('button.delete-group')
-
-        WebDriverWait(self.browser, 8).until(EC.staleness_of(group_row))
+        confirm_group_selector = ".delete-group"
+        self.browser_click_and_accept(confirm_group_selector)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
@@ -92,10 +91,11 @@ class GroupControlTests(FacilityMixins,
     def test_teachers_have_no_group_delete_button(self):
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.facility)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=self.facility.name)
 
         self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
