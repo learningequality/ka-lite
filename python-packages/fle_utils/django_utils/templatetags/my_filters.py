@@ -106,6 +106,13 @@ def percent(value, precision):
 
 
 @register.filter
+def compute_percent(numerator, denominator, precision=1):
+    if not numerator or not denominator:
+        return None
+    return floatformat((float(numerator) / float(denominator)) * 100, precision) + '%'
+
+
+@register.filter
 def format_name(user, format="first_last"):
     """
     Can be used for objects or dictionaries.
