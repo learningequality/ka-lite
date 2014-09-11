@@ -24,7 +24,13 @@ class CsvResponse(HttpResponse):
 
 def _dthandler(obj):
     """Handler for object types that are not Json-serializable"""
-    return  obj.isoformat() if isinstance(obj, datetime.datetime) else None
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+    elif hasattr(obj, "to_json"):
+        return obj.to_json()
+    else:
+        return None
+
 
 class JsonResponse(HttpResponse):
     """Wrapper class for generating a HTTP response with JSON data"""
@@ -35,6 +41,7 @@ class JsonResponse(HttpResponse):
         if not isinstance(content, basestring):
             content = simplejson.dumps(content, ensure_ascii=False, default=_dthandler)
         super(JsonResponse, self).__init__(content, content_type='application/json', *args, **kwargs)
+
 
 class JsonResponseMessage(JsonResponse):
     def __init__(self, message, level="success", code=None, data={}, *args, **kwargs):

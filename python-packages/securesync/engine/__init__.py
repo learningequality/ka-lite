@@ -136,7 +136,7 @@ def get_models(device_counters=None, limit=None, zone=None, dest_version=None, *
 
             device = Device.all_objects.get(pk=device_id)
 
-            queryset = Model.all_objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True))
+            queryset = Model.all_objects.filter(Q(signed_by=device) | Q(signed_by__isnull=True) | Q(counter__isnull=True))
 
             # for trusted (central) device, only include models with the correct fallback zone
             if not device.in_zone(zone):

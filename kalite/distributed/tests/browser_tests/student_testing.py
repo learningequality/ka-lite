@@ -22,7 +22,10 @@ from kalite.student_testing.utils import set_exam_mode_on
 
 # TODO (rtibbles): After integration into develop,
 # this needs to be modified to create a test and test using the test.
-TEST_ID = '1500'
+# NOTEFROM (aron): the specific test below has been chosen due to all
+# of its questions having a textarea for answer entry, which
+# test_exercise_mastery assumes.
+TEST_ID = 'g3_t4'
 
 
 class StudentTestTest(KALiteDistributedWithFacilityBrowserTestCase):
@@ -69,19 +72,29 @@ class StudentTestTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         answer = "notrightatall"
 
-        for i in range(0, 5):
+        total_questions = 30    # tester, check the test to determine this
+
+        for i in range(0, 30):
             self.browser_submit_answers(answer)
 
         # Now test the models
         testlog = TestLog.objects.get(test=TEST_ID, user=self.student)
-        self.assertEqual(testlog.index, 5, "Index should be 3")
+        self.assertEqual(testlog.index, total_questions, "Index should be %s" % total_questions)
         self.assertTrue(testlog.started, "Student has not started the test.")
         self.assertEqual(
-            testlog.total_number, 5, "Student should have 3 attempts.")
+            testlog.total_number,
+            total_questions,
+            "Student should have %s attempts." % total_questions
+        )
         self.assertTrue(
-            testlog.complete, "Student should have completed the test.")
+            testlog.complete,
+            "Student should have completed the test."
+        )
         self.assertEqual(
-            testlog.total_correct, 0, "Student should have none correct.")
+            testlog.total_correct,
+            0,
+            "Student should have none correct."
+        )
 
 
 @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")

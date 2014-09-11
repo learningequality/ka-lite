@@ -6,6 +6,10 @@
 {% block navbar_topics %}{% endblock navbar_topics %}
 {% block navbar_makelink %}{% endblock navbar_makelink %}
 
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/landing-page.css' %}" />
+{% endblock headcss %}
+
 {% block content %}
     <div>
         {% block navbar %}{{ block.super }}{% endblock navbar %}

@@ -285,7 +285,7 @@ def watch_home(request):
 
 
 @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-# @backend_cache_page
+@backend_cache_page
 @render_to("distributed/homepage.html")
 @refresh_topic_cache
 def homepage(request, topics):
@@ -293,10 +293,6 @@ def homepage(request, topics):
     Homepage.
     """
     context = topic_context(topics)
-    # TODO-BLOCKER(aron): Remove this when merging to other branches
-    if ("nalanda" not in settings.CONFIG_PACKAGE and
-       not settings.RUNNING_IN_TRAVIS):  # don't activate this when we're on travis
-        return HttpResponse("The Nalanda package must be activated. Put in the following to your local_settings.py:\n\nCONFIG_PACKAGE = 'Nalanda'", content_type="text/plain")
     context.update({
         "title": "Home",
     })
@@ -434,22 +430,6 @@ def handler_403(request, *args, **kwargs):
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
-
-
-#########
-# Custom JS and CSS django templates
-#########
-@render_to('distributed/css/ab_testing.css', mimetype='text/css')
-def ab_testing_css(request):
-    return {
-        'turn_off_motivational_features': settings.TURN_OFF_MOTIVATIONAL_FEATURES,
-    }
-
-@render_to('distributed/js/ab_testing.js', mimetype='text/javascript')
-def ab_testing_js(request):
-    return {
-        'fixed_block_exercises': settings.FIXED_BLOCK_EXERCISES,
-    }
 
 
 def handler_404(request):

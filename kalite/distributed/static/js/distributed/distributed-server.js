@@ -71,6 +71,9 @@ var StatusModel = Backbone.Model.extend({
 
         this.loaded.then(this.after_loading);
 
+        this.listenTo(this, "change:points", this.update_total_points);
+        this.listenTo(this, "change:newpoints", this.update_total_points);
+
     },
 
     get_server_time: function () {
@@ -98,7 +101,16 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
             $('.navbar-right').show();
         });
+
+        this.update_total_points();
+
+    },
+
+    update_total_points: function() {
+        // add the points that existed at page load and the points earned since page load, to get the total current points
+        this.set("totalpoints", this.get("points") + this.get("newpoints"));
     }
+
 });
 
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
@@ -112,16 +124,14 @@ var TotalPointView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.model.bind("change:points", this.render);
-        this.model.bind("change:newpoints", this.render);
+        this.model.bind("change:totalpoints", this.render);
         this.model.bind("change:username", this.render);
         this.render();
     },
 
     render: function() {
 
-        // add the points that existed at page load and the points earned since page load, to get the total current points
-        var points = this.model.get("points") + this.model.get("newpoints");
+        var points = this.model.get("totalpoints");
         var username_span = sprintf("<span id='logged-in-name'>%s</span>", this.model.get("username"));
         var message = null;
 
@@ -136,7 +146,10 @@ var TotalPointView = Backbone.View.extend({
         }
 
         if (points > 0) {
-            message = sprintf("%s<span class='motivational-feature'> | %s</span>", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
+            message = sprintf("%s<span> | %s</span>", username_span, sprintf(gettext("Total Points: %(points)d "), { points : points }));
+            if (ds.store.show_store_link_once_points_earned) {
+                message += " | <a href='/store/'>Store!</a>";
+            }
         } else {
             message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
         }
@@ -176,7 +189,7 @@ $(function(){
 });
 
 
-// Related to student log progress
+// Download needed user data and add classes to indicate progress, as appropriate
 $(function() {
 
     // load progress data for all videos linked on page, and render progress circles

@@ -10,6 +10,10 @@
 
 {% block title %}{{ student.get_name }} - {% trans "User Management" %}{{ block.super }}{% endblock title%}
 
+{% block headjs %}
+    {% include_block "coachreports/student_view.html" "student_report_js" %}    
+{% endblock headjs %}
+
 {% block headcss %}{% comment %}Don't insert block.super here, because block.super is WEIRD and isn't the super for student_view IN student view, but instead THIS super.{% endcomment %}
     {% include_block "coachreports/student_view.html" "headcss" %}
 {% endblock headcss %}
