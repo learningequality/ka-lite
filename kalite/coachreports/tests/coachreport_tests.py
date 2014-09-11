@@ -6,14 +6,14 @@ from kalite.student_testing.models import TestLog
 from kalite.testing import KALiteTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
-from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 
 class TestReportTests(FacilityMixins,
-                      StudentTestingMixins,
+                      StudentProgressMixin,
                       CreateAdminMixin,
                       CreateDeviceMixin,
                       KALiteDistributedBrowserTestCase):
@@ -32,7 +32,7 @@ class TestReportTests(FacilityMixins,
         self.browser_login_admin()
         self.browse_to(self.reverse('test_view'))
         student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[2]/td[1]').text
-        self.assertEqual(student_score[0:3], '50%')
+        self.assertEqual(student_score[0:3], '10%')
         empty_student = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr/td[1]').text
         self.assertEqual(empty_student, '')
 
@@ -113,7 +113,6 @@ class TestReportTests(FacilityMixins,
 
 
 class PlaylistProgressTest(FacilityMixins,
-                      StudentTestingMixins,
                       CreateAdminMixin,
                       CreateDeviceMixin,
                       CreatePlaylistProgressMixin,

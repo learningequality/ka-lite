@@ -1,14 +1,22 @@
 from annoying.functions import get_object_or_None
-from tastypie.resources import ModelResource
+from tastypie import fields
+from tastypie.exceptions import NotFound, BadRequest
+from tastypie.resources import Resource, ModelResource
 
-from kalite.facility.models import Facility, FacilityGroup
+from kalite.facility.models import Facility, FacilityGroup, FacilityUser
+from kalite.main.models import AttemptLog
+from kalite.shared.api_auth import ObjectAdminAuthorization
+from kalite.student_testing.models import TestLog
 from securesync.models import Zone
+
+from .api_serializers import CSVSerializer
 
 
 class FacilityResource(ModelResource):
     class Meta:
         queryset = Facility.objects.all()
         resource_name = 'facility'
+        authorization = ObjectAdminAuthorization()
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering facilities by zone
@@ -18,13 +26,15 @@ class FacilityResource(ModelResource):
         else:
             facility_list = Facility.objects.all()
 
-        return facility_list
+        # call super to trigger auth
+        return super(FacilityResource, self).authorized_read_list(facility_list, bundle)
+        
 
-
-class GroupResource(ModelResource):
+class FacilityGroupResource(ModelResource):
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
+        authorization = ObjectAdminAuthorization()
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering groups by facility
@@ -32,8 +42,138 @@ class GroupResource(ModelResource):
         if facility_id:
             group_list = FacilityGroup.objects.filter(facility__id=facility_id)
         else:
-            # TODO(dylanjbarth): this needs to be restricted to a zone?
             group_list = FacilityGroup.objects.all()
 
-        return group_list
+        # call super to trigger auth
+        return super(FacilityGroupResource, self).authorized_read_list(group_list, bundle)
+
+
+class ParentFacilityUserResource(ModelResource):
+    """A class with helper methods for getting facility users for data export requests"""
+
+    def _get_facility_users(self, bundle):
+        """Return a dict mapping facility_user_ids to facility user objs, filtered by the zone id(s), facility_id, or group_id"""
+        zone_id = bundle.request.GET.get('zone_id')
+        zone_ids = bundle.request.GET.get('zone_ids')
+        facility_id = bundle.request.GET.get('facility_id')
+        group_id = bundle.request.GET.get('group_id')
+
+        # They must have a zone_id, and may have a facility_id and group_id.
+        # Try to filter from most specific, to least 
+        facility_user_objects = []
+        if group_id:
+            facility_user_objects = FacilityUser.objects.filter(group__id=group_id)
+        elif facility_id:
+            facility_user_objects = FacilityUser.objects.filter(facility__id=facility_id)
+        elif zone_id:
+            facility_user_objects = FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+        elif zone_ids:
+            # Assume 'all' selected for zone, and a list of zone ids has been passed
+            zone_ids = zone_ids.split(",")
+            facility_user_objects = []
+            for zone_id in zone_ids:
+                facility_user_objects += FacilityUser.objects.by_zone(get_object_or_None(Zone, id=zone_id))
+        # TODO(dylanjbarth) errors commented out so we can pass a blank CSV if not found.
+        # in future, should handle these more gracefully, with a redirect, an AJAX warning,
+        # and reset the fields. see: https://gist.github.com/1116962/58b7db0364de837ce229cdd8ef524bc9ff6da19f
+        # else:
+        #     raise BadRequest("Invalid request.")
+
+        # if not facility_user_objects:
+        #     raise NotFound("Student not found.")
+        facility_user_dict = {}
+        for user in facility_user_objects:
+            facility_user_dict[user.id] = user
+        return facility_user_dict
+
+
+class FacilityUserResource(ParentFacilityUserResource):
+
+    _facility_users = None
+
+    class Meta:
+        queryset = FacilityUser.objects.all()
+        resource_name = 'facility_user_csv'
+        authorization = ObjectAdminAuthorization()
+        excludes = ['password', 'signature', 'deleted', 'signed_version', 'counter', 'notes']
+        serializer = CSVSerializer()
+
+    def obj_get_list(self, bundle, **kwargs):
+        self._facility_users = self._get_facility_users(bundle)
+        return super(FacilityUserResource, self).authorized_read_list(self._facility_users.values(), bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add facility name, and facility ID to responses"""
+        for bundle in to_be_serialized["objects"]:
+            user = self._facility_users.get(bundle.data["id"])
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
+
+        return to_be_serialized
+
+
+class TestLogResource(ParentFacilityUserResource):
+
+    _facility_users = None
+
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
+
+    class Meta:
+        queryset = TestLog.objects.all()
+        resource_name = 'test_log_csv'
+        authorization = ObjectAdminAuthorization()
+        excludes = ['user', 'counter', 'signature', 'deleted', 'signed_version']
+        serializer = CSVSerializer()
+
+    def obj_get_list(self, bundle, **kwargs):
+        self._facility_users = self._get_facility_users(bundle)
+        test_logs = TestLog.objects.filter(user__id__in=self._facility_users.keys())
+        # if not test_logs:
+        #     raise NotFound("No test logs found.")
+        return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add username, facility name, and facility ID to responses"""
+        for bundle in to_be_serialized["objects"]:
+            user_id = bundle.data["user"].data["id"]
+            user = self._facility_users.get(user_id)
+            bundle.data["username"] = user.username
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
+            bundle.data.pop("user")
+
+        return to_be_serialized
+
+
+class AttemptLogResource(ParentFacilityUserResource):
+
+    _facility_users = None
+
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
+
+    class Meta:
+        queryset = AttemptLog.objects.all()
+        resource_name = 'attempt_log_csv'
+        authorization = ObjectAdminAuthorization()
+        excludes = ['user', 'signed_version', 'language', 'deleted', 'response_log', 'signature', 'version', 'counter']
+        serializer = CSVSerializer()
+
+    def obj_get_list(self, bundle, **kwargs):
+        self._facility_users = self._get_facility_users(bundle)
+        attempt_logs = AttemptLog.objects.filter(user__id__in=self._facility_users.keys())
+        # if not attempt_logs:
+        #     raise NotFound("No attempt logs found.")
+        return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add username, facility name, and facility ID to responses"""
+        for bundle in to_be_serialized["objects"]:
+            user_id = bundle.data["user"].data["id"]
+            user = self._facility_users.get(user_id)
+            bundle.data["username"] = user.username
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
+            bundle.data.pop("user")
+
+        return to_be_serialized
 
