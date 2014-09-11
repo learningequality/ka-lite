@@ -9,10 +9,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.playlist import UNITS
 from kalite.student_testing.models import TestLog
-from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
+from kalite.testing.base import KALiteClientTestCase
 from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
     get_current_unit_settings_value, set_current_unit_settings_value
@@ -20,7 +19,7 @@ from .utils import get_exam_mode_on, set_exam_mode_on, \
 logging = settings.LOG
 
 
-class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
+class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
@@ -35,10 +34,6 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
         super(BaseTest, self).setUp()
 
-        # make tests faster
-        self.setup_fake_device()
-
-        self.client.setUp()
         self.assertTrue(self.client.facility)
         self.assertTrue(self.client.teacher)
         self.assertTrue(self.client.student)
@@ -315,7 +310,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         self.assertEqual(testlog.started, True)
 
 
-class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
+class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
@@ -329,10 +324,6 @@ class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         self.logout_url = self.reverse('logout')
         self.current_unit_url = self.reverse('current_unit')
 
-        # make tests faster
-        self.setup_fake_device()
-
-        self.client.setUp()
         self.assertTrue(self.client.facility)
         self.assertTrue(self.client.teacher)
         self.assertTrue(self.client.student)
