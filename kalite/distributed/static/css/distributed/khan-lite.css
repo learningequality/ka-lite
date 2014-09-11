@@ -87,14 +87,12 @@ a:hover {
 
 /********** "Teacher" Sub-Navigation bar ***********/
 .teach-nav {
-    display: inline-block;
     width: 100%;
     border-bottom: 4px solid #5C8547;
     margin-bottom: 25px;
 }
 .teach-nav ul {
     padding-left: 1%;
-    display: inline-block;
     margin-bottom: 0;
 }
 .teach-nav li {
@@ -106,31 +104,37 @@ a:hover {
     border-left: 3px solid #5C8547;
     width: 110px;
     text-align: center;
-    bottom: 0;
     font-weight: bold;
     display: inline-block;
     margin: 0 2px -4px 0;
+
 }
-.teach-nav li span {
-    line-height: 7.7;
+.teach-nav li div {
+    position: relative;
+    top: 35px;
+    left: 11px;
 }
-.teach-nav li a:hover {
-    background-color: white !important;
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 16px !important;
+.teach-nav li:hover {
+    background-color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 16px;
     color: #5C8547;
     font-weight: bold;
+    -webkit-transition: all 100ms ease-out;
+    -moz-transition: all 100ms ease-out;
+    -o-transition: all 100ms ease-out;
+    transition: all 100ms ease-out;
 }
 .teach-nav li a {
     color: white;
-    padding: 10px !important;
+    padding: 40px 15px 5px 15px;
     text-align: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    -webkit-transition: all 100ms ease-out !important;
-    -moz-transition: all 100ms ease-out !important;
-    -o-transition: all 100ms ease-out !important;
-    transition: all 100ms ease-out !important;
+    height: 87px;
+}
+.teach-nav li a:hover {
+    color: #5C8547;
 }
 .teach-nav li img {
     height: 40px;
@@ -139,29 +143,29 @@ a:hover {
     margin: auto;
     margin-bottom: 5px;
 }
+.subnav-div {
+    width: 80px;
+}
+.link-width {
+    width: 90px;
+}
 .active-nav {
-    color: #5C8547 !important;
-    background-color: white !important;
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 16px !important;
-    font-weight: bold;      
-    display: inline-block;      
+    color: #5C8547;
+    background-color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 16px;
+    font-weight: bold;           
 }
-.active {
-    background-color: #E9F1E4; 
-    height: 50px;       
-    display: inline-block;   
-}
+
 .active-tab {
     background-color: #E9F1E4; 
     height: 87px;
-    display: inline-block;
+    color: #5C8547;
 }
 .reports {
     background: url("../../images/distributed/reports-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
-    display: inline-block;
 }
 .reports:hover, .reports-active {
     background: url("../../images/distributed/reports-active-icon.png") no-repeat;
