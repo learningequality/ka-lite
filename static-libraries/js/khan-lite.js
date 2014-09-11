@@ -219,6 +219,9 @@ function show_message(msg_class, msg_text, msg_id) {
 
     var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
+    if (msg_class === "error") {
+        msg_class = "danger"
+    };
     var msg_html = "<div class='alert alert-" + msg_class + "'";
 
     if (msg_id) {
