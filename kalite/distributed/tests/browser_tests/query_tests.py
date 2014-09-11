@@ -11,10 +11,9 @@ from .base import KALiteDistributedWithFacilityBrowserTestCase
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
-class QueryTest(CreateDeviceMixin, KALiteDistributedWithFacilityBrowserTestCase):
+class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
         """To guarantee state across tests, clear browser state every time."""

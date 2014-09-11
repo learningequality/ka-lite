@@ -5,10 +5,12 @@ for automated browser-based testing.
 """
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import Client
+from django.test import Client, TestCase
 
 from kalite.shared.decorators.misc import deprecated
-from securesync.tests.base import SecuresyncTestCase
+
+from .client import KALiteClient
+from .mixins.securesync_mixins import CreateDeviceMixin
 
 
 @deprecated
@@ -29,8 +31,13 @@ def create_test_admin(username="admin", password="pass", email="admin@example.co
     return test_admin
 
 
-class KALiteTestCase(SecuresyncTestCase):
+class KALiteTestCase(CreateDeviceMixin, TestCase):
     """The base class for KA Lite test cases."""
+
+    def setUp(self):
+        self.setup_fake_device()
+
+        super(KALiteTestCase, self).setUp()
 
     def reverse(self, url_name, args=None, kwargs=None):
         """Given a URL name, returns the full central URL to that URL"""
