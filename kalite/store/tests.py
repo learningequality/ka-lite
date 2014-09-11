@@ -15,7 +15,8 @@ from .models import StoreTransactionLog
 
 logging = settings.LOG
 
-class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
+
+class BaseTest(FacilityMixins, KALiteTestCase):
 
     client_class = KALiteClient
 
@@ -24,9 +25,6 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
     def setUp(self):
 
         super(BaseTest, self).setUp()
-
-        # make tests faster
-        self.setup_fake_device()
 
         self.client.setUp()
         self.assertTrue(self.client.facility)

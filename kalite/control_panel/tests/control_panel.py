@@ -22,12 +22,7 @@ logging = settings.LOG
 
 class FacilityControlTests(FacilityMixins,
                            CreateAdminMixin,
-                           CreateDeviceMixin,
                            KALiteDistributedBrowserTestCase):
-
-    def setUp(self):
-        self.setup_fake_device()
-        super(FacilityControlTests, self).setUp()
 
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
@@ -61,11 +56,9 @@ class FacilityControlTests(FacilityMixins,
 
 
 class GroupControlTests(FacilityMixins,
-                        CreateDeviceMixin,
                         KALiteDistributedBrowserTestCase):
 
     def setUp(self):
-        self.setup_fake_device()
         self.facility = self.create_facility()
 
         group_name = 'group1'
@@ -119,12 +112,10 @@ class GroupControlTests(FacilityMixins,
 
 class CSVExportTests(FacilityMixins,
                      StudentTestingMixins,
-                     CreateDeviceMixin,
                      CreateAdminMixin,
                      KALiteDistributedBrowserTestCase):
 
     def setUp(self):
-        self.setup_fake_device()
         self.facility = self.create_facility()
         self.base_url = self.reverse("zone_data_export", kwargs={"zone_id": None})
 

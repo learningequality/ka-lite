@@ -2,20 +2,15 @@ from datetime import datetime
 
 from kalite.main.models import AttemptLog
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
-from kalite.student_testing.models import TestLog
-from kalite.testing import KALiteTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
 from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
-
 
 
 class TestReportTests(FacilityMixins,
                       StudentTestingMixins,
                       CreateAdminMixin,
-                      CreateDeviceMixin,
                       KALiteDistributedBrowserTestCase):
 
     def test_student_scores_display(self):
@@ -111,13 +106,11 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
-
 class PlaylistProgressTest(FacilityMixins,
-                      StudentTestingMixins,
-                      CreateAdminMixin,
-                      CreateDeviceMixin,
-                      CreatePlaylistProgressMixin,
-                      KALiteDistributedBrowserTestCase):
+                           StudentTestingMixins,
+                           CreateAdminMixin,
+                           CreatePlaylistProgressMixin,
+                           KALiteDistributedBrowserTestCase):
 
     def setUp(self):
         super(PlaylistProgressTest, self).setUp()
