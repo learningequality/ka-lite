@@ -89,7 +89,7 @@ class ParentFacilityUserResource(ModelResource):
 
 class FacilityUserResource(ParentFacilityUserResource):
 
-    _facility_users = {}
+    _facility_users = None
 
     class Meta:
         queryset = FacilityUser.objects.all()
@@ -114,7 +114,7 @@ class FacilityUserResource(ParentFacilityUserResource):
 
 class TestLogResource(ParentFacilityUserResource):
 
-    _facility_users = {}
+    _facility_users = None
 
     user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
 
@@ -147,7 +147,7 @@ class TestLogResource(ParentFacilityUserResource):
 
 class AttemptLogResource(ParentFacilityUserResource):
 
-    _facility_users = {}
+    _facility_users = None
 
     user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
 

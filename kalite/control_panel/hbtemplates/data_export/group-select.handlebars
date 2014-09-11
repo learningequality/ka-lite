@@ -6,7 +6,7 @@
         {{/if}}
         <select class="form-control {{#if loading}}loading-transparency{{/if}}" id="group-name" {{#if is_disabled}}disabled{{/if}}>
             {{#if groups }}
-                <option>All</option>
+                <option value="">All</option>
                 {{#each groups}}
                     <option value="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
                 {{/each}}
