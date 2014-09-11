@@ -2,6 +2,8 @@
 {% load kalite_staticfiles %}
 {% load i18n %}
 {% load i18n_filters %}
+{% load my_filters %}
+
 <html>
     <head>
         <!--[if lt IE 9]>
@@ -17,7 +19,6 @@
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' True %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' True %}">
         <!-- <link rel="stylesheet/less" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.less' True %}"> -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' True %}">
@@ -132,15 +133,6 @@
                     <ul class="nav navbar-nav navbar-right">
                         {% block sitewide_navigation %}
 
-<!--                         <li>
-                            <form action="{% url 'search' %}" method="GET" id="search-box">
-                            {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                                <input type="text" name="query" class="search-js" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
-                                <a class="btn btn-success btn-xs search-js" id="search-button" href="#" />{% trans 'Search' %}</a>
-                                <span class="glyphicon glyphicon-search" id="glyphicon-search-js" title="{% trans 'Search by keyword' %}"></span>
-                            </form>
-                        </li> -->
-
                         {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                        <li><a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Learn" %}</a></li>
 
@@ -212,8 +204,16 @@
                     <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
                     {% if messages %}
                         <!--Normal messages loaded from the view get inserted here-->
-                        <div id="messages">
-                        </div>
+                        {% for message in messages %}
+                            {% get_twitter_bootstrap_alert_msg_css_name message.tags as alert_tag %}
+                            <div class="alert alert-{{alert_tag}} alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span aria-hidden="true">&times;</span>
+                                    <span class="sr-only">Close</span>
+                                </button>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     {% endif %}
                     {% endblock precontent %}
                     {% block content %}

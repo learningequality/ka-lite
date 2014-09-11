@@ -135,3 +135,8 @@ def format_name(user, format="first_last"):
 @register.simple_tag
 def central_server_api(path, securesync=False):
     return "%s://%s%s" % ((settings.SECURESYNC_PROTOCOL if securesync else "http"), settings.CENTRAL_SERVER_HOST, path)
+
+
+@register.assignment_tag
+def get_twitter_bootstrap_alert_msg_css_name(tags):
+    return 'danger' if tags == 'error' else tags
