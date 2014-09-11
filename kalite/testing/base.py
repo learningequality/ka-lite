@@ -43,3 +43,16 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
         """Given a URL name, returns the full central URL to that URL"""
 
         return self.live_server_url + reverse(url_name, args=args, kwargs=kwargs)
+
+
+class KALiteClientTestCase(KALiteTestCase):
+
+    def setUp(self):
+        self.client = KALiteClient()
+        self.client.setUp()
+
+        super(KALiteClientTestCase, self).setUp()
+
+
+class KALiteBrowserTestCase(KALiteTestCase):
+    pass
