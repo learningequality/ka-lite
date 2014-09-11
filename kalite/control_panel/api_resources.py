@@ -1,4 +1,6 @@
 from annoying.functions import get_object_or_None
+from datetime import datetime
+from django.http import HttpResponse
 from tastypie import fields
 from tastypie.exceptions import NotFound, BadRequest
 from tastypie.resources import Resource, ModelResource
@@ -86,6 +88,13 @@ class ParentFacilityUserResource(ModelResource):
             facility_user_dict[user.id] = user
         return facility_user_dict
 
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        response = super(ParentFacilityUserResource, self).create_response(request, data, response_class=response_class, **response_kwargs)
+        # add a suggested download filename if we're replying with a CSV file
+        if response["Content-Type"].startswith("text/csv"):
+            params = ["%s-%s" % (k,str(v)[0:8]) for (k,v) in request.GET.items() if v and k not in ["format", "limit"]]
+            response["Content-Disposition"] = "filename=%s__%s__exported_at-%s.csv" % (request.path.strip("/").split("/")[-1], "__".join(params), datetime.now().strftime("%Y%m%d_%H%M%S"))
+        return response
 
 class FacilityUserResource(ParentFacilityUserResource):
 
