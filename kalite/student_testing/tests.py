@@ -6,11 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from fle_utils.config.models import Settings
-
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.playlist import UNITS
-from kalite.student_testing.api_resources import Test
 from kalite.student_testing.models import TestLog
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
