@@ -472,8 +472,8 @@ def get_video_data(request, video_id=None):
     video = videos_dict.get(video_id)
 
     # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
-    from kalite.updates import stamp_availability_on_video
-    video = stamp_availability_on_video(video)
+    # from kalite.updates import stamp_availability_on_video
+    # video = stamp_availability_on_video(video)
 
     if not video["available"]:
         if request.is_admin:
@@ -521,3 +521,11 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
+def convert_leaf_url_to_id(leaf_url):
+    """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
+    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1] 
+    assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
+    return leaf_id[0]
+
+

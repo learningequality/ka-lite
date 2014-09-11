@@ -19,21 +19,19 @@
         var ALL_TESTS_URL = "{% url 'api_dispatch_list' resource_name='test' %}";
     </script>
 
-    <script type="text/html" id="all-tests-list-entry-template">
-        <td test-title="<%= title %>"> <a href="<%= test_url %>"><%= title %></a> </td>
-        <td>
-            {% if request.is_admin %}
-                <% if (is_exam_mode) { %>
-                    <button data-exam-title="<%= title %>" class="btn btn-info test-row-button">Disable Exam Mode</button>
-                <% } else { %>
-                    <button data-exam-title="<%= title %>" class="btn test-row-button">Enable Exam Mode</button>
-                <% } %>
-            {% endif %}
-        </td>
-    </script>
-
+    <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
     <script src="{% static 'js/student_testing/models.js' %}"></script>
     <script src="{% static 'js/student_testing/test_list.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.test_setting_app_view = new TestSettingAppView({
+                el: $("#test-setting-app-container")
+            });
+        });
+    </script>
+
+
 {% endblock headjs %}
 
 {% block content %}
@@ -61,6 +59,7 @@
             </thead>
         </table>
     </div>
+    <div id="test-setting-app-container"></div>
 {% endblock content %}
 {% comment %}
 {% endcomment %}

@@ -71,8 +71,9 @@ def get_dubbed_video_map(lang_code=None, force=False):
         try:
             if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
                 try:
-                    # Generate from the spreadsheet
-                    response = requests.get("http://%s/api/i18n/videos/dubbed_video_map" % (settings.CENTRAL_SERVER_HOST))
+                    # Never call commands that could fail from the distributed server.
+                    #   Always create a central server API to abstract things
+                    response = requests.get("%s://%s/api/i18n/videos/dubbed_video_map" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST))
                     response.raise_for_status()
                     with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
                         fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
@@ -94,8 +95,9 @@ def get_dubbed_video_map(lang_code=None, force=False):
 
         DUBBED_VIDEO_MAP = {}
         for lang_name, video_map in DUBBED_VIDEO_MAP_RAW.iteritems():
-            logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
-            DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
+            if lang_name:
+                logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
+                DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
 
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
@@ -177,6 +179,9 @@ def get_file2lang_map(force=False):
         YT2LANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
             for dubbed_youtube_id in dic.values():
+                if dubbed_youtube_id.startswith("#") or len(dubbed_youtube_id) != 11:
+                    # Handle bad cells from the mapping spreadsheet by skipping them
+                    continue
                 if dubbed_youtube_id in YT2LANG_MAP and YT2LANG_MAP[dubbed_youtube_id] != lang_code:
                     # Sanity check, but must be failsafe, since we don't control these data
                     logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))

@@ -49,7 +49,7 @@ class UserRegistrationTestCase(FacilityTestCase):
     def test_admin_and_user_no_common_username(self):
         """Post as username"""
         self.data['username'] = self.admin.username
-        response = self.client.post(reverse('facility_user_signup'), self.data)
+        response = self.client.post(reverse('facility_user_signup'), self.data, follow=True)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
         self.assertFormError(response, 'form', 'username',
                             'A user with this username already exists. Please choose a new username and try again.')
@@ -68,7 +68,7 @@ class UserRegistrationTestCase(FacilityTestCase):
         d = self.data['password_first'][:min_length - 1]
         self.data['password_first'] = self.data['password_recheck'] = d
 
-        response = self.client.post(reverse('add_facility_student'), self.data)
+        response = self.client.post(reverse('facility_user_signup'), self.data, follow=True)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
         self.assertFormError(response, 'form', 'password_first',
                              "Password should be at least %d characters." % min_length)

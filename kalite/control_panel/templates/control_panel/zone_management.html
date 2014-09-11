@@ -62,6 +62,7 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
+            <a href="{% url 'zone_data_export' zone_id=zone_id %}" class="btn btn-success">{% trans "Export Test Data" %}</a>
 {% endblock buttons %}
 
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
@@ -195,77 +196,82 @@
                 </div>
             {% endif %}
         </div>
-        {% if not devices %}
-            <p>{% trans "You currently have no devices that sync data with the central server" %}</p>
-
-        {% else %}
-        <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
-        called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
-            <table class="simple-table">
-                <tr>
-                    <th>{% trans "Device name" %}</th>
-                    <th>{% trans "# Times Synced" %}</th>
-                    <th>{% trans "Last Sync" %}</th>
-                    <th>{% trans "Last Usage" %}</th>
-                    <th>{% trans "Available Actions" %}</th>
-                    <!--th width="250px">
-                        {% trans "Counter" %}
-                        <span class="glossary-link nudge-left" title="{% trans 'The counter is an integer &#39;timestamp&#39; for each update, and tells the last data update synced for a given device.' %}"></span>
-                    </th-->
-                </tr>
-                {% for id,device in devices.items %}
-                    <tr class="{% if not device.is_registered %}unregistered {% endif %}{% if device.is_demo_device %}demo-device{% else %}real{% endif %}">
-                        <td>
-                            {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
-                                {{ device.name }}
-                                {% if device.is_demo_device %}[Demo data]{% endif %}
-                            {% if device.num_times_synced != None %}</a>{% endif %}
-                        </td>
-                        <td>
-                            {% if device.num_times_synced != None %}
-                                {{ device.num_times_synced }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if device.last_time_synced != None %}
-                                {{ device.last_time_synced }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not device.last_time_used %}
-                                {% trans "Never" %}
-                            {% elif device.last_time_used.completion_timestamp %}
-                                {{ device.last_time_used.completion_timestamp|date }}
-                            {% elif device.last_time_used.last_activity_datetime %}
-                                {{ device.last_time_used.last_activity_datetime }}
-                            {% elif device.last_time_used.start_datetime %}
-                                {{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if device.is_own_device %}
-                            <button id="force-sync" class="btn btn-default btn-xs registered-only">{% trans "Sync Now!" %}</button>
-                            <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
-                            {% if clock_set %}
-                            /
-                            <a onclick="$('#clock_set').show()">set clock</a>
-                            <div id="clock_set" style="display:none">
-                                {% include_block "control_panel/snippets/clock_set.html" "content" %}
-                            </div>
-                            {% endif %}
-                            {% endif %}
-                        </td>
-                        <!--td>{{ device.counter }}</td-->
-                    </tr>
-
-                {% endfor %}
-            </table>
+    </div> <!-- End Facilities -->
+    <!-- Begin Devices -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{% trans "Devices" %}</br><small>{% trans "A device is a KA Lite installation." %}{% trans "Devices in the same 'sharing network' sync user data with each other." %}</small></h2>
         </div>
-        {% endif %}
+        <div class="col-md-12">
+            {% if not devices %}
+                <p>{% trans "You currently have no devices that sync data with the central server" %}</p>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr class="success">
+                                <th>{% trans "Device name" %}</th>
+                                <th>{% trans "# Times Synced" %}</th>
+                                <th>{% trans "Last Sync" %}</th>
+                                <th>{% trans "Last Usage" %}</th>
+                                <th>{% trans "Available Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for id,device in devices.items %}
+                            <tr class="{% if not device.is_registered %}warning {% endif %}{% if device.is_demo_device %}active{% endif %}">
+                                <td>
+                                    {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
+                                        {{ device.name|truncatechars:25 }}
+                                    {% if device.is_demo_device %}[Demo data]{% endif %}
+                                    {% if device.num_times_synced != None %}</a>{% endif %}
+                                </td>
+                                <td>
+                                    {% if device.num_times_synced != None %}
+                                        {{ device.num_times_synced }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if device.last_time_synced != None %}
+                                        {{ device.last_time_synced }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not device.last_time_used %}
+                                        {% trans "Never" %}
+                                    {% elif device.last_time_used.completion_timestamp %}
+                                        {{ device.last_time_used.completion_timestamp|date }}
+                                    {% elif device.last_time_used.last_activity_datetime %}
+                                        {{ device.last_time_used.last_activity_datetime }}
+                                    {% elif device.last_time_used.start_datetime %}
+                                        {{ device.last_time_used.start_datetime|date }} - {{ device.last_time_used.end_datetime|date }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if device.is_own_device %}
+                                        <a href="#" id="force-sync" class="registered-only">{% trans "Sync Now!" %}</a></br> 
+                                        <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">{% trans "Update" %}</a>
+                                        <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
+                                        {% if clock_set %}
+                                        /
+                                        <a onclick="$('#clock_set').show()">set clock</a>
+                                        <div id="clock_set" style="display:none">
+                                            {% include_block "control_panel/snippets/clock_set.html" "content" %}
+                                        </div>
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
     </div><!-- devices -->
 </div><!-- zone_container -->
 

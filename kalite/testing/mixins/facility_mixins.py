@@ -3,7 +3,7 @@ from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
 class CreateFacilityMixin(object):
     DEFAULTS = {
-        'name': 'facility0',
+        'name': 'facility1',
         'description': 'a default facility',
         'user_count': 1,
     }

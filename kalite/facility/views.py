@@ -142,10 +142,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             # Editing self
             if request.session.get("facility_user") and request.session.get("facility_user").id == form.instance.id:
                 messages.success(request, _("You successfully updated your user settings."))
-                if form.instance.is_teacher:
-                    return HttpResponseRedirect(next)
-                else:
-                    return HttpResponseRedirect(next)
+                return HttpResponseRedirect(next)
 
             # Editing another user
             elif not new_user:
@@ -164,7 +161,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                 messages.success(request, _("You successfully registered."))
                 return HttpResponseRedirect(reverse("login"))
 
-    # render form for editicng
+    # render form for editing
     elif user_being_edited:
         form = FacilityUserForm(facility=facility, instance=user_being_edited)
 
