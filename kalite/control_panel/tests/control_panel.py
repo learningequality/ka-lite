@@ -247,13 +247,11 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         facility_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 4, "API response incorrect")
-        self.assertEqual(rows[2][0:4], "stu2", "API response incorrect")
 
         # Test filtering by group
         group_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
-        self.assertEqual(rows[1][0:4], "stu1", "API response incorrect")
         self.client.logout()
 
 
@@ -263,13 +261,11 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         facility_filtered_resp = self.client.get(self.api_test_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 3, "API response incorrect")
-        self.assertEqual(rows[1][0:4], "stu2", "API response incorrect")
 
         # Test filtering by group
         group_filtered_resp = self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
-        self.assertEqual(rows[1][0:4], "stu1", "API response incorrect")
         self.client.logout()
 
 
@@ -279,13 +275,11 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         facility_filtered_resp = self.client.get(self.api_attempt_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 3, "API response incorrect")
-        self.assertEqual(rows[1][0:4], "stu2", "API response incorrect")
 
         # Test filtering by group
         group_filtered_resp = self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
-        self.assertEqual(rows[1][0:4], "stu1", "API response incorrect")
         self.client.logout()
 
 
