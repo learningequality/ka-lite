@@ -177,4 +177,3 @@ class AttemptLogResource(ParentFacilityUserResource):
 
         return to_be_serialized
 
-

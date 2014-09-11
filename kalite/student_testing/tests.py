@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import unittest
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -8,13 +9,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from fle_utils.config.models import Settings
 
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
+from kalite.playlist import UNITS
+from kalite.student_testing.api_resources import Test
+from kalite.student_testing.models import TestLog
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_value, set_current_unit_settings_value, SETTINGS_MAX_UNITS
+    get_current_unit_settings_value, set_current_unit_settings_value
 
 logging = settings.LOG
 
@@ -204,15 +208,19 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
                                    exam_mode_on=exam_mode_on)
 
     def wait_for_element(self, by, elem):
-        WebDriverWait(self.browser, 1).until(ec.element_to_be_clickable((by, elem)))
+        WebDriverWait(self.browser, 5).until(ec.element_to_be_clickable((by, elem)))
 
     def get_button(self, is_on=False):
         if is_on:
             self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
+            WebDriverWait(self.browser,1).until(ec.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON), self.TEXT_DISABLE))
             btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
             self.assertEqual(btn.text, self.TEXT_DISABLE)
         else:
             self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
+            WebDriverWait(self.browser,1).until(ec.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON), self.TEXT_ENABLE))
             btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
             self.assertEqual(btn.text, self.TEXT_ENABLE)
         return btn
@@ -261,6 +269,53 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         self.browser_logout_user()
         self.login_student_in_browser()
         self.assertEqual(self.reverse("homepage"), self.browser.current_url)
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
+    def test_exam_mode_shut_out(self):
+
+        set_exam_mode_on(self.exam_id)
+
+        self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True)
+
+        # Start the quiz to create a test log
+
+        self.wait_for_element(By.ID, 'start-test')
+
+        self.browser.find_element_by_id("start-test").click()
+
+        # Answer one question
+
+        self.wait_for_element(By.ID, 'check-answer-button')
+
+        # Turn off the exam
+
+        set_exam_mode_on('')
+
+        self.browser.find_element_by_css_selector("input").click()
+
+        self.browser.find_element_by_id("check-answer-button").click()
+
+        testlog = TestLog.objects.get(user=self.client.student, test=self.exam_id)
+
+        # Check that the Test Log is started, but not advanced.
+        self.assertEqual(testlog.started, True)
+        self.assertEqual(testlog.index, 0)
+
+        # logout the student and login a teacher to check they can access the exam.
+        self.browser_logout_user()
+        self.login_teacher_in_browser()
+        self.browse_to(self.exam_page_url)
+
+        # Start the quiz to create a test log
+
+        self.wait_for_element(By.ID, 'start-test')
+
+        self.browser.find_element_by_id("start-test").click()
+
+        testlog = TestLog.objects.get(user=self.client.student, test=self.exam_id)
+
+        # Check that the Test Log is started.
+        self.assertEqual(testlog.started, True)
 
 
 class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
@@ -385,6 +440,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         btn = self.get_button(is_next=True)
         btn.click()
 
+        self.browser_accept_alert(sleep=2)
+
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit + 1,)
         self.wait_for_element(By.CSS_SELECTOR, sel)
@@ -395,6 +452,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click previous and test that Setting was decremented
         btn = self.get_button(is_next=False)
         btn.click()
+
+        self.browser_accept_alert()
 
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
@@ -413,7 +472,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         facility_id = self.client.facility.id
 
         # set to max units and check the previous and next buttons
-        set_current_unit_settings_value(facility_id, SETTINGS_MAX_UNITS)
+        set_current_unit_settings_value(facility_id, max(UNITS))
 
         # go to current unit page
         self.browse_to(self.current_unit_url)
@@ -422,7 +481,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         unit = get_current_unit_settings_value(facility_id)
 
         # must have been successfully set to max unit
-        self.assertEqual(SETTINGS_MAX_UNITS, unit)
+        self.assertEqual(max(UNITS), unit)
 
         # check that next button is disabled
         btn = self.get_button(is_next=True)
@@ -431,6 +490,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click previous and test that Setting was decremented
         btn = self.get_button(is_next=False)
         btn.click()
+
+        self.browser_accept_alert()
 
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit - 1,)
@@ -442,6 +503,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # click next and test that Setting was incremented
         btn = self.get_button(is_next=True)
         btn.click()
+
+        self.browser_accept_alert()
 
         # wait until ajax call is done
         sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)

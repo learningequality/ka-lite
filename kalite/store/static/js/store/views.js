@@ -91,13 +91,15 @@ window.AvailableStoreItemListView = Backbone.View.extend({
     },
 
     add_item: function(item) {
-        var self = this;
-        var view = new AvailableStoreItemView({
-            model: item
-        });
-        this.$el.append(view.render().el);
-        this.item_views.push(view);
-        this.listenTo(view, "purchase_requested", function(item) { self.trigger("purchase_requested", item); })
+        if(item.get("shown")){
+            var self = this;
+            var view = new AvailableStoreItemView({
+                model: item
+            });
+            this.$el.append(view.render().el);
+            this.item_views.push(view);
+            this.listenTo(view, "purchase_requested", function(item) { self.trigger("purchase_requested", item); });
+        }
     },
 
     add_all_items: function() {
@@ -122,13 +124,16 @@ window.PurchasedStoreItemListView = Backbone.View.extend({
         this.listenTo(this.collection, "reset", this.add_all_items);
     },
 
-    add_item: function(item) {
-        var view = new PurchasedStoreItemView({
-            model: item,
-            available_items: this.options.available_items
-        });
-        this.$el.append(view.render().el);
-        this.item_views.push(view);
+    add_item: function(model) {
+        var item = this.options.available_items.get(model.get("item"))
+        if (item && item.get("shown")) {
+            var view = new PurchasedStoreItemView({
+                model: model,
+                available_items: this.options.available_items
+            });
+            this.$el.append(view.render().el);
+            this.item_views.push(view);
+        }
     },
 
     add_all_items: function() {

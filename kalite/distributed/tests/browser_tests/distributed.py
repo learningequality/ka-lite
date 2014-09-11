@@ -67,7 +67,7 @@ class DeviceUnregisteredTest(KALiteDistributedBrowserTestCase):
         home_url = self.reverse("homepage")
 
         # First, get the homepage without any automated information.
-        self.browser.get(home_url) # Load page
+        self.browse_to(home_url) # Load page
         self.browser_check_django_message(message_type="warning", contains="complete the setup.")
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
 

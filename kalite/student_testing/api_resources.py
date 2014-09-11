@@ -1,5 +1,3 @@
-import glob
-import json
 import os
 
 from random import randint
@@ -18,43 +16,71 @@ from fle_utils.internet import api_handle_error_with_json
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.facility.models import Facility
+from kalite.playlist import UNITS
 
-from .models import TestLog
-from .settings import SETTINGS_KEY_EXAM_MODE, STUDENT_TESTING_DATA_PATH
-from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_name, get_current_unit_settings_value, set_current_unit_settings_value,\
-    SETTINGS_MAX_UNITS
+from .models import Test, TestLog
+from .settings import SETTINGS_KEY_EXAM_MODE
+from .utils import get_exam_mode_on, set_exam_mode_on, get_current_unit_settings_value, set_current_unit_settings_value
 
 from django.conf import settings
 
 logging = settings.LOG
 
-testscache = {}
+class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
 
+    def check_test(self, bundle):
 
-class Test():
-    def __init__(self, **kwargs):
-        test_id = kwargs.get('test_id')
-        self.title = kwargs.get('title')
-        self.ids = json.dumps(kwargs.get('ids'))
-        self.playlist_ids = json.dumps(kwargs.get('playlist_ids'))
-        self.seed = kwargs.get('seed')
-        self.repeats = kwargs.get('repeats')
-        self.practice = kwargs.get('practice')
-        self.test_id = test_id
-        self.test_url = reverse('test', args=[test_id])
-        self.set_exam_mode()
+        test_id = bundle.obj.test or bundle.request.GET.get("test", "")
 
-    def set_exam_mode(self):
-        # check if exam mode is active on specific exam
-        is_exam_mode = False
-        exam_mode_setting = get_exam_mode_on()
-        if exam_mode_setting and exam_mode_setting == self.test_id:
-            is_exam_mode = True
-        self.is_exam_mode = is_exam_mode
+        if (not self._user_is_admin(bundle)) and test_id != get_exam_mode_on():
+            raise Unauthorized("Sorry, the test is not currently active.")
 
+    def create_list(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).create_list(object_list, bundle)
+
+    def create_detail(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).create_detail(object_list, bundle)
+
+    def update_list(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).update_list(object_list, bundle)
+
+    def update_detail(self, object_list, bundle):
+
+        self.check_test(bundle)
+
+        return super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
 
 class TestLogResource(ModelResource):
+
+    def wrap_view(self, view):
+        """
+        Wraps views to return custom error codes instead of generic 500's
+        """
+        def wrapper(request, *args, **kwargs):
+            try:
+                callback = getattr(self, view)
+                response = callback(request, *args, **kwargs)
+
+                # response is a HttpResponse object, so follow Django's instructions
+                # to change it to your needs before you return it.
+                # https://docs.djangoproject.com/en/dev/ref/request-response/
+                return response
+            except Exception as e:
+                # Rather than re-raising, we're going to things similar to
+                # what Django does. The difference is returning a serialized
+                # error message.
+                return self._handle_500(request, e)
+
+        return wrapper
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
 
@@ -65,7 +91,7 @@ class TestLogResource(ModelResource):
             "test": ('exact', ),
             "user": ('exact', ),
         }
-        authorization = UserObjectsOnlyAuthorization()
+        authorization = UserTestObjectsOnlyAuthorization()
 
 
 class TestResource(Resource):
@@ -83,25 +109,12 @@ class TestResource(Resource):
         resource_name = 'test'
         object_class = Test
 
-    #TODO(aron): refactor reading of tests json files
-    def _refresh_tests_cache(self):
-        for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
-            with open(testfile) as f:
-                data = json.load(f)
-                # Coerce each test dict into a Test object
-                # also add in the group IDs that are assigned to view this test
-                test_id = os.path.splitext(os.path.basename(f.name))[0]
-                data["test_id"] = test_id
-                testscache[test_id] = (Test(**data))
-
     def _read_test(self, test_id, force=False):
-        if not testscache or force:
-            self._refresh_tests_cache()
+        testscache = Test.all(force=force)
         return testscache.get(test_id, None)
 
     def _read_tests(self, test_id=None, force=False):
-        if not testscache or force:
-            self._refresh_tests_cache()
+        testscache = Test.all(force=force)
         return sorted(testscache.values(), key=lambda test: test.title)
 
     def prepend_urls(self):
@@ -124,7 +137,7 @@ class TestResource(Resource):
         Get the list of tests based from a request.
         """
         if not request.is_admin:
-            return [] 
+            return []
         return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):
@@ -154,6 +167,7 @@ class TestResource(Resource):
             raise Unauthorized(_("You cannot set this test into exam mode."))
         try:
             test_id = kwargs['test_id']
+            testscache = Test.all()
             set_exam_mode_on(testscache[test_id])
             return bundle
         except Exception as e:
@@ -181,36 +195,20 @@ class CurrentUnit():
         self.facility_id = kwargs.get('facility_id', '')
         self.facility_name = kwargs.get('facility_name', '<facility_name>')
         self.facility_url = kwargs.get('facility_url', '<facility_url>')
-        self.unit_list = kwargs.get('unit_list', self._get_unit_list())
+        self.unit_list = kwargs.get('unit_list', UNITS)
         self.current_unit = kwargs.get('current_unit', self._get_current_unit())
-        self.is_on_first = self.current_unit <= 1
-        if self.unit_list and self.current_unit:
-            is_on_last = self.unit_list[len(self.unit_list)-1] <= self.current_unit
-            self.is_on_last = is_on_last
+        self.max_unit = max(UNITS)
+        self.min_unit = min(UNITS)
 
     def __unicode__(self):
         return self.facility_name
-
-    def _get_settings_name(self):
-        name = get_current_unit_settings_name(self.facility_id)
-        return name
-
-    def _get_settings_value(self):
-        value = get_current_unit_settings_value(self.facility_id)
-        return value
 
     def _get_current_unit(self):
         # get active unit for the Facility from Settings
         current_unit = 1
         if self.facility_id:
-            current_unit = self._get_settings_value()
+            current_unit = get_current_unit_settings_value(self.facility_id)
         return current_unit
-
-    def _get_unit_list(self):
-        # TODO(cpauya): Return list of units, facility_id can be passed later to determine list of units
-        # for the facility.
-        l = [x for x in xrange(1, SETTINGS_MAX_UNITS + 1)]
-        return l
 
 
 class CurrentUnitResource(Resource):
@@ -219,9 +217,9 @@ class CurrentUnitResource(Resource):
     facility_id = fields.CharField(attribute='facility_id')
     facility_name = fields.CharField(attribute='facility_name')
     facility_url = fields.CharField(attribute='facility_url')
-    current_unit = fields.CharField(attribute='current_unit', default=1)
-    is_on_first = fields.BooleanField(attribute='is_on_first', default=False)
-    is_on_last = fields.BooleanField(attribute='is_on_last', default=False)
+    current_unit = fields.IntegerField(attribute='current_unit', default=1)
+    min_unit = fields.IntegerField(attribute='min_unit', default=1)
+    max_unit = fields.IntegerField(attribute='max_unit', default=8)
     unit_list = fields.ListField(attribute='unit_list')
 
     class Meta:
@@ -240,21 +238,22 @@ class CurrentUnitResource(Resource):
         """
         Get the list of facilities based from a request.
         """
-        l = []
-        if bundle.request.is_admin:
-            facilities = Facility.objects.order_by('name')
-            for facility in facilities:
-                url = reverse('facility_management', args=[None, facility.id])
-                data = {
-                    'id': facility.id,
-                    'facility_id': facility.id,
-                    'facility_name': facility.name,
-                    'facility_url': url
-                }
-                o = CurrentUnit(**data)
-                l.append(o)
-            return l
-        raise Unauthorized(_("You cannot view these objects."))
+        if not bundle.request.is_admin:
+            raise Unauthorized(_("You cannot view these objects."))
+
+        objects = []
+        for facility in Facility.objects.order_by('name'):
+            url = reverse('facility_management', args=[None, facility.id])
+            data = {
+                'id': facility.id,
+                'facility_id': facility.id,
+                'facility_name': facility.name,
+                'facility_url': url
+            }
+            o = CurrentUnit(**data)
+            objects.append(o)
+        return objects
+
 
     def get_object_list(self, request, force=False):
         raise NotImplemented(_("Operation not implemented."))
@@ -266,27 +265,14 @@ class CurrentUnitResource(Resource):
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot update this object."))
         try:
-            is_next = bundle.data.get('is_next', False)
-            is_previous = bundle.data.get('is_previous', False)
             facility_id = bundle.data.get('facility_id', '')
-            current_unit = bundle.data.get('current_unit', '')
-            selected_unit = int(bundle.data.get('selected_unit', '0'))
-            if current_unit:
-                current_unit = int(current_unit)
-                if selected_unit and 1 <= selected_unit <= SETTINGS_MAX_UNITS:
-                    current_unit = selected_unit
-                elif is_next and current_unit < SETTINGS_MAX_UNITS:
-                    current_unit += 1
-                elif is_previous and current_unit > 1:
-                    current_unit -= 1
-                else:
-                    current_unit = 1
-                set_current_unit_settings_value(facility_id, current_unit)
+            current_unit = int(bundle.data.get('current_unit', '0'))
+            assert current_unit in UNITS
+            set_current_unit_settings_value(facility_id, current_unit)
             return bundle
         except Exception as e:
             logging.error("CurrentUnitResource.obj_update() exception: %s" % e)
-            pass
-        raise NotImplemented(_("Operation not implemented."))
+            raise
 
     def obj_delete_list(self, request):
         raise NotImplemented(_("Operation not implemented."))

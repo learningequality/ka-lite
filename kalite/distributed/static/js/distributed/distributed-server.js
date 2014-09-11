@@ -144,7 +144,10 @@ var TotalPointView = Backbone.View.extend({
         }
 
         if (points > 0) {
-            message = sprintf("%s<span class='motivational-feature'> | %s</span>", username_span, sprintf(gettext("Total Points : %(points)d "), { points : points }));
+            message = sprintf("%s<span> | %s</span>", username_span, sprintf(gettext("Total Points: %(points)d "), { points : points }));
+            if (ds.store.show_store_link_once_points_earned) {
+                message += " | <a href='/store/'>Store!</a>";
+            }
         } else {
             message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
         }

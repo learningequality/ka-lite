@@ -7,27 +7,6 @@
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/bootstrap-control-panel.css' %}" />
-
-    <!-- Override bootstrap here to fix up search bar -->
-    <style type="text/css">
-        button, .btn, select {
-            margin-bottom: 7px;
-        }
-        a.btn {
-            color: white;
-        }
-        input#search {
-            font: -webkit-small-control;
-            margin: 0em;
-        }
-        #search-button {
-            height: 18px;
-        }
-        .container {
-            max-width: 1030px;
-        }
-
-    </style>
 {% endblock headcss %}
 
 {% block content %}

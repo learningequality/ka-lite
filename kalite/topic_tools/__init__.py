@@ -462,15 +462,6 @@ def get_exercise_data(request, exercise_id=None):
 
     exercise["related_videos"] = get_related_videos(exercise, limit_to_available=True).values()
 
-    if "nalanda" in settings.CONFIG_PACKAGE:
-        #TODO-BLOCKER (rtibbles): Hook into unit settings code to determine the current unit, and hence the total number of exercises the total points is being shared across
-        current_unit_exercises = ["addition_1"]
-        if exercise["exercise_id"] not in current_unit_exercises:
-            exercise["basepoints"] = 0
-        else:
-            # TODO-BLOCKER (rtibbles): Hook into unit settings/front end parameterization to replace '8'.
-            exercise["basepoints"] = settings.UNIT_POINTS/(len(current_unit_exercises)*(8 + settings.FIXED_BLOCK_EXERCISES + settings.QUIZ_REPEATS))
-
     return exercise
 
 
@@ -481,8 +472,8 @@ def get_video_data(request, video_id=None):
     video = videos_dict.get(video_id)
 
     # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
-    from kalite.updates import stamp_availability_on_video
-    video = stamp_availability_on_video(video)
+    # from kalite.updates import stamp_availability_on_video
+    # video = stamp_availability_on_video(video)
 
     if not video["available"]:
         if request.is_admin:
@@ -530,3 +521,11 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
+def convert_leaf_url_to_id(leaf_url):
+    """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
+    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1] 
+    assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
+    return leaf_id[0]
+
+

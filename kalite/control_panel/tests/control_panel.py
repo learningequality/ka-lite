@@ -6,9 +6,10 @@ from django.utils import unittest
 from django.test import Client
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
-from tastypie.http import HttpUnauthorized
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.control_panel.views import UNGROUPED
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
@@ -83,7 +84,8 @@ class GroupControlTests(FacilityMixins,
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
         group_delete_checkbox.click()
 
-        self.browser_click_and_accept('button.delete-group')
+        confirm_group_selector = ".delete-group"
+        self.browser_click_and_accept(confirm_group_selector)
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
@@ -91,10 +93,11 @@ class GroupControlTests(FacilityMixins,
     def test_teachers_have_no_group_delete_button(self):
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.facility)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=self.facility.name)
 
         self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
@@ -226,7 +229,7 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         facility_resp = json.loads(self.client.get(self.api_facility_url + "?zone_id=" + self.zone.id).content)
         objects = facility_resp.get("objects")
         self.assertEqual(len(objects), 1, "API response incorrect")
-        self.assertEqual(objects[0]["name"], "facility0", "API response incorrect")
+        self.assertEqual(objects[0]["name"], "facility1", "API response incorrect")
         self.client.logout()
 
     def test_group_endpoint(self):
@@ -291,7 +294,7 @@ class CSVExportBrowserTests(CSVExportTestSetup):
     def setUp(self):
         super(CSVExportBrowserTests, self).setUp()
 
-    def test_something(self):
+    def test_user_interface(self):
         self.browser_login_admin() 
         self.browse_to(self.distributed_data_export_url)
 
@@ -304,7 +307,7 @@ class CSVExportBrowserTests(CSVExportTestSetup):
         # Select facility, wait, and ensure group is enabled
         facility_select = self.browser.find_element_by_id("facility-name")
         for option in facility_select.find_elements_by_tag_name('option'):
-            if option.text == 'facility0':
+            if option.text == 'facility1':
                 option.click() # select() in earlier versions of webdriver
                 break
 
