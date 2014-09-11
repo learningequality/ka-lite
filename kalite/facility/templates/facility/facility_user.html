@@ -36,7 +36,7 @@
         {% endif %}
 
         {# Show facility info #}
-        {% if request.session.facility_count == 1 %}
+        {% if request.session.facility_count > 1 %}
             // Show the dropdown
             $("#id_facility").show();
         {% else %}
@@ -51,7 +51,6 @@
 {% block manage_nav %}{{block.super}}{% endblock manage_nav %}
     <div class="container">
         <h3 class="no-margin-top">{{ title }}</h3>
-
         <form method="post" class="basic-form">
             {% csrf_token %}
 
