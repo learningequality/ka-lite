@@ -1,6 +1,14 @@
 [
     {
         "users": ["guest"],
+        "slug": "guest-home",
+        "start_url": "/",
+        "inputs": [],
+        "end_url": "/",
+        "page": 5
+    },
+    {
+        "users": ["guest"],
         "slug": "login",
         "start_url": "/securesync/login/",
         "inputs": [],

@@ -184,5 +184,26 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 
 
-# JSON file for screenshots
+########################
+# Screenshots
+########################
+
+from django.conf import settings
+PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", settings.PROJECT_PATH)) + "/"
 SCREENSHOTS_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+SCREENSHOTS_OUTPUT_PATH = os.path.join(os.path.realpath(PROJECT_PATH), "..", "data", "screenshots")
+SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_DATA_PATH, 'screenshots.json')
+SCREENSHOTS_JSON_KEYS = ['users', 'slug', 'start_url', 'inputs', 'end_url']
+SCREENSHOTS_ROUTER = 'default'
+
+if 'screenshot' in sys.argv:
+    # use another sqlite3 database for the screenshots
+    DATABASES = {
+        SCREENSHOTS_ROUTER: {
+            "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
+            "NAME": os.path.join(SCREENSHOTS_OUTPUT_PATH, "screenshot-data.sqlite"),
+            "OPTIONS": {
+                "timeout": 60,
+            },
+        }
+    }
