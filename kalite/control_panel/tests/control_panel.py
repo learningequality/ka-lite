@@ -14,12 +14,19 @@ logging = settings.LOG
 class FacilityControlTests(FacilityMixins,
                            CreateAdminMixin,
                            BrowserActionMixins,
+                           StudentTestingMixins,
                            KALiteBrowserTestCase):
+
+    def setUp(self):
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        super(FacilityControlTests, self).setUp()
 
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
 
         # assert that our facility exists
@@ -48,10 +55,15 @@ class FacilityControlTests(FacilityMixins,
 
 
 class GroupControlTests(FacilityMixins,
+                        CreateAdminMixin,
+                        BrowserActionMixins,
                         KALiteBrowserTestCase):
 
     def setUp(self):
         self.facility = self.create_facility()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
         group_name = 'group1'
         self.group = self.create_group(name=group_name, facility=self.facility)
@@ -60,7 +72,7 @@ class GroupControlTests(FacilityMixins,
 
     def test_delete_group(self):
 
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
         group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
