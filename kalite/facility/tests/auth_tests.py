@@ -1,7 +1,5 @@
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins.browser_mixins import BrowserActionMixins
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
 
 
 class FacilityUserPermissionsTests(CreateAdminMixin,

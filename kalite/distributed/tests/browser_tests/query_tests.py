@@ -7,13 +7,14 @@ import string
 from django.conf import settings
 from django.utils import unittest
 
-from .base import KALiteDistributedWithFacilityBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import FacilityMixins, CreateAdminMixin, BrowserActionMixins
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt
 
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
-class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
+class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """"""
     def __init__(self, *args, **kwargs):
         """To guarantee state across tests, clear browser state every time."""
@@ -22,7 +23,10 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         super(QueryTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
-        self.setup_fake_device()
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
+
         super(QueryTest, self).setUp()
 
     @staticmethod
@@ -30,8 +34,8 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
-        with self.assertNumQueries(FuzzyInt(35, 41)):
-            self.browser_login_admin()
+        with self.assertNumQueries(FuzzyInt(35, 44)):
+            self.browser_login_admin(**self.admin_data)
 
     def test_query_login_teacher(self):
         """Check the # of queries when logging in as a teacher."""
@@ -94,7 +98,7 @@ class QueryTest(KALiteDistributedWithFacilityBrowserTestCase):
         """Check the # of queries when browsing to the "Math" topic page"""
 
         # Without login
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(FuzzyInt(0, 7)):
             self.browse_to(self.live_server_url + "/math/")
 
     def test_query_goto_math_logged_in(self):

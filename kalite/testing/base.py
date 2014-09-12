@@ -4,6 +4,8 @@ automated of KA Lite using selenium
 for automated browser-based testing.
 """
 
+from selenium import webdriver
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase, LiveServerTestCase
@@ -12,7 +14,7 @@ from kalite.shared.decorators.misc import deprecated
 
 from .browser import setup_browser
 from .client import KALiteClient
-from .mixins.securesync_mixins import CreateDeviceMixin
+from .mixins import CreateDeviceMixin
 
 
 @deprecated

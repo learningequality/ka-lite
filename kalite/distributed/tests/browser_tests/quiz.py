@@ -1,25 +1,18 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-import time
-import glob
-import os
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
 from django.conf import settings
 logging = settings.LOG
 from django.core.urlresolvers import reverse
-from django.utils import unittest
+from django.test.utils import override_settings
 
-from .base import KALiteDistributedBrowserTestCase, KALiteDistributedWithFacilityBrowserTestCase
-
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 
 PLAYLIST_ID = "g3_p1"
 
-class QuizTest(KALiteDistributedWithFacilityBrowserTestCase):
+
+class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
 
     """
     Test tests.
@@ -27,12 +20,18 @@ class QuizTest(KALiteDistributedWithFacilityBrowserTestCase):
     student_username = 'test_student'
     student_password = 'socrates'
 
+    @override_settings(DEBUG=True)
     def setUp(self):
         """
         Create a student, log the student in, and go to the playlist page.
         """
         super(QuizTest, self).setUp()
-        self.student = self.create_student(facility_name=self.facility_name)
+        self.facility_name = "fac"
+        self.facility = self.create_facility(name=self.facility_name)
+
+        self.student_data = {"username": self.student_username,
+                             "password": self.student_password}
+        self.student = self.create_student(facility=self.facility, **self.student_data)
         self.browser_login_student(
             self.student_username,
             self.student_password,
@@ -42,7 +41,6 @@ class QuizTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browse_to(
             self.live_server_url +
             reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
-        self.browser_check_django_message(num_messages=0)
 
     def test_quiz_first_answer_correct_not_registered(self):
         """
@@ -55,4 +53,3 @@ class QuizTest(KALiteDistributedWithFacilityBrowserTestCase):
         self.browser.execute_script("quizlog.add_response_log_item({correct: true});")
         self.assertEqual(self.browser.execute_script("return quizlog.get('total_correct')"), 1)
         self.assertEqual(self.browser.execute_script("return quizlog._response_log_cache[0]"), 1)
-

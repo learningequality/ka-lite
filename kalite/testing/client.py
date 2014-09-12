@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client
 
-from .mixins.facility_mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin
+from .mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin
 
 logging = settings.LOG
 

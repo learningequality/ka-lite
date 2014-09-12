@@ -1,28 +1,20 @@
-import time
-
 from django.conf import settings
-from django.utils import unittest
 from django.test import Client
 
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.control_panel.views import UNGROUPED
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
-from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, StudentTestingMixins
 
 logging = settings.LOG
 
 
 class FacilityControlTests(FacilityMixins,
                            CreateAdminMixin,
-                           KALiteDistributedBrowserTestCase):
+                           BrowserActionMixins,
+                           KALiteBrowserTestCase):
 
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
@@ -56,7 +48,7 @@ class FacilityControlTests(FacilityMixins,
 
 
 class GroupControlTests(FacilityMixins,
-                        KALiteDistributedBrowserTestCase):
+                        KALiteBrowserTestCase):
 
     def setUp(self):
         self.facility = self.create_facility()
@@ -113,7 +105,7 @@ class GroupControlTests(FacilityMixins,
 class CSVExportTests(FacilityMixins,
                      StudentTestingMixins,
                      CreateAdminMixin,
-                     KALiteDistributedBrowserTestCase):
+                     KALiteBrowserTestCase):
 
     def setUp(self):
         self.facility = self.create_facility()

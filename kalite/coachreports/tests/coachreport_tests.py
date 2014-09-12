@@ -2,10 +2,7 @@ from datetime import datetime
 
 from kalite.main.models import AttemptLog
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
-from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
+from kalite.testing.mixins import CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentTestingMixins
 
 
 class TestReportTests(FacilityMixins,
