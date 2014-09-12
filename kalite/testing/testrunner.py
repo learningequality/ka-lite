@@ -74,8 +74,8 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         test_suite = super(KALiteTestRunner, self).build_suite(*args, **kwargs)
 
         # If failfast, drop into the debugger
-        if self.failfast:
-            for test in test_suite._tests:
-                testfun = getattr(test, test._testMethodName)
-                setattr(test, test._testMethodName, auto_pdb()(testfun))
+        # if self.failfast:
+        #     for test in test_suite._tests:
+        #         testfun = getattr(test, test._testMethodName)
+        #         setattr(test, test._testMethodName, auto_pdb()(testfun))
         return test_suite
