@@ -6,12 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.playlist import UNITS
 from kalite.student_testing.models import TestLog
 from kalite.testing.client import KALiteClient
-from kalite.testing.base import KALiteClientTestCase
-from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
     get_current_unit_settings_value, set_current_unit_settings_value
@@ -165,7 +164,7 @@ class CoreTests(BaseTest):
         _check_student_access_to_exam()
 
 
-class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
+class BrowserTests(BaseTest, BrowserActionMixins, KALiteBrowserTestCase):
 
     CSS_TEST_ROW_BUTTON = '.test-row-button'
     CSS_TEST_ROW_BUTTON_ON = '.test-row-button.btn-info'
@@ -176,7 +175,7 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
     def setUp(self):
 
-        # super(KALiteDistributedBrowserTestCase, self).setUp()
+        # super(KALiteBrowserTestCase, self).setUp()
         super(BrowserTests, self).setUp()
 
         # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
@@ -318,11 +317,9 @@ class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
         super(CurrentUnitTests, self).setUp()
 
-        # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
-        # or use the KALiteTestCase.reverse() method.
-        self.login_url = self.reverse('login')
-        self.logout_url = self.reverse('logout')
-        self.current_unit_url = self.reverse('current_unit')
+        self.login_url = reverse('login')
+        self.logout_url = reverse('logout')
+        self.current_unit_url = reverse('current_unit')
 
         self.assertTrue(self.client.facility)
         self.assertTrue(self.client.teacher)
@@ -377,7 +374,7 @@ class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
         self._check_url(response, self.login_url)
 
 
-class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase):
+class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrowserTestCase):
 
     CSS_CURRENT_UNIT_NEXT_BUTTON = '.current-unit-button.next'
     CSS_CURRENT_UNIT_PREV_BUTTON = '.current-unit-button.previous'
@@ -388,8 +385,14 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
     persistent_browser = True
 
     def setUp(self):
-        # super(KALiteDistributedBrowserTestCase, self).setUp()
+        # super(KALiteBrowserTestCase, self).setUp()
         super(CurrentUnitBrowserTests, self).setUp()
+
+        # We're a browser test now, so make sure we have the full path by reversing using the
+        # KALiteBrowserTestCase.reverse method
+        self.login_url = self.reverse('login')
+        self.logout_url = self.reverse('logout')
+        self.current_unit_url = self.reverse('current_unit')
 
     def tearDown(self):
         super(CurrentUnitBrowserTests, self).tearDown()
