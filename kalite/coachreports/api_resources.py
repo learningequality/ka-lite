@@ -70,8 +70,6 @@ class PlaylistProgressResource(PlaylistParentResource):
     def get_object_list(self, request):
         user_id = request.GET.get('user_id')
         result = PlaylistProgress.user_progress(user_id=user_id)
-        if not result:
-            raise NotFound("User playlist progress with user ID '%s' not found." % user_id)        
         return result
 
     def obj_get_list(self, bundle, **kwargs):
