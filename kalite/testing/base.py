@@ -3,12 +3,14 @@ Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import Client, TestCase
+from django.test import Client, TestCase, LiveServerTestCase
 
 from kalite.shared.decorators.misc import deprecated
 
+from .browser import setup_browser
 from .client import KALiteClient
 from .mixins.securesync_mixins import CreateDeviceMixin
 
@@ -39,11 +41,6 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
 
         super(KALiteTestCase, self).setUp()
 
-    def reverse(self, url_name, args=None, kwargs=None):
-        """Given a URL name, returns the full central URL to that URL"""
-
-        return self.live_server_url + reverse(url_name, args=args, kwargs=kwargs)
-
 
 class KALiteClientTestCase(KALiteTestCase):
 
@@ -54,5 +51,27 @@ class KALiteClientTestCase(KALiteTestCase):
         super(KALiteClientTestCase, self).setUp()
 
 
-class KALiteBrowserTestCase(KALiteTestCase):
-    pass
+class KALiteBrowserTestCase(KALiteTestCase, LiveServerTestCase):
+
+    def setUp(self):
+        self.browser = setup_browser(browser_type="Firefox")
+
+        super(KALiteBrowserTestCase, self).setUp()
+
+    def tearDown(self):
+        self.browser.quit()
+
+        super(KALiteBrowserTestCase, self).tearDown()
+
+    def reverse(self, url_name, args=None, kwargs=None):
+        """Given a URL name, returns the full central URL to that URL"""
+
+        return self.live_server_url + reverse(
+            url_name,
+            args=args,
+            kwargs=kwargs,
+        )
+
+    @property
+    def is_phantomjs(self):
+        return isinstance(self.browser, webdriver.PhantomJS)
