@@ -39,7 +39,7 @@ Handlebars.registerHelper("ifcond", function(v1, operator, v2, options) {
 
 Handlebars.registerHelper("_", function(i18n_key) {
 
-    // TODO(jamalex): get this doing actual translation!
-    return i18n_key;
+    // TODO(jamalex): make sure this is getting picked up and included in the po files
+    return sprintf(gettext(i18n_key), this);
 
 });
