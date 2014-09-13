@@ -141,8 +141,9 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
-# only allow, and use by default, JSON in tastypie
+# only allow, and use by default, JSON in tastypie, and remove api page limit
 TASTYPIE_DEFAULT_FORMATS = ['json']
+API_LIMIT_PER_PAGE = 0
 
 # Default to a 20 minute timeout for a session - set to 0 to disable.
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
