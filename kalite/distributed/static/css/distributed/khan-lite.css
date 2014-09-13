@@ -263,15 +263,18 @@ a:hover {
     -o-transition: all 115ms ease-out;
     transition: all 115ms ease-out;
 }
+.manage-nav li:hover {
+    background-color: white;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
+}
 .manage-nav li a {
     color: white;
     text-align: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    -webkit-transition: all 115ms ease-out !important;
-    -moz-transition: all 115ms ease-out !important;
-    -o-transition: all 115ms ease-out !important;
-    transition: all 115ms ease-out !important;
 }
 .manage-nav li div {
     position: relative;
