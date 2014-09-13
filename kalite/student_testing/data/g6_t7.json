@@ -1,0 +1,12 @@
+{
+  "id": "g6_t7",
+  "title": "Grade VI - Unit Test 7",
+  "seed": 602,
+  "playlist_ids": [ "g6_p23", "g6_p24", "g6_p25" ],
+  "repeats": "4",
+  "ids": [
+    "angles_1", "angles_2", "angles_of_a_polygon",
+    "areas_of_circles_and_sectors", "circles_and_arcs"
+  ],
+  "is_practice": false
+}

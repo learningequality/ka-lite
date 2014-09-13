@@ -6,11 +6,13 @@ views in any other way is generally not advised.
 
 import os
 import django.views.static
+
+from hashlib import sha1 as sha_constructor
+
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.utils import simplejson
-from django.utils.hashcompat import sha_constructor
 
 from debug_toolbar.utils.compat.db import connections
 

@@ -7,20 +7,22 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .not-client-online-only {
-            display:none;
-        }
 
-        #video_language_selector {
-
-            display:none;
+        .video-language-selector {
             position: relative;
             top: -2px;
         }
 
-        #lang_display_name a {
-            cursor: pointer;
+        .vidprev, .vidnext {
+            padding-bottom: 10px;
+            margin-top: -5px;
         }
+
+        .related-exercise-button {
+            float: right;
+            margin-top: 5px;
+        }
+
     </style>
     <!--[if IE]>
     <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
@@ -34,13 +36,22 @@
     <!-- <![endif]-->
 {% endblock headcss %}
 
-{% block headjs %}{{ block.super }}
+{% block headjs %}
+
+    {{ block.super }}
+
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
+
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
     <script>
     $(function() {
-        // Keep this lean, in order to reduce caching filesize
-        initialize_video("{{ video.id }}", "{{ video.youtube_id }}");
+
+        window.videoWrapperView = new VideoWrapperView({
+            video_id: "{{ video.slug }}",
+            el: $(".video-wrapper")
+        });
+
     });
     </script>
 
@@ -58,76 +69,29 @@
     </script>
     <!-- <![endif]-->
 
-
-    <script type="text/javascript">
-        function selectVideoLanguage(obj){
-            //
-            var selectedVideoURL = obj.options[obj.selectedIndex].value;
-            window.location = selectedVideoURL;
-        }
-        $(function() {
-            $('#lang_display_name a').click(function() {
-                $('#video_language_selector').show();
-                $('#lang_display_name').hide();
-            });
-        });
-    </script>
-
 {% endblock headjs %}
 
 {% block content %}
-    <h2 class="title-header">
-
-        {% if num_videos_available > 1 %}
-            <span id="lang_display_name">
-                [<a >{{ selected_language|get_language_name }}</a>]
-            </span>
-            <select id="video_language_selector" onchange="selectVideoLanguage(this)" AutoPostBack="True">
-                {% for lang_code, avail in video.availability.iteritems %}
-                    <option value="{{ video.path }}?lang={{ lang_code }}" {% if lang_code == selected_language %}selected{% endif %}>
-                    {{ lang_code|get_language_name }}
-                {% endfor %}
-            </select>
-        {% endif %}
-
-        <span class="title">{% trans video.title %}</span>
-        <br/>
-        {% if video.description %}
-        <span class="long-description">{% trans video.description %}</span>
-        {% endif %}
-        {% if video.related_exercise %}
-        <span style="float:right; margin-top: -17px; font-size: 14px;">
-            <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
-            {# Translators: Example usage=> Exercise: Name of Exercise #}
-            {% trans "Exercise" as exercise %}
-            <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
-        </span>
-        {% endif %}
-        <div class="clear"></div>
-
-        <div class="points-container" style="display: none;">{% trans "Points" %}: <span class="points">0</span></div>
-    </h2>
-    <div class="clear"></div>
 
     {% if prev %}
-    <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
+    <div class="vidprev"><a href="{{ prev.path }}?lang={{ video.selected_language }}">&lt; {% trans prev.title %} <span class="progress-circle" data-video-id="{{ prev.id }}"></span></a></div>
     {% endif %}
 
     {% if next %}
-    <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+    <div class="vidnext pull-right"><a href="{{ next.path }}?lang={{ video.selected_language }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
+
     <div class="clear"></div>
 
-    {% if video.available %}
-        <div id="video-player"{% if not video_urls.on_disk %} class="client-online-only"{% endif %}>
-            <video id="video-element" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="600" {% if video_urls.thumbnail %}poster="{{ video_urls.thumbnail }}" {% endif %}data-setup="{}">
-                <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
-                {% for lang, subtitle_url in subtitle_urls.iteritems %}
-                <track kind="captions" src="{{ subtitle_url }}" srclang="{{ lang }}" label="{{ lang }}" {% if lang == selected_language and selected_language != "en" %}default="True" {% endif %}/>
-                {% endfor %}
-            </video>
-            {% if video_urls.thumbnail %}<img class="video-thumb" src="{{ video_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{% endif %}
-        </div>
+    {% if video.related_exercise %}
+    <span class="related-exercise-button">
+        <span class="progress-circle" data-exercise-id="{{ video.related_exercise.slug }}"></span>
+        {# Translators: Example usage=> Exercise: Name of Exercise #}
+        {% trans "Exercise" as exercise %}
+        <a href="{{ video.related_exercise.path }}" class="simple-button green" title="{% trans exercise %}: '{% trans video.related_exercise.title %}'">{% trans "Practice this concept" %}</a>
+    </span>
     {% endif %}
+
+    <div class="video-wrapper"></div>
 
 {% endblock content %}

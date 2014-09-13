@@ -1,11 +1,23 @@
 import time
 
-from selenium.common.exceptions import NoSuchElementException
+from django.conf import settings
+from django.utils import unittest
+from django.test import Client
 
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+from kalite.control_panel.views import UNGROUPED
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
+from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
 from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+
+logging = settings.LOG
 
 
 class FacilityControlTests(FacilityMixins,
@@ -103,3 +115,52 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
+
+
+class CSVExportTests(FacilityMixins,
+                     StudentTestingMixins,
+                     CreateDeviceMixin,
+                     CreateAdminMixin,
+                     KALiteDistributedBrowserTestCase):
+
+    def setUp(self):
+        self.setup_fake_device()
+        self.facility = self.create_facility()
+        self.base_url = self.reverse("zone_data_export", kwargs={"zone_id": None})
+
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.empty_group = self.create_group(name='empty_group', facility=self.facility)
+
+        self.stu1 = self.create_student(username='stu1', facility=self.facility, group=self.group)
+        self.stu2 = self.create_student(username='stu2', facility=self.facility)
+
+        self.test_log_1 = self.create_test_log(user=self.stu1)
+        self.test_log_2 = self.create_test_log(user=self.stu2)
+
+        self.admin = self.create_admin()
+        self.client = Client()
+        self.client.login(username='admin', password='admin')
+
+        super(CSVExportTests, self).setUp()
+
+    def test_export_all(self):
+        resp = self.client.get(self.base_url + "?facility_id=all&group_id=all")
+        self.assertEquals(len(resp._container), 4, "CSV file has wrong number of rows")
+        # Because the CSV result does not guarantee sorting - we loop thru the results here
+        # and check if the grouped and ungrouped users exist.
+        ungrouped_ok = False
+        grouped_ok = False
+        for row in resp._container[2:]:
+            values = row.split(',')
+            if values[2] == self.group.name:
+                grouped_ok = True
+            elif values[2] == UNGROUPED:
+                ungrouped_ok = True
+        self.assertTrue(grouped_ok, "Grouped user data not exported.")
+        self.assertTrue(ungrouped_ok, "Ungrouped user data not exported.")
+
+    def test_export_grouped_students_only(self):
+        resp = self.client.get(self.base_url + "?facility_id=all&group_id=%s" % self.group.id)
+        self.assertEquals(len(resp._container), 3, "CSV file has wrong number of rows")
+        first_row = resp._container[2].split(',')
+        self.assertEquals(self.group.name, first_row[2], "Returned data for wrong group")

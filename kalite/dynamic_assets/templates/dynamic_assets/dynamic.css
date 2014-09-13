@@ -1,0 +1,10 @@
+/* Hide motivational features if disabled in settings */
+{% if ds.distributed.turn_off_motivational_features %}
+.motivational-feature {
+  display: none;
+}
+
+#map-container .ex-live {
+  display: none;
+}
+{% endif %}

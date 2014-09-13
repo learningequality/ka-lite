@@ -1,14 +1,14 @@
 // Scripts for mapping our stats into text names and Google vis types.
 function stat2name(stat) {
     var children = $("#xaxis option");
-    for (opt in children) {
+    for (var opt in children) {
         if (children[opt].value == stat) {
             return children[opt].text;
         }
     }
 
     var children = $("#yaxis option");
-    for (opt in children) {
+    for (var opt in children) {
         if (children[opt].value == stat) {
             return children[opt].text;
         }
@@ -58,7 +58,7 @@ function plotTopics(topic_paths) {
         return false;
     }
     if (topic_paths==null) {
-        topic_paths = get_topic_paths_from_tree()
+        topic_paths = get_topic_paths_from_tree();
     }
     plotJsonData(
         "#chart_div",
@@ -123,14 +123,14 @@ $(function() {
                         // Load the topics found in the querystring, when the topic_tree finishes initializing
                         topic_paths_in_querystring = FORM_TOPIC_PATH;
                         if (topic_paths_in_querystring.length == 0) {
-                            toggle_tree(true) // open tree, force callbacks
+                            toggle_tree(true); // open tree, force callbacks
                         }
                         else {
                             set_topic_paths_in_tree(this, topic_paths_in_querystring);
                         }
 
                     }
-                })
-            })
+                });
+            });
     }, 200); //200= callback wait time.
 });

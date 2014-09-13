@@ -1,0 +1,26 @@
+<td facility-name="{{facility_name}}"><a href="{{facility_url}}">{{facility_name}}</a></td>
+<td>
+    <button
+        {{#ifcond current_unit "==" min_unit }}
+            disabled=disabled
+        {{/ifcond}}
+            class="btn btn-info current-unit-button previous">
+        {{_ "Previous" }}
+    </button>
+    {{#each unit_list}}
+        {{#ifcond this '==' ../current_unit }}
+            <span class="current-unit-{{this}}" style="font-weight: bold;"> {{_ "Unit" }} {{this}} </span>
+        {{else}}
+            <a href="#" class="selected-unit" data-facility-id="{{../facility_id}}"
+               data-selected-unit="{{this}}">{{this}}</a>
+        {{/ifcond}}
+        &nbsp;
+    {{/each}}
+    <button
+        {{#ifcond current_unit "==" max_unit }}
+            disabled=disabled
+        {{/ifcond}}
+            class="btn btn-info current-unit-button next">
+        {{_ "Next" }}
+    </button>
+</td>

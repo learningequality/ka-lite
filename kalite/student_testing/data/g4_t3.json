@@ -1,0 +1,13 @@
+{
+  "id": "g4_t3",
+  "title": "Grade IV - Unit Test 3",
+  "seed": 3715,
+  "playlist_ids": [ "g4_p6", "g4_p7" ],
+  "repeats": "4",
+  "ids": [
+    "arithmetic_word_problems", "arithmetic_word_problems_2",
+    "multiplication_1", "multiplication_1.5", "multiplication_2",
+    "multiplication_3", "multiplication_4"
+  ],
+  "is_practice": false
+}

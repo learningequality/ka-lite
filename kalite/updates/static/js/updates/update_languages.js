@@ -50,16 +50,16 @@ function display_languages() {
             } else {
                 link_text = "(Default)";
             }
-            var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+            var lang_name = sprintf("<b>%(name)s</b>", lang);
             var lang_code = lang['code'];
             var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
             var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
 
             if ( lang_code != 'en')
-                lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
+                lang_description += sprintf("<div class='delete-language-button pull-right'> <button class='btn btn-default btn-xs' value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
             else
                 if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
+                    lang_description += sprintf("<div class='delete-language-button pull-right'> <button class='btn btn-default btn-xs' value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
                 }
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
@@ -143,7 +143,7 @@ $(function () {
         var installed_languages = installed.map(function(elem) { return elem['code']; });
         if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
             if (percent_translated > 0 || srtcount > 0) {
-                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s)</option>', langdata));
+                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s</option>', langdata));
             }
         }
     });
@@ -157,6 +157,9 @@ $(function () {
 // Messy UI stuff incoming
 //
 
+var languagepack_callbacks = {
+    reset: languagepack_reset_callback
+};
 
 function start_languagepack_download(lang_code) {
     clear_messages();  // get rid of any lingering messages before starting download
@@ -211,16 +214,11 @@ $(function () {
     });
 });
 
-
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
     downloading = false;
 }
-
-var languagepack_callbacks = {
-    reset: languagepack_reset_callback
-};
 
 function set_server_language(lang) {
     doRequest(SET_DEFAULT_LANGUAGE_URL,

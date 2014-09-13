@@ -1,0 +1,11 @@
+<div id="video-player"{{#unless video_urls.on_disk }} class="client-online-only"{{/unless}}>
+    <video class="video-js vjs-default-skin" id="{{ random_id }}" controls preload="auto" width="100%" height="600" {{#if video_urls.thumbnail }}poster="{{ video_urls.thumbnail }}" {{/if}}data-setup="{}">
+        <source src="{{ video_urls.stream }}" type="{{ video_urls.stream_type }}" />
+        {{#each subtitle_urls }}
+        <track kind="captions" src="{{ url }}" srclang="{{ code }}" label="{{ name }}" {{#ifcond code "==" ../selected_language }}{{#ifcond ../code "!=" "en" }}default="True"{{/ifcond}}{{/ifcond}}/>
+        {{/each}}
+    </video>
+    {{#if video_urls.thumbnail}}<img class="video-thumb" src="{{ video_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{{/if}}
+</div>
+
+{{#unless video_urls.on_disk }}<div class="not-client-online-only">{{_ "Sorry, this video has not been downloaded." }}</div>{{/unless}}

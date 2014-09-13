@@ -1,11 +1,13 @@
-{% extends base_template %}
+{% extends "distributed/base_teach.html" %}
 {% load staticfiles %}
 {% load i18n %}
 {% load my_filters %}
 
-{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block reports_active %}reports-active active-tab active-nav{% endblock reports_active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
 
-{% block title %}{% trans "Coach Reports" %}{{ block.super }}{% endblock title %}
+{% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <style>
@@ -13,31 +15,37 @@
             float: left;
             padding: 0 10px 10px 0;
         }
-        select {
-            margin-left: 10px;
+        select#report_type, select#topic {
+            margin-left: 5px;
         }
         .subtitle {
-            float:left;
+            float: left;
         }
         #facility, .group_select {
-            display:none;
+            display: none;
         }
-        h2 {
-            width:100%;
-            margin: 0px;
-            margin-top: 10px;
-        }
-        h3 {
-            margin-left: 25px;
-            margin-bottom: 0px;
+        h4 {
+            font-size: 20px;
+            margin-left: 18px;
+            margin-bottom: 0;
         }
         #link-box {
-            float:right;
-            margin-right:25px;
+            float: right;
+        }
+        #link-box input#url {
+            font-size: 14px;
         }
         .group_div {
-            position: absolute;
             margin-left: 20px;
+        }
+        
+        @media only screen and (max-width: 744px) {+
+            h4 { margin-top: 0; }
+            .selection { padding-bottom: 0; }
+            #link-box { float: left; padding-bottom: 10px; }
+        }
+        @media only screen and (max-width: 655px) {
+            #select-topic, select#topic { margin-top: 10px; }
         }
     </style>
 {% endblock headcss %}
@@ -51,14 +59,18 @@
 {% endblock headjs %}
 
 {# sub-pages must embed the navbar within the content, to have it appear. #}
+
 {% block navbar %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
 
     <div id="navbar" style="padding-bottom:25px">
         <div id="users_link">
         </div>
 
         {% block navbar_title %}
-        <h2>
+        <h4>
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
@@ -98,6 +110,9 @@
                                     {% for group in groupobject.groups %}
                                     <option value="{{ group.id }}">{{ group }}</option>
                                     {% endfor %}
+                                    {% if ungrouped_available %}
+                                    <option value="Ungrouped">{% trans "Ungrouped" %}</option>
+                                    {% endif %}
                             {% else %}
                                 <option value="" selected>[{% trans "no groups" %}]</option>
                             {% endif %}
@@ -122,7 +137,7 @@
                 </div>
                 {% endblock navbar_makelink %}
             </div>
-        </h2>
+        </h4>
         {% endblock navbar_title %}
 
         {% block navbar_topics %}

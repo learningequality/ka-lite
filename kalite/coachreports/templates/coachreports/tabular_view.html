@@ -1,17 +1,18 @@
-{% extends "coachreports/base.html" %}
+{% extends "coachreports/base_d3_visualization.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
 {% load my_filters %}
 
-{% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+{% block title %}{% trans "Progress by topic" %} | {{ block.super }}{% endblock title %}
+{% block coachnav %}progress-tab-active{% endblock coachnav %}
+{% block progress_active %}sub-active{% endblock progress_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' True %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
 {% endblock headcss %}
-
-
 
 {% block headjs %}{{ block.super }}
     <script>
@@ -70,11 +71,17 @@
     </script>
 {% endblock headjs %}
 
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
 {% block content %}
+
+{% block navbar %}{{ block.super }}{% endblock navbar %}
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
 
-    <div id="selection-bar">
-        <div class="selection">
+<div class="container">
+    <!-- <div id="selection-bar"> -->
+    <div class="row">
+        <div class="selection selection-coach-page">
         {# Select the coach report type #}
         {% if report_types %}
             <div class="subtitle">{% trans "Select Report" %}</div>
@@ -89,7 +96,7 @@
         {% endif %}
         </div>
 
-        <div class="selection">
+        <div class="selection selection-coach-page">
         {% if users and request_report_type == "student" %}
             <div class="subtitle">{% trans "Select Student" %}</div>
             <select id="student">
@@ -99,7 +106,7 @@
                 {% endfor %}
             </select>
         {% elif topics and groups %}
-            <div class="subtitle">{% trans "Select Topic" %}</div>
+            <div class="subtitle" id="select-topic">{% trans "Select Topic" %}</div>
             <select id="topic">
                 <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                 {% for topic in topics %}
@@ -108,18 +115,16 @@
             </select>
         {% endif %}
         </div>
-    </div>
+    <!-- </div> -->
 
-    <div id="content">
-        <div id="legend">
-            <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
-            <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+        <ul class="pull-right" id="legend">
+            <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
+            <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
             {% if request_report_type != "video" %}
-            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
             {% endif %}
-        </div>
+        </ul>
     </div>
-    <div style="clear: both;"></div>
 
     {% if not students %}
         <p><div class="subtitle error" id="error_message">
@@ -236,5 +241,7 @@
         {% endblock video_data %}
         {% endif %}
     {% endif %}
+</div>
+</div>
 {% endblock content %}
 

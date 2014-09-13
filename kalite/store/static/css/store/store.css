@@ -1,0 +1,34 @@
+.store-item, .store-purchased-item {
+    background-color: #EEE;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.store-item .store-item-image {
+    width: 20%;
+    max-width: 200px;
+    float: left;
+}
+
+.store-purchased-item {
+    float: left;
+    margin-right: 10px;
+}
+
+.store-purchased-item .store-item-image {
+    height: 10%;
+    max-height: 100px;
+    float: left;
+}
+
+.store-item-metadata {
+    width: 75%;
+    float: left;
+    padding-left: 3%;
+}
+
+.store-item-title {
+    font-weight: bold;
+    font-size: 1.2em;
+}

@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "distributed/base_manage.html" %}
 {% load staticfiles %}
 {% load i18n %}
 
@@ -7,7 +7,6 @@
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/bootstrap-control-panel.css' %}" />
-
     <!-- Override bootstrap here to fix up search bar -->
     <style type="text/css">
         input#search {
@@ -26,11 +25,13 @@
         ul.pagination > .active > a {
             color: gray;
         }
-
     </style>
 {% endblock headcss %}
 
 {% block content %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
     {% block titlebar %}
         <div class="titlebar">
             <ul class="titlebar__title">
@@ -55,7 +56,10 @@
                             {% endif %}
                         {% endif %}
                     {% if facility or device %}</a>
-                    {% elif own_device_is_trusted %} <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">{% trans "(edit)" %}</a>
+                    {% elif own_device_is_trusted %} 
+                    <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">
+                        <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
+                    </a>
                     {% endif %}
                 </li>
                 <li>
@@ -66,10 +70,12 @@
 
                 {% if facility %}
                 <li>
-                    &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
+                    &gt; {% if group_id %}<a href="{% url 'device_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
-                    <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">{% trans "(edit)" %}</a>
+                    <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">
+                        <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
+                    </a>
                     {% endif %}
                 </li>
                 {% endif %}

@@ -3,7 +3,9 @@
 {% load staticfiles %}
 {% load i18n_filters %}
 
-{% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
+{% block video_active %}video-active active-tab active-nav{% endblock video_active %}
 
 {% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
@@ -20,9 +22,15 @@
         var URL_START_VIDEO_DOWNLOADS = "{% url 'start_video_download' %}?lang={{ current_language }}";
         var URL_DELETE_VIDEOS = "{% url 'delete_videos' %}";
         var URL_CANCEL_VIDEO_DOWNLOADS = "{% url 'cancel_video_download' %}";
+        var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
+        var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+        var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
+        var defaultLanguage = "{{ default_language }}";
     </script>
 
     <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
@@ -30,8 +38,12 @@
 {% endblock ga_setmetrics %}
 
 {% block content %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
+
     <div class="download-actions vertical-shadow">
-        <h2>
+        <h4 class="videos">
             <span id="language_choice_titlebar">
             {% if num_language_choices == 1 %}
                 {% blocktrans with lang_name=current_language_name %}Videos for language {{ lang_name }}{% endblocktrans %}
@@ -46,11 +58,11 @@
                 </option>
             {% endfor %}
             </select>
-        </h2>
-
-        <h4 id="download-legend-unselected" class="button_text">
-            {% trans "Please select videos to download (below)" %}
         </h4>
+
+        <h5 id="download-legend-unselected" class="button_text">
+            {% trans "Please select videos to download (below)" %}
+        </h5>
 
         <button id="download-videos" type="button" class="enable-when-server-online">
             <span id="download-videos-text" class="new-video-count"></span>
@@ -65,9 +77,9 @@
 
 
     <div class="download-actions vertical-shadow client-online-only">
-        <h2>
+        <h4 class="videos">
         {% trans "Help for downloading videos" %}
-        </h2>
+        </h4>
         <div id="help-info">
             <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
                 {% trans "Q: How do I bulk-download videos?" %}
@@ -85,10 +97,11 @@
         </div>
 
         <div>
-            <button id="cancel-download" type="button">{% trans "Cancel Video Downloads" %}</button>
+            <button class="btn btn-default btn-xs" id="cancel-download" type="button">{% trans "Cancel Video Downloads" %}</button>
         </div>
     </div>
     <div style="clear: both;"></div>
 
-    <div id="content_tree"><br/><h2>{% trans "Loading topic tree... Please wait!" %}</h2></div>
+    <div id="content_tree"><br/><h4>{% trans "Loading topic tree... Please wait!" %}</h4></div>
+
 {% endblock content %}

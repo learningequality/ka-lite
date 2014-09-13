@@ -1,0 +1,35 @@
+    <div class="video-wrapper">
+
+        <h3 class="title-header">
+
+            {{#if dubs_available }}
+                <select class="video-language-selector">
+                    {{#each availability }}
+                    <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                        {{ language_name }}
+                    </option>
+                    {{/each}}
+                </select>
+            {{/if}}
+
+            <span class="title">{{ title }}</span>
+
+            <br/>
+
+            {{#if description }}
+            <span class="long-description">{{ description }}</span>
+            {{/if}}
+
+            <div class="clear"></div>
+
+            <div class="motivational-feature">
+                <div class="points-container" style="display: none;">{{_ "Points" }}: <span class="points">0</span></div>
+            </div>
+
+        </h3>
+
+        <div class="clear"></div>
+
+        <div class="video-player-container"></div>
+
+    </div>

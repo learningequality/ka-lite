@@ -1,0 +1,26 @@
+.span3 td {
+    border-top-width: 0px !important;
+}
+
+.span3 th {
+    border-bottom: 1px solid #ddd;
+}
+
+.student-grp-row {
+    cursor: move;
+}
+
+#student-groups {
+    position: fixed;
+    width: auto;
+}
+
+#playlists {
+    margin-left: 200px;
+    
+}
+
+.remove {
+    position: relative;
+    top: -2px;
+}

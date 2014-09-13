@@ -12,11 +12,15 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 
 from . import api_urls
+import kalite.dynamic_assets.urls
 import kalite.coachreports.urls
+import kalite.playlist.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
 import securesync.urls
+
+import fle_utils.handlebars
 
 
 admin.autodiscover()
@@ -46,6 +50,9 @@ urlpatterns += patterns(__package__ + '.views',
     # For teachers
     url(r'^coachreports/', include(kalite.coachreports.urls)),
 
+    # For playlists
+    url(r'^playlists/', include(kalite.playlist.urls)),
+
     # For admins
     url(r'^update/', include(kalite.updates.urls)),
 
@@ -60,11 +67,21 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^management/', include(kalite.control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
 )
 
+# Dynamic assets
+urlpatterns += patterns('',
+    url(r'^_generated/', include(kalite.dynamic_assets.urls)),
+)
+
 # Testing
 if "tests.loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns(__package__ + '.views',
         url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
     )
+
+# Handlebars
+urlpatterns += patterns('',
+    url(r'^handlebars/', include(fle_utils.handlebars.urls)),
+)
 
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
@@ -72,11 +89,13 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^watch/$', 'watch_home', {}, 'watch_home'),
     url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
+    url(r'^test/', include('student_testing.urls')),
+    url(r'^store/', include('store.urls')),
     # the following pattern is a catch-all, so keep it last:
-    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
-
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+
+    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
 )
 
 handler403 = __package__ + '.views.handler_403'

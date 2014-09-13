@@ -20,6 +20,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
 from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode, mark_safe
@@ -35,10 +36,12 @@ from fle_utils.general import break_into_chunks
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
+from kalite import version
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.shared.decorators import require_admin
+from kalite.store.models import StoreTransactionLog
 
 
 @require_admin
@@ -78,7 +81,7 @@ def compute_total_points(user):
     if user.is_teacher:
         return None
     else:
-        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
+        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user) + StoreTransactionLog.get_points_for_user(user)
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
@@ -116,21 +119,28 @@ def status(request):
     # Default data
     data = {
         "is_logged_in": request.is_logged_in,
-        "registered": request.session["registered"],
+        "registered": request.session.get("registered", True),
         "is_admin": request.is_admin,
         "is_django_user": request.is_django_user,
         "points": 0,
         "current_language": request.session[settings.LANGUAGE_COOKIE_NAME],
         "messages": message_dicts,
+        "status_timestamp": datetime.datetime.now(),
+        "version": version.VERSION,
     }
+
     # Override properties using facility data
     if "facility_user" in request.session:  # Facility user
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
-        if "points" not in request.session:
-            request.session["points"] = compute_total_points(user)
+        # TODO-BLOCKER(jamalex): re-enable this conditional once tastypie endpoints invalidate cached session value
+        # if "points" not in request.session:
+        request.session["points"] = compute_total_points(user)
         data["points"] = request.session["points"]
+        data["user_id"] = user.id
+        data["user_uri"] = reverse("api_dispatch_detail", kwargs={"resource_name": "user", "pk": user.id})
+
     # Override data using django data
     if request.user.is_authenticated():  # Django user
         data["is_logged_in"] = True

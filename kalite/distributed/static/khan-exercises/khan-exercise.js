@@ -218,9 +218,9 @@ var Khan = (function() {
     // Promise that gets resolved when MathJax is loaded
     mathJaxLoaded,
 
-    // KA-LITE-MOD: pull this path from an externally specified variable, so it can point
-    // to the correct location of khan-exercises within the context of our Django project
-    urlBase = urlBaseOverride,
+    // KA-LITE-MOD: ensure we're pointing to the correct location of khan-exercises,
+    // within the context of our Django project
+    urlBase = STATIC_URL + "khan-exercises/",
 
     // In local mode, we use khan-exercises local copy of the /images
     // directory.  But in production (on www.khanacademy.org), we use
@@ -275,6 +275,9 @@ var Khan = (function() {
         imageBase: imageBase,
 
         startLoadingExercise: startLoadingExercise,
+
+        // KA-LITE-MOD: add a deferred that we can use to ensure khan-exercises has loaded
+        loaded: $.Deferred(),
 
         moduleDependencies: {
             "math": ["../third_party/raphael"],
@@ -962,8 +965,8 @@ var Khan = (function() {
             return $.contains(elem.ownerDocument.documentElement, elem);
         };
 
-        // KA-LITE-MOD: trigger an event at this point, so that in KA Lite we can launch exercise rendering
-        $(Khan).trigger("loaded");
+        // KA-LITE-MOD: resolve our deferred, so that in KA Lite we know we can now launch exercise rendering
+        Khan.loaded.resolve();
 
     }
 
@@ -1731,6 +1734,11 @@ var Khan = (function() {
         //     $(Exercises).trigger("clearExistingProblem");
         //     makeProblem();
         // } else {
+
+            // KA-LITE-MOD: make sure the random seed is initialized to desired value now,
+            // otherwise the problem type (as output by makeProblemBag) will depend on old seed
+            randomSeed = data.userExercise.seed;
+
             loadAndRenderExercise(data.userExercise);
         // }
     }

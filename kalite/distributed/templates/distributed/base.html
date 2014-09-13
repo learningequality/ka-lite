@@ -10,15 +10,22 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="wot-verification" content="075abe861486e6bb3ab9"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block titletag %}
         <title>{% block title %}{% trans title %}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' True %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-alerts.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' True %}">
+        <!-- <link rel="stylesheet/less" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.less' True %}"> -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' True %}">
+
+        <!-- CSS for dynamic settings -->
+        <link rel="stylesheet" type="text/css" href="{% url 'dynamic_css' %}">
 
         {% block headcss %}{% endblock headcss %}
         <link rel="shortcut icon" href="{% static "images/distributed/favicon.ico" %}">
@@ -27,6 +34,7 @@
             window.console = window.console || {log: function() {}};
         </script>
 
+        <script type="text/javascript" src="{% url 'dynamic_js' %}"></script>
 
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
@@ -55,7 +63,8 @@
         </script>
         {% endblock jqueryjs %}
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/backbone-min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone-tastypie.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
@@ -67,6 +76,8 @@
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
          var STATUS_URL                  = "{% url 'status' %}";
          var FORCE_SYNC_URL              = "{% url 'api_force_sync' %}";
+
+         // TODO(rtibbles): This looks like it could do with some cleanup
          var GET_VIDEO_LOGS_URL          = "{% url 'get_video_logs' %}";
          var GET_EXERCISE_LOGS_URL       = "{% url 'get_exercise_logs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
@@ -75,144 +86,158 @@
          var DELETE_USERS_URL            = "{% url 'delete_users' %}";
          var DELETE_GROUPS_URL           = "{% url 'group_delete' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
-         var SAVE_EXERCISE_LOG_URL       = "{% url 'save_exercise_log' %}";
          var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
+         var STATIC_URL                  = "{% static "" True %}"; // pass "True" to avoid build id being appended
          var SERVER_INFO_PATH            = "{% url 'get_server_info' %}";
-
          var CENTRAL_SERVER_HOST         = "{{ central_server_host }}";
          var SECURESYNC_PROTOCOL         = "{{ securesync_protocol }}";
          var CURRENT_LANGUAGE            = "{{ current_language }}";
         </script>
+        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/modernizr.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.ui.autocomplete.html.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/khan-lite.js' True %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' True %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' True %}"></script>
+        <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' %}"></script>
+
+        <!-- Imports for handlebars, our JS templating engine -->
+        <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>
+        <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
+        <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
+
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
     </head>
 
-    <body class="light {% block bodyclass %}{% endblock %}">
-        <div id="outer-wrapper"><div id="page-container"><div id="page-container-inner">
-        <div id="fb-root"></div>
+    <body class="{% block bodyclass %}{% endblock %}">
 
-        <header><div id="top-header">
-            <div id="sitepoints"></div>
-            <div class="clear"></div>
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
 
-            <div class="top-header-links"><nav><span class="nav-subheader">
-                {% block sitewide_navigation %}
+                    <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
+                        <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
+                        <div class="pull-right visible-xs" id="sitepoints-xs"></div>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        {% block sitewide_navigation %}
 
-                {% block lang_choices %}
-                <span class="not-admin-only">
-                {% if num_language_choices > 1 %}
-                  <select id="language_selector" name="set_user_language">
-                    {% for lang_code, lang_meta in language_choices.iteritems %}
-                      <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                        {{ lang_code|get_language_name }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                {% endif %}
-                </span>
-                {% endblock lang_choices %}
+<!--                         <li>
+                            <form action="{% url 'search' %}" method="GET" id="search-box">
+                            {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                                <input type="text" name="query" class="search-js" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
+                                <a class="btn btn-success btn-xs search-js" id="search-button" href="#" />{% trans 'Search' %}</a>
+                                <span class="glyphicon glyphicon-search" id="glyphicon-search-js" title="{% trans 'Search by keyword' %}"></span>
+                            </form>
+                        </li> -->
 
-                {# Note that the following links are listed in the opposite order to how they will be displayed, as they are float:right #}
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                       <li><a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Learn" %}</a></li>
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">&nbsp;{% trans "Logout" %}</a>
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block teacher_active %}{% endblock teacher_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
+                        
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li class="not-teacher-only"><a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only {% block admin_active %}{% endblock admin_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'account_management' %}" id="logged-in-name" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
+                        {# Admin Manage #}
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li class="not-teacher-only"><a href="{% url 'zone_redirect' %}" class="admin-only {% block manage_active %}{% endblock manage_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Manage" %}</a></li> 
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'help' %}" id="nav_help" class="admin-only {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a>
+                        {# Teacher Manage #}
+                        {% if request.session.facility_user.facility %}
+                        <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}"><span>{% trans "Manage" %}</span></a></li>
+                        {% endif %}
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a>
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li class="motivational-feature">
+                            <a href="{% url 'account_management' %}" id="nav_progress" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
+                        </li>
 
-                {% if not restricted %}
-                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a>
-                {% endif %}
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a></li>
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block coachreports_active %}{% endblock coachreports_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Coach" %}</a>
+                        {% if not restricted %}
+                            {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                            <li><a href="{% url 'add_facility_student' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a></li>
+                        {% endif %}
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'update_languages' %}" id="nav_languages" class="admin-only {% block languages_active %}{% endblock languages_active %}" title="{% trans 'Update this server with new languages' %}">{% trans "Languages" %}</a>
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'help' %}" id="nav_help" class="{% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'update_videos' %}" id="nav_update" class="admin-only {% block update_active %}{% endblock update_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Videos" %}</a>
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">{% trans "Logout" %}</a></li>
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'facility_management' zone_id='None' facility_id='None' %}" id="nav_manage_zone" class="admin-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Users" %}</a>
+                        {% block lang_choices %}
+                        <li><span class="not-logged-in-only">
+                        {% if num_language_choices > 1 %}
+                        <select id="language_selector">
+                        {% for lang_code, lang_meta in language_choices.iteritems %}
+                            <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                                {{ lang_code|get_language_name }}
+                            </option>
+                        {% endfor %}
+                        </select>
+                        {% endif %}
+                        </span></li>
+                        {% endblock lang_choices %}
 
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'zone_redirect' %}" id="nav_manage_zone" class="admin-only {% block control_panel_active %}{% endblock control_panel_active %}" title="{% trans 'Manage KA Lite' %}">{% trans "Overview" %}</a>
-
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'exercise_dashboard' %}" id="nav_practice" class="practice-navlink not-admin-only {% block practice_active %}{% endblock practice_active %}" title="{% trans 'Practice Lessons' %}">{% trans "Practice" %}</a>
-
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'watch_home' %}" id="nav_watch" class="watch-navlink not-admin-only {% block watch_active %}{% endblock watch_active %}" title="{% trans 'Watch Videos' %}">{% trans "Watch" %}</a>
-
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Home" %}</a>
-
-                <form action="{% url 'search' %}" method="GET" id="search-box">
-                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <a class="green_button" id="search-button" href="#">{% trans 'Search' %}</a>
-                    <input type="text" name="query" id="search" placeholder="{% trans 'video, topic, or exercise...' %}" />
-                </form>
-                {% endblock sitewide_navigation %}
-            </span></nav></div>
-            <div class="clear"></div>
+                        {% endblock sitewide_navigation %}
+                        </span>
 
 
-            <div id="logo">
-                <a id="logo-image-small" href="/" title="{% trans 'KA Lite Home' %}">
-                    <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="KA Lite logo">
-                </a>
+
+                        <div class="hidden-xs" id="sitepoints"></div>
+                    </ul>
+                </div>
             </div>
-            <div class="clear"></div>
-        </div></header>
-
-        {% block outer_content %}
-        <div id="container">
-            <article class="clearfix">
-                {% block precontent %}
-                <div id="message_container">
-                    <!--Ajax messages from central server get inserted here-->
-                </div>
-                {% endblock precontent %}
-                {% block content %}{% endblock content %}
-            </article>
         </div>
-        {% endblock outer_content %}
 
-        <div id="end-of-page-spacer" style="height: 38px;">&nbsp;</div>
-        <div id="badge-notification-container" class="badge-award-container" style="display:none;"></div>
+        <div class="container" id="wrapper">
 
-        </div></div></div>{# ending the khan-necessary divs #}
+            
 
-        <footer id="footer" class="short">
-            <div id="leaves">
-                <div class="inner">
-                    <div style="float:left;margin-top: 5px;" class="tiny">
-                        {% block footerleft %}
-                        <div style="float:left"><img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}"/></div>
-                        <div style="float:left; margin-top:4px;">creators of KA Lite &copy; 2014</div>
-                        {% endblock footerleft %}
-                    </div>
-                    <div id="copyright" class="tiny">
-                      {% trans "Videos and Exercises" %} &copy; 2014 Khan Academy
-                      <a rel="license" id="creative-commons-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank"></a>
-                    </div>
-                </div>
+            {% block outer_content %}
+                    {% block precontent %}
+                    <div id="message_container"><!--Ajax messages from central server get inserted here--></div>
+                    {% if messages %}
+                        <!--Normal messages loaded from the view get inserted here-->
+                        <div id="messages">
+                        </div>
+                    {% endif %}
+                    {% endblock precontent %}
+                    {% block content %}
+
+                    {% block subnavbar %}{% endblock subnavbar %}
+                    
+                    
+                    {% endblock content %}
+            {% endblock outer_content %}
+            <div class="footer-clearfix"></div>
+        </div>
+
+        <footer class="navbar-default">
+            <div class="container">
+                <a class="navbar-brand tiny">
+                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="{% trans 'Foundation for Learning Equality logo' %}"/>
+                    <p>{% trans "Creators of KA Lite" %} &copy; 2014</p>
+                    <p class="visible-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</p>
+                    <p class="visible-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></p>
+                </a>
+                <ul class="nav navbar-nav navbar-right tiny">
+                    <li class="pull-right hidden-xs"><img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}"></li>
+                    <li class="pull-right hidden-xs">{% trans "Videos and Exercises" %} &copy; 2014 Khan Academy</li>
+                </ul>
             </div>
         </footer>
 

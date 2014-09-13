@@ -1,0 +1,35 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block headcss %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/store/store.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/bootstrap-control-panel.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+    </script>
+    <script src="{% static 'js/store/models.js' %}"></script>
+    <script src="{% static 'js/store/views.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='store' %}"></script>
+
+    <script>
+
+        window.statusModel.loaded.then(function() {
+            $(function() {
+                window.store_view = new StoreWrapperView();
+                $('.store-wrapper').append(window.store_view.el);
+            });
+        });
+
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+
+    <div class="store-wrapper"></div>
+
+{% endblock content %}

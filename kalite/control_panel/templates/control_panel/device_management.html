@@ -5,23 +5,62 @@
 
 {% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+
 {% block headcss %}{{ block.super }}
+    <style>
+
+        th:first-child, th:nth-child(2) {
+            width: 250px;
+        }
+        th:nth-child(3), th:nth-child(4), th:last-child {
+            width: 200px;
+        }
+
+        .sync-details {
+            font-size: 0.7em;
+            padding-left: 20px;
+            position: relative;
+            display: none;
+        }
+
+        .sync-stderr {
+            color: red;
+        }
+
+    </style>
 {% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+<script>
+    $(function() {
+        $(".show-sync-details a").click(function() {
+            $(".show-sync-details").hide();
+            $(".sync-details").slideDown();
+            return false;
+        });
+    });
+</script>
+{% endblock headjs %}
 
 {% block buttons %}{{ block.super }}
     {% if is_own_device %}
         <div class="server-online-only">
-            <a class="registered-only green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
-            <a class="not-registered-only green_button" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
+            <a class="registered-only btn btn-success" href="javascript:force_sync()">{% trans "Sync to central server!" %}</a>
+            <a class="not-registered-only btn btn-success" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
         </div>
     {% endif %}
 {% endblock buttons %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
 {% block control_panel_content %}
     <div id="zone_container">
 
         <div class="device_metadata">
-            <h2>{% trans "Device Metadata" %}</h2>
+            <h3>{% trans "Device Metadata" %}</h3>
 
             <dl class="dl-horizontal">
             {% if software_version %}
@@ -53,13 +92,33 @@
 
         <div class="sync_sessions">
             <div>
-                <h2>{% trans "Sync Sessions" %}</h2>
+                <h3>{% trans "Sync Sessions" %}</h3>
             </div>
 
             {% if not session_pages %}
                 <p class="registered-only">{% trans "This device has never synced with the central server." %}</p>
                 <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
             {% else %}
+
+                {% if sync_job.is_running %}
+                    <h3>{% trans "A sync is currently in progress..." %} <a href=".">{% trans "(refresh)" %}</a></h3>
+                {% else %}
+                    <h3>
+                    {% if sync_job.last_run_successful %}
+                        <img src="{% static 'admin/img/icon-yes.gif' %}"/>
+                        {% trans "The last sync completed successfully" %}
+                    {% else %}
+                        <img src="{% static 'admin/img/icon-no.gif' %}"/>
+                        {% trans "There was an error in syncing" %}
+                    {% endif %}
+                    <span class="show-sync-details">(<a>{% trans "show details" %}</a>)</span>
+                    </h3>
+                    <div class="sync-details">
+                        <div class="sync-stdout">{{ sync_job.log_set.all.0.stdout|linebreaksbr }}</div>
+                        <div class="sync-stderr">{{ sync_job.log_set.all.0.stderr|linebreaksbr }}</div>
+                    </div>
+                {% endif %}
+
                 <table class="table">
                     <thead>
                         <tr class="success">
@@ -99,6 +158,27 @@
                         <a title="{% trans 'Browse to the next page of sessions.' %}" {% if session_pages.has_next %}href="{{ page_urls.next_page }}"{% endif %}>&gt&gt</a>
                 </div>
                 {% endif %}
+                <div class="table_responsive"> <!-- Note from Heidi: this is an imitation of the Bootstrap class 
+                called 'table-responsive'; I am not using Bootstrap's table classes here for a few reasons -->
+                    <table class="simple-table">
+                        <tr>
+                            <th>{% trans "Sync Date" %}</th>
+                            <th>{% trans "Device IP Address" %}</th>
+                            <th>{% trans "# Models Uploaded" %}</th>
+                            <th>{% trans "# Models Downloaded" %}</th>
+                            <th>{% trans "# Errors" %}</th>
+                        </tr>
+                        {% for sync_session in session_pages %}
+                            <tr>
+                                <td>{{ sync_session.timestamp }}</td>
+                                <td>{{ sync_session.ip }}</td>
+                                <td>{{ sync_session.models_uploaded }}</td>
+                                <td>{{ sync_session.models_downloaded }}</td>
+                                <td>{{ sync_session.errors }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
             {% endif %}
         </div>
 

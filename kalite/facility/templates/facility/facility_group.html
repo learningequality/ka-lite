@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "facility/facility.html" %}
 {% load i18n %}
 
 {% block headcss %}{{ block.super }}
@@ -29,13 +29,14 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
+    <h3 class="no-margin-top">{{ title }}</h3>
 
     <form method="post" class="basic-form">
         {% csrf_token %}
 
         {{ form.as_p }}
 
-        <input type="submit" class="submit" value="{% if group_id == 'new' %}{% trans 'Create group' %}{% else %}{% trans 'Update group' %}{% endif %}" />
+        <input type="submit" class="submit btn btn-default btn-sm" value="{% if group_id == 'new' %}{% trans 'Create group' %}{% else %}{% trans 'Update group' %}{% endif %}" />
     </form>
 {% endblock content %}

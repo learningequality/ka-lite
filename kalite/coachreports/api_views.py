@@ -366,8 +366,12 @@ def api_data(request, xaxis="", yaxis=""):
         users = [get_object_or_404(FacilityUser, id=form.data.get("user"))]
     elif form.data.get("group"):
         facility = []
-        groups = [get_object_or_404(FacilityGroup, id=form.data.get("group"))]
-        users = FacilityUser.objects.filter(group=form.data.get("group"), is_teacher=False).order_by("last_name", "first_name")
+        if form.data.get("group") == "Ungrouped":
+            groups = []
+            users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], group__isnull=True, is_teacher=False).order_by("last_name", "first_name")
+        else:
+            groups = [get_object_or_404(FacilityGroup, id=form.data.get("group"))]
+            users = FacilityUser.objects.filter(group=form.data.get("group"), is_teacher=False).order_by("last_name", "first_name")
     elif form.data.get("facility"):
         facility = get_object_or_404(Facility, id=form.data.get("facility"))
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
@@ -397,7 +401,7 @@ def api_data(request, xaxis="", yaxis=""):
         "exercises": exercises,
         "videos": computed_data["videos"],
         "users": dict(zip([u.id for u in users],
-                          ["%s, %s" % (u.last_name, u.first_name) for u in users]
+                          ["%s, %s" % (u.last_name, u.first_name) if u.last_name or u.first_name else u.username for u in users]
                      )),
         "groups": dict(zip([g.id for g in groups],
                            dict(zip(["id", "name"], [(g.id, g.name) for g in groups])),
