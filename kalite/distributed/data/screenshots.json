@@ -1,7 +1,7 @@
 [
     {
         "users": ["guest"],
-        "slug": "guest-home",
+        "slug": "home",
         "start_url": "/",
         "inputs": [],
         "end_url": "/",
@@ -17,7 +17,7 @@
     },
     {
         "users": ["admin"],
-        "slug": "home",
+        "slug": "admin-home",
         "start_url": "/",
         "inputs": [],
         "end_url": "/",
@@ -25,8 +25,24 @@
     },
     {
         "users": ["admin"],
-        "slug": "register",
-        "start_url": "/securesync/register/?",
+        "slug": "admin-register",
+        "start_url": "/securesync/register/",
+        "inputs": [],
+        "end_url": "/",
+        "page": 5
+    },
+    {
+        "users": ["admin"],
+        "slug": "admin-overview",
+        "start_url": "/management/zone/None/",
+        "inputs": [],
+        "end_url": "/",
+        "page": 5
+    },
+    {
+        "users": ["coach"],
+        "slug": "coach-overview",
+        "start_url": "/management/zone/None/",
         "inputs": [],
         "end_url": "/",
         "page": 5
