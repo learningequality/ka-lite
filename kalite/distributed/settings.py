@@ -197,7 +197,7 @@ SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_DATA_PATH, 'screenshots.json')
 SCREENSHOTS_ROUTER = 'default'
 SQLITE3_ENGINE = 'django.db.backends.sqlite3'
 
-if 'screenshot' in sys.argv:
+if 'screenshots' in sys.argv:
     # use another sqlite3 database for the screenshots
     DATABASES = {
         SCREENSHOTS_ROUTER: {
