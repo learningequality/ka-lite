@@ -1,12 +1,9 @@
 """
 """
-import glob
 import os
-import random
 import shutil
 import tempfile
 
-from django import conf
 from django.conf import settings
 from django.core import cache
 from django.core.cache.backends.filebased import FileBasedCache
