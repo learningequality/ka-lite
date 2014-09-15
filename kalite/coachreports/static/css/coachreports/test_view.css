@@ -14,7 +14,9 @@ th, td {
     max-width: 80px;
     min-width: 60px;
     font-weight: bold;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
     line-height: 1.1em;
 }
 .student-table {
