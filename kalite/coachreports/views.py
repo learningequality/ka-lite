@@ -396,7 +396,7 @@ def test_detail_view(request, facility, test_id):
             if attempts_count:
                 score = round(100 * float(attempts_count_correct)/float(attempts_count), 1)
                 scores_dict[ex].append(score)
-                display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct, 'attempts': attempts_count}
+                display_score = "%d%%" % score
             else:
                 score = ''
                 display_score = ''
@@ -409,14 +409,17 @@ def test_detail_view(request, facility, test_id):
         # Calc overall score
         if attempts_count_total:
             score = round(100 * float(attempts_count_correct_total)/float(attempts_count_total), 1)
-            display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct_total, 'attempts': attempts_count_total}
+            display_score = "%d%%" % score
+            fraction_correct = "(%(correct)d/%(attempts)d)" % ({'correct': attempts_count_correct_total, 'attempts': attempts_count_total})
         else:
             score = ''
             display_score = ''
+            fraction_correct = ''
 
         results_table[s].append({
             'display_score': display_score,
             'raw_score': score,
+            'title': fraction_correct, 
         })
 
     # This retrieves stats for individual exercises
