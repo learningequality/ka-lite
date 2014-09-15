@@ -4,7 +4,6 @@ from django.test.utils import override_settings
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 from kalite.main.models import ExerciseLog
 
