@@ -7,7 +7,7 @@
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
 {% block subnavbar %}
-	<div class="teach-nav">
+	<div class="teach-nav admin-only">
         <ul>
             <li class="teacher-only reports {% block reports_active %}{% endblock reports_active %}"><a href="{% url 'coach_reports' %}" title="{% trans 'Track the progress of your students' %}"><div class="">{% trans "Reports" %}</div></a></li>
             <li class="playlist {% block playlist_active %}{% endblock playlist_active %}"><a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to student groups' %}"><div>{% trans "Playlists" %}</div></a></li>
