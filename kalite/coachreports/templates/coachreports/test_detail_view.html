@@ -135,7 +135,7 @@
                         <tr>
                         {% for r in results %}
                             {% if r.raw_score == '' %}
-                                <td title="Not yet completed"></td>
+                                <td title="{% trans 'Not Started' %}"></td>
                             {% else %}
                                 <td {% if r.title %}title="{{r.title}}"{% endif %}>
                                     <span class="status-circle status-circle-sm {% if r.raw_score > 79 %}pass{% elif r.raw_score > 59 %}borderline{% else %}fail{% endif %}"></span>

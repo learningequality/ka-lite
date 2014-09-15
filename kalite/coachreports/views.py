@@ -17,7 +17,7 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext, ugettext as _
 
 from .api_views import get_data_form, stats_dict
 from fle_utils.general import max_none
@@ -33,7 +33,7 @@ from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
 
 # shared by test_view and test_detail view
-SUMMARY_STATS = ['Max', 'Min', 'Average', 'Std Dev']
+SUMMARY_STATS = [_('Max'), _('Min'), _('Average'), _('Std Dev')]
 
 def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
@@ -294,11 +294,11 @@ def test_view(request, facility):
                 if log_object.complete:
                     # Case: completed => we show % score
                     if score >= 80:
-                        status = "pass"
+                        status = _("pass")
                     elif score >= 60:
-                        status = "borderline"
+                        status = _("borderline")
                     else:
-                        status = "fail" 
+                        status = _("fail" )
                     results_table[s].append({
                         "status": status,
                         "cell_display": display_score,
@@ -307,16 +307,23 @@ def test_view(request, facility):
                 else:
                     # Case: has started, but has not finished => we display % score & # remaining in title 
                     n_remaining = test_object.total_questions - log_object.index
+                    status = _("incomplete")
                     results_table[s].append({
-                        "status": "incomplete",
+                        "status": status,
                         "cell_display": display_score,
-                        "title": "%s: %d problem%s remaining" % (display_score, n_remaining, "s"[n_remaining==1:])
+                        "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
+                                           "%(n_remaining)d problems remaining", 
+                                            n_remaining) % {
+                                            'n_remaining': n_remaining,
+                                           },
                     })
             else:
                 # Case: has not started
+                status = _("not started")
                 results_table[s].append({
-                    "status": "notstarted",
+                    "status": status,
                     "cell_display": "",
+                    "title": status.title(),
                 })
 
         # This retrieves stats for students

@@ -42,7 +42,7 @@
             <div class="legend"><span class="status-circle status-circle-md pass"></span>80-100%</div>
             <div class="legend"><span class="status-circle status-circle-md borderline"></span>60-79%</div>
             <div class="legend"><span class="status-circle status-circle-md fail"></span>0-59%</div>
-            <div class="legend"><span class="status-circle status-circle-md incomplete"></span>* Incomplete</div>
+            <div class="legend"><span class="status-circle status-circle-md incomplete"></span>* {% trans "Incomplete" %}</div>
         </div>
     </div>
     <div style="clear: both;"></div>
@@ -85,7 +85,7 @@
                 {% for stat in summary_stats %}
                     <tr>
                         <th class="summary-stat-header">
-                            {{ stat }}
+                            {% trans "{{ stat }}" %}
                         </th>
                     </tr>
                 {% endfor %}
@@ -112,7 +112,7 @@
                         <tr>
                         {% for r in results %}
                             {% if r.status != statistic %}
-                                <td title="{{ r.title }}">
+                                <td title="{% trans '{{ r.title }}' %}">
                                     <span class="status-circle status-circle-sm {{ r.status }}"></span>
                                     {{ r.cell_display }}
                                 </td>
