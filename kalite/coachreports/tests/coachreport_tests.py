@@ -2,11 +2,15 @@ from datetime import datetime
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentTestingMixins
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentProgressMixin
+
+
+from kalite.student_testing.models import TestLog
+from kalite.testing import KALiteTestCase
 
 
 class TestReportTests(FacilityMixins,
-                      StudentTestingMixins,
+                      StudentProgressMixin,
                       BrowserActionMixins,
                       CreateAdminMixin,
                       KALiteBrowserTestCase):
@@ -100,7 +104,6 @@ class TestReportTests(FacilityMixins,
 
 
 class PlaylistProgressTest(FacilityMixins,
-                           StudentTestingMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,
                            BrowserActionMixins,

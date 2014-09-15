@@ -1,5 +1,5 @@
 from fle_utils.config.models import Settings
-from securesync.models import Device, DeviceZone, Zone
+from securesync.models import Device, Zone, DeviceZone
 
 
 class CreateDeviceMixin:
@@ -16,3 +16,18 @@ class CreateDeviceMixin:
         """Register the local device to a zone (dummy zone if none specified)."""
         zone = zone or Zone.objects.create(name='test_zone')
         DeviceZone.objects.create(zone=zone, device=Device.get_own_device())
+
+
+class CreateZoneMixin:
+
+    @classmethod
+    def create_device_zone(self, zone):
+        return DeviceZone.objects.create(device=Device.get_own_device(), zone=zone)
+
+    @classmethod
+    def create_zone(self, **kwargs):
+        attr = {
+            "name": "zone"
+        }
+        attr.update(**kwargs)
+        return Zone.objects.create(**attr)

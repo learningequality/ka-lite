@@ -8,8 +8,13 @@
 {% block headjs %}{{ block.super }}
     <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
     <script>
+        // Pass in zones api endpoint from context because it is only applicable on central server
+        var ALL_ZONES_URL = "{{ all_zones_url }}";
         var ALL_FACILITIES_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var FACILITY_USER_CSV_URL = "{% url 'api_dispatch_list' resource_name='facility_user_csv' %}";
+        var TEST_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='test_log_csv' %}";
+        var ATTEMPT_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='attempt_log_csv' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
 
@@ -17,10 +22,13 @@
         $(function() {
             window.container_view = new DataExportView({
                 el: $("#data-export-container"),
-                model: new StudentSelectStateModel({
+                model: new DataExportStateModel({
+                    zone_id: "{{ zone_id }}",
                     group_id: "{{ group_id }}",
-                    facility_id: "{{ facility_id }}"
-                })
+                    facility_id: "{{ facility_id }}",
+                    is_central: {{ is_central|lower }}
+                }),
+                org_id: "{{ org_id }}"
             });
         });
     </script>
@@ -29,12 +37,20 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .form-group {
-            float: left;
-            padding-right: 10px;
-        }
         select:disabled {
             color: graytext;
+        }
+        label {
+            text-align: right;
+        }
+        .float-over-select {
+            position: absolute;
+            z-index: 100;
+            top: 8px;
+            left: 50%;
+        }
+        .loading-transparency {
+            opacity: 0.3 !important;
         }
     </style>
 {% endblock headcss %}
@@ -43,8 +59,18 @@
         <div class="titlebar">
             <ul class="titlebar__title">
             {% block titlebar_title %}
+                {% if org %}
+                    <li>
+                        <a href="{% url 'org_management' %}"> {{ org.name }}</a> > 
+                    </li>
+                {% endif %}
+                {% if zone %}
+                    <li>
+                        <a href="{% url 'zone_management' zone_id=zone.id %}"> {{ zone.name }}</a> > 
+                    </li>
+                {% endif %}
                 <li>
-                    <a href="{% url 'zone_management' zone_id=zone_id %}">{{ zone.name }}</a> > Test Data Export
+                    Data Export
                 </li>
             {% endblock titlebar_title %}
             </ul>
@@ -53,7 +79,7 @@
 
 {% block control_panel_content %}
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-12">
         <div id="data-export-container">
             {# Backbone inserts stuff here #}
         </div>

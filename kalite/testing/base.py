@@ -43,6 +43,11 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
 
         super(KALiteTestCase, self).setUp()
 
+    def reverse(self, *args, **kwargs):
+        """Regular Django reverse function."""
+
+        return reverse(*args, **kwargs)
+
 
 class KALiteClientTestCase(KALiteTestCase):
 

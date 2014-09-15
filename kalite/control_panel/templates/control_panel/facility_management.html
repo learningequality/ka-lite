@@ -44,7 +44,7 @@
             $("#top_export_button_id").click(function() {
                 $("#export_csv_div_id").toggle(function() {
                     if (!$("#export_csv_div_id").is(":visible")) {
-                        $("#top_export_button_id").val("{% trans 'Export data' %}");
+                        $("#top_export_button_id").val("{% trans 'Export student stats' %}");
                     } else {
                         $("#start_date_select").datepicker('setDate', start_date);
                         $("#end_date_select").datepicker('setDate', end_date);
@@ -76,7 +76,7 @@
 
 {% block buttons %}{{ block.super }}
     <li>
-        <button class="btn btn-success" id="top_export_button_id" value="{% trans 'Export data' %}">{% trans 'Export data' %}</button>
+        <button class="btn btn-success" id="top_export_button_id" value="{% trans 'Export student stats' %}">{% trans 'Export student stats' %}</button>
     </li>
     <li>
         <div id="export_csv_div_id" class="export_csv_div">

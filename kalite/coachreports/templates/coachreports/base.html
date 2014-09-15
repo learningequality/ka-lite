@@ -53,12 +53,12 @@
 {# sub-pages must embed the navbar within the content, to have it appear. #}
 {% block navbar %}
 
-    <div id="navbar" style="padding-bottom:25px">
+    <div id="navbar">
         <div id="users_link">
         </div>
 
         {% block navbar_title %}
-        <h2>
+        <h1>
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
@@ -122,7 +122,7 @@
                 </div>
                 {% endblock navbar_makelink %}
             </div>
-        </h2>
+        </h1>
         {% endblock navbar_title %}
 
         {% block navbar_topics %}
