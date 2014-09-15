@@ -65,7 +65,7 @@ def get_response(url):
     response = ""
     file = None
     try:
-        file = urllib2.urlopen(url)
+        file = urllib2.urlopen(url, timeout=300)
         response = file.read()
     finally:
         if file:
@@ -77,7 +77,7 @@ def post_response(url, data):
     response = ""
     file = None
     try:
-        file = urllib2.urlopen(url, data)
+        file = urllib2.urlopen(url, data, timeout=300)
         response = file.read()
     finally:
         if file:
