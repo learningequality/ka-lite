@@ -8,8 +8,6 @@ from kalite.testing.mixins import CreateAdminMixin, CreatePlaylistProgressMixin,
 
 
 class TestGetTopicTree(KALiteTestCase):
-    def setUp(self):
-        self.client = KALiteClient()
 
     def test_get_root(self):
         """Get the root node of the topic tree"""
