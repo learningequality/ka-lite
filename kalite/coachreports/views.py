@@ -285,27 +285,53 @@ def test_view(request, facility):
         user_test_logs = [log for log in test_logs if log.user == s]
         results_table[s] = []
         for t in test_objects:
-            # Get the log object for this test, if it exists, otherwise return empty TestLog object
             log_object = next((log for log in user_test_logs if log.test == t.test_id), '')
-            # check if student has completed test
+            # The template expects a status and a score to display
             if log_object:
                 test_object = log_object.get_test_object()
                 score = round(100 * float(log_object.total_correct) / float(test_object.total_questions), 1)
-                results_table[s].append({
-                    "log": log_object,
-                    "raw_score": score,
-                    "display_score": "%(score)d%% (%(correct)d/%(total_questions)d)" % {'score': score, 'correct': log_object.total_correct, 'total_questions': test_object.total_questions},
-                })
+                display_score = "%(score)d%% (%(correct)d/%(total_questions)d)" % {'score': score, 'correct': log_object.total_correct, 'total_questions': test_object.total_questions}
+                if log_object.complete:
+                    # Case: completed => we show % score
+                    if score >= 80:
+                        status = "pass"
+                    elif score >= 60:
+                        status = "borderline"
+                    else:
+                        status = "fail" 
+                    results_table[s].append({
+                        "status": status,
+                        "cell_display": display_score,
+                        "title": status.title(),
+                    })
+                else:
+                    # Case: has started, but has not finished => we display % score & # remaining in title 
+                    n_remaining = test_object.total_questions - log_object.index
+                    results_table[s].append({
+                        "status": "incomplete",
+                        "cell_display": display_score,
+                        "title": "%s: %d problem%s remaining" % (display_score, n_remaining, "s"[n_remaining==1:])
+                    })
             else:
-                results_table[s].append({})
+                # Case: has not started
+                results_table[s].append({
+                    "status": "notstarted",
+                    "cell_display": "",
+                })
 
         # This retrieves stats for students
         score_list = [round(100 * float(result.total_correct) / float(result.get_test_object().total_questions), 1) for result in user_test_logs]
         for stat in SUMMARY_STATS:
             if score_list:
-                results_table[s].append({"stat": "%d%%" % return_list_stat(score_list, stat)})
+                results_table[s].append({
+                    "status": "statistic",
+                    "cell_display": "%d%%" % return_list_stat(score_list, stat),
+                })
             else:
-                results_table[s].append({})
+                results_table[s].append({
+                    "status": "statistic",
+                    "cell_display": "",
+                })
 
     # This retrieves stats for tests
     stats_dict = OrderedDict()

@@ -37,7 +37,7 @@ th, td {
     background-color: #CA4D4D;
 }
 .incomplete {
-    background-color: #D8D8D8;
+    background-color: #999999;
 }
 #legend {
     float:right;
@@ -57,15 +57,27 @@ th, td {
     padding:2px;
     margin-right: 2px;
 }
-.legend div {
-    float:left;
-    width:35px;
-    height:21px;
-}
 .summary-stat-header {
-    background-color: rgb(189, 189, 189)
+    background-color: rgb(238, 238, 238);
 }
 .unpadded-p {
     margin: 0;
     padding: 0;
+}
+.status-circle {
+    position: relative;
+    float: left;
+    border-radius: 50%;
+}
+.status-circle-sm {
+    height: 10px;
+    width: 10px;
+    top: 6px;
+    margin-right: 7px;
+}
+.status-circle-md {
+    height: 15px;
+    width: 15px;
+    top: 3px;
+    left: 10px;
 }
