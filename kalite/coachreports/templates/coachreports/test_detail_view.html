@@ -103,8 +103,10 @@
             <tbody>
                 {% for student in results_table.keys %}
                     <tr>
-                        <th>
-                            {{ student.username }}
+                        <th class="username">
+                            <span title="{{ student.name }} ({{ student.username }})">
+                                <div class="student-name"><a href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a></div>
+                            </span>
                         </th>
                     </tr>
                 {% endfor %} 
