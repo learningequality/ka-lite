@@ -7,10 +7,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
-from kalite.topic_tools import get_slug2id_map, get_id2slug_map, get_flat_topic_tree, convert_leaf_url_to_id
+from kalite.topic_tools import get_slug2id_map, get_id2slug_map, get_node_cache, convert_leaf_url_to_id
 
 
-FLAT_TOPIC_TREE = get_flat_topic_tree()
+FLAT_TOPIC_TREE = get_node_cache()
 ID2SLUG_MAP = get_id2slug_map()
 SLUG2ID_MAP = get_slug2id_map()
 
