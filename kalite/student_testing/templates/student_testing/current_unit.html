@@ -9,8 +9,8 @@
 
 {% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
 
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+{% block headcss %}
+    {{ block.super }}
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -33,5 +33,7 @@
 
 {% block content %}
     {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div id="current-unit-container"></div>
+    <div id="current-unit-container">
+        {# Backbone magic here! #}
+    </div>
 {% endblock content %}

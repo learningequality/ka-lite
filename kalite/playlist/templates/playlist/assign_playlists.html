@@ -1,5 +1,4 @@
- {% extends "distributed/base_teach.html" %}
-
+{% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
@@ -39,21 +38,23 @@
 {% block content %}
 
   {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-
-  <div class="row">
-    <div class="col-xs-3">
-      <table class="table table-hover" id="student-groups">
-        <tr>
-          <th>Student Groups</th>
-        </tr>
-      </table>
-    </div>
-    <div class="col-xs-9">
-      <table class="table table-hover" id="playlists">
-        <tr>
-          <th>Playlists</th>
-        </tr>
-      </table>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-3">
+        <table class="table table-hover" id="student-groups">
+          <tr>
+            <th>Student Groups</th>
+          </tr>
+        </table>
+      </div>
+      <div class="col-xs-9">
+        <table class="table table-hover" id="playlists">
+          <tr>
+            <th>Playlists</th>
+          </tr>
+        </table>
+       </div>
     </div>
   </div>
+
   {% endblock content %}

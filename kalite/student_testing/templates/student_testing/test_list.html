@@ -3,7 +3,6 @@
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-
 {% block exams-active %}exams-active active-tab active-nav{% endblock exams-active %}
 {% block teacher_active %}active{% endblock teacher_active %}
 {% block admin_active %}active{% endblock admin_active %}
@@ -36,7 +35,11 @@
 
 {% block content %}
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div id="test-setting-app-container"></div>
+    <div class="container">
+        <div id="test-setting-app-container">
+            {# Backbone magic here! #}
+        </div>
+    </div>
 {% endblock content %}
 {% comment %}
 {% endcomment %}
