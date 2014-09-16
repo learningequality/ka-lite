@@ -1,9 +1,11 @@
-{% extends base_template %}
+{% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-{% block current_unit_active %}active{% endblock current_unit_active %}
+{% block current_unit_active %}units-active active-tab active-nav{% endblock current_unit_active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
 
 {% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
 
@@ -30,5 +32,6 @@
 {% endblock headjs %}
 
 {% block content %}
+    {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
     <div id="current-unit-container"></div>
 {% endblock content %}
