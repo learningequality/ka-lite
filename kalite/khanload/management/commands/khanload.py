@@ -54,13 +54,13 @@ defaulticon = "default"
 attribute_whitelists = {
     "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type"],
     "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "y_pos", "x_pos", "in_knowledge_map"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "v_position", "h_position", "all_assessment_items", "uses_assessment_items"],
+    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "all_assessment_items", "uses_assessment_items"],
     "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"]
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id", "id"],
-    "Exercise": ["kind", "description", "title", "display_name", "name", "id"]
+    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id", "id", "y_pos", "x_pos"],
+    "Exercise": ["kind", "description", "title", "display_name", "name", "id", "y_pos", "x_pos"]
 }
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
@@ -83,6 +83,9 @@ def whitewash_node_data(node, path="", ancestor_ids=[]):
     if not kind:
         return node
 
+    node["x_pos"] = node.get("x_pos", 0) or node.get("h_position", 0)
+    node["y_pos"] = node.get("y_pos", 0) or node.get("v_position", 0)
+
     # Only keep key data we can use
     for key in node.keys():
         if key not in attribute_whitelists[kind]:
@@ -92,6 +95,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[]):
     if slug_key[kind] not in node:
         # logging.warn("Could not find expected slug key (%s) on node: %s" % (slug_key[kind], node))
         node[slug_key[kind]] = node["id"]  # put it SOMEWHERE.
+
     node["slug"] = node[slug_key[kind]] if node[slug_key[kind]] != "root" else ""
     node["id"] = node[id_key[kind]]  # these used to be the same; now not. Easier if they stay the same (issue #233)
 
@@ -251,6 +255,33 @@ def rebuild_topictree(remove_unknown_exercises=False, remove_disabled_topics=Tru
             del node["children"][ci]
     recurse_nodes_to_remove_childless_nodes(topic_tree)
 
+    def recurse_nodes_to_add_position_data(node):
+        """
+        Only execises have position data associated with them.
+        To get position data for higher level topics, averaging of
+        lower level positions can be used to give a center of mass.
+        """
+        if node["kind"] == "Topic":
+            x_pos = []
+            y_pos = []
+            videos = []
+            for child in node.get("children", []):
+                if not (child.get("x_pos", 0) and child.get("y_pos", 0)):
+                    recurse_nodes_to_add_position_data(child)
+                if child.get("x_pos", 0) and child.get("y_pos", 0):
+                    x_pos.append(child["x_pos"])
+                    y_pos.append(child["y_pos"])
+                elif child["kind"] == "Video":
+                    videos.append(child)
+            if len(x_pos) and len(y_pos):
+                node["x_pos"] = sum(x_pos)/float(len(x_pos))
+                node["y_pos"] = sum(y_pos)/float(len(y_pos))
+                for i, video in enumerate(videos):
+                    video["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos))*i/float(len(videos))
+                    video["y_pos"] = min(y_pos) + (max(y_pos) - min(y_pos))*i/float(len(videos))
+
+    recurse_nodes_to_add_position_data(topic_tree)
+
     return topic_tree, exercises, videos, assessment_items
 
 def build_full_cache(items, id_key="id"):
@@ -274,241 +305,6 @@ def build_full_cache(items, id_key="id"):
                         {key: value for key, value in item.attribute.items()
                         if key in denormed_attribute_list[item[attribute]["kind"]]})
     return {item["id"]: whitewash_node_data(item) for item in items}
-
-
-def rebuild_knowledge_map(topic_tree, node_cache, data_path=settings.PROJECT_PATH + "/static/data/", force_icons=False):
-    """
-    Uses KA Lite topic data and supporting data from Khan Academy
-    to rebuild the knowledge map (maplayout.json) and topics.json files.
-    """
-
-    knowledge_topics = {}  # Stored variable that keeps all exercises related to second-level topics
-                           #   Much of this is duplicate information from node_cache
-    #knowledge_map = download_khan_data("http://www.khanacademy.org/api/v1/maplayout")
-
-    def scrub_knowledge_map(knowledge_map, node_cache):
-        """
-        Some topics in the knowledge map, we don't keep in our topic tree / node cache.
-        Eliminate them from the knowledge map here.
-        """
-        for slug in knowledge_map["topics"].keys():
-            nodecache_node = node_cache["Topic"].get(slug, {})
-            topictree_node = topic_tools.get_topic_by_path(nodecache_node.get("path"), root_node=topic_tree)
-
-            if not nodecache_node or not topictree_node:
-                logging.warn("Removing unrecognized knowledge_map topic '%s'" % slug)
-            elif not topictree_node.get("children"):
-                logging.warn("Removing knowledge_map topic '%s' with no children." % slug)
-            elif not "Exercise" in topictree_node.get("contains"):
-                logging.warn("Removing knowledge_map topic '%s' with no exercises." % slug)
-            else:
-                continue
-
-            del knowledge_map["topics"][slug]
-            topictree_node["in_knowledge_map"] = False
-    #scrub_knowledge_map(knowledge_map, node_cache)
-
-
-    def recurse_nodes_to_extract_knowledge_map(node, node_cache):
-        """
-        Internal function for recursing the topic tree and building the knowledge map.
-        Requires rebranding of metadata done by recurse_nodes function.
-        """
-        assert node["kind"] == "Topic"
-
-        if node.get("in_knowledge_map", None):
-            if node["slug"] not in knowledge_map["topics"]:
-                logging.debug("Not in knowledge map: %s" % node["slug"])
-                node["in_knowledge_map"] = False
-                for node in node_cache["Topic"][node["slug"]]:
-                    node["in_knowledge_map"] = False
-
-            knowledge_topics[node["slug"]] = topic_tools.get_all_leaves(node, leaf_type="Exercise")
-
-            if not knowledge_topics[node["slug"]]:
-                sys.stderr.write("Removing topic from topic tree: no exercises. %s" % node["slug"])
-                del knowledge_topics[node["slug"]]
-                del knowledge_map["topics"][node["slug"]]
-                node["in_knowledge_map"] = False
-                for node in node_cache["Topic"][node["slug"]]:
-                    node["in_knowledge_map"] = False
-        else:
-            if node["slug"] in knowledge_map["topics"]:
-                sys.stderr.write("Removing topic from topic tree; does not belong. '%s'" % node["slug"])
-                logging.warn("Removing from knowledge map: %s" % node["slug"])
-                del knowledge_map["topics"][node["slug"]]
-
-        for child in [n for n in node.get("children", []) if n["kind"] == "Topic"]:
-            recurse_nodes_to_extract_knowledge_map(child, node_cache)
-    recurse_nodes_to_extract_knowledge_map(topic_tree, node_cache)
-
-
-    # Download icons
-    def download_kmap_icons(knowledge_map):
-        for key, value in knowledge_map["topics"].items():
-            # Note: id here is retrieved from knowledge_map, so we're OK
-            #   that we blew away ID in the topic tree earlier.
-            if "icon_url" not in value:
-                logging.warn("No icon URL for %s" % key)
-
-            value["icon_url"] = iconfilepath + value["id"] + iconextension
-            knowledge_map["topics"][key] = value
-
-            out_path = data_path + "../" + value["icon_url"]
-            if os.path.exists(out_path) and not force_icons:
-                continue
-
-            icon_khan_url = "http://www.khanacademy.org" + value["icon_url"]
-            sys.stdout.write("Downloading icon %s from %s..." % (value["id"], icon_khan_url))
-            sys.stdout.flush()
-            try:
-                icon = requests.get(icon_khan_url)
-            except Exception as e:
-                sys.stdout.write("\n")  # complete the "downloading" output
-                sys.stderr.write("Failed to download %-80s: %s\n" % (icon_khan_url, e))
-                continue
-            if icon.status_code == 200:
-                iconfile = file(data_path + "../" + value["icon_url"], "w")
-                iconfile.write(icon.content)
-            else:
-                sys.stdout.write(" [NOT FOUND]")
-                value["icon_url"] = iconfilepath + defaulticon + iconextension
-            sys.stdout.write(" done.\n")  # complete the "downloading" output
-    download_kmap_icons(knowledge_map)
-
-
-    # Clean the knowledge map
-    def clean_orphaned_polylines(knowledge_map):
-        """
-        We remove some topics (without leaves); need to remove polylines associated with these topics.
-        """
-        all_topic_points = [(km["x"],km["y"]) for km in knowledge_map["topics"].values()]
-
-        polylines_to_delete = []
-        for li, polyline in enumerate(knowledge_map["polylines"]):
-            if any(["x" for pt in polyline["path"] if (pt["x"], pt["y"]) not in all_topic_points]):
-                polylines_to_delete.append(li)
-
-        logging.warn("Removing %s of %s polylines in top-level knowledge map" % (len(polylines_to_delete), len(knowledge_map["polylines"])))
-        for i in reversed(polylines_to_delete):
-            del knowledge_map["polylines"][i]
-
-        return knowledge_map
-    clean_orphaned_polylines(knowledge_map)
-
-
-    def normalize_tree(knowledge_map, knowledge_topics):
-        """
-        The knowledge map is currently arbitrary coordinates, with a lot of space
-        between nodes.
-
-        The code below adjusts the space between nodes.  Our code
-        in kmap-editor.js adjust coordinates based on screen size.
-
-        TODO(bcipolli): normalize coordinates to range [0,1]
-        that will make code for expanding out to arbitrary screen
-        sizes much more simple.
-        """
-
-        def adjust_coord(children, prop_name):
-
-            allX = [ch[prop_name] for ch in children]
-            minX = min(allX)
-            maxX = max(allX)
-            rangeX = maxX - minX + 1
-            if not rangeX:
-                return children
-
-            filledX = [False] * rangeX
-
-            # Mark all the places where an object is found
-            for ch in children:
-                filledX[ch[prop_name] - minX] = True
-
-            # calculate how much each row/column need to be shifted to fill in the gaps,
-            #   by seeing how many positions along the way are gaps,
-            #   then trying to minimize them
-            shiftX = [0] * rangeX
-            shift = 0
-            for ii in range(rangeX):
-                if not filledX[ii]:
-                    shift -= 1   # move increasingly left, to close gaps
-                shiftX[ii] = shift
-
-            # shift each exercise to fill in the gaps
-            for ch in children:
-                ch[prop_name] += shiftX[ch[prop_name] - minX]
-
-            return children
-
-        # mark the children as not yet having been flipped, so we can avoid flipping twice later
-        for children in knowledge_topics.itervalues():
-            for ch in children:
-                ch["unflipped"] = True
-
-        # NOTE that we are not adjusting any coordinates in
-        #   the knowledge map, or in the polylines.
-        for slug, children in knowledge_topics.iteritems():
-            # Flip coordinates, but only once per node
-            for ch in children:
-                if ch.get("unflipped", False):
-                    ch["v_position"], ch["h_position"] = ch["h_position"], ch["v_position"]
-                    del ch["unflipped"]
-
-            # Adjust coordinates
-            adjust_coord(children, "v_position")  # side-effect directly into 'children'
-            adjust_coord(children, "h_position")
-
-        return knowledge_map, knowledge_topics
-    normalize_tree(knowledge_map, knowledge_topics)
-
-    def stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics):
-        """
-        Any topic node can have a "knowledge map" property.
-        If it does, it can have two components:
-        1. nodes: a dictionary containing node ids and a few values, including:
-            - kind (the kind of node)
-            - h_position / v_position
-            - optional "icon_url"
-        2. polylines (optional)
-          - defines the connections between nodes
-
-        So now, when you have a topic node, it contains in itself
-          enough data to pull together a knowledge map on the fly.
-        """
-        # Move over the root map
-        root_map = {}
-        for topic in knowledge_map["topics"].values():
-            root_map[topic["id"]] = {
-                "kind": "Topic",
-                "h_position": topic["x"],
-                "v_position": topic["y"],
-                "icon_url": topic["icon_url"],
-            }
-        root_node = node_cache["Topic"]["root"]
-        root_node["knowledge_map"] = {
-            "nodes": root_map,
-            "polylines": knowledge_map["polylines"],
-        }
-
-        # Move over subtopic paths
-        for topic_id, subtopic_data in knowledge_topics.iteritems():
-            # Move over the root map
-            topic_map = {}
-            for subtopic in subtopic_data:
-                topic_map[subtopic["id"]] = {
-                    "kind": "Exercise",
-                    "h_position": subtopic["h_position"],
-                    "v_position": subtopic["v_position"],
-                }
-            for node in node_cache["Topic"][topic_id]:
-                node["icon_url"] = node["icon_src"]
-                node["knowledge_map"] = {
-                    "nodes": topic_map,
-                }
-    stamp_knowledge_map_on_topic_tree(node_cache, knowledge_map, knowledge_topics)
-
-    return knowledge_map, knowledge_topics
 
 
 def validate_data(topic_tree, node_cache, slug2id_map):
@@ -567,6 +363,23 @@ def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=se
     with open(dest_filepath, "w") as fp:
         fp.write(json.dumps(cache_object))
 
+def recurse_topic_tree_to_create_DSTT_hierarchy(node, level_cache={}):
+    hierarchy = ["Domain", "Subject", "Topic", "Tutorial"]
+    if not level_cache:
+        for hier in hierarchy:
+            level_cache[hier] = []
+    render_type = node.get("render_type", "")
+    if render_type in hierarchy:
+        node_copy = copy.deepcopy(dict(node))
+        for child in node_copy.get("children", []):
+            if child.has_key("children"):
+                del child["children"]
+        level_cache[render_type].append(node_copy)
+    for child in node.get("children", []):
+        recurse_topic_tree_to_create_DSTT_hierarchy(child, level_cache)
+    return level_cache
+
+
 
 class Command(BaseCommand):
     help = """**WARNING** not intended for use outside of the FLE; use at your own risk!
@@ -616,10 +429,16 @@ class Command(BaseCommand):
 
         validate_data(topic_tree, node_cache, slug2id_map)
 
+        level_cache = recurse_topic_tree_to_create_DSTT_hierarchy(topic_tree)
+
         save_topic_tree(topic_tree)
         save_cache_file("Exercise", cache_object=exercise_cache)
         save_cache_file("Video", cache_object=video_cache)
         save_cache_file("AssessmentItem", cache_object=assessment_item_cache)
+        save_cache_file("Map_Domain", cache_object=level_cache["Domain"])
+        save_cache_file("Map_Subject", cache_object=level_cache["Subject"])
+        save_cache_file("Map_Topic", cache_object=level_cache["Topic"])
+        save_cache_file("Map_Tutorial", cache_object=level_cache["Tutorial"])
 
         sys.stdout.write("Downloaded topic_tree data for %d topics, %d videos, %d exercises\n" % (
             len(node_cache["Topic"]),
