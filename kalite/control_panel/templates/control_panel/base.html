@@ -69,7 +69,7 @@
 
                 {% if facility %}
                 <li>
-                    &gt; {% if group_id %}<a href="{% url 'device_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
+                    &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
                     <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">
