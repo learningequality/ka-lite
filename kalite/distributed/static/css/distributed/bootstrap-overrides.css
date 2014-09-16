@@ -46,7 +46,11 @@ table {
 input[type="submit"] {
     margin-bottom: 15px;
 }
-
+.help-tooltip {
+    color: rgb(58, 58, 58);
+    position: relative; 
+    top: -5px;
+}
 
 /* ===================================
     Nav Bar

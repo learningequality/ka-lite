@@ -33,7 +33,18 @@
 
 {% block content %}
     {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div id="current-unit-container">
-        {# Backbone magic here! #}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>{% trans "Current Units" %}
+                    <small>
+                        <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% blocktrans %}This page shows the current unit selected for each Facility.{% endblocktrans %} {% blocktrans %}Click on the "Previous" or "Next" buttons or the number links to select the current unit for the facility.{% endblocktrans %}'></span>
+                    </small>
+                </h2>
+            </div>
+        </div>
+        <div id="current-unit-container">
+            {# Backbone magic here! #}
+        </div>
     </div>
 {% endblock content %}

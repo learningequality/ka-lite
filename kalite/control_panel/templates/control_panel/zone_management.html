@@ -26,14 +26,6 @@
         {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
     {% endif %}
     <script type="text/javascript" src="{% static 'js/control_panel/zone_management.js' %}"></script>
-    <script>
-        // Trigger tooltips 
-        $(function(){
-            $('.help-tooltip').tooltip({
-                trigger: "hover click"
-            });
-        });
-    </script>
 {% endblock headjs %}
 
 {% block buttons %}

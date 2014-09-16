@@ -40,6 +40,15 @@
   {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
   <div class="container">
     <div class="row">
+      <div class="col-xs-12">
+        <h2>
+          {% trans "Assign Playlists" %}
+          <small>
+                <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "To assign a playlist to a group, drag that group and drop it onto the playlist." %}'></span>
+            </small>
+        </h2>
+      </div>
+
       <div class="col-xs-3">
         <table class="table table-hover" id="student-groups">
           <tr>

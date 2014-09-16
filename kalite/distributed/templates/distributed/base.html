@@ -107,6 +107,14 @@
         <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
         <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
 
+        {# Trigger tooltips for help icons #}
+        <script>
+            $(function(){
+                $('.help-tooltip').tooltip({
+                    trigger: "hover click"
+                });
+            });
+        </script>
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
