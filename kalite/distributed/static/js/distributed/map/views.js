@@ -1,3 +1,38 @@
+var zoomControl = L.Control.extend({
+    options: {
+        position: 'topleft'
+    },
+
+    onAdd: function (map) {
+
+        var container = L.DomUtil.create('div', 'leaflet-control-zoom leaflet-bar');
+
+        L.DomEvent
+            .addListener(container, 'click', L.DomEvent.stopPropagation)
+            .addListener(container, 'click', L.DomEvent.preventDefault)
+            .addListener(container, 'dblclick', L.DomEvent.stopPropagation)
+            .addListener(container, 'dblclick', L.DomEvent.preventDefault);
+
+        var plus = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
+
+        plus.text = "+";
+        plus.title = "Zoom in";
+        plus.href = "#";
+
+        L.DomEvent.addListener(plus, 'click', function(){map.fire('zoomIn')});
+        
+        var minus = L.DomUtil.create('a', 'leaflet-control-zoom-out', container);
+
+        minus.text = "-";
+        minus.title = "Zoom out";
+        minus.href = "#";
+
+        L.DomEvent.addListener(minus, 'click', function(){map.fire('zoomOut')});
+
+        return container;
+    }
+});
+
 window.KnowledgeMapView = Backbone.View.extend({
 
     template: HB.template("map/map"),

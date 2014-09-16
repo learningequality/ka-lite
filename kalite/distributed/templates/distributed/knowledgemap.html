@@ -13,10 +13,15 @@
     <script src="{% url 'handlebars_templates' module_name='map' %}"></script>
     <script type='text/javascript' src='{% static "js/leaflet.js" %}'></script>
     <script type="text/javascript">
-        var ALL_EXERCISES_URL = '{% static "data/exercises.json" %}';
+        var TOPIC_DATA_URLS = {
+            Domains: '{% static "data/map_domains.json" %}',
+            Subjects: '{% static "data/map_subjects.json" %}',
+            Topics: '{% static "data/map_topics.json" %}',
+            Tutorials: '{% static "data/map_tutorials.json" %}',
+            Exercises: '{% static "data/exercises.json" %}'
+        }
     </script>
     <script src="{% static 'js/distributed/map/models.js' %}"></script>
-    <script src="{% static 'js/distributed/topics/models.js' %}"></script>
     <script src="{% static 'js/distributed/map/views.js' %}"></script>
     <script type="text/javascript">
         $(function() {
