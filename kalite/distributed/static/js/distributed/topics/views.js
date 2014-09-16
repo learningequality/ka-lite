@@ -363,6 +363,7 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.inner_views[0].remove();
         this.inner_views.shift();
         this.inner_views[0].show();
+        window.router.url_back();
     },
 
     entry_requested: function(entry) {
