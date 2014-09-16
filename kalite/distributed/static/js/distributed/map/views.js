@@ -37,22 +37,19 @@ window.KnowledgeMapView = Backbone.View.extend({
 
     template: HB.template("map/map"),
 
-    initialize: function() {
+    zoomLevels: ["Domains", "Subjects", "Topics", "Tutorials", "Exercises"],
+
+    initialize: function(options) {
 
         _.bindAll(this);
 
-        this.collection =  this.collection || new ExerciseCollection();
+        this.zoomLevel = options.zoomLevel || 0;
 
-        this.collection.fetch().then(this.render);
+        this.zoom = 3;
 
-        this.LeafIcon = L.icon({
-                iconUrl: '/static/images/distributed/default-60x60.png',
-                iconSize:     [38, 95],
-                shadowSize:   [50, 64],
-                iconAnchor:   [22, 94],
-                shadowAnchor: [4, 62],
-                popupAnchor:  [-3, -76]
-        });
+        this.zoomLayers = {};
+
+        this.render();
 
     },
 
@@ -62,12 +59,123 @@ window.KnowledgeMapView = Backbone.View.extend({
 
         this.map = L.map('map', {
             center: [0, 0],
-            zoom: 13
+            zoom: this.zoom,
+            zoomControl: false
         });
+
+        this.map.addControl(new zoomControl());
+
+        this.map.on('zoomIn', this.zoomIn);
+
+        this.map.on('zoomOut', this.zoomOut);
+
+        this.showCurrentLayer();
+        
+    },
+
+    zoomIn: function() {
+        if (this.zoomLevel < this.zoomLevels.length - 1) {
+            this.zoomLevel += 1;
+            this.showCurrentLayer();
+        }
+    },
+
+    zoomOut: function() {
+        if (this.zoomLevel > 0) {
+            this.zoomLevel = this.zoomLevel - 1;
+            this.showCurrentLayer();
+        }
+    },
+
+    showCurrentLayer: function() {
+        if (this.current_layer!==undefined) {
+            this.current_layer.hideLayer();
+        }
+
+        if (this.zoomLayers[this.zoomLevels[this.zoomLevel]]===undefined) {
+            collection = new TopicCollection([{that:"this"}], {url: TOPIC_DATA_URLS[this.zoomLevels[this.zoomLevel]]});
+            this.zoomLayers[this.zoomLevels[this.zoomLevel]] = new KnowledgeMapLayerView({collection: collection, map: this.map, zoom: this.zoom, zoomLevel: this.zoomLevels[this.zoomLevel]});
+        } else {
+            this.zoomLayers[this.zoomLevels[this.zoomLevel]].showLayer();
+        }
+
+        this.current_layer =  this.zoomLayers[this.zoomLevels[this.zoomLevel]];
+    }
+});
+
+window.KnowledgeMapLayerView = Backbone.View.extend({
+
+    initialize: function(options) {
+
+        _.bindAll(this);
+
+        this.map = options.map;
+        this.zoom = options.zoom;
+        this.zoomLevel = options.zoomLevel;
+
+        this.collection.fetch().then(this.render);
+
+    },
+
+    render: function() {
+
+        this.subviews = {};
+
+        this.layerGroup = L.featureGroup();
 
         for (i=0; i < this.collection.length; i++) {
             model = this.collection.models[i];
-            L.marker([model.get("h_position"), model.get("v_position")], {icon: this.LeafIcon}).addTo(this.map);
+            this.addSubView(model);
         }
+
+        this.showLayer();
+    },
+
+    addSubView: function(model) {
+        if (model.coordinates()) {
+            this.subviews[model.get("id")] = new KnowledgeMapItemView({model: model, map: this.map, zoom: this.zoom, zoomLevel: this.zoomLevel});
+            this.layerGroup.addLayer(this.subviews[model.get("id")].marker);
+        }
+    },
+
+    hideLayer: function() {
+        this.map.removeLayer(this.layerGroup);
+    },
+
+    showLayer: function() {
+        this.map.addLayer(this.layerGroup);
+        this.layerGroup.on("click", this.hideLayer);
+    }
+});
+
+window.KnowledgeMapItemView = Backbone.View.extend({
+
+    initialize: function(options) {
+
+        _.bindAll(this);
+
+        this.map = options.map;
+        this.zoom = options.zoom;
+        this.zoomLevel = options.zoomLevel;
+
+        this.model = options.model;
+
+        this.render();
+
+    },
+
+    render: function() {
+        this.marker = L.marker(this.model.coordinates(), {icon: L.divIcon({className: 'map-icon', html: "<div>" + this.model.get("title") + "</div>", iconSize: [100,100]}), title: this.model.get("title")});
+        if (this.zoomLevel=="Exercises") {
+            this.marker.on("click", this.navigateToExercise);
+        } else {
+            this.marker.on("click", this.zoomToSubLayer);
+        }
+    },
+
+    zoomToSubLayer: function() {
+        this.collection = this.collection || new TopicCollection(this.model.get("children"));
+        this.map.panTo(this.collection.centerOfMass());
+        this.map.fire("zoomIn");
     }
 });
