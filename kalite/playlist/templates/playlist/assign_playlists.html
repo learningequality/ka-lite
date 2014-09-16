@@ -38,16 +38,18 @@
 
 {% block content %}
 
-{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+  {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
   <div class="row">
-    <table class="span3 table table-hover" id="student-groups">
-      <tr>
-        <th>Student Groups</th>
-      </tr>
-    </table>
-    <div class="col-md-9 col-sm-8">
-      <table class="span10 table table-hover" id="playlists">
+    <div class="col-xs-3">
+      <table class="table table-hover" id="student-groups">
+        <tr>
+          <th>Student Groups</th>
+        </tr>
+      </table>
+    </div>
+    <div class="col-xs-9">
+      <table class="table table-hover" id="playlists">
         <tr>
           <th>Playlists</th>
         </tr>
