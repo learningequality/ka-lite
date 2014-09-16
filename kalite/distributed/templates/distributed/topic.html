@@ -78,6 +78,7 @@
     <script src="{% static 'js/distributed/topics/bigSlide.js' %}"></script>
     <script src="{% static 'js/distributed/topics/models.js' %}"></script>
     <script src="{% static 'js/distributed/topics/views.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/router.js' %}"></script>
 
     <script type="text/javascript">
         $(function() {
@@ -86,6 +87,10 @@
                 entity_collection: TopicCollection
             });
             $("#sidebar-container").append(sidebar_view.el);
+            window.router = new TopicRouter({
+                control_view: window.sidebar_view
+            });
+            Backbone.history.start({pushState: true, root: "/{{ request.resolver_match.url_name }}/"});
         });
     </script>
 

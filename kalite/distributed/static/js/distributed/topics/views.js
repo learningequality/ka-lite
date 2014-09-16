@@ -121,6 +121,10 @@ window.SidebarView = Backbone.View.extend({
 
     hide_sidebar: function() {
         this.state_model.set("open", false);
+    },
+
+    navigate_paths: function(paths) {
+        this.topic_node_view.defer_navigate_paths(paths);
     }
 
 });
@@ -223,6 +227,12 @@ window.SidebarContentView = Backbone.View.extend({
 
     backToParent: function(ev) {
         this.trigger('back_button_clicked', this.model);
+    },
+
+    node_by_slug: function(slug) {
+        // Convenience method to return a node by a passed in slug
+        console.log(slug);
+        return _.find(this.model.get(this.entity_key).models, function(model) {return model.get("slug")==slug;});
     }
 
 });
@@ -282,6 +292,23 @@ window.TopicContainerOuter = Backbone.View.extend({
     },
 
     show_new_topic: function(node) {
+
+        var new_topic = this.add_new_topic_view(node);
+
+        this.$el.append(new_topic.el);
+
+        // Listeners
+        if(node.get("render_type")=="Tutorial"||node.get("entries")){
+            this.listenTo(new_topic, "entry_requested", this.entry_requested);
+        } else {
+            this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
+        }
+        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
+        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
+        this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
+    },
+
+    add_new_topic_view: function(node) {
         if(node.get("render_type")=="Tutorial"||node.get("entries")){
             ItemWrapper = PlaylistSidebarView;
         } else {
@@ -298,22 +325,38 @@ window.TopicContainerOuter = Backbone.View.extend({
 
         if (this.inner_views.length === 0){
             new_topic.model.set("has_parent", false);
+            this.inner_views.unshift(new_topic);
+            this.trigger("inner_view_added");
         } else if (this.inner_views.length >= 1) {
             this.inner_views[0].hide();
+            this.inner_views.unshift(new_topic);
         }
 
-        this.$el.append(new_topic.el);
-        this.inner_views.unshift(new_topic);
 
-        // Listeners
-        if(node.get("render_type")=="Tutorial"||node.get("entries")){
-            this.listenTo(new_topic, "entry_requested", this.entry_requested);
+        return new_topic;
+    },
+
+    defer_navigate_paths: function(paths) {
+        if (this.inner_views.length === 0){
+            var self = this;
+            this.listenToOnce(this, "inner_view_added", function() {self.navigate_paths(paths);});
         } else {
-            this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
+            this.navigate_paths(paths);
         }
-        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
-        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
-        this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
+    },
+
+    navigate_paths: function(paths) {
+        paths = _.reject(paths, function(slug) {return slug===null;});
+        for (i=0; i < paths.length; i++) {
+            var node = this.inner_views[0].node_by_slug(paths[i]);
+            if (node!==undefined) {
+                if (i == paths.length - 1) {
+                    this.show_new_topic(node);
+                } else {
+                    this.add_new_topic_view(node);
+                }
+            }
+        }
     },
 
     back_to_parent: function() {
