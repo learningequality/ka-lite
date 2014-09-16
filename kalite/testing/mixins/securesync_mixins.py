@@ -12,11 +12,17 @@ class CreateDeviceMixin:
         Device.initialize_own_device()
 
     @classmethod
-    def create_device_zone(self, zone):
-        return DeviceZone.objects.create(device=Device.get_own_device(), zone=zone)
+    def register_device(self, zone=None):
+        """Register the local device to a zone (dummy zone if none specified)."""
+        zone = zone or Zone.objects.create(name='test_zone')
+        DeviceZone.objects.create(zone=zone, device=Device.get_own_device())
 
 
 class CreateZoneMixin:
+
+    @classmethod
+    def create_device_zone(self, zone):
+        return DeviceZone.objects.create(device=Device.get_own_device(), zone=zone)
 
     @classmethod
     def create_zone(self, **kwargs):

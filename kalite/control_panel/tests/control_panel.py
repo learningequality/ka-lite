@@ -1,40 +1,31 @@
 import json
-import time
 
 from django.conf import settings
-from django.utils import unittest
-from django.test import Client
+from django.core.urlresolvers import reverse
 
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
-from kalite.control_panel.views import UNGROUPED
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
-from kalite.testing import KALiteTestCase, KALiteClient
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateGroupMixin
-from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin, CreateZoneMixin
+from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin
 
 logging = settings.LOG
 
 
 class FacilityControlTests(FacilityMixins,
                            CreateAdminMixin,
-                           CreateDeviceMixin,
-                           KALiteDistributedBrowserTestCase):
+                           BrowserActionMixins,
+                           KALiteBrowserTestCase):
 
     def setUp(self):
-        self.setup_fake_device()
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
         super(FacilityControlTests, self).setUp()
 
     def test_delete_facility(self):
         facility_name = 'should-be-deleted'
         self.fac = self.create_facility(name=facility_name)
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
 
         # assert that our facility exists
@@ -63,12 +54,15 @@ class FacilityControlTests(FacilityMixins,
 
 
 class GroupControlTests(FacilityMixins,
-                        CreateDeviceMixin,
-                        KALiteDistributedBrowserTestCase):
+                        CreateAdminMixin,
+                        BrowserActionMixins,
+                        KALiteBrowserTestCase):
 
     def setUp(self):
-        self.setup_fake_device()
         self.facility = self.create_facility()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
         group_name = 'group1'
         self.group = self.create_group(name=group_name, facility=self.facility)
@@ -77,7 +71,7 @@ class GroupControlTests(FacilityMixins,
 
     def test_delete_group(self):
 
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
 
         group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
@@ -120,14 +114,14 @@ class GroupControlTests(FacilityMixins,
 
 
 class CSVExportTestSetup(FacilityMixins,
-                     StudentProgressMixin,
-                     CreateDeviceMixin,
-                     CreateZoneMixin,
-                     CreateAdminMixin,
-                     KALiteDistributedBrowserTestCase):
+                         StudentProgressMixin,
+                         CreateZoneMixin,
+                         CreateAdminMixin,
+                         KALiteTestCase):
 
     def setUp(self):
-        self.setup_fake_device()
+        super(CSVExportTestSetup, self).setUp()
+
         self.zone = self.create_zone()
         self.device_zone = self.create_device_zone(self.zone)
         self.facility = self.create_facility()
@@ -146,7 +140,8 @@ class CSVExportTestSetup(FacilityMixins,
         self.attempt_log_1 = self.create_attempt_log(user=self.stu1)
         self.attempt_log_2 = self.create_attempt_log(user=self.stu2)
 
-        self.admin = self.create_admin()
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
         # base urls
         self.distributed_data_export_url = "%s%s%s" % (self.reverse("data_export"), "?zone_id=", self.facility.get_zone().id)
@@ -156,17 +151,11 @@ class CSVExportTestSetup(FacilityMixins,
         self.api_test_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "test_log_csv"})
         self.api_attempt_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "attempt_log_csv"})
 
-        super(CSVExportTestSetup, self).setUp()
 
-
-class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
-    
-    def setUp(self):
-        self.client = KALiteClient()
-        super(CSVExportAPITests, self).setUp()
+class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
 
     def test_api_auth_super_admin(self):
-        # Super admin can access everything 
+        # Super admin can access everything
         self.client.login(username='admin', password='admin')
         facility_resp = json.loads(self.client.get(self.api_facility_url).content)
         self.assertTrue(facility_resp.get("objects"), "Authorization error")
@@ -211,7 +200,7 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         self.client.logout()
 
     def test_api_auth_not_logged_in(self):
-        # Not logged in can't 
+        # Not logged in can't
         facility_resp = self.client.get(self.api_facility_url)
         self.assertFalse(facility_resp.content, "Authorization error")
         group_resp = self.client.get(self.api_group_url + "?facility_id=" + self.facility.id)
@@ -283,13 +272,13 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteTestCase):
         self.client.logout()
 
 
-class CSVExportBrowserTests(CSVExportTestSetup):
+class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
 
     def setUp(self):
         super(CSVExportBrowserTests, self).setUp()
 
     def test_user_interface(self):
-        self.browser_login_admin() 
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.distributed_data_export_url)
 
         self.browser_wait_for_ajax_calls_to_finish()
@@ -297,7 +286,7 @@ class CSVExportBrowserTests(CSVExportTestSetup):
         # Check that group is disabled until facility is selected
         group_select = self.browser.find_element_by_id("group-name")
         self.assertFalse(group_select.is_enabled(), "UI error")
-        
+
         # Select facility, wait, and ensure group is enabled
         facility_select = self.browser.find_element_by_id("facility-name")
         for option in facility_select.find_elements_by_tag_name('option'):

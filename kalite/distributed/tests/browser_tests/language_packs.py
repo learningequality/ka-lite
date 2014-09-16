@@ -3,29 +3,29 @@ These use a web-browser, along selenium, to simulate user actions.
 """
 import mock
 import os
-import re
 import time
 import urllib
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions, ui
-from selenium.webdriver.firefox.webdriver import WebDriver
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
 from django.core.management import call_command
-from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.utils import unittest
-from django.utils.translation import ugettext as _
 
-from .base import KALiteDistributedBrowserTestCase
-from kalite.i18n import get_installed_language_packs, delete_language
-from kalite.main.models import ExerciseLog
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin
+from kalite.i18n import get_installed_language_packs
+
+logging = settings.LOG
 
 
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
-class LanguagePackTest(KALiteDistributedBrowserTestCase):
+class LanguagePackTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase):
+
+    def setUp(self):
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        super(LanguagePackTest, self).setUp()
 
     def is_language_installed(self, lang_code, force_reload=True):
         return lang_code in get_installed_language_packs(force=force_reload)
@@ -37,7 +37,7 @@ class LanguagePackTest(KALiteDistributedBrowserTestCase):
         test_zip_filepath = os.path.join(os.path.dirname(__file__), 'de.zip')
         urlretrieve_method.return_value = [test_zip_filepath, open(test_zip_filepath)]
         # Login as admin
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
 
         # Delete the language pack
         if not self.is_language_installed("de"):

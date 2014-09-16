@@ -1,6 +1,7 @@
 from kalite.main.models import VideoLog, ExerciseLog
 from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
 
+
 class CreatePlaylistProgressMixin(object):
     """Helper to create progress for a student on a playlist"""
 
@@ -10,7 +11,7 @@ class CreatePlaylistProgressMixin(object):
         playlist = Playlist.all()[1]
         assert(playlist.id == default_playlist), "Unexpected playlist ID. Update tests to match new playlists.json"
 
-        # Creating one specific entry for a specific item in the playlist 
+        # Creating one specific entry for a specific item in the playlist
         VideoLog(**{
             "user": user,
             "video_id": "nFsQA2Zvy1o",
