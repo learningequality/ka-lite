@@ -11,7 +11,7 @@ import shutil
 import sys
 import time
 
-from khan_api_python.api_models import Khan
+from khan_api_python.api_models import Khan, APIError
 from math import ceil, log, exp  # needed for basepoints calculation
 from optparse import make_option
 
@@ -291,19 +291,22 @@ def build_full_cache(items, id_key="id"):
     """
     for item in items:
         for attribute in item._API_attributes:
-            dummy_variable_to_force_fetch = item.__getattr__(attribute)
-            if isinstance(item[attribute], list):
-                for subitem in item[attribute]:
-                    if isinstance(subitem, dict):
-                        if subitem.has_key("kind"):
-                            subitem = whitewash_node_data(
-                                {key: value for key, value in subitem.items()
-                                if key in denormed_attribute_list[subitem["kind"]]})
-            elif isinstance(item[attribute], dict):
-                if item[attribute].has_key("kind"):
-                    item[attribute] = whitewash_node_data(
-                        {key: value for key, value in item.attribute.items()
-                        if key in denormed_attribute_list[item[attribute]["kind"]]})
+            try:
+                dummy_variable_to_force_fetch = item.__getattr__(attribute)
+                if isinstance(item[attribute], list):
+                    for subitem in item[attribute]:
+                        if isinstance(subitem, dict):
+                            if subitem.has_key("kind"):
+                                subitem = whitewash_node_data(
+                                    {key: value for key, value in subitem.items()
+                                    if key in denormed_attribute_list[subitem["kind"]]})
+                elif isinstance(item[attribute], dict):
+                    if item[attribute].has_key("kind"):
+                        item[attribute] = whitewash_node_data(
+                            {key: value for key, value in item.attribute.items()
+                            if key in denormed_attribute_list[item[attribute]["kind"]]})
+            except APIError as e:
+                del item[attribute]
     return {item["id"]: whitewash_node_data(item) for item in items}
 
 
