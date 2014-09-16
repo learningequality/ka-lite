@@ -184,9 +184,9 @@ def generate_slug_to_video_id_map(node_cache=None):
     for video_id, v in node_cache.get('Video', {}).iteritems():
         try:
             assert v["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
-            slug2id_map[v['slug']] = video_id
-        except:
-            True
+        except AssertionError as e:
+            logging.warn(_("{slug} duplicated in topic tree - overwritten here.").format(slug=v["slug"]))
+        slug2id_map[v['slug']] = video_id
 
     return slug2id_map
 
@@ -204,15 +204,12 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
             if alldata:
                 relevant_data = node
             else:
-                try:
-                    relevant_data = {
-                        'title': _(node['title']),
-                        'path': node['path'],
-                        'kind': node['kind'],
-                        'available': node.get('available', True),
-                    }
-                except:
-                    True
+                relevant_data = {
+                    'title': _(node['title']),
+                    'path': node['path'],
+                    'kind': node['kind'],
+                    'available': node.get('available', True),
+                }
             result[category_name][node_name] = relevant_data
 
     translation.deactivate()
@@ -559,8 +556,8 @@ def get_video_data(request, video_id=None):
         return None
 
     # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
-    # from kalite.updates import stamp_availability_on_video
-    # video = stamp_availability_on_video(video)
+    from kalite.updates import stamp_availability_on_video
+    video = stamp_availability_on_video(video)
 
     if not video["available"]:
         if request.is_admin:
