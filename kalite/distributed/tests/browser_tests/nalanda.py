@@ -1,39 +1,26 @@
 """
 These use a web-browser, along with selenium, to simulate user actions.
 """
-import re
 import time
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions, ui
-from selenium.webdriver.firefox.webdriver import WebDriver
-
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.test import TestCase
-from django.utils import unittest
-from django.test.utils import override_settings
-from django.utils.translation import ugettext as _
 
-from .base import KALiteDistributedBrowserTestCase, KALiteDistributedWithFacilityBrowserTestCase
-from fle_utils.django_utils import call_command_with_output
-from fle_utils.general import isnumeric
-from kalite.facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.main.models import VideoLog
-from kalite.testing.browser import BrowserTestCase
-from kalite.topic_tools import get_exercise_paths, get_node_cache
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
+from kalite.topic_tools import get_node_cache
 from kalite.student_testing.utils import set_current_unit_settings_value
 
 PLAYLIST_ID = "g3_p1"
 
-class UnitSwitchTest(KALiteDistributedBrowserTestCase):
+logging = settings.LOG
+
+
+class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """
     Tests that dynamic settings are properly set for different units.
     """
     student_username = 'test_student'
-    student_password =  'socrates'
+    student_password = 'socrates'
     facility_name = 'facility1'
 
     def setUp(self):
@@ -41,8 +28,8 @@ class UnitSwitchTest(KALiteDistributedBrowserTestCase):
         Create a student, log the student in.
         """
         super(UnitSwitchTest, self).setUp()
-        self.facility = self.create_facility(facility_name=self.facility_name)
-        self.student = self.create_student(facility_name=self.facility_name)
+        self.facility = self.create_facility(name=self.facility_name)
+        self.student = self.create_student(username=self.student_username, password=self.student_password, facility=self.facility)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
 
