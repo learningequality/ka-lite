@@ -83,11 +83,11 @@
                             </span>
                         </th>
                     </tr>
-                {% endfor %} 
+                {% endfor %}
                 {% for stat in summary_stats %}
                     <tr>
                         <th class="summary-stat-header">
-                            {% trans "{{ stat }}" %}
+                          {{ stat }}
                         </th>
                     </tr>
                 {% endfor %}
@@ -124,7 +124,7 @@
                                 </td>
                             {% endif%}
                         {% endfor %}
-                        </tr>    
+                        </tr>
                     {% endfor %}
                     {% for stats in stats_dict.values %}
                         <tr>
@@ -141,4 +141,3 @@
     </div>
     {% endif %}
 {% endblock content %}
-
