@@ -157,8 +157,6 @@ window.SidebarContentView = Backbone.View.extend({
 
         this.add_all_entries();
 
-        this.render();
-
     },
 
     render: function() {
@@ -166,10 +164,6 @@ window.SidebarContentView = Backbone.View.extend({
 
         this.$el.html(this.template(this.model.attributes));
         
-        this._entry_views.forEach(function(entry_view) {
-
-        });
-
         this.$(".sidebar").slimScroll({
             height: "auto",
             color: "#033000",
@@ -197,8 +191,8 @@ window.SidebarContentView = Backbone.View.extend({
     add_new_entry: function(entry) {
         var view = new SidebarEntryView({model: entry});
         this._entry_views.push(view);
-        this.$(".sidebar").append(entry_view.render().$el);
-        this.listenTo(entry_view, "clicked", self.item_clicked);
+        this.$(".sidebar").append(view.render().$el);
+        this.listenTo(view, "clicked", this.item_clicked);
         this.load_entry_progress();
     },
 
@@ -263,7 +257,7 @@ window.SidebarEntryView = Backbone.View.extend({
     },
 
     toggle_active: function() {
-        this.$(".sidebar-entry").toggleClass("active", this.model.get("active"));
+        this.$(".sidebar-entry").toggleClass("active-entry", this.model.get("active"));
     }
 
 });

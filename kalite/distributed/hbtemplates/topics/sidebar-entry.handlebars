@@ -15,5 +15,9 @@
     <span class="sidebar-icon icon-quiz" data-quiz-id="{{ entity_id }}"></span>
     <span class="sidebar-text" data-quiz-id="{{ entity_id }}">{{ title }}</span>
     {{/ifcond}}
+    {{#ifcond entity_kind "==" "Topic"}}
+    <span class="sidebar-icon icon-list" data-topic-id="{{ id }}"></span>
+    <span class="sidebar-text" data-topic-id="{{ id }}">{{ title }}</span>
+    {{/ifcond}}
 </a>
 {{/ifcond}}
