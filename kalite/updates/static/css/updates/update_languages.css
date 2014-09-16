@@ -16,26 +16,26 @@
 }
 
 .lang-link {
-    width: 14%; 
+    width: 25%; 
     text-align: center;
 }
 
 .lang-name {
-    text-align: middle; 
+    text-align: center; 
     width: 20%;
 }
 
 .lang-data {
-    text-align: left; 
+    text-align: center; 
 }
 
 .lang-data {
-    width: 30%; 
+    width: 25%; 
 }
 
 .upgrade-link {
     text-align: center;
-    width: 35%; 
+    width: 26%; 
 }
 
 #langpack-details {
@@ -68,14 +68,24 @@ h4.button_text {
 .language-table tr {
     border-top: 1px solid #ddd;
     width: 100%;
+    padding-top: 20px;
 }
 
 .language-table td {
     border-top: none !important;
+    padding-top: 15px !important;
+    height: 100px !important;
+    width: 33%;
+}
+
+
+
+.language-table span {
+    line-height: 2;
 }
 
 .delete-language-button {
-    text-align: right;
+    text-align: center;
 }
 
 @media only screen and (max-width: 1199px) {

@@ -43,24 +43,19 @@ function display_languages() {
         if (lang['name']) { // nonempty name
             var link_text;
             if (lang['code'] !== defaultLanguage) {
-                link_text = sprintf("<a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'>(Set to server default)</a>", {
+                link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>Set as default</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
                 });
             } else {
-                link_text = "(Default)";
+                link_text = "Default";
             }
-            var lang_name = sprintf("<b>%(name)s</b>", lang);
+            var lang_name_data = sprintf("<b>%(name)s</b><br>%(subtitle_count)d Subtitles <br> %(percent_translated)d%% Translated", lang);
             var lang_code = lang['code'];
-            var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles <br> %(percent_translated)d%% Translated"), lang);
-            var lang_description = sprintf("<tr><td class='lang-link'>%s </td><td class='lang-name'>%s</td><td class='lang-data'> - %s</td>", link_text, lang_name, lang_data);
+            
+            var lang_description = sprintf("<tr><td class='lang-name'>%s</td><td class='lang-link'>%s </td>", lang_name_data, link_text);
 
-            if ( lang_code != 'en')
-                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger btn-sm' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete'), lang));
-            else
-                if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger btn-sm' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete Subtitles'), lang));
-                }
+            
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -75,9 +70,9 @@ function display_languages() {
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
                         var subtitle_count_diff = matching_installable.subtitle_count - lang.subtitle_count;
                         lang_description += sprintf(
-                            "<td class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> <br> (+%(translated)d%% %(translated_text)s <br> +%(srt)d %(srt_text)s / %(size)s)</td>", {
+                            "<td class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> <br> +%(translated)d%% %(translated_text)s <br> +%(srt)d %(srt_text)s / %(size)s</td>", {
                                 lang: lang,
-                                upgrade_text: gettext("Upgrade"),
+                                upgrade_text: gettext("<button type='button' class='btn btn-info'>Upgrade</button>"),
                                 translated: percent_translated_diff,
                                 translated_text: gettext("Translated"),
                                 srt: subtitle_count_diff,
@@ -85,8 +80,19 @@ function display_languages() {
                                 size: sprintf("%5.2f MB", matching_installable.zip_size/1.0E6 || 0)
                         });
                     }
+                    else {
+                        lang_description += sprintf("<td class='upgrade-link'>Up to date</td>");
+                    }
                 }
             }
+
+            if ( lang_code != 'en')
+                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete'), lang));
+            else
+                if (lang['subtitle_count'] > 0) {
+                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete Subtitles'), lang));
+                }
+
             lang_description += "<td class='clear'></td></tr>";
 
             $("table.installed-languages").append(lang_description);
