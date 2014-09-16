@@ -126,7 +126,7 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         self.browser_login_admin(**self.admin_data)
 
         # Install the language pack
-        if not "es" in get_installed_language_packs(force=True):
+        if "es" not in get_installed_language_packs(force=True):
             call_command("languagepackdownload", lang_code="es")
 
         self.register_device()
