@@ -118,12 +118,21 @@ a:hover {
     font-weight: bold;
     display: inline-block;
     margin: 0 2px -4px 0;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
 
 }
 .teach-nav li div {
     position: relative;
-    top: 35px;
-    left: 11px;
+    width: 110px;
+    height: 88px;
+    line-height: 10;
+    margin: -24px 0px -47px -3px;
+}
+.teach-nav li div:hover {
+    color: #5C8547;
 }
 .teach-nav li:hover {
     background-color: white;
@@ -131,14 +140,14 @@ a:hover {
     border-top-right-radius: 16px;
     color: #5C8547;
     font-weight: bold;
-    -webkit-transition: all 100ms ease-out;
-    -moz-transition: all 100ms ease-out;
-    -o-transition: all 100ms ease-out;
-    transition: all 100ms ease-out;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
 }
 .teach-nav li a {
     color: white;
-    padding: 40px 15px 5px 15px;
+    padding: 0px 15px 5px 15px;
     text-align: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
@@ -154,24 +163,22 @@ a:hover {
     margin: auto;
     margin-bottom: 5px;
 }
-.subnav-div {
-    width: 80px;
-}
 .link-width {
     width: 90px;
 }
 .active-nav {
-    color: #5C8547;
+    color: #5C8547 !important;
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
-    font-weight: bold;           
+    font-weight: bold;
 }
-
-.active-tab {
-    background-color: #E9F1E4; 
-    height: 87px;
-    color: #5C8547;
+.active-tab { 
+    height: 89px;
+    width: 110px;
+}
+.active-tab div {
+    color: #5C8547 !important;
 }
 .reports {
     background: url("../../images/distributed/reports-icon.png") no-repeat;
@@ -182,6 +189,7 @@ a:hover {
     background: url("../../images/distributed/reports-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
+    color: #5C8547 !important;
 }
 .playlist {
     background: url("../../images/distributed/playlist-icon.png") no-repeat;
@@ -200,6 +208,16 @@ a:hover {
 }
 .exams:hover, .exams-active {
     background: url("../../images/distributed/exam-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.units {
+    background: url("../../images/distributed/units-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.units:hover, .units-active {
+    background: url("../../images/distributed/units-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
@@ -225,7 +243,8 @@ a:hover {
 }
 .manage-nav ul {
     padding-left: 1%;
-    margin-bottom: 0;
+    margin-bottom: -4px;
+    height: 87px;
 }
 .manage-nav li {
     background-color: #5C8547;
@@ -239,23 +258,36 @@ a:hover {
     font-weight: bold;
     display: inline-block !important;
     margin: 0 2px -4px 0;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+}
+.manage-nav li:hover {
+    background-color: white;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
 }
 .manage-nav li a {
     color: white;
-    padding: 10px !important;
     text-align: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    -webkit-transition: all 100ms ease-out !important;
-    -moz-transition: all 100ms ease-out !important;
-    -o-transition: all 100ms ease-out !important;
-    transition: all 100ms ease-out !important;
 }
-.manage-nav li span {
-    line-height: 7.7;
+.manage-nav li div {
+    position: relative;
+    width: 110px;
+    height: 85px;
+    line-height: 9.5;
+    margin-left: -3px;
+    margin-top: -3px;
+}
+.manage-nav li div:hover {
+    color: #5C8547;
 }
 .manage-nav li a:hover {
-    background-color: white !important;
     border-top-left-radius: 5px !important;
     border-top-right-radius: 16px !important;
     color: #5C8547;
@@ -279,10 +311,6 @@ a:hover {
 .active {
     background-color: #E9F1E4;
     height: 50px;
-}
-.active-tab {
-    background-color: #E9F1E4;
-    height: 87px;
 }
 .users {
     background: url("../../images/distributed/users-icon.png") no-repeat;
@@ -344,7 +372,7 @@ a:hover {
     display: inline-block;
     text-align: center;
     border-radius: 10px;
-    border: 2px solid #5C8547;
+    border: 3px solid #6E9F56;
     margin: -25px 10px 0 10px;
 }
 .subnav li a {
@@ -353,10 +381,10 @@ a:hover {
     text-decoration: none;
     color: #5C8547;
     font-weight: bold;
-    -webkit-transition: all 100ms ease-out !important;
-    -moz-transition: all 100ms ease-out !important;
-    -o-transition: all 100ms ease-out !important;
-    transition: all 100ms ease-out !important;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
 }
 .subnav li a:hover {
     background-color: #5C8547 !important;
