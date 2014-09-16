@@ -54,3 +54,20 @@ div.exercise {
 div.exercise-label {
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+.map-icon {
+    position: absolute;
+    background:#ff8800;
+    border:5px solid rgba(255,255,255,0.5);
+    color:#fff;
+    font-weight:bold;
+    font-size: 1.25em;
+    border-radius:50%;
+}
+
+.map-icon div {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+}
