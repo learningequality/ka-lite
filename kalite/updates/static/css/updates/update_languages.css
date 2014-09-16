@@ -15,29 +15,27 @@
     text-decoration: underline;
 }
 
-.lang-link, .lang-name {
-    width: 12.5%; 
-}
-
-.lang-link { 
-    text-align: left;
+.lang-link {
+    width: 14%; 
+    text-align: center;
 }
 
 .lang-name {
     text-align: middle; 
-}
-
-.lang-data, .upgrade-link {
-    text-align: right; 
+    width: 20%;
 }
 
 .lang-data {
-    width: 25%; 
+    text-align: left; 
+}
+
+.lang-data {
+    width: 30%; 
 }
 
 .upgrade-link {
-    text-align: right; 
-    width: 50%; 
+    text-align: center;
+    width: 35%; 
 }
 
 #langpack-details {
@@ -50,6 +48,7 @@
 }
 
 #languagepackdownload-progressbar {
+    margin-top: 25px;
     margin-bottom: 25px;
 }
 
@@ -62,8 +61,21 @@ h4.button_text {
 }
 
 #installed-languages-div {
-    margin-left: 20px;
+    padding: 5px 0px 20px 25px;
     margin-top: 20px;
+}
+
+.language-table tr {
+    border-top: 1px solid #ddd;
+    width: 100%;
+}
+
+.language-table td {
+    border-top: none !important;
+}
+
+.delete-language-button {
+    text-align: right;
 }
 
 @media only screen and (max-width: 1199px) {

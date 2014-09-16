@@ -38,12 +38,12 @@ function display_languages() {
     //
     // show list of installed languages
     //
-    $("div.installed-languages").empty();
+    $("table.installed-languages").empty();
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
             if (lang['code'] !== defaultLanguage) {
-                link_text = sprintf("<a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'>(Set server default)</a>", {
+                link_text = sprintf("<a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'>(Set to server default)</a>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
                 });
@@ -52,14 +52,14 @@ function display_languages() {
             }
             var lang_name = sprintf("<b>%(name)s</b>", lang);
             var lang_code = lang['code'];
-            var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
-            var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
+            var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles <br> %(percent_translated)d%% Translated"), lang);
+            var lang_description = sprintf("<tr><td class='lang-link'>%s </td><td class='lang-name'>%s</td><td class='lang-data'> - %s</td>", link_text, lang_name, lang_data);
 
             if ( lang_code != 'en')
-                lang_description += sprintf("<div class='delete-language-button pull-right'> <button class='btn btn-default btn-xs' value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
+                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger btn-sm' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete'), lang));
             else
                 if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<div class='delete-language-button pull-right'> <button class='btn btn-default btn-xs' value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
+                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger btn-sm' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete Subtitles'), lang));
                 }
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
@@ -75,7 +75,7 @@ function display_languages() {
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
                         var subtitle_count_diff = matching_installable.subtitle_count - lang.subtitle_count;
                         lang_description += sprintf(
-                            "<div class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> (+%(translated)d%% %(translated_text)s / +%(srt)d %(srt_text)s / %(size)s)</div>", {
+                            "<td class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> <br> (+%(translated)d%% %(translated_text)s <br> +%(srt)d %(srt_text)s / %(size)s)</td>", {
                                 lang: lang,
                                 upgrade_text: gettext("Upgrade"),
                                 translated: percent_translated_diff,
@@ -87,9 +87,9 @@ function display_languages() {
                     }
                 }
             }
-            lang_description += "<div class='clear'></div>";
+            lang_description += "<td class='clear'></td></tr>";
 
-            $("div.installed-languages").append(lang_description);
+            $("table.installed-languages").append(lang_description);
         }
     });
 
