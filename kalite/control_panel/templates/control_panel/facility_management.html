@@ -44,7 +44,7 @@
             $("#top_export_button_id").click(function() {
                 $("#export_csv_div_id").toggle(function() {
                     if (!$("#export_csv_div_id").is(":visible")) {
-                        $("#top_export_button_id").val("{% trans 'Export data' %}");
+                        $("#top_export_button_id").val("{% trans 'Export student stats' %}");
                     } else {
                         $("#start_date_select").datepicker('setDate', start_date);
                         $("#end_date_select").datepicker('setDate', end_date);
@@ -76,7 +76,7 @@
 
 {% block buttons %}{{ block.super }}
     <li>
-        <button class="btn btn-success" id="top_export_button_id" value="{% trans 'Export data' %}">{% trans 'Export data' %}</button>
+        <button class="btn btn-success" id="top_export_button_id" value="{% trans 'Export student stats' %}">{% trans 'Export student stats' %}</button>
     </li>
     <li>
         <div id="export_csv_div_id" class="export_csv_div">
@@ -246,9 +246,14 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if group.id %}
                                                 {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                                <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}">
+                                                <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}{% endblocktrans %}" 
+                                                {% if group.id %}
+                                                    href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}"
+                                                {% elif group.name == ungrouped %}
+                                                    href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.name }}"
+                                                {% endif %}
+                                                >
                                                 <div class="sparklines" sparkType="bar" sparkBarColor="green">
                                                 <!--
                                                     {{ group.total_logins }},
@@ -256,7 +261,6 @@
                                                     {{ group.total_exercises }}
                                                 -->
                                                 </div></a>
-                                                {% endif %}
                                             </td>
                                             <td>{{ group.total_users }}</td>
                                             <td>{{ group.total_logins }}</td>

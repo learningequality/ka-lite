@@ -64,13 +64,12 @@
 
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
-
-    <div id="navbar" style="padding-bottom:25px">
+    <div id="navbar">
         <div id="users_link">
         </div>
 
         {% block navbar_title %}
-        <h4>
+        <h1>
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
@@ -137,7 +136,7 @@
                 </div>
                 {% endblock navbar_makelink %}
             </div>
-        </h4>
+        </h1>
         {% endblock navbar_title %}
 
         {% block navbar_topics %}
