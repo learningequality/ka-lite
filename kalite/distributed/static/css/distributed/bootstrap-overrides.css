@@ -68,6 +68,7 @@ input[type="submit"] {
     color: #333 !important;
     text-transform: uppercase;
 }
+}
 .navbar ul li a:hover, .navbar ul li a:focus {
     background: #dcdcdc !important;
 }
@@ -101,6 +102,16 @@ input#search.ui-autocomplete-input {
 #language_selector {
     margin: 15px 15px 0;
     /*width: 75px;*/
+}
+/* Navbar collapse styles for hamburger */
+.navbar-toggle {
+    background-color: rgb(214, 214, 214);
+}
+.navbar-toggle:hover {
+    opacity: 0.7;
+}
+.navbar-toggle .icon-bar {
+    background-color: #858B78;
 }
 /* ======= Logged in student only ======== */
 .relative-block{
