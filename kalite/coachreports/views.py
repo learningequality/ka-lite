@@ -170,7 +170,7 @@ def tabular_view(request, facility, report_type="exercise"):
     topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
-    
+
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
@@ -337,14 +337,14 @@ def test_view(request, facility):
                         "title": status.title(),
                     })
                 else:
-                    # Case: has started, but has not finished => we display % score & # remaining in title 
+                    # Case: has started, but has not finished => we display % score & # remaining in title
                     n_remaining = test_object.total_questions - log_object.index
                     status = _("incomplete")
                     results_table[s].append({
                         "status": status,
                         "cell_display": display_score,
                         "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
-                                           "%(n_remaining)d problems remaining", 
+                                           "%(n_remaining)d problems remaining",
                                             n_remaining) % {
                                             'n_remaining': n_remaining,
                                            },
@@ -458,7 +458,7 @@ def test_detail_view(request, facility, test_id):
         results_table[s].append({
             'display_score': display_score,
             'raw_score': score,
-            'title': fraction_correct, 
+            'title': fraction_correct,
         })
 
     # This retrieves stats for individual exercises
@@ -501,7 +501,7 @@ def test_detail_view(request, facility, test_id):
 def get_user_queryset(request, facility, group_id):
     """Return set of users appropriate to the facility and group"""
     student_ordering = ["last_name", "first_name", "username"]
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+    (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     if group_id:
         # Narrow by group
