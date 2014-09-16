@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "distributed/base_manage.html" %}
 {% load staticfiles %}
 {% load i18n %}
 
@@ -7,7 +7,6 @@
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/bootstrap-control-panel.css' %}" />
-
     <!-- Override bootstrap here to fix up search bar -->
     <style type="text/css">
         input#search {
@@ -26,18 +25,20 @@
         ul.pagination > .active > a {
             color: gray;
         }
-
     </style>
 {% endblock headcss %}
 
 {% block content %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
     {% block titlebar %}
         <div class="titlebar">
             <ul class="titlebar__title">
             {% block titlebar_title %}
-                {% comment "Draw the top navigation bar %}{% endcomment %}
+                {% comment "Draw the top navigation bar" %}{% endcomment %}
                 {% if org %}
-                <li><a href="{% url 'org_management' %}"> {{ org.name }}</a></li>
+                <li><a href="{% url 'org_management' %}">{{ org.name }}</a></li>
                 {% endif %}
 
                 <li>
@@ -69,7 +70,7 @@
 
                 {% if facility %}
                 <li>
-                    &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
+                    &gt; {% if group_id %}<a href="{% url 'device_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
                     <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">

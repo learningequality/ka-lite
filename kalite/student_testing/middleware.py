@@ -26,7 +26,7 @@ class ExamModeCheck:
             "^/test/*",
             "^/static/*",
             "^/handlebars/*",
-            "^/_generated/*"    # TODO-BLOCKER(aron): change this to make use of ab_testing app once that's implemented
+            "^.*/_generated/*"    # TODO-BLOCKER(aron): change this to make use of ab_testing app once that's implemented
         ]
         for item in url_exceptions:
             p = re.compile(item)

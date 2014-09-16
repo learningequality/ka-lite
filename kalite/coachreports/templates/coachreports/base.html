@@ -1,9 +1,11 @@
-{% extends base_template %}
+{% extends "distributed/base_teach.html" %}
 {% load staticfiles %}
 {% load i18n %}
 {% load my_filters %}
 
-{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block reports_active %}reports-active active-tab active-nav{% endblock reports_active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
 
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
@@ -36,7 +38,8 @@
         .group_div {
             margin-left: 20px;
         }
-        @media only screen and (max-width: 744px) {
+        
+        @media only screen and (max-width: 744px) {+
             h4 { margin-top: 0; }
             .selection { padding-bottom: 0; }
             #link-box { float: left; padding-bottom: 10px; }
@@ -56,14 +59,17 @@
 {% endblock headjs %}
 
 {# sub-pages must embed the navbar within the content, to have it appear. #}
+
 {% block navbar %}
 
-    <div id="navbar" style="padding-bottom:25px">
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
+    <div id="navbar">
         <div id="users_link">
         </div>
 
         {% block navbar_title %}
-        <h4>
+        <h1>
             <div style="float:left">
                 {% block report_title %}
                     {# Note to translators: following this phrase is the name of a class. #}
@@ -130,7 +136,7 @@
                 </div>
                 {% endblock navbar_makelink %}
             </div>
-        </h4>
+        </h1>
         {% endblock navbar_title %}
 
         {% block navbar_topics %}

@@ -111,6 +111,7 @@ th.headrowuser {
     float:none;
     text-align:left;
     display:block;
+    text-overflow: ellipsis;
 }
 #legend {
     padding-left: 0;

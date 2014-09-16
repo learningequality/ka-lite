@@ -2,7 +2,9 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block languages_active %}active{% endblock languages_active %}
+{% block languages_active %}languages-active active-tab active-nav{% endblock languages_active %}
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
 
 {% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
@@ -22,6 +24,9 @@
 {% endblock headjs %}
 
 {% block content %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
     <div class="container">
         
         <div class="col-sm-8 download-actions-languages get-language vertical-shadow">            

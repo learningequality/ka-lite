@@ -3,7 +3,9 @@
 {% load staticfiles %}
 {% load i18n_filters %}
 
-{% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
+{% block video_active %}video-active active-tab active-nav{% endblock video_active %}
 
 {% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
@@ -20,9 +22,15 @@
         var URL_START_VIDEO_DOWNLOADS = "{% url 'start_video_download' %}?lang={{ current_language }}";
         var URL_DELETE_VIDEOS = "{% url 'delete_videos' %}";
         var URL_CANCEL_VIDEO_DOWNLOADS = "{% url 'cancel_video_download' %}";
+        var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
+        var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+        var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
+        var defaultLanguage = "{{ default_language }}";
     </script>
 
     <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
@@ -30,6 +38,10 @@
 {% endblock ga_setmetrics %}
 
 {% block content %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
+
     <div class="download-actions vertical-shadow">
         <h4 class="videos">
             <span id="language_choice_titlebar">
@@ -91,4 +103,5 @@
     <div style="clear: both;"></div>
 
     <div id="content_tree"><br/><h4>{% trans "Loading topic tree... Please wait!" %}</h4></div>
+
 {% endblock content %}

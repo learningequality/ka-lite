@@ -1,0 +1,12 @@
+{
+  "id": "g5_t7_practice",
+  "title": "Grade V - Unit Test 7 - Practice",
+  "seed": 3337,
+  "playlist_ids": [ "g5_p20", "g5_p21" ],
+  "repeats": "4",
+  "ids": [
+    "angle_types", "areas_of_circles_and_sectors", "circles_and_arcs",
+    "exploring_angle_pairs_1", "measuring_angles"
+  ],
+  "is_practice": true
+}

@@ -50,13 +50,18 @@
     <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
     <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
-    <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
+
     <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
     <script src="{% static 'perseus/ke/interface.js' %}"></script>
     <!-- END PERSEUS STUFF -->
+
+    <script src="{% static 'js/seedrandom.min.js' %}"></script>
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+    <!-- Import below is to allow quizes to create 'gift_cards' to award points !-->
+    <script src="{% static 'js/store/models.js' %}"></script>
+
     <!-- video-related files -->
     <!--[if IE]>
     <script src="{% static "video-js-4/video.js" %}"></script>

@@ -1,9 +1,11 @@
-{% extends base_template %}
+{% extends "distributed/base.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
 
 {% block home_active %}active{% endblock home_active %}
+{% block learn_active %}learn-active active-tab active-nav{% endblock learn_active %}
+
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
@@ -24,8 +26,16 @@
     {% endif %}
 
     <script type="text/javascript">
-     var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
-     var VIEW_PLAYLIST_TEMPLATE_URL = "/playlists/view/%(playlist_id)s/"
+     var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}";
+     var VIEW_PLAYLIST_TEMPLATE_URL = "/playlists/view/%(playlist_id)s/";
+    </script>
+
+    <script>
+        $(function() {
+            if (ds.distributed.front_page_welcome_message) {
+                show_message("success", ds.distributed.front_page_welcome_message);
+            }
+        });
     </script>
 
     <script type="text/template" id="playlist-table">
@@ -48,6 +58,7 @@
 {% endblock headjs %}
 
 {% block content %}
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
     <div class="container">
 
         <div class="row">

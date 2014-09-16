@@ -1,5 +1,6 @@
 """
 """
+import csv 
 import copy
 import datetime
 import re
@@ -13,14 +14,15 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
-from fle_utils.internet import CsvResponse, render_to_csv
+from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
+from fle_utils.internet import CsvResponse, render_to_csv
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -28,9 +30,20 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+
 from kalite.topic_tools import get_exercise_cache
+
+from kalite.student_testing.models import TestLog
+
 from kalite.version import VERSION, VERSION_INFO
 from securesync.models import DeviceZone, Device, Zone, SyncSession
+
+# TODO(dylanjbarth): this looks awful
+if settings.CENTRAL_SERVER:
+    from central.models import Organization
+
+
+UNGROUPED = "Ungrouped"
 
 
 def set_clock_context(request):
@@ -143,8 +156,51 @@ def zone_management(request, zone_id="None"):
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
     })
     context.update(set_clock_context(request))
+
     return context
 
+
+@require_authorized_admin
+@render_to("control_panel/data_export.html")
+def data_export(request):
+
+    zone_id = request.GET.get("zone_id", "")
+    facility_id = request.GET.get("facility_id", "")
+    group_id = request.GET.get("group_id", "")
+
+    if zone_id:
+        zone = Zone.objects.get(id=zone_id)
+    else:
+        zone = ""
+
+    if settings.CENTRAL_SERVER:
+        all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
+        if zone_id:
+            org = Zone.objects.get(id=zone_id).get_org()
+            org_id = org.id
+        else:
+            org_id = request.GET.get("org_id", "")
+            if not org_id:
+                return HttpResponseNotFound()
+            else:
+                org = Organization.objects.get(id=org_id)
+    else:
+        all_zones_url = ""
+        org = ""
+        org_id = ""
+
+    context = {
+        "is_central": settings.CENTRAL_SERVER,
+        "org_id": org_id,
+        "zone_id": zone_id,
+        "facility_id": facility_id,
+        "group_id": group_id,
+        "all_zones_url": all_zones_url,
+        "org": org,
+        "zone": zone,
+    }
+
+    return context
 
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
@@ -162,6 +218,8 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     session_pages, page_urls = paginate_data(request, shown_sessions, page=cur_page, per_page=per_page)
 
+    sync_job = get_object_or_None(Job, command="syncmodels")
+
     context.update({
         "session_pages": session_pages,
         "page_urls": page_urls,
@@ -169,6 +227,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
         "device_version": total_sessions and all_sessions[0].client_version or None,
         "device_os": total_sessions and all_sessions[0].client_os or None,
         "is_own_device": not settings.CENTRAL_SERVER and device_id == Device.get_own_device().id,
+        "sync_job": sync_job,
     })
 
     # If local (and, for security purposes, a distributed server), get device metadata
@@ -255,7 +314,7 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @render_to("control_panel/facility_management.html")
 def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
 
-    ungrouped_id = "Ungrouped"
+    ungrouped_id = UNGROUPED
 
     if request.method == "POST" and request.GET.get("format") == "csv":
         try:
@@ -296,7 +355,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
     # If group_id exists, extract data for that group
     if group_id:
         if group_id == ungrouped_id:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _("Ungrouped"))
+            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _(UNGROUPED))
         else:
             group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
         group_data = group_data.values()[group_id_index]
@@ -437,10 +496,10 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id=="Ungrouped"):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None]*(group_id==None or group_id==UNGROUPED):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
-        group_name = getattr(group, "name", _("Ungrouped"))
-        group_title = getattr(group, "title", _("Ungrouped"))
+        group_name = getattr(group, "name", _(UNGROUPED))
+        group_title = getattr(group, "title", _(UNGROUPED))
         group_data[group_pk] = {
             "id": group_pk,
             "name": group_name,
@@ -453,7 +512,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             "pct_mastery": 0,
         }
 
-    # Add group data.  Allow a fake group "Ungrouped"
+    # Add group data.  Allow a fake group UNGROUPED
     for user in users:
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:

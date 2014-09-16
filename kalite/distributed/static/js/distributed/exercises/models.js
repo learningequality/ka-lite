@@ -1,7 +1,27 @@
+// add some dummy features onto the Exercises object to make khan-exercises.js happy
+window.Exercises = {
+    completeStack: {
+        getUid: function() { return 0; },
+        getCustomStackID: function() { return 0; }
+    },
+    currentCard: {
+        attributes: {},
+        get: function() {}
+    },
+    RelatedVideos: {
+        render: function() {}
+    },
+    getCurrentFramework: function() { return "khan-exercises"; },
+    incompleteStack: [0],
+    PerseusBridge: {
+        cleanupProblem: function() {}
+    }
+};
+
 window.ExerciseParams = {
-    STREAK_CORRECT_NEEDED: 8,
+    STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
     STREAK_WINDOW: 10,
-    FIXED_BLOCK_EXERCISES: window.FIXED_BLOCK_EXERCISES || 0
+    FIXED_BLOCK_EXERCISES: ds.distributed.fixed_block_exercises || 0
 };
 
 
@@ -303,6 +323,8 @@ window.TestLogModel = Backbone.Model.extend({
         If seeded inside each call to the function, then the blocks of seeds for each user
         would be identically shuffled.
         */
+
+        // TODO (rtibbles): qUnit or other javascript unit testing to set up tests for this code.
         if(typeof(test_data_model)==="object"){
 
             var random = new Math.seedrandom(this.get("user"));
@@ -313,16 +335,6 @@ window.TestLogModel = Backbone.Model.extend({
 
             var repeats = test_data_model.get("repeats");
 
-            var block_seeds = [];
-
-            // Create list of seeds incremented from initial_seed, one for every repeat.
-            for(i=0; i < repeats; i++){
-                block_seeds.push(initial_seed + i);
-            }
-
-            // Cache random shuffling of block seeds for each exercise_id.
-            var shuffled_block_seeds_gen = {};
-
             // Final seed and item sequences.
             this.seed_sequence = [];
 
@@ -330,18 +342,32 @@ window.TestLogModel = Backbone.Model.extend({
 
             /*
             Loop over every repeat, adding each exercise_id in turn to item_sequence.
-            On first loop, create shuffled copy of block_seeds for each exercise_id.
-            Add seed from shuffled block_seeds copy to seed_sequence.
+            Increment initial_seed on each inner iteration to give unique seeds across
+            all exercises. This will prevent similarly generated exercises from appearing identical.
             This will have the net effect of a fixed sequence of exercise_ids, repeating
-            'repeats' times, with each exercise_id having a shuffled sequence of seeds across blocks.
+            'repeats' times. Build seed sequences per item, so that sequence of seeds can be shuffled
+            per item, giving the net result that across tests, the seed/item pairs are matched, but the
+            order the seeds appear in within the item repeat blocks is different for each test taker.
             */
+            var item_seed_sequence = [];
+
             for(j=0; j < repeats; j++){
                 for(i=0; i < items.length; i++){
                     if(j===0){
-                        shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
+                        item_seed_sequence[i] = [];
                     }
                     this.item_sequence.push(items[i]);
-                    this.seed_sequence.push(shuffled_block_seeds_gen[i][j]);
+                    item_seed_sequence[i].push(initial_seed);
+                    initial_seed+=1;
+                }
+            }
+            for(i=0; i < items.length; i++){
+                item_seed_sequence[i] = seeded_shuffle(item_seed_sequence[i], random);
+            }
+
+            for(j=0; j < repeats; j++){
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(item_seed_sequence[i][j]);
                 }
             }
         }
@@ -446,7 +472,8 @@ window.QuizLogModel = Backbone.Model.extend({
     defaults: {
         index: 0,
         complete: false,
-        attempts: 0
+        attempts: 0,
+        total_correct: 0
     },
 
     init: function(options) {
@@ -477,18 +504,28 @@ window.QuizLogModel = Backbone.Model.extend({
 
             var repeats = quiz_data_model.get("repeats");
 
+            var initial_seed = new Math.seedrandom(this.get("user") + this.get("attempts"))()*1000;
+
             this.item_sequence = [];
+
+            this.seed_sequence = [];
 
             for(j=0; j < repeats; j++){
                 this.item_sequence.push(items);
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(initial_seed);
+                    initial_seed+=1;
+                }
             }
 
             this.item_sequence = _.flatten(this.item_sequence);
 
             this.item_sequence = seeded_shuffle(this.item_sequence, random);
+
         }
         return {
-            exercise_id: this.item_sequence[this.get("index")]
+            exercise_id: this.item_sequence[this.get("index")],
+            seed: this.seed_sequence[this.get("index")]
         };
     },
 
@@ -534,21 +571,33 @@ window.QuizLogModel = Backbone.Model.extend({
             this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
         }
 
-        if(this._response_log_cache[this.get("attempts")]){
+        if(!this._response_log_cache[this.get("attempts")]){
             this._response_log_cache.push(0);
         }
         // add the event to the response log list
         if(data.correct){
             this._response_log_cache[this.get("attempts")] += 1;
-            if(this.get("attempts")==0) {
+            if(this.get("attempts")===0) {
                 this.set({
                     total_correct: this.get("total_correct") + 1
                 });
             }
         }
-
         // deflate the response log list so it will be saved along with the model later
         this.set("response_log", JSON.stringify(this._response_log_cache));
+
+    },
+
+    get_latest_response_log_item: function() {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        // add the event to the response log list
+
+        return this._response_log_cache[this.get("attempts")-1];
 
     },
 

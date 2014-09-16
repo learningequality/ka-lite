@@ -1,8 +1,10 @@
-{% extends base_template %}
+{% extends "updates/update_videos.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
 {% block title %}{% trans "Edit Facility" %}{% endblock title %}
+{% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock %}
 
 {% block headcss %}
     <style>
@@ -168,6 +170,7 @@
 {% endblock headjs %}
 
 {% block content %}
+ 
     <h3 class="no-margin-top">{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
     <div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>
     <div id="id_direc_map">

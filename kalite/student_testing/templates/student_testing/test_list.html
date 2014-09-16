@@ -1,14 +1,16 @@
-{% extends base_template %}
+{% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-{% block tests_active %}active{% endblock tests_active %}
+
+{% block exams-active %}exams-active active-tab active-nav{% endblock exams-active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
 
 {% block title %}{% trans "Tests" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
 {% endblock headcss %}
 
@@ -17,24 +19,30 @@
         var ALL_TESTS_URL = "{% url 'api_dispatch_list' resource_name='test' %}";
     </script>
 
-    <script type="text/html" id="all-tests-list-entry-template">
-        <td test-title="<%= title %>"> <a href="<%= test_url %>"><%= title %></a> </td>
-        <td>
-            {% if request.is_admin %}
-                <% if (is_exam_mode) { %>
-                    <button data-exam-title="<%= title %>" class="btn btn-info test-row-button">Disable Exam Mode</button>
-                <% } else { %>
-                    <button data-exam-title="<%= title %>" class="btn test-row-button">Enable Exam Mode</button>
-                <% } %>
-            {% endif %}
-        </td>
-    </script>
-
+    <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
     <script src="{% static 'js/student_testing/models.js' %}"></script>
     <script src="{% static 'js/student_testing/test_list.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.test_setting_app_view = new TestSettingAppView({
+                el: $("#test-setting-app-container")
+            });
+        });
+    </script>
+
+
 {% endblock headjs %}
 
 {% block content %}
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+    
+        <div>
+            <a class="changeable-link" href="{% url 'test_view' %}">  
+                <h2 class="suggested-action-title">{% trans "Exam Results" %}</h2>
+            </a>
+        </div>
+
     <h2 class="title-header">
         <div class="title">{% trans "Tests" %}</div>
     </h2>
@@ -51,6 +59,7 @@
             </thead>
         </table>
     </div>
+    <div id="test-setting-app-container"></div>
 {% endblock content %}
 {% comment %}
 {% endcomment %}

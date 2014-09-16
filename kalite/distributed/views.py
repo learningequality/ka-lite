@@ -211,6 +211,24 @@ def homepage(request):
     """
     return HttpResponseRedirect(reverse("learn"))
 
+def watch_home(request):
+    """Dummy wrapper function for topic_handler with url=/"""
+    return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
+
+
+# @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
+# @backend_cache_page
+# @render_to("distributed/homepage.html")
+# @refresh_topic_cache
+# def homepage(request, topics):
+#     """
+#     Homepage.
+#     """
+#     context = topic_context(topics)
+#     context.update({
+#         "title": "Home",
+#     })
+#     return context
 
 def help(request):
     if request.is_admin:
@@ -345,27 +363,9 @@ def handler_403(request, *args, **kwargs):
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
-
 @render_to("distributed/perseus.html")
 def perseus(request):
     return {}
-
-
-#########
-# Custom JS and CSS django templates
-#########
-@render_to('distributed/css/ab_testing.css', mimetype='text/css')
-def ab_testing_css(request):
-    return {
-        'turn_off_motivational_features': settings.TURN_OFF_MOTIVATIONAL_FEATURES,
-    }
-
-@render_to('distributed/js/ab_testing.js', mimetype='text/javascript')
-def ab_testing_js(request):
-    return {
-        'fixed_block_exercises': settings.FIXED_BLOCK_EXERCISES,
-    }
-
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))

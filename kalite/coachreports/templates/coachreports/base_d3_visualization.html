@@ -1,4 +1,4 @@
-{% extends "coachreports/base.html" %}
+{% extends "coachreports/coachreport.html" %}
 {% comment %}
     This template is a basic skeleton around a d3 plot.  It has the following parts:
 
@@ -22,6 +22,9 @@
 {% load my_filters %}
 {% load staticfiles %}
 
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+
 {% block headcss %} {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
@@ -35,12 +38,12 @@
         }
         .google-chart {
             width: 900px;
-            height: 500px;
+            height: 400px;
             float: left;
         }
         .subtitle {
             float: left;
-        }
+        }    
         #summary {
             border: 1px black solid;
             position: absolute;
@@ -93,6 +96,8 @@
     <script type="text/javascript" src="{% static 'js/coachreports/base_d3_visualization.js' %}"></script>
 {% endblock headjs %}
 
+
+
 {% block navbar_topics %}
     <div class="container">
         <div class="row">
@@ -104,8 +109,14 @@
         </div>
 {% endblock navbar_topics %}
 
+
+
 {% block content %}
-    {% block navbar %}{{ block.super }}{% endblock navbar %}
+    
+    {% block navbar %}
+
+    {{ block.super }}{% endblock navbar %}
+    
 
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->

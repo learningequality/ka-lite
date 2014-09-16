@@ -6,6 +6,13 @@
 
 {% block title %}{{ title }} | {{ block.super }}{% endblock title %}
 {% block report_title %}{{ title }}{% endblock report_title %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+{% block effort_active %}sub-active{% endblock effort_active %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
+{% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/coachreports/d3.scatter.js' %}"></script>
@@ -18,11 +25,13 @@
     </script>
 {% endblock headjs %}
 
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/scatter_view.css' %}" />
-{% endblock headcss %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
+
 
 {% block axis_dropdown %}
+
     {% trans "X-Axis" %}:
     <select id="xaxis" name="xaxis">
         {% block data_options %}
@@ -32,10 +41,11 @@
                         <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
                     {% endif %}
                 {% endfor %}
-        {% endblock %}
+        {% endblock data_options %}
     </select>
     {% trans "Y-Axis" %}:
     <select id="yaxis" name="yaxis">
         {% repeatblock data_options %}
     </select>
+    
 {% endblock axis_dropdown %}

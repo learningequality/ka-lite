@@ -6,7 +6,9 @@
 
 {% block title %}{{ title }} | {{ block.super }}{% endblock title %}
 {% block report_title %}{{ title }}{% endblock report_title %}
-
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+{% block mastery_active %}sub-active{% endblock mastery_active %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/timeline_view.css' %}">
@@ -32,6 +34,7 @@
     </script>
 {% endblock headjs %}
 
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
 {% block axis_dropdown %}
     {% trans "X-Axis" %}:

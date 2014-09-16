@@ -3,17 +3,29 @@ Icon Font
 ======================================
 */
 
-.icon-Exercise:before {
+.icon-exercise:before {
     content: "\e600";
 }
-.icon-Video:before {
+.icon-video:before {
     content: "\e601";
 }
-.icon-Quiz:before {
+.icon-quiz:before {
     content: "\e602";
 }
 .icon-list:before {
     content: "\e603";
+}
+
+.sidebar-icon.partial {
+    opacity: 0.45;
+}
+
+.sidebar-icon.complete {
+    opacity: 0.15;
+}
+
+.sidebar-text.complete {
+    opacity: 0.45;
 }
 
 /*
