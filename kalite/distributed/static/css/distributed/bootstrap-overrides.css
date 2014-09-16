@@ -254,12 +254,13 @@ footer {
     border-top: 1px solid #999;
 }
 .footer-text { 
-    font-size: 0.85em; 
+    font-size: 11px; 
     text-align: center;
-    line-height: 0;
+    margin: 0;
 }
 #fle-logo {
     margin-top: 15px;
+    margin-bottom: 5px;
     height: 18px;
     width: 268px;
 }
@@ -283,9 +284,6 @@ footer {
     form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
     h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
     .suggested-action .topic-list a { font-size: 1.25em; }
-    #fle-logo { margin-top: 0; }
-    footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
-    p.visible-xs:last-child { height: 17px; } /* Controls space below footer */
 }
 @media only screen and (max-width: 469px) {
     h3.suggested-action-title { font-size: 18px; padding-top: 0; }
