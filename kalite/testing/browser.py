@@ -37,7 +37,49 @@ def setup_test_env(browser_type="Firefox", test_user="testadmin", test_password=
     else:
         local_browser = browser
 
+    hacks_for_phantomjs(local_browser)
+
     return (local_browser, admin_user, test_password)
+
+
+def hacks_for_phantomjs(browser):
+    """
+    HACK: If using PhantomJS, override the window.alert()/confirm()/prompt() functions to return true because
+    the GhostDriver does not support modal dialogs (alert, confirm, prompt).
+
+    What we do is override the alert/confirm/prompt functions so any call that expects the dialog with return true.
+
+    REF: http://stackoverflow.com/questions/15708518/how-can-i-handle-an-alert-with-ghostdriver-via-python
+    REF: https://groups.google.com/forum/#!topic/phantomjs/w_rKkFJ0g8w
+    REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
+    """
+    if isinstance(browser, webdriver.PhantomJS):
+        js = """
+            window.confirm = function(message) {
+                return true;
+            }
+            window.alert = window.prompt = window.confirm;
+
+            // REF: http://stackoverflow.com/questions/13536752/phantomjs-click-a-link-on-a-page?rq=1
+            // REF: http://stackoverflow.com/questions/2705583/how-to-simulate-a-click-with-javascript/2706236#2706236
+            window.eventFire = function(el, etype) {
+                if (el.fireEvent) {
+                    el.fireEvent('on' + etype);
+                } else {
+                    var evObj = document.createEvent('Events');
+                    evObj.initEvent(etype, true, false);
+                    el.dispatchEvent(evObj);
+                }
+            };
+
+            // shorter alternative of above method
+            window.simulateClick = function(el) {
+                var e = document.createEvent('MouseEvents');
+                e.initEvent( 'click', true, true );
+                el.dispatchEvent(e);
+            };
+        """
+        browser.execute_script("%s" % js)
 
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
