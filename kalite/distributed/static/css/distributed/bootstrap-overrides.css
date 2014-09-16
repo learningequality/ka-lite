@@ -68,6 +68,7 @@ input[type="submit"] {
     color: #333 !important;
     text-transform: uppercase;
 }
+}
 .navbar ul li a:hover, .navbar ul li a:focus {
     background: #dcdcdc !important;
 }
@@ -102,20 +103,34 @@ input#search.ui-autocomplete-input {
     margin: 15px 15px 0;
     /*width: 75px;*/
 }
+/* Navbar collapse styles for hamburger */
+.navbar-toggle {
+    background-color: rgb(214, 214, 214);
+}
+.navbar-toggle:hover {
+    opacity: 0.7;
+}
+.navbar-toggle .icon-bar {
+    background-color: #858B78;
+}
 /* ======= Logged in student only ======== */
-    #sitepoints {
-        font-size: 0.85em;
-        opacity: 0.7;
-        position: absolute;
-        right: 10px;
-        top: 2px;
-    }
-    #sitepoints-xs {
-        font-size: 12px;
-        margin-top: -12px;
-        margin-left: 100px;
-        position: absolute;
-    }
+.relative-block{
+    position: relative;
+}
+.sitepoint {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    position: absolute;
+    opacity: 0.7;
+}
+#sitepoints {
+    font-size: 0.95em;
+    right: -0px;
+}
+#sitepoints-xs {
+    font-size: 0.7em;
+    top: 27px;
+    left: 110px;
+}
 
 
 /* ===================================

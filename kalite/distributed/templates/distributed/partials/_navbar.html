@@ -11,11 +11,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-
-                <a class="navbar-brand" href="/" title="{% trans 'KA Lite Home' %}">
-                    <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
-                    <div class="pull-right visible-xs" id="sitepoints-xs"></div>
-                </a>
+                <div class="navbar-brand">
+                    <a href="/" title="{% trans 'KA Lite Home' %}">
+                        <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
+                    </a>
+                    <div class="pull-right visible-xs sitepoint" id="sitepoints-xs"></div>
+                </div>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -74,8 +75,9 @@
 
                     {% endblock sitewide_navigation %}
                     </span>
-
-                    <div class="hidden-xs" id="sitepoints"></div>
+                    <div class="relative-block">
+                        <div class="hidden-xs sitepoint" id="sitepoints"></div>
+                    </div>
                 </ul>
             </div>
         </div>
