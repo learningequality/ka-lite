@@ -4,9 +4,6 @@ h2 {
 .facility, .device {
     width:100%;
 }
-#zone_container{
-    width: 100%;
-}
 .titlebar__title {
     padding: 0 0 15px 0;
     border-bottom: 1px #E7E7E7 solid;
