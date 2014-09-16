@@ -17,7 +17,7 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext, ugettext as _
 
 from .api_views import get_data_form, stats_dict
 from fle_utils.general import max_none
@@ -33,7 +33,7 @@ from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
 
 # shared by test_view and test_detail view
-SUMMARY_STATS = ['Max', 'Min', 'Average', 'Std Dev']
+SUMMARY_STATS = [_('Max'), _('Min'), _('Average'), _('Std Dev')]
 
 def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
@@ -285,27 +285,60 @@ def test_view(request, facility):
         user_test_logs = [log for log in test_logs if log.user == s]
         results_table[s] = []
         for t in test_objects:
-            # Get the log object for this test, if it exists, otherwise return empty TestLog object
             log_object = next((log for log in user_test_logs if log.test == t.test_id), '')
-            # check if student has completed test
+            # The template expects a status and a score to display
             if log_object:
                 test_object = log_object.get_test_object()
                 score = round(100 * float(log_object.total_correct) / float(test_object.total_questions), 1)
-                results_table[s].append({
-                    "log": log_object,
-                    "raw_score": score,
-                    "display_score": "%(score)d%% (%(correct)d/%(total_questions)d)" % {'score': score, 'correct': log_object.total_correct, 'total_questions': test_object.total_questions},
-                })
+                display_score = "%(score)d%% (%(correct)d/%(total_questions)d)" % {'score': score, 'correct': log_object.total_correct, 'total_questions': test_object.total_questions}
+                if log_object.complete:
+                    # Case: completed => we show % score
+                    if score >= 80:
+                        status = _("pass")
+                    elif score >= 60:
+                        status = _("borderline")
+                    else:
+                        status = _("fail" )
+                    results_table[s].append({
+                        "status": status,
+                        "cell_display": display_score,
+                        "title": status.title(),
+                    })
+                else:
+                    # Case: has started, but has not finished => we display % score & # remaining in title 
+                    n_remaining = test_object.total_questions - log_object.index
+                    status = _("incomplete")
+                    results_table[s].append({
+                        "status": status,
+                        "cell_display": display_score,
+                        "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
+                                           "%(n_remaining)d problems remaining", 
+                                            n_remaining) % {
+                                            'n_remaining': n_remaining,
+                                           },
+                    })
             else:
-                results_table[s].append({})
+                # Case: has not started
+                status = _("not started")
+                results_table[s].append({
+                    "status": status,
+                    "cell_display": "",
+                    "title": status.title(),
+                })
 
         # This retrieves stats for students
         score_list = [round(100 * float(result.total_correct) / float(result.get_test_object().total_questions), 1) for result in user_test_logs]
         for stat in SUMMARY_STATS:
             if score_list:
-                results_table[s].append({"stat": "%d%%" % return_list_stat(score_list, stat)})
+                results_table[s].append({
+                    "status": "statistic",
+                    "cell_display": "%d%%" % return_list_stat(score_list, stat),
+                })
             else:
-                results_table[s].append({})
+                results_table[s].append({
+                    "status": "statistic",
+                    "cell_display": "",
+                })
 
     # This retrieves stats for tests
     stats_dict = OrderedDict()
@@ -370,7 +403,7 @@ def test_detail_view(request, facility, test_id):
             if attempts_count:
                 score = round(100 * float(attempts_count_correct)/float(attempts_count), 1)
                 scores_dict[ex].append(score)
-                display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct, 'attempts': attempts_count}
+                display_score = "%d%%" % score
             else:
                 score = ''
                 display_score = ''
@@ -383,14 +416,17 @@ def test_detail_view(request, facility, test_id):
         # Calc overall score
         if attempts_count_total:
             score = round(100 * float(attempts_count_correct_total)/float(attempts_count_total), 1)
-            display_score = "%(score)d%% (%(correct)d/%(attempts)d)" % {'score': score, 'correct': attempts_count_correct_total, 'attempts': attempts_count_total}
+            display_score = "%d%%" % score
+            fraction_correct = "(%(correct)d/%(attempts)d)" % ({'correct': attempts_count_correct_total, 'attempts': attempts_count_total})
         else:
             score = ''
             display_score = ''
+            fraction_correct = ''
 
         results_table[s].append({
             'display_score': display_score,
             'raw_score': score,
+            'title': fraction_correct, 
         })
 
     # This retrieves stats for individual exercises
