@@ -231,7 +231,6 @@ window.SidebarContentView = Backbone.View.extend({
 
     node_by_slug: function(slug) {
         // Convenience method to return a node by a passed in slug
-        console.log(slug);
         return _.find(this.model.get(this.entity_key).models, function(model) {return model.get("slug")==slug;});
     }
 
@@ -349,10 +348,11 @@ window.TopicContainerOuter = Backbone.View.extend({
         for (i=0; i < paths.length; i++) {
             var node = this.inner_views[0].node_by_slug(paths[i]);
             if (node!==undefined) {
-                if (i == paths.length - 1) {
+                if (node.get("render_type")!==undefined) {
                     this.show_new_topic(node);
                 } else {
-                    this.add_new_topic_view(node);
+                    this.entry_requested(node);
+                    node.set("active", true);
                 }
             }
         }
@@ -414,11 +414,17 @@ window.PlaylistSidebarView = SidebarContentView.extend({
         // only trigger an entry_requested event if the item wasn't already active
         if (!view.model.get("active")) {
             this.trigger("entry_requested", view.model);
+            
         }
         // mark the clicked view as active, and unmark all the others
         _.each(this._entry_views, function(v) {
+            if (v.model.get("active")) {
+                window.router.url_back();
+            }
             v.model.set("active", v == view);
         });
+
+        window.router.add_slug(view.model.get("slug"));
     },
 
     load_entry_progress: _.debounce(function() {

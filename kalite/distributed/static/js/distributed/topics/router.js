@@ -4,7 +4,7 @@ TopicRouter = Backbone.Router.extend({
     },
 
     routes: {
-        "(:domain/)(:subject/)(:topic/)(:tutorial/)":    "navigate_topics"
+        "(:domain/)(:subject/)(:topic/)(:tutorial/)(:content/)":    "navigate_topics"
     },
 
     navigate_topics: function() {
