@@ -268,19 +268,19 @@ class Khan():
         else:
             print "Consumer key and secret not set in secrets.py - authenticated access to API unavailable."
 
-    def class_by_kind(self, node, loaded=True):
+    def class_by_kind(self, node, session=self, loaded=True):
         """
         Function to turn a dictionary into a Python object of the appropriate kind,
         based on the "kind" attribute found in the dictionary.
         """
         # TODO: Fail better or prevent failure when "kind" is missing.
         try:
-            return kind_to_class_map[node["kind"]](node, session=self, loaded=loaded)
+            return kind_to_class_map[node["kind"]](node, session=session, loaded=loaded)
         except KeyError:
             raise APIError(
                 "This kind of object should have a 'kind' attribute.", node)
 
-    def convert_list_to_classes(self, nodelist, class_converter=None, loaded=True):
+    def convert_list_to_classes(self, nodelist, session=self, class_converter=None, loaded=True):
         """
         Convert each element of the list (in-place) into an instance of a subclass of APIModel.
         You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
@@ -288,15 +288,15 @@ class Khan():
         if not class_converter:
             class_converter = self.class_by_kind
         for i in range(len(nodelist)):
-            nodelist[i] = class_converter(nodelist[i], loaded=loaded)
+            nodelist[i] = class_converter(nodelist[i], session=session, loaded=loaded)
 
         return nodelist  # just for good measure; it's already been changed
 
-    def class_by_name(self, node, name, loaded=True):
+    def class_by_name(self, node, name, session=self, loaded=True):
         """
         Function to turn a dictionary into a Python object of the kind given by name.
         """
-        return kind_to_class_map[name](node, session=self, loaded=loaded)
+        return kind_to_class_map[name](node, session=session, loaded=loaded)
 
     def convert_items(self, name, obj, loaded=True):
         """
