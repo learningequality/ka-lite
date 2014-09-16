@@ -5,18 +5,11 @@ Here, these are focused on:
 * GET/save student progress (video, exercise)
 * topic tree views (search, knowledge map)
 """
-import cgi
-import copy
 import json
-import os
-import re
-import os
-import datetime
 
 from annoying.functions import get_object_or_None
 from django.conf import settings
-from django.contrib import messages
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _

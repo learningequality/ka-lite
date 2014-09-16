@@ -37,6 +37,7 @@ TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
 EXERCISES_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "exercises.json")
 VIDEOS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "videos.json")
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "assessmentitems.json")
+KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "map_topics.json")
 
 CACHE_VARS = []
 
@@ -106,9 +107,7 @@ CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        root_node = get_topic_tree(force=force)
-        sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
-        KNOWLEDGEMAP_TOPICS =  [k[0] for k in sorted_items]
+        KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=True)
     return KNOWLEDGEMAP_TOPICS
 
 
@@ -183,8 +182,11 @@ def generate_slug_to_video_id_map(node_cache=None):
 
     # Make a map from youtube ID to video slug
     for video_id, v in node_cache.get('Video', {}).iteritems():
-        assert v["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
-        slug2id_map[v['slug']] = video_id
+        try:
+            assert v["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
+            slug2id_map[v['slug']] = video_id
+        except:
+            True
 
     return slug2id_map
 
@@ -202,12 +204,15 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
             if alldata:
                 relevant_data = node
             else:
-                relevant_data = {
-                    'title': _(node['title']),
-                    'path': node['path'],
-                    'kind': node['kind'],
-                    'available': node.get('available', True),
-                }
+                try:
+                    relevant_data = {
+                        'title': _(node['title']),
+                        'path': node['path'],
+                        'kind': node['kind'],
+                        'available': node.get('available', True),
+                    }
+                except:
+                    True
             result[category_name][node_name] = relevant_data
 
     translation.deactivate()
@@ -228,15 +233,19 @@ def generate_node_cache(topictree=None):
     def recurse_nodes(node):
         # Add the node to the node cache
         kind = node["kind"]
-        node_cache[kind] = node_cache.get(kind, {})
+        if kind == "Topic":
+            node_cache[kind] = node_cache.get(kind, {})
 
-        if node["id"] not in node_cache[kind]:
-            node_cache[kind][node["id"]] = node
+            if node["id"] not in node_cache[kind]:
+                node_cache[kind][node["id"]] = node
 
-        # Do the recursion
-        for child in node.get("children", []):
-            recurse_nodes(child)
+            # Do the recursion
+            for child in node.get("children", []):
+                recurse_nodes(child)
     recurse_nodes(topictree)
+
+    node_cache["Exercise"] = get_exercise_cache()
+    node_cache["Video"] = get_video_cache()
 
     return node_cache
 
