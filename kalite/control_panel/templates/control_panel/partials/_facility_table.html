@@ -58,18 +58,22 @@
                         {% endfor %}
                         {# Add a new facility #}
                         <tr>
-                            <td>
-                                <a href="{% url 'add_facility' zone_id=zone_id %}">
-                                    <span class="glyphicon glyphicon-plus-sign"></span>
-                                    {% trans 'Add a new facility' %}...
-                                </a>
-                            </td>
-                            {# 4 empty cells for formatting purposes #}
-                            <td></td> <td></td> <td></td> <td></td>
+                            {# 5 empty cells for formatting purposes #}
+                            <td></td> <td></td> <td></td> <td></td> <td></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         {% endif %}
+    </div>
+</div>
+<div class="row table-bottom-options">
+    <div class="col-sm-4 col-xs-12">
+        <p class="add-new-table-item">
+            <a href="{% url 'add_facility' zone_id=zone_id %}">
+                <span class="glyphicon glyphicon-plus-sign"></span>
+                {% trans 'Add a new facility' %}...
+            </a>
+        </p>
     </div>
 </div>
