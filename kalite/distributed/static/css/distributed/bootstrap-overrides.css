@@ -103,19 +103,23 @@ input#search.ui-autocomplete-input {
     /*width: 75px;*/
 }
 /* ======= Logged in student only ======== */
-    #sitepoints {
-        font-size: 0.85em;
-        opacity: 0.7;
-        position: absolute;
-        right: 10px;
-        top: 2px;
-    }
-    #sitepoints-xs {
-        font-size: 12px;
-        margin-top: -12px;
-        margin-left: 100px;
-        position: absolute;
-    }
+.relative-block{
+    position: relative;
+}
+.sitepoint {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    position: absolute;
+    opacity: 0.7;
+}
+#sitepoints {
+    font-size: 0.95em;
+    right: -0px;
+}
+#sitepoints-xs {
+    font-size: 0.7em;
+    top: 27px;
+    left: 110px;
+}
 
 
 /* ===================================
