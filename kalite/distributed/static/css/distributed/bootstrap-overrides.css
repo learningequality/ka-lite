@@ -40,10 +40,6 @@ ul.errorlist {
 input.submit {
     margin-top: 30px;
 }
-.table_responsive {
-    border-bottom: 1px solid #ddd;
-    overflow-x: auto;
-}
 table {
     margin-bottom: 0;
 }
