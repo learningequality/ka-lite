@@ -332,7 +332,6 @@ window.TopicContainerOuter = Backbone.View.extend({
             this.inner_views.unshift(new_topic);
         }
 
-
         return new_topic;
     },
 
@@ -474,6 +473,7 @@ window.TopicContainerInner = SidebarContentView.extend({
 
     item_clicked: function(view) {
         this.trigger('topic_node_clicked', view.model);
+        window.router.add_slug(view.model.get("slug"));
     }
 
 });

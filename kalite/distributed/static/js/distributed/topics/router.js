@@ -9,5 +9,9 @@ TopicRouter = Backbone.Router.extend({
 
     navigate_topics: function() {
         this.control_view.navigate_paths(arguments);
+    },
+
+    add_slug: function(slug) {
+        this.navigate(Backbone.history.getFragment() + slug + "/");
     }
 });
