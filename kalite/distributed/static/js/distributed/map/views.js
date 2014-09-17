@@ -97,6 +97,25 @@ window.KnowledgeMapView = Backbone.View.extend({
 
         return this.current_layer;
     },
+
+    navigate_paths: function(paths) {
+        var exercise = false;
+        paths = _.reject(paths, function(slug) {return slug===null;});
+        this.zoomLevel = paths.length;
+        if (this.zoomLevel > this.zoomLevels.length - 1) {
+            this.zoomLevel = this.zoomLevels.length - 1;
+            exercise = true;
+        }
+        current_layer = this.show_current_layer();
+        collection = new TopicCollection(_.filter(current_layer.collection.models, function(model){
+            return model.get("ancestor_ids").slice(-1)===paths.slice(-1);
+        }));
+        if (collection.length > 0) {
+            this.map.panTo(collection.center_of_mass());
+        }
+        if (exercise) {
+            current_layer.defer_show_exercise_by_slug(paths.slice(-1)[0]);
+        }
     }
 });
 
@@ -106,6 +125,7 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
 
         _.bindAll(this);
 
+        this.rendered = false;
         this.map = options.map;
         this.zoom = options.zoom;
         this.zoomLevel = options.zoomLevel;
@@ -115,6 +135,8 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
     },
 
     render: function() {
+
+        var self = this;
 
         this.map.panTo(this.collection.center_of_mass())
 
@@ -128,6 +150,11 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
         }
 
         this.show_layer();
+
+        _.defer(function(){
+            self.rendered=true;
+            self.trigger("rendered");
+        });
     },
 
     add_subview: function(model) {
@@ -147,6 +174,20 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
         this.map.addLayer(this.layerGroup);
         this.layerGroup.on("click", this.hide_layer);
     },
+
+    defer_show_exercise_by_slug: function(slug) {
+        var self = this;
+        if (this.rendered) {
+            show_exercise_by_slug(slug);
+        } else {
+            this.listenToOnce(this, "rendered", function() {self.show_exercise_by_slug(slug);});
+        }
+    },
+
+    show_exercise_by_slug: function(slug) {
+        /* Note: this will break if used for anything other than the exercise item layer */
+        model = _.find(this.collection.models, function(model) {return model.get("slug")===slug;});
+        this.subviews[model.get("id")].show_exercise();
     }
 });
 
@@ -180,5 +221,31 @@ window.KnowledgeMapItemView = Backbone.View.extend({
         window.router.add_slug(this.model.get("slug"));
         this.map.fire("zoomend", {slug_modified: true, zoomtype: "zoom_in"});
     },
+
+    navigate_to_exercise: function() {
+        window.router.add_slug(this.model.get("slug"));
+        this.show_exercise();
+    },
+
+    show_exercise: function() {
+        this.exercise_view = new ExercisePracticeView({
+            exercise_id: this.model.get("id"),
+            context_type: "knowledgemap"
+        });
+        $(".content").append(this.exercise_view.$el);
+        $("#overlay").show();
+        $("#fade").show();
+        $(".close").click(this.close_exercise);
+    },
+
+    close_exercise: function() {
+        window.router.url_back();
+        if (_.isFunction(this.exercise_view.close)) {
+            this.exercise_view.close();
+        } else {
+            this.exercise_view.remove();
+        }
+        $("#overlay").hide();
+        $("#fade").hide();
     }
 });
