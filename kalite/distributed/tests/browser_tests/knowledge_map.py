@@ -3,10 +3,10 @@ import time
 from django.conf import settings
 from django.utils import unittest
 
-from .base import KALiteDistributedBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
 
 
-class KnowledgeMapTests(KALiteDistributedBrowserTestCase):
+class KnowledgeMapTests(KALiteBrowserTestCase):
 
     @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
     def test_exercise_dashboard(self, map_url=None):

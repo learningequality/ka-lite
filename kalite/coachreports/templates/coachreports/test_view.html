@@ -39,10 +39,10 @@
 
     <div id="content">
         <div id="legend">
-            <div class="legend"><div class="pass"></div>80-100%</div>
-            <div class="legend"><div class="borderline"></div>60-79%</div>
-            <div class="legend"><div class="fail"></div>0-59%</div>
-            <div class="legend"><div class="incomplete"></div>* Incomplete</div>
+            <div class="legend"><span class="status-circle status-circle-md pass"></span>80-100%</div>
+            <div class="legend"><span class="status-circle status-circle-md borderline"></span>60-79%</div>
+            <div class="legend"><span class="status-circle status-circle-md fail"></span>0-59%</div>
+            <div class="legend"><span class="status-circle status-circle-md incomplete"></span>* {% trans "Incomplete" %}</div>
         </div>
     </div>
     <div style="clear: both;"></div>
@@ -83,11 +83,11 @@
                             </span>
                         </th>
                     </tr>
-                {% endfor %} 
+                {% endfor %}
                 {% for stat in summary_stats %}
                     <tr>
                         <th class="summary-stat-header">
-                            {{ stat }}
+                          {{ stat }}
                         </th>
                     </tr>
                 {% endfor %}
@@ -113,34 +113,18 @@
                     {% for results in results_table.values %}
                         <tr>
                         {% for r in results %}
-                            {% if r.raw_score %}
-                                {% if not r.log.complete and r.log.started %}
-                                    <td class="incomplete" title="Incomplete">
-                                        {{ r.display_score }}*
-                                    </td>
-                                {% elif r.raw_score > 79 %}
-                                    <td class="pass" title="Passed">
-                                        {{r.display_score}}
-                                    </td>    
-                                {% elif r.raw_score > 59%}
-                                    <td class="borderline" title="Borderline">
-                                        {{r.display_score}}
-                                    </td>
-                                {% elif r.raw_score >= 0 %}
-                                    <td class="fail" title="Failed">
-                                        {{r.display_score}}
-                                    </td>   
-                                {% else %}
-                                    <td class="incomplete" title="Incomplete">
-                                    </td>
-                                {% endif %}
-                            {% elif r.stat %}
-                                <td>{{ r.stat }}</td>
+                            {% if r.status != statistic %}
+                                <td title="{% trans '{{ r.title }}' %}">
+                                    <span class="status-circle status-circle-sm {{ r.status }}"></span>
+                                    {{ r.cell_display }}
+                                </td>
                             {% else %}
-                                <td></td>
-                            {% endif %}
+                                <td>
+                                    {{ r.cell_display }}
+                                </td>
+                            {% endif%}
                         {% endfor %}
-                        </tr>    
+                        </tr>
                     {% endfor %}
                     {% for stats in stats_dict.values %}
                         <tr>
@@ -157,4 +141,3 @@
     </div>
     {% endif %}
 {% endblock content %}
-

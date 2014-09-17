@@ -4,6 +4,7 @@ import os
 import sys
 from optparse import make_option
 
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.management.base import CommandError, NoArgsCommand
 from django.utils.encoding import smart_text
@@ -12,6 +13,7 @@ from django.utils.six.moves import input
 
 from django.contrib.staticfiles import finders, storage
 
+logging = settings.LOG
 
 class Command(NoArgsCommand):
     """
@@ -120,11 +122,11 @@ class Command(NoArgsCommand):
                                                   dry_run=self.dry_run)
             for original_path, processed_path, processed in processor:
                 if processed:
-                    self.log("Post-processed '%s' as '%s" %
+                    logging.debug("Post-processed '%s' as '%s" %
                              (original_path, processed_path), level=1)
                     self.post_processed_files.append(original_path)
                 else:
-                    self.log("Skipped post-processing '%s'" % original_path)
+                    logging.debug("Skipped post-processing '%s'" % original_path)
 
         return {
             'modified': self.copied_files + self.symlinked_files,
@@ -183,13 +185,6 @@ Type 'yes' to continue, or 'no' to cancel: """
             }
             self.stdout.write(summary)
 
-    def log(self, msg, level=2):
-        """
-        Small log helper
-        """
-        if self.verbosity >= level:
-            self.stdout.write(msg)
-
     def clear_dir(self, path):
         """
         Deletes the given relative path using the destination storage backend.
@@ -198,10 +193,10 @@ Type 'yes' to continue, or 'no' to cancel: """
         for f in files:
             fpath = os.path.join(path, f)
             if self.dry_run:
-                self.log("Pretending to delete '%s'" %
+                logging.debug("Pretending to delete '%s'" %
                          smart_text(fpath), level=1)
             else:
-                self.log("Deleting '%s'" % smart_text(fpath), level=1)
+                logging.debug("Deleting '%s'" % smart_text(fpath), level=1)
                 self.storage.delete(fpath)
         for d in dirs:
             self.clear_dir(os.path.join(path, d))
@@ -238,13 +233,13 @@ Type 'yes' to continue, or 'no' to cancel: """
                                  and os.path.islink(full_path))):
                             if prefixed_path not in self.unmodified_files:
                                 self.unmodified_files.append(prefixed_path)
-                            self.log("Skipping '%s' (not modified)" % path)
+                            logging.debug("Skipping '%s' (not modified)" % path)
                             return False
             # Then delete the existing file if really needed
             if self.dry_run:
-                self.log("Pretending to delete '%s'" % path)
+                logging.debug("Pretending to delete '%s'" % path)
             else:
-                self.log("Deleting '%s'" % path)
+                logging.debug("Deleting '%s'" % path)
                 self.storage.delete(prefixed_path)
         return True
 
@@ -254,7 +249,7 @@ Type 'yes' to continue, or 'no' to cancel: """
         """
         # Skip this file if it was already copied earlier
         if prefixed_path in self.symlinked_files:
-            return self.log("Skipping '%s' (already linked earlier)" % path)
+            return logging.debug("Skipping '%s' (already linked earlier)" % path)
         # Delete the target file if needed or break
         if not self.delete_file(path, prefixed_path, source_storage):
             return
@@ -262,9 +257,9 @@ Type 'yes' to continue, or 'no' to cancel: """
         source_path = source_storage.path(path)
         # Finally link the file
         if self.dry_run:
-            self.log("Pretending to link '%s'" % source_path, level=1)
+            logging.debug("Pretending to link '%s'" % source_path, level=1)
         else:
-            self.log("Linking '%s'" % source_path, level=1)
+            logging.debug("Linking '%s'" % source_path, level=1)
             full_path = self.storage.path(prefixed_path)
             try:
                 os.makedirs(os.path.dirname(full_path))
@@ -280,7 +275,7 @@ Type 'yes' to continue, or 'no' to cancel: """
         """
         # Skip this file if it was already copied earlier
         if prefixed_path in self.copied_files:
-            return self.log("Skipping '%s' (already copied earlier)" % path)
+            return logging.debug("Skipping '%s' (already copied earlier)" % path)
         # Delete the target file if needed or break
         if not self.delete_file(path, prefixed_path, source_storage):
             return
@@ -288,9 +283,9 @@ Type 'yes' to continue, or 'no' to cancel: """
         source_path = source_storage.path(path)
         # Finally start copying
         if self.dry_run:
-            self.log("Pretending to copy '%s'" % source_path, level=1)
+            logging.info("Pretending to copy '%s'" % source_path, level=1)
         else:
-            self.log("Copying '%s'" % source_path, level=1)
+            logging.info("Copying '%s'" % source_path, level=1)
             if self.local:
                 full_path = self.storage.path(prefixed_path)
                 try:
