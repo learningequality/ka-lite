@@ -1,6 +1,6 @@
 from django.conf.urls import include, patterns, url
 
-from .api_resources import FacilityResource, FacilityGroupResource, FacilityUserResource, TestLogResource, AttemptLogResource
+from .api_resources import FacilityResource, FacilityGroupResource, FacilityUserResource, TestLogResource, AttemptLogResource, ExerciseLogResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -9,4 +9,5 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(FacilityUserResource().urls)),
     url(r'^', include(TestLogResource().urls)),
     url(r'^', include(AttemptLogResource().urls)),
+    url(r'^', include(ExerciseLogResource().urls)),
 )
