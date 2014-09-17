@@ -6,7 +6,7 @@ from tastypie.exceptions import NotFound, BadRequest
 from tastypie.resources import Resource, ModelResource
 
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.main.models import AttemptLog
+from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth import ObjectAdminAuthorization
 from kalite.student_testing.models import TestLog
 from securesync.models import Zone
@@ -179,6 +179,39 @@ class AttemptLogResource(ParentFacilityUserResource):
         # if not attempt_logs:
         #     raise NotFound("No attempt logs found.")
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add username, facility name, and facility ID to responses"""
+        for bundle in to_be_serialized["objects"]:
+            user_id = bundle.data["user"].data["id"]
+            user = self._facility_users.get(user_id)
+            bundle.data["username"] = user.username
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["facility_id"] = user.facility.id
+            bundle.data.pop("user")
+
+        return to_be_serialized
+
+
+class ExerciseLogResource(ParentFacilityUserResource):
+
+    _facility_users = None
+
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
+
+    class Meta:
+        queryset = ExerciseLog.objects.all()
+        resource_name = 'exercise_log_csv'
+        authorization = ObjectAdminAuthorization()
+        excludes = ['signed_version', 'counter', 'signature']
+        serializer = CSVSerializer()
+
+    def obj_get_list(self, bundle, **kwargs):
+        self._facility_users = self._get_facility_users(bundle)
+        exercise_logs = ExerciseLog.objects.filter(user__id__in=self._facility_users.keys())
+        # if not exercise_logs:
+        #     raise NotFound("No exercise logs found.")
+        return super(ExerciseLogResource, self).authorized_read_list(exercise_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
         """Add username, facility name, and facility ID to responses"""

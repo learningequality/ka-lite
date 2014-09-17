@@ -12,18 +12,25 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from django.conf import settings
 from django.utils import unittest
 from django.core.management import call_command
-from django.core.urlresolvers import reverse
 
-from .base import KALiteDistributedWithFacilityBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import get_installed_language_packs, set_default_language
 
 
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
-class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
+class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
     Test errors and successes for different user management actions.
     """
+
+    def setUp(self):
+        super(TestUserManagement, self).setUp()
+        self.facility_name = "fac"
+        self.facility = self.create_facility(name=self.facility_name)
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
     def test_no_groups_no_users(self):
         facility = self.facility
@@ -31,7 +38,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
             "zone_id": None,
             "facility_id": facility.id,
         }
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.assertEqual(self.browser.find_element_by_css_selector('div#coaches p.no-data').text, "You currently have no coaches for this facility.", "Does not report no coaches with no coaches.")
         self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "You currently have no group data available.", "Does not report no groups with no groups.")
@@ -46,12 +53,10 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         group_name = "Test Group"
         group = FacilityGroup(name=group_name, facility=self.facility)
         group.save()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[2]/a[1]").text, "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text, "0", "Does not report zero users for empty group.")
-
-
 
     def test_groups_one_group_one_user_in_group_no_ungrouped_no_group_selected(self):
         facility = self.facility
@@ -65,7 +70,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user = FacilityUser(username="test_user", facility=self.facility, group=group)
         user.set_password(raw_password="not-blank")
         user.save()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[2]/a[1]").text.strip()[:len(group.name)], "Test Group", "Does not show group in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text.strip()[:len(group.name)], "1", "Does not report one user for group.")
@@ -89,7 +94,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user = FacilityUser(username="test_user", facility=self.facility, group=group1)
         user.set_password(raw_password="not-blank")
         user.save()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[1]/input[@type='checkbox'][1]").click()
         Select(self.browser.find_element_by_css_selector("div#students select.movegrouplist")).select_by_visible_text("To Group")
@@ -118,7 +123,7 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         test_zip_filepath = os.path.join(os.path.dirname(__file__), 'es.zip')
         urlretrieve_method.return_value = [test_zip_filepath, open(test_zip_filepath)]
         # Login as admin
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
 
         # Install the language pack
         if not "es" in get_installed_language_packs(force=True):
@@ -132,4 +137,4 @@ class TestUserManagement(KALiteDistributedWithFacilityBrowserTestCase):
         user.save()
 
         self.browse_to(self.reverse("group_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div/dl/dd").text, "1", "Does not report one user for From Group.")        
+        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div/dl/dd").text, "1", "Does not report one user for From Group.")

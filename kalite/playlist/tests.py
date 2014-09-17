@@ -1,19 +1,16 @@
 
 import json
 from django.core.urlresolvers import reverse
-from django.test import Client, TestCase
 
 from .models import Playlist
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.testing.mixins import CreateAdminMixin, FacilityMixins
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 
 
-class PlaylistTests(CreateDeviceMixin, FacilityMixins, TestCase):
+class PlaylistTests(FacilityMixins, KALiteTestCase):
     # fixtures = ['single_student_testdata.json']
 
     def setUp(self):
-        self.setup_fake_device()  # Call this so we don't have to generate a device key, which takes a long time!
 
         self.test_student = self.create_student()
         self.p = Playlist.objects.create(
@@ -51,7 +48,7 @@ class PlaylistTests(CreateDeviceMixin, FacilityMixins, TestCase):
         self.assertEqual(entries[2].reload().sort_order, 3)
 
 
-class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, TestCase):
+class PlaylistAPITests(FacilityMixins, CreateAdminMixin, KALiteClientTestCase):
     def _playlist_url(self, playlist_id=None):
         '''
         If no playlist_id is given, returns a url that gets all
@@ -63,10 +60,10 @@ class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, Test
             return reverse("api_dispatch_detail", kwargs={'resource_name': 'playlist', 'pk': playlist_id})
 
     def setUp(self):
-        self.setup_fake_device()  # Call this so we don't have to generate a device key, which takes a long time!
+        super(PlaylistAPITests, self).setUp()
+
         self.admin = self.create_admin()
         self.group = self.create_group()
-        self.client = Client()
         self.client.login(username='admin', password='admin')
 
     def test_playlist_list_url_exists(self):

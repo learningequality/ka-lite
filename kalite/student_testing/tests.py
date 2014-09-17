@@ -6,16 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from fle_utils.config.models import Settings
-
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.playlist import UNITS
-from kalite.student_testing.api_resources import Test
 from kalite.student_testing.models import TestLog
-from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
     get_current_unit_settings_value, set_current_unit_settings_value
@@ -23,7 +18,7 @@ from .utils import get_exam_mode_on, set_exam_mode_on, \
 logging = settings.LOG
 
 
-class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
+class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
@@ -38,20 +33,20 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
 
         super(BaseTest, self).setUp()
 
-        # make tests faster
-        self.setup_fake_device()
+        self.facility = self.create_facility()
+        self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
+        self.student_data = CreateStudentMixin.DEFAULTS.copy()
+        self.teacher_data['facility'] = self.student_data['facility'] = self.facility
 
-        self.client.setUp()
-        self.assertTrue(self.client.facility)
-        self.assertTrue(self.client.teacher)
-        self.assertTrue(self.client.student)
+        self.teacher = self.create_teacher(**self.teacher_data)
+        self.student = self.create_student(**self.student_data)
 
     def tearDown(self):
         self.logout()
         super(BaseTest, self).tearDown()
 
     def login_teacher(self):
-        response = self.client.login_teacher()
+        response = self.client.login_teacher(data=self.teacher_data, facility=self.facility)
         # check content for teacher
         text = "Coach Reports"
         self.assertContains(response, text)
@@ -61,7 +56,7 @@ class BaseTest(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         return response
 
     def login_student(self, url='/'):
-        response = self.client.login_student()
+        response = self.client.login_student(data=self.student_data, facility=self.facility)
         if url == '/':
             self.assertTrue(self.client.is_logged_in())
         if url == self.exam_page_url:
@@ -173,18 +168,16 @@ class CoreTests(BaseTest):
         _check_student_access_to_exam()
 
 
-class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
+class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
 
     CSS_TEST_ROW_BUTTON = '.test-row-button'
     CSS_TEST_ROW_BUTTON_ON = '.test-row-button.btn-info'
     TEXT_ENABLE = 'Enable Exam Mode'
     TEXT_DISABLE = 'Disable Exam Mode'
 
-    persistent_browser = True
-
     def setUp(self):
 
-        # super(KALiteDistributedBrowserTestCase, self).setUp()
+        # super(KALiteBrowserTestCase, self).setUp()
         super(BrowserTests, self).setUp()
 
         # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
@@ -197,14 +190,14 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
         super(BrowserTests, self).tearDown()
 
     def login_teacher_in_browser(self):
-        self.browser_login_teacher(username=self.client.teacher_data['username'],
-                                   password=self.client.teacher_data['password'],
-                                   facility_name=self.client.facility.name)
+        self.browser_login_teacher(username=self.teacher_data['username'],
+                                   password=self.teacher_data['password'],
+                                   facility_name=self.facility.name)
 
     def login_student_in_browser(self, expect_url=None, exam_mode_on=False):
-        self.browser_login_student(username=self.client.student_data['username'],
-                                   password=self.client.student_data['password'],
-                                   facility_name=self.client.facility.name,
+        self.browser_login_student(username=self.student_data['username'],
+                                   password=self.student_data['password'],
+                                   facility_name=self.facility.name,
                                    exam_mode_on=exam_mode_on)
 
     def wait_for_element(self, by, elem):
@@ -295,7 +288,11 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
         self.browser.find_element_by_id("check-answer-button").click()
 
-        testlog = TestLog.objects.get(user=self.client.student, test=self.exam_id)
+        try:
+            testlog = TestLog.objects.get(user=self.student, test=self.exam_id)
+        except:
+            pass
+            # import pdb; pdb.set_trace()
 
         # Check that the Test Log is started, but not advanced.
         self.assertEqual(testlog.started, True)
@@ -312,33 +309,29 @@ class BrowserTests(BaseTest, KALiteDistributedBrowserTestCase):
 
         self.browser.find_element_by_id("start-test").click()
 
-        testlog = TestLog.objects.get(user=self.client.student, test=self.exam_id)
+        testlog = TestLog.objects.get(user=self.student, test=self.exam_id)
 
         # Check that the Test Log is started.
         self.assertEqual(testlog.started, True)
 
 
-class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
-
-    client_class = KALiteClient
+class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
     def setUp(self):
 
         super(CurrentUnitTests, self).setUp()
 
-        # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
-        # or use the KALiteTestCase.reverse() method.
-        self.login_url = self.reverse('login')
-        self.logout_url = self.reverse('logout')
-        self.current_unit_url = self.reverse('current_unit')
+        self.login_url = reverse('login')
+        self.logout_url = reverse('logout')
+        self.current_unit_url = reverse('current_unit')
 
-        # make tests faster
-        self.setup_fake_device()
+        self.facility = self.create_facility()
+        self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
+        self.student_data = CreateStudentMixin.DEFAULTS.copy()
+        self.teacher_data['facility'] = self.student_data['facility'] = self.facility
 
-        self.client.setUp()
-        self.assertTrue(self.client.facility)
-        self.assertTrue(self.client.teacher)
-        self.assertTrue(self.client.student)
+        self.teacher = self.create_teacher(**self.teacher_data)
+        self.student = self.create_student(**self.student_data)
 
     def tearDown(self):
         self.logout()
@@ -349,7 +342,7 @@ class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         self.assertEqual(path, url[-1*len(path):])
 
     def login_teacher(self):
-        response = self.client.login_teacher()
+        response = self.client.login_teacher(data=self.teacher_data, facility=self.facility)
         # check content for teacher
         text = "Coach Reports"
         self.assertContains(response, text)
@@ -362,7 +355,7 @@ class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         return response
 
     def login_student(self, url='/'):
-        response = self.client.login_student()
+        response = self.client.login_student(data=self.student_data, facility=self.facility)
         if url == '/':
             self.assertTrue(self.client.is_logged_in())
         return response
@@ -389,7 +382,7 @@ class CurrentUnitTests(FacilityMixins, CreateDeviceMixin, KALiteTestCase):
         self._check_url(response, self.login_url)
 
 
-class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase):
+class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrowserTestCase):
 
     CSS_CURRENT_UNIT_NEXT_BUTTON = '.current-unit-button.next'
     CSS_CURRENT_UNIT_PREV_BUTTON = '.current-unit-button.previous'
@@ -400,16 +393,21 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
     persistent_browser = True
 
     def setUp(self):
-        # super(KALiteDistributedBrowserTestCase, self).setUp()
         super(CurrentUnitBrowserTests, self).setUp()
+
+        # We're a browser test now, so make sure we have the full path by reversing using the
+        # KALiteBrowserTestCase.reverse method
+        self.login_url = self.reverse('login')
+        self.logout_url = self.reverse('logout')
+        self.current_unit_url = self.reverse('current_unit')
 
     def tearDown(self):
         super(CurrentUnitBrowserTests, self).tearDown()
 
     def login_teacher_in_browser(self):
-        self.browser_login_teacher(username=self.client.teacher_data['username'],
-                                   password=self.client.teacher_data['password'],
-                                   facility_name=self.client.facility.name)
+        self.browser_login_teacher(username=self.teacher_data['username'],
+                                   password=self.teacher_data['password'],
+                                   facility_name=self.facility.name)
 
     def wait_for_element(self, by, elem):
         WebDriverWait(self.browser, 10).until(ec.visibility_of_element_located((by, elem)))
@@ -431,7 +429,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
         # go to current unit page
         self.browse_to(self.current_unit_url)
 
-        facility_id = self.client.facility.id
+        facility_id = self.facility.id
 
         # save the current unit at Settings
         unit = get_current_unit_settings_value(facility_id)
@@ -469,7 +467,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, KALiteDistributedBrowserTestCase
     def test_current_unit_last(self):
         self.login_teacher_in_browser()
 
-        facility_id = self.client.facility.id
+        facility_id = self.facility.id
 
         # set to max units and check the previous and next buttons
         set_current_unit_settings_value(facility_id, max(UNITS))
