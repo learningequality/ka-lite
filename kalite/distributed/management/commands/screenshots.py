@@ -114,7 +114,6 @@ class Screenshot(KALiteDistributedBrowserTestCase):
     student_username = 'student'
     default_password = 'password'
     facility = None
-    last_user = USER_TYPE_GUEST
 
     KEY_USERS = 'users'
     KEY_SLUG = 'slug'
@@ -195,20 +194,16 @@ class Screenshot(KALiteDistributedBrowserTestCase):
 
         start_url = '/'
         try:
-            if USER_TYPE_STUDENT in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_STUDENT:
+            if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
                 self.browser_login_student(self.student_username, self.default_password, self.facility.name)
-                self.last_user = USER_TYPE_STUDENT
-            elif USER_TYPE_COACH in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_COACH:
+            elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
                 # MUST: `expect_success=False` is needed here to prevent this error:
                 # exception:  'Screenshot' object has no attribute '_type_equality_funcs'
                 self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name, False)
-                self.last_user = USER_TYPE_COACH
-            elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_ADMIN:
+            elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.admin_username):
                 self.browser_login_user(self.admin_username, self.default_password)
-                self.last_user = USER_TYPE_ADMIN
-            elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_GUEST:
+            elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
                 self.browser_logout_user()
-                self.last_user = USER_TYPE_GUEST
 
             start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
             if self.browser.current_url != start_url:
