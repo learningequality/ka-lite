@@ -13,11 +13,22 @@ CONDITION_BY_FACILITY_AND_UNIT = {
         "1": "nalanda_input",
         "2": "nalanda_output",
         "3": "nalanda_control",
-    }
+    },
+    "Test": {
+        "1": "testing",
+        "2": "testing",
+        "3": "testing",
+        "4": "testing",
+        "5": "testing",
+        "6": "testing",
+        "7": "testing",
+        "8": "testing",
+    },
 }
 
 GRADE_BY_FACILITY = {
     "facility1": 4,
     "facility2": 5,
     "facility3": 6,
+    "Test": 1,
 }
