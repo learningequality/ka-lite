@@ -85,7 +85,7 @@
                             <td>
                                 {% if student.group %}
                                     {% if group_id %}
-                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
+                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'tabular_view' %}?facility={{ facility.id }}&group={{ student.group.id }}">
                                     {% else %}
                                     <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
                                     {% endif %}

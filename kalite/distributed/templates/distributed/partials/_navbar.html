@@ -26,7 +26,7 @@
                    <li><a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Learn" %}</a></li>
 
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                    <li><a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only {% block teacher_active %}{% endblock teacher_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
+                    <li><a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only {% block teacher_active %}{% endblock teacher_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
                     
                     {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                     <li class="not-teacher-only"><a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only {% block admin_active %}{% endblock admin_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
