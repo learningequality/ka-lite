@@ -25,20 +25,42 @@ window.KnowledgeMapView = Backbone.View.extend({
         this.map = L.map('map', {
             center: [0, 0],
             zoom: this.zoom,
-            zoomControl: false
+            minZoom: this.zoom,
+            maxZoom: this.zoom + this.zoomLevels.length - 1
         });
 
         this.map.on('zoom_in', this.zoom_in);
 
         this.map.on('zoom_out', this.zoom_out);
 
-        this.map.on('zoomOut', this.zoomOut);
+        this.map.on('zoomend', this.zoom_modify);
 
-        this.showCurrentLayer();
-        
+        this.map.on('dblclick', this.zoom_in);
+
+        this.map.on('contextmenu', this.zoom_out);
+      
     },
 
-    zoomIn: function() {
+    zoom_modify: _.debounce(function(event) {
+        if (this.map.getZoom() > this.zoom + this.zoomLevel || event.zoomtype === "zoom_in") {
+            if (this.map.getZoom() > this.zoom + this.zoomLevel) {
+                for (i=0; i < this.map.getZoom() - (this.zoom + this.zoomLevel); i++) {
+                    this.zoom_in(event);
+                }
+            } else {
+                this.zoom_in(event);
+            }
+        } else if (this.map.getZoom() < this.zoom + this.zoomLevel || event.zoomtype === "zoom_out") {
+            if (this.map.getZoom() < this.zoom + this.zoomLevel) {
+                for (i=0; i < (this.zoom + this.zoomLevel) - this.map.getZoom(); i++) {
+                    this.zoom_out(event);
+                }
+            } else {
+                this.zoom_out(event);
+            }
+        }
+    }, 500),
+
     zoom_in: function(data) {
         if (this.zoomLevel < this.zoomLevels.length - 1) {
             this.zoomLevel += 1;
@@ -59,17 +81,22 @@ window.KnowledgeMapView = Backbone.View.extend({
 
     show_current_layer: function() {
         if (this.current_layer!==undefined) {
-            this.current_layer.hideLayer();
+            this.current_layer.hide_layer();
         }
 
         if (this.zoomLayers[this.zoomLevels[this.zoomLevel]]===undefined) {
-            collection = new TopicCollection([{that:"this"}], {url: TOPIC_DATA_URLS[this.zoomLevels[this.zoomLevel]]});
+            collection = new TopicCollection([], {url: TOPIC_DATA_URLS[this.zoomLevels[this.zoomLevel]]});
             this.zoomLayers[this.zoomLevels[this.zoomLevel]] = new KnowledgeMapLayerView({collection: collection, map: this.map, zoom: this.zoom, zoomLevel: this.zoomLevels[this.zoomLevel]});
         } else {
-            this.zoomLayers[this.zoomLevels[this.zoomLevel]].showLayer();
+            this.zoomLayers[this.zoomLevels[this.zoomLevel]].show_layer();
         }
 
         this.current_layer =  this.zoomLayers[this.zoomLevels[this.zoomLevel]];
+
+        this.map.setZoom(this.zoom + this.zoomLevel);
+
+        return this.current_layer;
+    },
     }
 });
 
@@ -88,6 +115,8 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
     },
 
     render: function() {
+
+        this.map.panTo(this.collection.center_of_mass())
 
         this.subviews = {};
 
@@ -147,8 +176,9 @@ window.KnowledgeMapItemView = Backbone.View.extend({
     },
 
     zoom_to_sub_layer: function() {
-        this.collection = this.collection || new TopicCollection(this.model.get("children"));
-        this.map.panTo(this.collection.centerOfMass());
-        this.map.fire("zoomIn");
+        this.map.panTo(this.model.coordinates());
+        window.router.add_slug(this.model.get("slug"));
+        this.map.fire("zoomend", {slug_modified: true, zoomtype: "zoom_in"});
+    },
     }
 });
