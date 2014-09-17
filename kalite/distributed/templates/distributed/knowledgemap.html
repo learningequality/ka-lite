@@ -10,6 +10,28 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+    <!-- START PERSEUS STUFF -->
+    <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+    <script src="{% static "perseus/lib/marked.js" %}"></script>
+    <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
+    <script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
+    <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
+    <script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
+    <script src="{% static "perseus/lib/kas.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
+    <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
+    <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
+    <script src="{% static 'perseus/ke/interface.js' %}"></script>
+    <!-- END PERSEUS STUFF -->
+
     <script src="{% url 'handlebars_templates' module_name='map' %}"></script>
     <script type='text/javascript' src='{% static "js/leaflet.js" %}'></script>
     <script type="text/javascript">
@@ -23,16 +45,29 @@
     </script>
     <script src="{% static 'js/distributed/map/models.js' %}"></script>
     <script src="{% static 'js/distributed/map/views.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/router.js' %}"></script>
     <script type="text/javascript">
         $(function() {
             window.map_view = new KnowledgeMapView({
                 el: "#map-container"
             });
+            window.router = new TopicRouter({
+                control_view: window.map_view
+            });
+            Backbone.history.start({pushState: true, root: "{% url 'exercise_dashboard' %}"});
         });
     </script>
 {% endblock headjs %}
 
 {% block content %}
+
     <div id="map-container">
     </div>
+    <div id="overlay">
+        <a href="#" class="close btn btn-danger">X</a>
+        <div id="content-area">
+            <div class="content"></div>
+        </div>
+    </div>
+    <div id="fade"></div>
 {% endblock content %}
