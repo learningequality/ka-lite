@@ -53,15 +53,15 @@
         "start_url": "/securesync/zone/None/facility/new/",
         "inputs": [
             {"name": "UCSD"},
-            {"": "For demo and manual use."},
-            {"": "9450 Gilman Dr. La Jolla, CA"},
-            {"": "First Last"},
-            {"": "999-999-9999"},
-            {"": "facility@example.com"},
-            {"": "10"},
-            {"<shot>": "admin-add-facility-filled"},
+            {"description": "For demo and manual use."},
+            {"address": "9450 Gilman Dr. La Jolla, CA"},
+            {"contact_name": "First Last"},
+            {"contact_phone": "999-999-9999"},
+            {"contact_email": "facility@example.com"},
+            {"user_count": "10"},
+            {"<slug>": "admin-add-facility-filled"},
             {"<submit>": ""},
-            {"<shot>": "admin-add-facility-saved"}
+            {"<slug>": "admin-add-facility-saved"}
         ],
         "pages": [12],
         "notes": "new facility form, filled and saved"
