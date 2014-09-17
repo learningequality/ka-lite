@@ -55,6 +55,9 @@ input[type="submit"] {
     border-top-width: 0;
     border-bottom: 4px solid;
 }
+.display-inline {
+    display: inline;
+}
 
 /* ===================================
     Nav Bar

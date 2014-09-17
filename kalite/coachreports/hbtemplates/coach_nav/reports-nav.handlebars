@@ -1,0 +1,26 @@
+<form id="coachreport-select-form" class="form-inline">
+    <div class="form-group">
+        <label for="report-select">{{_ "Report Type" }}</label>
+        <select id="report-select">
+            <option value="tabular">
+                {{_ "Tabular Report" }}
+            </option>
+            <option value="scatter">
+                {{_ "Scatter Report" }}
+            </option>
+            <option value="timeline">
+                {{_ "Timeline Report" }}
+            </option>
+            <option value="test">
+                {{_ "Test Report" }}
+            </option>
+        </select>
+    </div> 
+    <div id="facility-select-container" class="form-group">
+        {{!-- Insert facility select template here --}}
+    </div>
+    <div id="group-select-container" class="form-group">
+        {{!-- Insert group select template here --}}
+    </div>
+    <button id="display-coach-report" class="btn btn-primary">{{_ "Go" }}</button>
+</form>

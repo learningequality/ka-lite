@@ -9,138 +9,48 @@
 
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
-{% block headcss %}{{ block.super }}
-    <style>
-        .selection {
-            float: left;
-            padding: 0 10px 10px 0;
-        }
-        select#report_type, select#topic {
-            margin-left: 5px;
-        }
-        .subtitle {
-            float: left;
-        }
-        #facility, .group_select {
-            display: none;
-        }
-        h4 {
-            font-size: 20px;
-            margin-left: 18px;
-            margin-bottom: 0;
-        }
-        #link-box {
-            float: right;
-        }
-        #link-box input#url {
-            font-size: 14px;
-        }
-        .group_div {
-            margin-left: 20px;
-        }
-        
-        @media only screen and (max-width: 744px) {+
-            h4 { margin-top: 0; }
-            .selection { padding-bottom: 0; }
-            #link-box { float: left; padding-bottom: 10px; }
-        }
-        @media only screen and (max-width: 655px) {
-            #select-topic, select#topic { margin-top: 10px; }
-        }
-    </style>
-{% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
+        var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
+        var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var TABULAR_REPORT_URL = "{% url 'tabular_view' %}";
+        var SCATTER_REPORT_URL = "{% url 'scatter_view' %}";
+        var TIMELINE_REPORT_URL = "{% url 'timeline_view' %}";
+        var TEST_REPORT_URL = "{% url 'test_view' %}";
+
         var FACILITY_ID = "{{ form.facility }}";
         var GROUP_ID = "{{ form.group }}";
     </script>
     <script type="text/javascript" src="{% static 'js/coachreports/base.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>
+    <script>
+        $(function() {
+            window.report_select_view = new NavigationContainerView({
+                el: $('#coachreport-navigation-container')
+            });
+        });
+    </script>
 {% endblock headjs %}
 
-{# sub-pages must embed the navbar within the content, to have it appear. #}
+{% block content %}
+    {# This call to super pulls in the subnavbar #}
+    {{ block.super }}
 
-{% block navbar %}
-
-{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-
-
-    <div id="navbar" style="padding-bottom:25px">
-        <div id="users_link">
-        </div>
-
-        {% block navbar_title %}
-        <h4>
-            <div style="float:left">
-                {% block report_title %}
+    {# Now we create the coachreport selection bar #}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>
                     {# Note to translators: following this phrase is the name of a class. #}
                     {% trans "Coach Reports" %}
-                {% endblock %}
-                {# Note to translators: The context is the title "Coach Reports *for* Facility X." #}
-                {% trans "for" %}&nbsp;
-            </div>
-            {% block navbar_facilities %}
-            <div id="select-facilities" class="selection">
-                <select id="facility">
-                {% if facilities %}
-                    {% for facility in facilities %}
-                    <option value="{{ facility.id }}" {% if form.facility == facility.id %}selected{% endif %}>{{ facility }}</option>
-                    {% endfor %}
-                {% else %}
-                    <option value="" selected>[{% trans "this device" %}]</option>
-                {% endif %}
-                </select>
-                {% if facilities|length > 1 %}
-                <a id="facility_editable" href="javascript:make_editable('facility')"></a>
-                {% else %}
-                <span id="facility_editable"></span>
-                {% endif %}
-            </div>
-            {% endblock navbar_facilities %}
-
-            {% block navbar_groups %}
-            <div id="select-groups" class="selection">
-                <div class="subtitle"> {% if facilities and groups %}/&nbsp;{% endif %}</div>
-                {% if groups %}
-                    {% for groupobject in groups %}
-                    <div id="{{ groupobject.facility }}" class="group_div">
-                        <select id="{{ groupobject.facility }}_group_select" class="group_select">
-                            {% if groupobject.groups %}
-                                    <option value="">[{% trans "all groups" %}]</option>
-                                    {% for group in groupobject.groups %}
-                                    <option value="{{ group.id }}">{{ group }}</option>
-                                    {% endfor %}
-                                    {% if ungrouped_available %}
-                                    <option value="Ungrouped">{% trans "Ungrouped" %}</option>
-                                    {% endif %}
-                            {% else %}
-                                <option value="" selected>[{% trans "no groups" %}]</option>
-                            {% endif %}
-                        </select>
-                        {% if groupobject.groups|length > 1 %}
-                        <a id="{{ groupobject.facility }}_group_select_editable" href="javascript:make_editable('{{ groupobject.facility }}_group_select')"></a>
-                        {% else %}
-                        <span id="{{ groupobject.facility }}_group_select_editable"></span>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            {% endblock navbar_groups %}
-
-            <div class="clearfix">
-                {% block navbar_makelink %}
-                <div id="link-box">
-                    <input name="url" id="url" type="text" style="display:none"></input>
-                    {# Translators: this is used to share a URL (with other teachers) #}
-                    <a href="javascript:display_link()">({% trans "share" %})</a>
+                </h4>
+                <div id="coachreport-navigation-container">
+                    {# insert backbone magic here for coachreport navigation #}
                 </div>
-                {% endblock navbar_makelink %}
             </div>
-        </h4>
-        {% endblock navbar_title %}
-
-        {% block navbar_topics %}
-        {% endblock navbar_topics %}
+        </div>
     </div>
-{% endblock navbar %}
+
+{% endblock content %}
+

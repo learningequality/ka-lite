@@ -1,0 +1,11 @@
+<label for="facility-select">{{_ "Facility" }}</label>
+<select id="facility-select">
+    {{#if facilities}}
+        <option value="">{{_ "All" }}</option>
+        {{#each facilities}}
+            <option value="{{ id }}">{{ name }}</option>
+        {{/each}}
+    {{else}}
+        <option value="" selected>[{% trans "this device" %}]</option>
+    {{/if}}
+</select>
