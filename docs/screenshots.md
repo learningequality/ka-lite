@@ -15,7 +15,7 @@ This command uses a Screenshot class which takes "orders" from a `screenshots.js
 The `screenshots.json` data file "drives" the Screenshot class.  Each entry has a starting url and can optionally have actions that can be done when the Selenium browser loads the page.  Actions include filling-in form fields, submitting the form, or taking a screenshot in between the actions.  So an entry therefore may have one or more screenshots:
     
     1. based on the `slug` key;
-    2. based on each `<shot>` key of the `inputs` array.
+    2. based on each `<slug>` key of the `inputs` array.  It is an array to make sure that the actions are parsed and sorted.
 
 The screenshot filename value is taken from the value of the above-mentioned keys which must be unique.
 
@@ -47,12 +47,12 @@ Here are sample entries for the `/kalite/distributed/data/screenshots.json` file
             "slug": "",
             "start_url": "/securesync/login/",
             "inputs": [
-                {"<shot>": "login-form"},
+                {"<slug>": "login-form"},
                 {"#id_username": "username"},
                 {"": "password"},
-                {"<shot>": "login-form-filled"},
+                {"<slug>": "login-form-filled"},
                 {"<submit>": ""},
-                {"<shot>": "login-form-saved"}
+                {"<slug>": "login-form-saved"}
             ],
             "pages": [5],
             "notes": ""
@@ -64,7 +64,7 @@ Here are sample entries for the `/kalite/distributed/data/screenshots.json` file
     start_url == where the browser will start to do the inputs 
     inputs == array of key-value objects as inputs (selector, text, special codes, etc), to do to show the page as per url.  Possible values for object keys are:
         "#id_form_field" = If has "#", use the `id` argument, else, treat the key as the `name` for the `browser_activate_element()` method call.  This automatically moves to the next form element.
-        "<shot>" == take a screenshot here and the value, which must be a unique slug, is used as filename
+        "<slug>" == take a screenshot here and the value, which must be a unique slug, is used as filename
         "<submit>" == submit the page by sending the Enter key to the browser
         "" / empty string as key == Fill-in the value on the current form element, which is automatically selected by above selector key.
     pages == page numbers from user guide where the screenshot can be used (for reference)
@@ -89,7 +89,7 @@ Here are sample entries for the `/kalite/distributed/data/screenshots.json` file
 
 ## Other considerations:
 
-1. Was plannig to hook up with tests.  So if we have a test suite for student registration where the test case is 
+1. Was planning to hook up with tests.  So if we have a test suite for student registration where the test case is 
 to go thru the steps, do the inputs, validations, etc - then we can call a method within the test to 
 generate the screenshots, passing the output filename for each call.  Dropped this to create a Screenshot class which takes "orders" from a screenshots.json on what, how, and when to do the screenshots so we can customize the data and flow without relying on the test suites.
 
