@@ -76,6 +76,16 @@ window.ExerciseView = Backbone.View.extend({
 
     },
 
+    load_exercises_when_ready: function() {
+        var self = this;
+        Khan.loaded.then(function() {
+
+            var userExercise = self.data_model.as_user_exercise();
+            $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
+
+        });
+    },
+
     load_question: function(question_data) {
 
         var self = this;
@@ -99,20 +109,11 @@ window.ExerciseView = Backbone.View.extend({
 
             if (framework == "khan-exercises") {
 
-                // TODO-BLOCKER(jamalex): this is a broken attempt to get khan-exercises loading in same page as perseus
                 if (Khan.loaded === undefined) {
-                    $.getScript(KHAN_EXERCISES_SCRIPT_URL);
+                    $.getScript(KHAN_EXERCISES_SCRIPT_URL, self.load_exercises_when_ready);
+                } else {
+                    self.load_exercises_when_ready();
                 }
-
-                Khan.loaded.then(function() {
-
-                    var userExercise = self.data_model.as_user_exercise();
-                    $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
-
-                    // $(Exercises).trigger("newProblem", {
-                    //     userExercise: userExercise
-                    // });
-                });
 
             } else if (framework == "perseus") {
 
