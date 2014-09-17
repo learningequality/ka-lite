@@ -18,7 +18,7 @@ window.TopicCollection = Backbone.Collection.extend({
     
     model: TopicNode,
 
-    centerOfMass: function() {
+    center_of_mass: function() {
         var x = _.reduce(this.models, function(memo, model){return memo + model.get("x_pos");}, 0)/this.length;
         var y = _.reduce(this.models, function(memo, model){return memo + model.get("y_pos");}, 0)/this.length;
         return [x,y];

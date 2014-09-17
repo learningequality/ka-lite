@@ -1,38 +1,3 @@
-var zoomControl = L.Control.extend({
-    options: {
-        position: 'topleft'
-    },
-
-    onAdd: function (map) {
-
-        var container = L.DomUtil.create('div', 'leaflet-control-zoom leaflet-bar');
-
-        L.DomEvent
-            .addListener(container, 'click', L.DomEvent.stopPropagation)
-            .addListener(container, 'click', L.DomEvent.preventDefault)
-            .addListener(container, 'dblclick', L.DomEvent.stopPropagation)
-            .addListener(container, 'dblclick', L.DomEvent.preventDefault);
-
-        var plus = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
-
-        plus.text = "+";
-        plus.title = "Zoom in";
-        plus.href = "#";
-
-        L.DomEvent.addListener(plus, 'click', function(){map.fire('zoomIn')});
-        
-        var minus = L.DomUtil.create('a', 'leaflet-control-zoom-out', container);
-
-        minus.text = "-";
-        minus.title = "Zoom out";
-        minus.href = "#";
-
-        L.DomEvent.addListener(minus, 'click', function(){map.fire('zoomOut')});
-
-        return container;
-    }
-});
-
 window.KnowledgeMapView = Backbone.View.extend({
 
     template: HB.template("map/map"),
@@ -63,9 +28,9 @@ window.KnowledgeMapView = Backbone.View.extend({
             zoomControl: false
         });
 
-        this.map.addControl(new zoomControl());
+        this.map.on('zoom_in', this.zoom_in);
 
-        this.map.on('zoomIn', this.zoomIn);
+        this.map.on('zoom_out', this.zoom_out);
 
         this.map.on('zoomOut', this.zoomOut);
 
@@ -74,20 +39,25 @@ window.KnowledgeMapView = Backbone.View.extend({
     },
 
     zoomIn: function() {
+    zoom_in: function(data) {
         if (this.zoomLevel < this.zoomLevels.length - 1) {
             this.zoomLevel += 1;
-            this.showCurrentLayer();
+            this.show_current_layer();
+            if (data.slug_modified!==true) {
+                window.router.add_slug(this.zoomLevels[this.zoomLevel]);
+            }
         }
     },
 
-    zoomOut: function() {
+    zoom_out: function() {
         if (this.zoomLevel > 0) {
             this.zoomLevel = this.zoomLevel - 1;
-            this.showCurrentLayer();
+            this.show_current_layer();
+            window.router.url_back();
         }
     },
 
-    showCurrentLayer: function() {
+    show_current_layer: function() {
         if (this.current_layer!==undefined) {
             this.current_layer.hideLayer();
         }
@@ -125,26 +95,29 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
 
         for (i=0; i < this.collection.length; i++) {
             model = this.collection.models[i];
-            this.addSubView(model);
+            this.add_subview(model);
         }
 
-        this.showLayer();
+        this.show_layer();
     },
 
-    addSubView: function(model) {
+    add_subview: function(model) {
         if (model.coordinates()) {
             this.subviews[model.get("id")] = new KnowledgeMapItemView({model: model, map: this.map, zoom: this.zoom, zoomLevel: this.zoomLevel});
             this.layerGroup.addLayer(this.subviews[model.get("id")].marker);
         }
     },
 
-    hideLayer: function() {
-        this.map.removeLayer(this.layerGroup);
+    hide_layer: function() {
+        if (this.layerGroup!==undefined) {
+            this.map.removeLayer(this.layerGroup);
+        }
     },
 
-    showLayer: function() {
+    show_layer: function() {
         this.map.addLayer(this.layerGroup);
-        this.layerGroup.on("click", this.hideLayer);
+        this.layerGroup.on("click", this.hide_layer);
+    },
     }
 });
 
@@ -167,13 +140,13 @@ window.KnowledgeMapItemView = Backbone.View.extend({
     render: function() {
         this.marker = L.marker(this.model.coordinates(), {icon: L.divIcon({className: 'map-icon', html: "<div>" + this.model.get("title") + "</div>", iconSize: [100,100]}), title: this.model.get("title")});
         if (this.zoomLevel=="Exercises") {
-            this.marker.on("click", this.navigateToExercise);
+            this.marker.on("click", this.navigate_to_exercise);
         } else {
-            this.marker.on("click", this.zoomToSubLayer);
+            this.marker.on("click", this.zoom_to_sub_layer);
         }
     },
 
-    zoomToSubLayer: function() {
+    zoom_to_sub_layer: function() {
         this.collection = this.collection || new TopicCollection(this.model.get("children"));
         this.map.panTo(this.collection.centerOfMass());
         this.map.fire("zoomIn");

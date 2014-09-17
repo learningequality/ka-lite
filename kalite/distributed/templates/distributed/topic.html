@@ -90,7 +90,7 @@
             window.router = new TopicRouter({
                 control_view: window.sidebar_view
             });
-            Backbone.history.start({pushState: true, root: "/{{ request.resolver_match.url_name }}/"});
+            Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
         });
     </script>
 
