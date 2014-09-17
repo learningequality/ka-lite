@@ -1,27 +1,13 @@
 import json
-import os
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.management import call_command
-from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
-from django.utils import unittest
 from tastypie.exceptions import Unauthorized
 
-from kalite.facility.models import Facility, FacilityUser
-from kalite.main.tests.base import MainTestCase
-from kalite.main.models import VideoLog, ExerciseLog
 from kalite.testing import KALiteClient, KALiteTestCase
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.testing.mixins import CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins
 
 
 class TestGetTopicTree(KALiteTestCase):
-    def setUp(self):
-        self.client = KALiteClient()
 
     def test_get_root(self):
         """Get the root node of the topic tree"""
@@ -58,9 +44,8 @@ class TestGetTopicTree(KALiteTestCase):
         self.assertEqual(resp.status_code, 404, "Status code should be 404 (actual: %s)" % resp.status_code)
 
 
-class PlaylistProgressAPITest(CreatePlaylistProgressMixin, 
-                              CreateAdminMixin, 
-                              CreateDeviceMixin, 
+class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
+                              CreateAdminMixin,
                               FacilityMixins,
                               KALiteTestCase):
 
@@ -92,12 +77,12 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
         self.assertEqual(pl_response["quiz_status"], "borderline", "Incorrect value returned by API")
 
         self.client.logout()
-        
+
     def test_playlist_progress_detail_resource(self, auth_test=False):
         self.playlist = self.create_playlist_progress(self.test_student)
         # Playlist Progress Details
         if not auth_test:
-            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)        
+            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)
         resp = self.client.get("%s?user_id=%s&playlist_id=%s" % (reverse("api_dispatch_list", kwargs={"resource_name": "playlist_progress_detail"}), self.test_student.id, self.playlist.id))
         pl_response = json.loads(resp.content)["objects"]
 
@@ -115,7 +100,7 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
         self.playlist = self.create_playlist_progress(self.test_student, quiz=False)
         # Playlist Progress Details
         if not auth_test:
-            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)        
+            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)
         resp = self.client.get("%s?user_id=%s&playlist_id=%s" % (reverse("api_dispatch_list", kwargs={"resource_name": "playlist_progress_detail"}), self.test_student.id, self.playlist.id))
         pl_response = json.loads(resp.content)["objects"]
 
@@ -130,12 +115,12 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
 
     def test_playlist_progress_resource_auth(self):
         # Admins should be able to view
-        self.client.login(username=self.admin.username, password="admin")  
-        self.test_playlist_progress_resource(auth_test=True)           
+        self.client.login(username=self.admin.username, password="admin")
+        self.test_playlist_progress_resource(auth_test=True)
         self.client.logout()
 
         # other students should not
-        self.client.login(username=self.hacker_student.username, password="hacker", facility=self.facility.id)  
+        self.client.login(username=self.hacker_student.username, password="hacker", facility=self.facility.id)
         with self.assertRaises(Unauthorized):
             self.test_playlist_progress_resource(auth_test=True)
         self.client.logout()
@@ -147,14 +132,14 @@ class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
 
     def test_playlist_progress_detail_resource_auth(self):
         # Admins should be able to view
-        self.client.login(username=self.admin.username, password="admin")  
-        self.test_playlist_progress_detail_resource(auth_test=True)           
+        self.client.login(username=self.admin.username, password="admin")
+        self.test_playlist_progress_detail_resource(auth_test=True)
         self.client.logout()
 
         # other students should not
-        self.client.login(username=self.hacker_student.username, password="hacker", facility=self.facility.id)  
+        self.client.login(username=self.hacker_student.username, password="hacker", facility=self.facility.id)
         with self.assertRaises(Unauthorized):
-            self.test_playlist_progress_detail_resource(auth_test=True) 
+            self.test_playlist_progress_detail_resource(auth_test=True)
         self.client.logout()
 
         # nor should not logged in users
