@@ -190,10 +190,15 @@ LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 
 from django.conf import settings
 PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", settings.PROJECT_PATH)) + "/"
-SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
-SCREENSHOTS_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+
 SCREENSHOTS_OUTPUT_PATH = os.path.join(os.path.realpath(PROJECT_PATH), "..", "data", "screenshots")
-SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_DATA_PATH, 'screenshots.json')
+SCREENSHOTS_EXTENSION = ".png"
+
+SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
+SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
+
+SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
+SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
 SCREENSHOTS_ROUTER = 'default'
 SQLITE3_ENGINE = 'django.db.backends.sqlite3'
 
@@ -202,7 +207,7 @@ if 'screenshots' in sys.argv:
     DATABASES = {
         SCREENSHOTS_ROUTER: {
             "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
-            "NAME": os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME),
+            "NAME": SCREENSHOTS_DATABASE_PATH,
             "OPTIONS": {
                 "timeout": 60,
             },

@@ -12,6 +12,8 @@ from django.utils.six import StringIO
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from fle_utils.general import ensure_dir
+
 from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 
 
@@ -32,10 +34,12 @@ log = settings.LOG
 class Command(BaseCommand):
     """
     This will generate screenshots based on the selenium firefox webdriver to be used for the user guide document.
-    1. Create a separate sqlite3 database on the /data/screenshots/ folder.
-    2. Read contents of screenshots from /kalite/distributed/data/screenshots.json.
-    3. Save the screenshots to /data/screenshots folder.
-    4. Delete the created sqlite3 database.
+    1. Sets output of database and screenshots to /data/screenshots/ folder.
+    2. Create a separate sqlite3 database on the output folder.
+    3. Delete any .png files from the output folder.
+    4. Read contents of screenshots from /kalite/distributed/data/screenshots.json.
+    5. Save the screenshots to the output folder.
+    6. Delete the created sqlite3 database.
     """
     help = "Generate screenshots to be used on the User manual."
 
@@ -43,22 +47,9 @@ class Command(BaseCommand):
         sc = Screenshot()
         sc.snap_all()
         # since we used a new sqlite database for this command we must delete it after
-        database_name = getattr(settings, 'SCREENSHOTS_DATABASE_NAME', 'data.sqlite')
-        if database_name != "data.sqlite":
+        database_name = getattr(settings, 'SCREENSHOTS_DATABASE_NAME', None)
+        if database_name:
             delete_sqlite_database(sc.database)
-
-
-# REF: http://stackoverflow.com/questions/273192/check-if-a-directory-exists-and-create-it-if-necessary
-def make_sure_path_exists(path):
-    """
-    Check if directory exists and create it if necessary.
-    """
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
-# ENDREF:
 
 
 # Possibly re-usable codes.
@@ -75,6 +66,10 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None)
         router = getattr(settings, 'SCREENSHOTS_ROUTER', 'default')
     db_engine = settings.DATABASES[router]['ENGINE']
     if db_engine == settings.SQLITE3_ENGINE:
+
+        # make sure database path exists
+        ensure_dir(settings.SCREENSHOTS_OUTPUT_PATH)
+
         new_io = StringIO()
         call_command("reset_db", interactive=False, stdout=new_io, router=router)
         call_command("syncdb", interactive=False, stdout=new_io, router=router)
@@ -121,86 +116,97 @@ class Screenshot(KALiteDistributedBrowserTestCase):
     facility = None
     last_user = USER_TYPE_GUEST
 
-    database = settings.DATABASES[getattr(settings, 'SCREENSHOTS_ROUTER', 'default')]['NAME']
+    KEY_USERS = 'users'
+    KEY_SLUG = 'slug'
+    KEY_START_URL = 'start_url'
+    KEY_INPUTS = 'inputs'
+    KEY_PAGES = 'pages'
+    KEY_NOTES = 'notes'
+
+    KEY_CMD_SLUG = '<slug>'
+    KEY_CMD_SUBMIT = '<submit>'
+
+    JSON_KEYS = (KEY_USERS, KEY_SLUG, KEY_START_URL, KEY_INPUTS, KEY_PAGES, KEY_NOTES,)
+
+    database = getattr(settings, 'SCREENSHOTS_DATABASE_PATH', None)
 
     def __init__(self, *args, **kwargs):
 
+        # make sure output path exists and is empty
+        output_path = settings.SCREENSHOTS_OUTPUT_PATH
+        ensure_dir(output_path)
+
+        # make sure directory is empty from screenshot files
+        import glob
+        png_path = os.path.join(output_path, "*%s" % settings.SCREENSHOTS_EXTENSION)
+        pngs = glob.glob(png_path)
+        if pngs:
+            log.warn("==> Deleting existing screenshots: %s ..." % png_path)
+            for filename in pngs:
+                os.remove(filename)
+
         # setup database to use and auto-create admin user
-        log.info('==> Setting-up database ...')
+        log.info("==> Setting-up database ...")
         self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email, self.default_password)
         self.admin_pass = self.default_password
+        if not self.admin_user:
+            raise Exception("==> Did not successfully setup database!")
 
         self.facility = self.create_facility()
         self.create_student(self.student_username, self.default_password, self.facility.name)
         self.create_teacher(self.coach_username, self.default_password, self.facility.name)
 
         self.persistent_browser = True
-        self.max_wait_time = kwargs.get("max_wait_time", 30)
+        self.max_wait_time = kwargs.get('max_wait_time', 30)
 
         self.setUpClass()
 
         # self.browser = webdriver.PhantomJS()
-        log.info('==> Setting-up browser ...')
+        log.info("==> Setting-up browser ...")
         self.browser = webdriver.Firefox()
         self.browser.set_window_size(1024, 768)
 
-        log.info('==> Browser %s successfully setup with live_server_url %s.' %
+        log.info("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
-        log.info('==> Saving screenshots at %s ...' % (settings.SCREENSHOTS_OUTPUT_PATH,))
+        log.info("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
 
-    def get_contents(self):
+    def validate_json_keys(self, shot):
         """
-        Get the contents of shots.
+        Validates a json item if keys are valid or not, raises an exception if keys are found.
         """
-        items = []
-        try:
-            log.info('==> Fetching list of screenshots from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
-            items = json.load(open(settings.SCREENSHOTS_JSON_FILE))
-        except Exception as exc:
-            log.error("Cannot open `screenshots.json` at %s:\n  exception:  %s" %
-                      (settings.SCREENSHOTS_JSON_FILE, exc,))
-        return items
-
-    def validate_json_item(self, shot):
-        """
-        Validates a json item if keys are valid or not.
-        """
-        json_keys = ['users', 'slug', 'start_url', 'inputs', 'pages', 'notes']
-        try:
-            values = [shot[key] for key in json_keys]
-            if values:
-                return True
-        except Exception as exc:
-            log.error("Screenshot JSON must have keys %s\n but has invalid format: \n  json==%s\n  exception==%s" %
-                      (json_keys, shot, exc,))
-        return False
+        values = [shot[key] for key in self.JSON_KEYS]
 
     def make_filename(self, slug):
-        make_sure_path_exists(settings.SCREENSHOTS_OUTPUT_PATH)
-        filename = "%s/%s.png" % (settings.SCREENSHOTS_OUTPUT_PATH, slug,)
+        ensure_dir(settings.SCREENSHOTS_OUTPUT_PATH)
+        filename = "%s/%s%s" % (settings.SCREENSHOTS_OUTPUT_PATH, slug, settings.SCREENSHOTS_EXTENSION)
         return filename
 
-    def snap(self, shot, browser=None):
+    def snap(self, slug):
+        filename = self.make_filename(slug=slug)
+        log.info('====> Snapping %s --titled-- "%s" --> %s%s ...' %
+                 (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
+        self.browser.save_screenshot(filename)
+
+    def process_snap(self, shot, browser=None):
         """
         Take a screenshot and save on SCREENSHOTS_OUTPUT_PATH.
         """
+        self.validate_json_keys(shot)
+
         start_url = '/'
         try:
-            if not self.validate_json_item(shot):
-                return False
-
-            if USER_TYPE_STUDENT in shot["users"] and self.last_user is not USER_TYPE_STUDENT:
+            if USER_TYPE_STUDENT in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_STUDENT:
                 self.browser_login_student(self.student_username, self.default_password, self.facility.name)
                 self.last_user = USER_TYPE_STUDENT
-            elif USER_TYPE_COACH in shot["users"] and self.last_user is not USER_TYPE_COACH:
+            elif USER_TYPE_COACH in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_COACH:
                 # MUST: `expect_success=False` is needed here to prevent this error:
                 # exception:  'Screenshot' object has no attribute '_type_equality_funcs'
                 self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name, False)
                 self.last_user = USER_TYPE_COACH
-            elif USER_TYPE_ADMIN in shot["users"] and self.last_user is not USER_TYPE_ADMIN:
+            elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_ADMIN:
                 self.browser_login_user(self.admin_username, self.default_password)
                 self.last_user = USER_TYPE_ADMIN
-            elif USER_TYPE_GUEST in shot["users"] and self.last_user is not USER_TYPE_GUEST:
+            elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.last_user is not USER_TYPE_GUEST:
                 self.browser_logout_user()
                 self.last_user = USER_TYPE_GUEST
 
@@ -209,36 +215,28 @@ class Screenshot(KALiteDistributedBrowserTestCase):
                 self.browse_to(start_url)
 
             # Make browser inputs and take screenshots as specified.
-            inputs = shot["inputs"]
+            inputs = shot[self.KEY_INPUTS]
             for item in inputs:
-                key = item.keys()[0]
-                value = item.values()[0]
-                if key:
-                    key = key.lower()
-                    if key == "<shot>":
-                        filename = self.make_filename(slug=item[key])
-                        self.browser.save_screenshot(filename)
-                        continue
-                    elif key == "<submit>":
-                        self.browser_send_keys(Keys.RETURN)
-                        continue
-                    else:
-                        if "#" in key:
-                            key = key.replace("#", "")
-                            self.browser_activate_element(id=key)
+                for key, value in item.iteritems():
+                    if key:
+                        if key.lower() == self.KEY_CMD_SLUG:
+                            self.snap(slug=value)
+                            continue
+                        elif key.lower() == self.KEY_CMD_SUBMIT:
+                            self.browser_send_keys(Keys.RETURN)
+                            continue
                         else:
-                            self.browser_activate_element(name=key)
-                self.browser_form_fill(value)
+                            kwargs = {'name': key}
+                            if key[0] == "#":
+                                kwargs = {'id': key.replace("#", "")}
+                            self.browser_activate_element(**kwargs)
+                    self.browser_form_fill(value)
 
-            if shot["slug"]:
-                filename = self.make_filename(slug=shot["slug"])
-                log.info('====> Snapping %s --titled-- "%s" --> %s.png ...' %
-                         (self.browser.current_url, self.browser.title, shot["slug"],))
-                self.browser.save_screenshot(filename)
-            return True
+            if shot[self.KEY_SLUG]:
+                self.snap(slug=shot[self.KEY_SLUG])
         except Exception as exc:
             log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
-            return False
+            raise
 
     def snap_all(self, browser=None):
         """
@@ -249,7 +247,7 @@ class Screenshot(KALiteDistributedBrowserTestCase):
             log.info('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
             shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
             for shot in shots:
-                self.snap(shot, browser=browser)
+                self.process_snap(shot, browser=browser)
             self.browser.quit()
         except Exception as exc:
             log.error("Cannot open `screenshots.json` at %s:\n  exception:  %s" %
