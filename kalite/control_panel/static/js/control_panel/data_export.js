@@ -8,20 +8,20 @@ var FacilityModel = Backbone.Model.extend();
 
 var GroupModel = Backbone.Model.extend();
 
-var DataExportStateModel = Backbone.Model.extend();  
+var DataExportStateModel = Backbone.Model.extend();
 
 // Collections
-var ZoneCollection = Backbone.Collection.extend({ 
-    model: ZoneModel, 
+var ZoneCollection = Backbone.Collection.extend({
+    model: ZoneModel,
     url: ALL_ZONES_URL
 });
 
-var FacilityCollection = Backbone.Collection.extend({ 
-    model: FacilityModel, 
+var FacilityCollection = Backbone.Collection.extend({
+    model: FacilityModel,
     url: ALL_FACILITIES_URL
 });
 
-var GroupCollection = Backbone.Collection.extend({ 
+var GroupCollection = Backbone.Collection.extend({
     model: GroupModel,
     url: ALL_GROUPS_URL
 });
@@ -52,14 +52,14 @@ var DataExportView = Backbone.View.extend({
 
     events: {
         "click #export-button": "export_data"
-    },  
+    },
 
     render: function() {
         // render container     
         this.$el.html(this.template());
 
         // append zone, facility & group select views.
-        this.$('#student-select-container').append(this.zone_select_view.$el)
+        this.$('#student-select-container').append(this.zone_select_view.$el);
         this.$('#student-select-container').append(this.facility_select_view.$el);
         this.$('#student-select-container').append(this.group_select_view.$el);
     },
@@ -96,8 +96,8 @@ var DataExportView = Backbone.View.extend({
         // If no zone_id, all is selected, so compile a comma seperated string
         // of zone ids to pass to endpoint
         var zone_ids = "";
-        if (!zone_id) {
-            var zone_ids = _.map(this.zone_select_view.zone_list.models, function(zone) { return zone.get("id"); }).join(); 
+        if (zone_id===undefined || zone_id==="") {
+            zone_ids = _.map(this.zone_select_view.zone_list.models, function(zone) { return zone.get("id"); }).join();
         }
 
         var export_params = "?" + $.param({
@@ -105,9 +105,9 @@ var DataExportView = Backbone.View.extend({
             facility_id: facility_id,
             zone_id: zone_id,
             zone_ids: zone_ids,
-            format:"csv", 
+            format:"csv",
             limit:0
-        })
+        });
 
         var export_data_url = this.resource_endpoint() + export_params;
 
@@ -132,7 +132,7 @@ var ZoneSelectView = Backbone.View.extend({
 
             // Fetch collection by org_id
             this.zone_list.fetch({
-                data: $.param({ 
+                data: $.param({
                     "org_id": this.options.org_id,
                     "limit": 0
                 })
@@ -149,7 +149,7 @@ var ZoneSelectView = Backbone.View.extend({
         });
 
         if (this.model.get("is_central")) {
-            this.$el.html(rendered_html);    
+            this.$el.html(rendered_html);
         } else {
             this.$el.html(rendered_html).hide();
         }
@@ -162,13 +162,13 @@ var ZoneSelectView = Backbone.View.extend({
     zone_changed: function(ev) {
         // Update state model
         var zone_id = this.$("select").val();
-        this.model.set({ 
+        this.model.set({
             facility_id: undefined,
             group_id: undefined,
             zone_id: zone_id
         });
     }
-})
+});
 
 
 var FacilitySelectView = Backbone.View.extend({
@@ -199,11 +199,11 @@ var FacilitySelectView = Backbone.View.extend({
 
     render: function() {
 
-        var template_context = { 
+        var template_context = {
             facilities: this.facility_list.toJSON(),
             selection: this.model.get("facility_id"),
             // Facility select is enabled only if zone_id has been set 
-            is_disabled: !this.model.get("zone_id")
+            is_disabled: ((this.model.get("zone_id") === undefined || this.model.get("zone_id") === "") &&  this.model.get("is_central"))
         };
 
         this.$el.html(this.template(template_context));
@@ -228,7 +228,7 @@ var FacilitySelectView = Backbone.View.extend({
         // Update state model 
         var facility_id = this.$("select").val();
 
-        this.model.set({ 
+        this.model.set({
             group_id: undefined,
             facility_id: facility_id
         });
@@ -236,23 +236,27 @@ var FacilitySelectView = Backbone.View.extend({
 
     fetch_by_zone: function() {
         // First disable the select
-        var zone_id = this.model.get("zone_id");
-        
-        // only fetch if a zone ID has been set 
-        if (zone_id) {
-            this.render_waiting(); 
-            this.facility_list.fetch({
-                data: $.param({ 
-                    "zone_id": zone_id,
-                    "limit": 0
-                })
-            });
+        if (this.model.get("is_central")) {
+            var zone_id = this.model.get("zone_id");
+            
+            // only fetch if a zone ID has been set 
+            if (zone_id) {
+                this.render_waiting();
+                this.facility_list.fetch({
+                    data: $.param({
+                        "zone_id": zone_id,
+                        "limit": 0
+                    })
+                });
+            } else {
+                this.facility_list.reset();
+            }
         } else {
-            this.facility_list.reset();
+            this.render_waiting();
+            this.facility_list.fetch();
         }
     }
 });
-
 
 var GroupSelectView = Backbone.View.extend({
     
@@ -276,7 +280,7 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     render: function() {
-        var template_context = { 
+        var template_context = {
             groups: this.group_list.toJSON(),
             selection: this.model.get("group_id"),
             // Group select is enabled only if facility_id has been set 
@@ -312,7 +316,7 @@ var GroupSelectView = Backbone.View.extend({
         if (facility_id) {
             this.render_waiting();
             this.group_list.fetch({
-                data: $.param({ 
+                data: $.param({
                     "facility_id": facility_id,
                     "limit": 0
                 })
