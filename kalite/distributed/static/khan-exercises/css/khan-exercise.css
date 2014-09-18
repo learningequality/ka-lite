@@ -654,16 +654,16 @@ html.exercise-browser {
   white-space: nowrap;
 }
 
-.thumbnail a {
+.thumbnail_vid a {
   outline: none;
   color: #fff;
 }
 
-.thumbnail a:hover {
+.thumbnail_vid a:hover {
   text-decoration: none;
 }
 
-.thumbnail div.thumb {
+.thumbnail_vid div.thumb {
   background-size: 200px 150px;
   background-position: no-repeat top left;
   background-position: 0px -25px;
@@ -680,7 +680,7 @@ html.exercise-browser {
   margin-top: 4px;
 }
 
-.thumbnail div.thumbnail_label {
+.thumbnail_vid div.thumbnail_label {
   padding: 5px 10px;
   max-width: 180px;
   margin: 0;
@@ -693,14 +693,14 @@ html.exercise-browser {
   text-overflow: ellipsis;
 }
 
-.thumbnail div.thumbnail_desc {
+.thumbnail_vid div.thumbnail_desc {
   width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.thumbnail div.thumbnail_teaser {
+.thumbnail_vid div.thumbnail_teaser {
   height: 0px;
   overflow: hidden;
   text-overflow: ellipsis;

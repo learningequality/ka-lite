@@ -25,7 +25,6 @@
     {% endblock student_report_js %}
 {% endblock headjs %}
 
-
 {% block headcss %}
     {{ block.super }}
     {# Re-import control-panel bootstrap so that styles within coach report look correct #}
@@ -47,11 +46,11 @@
 {% endblock navbar_groups %}
 
 {% block content %}
-{% block navbar %}{{ block.super }}{% endblock navbar %}
 
 {% block student_report %}
     <div class="container">
         <div id="student-progress-container"></div>
     </div>
 {% endblock student_report %}
+
 {% endblock content %}

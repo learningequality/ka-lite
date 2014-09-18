@@ -270,7 +270,7 @@ def login(request, facility):
             landing_page = form.cleaned_data["callback_url"]
             if not landing_page:
                 # Just going back to the homepage?  We can do better than that.
-                landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
+                landing_page = reverse("tabular_view") if form.get_user().is_teacher else None
                 landing_page = landing_page or (reverse("account_management") if False else reverse("homepage"))  # TODO: pass the redirect as a parameter.
 
             return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)

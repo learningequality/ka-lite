@@ -1,15 +1,10 @@
-.selection {
-    float: left;
-    padding: 0 10px 10px 0;
-    
-}
 #displaygrid {
     width: 100%;
     padding-top: 5px;
     padding-left: 2px;
 }
 
-#displaygrid > .users {
+#displaygrid > .users-table {
     width: 11%;
     margin-right: 1px;
     float: left;
@@ -20,7 +15,7 @@
     width: 88%;
 }
 
-.users table {
+.users-table table {
     width: 100%;
 }
 
@@ -33,7 +28,7 @@ th, td {
     padding: 2px;
 }
 
-.users th {
+.users-table th {
     text-align: left;
     
 }
@@ -43,6 +38,11 @@ th, td {
     font-weight: bold;
 }
 
+.subtitle.error {
+    margin-left: 4px;
+    margin-top: 15px;
+}
+
 .status {
     height: 27px;
     background-color: #EEE;
@@ -50,10 +50,10 @@ th, td {
 }
 
 th.username {
+    font-size: 12px;
     height: 27px;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
     /*border-right: none;*/
-    padding-left: 5px;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -89,11 +89,11 @@ th.headrowuser {
     /*white-space: nowrap;*/
 }
 
-#legend a {
+/*#legend a {
     height:12px;
     margin:0px;
     padding:0px;
-}   
+}*/   
 
 .student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
     float:left; 
@@ -106,6 +106,7 @@ th.headrowuser {
     text-align:right;
     vertical-align:middle;
 }
+
 .student-name {
     float:none;
     text-align:left;
@@ -113,33 +114,30 @@ th.headrowuser {
     text-overflow: ellipsis;
 }
 #legend {
-    float:right;
-    vertical-align:middle;
-    margin:12px 25px 2px 10px;
+    padding-left: 0;
+    padding-top: 0 !important;
 }
 .legend {
-    float:right;
-    width:120px;
-    height:20px;
+    border: 1px solid #333;
+    display: inline-block;
+    height: 20px;
+    overflow: hidden;
     text-align:center;
-    vertical-align:middle;
-    white-space:nowrap;
-    overflow:hidden;
-    border-style:solid;
-    border-width: 1px;
-    padding:2px;
-    margin-right: 2px;
-/*display:none;*/
-
+    width:120px;
 }
 .legend div {
     float:left;
     width:35px;
     height:21px;
 }
-#selection-bar {
-    overflow:hide;
+.selection {
+    margin-right: 10px;
 }
-#disp_options {
-    float:right;
+@media only screen and (max-width: 1199px) {
+    #legend { float: left !important; margin-top: 15px; }
+}
+
+@media only screen and (max-width: 400px) {
+    select#topic { margin-left: 0 !important; }
+    /* Moves "Select Topic" dropdown slightly to the right so that it lines up with "Select Topic" and "Select Report" */
 }

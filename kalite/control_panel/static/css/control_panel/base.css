@@ -1,41 +1,18 @@
-body {
-    min-height: 500px;
-}
-
 h2 {
     margin-top: 15px;
 }
-table {
-    margin-bottom: 25px;
-}
-ul, li {
-    list-style: none;
-    margin-left: 0px;
-}
-
 .facility, .device {
     width:100%;
 }
-
-#zone_container{
-    width: 100%;
-}
 .titlebar__title {
-    padding: 10px 0px 15px 0px;
+    padding: 0 0 15px 0;
     border-bottom: 1px #E7E7E7 solid;
     margin-bottom: 5px;
 }
 .titlebar__title li{
     display: inline;
     font-size: 20px;
-    padding-top: 5px;
 }
-
-.titlebar__buttons{
-    float: right;
-    margin: 0;
-}
-
 .selectable-table {
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -43,46 +20,11 @@ ul, li {
     user-select:none;
     draggable: false;
 }
-
 .selectable-table tbody tr {
     cursor: pointer;
 }
-
 .selectable-table tbody tr.selected {
     background: #C4CAF5;
-}
-
-.date {
-    display: inline !important;
-    margin: 5px;
-    text-align: center;
-    width: 180px;
-}
-
-.no-data {
-    padding-left: 50px;
-    font-weight: bold;
-    color: #f00;
-}
-.definition {
-    font-style: italic;
-}
-
-.hidden {
-    display: none;
-}
-.title-div{
-    margin-top: 20px;
-}
-.title {
-    font-size: 16pt;
-}
-.icon-medium {
-    min-width: 13px;
-    min-height: 13px;
-}
-.icon-pencil, .icon-trash, .icon-plus-sign {
-    padding-left: 10px;
 }
 .export_csv_div {
     float: right;
@@ -92,53 +34,18 @@ ul, li {
     background-color: #ddd;
     padding: 5px;
 }
-
 .export_csv_input {
     margin-left: 2.5em;
     display: inline !important;
     margin: 5px;
 }
-
-dl {
-    margin-bottom:20px;
+@media (min-width: 768px ) {
+    .table-bottom-options {
+        position: relative;
+        top: -25px;
+        margin-bottom: 10px;
     }
-
-dt,dd {
-    line-height:20px;
-    }
-
-dt {
-    font-weight:bold;
-    }
-
-dd {
-    margin-left:10px;
-    }
-
-.dl-horizontal {
-    *zoom:1;
-    }
-
-.dl-horizontal:before,.dl-horizontal:after {
-    display:table;
-    line-height:0;
-    content:"";
-    }
-
-.dl-horizontal:after {
-    clear:both;
-    }
-
-.dl-horizontal dt {
-    float:left;
-    width:160px;
-    overflow:hidden;
-    clear:left;
-    text-align:right;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    }
-
-.dl-horizontal dd {
-    margin-left:180px;
+}
+.add-new-table-item {
+    margin-left: 8px;
 }

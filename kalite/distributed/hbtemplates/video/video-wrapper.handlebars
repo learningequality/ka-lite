@@ -1,6 +1,6 @@
     <div class="video-wrapper">
 
-        <h2 class="title-header">
+        <h3 class="title-header">
 
             {{#if dubs_available }}
                 <select class="video-language-selector">
@@ -14,19 +14,13 @@
 
             <span class="title">{{ title }}</span>
 
-            <br/>
-
             {{#if description }}
             <span class="long-description">{{ description }}</span>
             {{/if}}
 
-            <div class="clear"></div>
+            <span class="motivational-feature points-container" style="display: none;">{{_ "Points" }}: <span class="points">0</span></span>
 
-            <div class="motivational-feature">
-                <div class="points-container" style="display: none;">{{_ "Points" }}: <span class="points">0</span></div>
-            </div>
-
-        </h2>
+        </h3>
 
         <div class="clear"></div>
 

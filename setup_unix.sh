@@ -6,7 +6,7 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 "$pyexec" "$current_dir/kalite/manage.py" setup
 
 # TODO: make a check to see if we're running the rpi
-we_are_rpi=""
+we_are_rpi="False"
 if [[ $we_are_rpi = "True" ]]; then
     while true
     do

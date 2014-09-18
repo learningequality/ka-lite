@@ -5,12 +5,35 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' True %}">
+
+    <!-- Used by KA to dynamically add styling to the exercise -->
+    <style id="exercise-inline-style"></style>
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
 
     <script>
+
+        // add some dummy features onto the Exercises object to make khan-exercises.js happy
+        window.Exercises = {
+            completeStack: {
+                getUid: function() { return 0; },
+                getCustomStackID: function() { return 0; }
+            },
+            currentCard: {
+                attributes: {},
+                get: function() {}
+            },
+            RelatedVideos: {
+                render: function() {}
+            },
+            getCurrentFramework: function() { return "khan-exercises"; },
+            incompleteStack: [0],
+            PerseusBridge: {
+                cleanupProblem: function() {}
+            }
+        };
 
         $(function() {
             window.exercise_practice_view = new ExercisePracticeView({
@@ -22,6 +45,8 @@
 
     </script>
 
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+
     <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
     <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
     <script src="{% static 'js/seedrandom.min.js' %}"></script>
@@ -32,16 +57,22 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="exercises-header">
+    <div class="container">
 
-        {% if prev %}
-        <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
-        {% endif %}
+        <div class="row">
+            <div class="exercises-header">
+                <div class="row col-xs-12">
+                    {% if prev %}
+                    <div class="vidprev"><a href="{{ prev.path }}">&lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span></a></div>
+                    {% endif %}
 
-        {% if next %}
-        <div class="vidnext"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
-        {% endif %}
-        <div class="clear"></div>
+                    {% if next %}
+                    <div class="vidnext pull-right"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+                    {% endif %}
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
     </div>
 
     <div class="exercise-wrapper"></div>

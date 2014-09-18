@@ -19,7 +19,7 @@ class TestTopicAvailability(UpdatesTestCase):
         self.n_videos = len(glob.glob(os.path.join(settings.CONTENT_ROOT, "*.mp4")))
 
     def test_video_availability(self):
-        nvids_local = sum([node_list[0]["on_disk"] for node_list in get_node_cache("Video").values()])
+        nvids_local = sum([node["on_disk"] for node in get_node_cache("Video").values()])
         self.assertEqual(self.n_videos, nvids_local, "# videos actually on disk should match # videos in topic tree")
 
     def test_topic_availability(self):

@@ -1,28 +1,18 @@
-import json
-import requests
-import datetime
 import re
-import os
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
 from ast import literal_eval
 from collections_local_copy import OrderedDict
-from functools import partial
 from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
-from django.template import RequestContext
-from django.template.loader import render_to_string
+
+from django.http import Http404
 from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from fle_utils.general import max_none
-from fle_utils.internet import StatusException
-from kalite.coachreports.models import PlaylistProgress
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
@@ -30,7 +20,7 @@ from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_exercise_cache
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
@@ -39,6 +29,7 @@ def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
     """
+    ungrouped_available = False
 
     # Options to select.  Note that this depends on the user.
     if request.user.is_superuser:
@@ -47,12 +38,14 @@ def get_accessible_objects_from_logged_in_user(request, facility):
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
         groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
 
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
             facilities = Facility.objects.all()
             groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+            ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
         else:
             # Students can only access their group
             facilities = [user.facility]
@@ -67,7 +60,7 @@ def get_accessible_objects_from_logged_in_user(request, facility):
     else:
         facilities = groups = None
 
-    return (groups, facilities)
+    return (groups, facilities, ungrouped_available)
 
 
 def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kwargs):
@@ -77,16 +70,35 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
     # Get the form, and retrieve the API data
     form = get_data_form(request, facility=facility, topic_path=topic_path, *args, **kwargs)
 
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+    (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     return {
         "form": form.data,
         "stats": stats_dict,
         "groups": groups,
         "facilities": facilities,
+        "ungrouped_available": ungrouped_available,
     }
 
-# view end-points ####
+def coach_nav_context(request, facility, report_id):
+    """
+    Updates the context of all coach reports with the facility, group, and report to have selected
+    by default on page load
+    """
+    facility_id = request.GET.get("facility_id", None)
+    if not facility_id:
+        facility_id = facility.id
+    else:
+        facility = Facility.objects.get(id=facility_id)
+    group_id = request.GET.get("group_id", "")
+    context = {
+        "nav_state": {
+            "facility_id": facility_id,
+            "group_id": group_id,
+            "report_id": report_id,
+        }
+    }
+    return (facility, group_id, context)
 
 
 @require_authorized_admin
@@ -94,7 +106,8 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, facility, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    facility, group_id, context = coach_nav_context(request, facility, "timeline")
+    context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Timeline plot")
     try:
         context["title"] = _(u"%(yaxis_name)s over time") % {
@@ -102,6 +115,7 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
         }
     except:
         pass
+
     return context
 
 
@@ -110,7 +124,8 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, facility, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    context = plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis)
+    facility, group_id, context = coach_nav_context(request, facility, "scatter")
+    context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Scatter plot")
     try:
         context["title"] = _(u"%(yaxis_name)s versus %(xaxis_name)s") % {
@@ -159,17 +174,24 @@ def landing_page(request, facility):
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
+
+    # important for setting the defaults for the coach nav bar
+    facility, group_id, context = coach_nav_context(request, facility, "tabular")
+
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
-    context = plotting_metadata_context(request, facility=facility)
+    topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics()]
+
+    (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+    
+    context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         # For translators: the following two translations are nouns
         "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
-        "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
+        "topics": [{"id": t["id"], "title": t["title"]} for t in topics if t],
     })
 
     # get querystring info
@@ -178,8 +200,32 @@ def tabular_view(request, facility, report_type="exercise"):
     if not topic_id or not re.match("^[\w\-]+$", topic_id):
         return context
 
-    group_id = request.GET.get("group", "")
-    users = get_user_queryset(request, facility, group_id)
+
+    if group_id:
+        # Narrow by group
+        if group_id == "Ungrouped":
+            users = FacilityUser.objects.filter(
+                facility=facility, group__isnull=True, is_teacher=False).order_by(*student_ordering)
+        else:
+            users = FacilityUser.objects.filter(
+                group=group_id, is_teacher=False).order_by(*student_ordering)
+
+    elif facility:
+        # Narrow by facility
+        search_groups = [groups_dict["groups"] for groups_dict in groups if groups_dict["facility"] == facility.id]
+        assert len(search_groups) <= 1, "Should only have one or zero matches."
+
+        # Return groups and ungrouped
+        search_groups = search_groups[0]  # make sure to include ungrouped students
+        users = FacilityUser.objects.filter(
+            Q(group__in=search_groups) | Q(group=None, facility=facility), is_teacher=False).order_by(*student_ordering)
+
+    else:
+        # Show all (including ungrouped)
+        for groups_dict in groups:
+            search_groups += groups_dict["groups"]
+        users = FacilityUser.objects.filter(
+            Q(group__in=search_groups) | Q(group=None), is_teacher=False).order_by(*student_ordering)
 
     # We have enough data to render over a group of students
     # Get type-specific information
@@ -258,9 +304,8 @@ def tabular_view(request, facility, report_type="exercise"):
 @render_to("coachreports/test_view.html")
 def test_view(request, facility):
     """Test view gets data server-side and displays exam results"""
-
+    facility, group_id, context = coach_nav_context(request, facility, "test")
     # Get students
-    group_id = request.GET.get("group", "")
     users = get_user_queryset(request, facility, group_id)
 
     # Get the TestLog objects generated by this group of students
@@ -305,14 +350,14 @@ def test_view(request, facility):
                         "title": status.title(),
                     })
                 else:
-                    # Case: has started, but has not finished => we display % score & # remaining in title 
+                    # Case: has started, but has not finished => we display % score & # remaining in title
                     n_remaining = test_object.total_questions - log_object.index
                     status = _("incomplete")
                     results_table[s].append({
                         "status": status,
                         "cell_display": display_score,
                         "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
-                                           "%(n_remaining)d problems remaining", 
+                                           "%(n_remaining)d problems remaining",
                                             n_remaining) % {
                                             'n_remaining': n_remaining,
                                            },
@@ -349,7 +394,7 @@ def test_view(request, facility):
             log_scores = [round(100 * float(test_log.total_correct) / float(test_log.get_test_object().total_questions), 1) for test_log in test_logs if test_log.test == test_obj.test_id]
             stats_dict[stat].append("%d%%" % return_list_stat(log_scores, stat))
 
-    context = plotting_metadata_context(request, facility=facility)
+    context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         "results_table": results_table,
         "test_columns": test_objects,
@@ -366,8 +411,8 @@ def test_view(request, facility):
 def test_detail_view(request, facility, test_id):
     """View details of student performance on specific exams"""
 
+    facility, group_id, context = coach_nav_context(request, facility, "test")
     # get users in this facility and group
-    group_id = request.GET.get("group", "")
     users = get_user_queryset(request, facility, group_id)
 
     # Get test object
@@ -426,7 +471,7 @@ def test_detail_view(request, facility, test_id):
         results_table[s].append({
             'display_score': display_score,
             'raw_score': score,
-            'title': fraction_correct, 
+            'title': fraction_correct,
         })
 
     # This retrieves stats for individual exercises
@@ -441,10 +486,10 @@ def test_detail_view(request, facility, test_id):
                 stats_dict[stat].append('')
 
     # replace the exercise ids with their full names
-    flat_topics = get_flat_topic_tree()
+    exercises = get_exercise_cache()
     ex_titles = []
     for ex in ex_ids:
-        ex_titles.append(flat_topics['Exercise'][ex]['title'])
+        ex_titles.append(exercises[ex]['title'])
 
     # provide a list of test options to view for this group/facility combo
     if group_id:
@@ -469,7 +514,7 @@ def test_detail_view(request, facility, test_id):
 def get_user_queryset(request, facility, group_id):
     """Return set of users appropriate to the facility and group"""
     student_ordering = ["last_name", "first_name", "username"]
-    (groups, facilities) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+    (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     if group_id:
         # Narrow by group

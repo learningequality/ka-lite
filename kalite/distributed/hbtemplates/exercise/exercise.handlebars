@@ -1,19 +1,22 @@
-<h2>
-    <span class="exercise-title-prefix">{{_ "Practicing" }}</span> <span class="exercise-title">{{ title }}</span>
+<h3 class="row">
+    <div class="col-xs-12">
+        <span class="practice-exercise-topic-context">{{_ "Practicing" }}</span>{{ title }}
     {{#if description }}<br/><span class="practice-exercise-description">{{ description }}</span>{{/if }}
-</h2>
+    </div>
+</h3>
 
-<div class="exercises-body">
-    <div class="exercises-card current-card">
-        <div class="current-card-container card-type-problem">
-            <div class="current-card-container-inner vertical-shadow">
-                <div class="current-card-contents">
-                    <div id="problem-and-answer">
-                        <div id="problemarea">
-                            <div id="scratchpad"><div></div></div>
-                            <div id="workarea"></div>
-                            <div id="hintsarea"></div>
-                        </div>
+<div class="row">
+    <div class="exercises-body col-sm-12">
+        <div class="exercises-card current-card">
+            <div class="current-card-container card-type-problem">
+                <div class="current-card-container-inner vertical-shadow">
+                    <div class="current-card-contents">
+                        <div id="problem-and-answer">
+                            <div id='problemarea'>
+                                <div id='scratchpad'><div></div></div>
+                                <div id='workarea'></div>
+                                <div id='hintsarea'></div>
+                            </div>
                         <div id="answer_area_wrap"><div id="answer_area">
                             <form class="answer-form">
                                 <div class="exercise-progress-wrapper"></div>

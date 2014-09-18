@@ -3,6 +3,8 @@
 {% load staticfiles %}
 
 {% block title %}{% trans "Edit Facility" %}{% endblock title %}
+{% block update_active %}active{% endblock update_active %}
+{% block users_active %}active{% endblock %}
 
 {% block headcss %}
     <style>
@@ -20,31 +22,41 @@
             margin-bottom: 10px;
             border: 1px solid #999;
         }
+        #search-panel input {
+            font-size: 12px;
+            width: 100%;
+        }
         #target {
             width: 545px;
         }
-
+        span.helptext {
+            margin-top: 5px;
+        }
         #id_name {
             width: 300px;
         }
-
         #id_address {
             width: 500px;
         }
-
         #id_latitude, #id_longitude {
             width: 150px;
         }
-
         #id_direc_map {
             display: none;
             padding-bottom: 10px;
             font-size: 14px;
         }
-
         #id_direc_no_map {
             padding-bottom: 10px;
             font-size: 14px;
+        }
+        @media only screen and (max-width: 596px) {
+            #search-panel { width: 100%; }
+        }
+        @media only screen and (max-width: 532px) {
+            #search-panel { border: none; padding: 0; }
+            #search-panel input { font-size: 8.5px; }
+            #id_address { width: 100%; }
         }
     </style>
 {% endblock headcss %}
@@ -158,7 +170,8 @@
 {% endblock headjs %}
 
 {% block content %}
-    <h2>{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h2>
+ 
+    <h3 class="no-margin-top">{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
     <div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>
     <div id="id_direc_map">
         {% trans "Please use this search box to locate your facility (and/or click on the map to select a spot), and then enter the additional information in the form below." %}<br/>
@@ -171,8 +184,14 @@
     <div id="map_canvas"></div>
     <form id="facility_form" method="post" class="basic-form">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% for field in form %}
+          <p>
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+            <span class="helptext">{{ field.help_text }}</span>
+          </p>
+        {% endfor %}
         {% trans "Save facility" as value %}
-        <input type="submit" value="{{ value }}" class="submit"/>
+        <input type="submit" value="{{ value }}" class="submit btn btn-default btn-sm"/>
     </form>
 {% endblock content %}

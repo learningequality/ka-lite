@@ -13,6 +13,7 @@ from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt
 
+@unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Don't run on Travis")
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
 class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """"""

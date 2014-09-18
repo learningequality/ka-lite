@@ -52,7 +52,7 @@ class UserRegistrationTestCase(FacilityTestCase):
         response = self.client.post(reverse('facility_user_signup'), self.data, follow=True)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
         self.assertFormError(response, 'form', 'username',
-                             'A user with this username already exists. Please choose a new username and try again.')
+                            'A user with this username already exists. Please choose a new username and try again.')
 
     def test_password_length_valid(self):
         response = self.client.post(reverse('facility_user_signup'), self.data)
@@ -194,7 +194,8 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.data['first_name'] += "-different"
         self.data['group'] = None
         user_form = FacilityUserForm(facility=new_fac, data=self.data)
-        self.assertTrue(user_form.is_valid(), "Form must be valid; instead: errors (%s)" % user_form.errors)
+        self.assertTrue(user_form.is_valid(),
+            "Form must be valid; instead: errors (%s)" % user_form.errors)
 
     def test_form_duplicate_name_count(self):
         """Should have the proper duplicate user name count."""

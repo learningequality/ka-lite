@@ -13,7 +13,6 @@ window.SoftwareKeyboardView = Backbone.View.extend({
            .prop("readonly", true)
            .css("-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)");
        this.field = this.inputs.first();
-       window.field = this.field;
        this.touch = Modernizr.touch;
        this.enabled = true;
        this.render();

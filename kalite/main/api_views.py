@@ -5,18 +5,11 @@ Here, these are focused on:
 * GET/save student progress (video, exercise)
 * topic tree views (search, knowledge map)
 """
-import cgi
-import copy
 import json
-import os
-import re
-import os
-import datetime
 
 from annoying.functions import get_object_or_None
 from django.conf import settings
-from django.contrib import messages
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
@@ -27,7 +20,9 @@ from .models import VideoLog, ExerciseLog, AttemptLog
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
+
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data, get_assessment_item_data
+
 from kalite.dynamic_assets.decorators import dynamic_settings
 
 from kalite.student_testing.utils import get_current_unit_settings_value
@@ -133,7 +128,7 @@ def exercise_log(request, exercise_id):
         #   NOTE: it's important to check this AFTER calling save() above.
         # TODO (rtibbles): MOVE THIS TO THE CLIENT SIDE!
         if not previously_complete and exerciselog.complete:
-            exercise = get_node_cache("Exercise").get(data["exercise_id"], [None])[0]
+            exercise = get_node_cache("Exercise").get(data["exercise_id"], None)
             junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
             if not next_exercise:
                 return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
@@ -249,7 +244,7 @@ UNIT_EXERCISES = {}
 @dynamic_settings
 @api_handle_error_with_json
 @backend_cache_page
-def exercise(request, ds, exercise_id):
+def exercise(request, exercise_id):
     exercise = get_exercise_data(request, exercise_id)
     if "facility_user" in request.session:
         facility_id = request.session["facility_user"].facility.id
@@ -280,14 +275,20 @@ def exercise(request, ds, exercise_id):
                     len(current_unit_exercises)*(ds["distributed"].streak_correct_needed +
                         ds["distributed"].fixed_block_exercises +
                         ds["distributed"].quiz_repeats))
-
-    return JsonResponse(exercise)
+    if exercise:
+        return JsonResponse(exercise)
+    else:
+        return JsonResponseMessageError("Exercise with id %(exercise_id)s not found" % {"exercise_id": exercise_id}, status=404)
 
 
 @api_handle_error_with_json
 @backend_cache_page
 def video(request, video_id):
-    return JsonResponse(get_video_data(request, video_id))
+    video = get_video_data(request, video_id)
+    if video:
+        return JsonResponse(video)
+    else:
+        return JsonResponseMessageError("Video with id %(video_id)s not found" % {"video_id": video_id}, status=404)
 
 
 @api_handle_error_with_json
@@ -307,15 +308,15 @@ def knowledge_map_json(request, topic_id):
     topic = get_node_cache("Topic").get(topic_id)
     if not topic:
         raise Http404("Topic '%s' not found" % topic_id)
-    elif not "knowledge_map" in topic[0]:
+    elif not "knowledge_map" in topic:
         raise Http404("Topic '%s' has no knowledge map metadata." % topic_id)
 
     # For each node (can be of any type now), pull out only
     #   the relevant data.
-    kmap = topic[0]["knowledge_map"]
+    kmap = topic["knowledge_map"]
     nodes_out = {}
     for id, kmap_data in kmap["nodes"].iteritems():
-        cur_node = get_node_cache(kmap_data["kind"])[id][0]
+        cur_node = get_node_cache(kmap_data["kind"])[id]
         nodes_out[id] = {
             "id": cur_node["id"],
             "title": _(cur_node["title"]),

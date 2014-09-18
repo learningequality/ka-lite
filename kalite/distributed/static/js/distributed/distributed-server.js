@@ -8,6 +8,8 @@
 function toggle_state(state, status){
     $("." + (status ? "not-" : "") + state + "-only").hide();
     $("." + (!status ? "not-" : "") + state + "-only").show();
+    // Use display block setting instead of inline to prevent misalignment of navbar items.
+    $(".nav ." + (!status ? "not-" : "") + state + "-only").css("display", "block");
 }
 
 function show_api_messages(messages) {
@@ -18,7 +20,7 @@ function show_api_messages(messages) {
     }
     switch (typeof messages) {
         case "object":
-            for (msg_type in messages) {
+            for (var msg_type in messages) {
                 show_message(msg_type, messages[msg_type]);
             }
             break;
@@ -98,6 +100,7 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("teacher", self.get("is_admin") && !self.get("is_django_user"));
             toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
+            $('.navbar-right').show();
         });
 
         this.update_total_points();
@@ -168,6 +171,9 @@ $(function(){
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
     var totalPointView = new TotalPointView({model: statusModel, el: "#sitepoints"});
 
+    // For mobile (Bootstrap xs) view
+    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#sitepoints-xs"});
+
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
 
@@ -181,7 +187,6 @@ $(function(){
 
     // Hide stuff with "-only" classes by default
     //$("[class$=-only]").hide();
-
 });
 
 
@@ -360,6 +365,25 @@ $(function() {
                 toggle_state(server_or_client + "-online", is_online);
 
             });
+        }
+    });
+
+});
+
+
+// Hides/shows nav bar search input field/button when user clicks on search glyphicon
+$(function() {
+
+    var glyphicon_search = $('#glyphicon-search-js'); // Search glyphicon
+    var search = $('.search-js'); // Search input field/button
+
+    search.hide(); // Search input field/button are hidden upon page load
+
+    glyphicon_search.click(function() { // When user clicks on search glyphicon,
+        if (search.is(':hidden')) { // if search input field/button are hidden,
+            search.show(); // search input field/button are displayed;
+        } else { // if user clicks on search glyphicon and search input field/button are displayed,
+            search.hide(); // search input field/button are hidden.
         }
     });
 

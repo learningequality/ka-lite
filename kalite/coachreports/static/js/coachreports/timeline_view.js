@@ -30,10 +30,10 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
                 timeScale.push(all_xdata[ri]);
             }
         } else {
-            var multiplier = 100/nobjects;
+            multiplier = 100/nobjects;
             for (var ri in all_xdata) {
                 var xdata = all_xdata[ri];
-                if (xdata == null) {
+                if (xdata === null) {
                     continue;
                 }
                 good_xdata.push(new Date(xdata));
@@ -43,22 +43,24 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
         }
 
         // Now create a data table
-        var data_array = {};
+        if (good_xdata.length > 1) {
+            var data_array = {};
 
-        data_array["name"] = json["users"][uid];
+            data_array["name"] = json["users"][uid];
 
-        var values = [];
-        
-        for (ri=0; ri<good_xdata.length; ++ri) {
+            var values = [];
+            
+            for (var ri=0; ri<good_xdata.length; ++ri) {
 
-            values.push({
-                date: good_xdata[ri], data_point: multiplier*good_ydata[ri]
-            });
+                values.push({
+                    date: good_xdata[ri], data_point: multiplier*good_ydata[ri]
+                });
+            }
+            
+            data_array["values"] = values;
+            
+            dataTable.push(data_array);
         }
-        
-        data_array["values"] = values;
-        
-        dataTable.push(data_array);
     }
     return [dataTable, timeScale];
   }
@@ -72,7 +74,11 @@ function drawJsonChart_timeline(chart_div, json, xaxis, yaxis) {
     var data = json2dataTable_timeline(json, xaxis, yaxis);
     var dataTable = data[0];
     var timeScale = data[1];
-    return drawChart_timeline(chart_div, dataTable, timeScale, options);
+    if (timeScale.length > 1){
+        drawChart_timeline(chart_div, dataTable, timeScale, options);
+    } else {
+        show_message("info", gettext("Not enough data to show timeline."));
+    }
 }
 
 function drawJsonChart(chart_div, json, xaxis, yaxis) {

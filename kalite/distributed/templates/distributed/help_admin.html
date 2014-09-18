@@ -10,70 +10,72 @@
 {% endblock headcss %}
 
 {% block content %}
+    <div class="container">
     {% trans "This page can help you administer your installation of KA Lite." %}
 
-    <table>
-        <!--tr>
-            <td class="title" colspan="2">
-                <h2>{% trans "(Offline) Management and Reporting Tools" %}</h2>
-            </td>
-        </tr>
-        <tr>
-            <td class="link"><a href="{% url 'device_redirect' %}">{% trans "Device information" %}</a></td>
-            <td class="desc">{%trans "Information about your KA Lite install, as well as device synchronization." %}</td>
-        </tr>
-        <tr>
-            <td class="link"><a href="{% url 'zone_redirect' %}">{% trans "Network management" %}</a></td>
-            <td class="desc">{%trans "Access to summary data over all facilities and devices." %}</td>
-        </tr-->
+        <table>
+            <!--tr>
+                <td class="title" colspan="2">
+                    <h2>{% trans "(Offline) Management and Reporting Tools" %}</h2>
+                </td>
+            </tr>
+            <tr>
+                <td class="link"><a href="{% url 'device_redirect' %}">{% trans "Device information" %}</a></td>
+                <td class="desc">{%trans "Information about your KA Lite install, as well as device synchronization." %}</td>
+            </tr>
+            <tr>
+                <td class="link"><a href="{% url 'zone_redirect' %}">{% trans "Network management" %}</a></td>
+                <td class="desc">{%trans "Access to summary data over all facilities and devices." %}</td>
+            </tr-->
 
-        <tr class="client-online-only">
-            <td class="title" colspan="2">
-                <h2>{% trans "(Online) Help Documents" %}</h2>
-            </td>
-        </tr>
-        <tr class="client-online-only">
-            <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
-            <td class="desc"> {% trans "Contains the latest information about setting up and using KA Lite." %}</td>
-        </tr>
-        <tr class="client-online-only">
-            <td class="link"><a href="https://learningequality.org/ka-lite/faq/" target="_blank">{% trans "FAQ" %}</a></td>
-            <td class="desc">{% trans "Contains the latest FAQ for troubleshooting." %}</td>
-        </tr>
+            <tr class="client-online-only">
+                <td class="title" colspan="2">
+                    <h4 class="no-margin-top">{% trans "(Online) Help Documents" %}</h4>
+                </td>
+            </tr>
+            <tr class="client-online-only">
+                <td class="link"><a href="{{wiki_url}}" target="_blank">{% trans "KA Lite Wiki" %}</a></td>
+                <td class="desc"> {% trans "Contains the latest information about setting up and using KA Lite." %}</td>
+            </tr>
+            <tr class="client-online-only">
+                <td class="link"><a href="https://learningequality.org/ka-lite/faq/" target="_blank">{% trans "FAQ" %}</a></td>
+                <td class="desc">{% trans "Contains the latest FAQ for troubleshooting." %}</td>
+            </tr>
 
-        <!--tr>
-            <td class="title" colspan="2">
-                <h2>{% trans "Advanced User Tools" %}</h2>
-            </td>
-        </tr>
-        <tr>
-            <td class="link"><a href="{% url 'admin:index' %}">{% trans "Django admin" %}</a></td>
-            <td class="desc">{% trans "Database of information stored in your KA Lite installation." %}</td>
-        </tr>
-        <tr>
-            <td class="link">&nbsp;</td>
-            <td class="desc">
-                <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
-            </td>
-        </tr-->
+            <!--tr>
+                <td class="title" colspan="2">
+                    <h2>{% trans "Advanced User Tools" %}</h2>
+                </td>
+            </tr>
+            <tr>
+                <td class="link"><a href="{% url 'admin:index' %}">{% trans "Django admin" %}</a></td>
+                <td class="desc">{% trans "Database of information stored in your KA Lite installation." %}</td>
+            </tr>
+            <tr>
+                <td class="link">&nbsp;</td>
+                <td class="desc">
+                    <span class="warn">({% trans "Warning: changing database values can break your KA Lite installation!" %})</span>
+                </td>
+            </tr-->
 
-        {% if ips %}
-        <tr>
-            <td class="title" colspan="2">
-                <h2>{% trans "Connection Information" %}</h2>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                {% trans "To connect to this installation of KA Lite from another computer over the network, try these addresses:" %}
-            </td>
-        </tr>
-        {% for ip in ips %}
-        <tr>
-            <td class="desc" colspan="2"><a target="_blank" href="http://{{ ip }}:{{ port }}/">http://{{ ip }}:{{ port }}/</a></td>
-        </tr>
-        {% endfor %}
+            {% if ips %}
+            <tr>
+                <td class="title" colspan="2">
+                    <h4 class="no-margin-top">{% trans "Connection Information" %}</h4>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    {% trans "To connect to this installation of KA Lite from another computer over the network, try these addresses:" %}
+                </td>
+            </tr>
+            {% for ip in ips %}
+            <tr>
+                <td class="desc" colspan="2"><a target="_blank" href="http://{{ ip }}:{{ port }}/">http://{{ ip }}:{{ port }}/</a></td>
+            </tr>
+            {% endfor %}
 
-        {% endif %}
-    </table>
+            {% endif %}
+        </table>
+    </div>
 {% endblock content %}
