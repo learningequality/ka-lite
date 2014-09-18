@@ -90,7 +90,18 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
         "ungrouped_available": ungrouped_available,
     }
 
-# view end-points ####
+def coach_nav_context(facility_id, group_id, report_type):
+    """
+    Updates the context of all coach reports with the facility, group, and report to have selected
+    by default on page load
+    """
+    return {
+        "nav_state": {
+            "facility_id": facility_id,
+            "group_id": group_id,
+            "report_type": report_type,
+        }
+    }
 
 
 @require_authorized_admin
@@ -163,6 +174,17 @@ def landing_page(request, facility):
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
+
+    facility_id = request.GET.get("facility_id", "")
+    if facility_id:
+        facility = Facility.objects.get(id=facility_id)
+    else:
+        facility_id = facility.id
+    group_id = request.GET.get("group_id", "")
+
+    # important for setting the defaults for the coach nav bar
+    context = coach_nav_context(facility_id, group_id, "tabular")
+
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
 
@@ -171,7 +193,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     
-    context = plotting_metadata_context(request, facility=facility)
+    context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         # For translators: the following two translations are nouns
         "report_types": (_("exercise"), _("video")),
@@ -185,7 +207,6 @@ def tabular_view(request, facility, report_type="exercise"):
     if not topic_id or not re.match("^[\w\-]+$", topic_id):
         return context
 
-    group_id = request.GET.get("group", "")
 
     if group_id:
         # Narrow by group

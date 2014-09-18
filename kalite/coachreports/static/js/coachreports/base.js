@@ -2,11 +2,6 @@ var StateModel = Backbone.Model.extend({
     defaults: {
         group_id: GROUP_ID,
         facility_id: FACILITY_ID
-    },
-    initialize: function() {
-        console.log("A new state model was born. Initially: ");
-        console.log("Group ID " + this.group_id);
-        console.log("Facility ID " + this.facility_id);
     }
 });
 
@@ -71,7 +66,7 @@ var NavigationContainerView = Backbone.View.extend({
                 url = TEST_REPORT_URL;
                 break;
         }
-        url += $.param({
+        url += "?" + $.param({
             facility_id: facility,
             group_id: group
         });
@@ -79,9 +74,7 @@ var NavigationContainerView = Backbone.View.extend({
         console.log("submitted: ");
         console.log(url)
 
-        form.attr("action", url)
-            .append("<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />") 
-            // .submit();
+        window.location = url;
     }
 });
 
@@ -97,7 +90,8 @@ var FacilitySelectView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template({
-            facilities: this.facility_list.toJSON()
+            facilities: this.facility_list.toJSON(),
+            selected: this.model.get("facility_id")
         }));
         return this;
     },
@@ -117,7 +111,7 @@ var GroupSelectView = Backbone.View.extend({
 
     initialize: function() {
         this.group_list = new GroupCollection();
-        this.group_list.fetch()
+        this.fetch_by_facility()
         this.listenTo(this.group_list, 'sync', this.render)
         this.listenTo(this.model, "change:facility_id", this.fetch_by_facility)
         this.render();
@@ -126,6 +120,7 @@ var GroupSelectView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             groups: this.group_list.toJSON(),
+            selected: this.model.get("group_id")
         }));
         return this;
     },

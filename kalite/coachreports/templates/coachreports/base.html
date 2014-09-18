@@ -19,8 +19,11 @@
         var TIMELINE_REPORT_URL = "{% url 'timeline_view' %}";
         var TEST_REPORT_URL = "{% url 'test_view' %}";
 
-        var FACILITY_ID = "{{ form.facility }}";
-        var GROUP_ID = "{{ form.group }}";
+        var FACILITY_ID = "{{ nav_state.facility_id }}";
+        var GROUP_ID = "{{ nav_state.group_id }}";
+
+        console.log("facid: " + FACILITY_ID);
+        console.log("grpid: " + GROUP_ID);
     </script>
     <script type="text/javascript" src="{% static 'js/coachreports/base.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>

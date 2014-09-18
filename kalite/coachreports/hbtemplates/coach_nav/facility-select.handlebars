@@ -3,9 +3,9 @@
     {{#if facilities}}
         <option value="">{{_ "All" }}</option>
         {{#each facilities}}
-            <option value="{{ id }}">{{ name }}</option>
+            <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
         {{/each}}
     {{else}}
-        <option value="" selected>[{% trans "this device" %}]</option>
+        <option value="">{{_ "this device" }}</option>
     {{/if}}
 </select>

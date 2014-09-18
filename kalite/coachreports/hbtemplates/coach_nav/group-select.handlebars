@@ -3,9 +3,9 @@
     {{#if groups}}
         <option value="">{{_ "All" }}</option>
         {{#each groups}}
-            <option value="{{ id }}">{{ name }}</option>
+            <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
         {{/each}}
     {{else}}
-        <option value="" selected>{{_ "No groups" }}</option>
+        <option value="">{{_ "No groups" }}</option>
     {{/if}}
 </select>
