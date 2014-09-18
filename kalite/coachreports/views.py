@@ -1,28 +1,18 @@
-import json
-import requests
-import datetime
 import re
-import os
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
 from ast import literal_eval
 from collections_local_copy import OrderedDict
-from functools import partial
 from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
-from django.template import RequestContext
-from django.template.loader import render_to_string
+
+from django.http import Http404
 from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
 
 from .api_views import get_data_form, stats_dict
-from fle_utils.general import max_none
-from fle_utils.internet import StatusException
-from kalite.coachreports.models import PlaylistProgress
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
@@ -30,7 +20,7 @@ from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_exercise_cache
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
@@ -176,7 +166,7 @@ def tabular_view(request, facility, report_type="exercise"):
         # For translators: the following two translations are nouns
         "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
-        "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
+        "topics": [{"id": t["id"], "title": t["title"]} for t in topics if t],
     })
 
     # get querystring info
@@ -473,10 +463,10 @@ def test_detail_view(request, facility, test_id):
                 stats_dict[stat].append('')
 
     # replace the exercise ids with their full names
-    flat_topics = get_flat_topic_tree()
+    exercises = get_exercise_cache()
     ex_titles = []
     for ex in ex_ids:
-        ex_titles.append(flat_topics['Exercise'][ex]['title'])
+        ex_titles.append(exercises[ex]['title'])
 
     # provide a list of test options to view for this group/facility combo
     if group_id:

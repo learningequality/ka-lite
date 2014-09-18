@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-geometry word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Area 1</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="UNIT,UNIT_TEXT">randFromArray(metricUnits.concat([genericUnit]))</var>
+    </div>
+    <div class="problems">
+        <div id="odd-shape">
+            <div class="vars">
+                <var id="WIDTH">randRange(5, 10)</var>
+                <var id="HEIGHT">randRange(5, 10)</var>
+                <var id="SHAPE" data-ensure="
+                    SHAPE.numSides &gt; 4 &amp;&amp;
+                    SHAPE.area &lt; 15">createOddShape({
+                        width: WIDTH,
+                        height: HEIGHT
+                    })
+                </var>
+            </div>
+
+            <p class="question">
+                What is the area of the shape? Each square in the grid is a
+                <code>1 \times 1</code> <var>UNIT_TEXT</var> square.
+            </p>
+
+            <div class="problem">
+                <div class="graphie" id="area">
+                    init({ range: [[-1, WIDTH + 1], [-1, HEIGHT + 1]] });
+                    var shape = [];
+
+                    _(WIDTH + 1).times(function(i) {
+                        line([i, 0], [i, HEIGHT], { "stroke-width": 1,
+                            stroke: "#bbb" });
+                    });
+                    _(HEIGHT + 1).times(function(i) {
+                        line([0, i], [WIDTH, i], { "stroke-width": 1,
+                            stroke: "#bbb" });
+                    });
+
+                    _.each(SHAPE.sides, function(side) {
+                        path([side.start, side.end], {stroke: BLUE});
+                    });
+                </div>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer"><var>SHAPE.area</var></span>
+                square <var>plural_form(UNIT_TEXT)</var>
+            </div>
+
+            <div class="hints">
+                <p>
+                    The area is the number of <code>1 \times 1</code> squares
+                    the shape covers.
+                </p>
+                <div>
+                    <div class="graphie" data-update="area">
+                        SHAPE.labelSquares();
+                    </div>
+                    <p>Count the number of squares covered.</p>
+                </div>
+                <p>
+                    The area is <code><var>SHAPE.area</var></code> square
+                    <var>plural_form(UNIT_TEXT, SHAPE.area)</var>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

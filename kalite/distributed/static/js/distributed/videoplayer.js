@@ -323,7 +323,7 @@ window.VideoPlayerView = Backbone.View.extend({
     },
 
     _onResize: _.throttle(function() {
-        var available_width = $("article").width();
+        var available_width = $(".container").width();
         var available_height = $(window).height() * 0.9;
         this.setContainerSize(available_width, available_height);
     }, 500),

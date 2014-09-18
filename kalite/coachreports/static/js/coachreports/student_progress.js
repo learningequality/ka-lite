@@ -25,30 +25,6 @@ var PlaylistProgressDetailCollection = Backbone.Collection.extend({
 });
 
 // Views
-var StudentProgressContainerView = Backbone.View.extend({
-    // The containing view
-    template: HB.template('student_progress/student-progress-container'),
-
-    initialize: function() {
-        this.listenTo(this.collection, 'add', this.add_one);
-
-        this.render();
-
-        this.collection.fetch();
-    },
-
-    render: function() {
-        // Only render container once
-        this.$el.html(this.template());
-    },
-
-    add_one: function(playlist) {
-        var view  = new PlaylistProgressView({
-            model: playlist
-        });
-        this.$("#playlists-container").append(view.render().el);
-    }
-});
 
 var PlaylistProgressView = Backbone.View.extend({
 
@@ -117,7 +93,32 @@ var PlaylistProgressDetailView = Backbone.View.extend({
 
         return this;
     }
-})
+});
+
+var StudentProgressContainerView = Backbone.View.extend({
+    // The containing view
+    template: HB.template('student_progress/student-progress-container'),
+
+    initialize: function() {
+        this.listenTo(this.collection, 'add', this.add_one);
+
+        this.render();
+
+        this.collection.fetch();
+    },
+
+    render: function() {
+        // Only render container once
+        this.$el.html(this.template());
+    },
+
+    add_one: function(playlist) {
+        var view  = new PlaylistProgressView({
+            model: playlist
+        });
+        this.$("#playlists-container").append(view.render().el);
+    }
+});
 
 // Start the app on page load
 $(function() {

@@ -268,7 +268,7 @@ class Khan():
         else:
             print "Consumer key and secret not set in secrets.py - authenticated access to API unavailable."
 
-    def class_by_kind(self, node, loaded=True):
+    def class_by_kind(self, node, session=None, loaded=True):
         """
         Function to turn a dictionary into a Python object of the appropriate kind,
         based on the "kind" attribute found in the dictionary.
@@ -280,7 +280,7 @@ class Khan():
             raise APIError(
                 "This kind of object should have a 'kind' attribute.", node)
 
-    def convert_list_to_classes(self, nodelist, class_converter=None, loaded=True):
+    def convert_list_to_classes(self, nodelist, session=None, class_converter=None, loaded=True):
         """
         Convert each element of the list (in-place) into an instance of a subclass of APIModel.
         You can pass a particular class to `class_converter` if you want to, or it will auto-select by kind.
@@ -288,11 +288,11 @@ class Khan():
         if not class_converter:
             class_converter = self.class_by_kind
         for i in range(len(nodelist)):
-            nodelist[i] = class_converter(nodelist[i], loaded=loaded)
+            nodelist[i] = class_converter(nodelist[i], session=self, loaded=loaded)
 
         return nodelist  # just for good measure; it's already been changed
 
-    def class_by_name(self, node, name, loaded=True):
+    def class_by_name(self, node, name, session=None, loaded=True):
         """
         Function to turn a dictionary into a Python object of the kind given by name.
         """
@@ -387,7 +387,9 @@ class Khan():
 
     def get_videos(self):
         """
-        Return list of all videos, by "readable_id" or "youtube_id" (deprecated)
+        Return list of all videos.
+        As no API endpoint is provided for this by Khan Academy, this function fetches the topic tree,
+        and recurses all the nodes in order to find all the videos in the topic tree.
         """
         topic_tree = self.get_topic_tree()
 
@@ -421,7 +423,7 @@ class Khan():
 
     def get_playlist_videos(self, topic_slug):
         """
-        This will return a list of videos in the highest level of a topic.
+        This will return a list of videos in the highest level of a playlist.
         """
         return self.convert_list_to_classes(api_call("v1", Playlist.base_url + "/" + topic_slug + "/videos" + self.params(), self))
 
@@ -431,6 +433,11 @@ class Khan():
         """
         return AssessmentItem(api_call("v1", AssessmentItem.base_url + "/" + assessment_id + self.params(), self), session=self)
 
+    def get_tags(self):
+        """
+        Return list of all assessment item tags in the Khan API
+        """
+        return self.convert_list_to_classes(api_call("v1", Tag.base_url + self.params(), self))
 
 class Exercise(APIModel):
 
@@ -470,6 +477,20 @@ class AssessmentItem(APIModel):
     """
 
     base_url = "/assessment_items"
+
+    def __init__(self, *args, **kwargs):
+
+        super(AssessmentItem, self).__init__(*args, **kwargs)
+        self._lazy_related_field_types = {
+            "tags": partial(self._session.class_by_name, name="Tag"),
+        }
+
+class Tag(APIModel):
+    """
+    A class for tags for Perseus Assessment Items.
+    """
+
+    base_url = "/assessment_items/tags"
 
 class Badge(APIModel):
 
@@ -648,6 +669,7 @@ kind_to_class_map = {
     "Playlist": Playlist,
     "ProblemType": ProblemType,
     "AssessmentItem": AssessmentItem,
+    "AssessmentItemTag": Tag,
 }
 
 

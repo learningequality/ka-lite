@@ -132,14 +132,16 @@ function handleFailedAPI(resp, error_prefix) {
             break;
 
         case 200:  // return JSON messages
-        case 201:
+
+        case 201:  // return JSON messages
+
         case 500:  // also currently return JSON messages
 
             // handle empty responses gracefully
             resp.responseText = resp.responseText || "{}";
 
             try {
-                messages = $.parseJSON(resp.responseText);
+                messages = $.parseJSON(resp.responseText || "{}");
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};

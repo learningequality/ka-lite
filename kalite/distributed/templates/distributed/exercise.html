@@ -15,6 +15,26 @@
 
     <script>
 
+        // add some dummy features onto the Exercises object to make khan-exercises.js happy
+        window.Exercises = {
+            completeStack: {
+                getUid: function() { return 0; },
+                getCustomStackID: function() { return 0; }
+            },
+            currentCard: {
+                attributes: {},
+                get: function() {}
+            },
+            RelatedVideos: {
+                render: function() {}
+            },
+            getCurrentFramework: function() { return "khan-exercises"; },
+            incompleteStack: [0],
+            PerseusBridge: {
+                cleanupProblem: function() {}
+            }
+        };
+
         $(function() {
             window.exercise_practice_view = new ExercisePracticeView({
                 el: $(".exercise-wrapper"),
@@ -50,7 +70,8 @@
                     <div class="vidnext pull-right"><a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
                     {% endif %}
                 </div>
-            <div class="clear"></div>
+                <div class="clear"></div>
+            </div>
         </div>
     </div>
 

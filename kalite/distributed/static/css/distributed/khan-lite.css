@@ -388,11 +388,6 @@ a:hover {
     font-size: 15px;
 }
 
-div#map-container {
-    min-height: 1000px;
-    min-width: 800px;
-}
-
 div.exercises-card {
     width: 800px;
 }
