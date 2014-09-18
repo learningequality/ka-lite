@@ -47,8 +47,14 @@
     <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
     <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
-    <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
+        <script>
+        require.config({
+            paths: {
+                "seedrandom": "{% static 'js/seedrandom.min' %}"
+            }
+        });
+        require(["seedrandom"], function(){});
+    </script>
     <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
