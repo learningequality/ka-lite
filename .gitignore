@@ -10,7 +10,7 @@
 *~
 *.sublime-*
 *.zip
-build/
+/build/
 locale/
 node_modules/
 tmp/
@@ -34,6 +34,7 @@ writeup/
 /kalite/*.jpg
 /kalite/*.mp4.part
 /kalite/i18n/data/dubbed_video_mappings.json
+/kalite/updates/data/video_file_sizes.json
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media

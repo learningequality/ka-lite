@@ -12,10 +12,11 @@ function getSelectedItems(select) {
 function setActionButtonState(select) {
     // argument to allow conditional selection of action buttons.
     if($(select).find("tr.selectable.selected").length) {
-        $('div.action button[value="'+select+'"]').removeAttr("disabled").removeAttr("title");
+
+        $('button[value="'+select+'"]').removeAttr("disabled").removeAttr("title");
     } else {
-        $('div.action button[value="'+select+'"]').attr("disabled", "disabled");
-        $('div.action button[value="'+select+'"]').attr("title", "You must select one or more rows from the table below before taking this action.");
+        $('button[value="'+select+'"]').attr("disabled", "disabled");
+        $('button[value="'+select+'"]').attr("title", "You must select one or more rows from the table below before taking this action.");
     }
 }
 
@@ -33,7 +34,6 @@ function setSelectAllState(selectAllId) {
 }
 
 $(function() {
-
     // on load add the same title tag to all disabled buttons 
     $('button[disabled="disabled"]').attr("title", "You must select one or more rows from the table below before taking this action.");
 

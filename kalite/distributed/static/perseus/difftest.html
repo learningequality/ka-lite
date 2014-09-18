@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>Diff Test</title>
+
+<link rel="stylesheet" type="text/css" href="/ke/css/khan-site.css" />
+<link rel="stylesheet" type="text/css" href="/ke/css/khan-exercise.css" />
+<link rel="stylesheet" type="text/css" href="/lib/katex/fonts/fonts.css" />
+<link rel="stylesheet/less" type="text/css" href="/lib/katex/katex.less" />
+<link rel="stylesheet" type="text/css" href="/lib/mathquill/mathquill.css" />
+
+<link rel="stylesheet/less" type="text/css" href="/stylesheets/exercise-content-package/perseus.less" />
+<script src="/lib/less.js"></script>
+
+</head>
+<body>
+<input type="button" id="swap" value="Swap it!"></input>
+
+<div class="perseus-diff">
+    <div id="diff">
+    </div>
+</div>
+
+<script src="/lib/es5-shim.js"></script>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/underscore.js"></script>
+<script src="/lib/marked.js"></script>
+<script src="/lib/react-with-addons.js"></script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full&amp;delayStartupUntil=configured"></script>
+<script src="/lib/katex/katex.js"></script>
+<script src="/lib/mathquill/mathquill.js"></script>
+<script src="/lib/kas.js"></script>
+
+<script>
+    var KhanUtil = {
+        debugLog: function() {}
+    };
+    var Khan = {
+        Util: KhanUtil,
+        error: function() {},
+        query: {debug: ""},
+        imageBase: "/ke/images/",
+        scratchpad: {
+            disable: function() {},
+            enable: function() {}
+        }
+    };
+    React.initializeTouchEvents(true);
+</script>
+
+<script src="ke/local-only/jed.js"></script>
+<script src="ke/local-only/i18n.js"></script>
+<script src="ke/local-only/jquery.qtip.js"></script>
+<script src="ke/exercises-stub.js"></script>
+<script src="ke/local-only/require.js"></script>
+
+<script>
+(function() {
+
+requirejs.config({
+    waitSeconds: 120
+});
+
+// Load khan-exercises modules, then perseus
+require(["ke-deps.js"], function() {
+    // pre built
+    // require(["build/perseus.js"], initPerseus);
+
+    // pre built with source maps
+    // require(["build/perseus.debug.js"], initPerseus);
+
+    // built on demand
+    require(["src/perseus.js"], initPerseus);
+});
+
+function initPerseus(Perseus) {
+
+var seedContent = {
+    "question": {
+        "content": "**What kind of structure is highlighted in green in the diagram shown?**\n \n![](https://ka-perseus-graphie.s3.amazonaws.com/07dace481175322baa244b35d112968977d19da3.png)![](https://ka-perseus-graphie.s3.amazonaws.com/a10ab9f9b66982637bd1cf1e3cfe493562144e15.png)",
+        "widgets": {}
+    },
+    "answerArea": {
+        "type": "radio",
+        "options": {
+            "choices": [
+                {
+                    "content": "A line",
+                    "correct": true
+                },
+                {
+                    "content": "A line segment  ",
+                    "correct": false
+                },
+                {
+                    "content": "A point  ",
+                    "correct": false
+                },
+                {
+                    "content": "A ray  ",
+                    "correct": false
+                }
+            ],
+            "randomize": true,
+            "multipleSelect": false
+        },
+        "calculator": false
+    },
+    "hints": [
+        {
+            "content": "The highlighted part of the diagram has no starting point and no ending point; it continues forever in both directions, like this: \n\n![](https://ka-perseus-graphie.s3.amazonaws.com/2b6f0a4700f9fd840e5049de8c1f88206134fde1.png)",
+            "widgets": {}
+        },
+        {
+            "content": "A straight, one-dimensional structure continuing forever in both directions is called a *line*.",
+            "widgets": {}
+        },
+        {
+            "content": "The structure highlighted in green is a line.",
+            "widgets": {}
+        }
+    ]
+};
+
+var seedContent2 = {
+    "question": {
+        "content": "**What kind of structure is highlighted in green in the diagram shown?**\n \n![](https://ka-perseus-graphie.s3.amazonaws.com/07dace481175322baa244b35d112968977d19da3.png)![](https://ka-perseus-graphie.s3.amazonaws.com/07dace481175322baa244b35d112968977d19da3.png)",
+        "widgets": {}
+    },
+    "answerArea": {
+        "type": "radio",
+        "options": {
+            "choices": [
+                {
+                    "content": "A line",
+                    "correct": true
+                },
+                {
+                    "content": "A line segment  ",
+                    "correct": false
+                },
+                {
+                    "content": "A point  ",
+                    "correct": false
+                },
+                {
+                    "content": "A ray  ",
+                    "correct": true
+                }
+            ],
+            "randomize": true,
+            "multipleSelect": false
+        },
+        "calculator": false
+    },
+    "hints": [
+        {
+            "content": "The highlighted part . of . the diagram has no starting point and no ending point; it continues forever in both directions, like this: \n\n![](https://ka-perseus-graphie.s3.amazonaws.com/2b6f0a4700f9fd840e5049de8c1f88206134fde1.png)",
+            "widgets": {}
+        },
+        {
+            "content": "A straight, one-dimensional structure continuing forever in both directions is called a *line*.",
+            "widgets": {}
+        },
+        {
+            "content": "The structure highlighted in green is a line.",
+            "widgets": {}
+        }
+    ]
+};
+
+Perseus.init({}).then(function() {
+    var itemMountNode = document.getElementById("diff");
+
+    zk = React.renderComponent(Perseus.RevisionDiff({
+        beforeItem: seedContent,
+        afterItem: seedContent2
+    }, null), itemMountNode);
+}).then(function() {
+    console.log("all done.", +new Date/1000);
+}, function(err) {
+    console.error(err);
+});
+
+var swapped = false;
+
+$("#swap").click(function() {
+    var itemMountNode = document.getElementById("diff");
+    zk = React.renderComponent(Perseus.RevisionDiff({
+        beforeItem: seedContent,
+        afterItem: swapped ? seedContent : seedContent2
+    }, null), itemMountNode);
+    swapped = !swapped;
+});
+
+};
+
+})();
+
+</script>
+
+</body>
+</html>

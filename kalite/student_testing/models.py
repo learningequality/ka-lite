@@ -4,6 +4,7 @@ import os
 
 from django.db import models
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from securesync.models import DeferredCountSyncedModel
@@ -56,7 +57,7 @@ class Test():
         self.repeats = kwargs.get('repeats')
         self.practice = kwargs.get('is_practice')
         self.test_id = test_id
-        self.test_url = reverse('test', args=[test_id])
+        self.test_url = "" if settings.CENTRAL_SERVER else reverse('test', args=[test_id])
         self.total_questions = len(kwargs.get('ids', [])) * int(self.repeats or 0)
         self.set_exam_mode()
 

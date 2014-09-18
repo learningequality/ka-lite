@@ -1,38 +1,39 @@
 from datetime import datetime
 
 from kalite.main.models import AttemptLog
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentProgressMixin
+
+
 from kalite.student_testing.models import TestLog
 from kalite.testing import KALiteTestCase
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
-from kalite.testing.mixins.student_testing_mixins import StudentTestingMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
-
 
 
 class TestReportTests(FacilityMixins,
-                      StudentTestingMixins,
+                      StudentProgressMixin,
+                      BrowserActionMixins,
                       CreateAdminMixin,
-                      CreateDeviceMixin,
-                      KALiteDistributedBrowserTestCase):
+                      KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(TestReportTests, self).setUp()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
 
     def test_student_scores_display(self):
         """
         Test that we show results for a test if they exist,
         and don't when they dont
         """
-        self.setup_fake_device()
-        self.facility = self.create_facility()
         self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
         self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
         self.test_log = self.create_test_log(user=self.student1)
-        self.admin = self.create_admin()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('test_view'))
         student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[2]/td[1]').text
-        self.assertEqual(student_score[0:3], '50%')
+        self.assertEqual(student_score[0:3], '10%')
         empty_student = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr/td[1]').text
         self.assertEqual(empty_student, '')
 
@@ -40,14 +41,11 @@ class TestReportTests(FacilityMixins,
         """
         Test that we show correct stats for a test.
         """
-        self.setup_fake_device()
-        self.facility = self.create_facility()
         self.student1 = self.create_student(username="stu1", facility=self.facility)
         self.student2 = self.create_student(username="stu2", facility=self.facility)
         self.test_log1 = self.create_test_log(user=self.student1, total_number=4, total_correct=2)
         self.test_log2 = self.create_test_log(user=self.student2, total_number=4, total_correct=1)
-        self.admin = self.create_admin()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('test_view'))
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[3]/td[1]').text
         self.assertEqual(stat_max, '10%')
@@ -62,12 +60,9 @@ class TestReportTests(FacilityMixins,
         """
         Test that we show correct stats for a test.
         """
-        self.setup_fake_device()
-        self.facility = self.create_facility()
         self.student1 = self.create_student(username="stu1", facility=self.facility)
         self.test_log1 = self.create_test_log(user=self.student1, total_number=4, total_correct=2)
-        self.admin = self.create_admin()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('test_view'))
         stat_max = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[2]').text
         self.assertEqual(stat_max, '10%')
@@ -89,13 +84,10 @@ class TestReportTests(FacilityMixins,
             'timestamp': datetime.now(),
             'correct': True,
         }
-        self.setup_fake_device()
-        self.facility = self.create_facility()
         self.student1 = self.create_student(facility=self.facility)
         self.attempt_log = AttemptLog.objects.create(user=self.student1, **attempt_log_default)
         self.test_log = self.create_test_log(user=self.student1, total_number=5, total_correct=1)
-        self.admin = self.create_admin()
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('test_detail_view', kwargs={'test_id': self.test_log.test}))
         student_score = self.browser.find_element_by_xpath('//div[@class="results-table"]/table/tbody/tr[1]/td[3]').text
         self.assertEqual(student_score[0:4], '100%')
@@ -111,13 +103,11 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
-
 class PlaylistProgressTest(FacilityMixins,
-                      StudentTestingMixins,
-                      CreateAdminMixin,
-                      CreateDeviceMixin,
-                      CreatePlaylistProgressMixin,
-                      KALiteDistributedBrowserTestCase):
+                           CreateAdminMixin,
+                           CreatePlaylistProgressMixin,
+                           BrowserActionMixins,
+                           KALiteBrowserTestCase):
 
     def setUp(self):
         super(PlaylistProgressTest, self).setUp()
