@@ -1,0 +1,11 @@
+<label for="group-select">{{_ "Group" }}</label>
+<select id="group-select">
+    {{#if groups}}
+        <option value="">{{_ "All" }}</option>
+        {{#each groups}}
+            <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
+        {{/each}}
+    {{else}}
+        <option value="">{{_ "No groups" }}</option>
+    {{/if}}
+</select>

@@ -1,0 +1,114 @@
+{% load my_filters %}
+{% load i18n %}
+{% load staticfiles %}
+
+<!-- Begin Student Groups -->
+<div class="row" id="groups">
+    {% trans "Ungrouped" as ungrouped %}
+    <div class="col-md-12">
+        {% if group_id and group_data %}
+            {# comment "First block is a group summary page for a single group's display" #}
+            {% include "control_panel/partials/_group_summary.html" %}
+
+        {% else %}
+            <h2>
+                {% trans "Student Groups" %}
+                <small>
+                    <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="{% blocktrans %}A 'group' is set of students, such as a classroom of students or all students in one grade.{% endblocktrans %} {% trans 'Add students by selecting a group.' %}"></span>
+                </small>
+            </h2>
+            {% if not groups %}
+                <p class="no-data">
+                    {% trans "You currently have no group data available." %}
+                </p>
+            {% else %}
+                {% if not request.is_teacher %}
+                    <p>
+                        <button class="delete-group btn btn-success" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
+                    </p>
+                {% endif %}
+
+                <div class="table-responsive">
+                    <table class="table selectable-table">
+                        <thead>
+                            <tr class="success">
+                                <th><input class="select-all" type="checkbox" value="#groups"></th>
+                                <th>{% trans "Group" %}</th>
+                                <th>{% trans "Edit" %}</th>
+                                <th>{% trans "Coach" %}</th>
+                                <th>{% trans "# Students" %}</th>
+                                <th>{% trans "Logins" %}</th>
+                                <th>{% trans "Login Time" %}</th>
+                                <th>{% trans "Videos Viewed" %}</th>
+                                <th>{% trans "Exercises Completed" %}</th>
+                                <th>{% trans "Mastery " %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in groups %}
+                                {% if group.name != ungrouped or group.total_users != 0 %}
+                                <tr {% if group.id %}class="selectable"{% endif %} value="{{ group.id }}" type="groups">
+                                    <td>{% if group.id %}<input type="checkbox" value="#groups">{% endif %}</td>
+                                    <td>
+                                        {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
+                                        <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
+                                            {% if group.id %}
+                                                href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
+                                            {% else %}
+                                                href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=ungrouped_id %}">
+                                            {% endif %}
+                                            {{ group.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if group.id %}
+                                        <a href="{% url 'group_edit' group_id=group.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}" title="{% trans 'Edit group' %}">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </a>
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if group.id %}
+                                        {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
+                                        <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}.{% endblocktrans %}" href="{% url 'tabular_view' %}?facility={{ facility_id }}&group={{ group.id }}">
+                                        <div class="sparklines" sparkType="bar" sparkBarColor="green">
+                                        <!--
+                                            {{ group.total_logins }},
+                                            {{ group.total_videos }},
+                                            {{ group.total_exercises }}
+                                        -->
+                                        </div></a>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ group.total_users }}</td>
+                                    <td>{{ group.total_logins }}</td>
+                                    <td>{{ group.total_hours|floatformat }}</td>
+                                    <td>{{ group.total_videos }}</td>
+                                    <td>{{ group.total_exercises }}</td>
+                                    <td>{{ group.pct_mastery|percent:1 }}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                            {# 10x td for table formatting purposes #}
+                            <tr>
+                                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <div class="row table-bottom-options">
+                <div class="col-sm-4 col-xs-12">
+                    <p class="add-new-table-item">
+                        <a href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                            <span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new group.' %}
+                        </a>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div> 
+<!-- End Student Groups -->

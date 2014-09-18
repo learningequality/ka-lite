@@ -1,0 +1,30 @@
+<form id="coachreport-select-form" class="form-inline">
+    <div class="form-group">
+        <label for="report-select">{{_ "Report Type" }}</label>
+        <select id="report-select">
+            <option value="tabular" 
+            {{#ifcond selected "===" "tabular" }}selected{{/ifcond}}>
+                {{_ "Tabular Report" }}
+            </option>
+            <option value="scatter"
+            {{#ifcond selected "===" "scatter" }}selected{{/ifcond}}>
+                {{_ "Scatter Report" }}
+            </option>
+            <option value="timeline"
+            {{#ifcond selected "===" "timeline" }}selected{{/ifcond}}>
+                {{_ "Timeline Report" }}
+            </option>
+            <option value="test"
+            {{#ifcond selected "===" "test" }}selected{{/ifcond}}>
+                {{_ "Test Report" }}
+            </option>
+        </select>
+    </div> 
+    <div id="facility-select-container" class="form-group">
+        {{!-- Insert facility select template here --}}
+    </div>
+    <div id="group-select-container" class="form-group">
+        {{!-- Insert group select template here --}}
+    </div>
+    <button id="display-coach-report" class="btn btn-primary">{{_ "Go" }}</button>
+</form>

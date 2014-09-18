@@ -1,0 +1,22 @@
+{% load kalite_staticfiles %}
+{% load i18n %}
+{% load i18n_filters %}
+
+<footer class="faded-green-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="footer-text">
+                    <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="{% trans 'Foundation for Learning Equality logo' %}"/>
+                </p>
+                <p class="footer-text">
+                    {% trans "Creators of KA Lite" %} &copy; 2014
+                </p>
+                <p class="footer-text">
+                    {% trans "Videos and Exercises" %} &copy; 2014 Khan Academy
+                    <img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}">
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

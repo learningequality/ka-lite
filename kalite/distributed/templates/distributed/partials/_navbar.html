@@ -1,0 +1,85 @@
+{% load kalite_staticfiles %}
+{% load i18n %}
+{% load i18n_filters %}
+
+<div class="navbar kalite-navbar faded-green-bg">
+    <div class="container">
+        <div class="row">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="navbar-brand">
+                    <a href="/" title="{% trans 'KA Lite Home' %}">
+                        <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
+                    </a>
+                    <div class="pull-right visible-xs sitepoint" id="sitepoints-xs"></div>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    {% block sitewide_navigation %}
+
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                   <li><a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block home_active %}{% endblock home_active %}" title="{% trans 'KA Lite Homepage' %}">{% trans "Learn" %}</a></li>
+
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li><a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only {% block teacher_active %}{% endblock teacher_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
+                    
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li class="not-teacher-only"><a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only {% block admin_active %}{% endblock admin_active %}" title="{% trans 'Track the progress of your students' %}">{% trans "Teach" %}</a></li>
+
+                    {# Admin Manage #}
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li class="not-teacher-only"><a href="{% url 'zone_redirect' %}" class="admin-only {% block manage_active %}{% endblock manage_active %}" title="{% trans 'Update this server with new videos and languages' %}">{% trans "Manage" %}</a></li> 
+
+                    {# Teacher Manage #}
+                    {% if request.session.facility_user.facility %}
+                    <li><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only {% block users_active %}{% endblock users_active %}" title="{% trans 'Manage Users' %}"><span>{% trans "Manage" %}</span></a></li>
+                    {% endif %}
+
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li class="motivational-feature">
+                        <a href="{% url 'account_management' %}" id="nav_progress" class="student-only {% block account_management_active %}{% endblock account_management_active %}">{% trans "My Progress" %}</a>
+                    </li>
+
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li><a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">{% trans "Login" %}</a></li>
+
+                    {% if not restricted %}
+                        {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                        <li><a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">{% trans "Sign Up" %}</a></li>
+                    {% endif %}
+
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li><a href="{% url 'help' %}" id="nav_help" class="{% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a></li>
+
+                    {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
+                    <li><a href="{% url 'logout' %}" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}">{% trans "Logout" %}</a></li>
+
+                    {% block lang_choices %}
+                    <li><span class="not-logged-in-only">
+                    {% if num_language_choices > 1 %}
+                    <select id="language_selector">
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
+                        <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                            {{ lang_code|get_language_name }}
+                        </option>
+                    {% endfor %}
+                    </select>
+                    {% endif %}
+                    </span></li>
+                    {% endblock lang_choices %}
+
+                    {% endblock sitewide_navigation %}
+                    </span>
+                    <div class="relative-block">
+                        <div class="hidden-xs sitepoint" id="sitepoints"></div>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div> 
