@@ -19,10 +19,7 @@ script:
 - grunt jshint
 notifications:
   email:
-  - aron@learningequality.org
-  - jamie@learningequality.org
+    - aron@learningequality.org
   hipchat:
     rooms:
-      secure: SnwCQIhrG/BVDUHtPDxfTFDytwuHcrIFQKhgy9jrM7MHIDVsGgQvd388v62upwHVCKONMrvW5qIYAjd7dZWPmO+A4nOLYrTv+JTYsmyMUVka1j9IgApqMTexfpDlM08CsZjbK0HPZuhBylcfIDSFu2NWDT8O/vIa7rwKUafKWBw=
-      template:
-        - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
+      secure: A4OlCFaETlLB20ATXrPmA+8F35AsjZZ9nO8dPUG9m5pAr1pD4CDiVrn/tmHbbk2rQaQLm3B8CifdNuQL6fLuEv2pJpfIdSESVqsqJcQPPpgogjvHRabOXgAmC5AWpQupe3DARIMDjOPhHaeRFN/GYjEnK8N+nqu/SQ2mPmAzOFQ=

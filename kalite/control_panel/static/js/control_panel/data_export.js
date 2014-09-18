@@ -79,6 +79,8 @@ var DataExportView = Backbone.View.extend({
                 return TEST_LOG_CSV_URL;
             case "attempt_log":
                 return ATTEMPT_LOG_CSV_URL;
+            case "exercise_log":
+                return EXERCISE_LOG_CSV_URL;
         }
     },
 

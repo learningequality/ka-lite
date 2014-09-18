@@ -263,7 +263,7 @@ def exercise(request, exercise_id):
                         if entry["entity_kind"] == "Exercise":
                             UNIT_EXERCISES[playlist.unit][grade].append(entry["entity_id"])
 
-            current_unit_exercises = UNIT_EXERCISES[current_unit][student_grade]
+            current_unit_exercises = UNIT_EXERCISES.get(current_unit, {}).get(student_grade, [])
 
             if ds["distributed"].turn_off_points_for_exercises:
                 exercise["basepoints"] = 0
