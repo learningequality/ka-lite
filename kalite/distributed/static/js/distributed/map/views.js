@@ -138,7 +138,7 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
 
         var self = this;
 
-        this.map.panTo(this.collection.center_of_mass())
+        this.map.panTo(this.collection.center_of_mass());
 
         this.subviews = {};
 

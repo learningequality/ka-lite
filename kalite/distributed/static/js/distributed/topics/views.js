@@ -370,10 +370,12 @@ window.TopicContainerOuter = Backbone.View.extend({
         var kind = entry.get("kind") || entry.get("entity_kind");
         var id = entry.get("id") || entry.get("entity_id");
 
+        var view;
+
         switch(kind) {
 
             case "Exercise":
-                var view = new ExercisePracticeView({
+                view = new ExercisePracticeView({
                     exercise_id: id,
                     context_type: "playlist",
                     context_id: this.model.get("id")
@@ -382,14 +384,14 @@ window.TopicContainerOuter = Backbone.View.extend({
                 break;
 
             case "Video":
-                var view = new VideoWrapperView({
+                view = new VideoWrapperView({
                     video_id: id
                 });
                 this.content_view.show_view(view);
                 break;
 
             case "Quiz":
-                var view = new ExerciseQuizView({
+                view = new ExerciseQuizView({
                     quiz_model: new QuizDataModel({entry: entry}),
                     context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
                 });
@@ -470,10 +472,7 @@ window.PlaylistSidebarView = SidebarContentView.extend({
                 });
         }
 
-
-
-
-    }, 100),
+    }, 100)
 });
 
 window.TopicContainerInner = SidebarContentView.extend({

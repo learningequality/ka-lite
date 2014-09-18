@@ -46,10 +46,6 @@ window.Exercises = {
 
 Exercises.PerseusBridge = {
 
-    cleanupProblem: function() {
-        return false;
-    },
-
     // this one needs to be here for khan-exercises
     scoreInput: function() {
         return Exercises.PerseusBridge.itemRenderer.scoreInput();
@@ -116,7 +112,7 @@ Exercises.PerseusBridge = {
                 // interceptInputFocus: function() {}, // do nothing here; prevent keyboard from popping up
                 // fancyDropdowns: true // needed?
                 // staticRender: true // don't want; iOS mode, blocks input box rendering
-            },
+            }
         }, null);
         zk = React.renderComponent(
             Exercises.PerseusBridge.itemRenderer,

@@ -143,11 +143,11 @@ window.ExerciseView = Backbone.View.extend({
 
 
     check_answer: function() {
-
+        var data;
         if (this.data_model.get_framework() == "khan-exercises") {
-            var data = Khan.scoreInput();
+            data = Khan.scoreInput();
         } else {
-            var data = Exercises.PerseusBridge.scoreInput();
+            data = Exercises.PerseusBridge.scoreInput();
         }
 
         this.trigger("check_answer", data);
@@ -271,12 +271,14 @@ window.ExercisePracticeView = Backbone.View.extend({
             numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
             denominator: ExerciseParams.STREAK_WINDOW
         };
+        
+        var msg;
 
         if (!this.log_model.get("complete")) {
             if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                var msg = "";
+                msg = "";
             } else {
-                var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
             }
         } else {
             context.remaining = ExerciseParams.FIXED_BLOCK_EXERCISES - this.log_model.attempts_since_completion();
@@ -284,11 +286,11 @@ window.ExercisePracticeView = Backbone.View.extend({
                 context.remaining++;
             }
             if (context.remaining > 1) {
-                var msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
             } else if (context.remaining == 1) {
-                var msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
             } else {
-                var msg = gettext("You have completed this exercise.");
+                msg = gettext("You have completed this exercise.");
             }
         }
 
