@@ -2,16 +2,20 @@
     <div class="form-group">
         <label for="report-select">{{_ "Report Type" }}</label>
         <select id="report-select">
-            <option value="tabular">
+            <option value="tabular" 
+            {{#ifcond selected "===" "tabular" }}selected{{/ifcond}}>
                 {{_ "Tabular Report" }}
             </option>
-            <option value="scatter">
+            <option value="scatter"
+            {{#ifcond selected "===" "scatter" }}selected{{/ifcond}}>
                 {{_ "Scatter Report" }}
             </option>
-            <option value="timeline">
+            <option value="timeline"
+            {{#ifcond selected "===" "timeline" }}selected{{/ifcond}}>
                 {{_ "Timeline Report" }}
             </option>
-            <option value="test">
+            <option value="test"
+            {{#ifcond selected "===" "test" }}selected{{/ifcond}}>
                 {{_ "Test Report" }}
             </option>
         </select>

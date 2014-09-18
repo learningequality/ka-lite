@@ -25,27 +25,25 @@
     </script>
 {% endblock headjs %}
 
+{% block report_content %}
+    {{ block.super }}
+    {% block axis_dropdown %}
+        {% trans "X-Axis" %}:
+        <select id="xaxis" name="xaxis">
+            {% block data_options %}
+                <option value="">----</option>
+                    {% for stat in stats %}
+                        {% if stat.type == "number" and not stat.noscatter %}
+                            <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
+                        {% endif %}
+                    {% endfor %}
+            {% endblock data_options %}
+        </select>
+        {% trans "Y-Axis" %}:
+        <select id="yaxis" name="yaxis">
+            {% repeatblock data_options %}
+        </select>
+        
+    {% endblock axis_dropdown %}
+{% endblock report_content %}
 
-{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-
-
-
-{% block axis_dropdown %}
-
-    {% trans "X-Axis" %}:
-    <select id="xaxis" name="xaxis">
-        {% block data_options %}
-            <option value="">----</option>
-                {% for stat in stats %}
-                    {% if stat.type == "number" and not stat.noscatter %}
-                        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
-                    {% endif %}
-                {% endfor %}
-        {% endblock data_options %}
-    </select>
-    {% trans "Y-Axis" %}:
-    <select id="yaxis" name="yaxis">
-        {% repeatblock data_options %}
-    </select>
-    
-{% endblock axis_dropdown %}

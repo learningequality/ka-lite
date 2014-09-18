@@ -22,9 +22,11 @@
         var TIMELINE_REPORT_URL = "{% url 'timeline_view' %}";
         var TEST_REPORT_URL = "{% url 'test_view' %}";
 
+        var REPORT_ID = "{{ nav_state.report_id }}"
         var FACILITY_ID = "{{ nav_state.facility_id }}";
         var GROUP_ID = "{{ nav_state.group_id }}";
 
+        console.log("rptid: " + REPORT_ID);
         console.log("facid: " + FACILITY_ID);
         console.log("grpid: " + GROUP_ID);
     </script>

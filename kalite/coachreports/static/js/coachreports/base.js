@@ -34,7 +34,9 @@ var NavigationContainerView = Backbone.View.extend({
     },
 
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template({
+            selected: REPORT_ID
+        }));
         this.$('#group-select-container').append(this.group_view.$el);
         this.$('#facility-select-container').append(this.facility_view.$el);
     },
