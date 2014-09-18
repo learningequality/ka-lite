@@ -9,6 +9,9 @@
 
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/base.css' %}" />
+{% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
@@ -41,7 +44,7 @@
     {{ block.super }}
 
     {# Now we create the coachreport selection bar #}
-    <div class="container">
+    <div class="container container-margin-bottom">
         <div class="row">
             <div class="col-md-12">
                 <h4>
@@ -53,6 +56,9 @@
                 </div>
             </div>
         </div>
+        {% block report_content %}
+            {# Insert report specifics here #}
+        {% endblock report_content %}
     </div>
 
 {% endblock content %}

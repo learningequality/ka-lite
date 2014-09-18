@@ -4,7 +4,7 @@
     padding-left: 2px;
 }
 
-#displaygrid > .users {
+#displaygrid > .users-table {
     width: 11%;
     margin-right: 1px;
     float: left;
@@ -15,7 +15,7 @@
     width: 88%;
 }
 
-.users table {
+.users-table table {
     width: 100%;
 }
 
@@ -28,7 +28,7 @@ th, td {
     padding: 2px;
 }
 
-.users th {
+.users-table th {
     text-align: left;
     
 }
@@ -116,50 +116,24 @@ th.headrowuser {
     padding-left: 0;
     padding-top: 0 !important;
 }
-
 .legend {
     border: 1px solid #333;
     display: inline-block;
     height: 20px;
-    /*white-space:nowrap;*/
     overflow: hidden;
     text-align:center;
     width:120px;
 }
-
 .legend div {
     float:left;
     width:35px;
     height:21px;
 }
-
-/*#selection-bar {
-    overflow:hide;
-}*/
-
-#disp_options {
-    float:right;
+.selection {
+    margin-right: 10px;
 }
-
-.selection-coach-page:first-child, .selection-coach-page:nth-child(2) {
-    padding: 0;
-}
-
-.selection-coach-page:first-child {
-    margin-left: 20px;
-}
-
-.selection-coach-page:nth-child(2) {
-    margin-left: 16px;
-}
-
 @media only screen and (max-width: 1199px) {
-    #legend { float: left !important; margin-left: 20px; margin-top: 15px; }
-}
-
-@media only screen and (max-width: 655px) {
-    .selection-coach-page:nth-child(2) { margin-left: 20px; }
-    /* Moves "Select Topic" slightly to the right so that it lines up with "Select Report" */
+    #legend { float: left !important; margin-top: 15px; }
 }
 
 @media only screen and (max-width: 400px) {
