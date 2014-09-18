@@ -25,8 +25,6 @@
     <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
     <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
-    <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
     <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
     <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
@@ -34,7 +32,15 @@
     <!-- END PERSEUS STUFF -->
 
     <script src="{% url 'handlebars_templates' module_name='map' %}"></script>
-    <script type='text/javascript' src='{% static "js/leaflet.js" %}'></script>
+    <script>
+        require.config({
+            paths: {
+                "leaflet": '{% static "js/leaflet" %}',
+                "seedrandom": "{% static 'js/seedrandom.min' %}"
+            }
+        });
+        require(["seedrandom"], function(){});
+    </script>
     <script type="text/javascript">
         var TOPIC_DATA_URLS = {
             Domains: '{% static "data/map_domains.json" %}',
@@ -48,14 +54,16 @@
     <script src="{% static 'js/distributed/map/views.js' %}"></script>
     <script src="{% static 'js/distributed/topics/router.js' %}"></script>
     <script type="text/javascript">
-        $(function() {
-            window.map_view = new KnowledgeMapView({
-                el: "#map-container"
+        require(["leaflet"], function(leaflet){
+            $(function() {
+                window.map_view = new KnowledgeMapView({
+                    el: "#map-container"
+                });
+                window.router = new TopicRouter({
+                    control_view: window.map_view
+                });
+                Backbone.history.start({pushState: true, root: "{% url 'exercise_dashboard' %}"});
             });
-            window.router = new TopicRouter({
-                control_view: window.map_view
-            });
-            Backbone.history.start({pushState: true, root: "{% url 'exercise_dashboard' %}"});
         });
     </script>
 {% endblock headjs %}
