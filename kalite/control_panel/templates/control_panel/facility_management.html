@@ -5,7 +5,8 @@
 
 {% block control_panel_active %}{% endblock %}
 {% block users_active %}active{% endblock %}
-\{% block user_active %}users-active active-tab active-nav{% endblock user_active %}
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+{% block user_active %}users-active active-tab active-nav{% endblock user_active %}
 
 {% block title %}{{ facility.name }} - {% trans "Facility Management" %}{{ block.super }}{% endblock title %}
 
@@ -43,20 +44,13 @@
 
         $(function(){
             $("#top_export_button_id").click(function() {
-                $("#export_csv_div_id").toggle(function() {
-                    if (!$("#export_csv_div_id").is(":visible")) {
-                        $("#top_export_button_id").val("{% trans 'Export student stats' %}");
-                    } else {
-                        $("#start_date_select").datepicker('setDate', start_date);
-                        $("#end_date_select").datepicker('setDate', end_date);
-
-                        $("#top_export_button_id").val("{% trans 'Cancel' %}");
-                    }
-                });
+                $('#export_csv_div_id').modal();
+                $("#start_date_select").datepicker('setDate', start_date);
+                $("#end_date_select").datepicker('setDate', end_date);
             });
 
             $("#CSV_EXPORT").click(function() {
-                $("#top_export_button_id").click(); // hides the form on submit
+                // $("#top_export_button_id").click(); // hides the form on submit
 
                 start_date = $("#start_date_select").datepicker('getDate');
                 end_date = $("#end_date_select").datepicker('getDate');
@@ -77,18 +71,38 @@
 
 {% block buttons %}{{ block.super }}
     <li>
-        <button class="btn btn-success" id="top_export_button_id" value="{% trans 'Export student stats' %}">{% trans 'Export student stats' %}</button>
+        <button class="btn btn-success" data-toggle="modal" data-target="export_csv_div_id" id="top_export_button_id" value="{% trans 'Export student stats' %}">{% trans 'Export student stats' %}</button>
     </li>
-    <li>
-        <div id="export_csv_div_id" class="export_csv_div">
-            <form method="post" action="?format=csv" id="date_picker_form">
-                {% csrf_token %}
-                <label class="date">{% trans "Start Date" %}:</label><input class="export_csv_input" name="period_start" id="start_date_select" type="text" value=""></input>
-                <label class="date">{% trans "End Date" %}:</label><input class="export_csv_input" name="period_end" id="end_date_select" type="text" value=""></input>
-                <input type="button" class="btn btn-success" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
-            </form>
-        </div>
-    </li>
+    <div id="export_csv_div_id" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">{% trans "Export student stats" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form" method="post" action="?format=csv" id="date_picker_form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="date">
+                                {% trans "Start Date" %}:
+                            </label>
+                            <input class="export_csv_input" name="period_start" id="start_date_select" type="text" value=""></input><br/>
+                        </div>
+                        <div class="form-group">
+                            <label class="date">
+                                {% trans "End Date" %}:
+                            </label>
+                            <input class="export_csv_input" name="period_end" id="end_date_select" type="text" value=""></input><br/>
+                        </div>
+                        <div class="form-group">
+                            <input type="button" class="btn btn-success" id="CSV_EXPORT" title="{% trans "User report for the previous month" %}" value="{% trans "Export to CSV" %}" /></input>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 {% endblock buttons %}
 
 {% block control_panel_content %}

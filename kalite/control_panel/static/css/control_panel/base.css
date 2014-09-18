@@ -26,14 +26,6 @@ h2 {
 .selectable-table tbody tr.selected {
     background: #C4CAF5;
 }
-.export_csv_div {
-    float: right;
-    margin-top: 30px;
-    position: relative;
-    display: none;
-    background-color: #ddd;
-    padding: 5px;
-}
 .export_csv_input {
     margin-left: 2.5em;
     display: inline !important;

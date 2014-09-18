@@ -79,9 +79,11 @@ input[type="submit"] {
     color: #333 !important;
     text-transform: uppercase;
 }
-}
-.navbar ul li a:hover, .navbar ul li a:focus {
-    background: #dcdcdc !important;
+.navbar ul li a:hover, 
+.navbar ul li a:focus,
+.navbar ul li a.active {
+    background-color: rgb(185, 196, 174) !important;
+    border-radius: 5px;
 }
 .navbar-right {
     display: none;
@@ -104,11 +106,6 @@ input#search.ui-autocomplete-input {
 }
 #search-button:hover, #search-button:focus {
     background: #4cae4c !important;
-}
-.active {
-    background: #dcdcdc;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
 }
 #language_selector {
     margin: 15px 15px 0;

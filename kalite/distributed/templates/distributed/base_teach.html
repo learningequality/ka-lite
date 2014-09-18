@@ -4,6 +4,9 @@
 {% load i18n %}
 {% load my_filters %}
 
+{% block teach_active_teachers %}active{% endblock teach_active_teachers %}
+{% block teach_active_admins %}active{% endblock teach_active_admins %}
+
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
 {% block subnavbar %}

@@ -310,7 +310,6 @@ a:hover {
 }
 .active {
     background-color: #E9F1E4;
-    height: 50px;
 }
 .users {
     background: url("../../images/distributed/users-icon.png") no-repeat;
