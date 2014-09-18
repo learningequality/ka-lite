@@ -19,7 +19,7 @@ script:
 - grunt jshint
 notifications:
   email:
-    secure: CkcQ6HLHdLtyfH3bnyMbuR7u0/7wJuit3+EAWEDGABDkTLe7LBsKFMpcFc7Tee0IxnHoSP/7NIjD/p3ZlqtnlviOgw+JtoBp9lZennXoIEfB6K7fWvDqSb46dBUWZrzc0wLlXzdVgBjOwz+1LTaI1cgvsgNqRpkVJuqowNtURv4=
+    secure: fWa/ndU54XGuLssX5Zl8RmdTh0jsc7lxWQUHRGhwNyw3lBwqcqZtxPUepYtgHD3cN03OH7cj5LmpkzxFcTogFR6vywTO1st8J+Hm9J7ZYi02ocK1Ju6h76FOwO2pLveywkBr6rAfgu+CucV9/4BAFGq1rJ5RLG/Xqh+vcMezwd8=
   hipchat:
     rooms:
       secure: A4OlCFaETlLB20ATXrPmA+8F35AsjZZ9nO8dPUG9m5pAr1pD4CDiVrn/tmHbbk2rQaQLm3B8CifdNuQL6fLuEv2pJpfIdSESVqsqJcQPPpgogjvHRabOXgAmC5AWpQupe3DARIMDjOPhHaeRFN/GYjEnK8N+nqu/SQ2mPmAzOFQ=
