@@ -79,6 +79,13 @@
     <!-- <![endif]-->
     <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
+
+    <script src="{% static "audio-js/audio.min.js" %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='audio' %}"></script>
+    <script src="{% static 'js/distributed/content/models.js' %}"></script>
+    <script src="{% static 'js/distributed/audio/views.js' %}"></script>
+
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
     <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
     <script src="{% static 'js/distributed/topics/bigSlide.js' %}"></script>

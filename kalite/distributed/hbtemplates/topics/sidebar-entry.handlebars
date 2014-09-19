@@ -19,5 +19,9 @@
     <span class="sidebar-icon icon-list" data-topic-id="{{ id }}"></span>
     <span class="sidebar-text" data-topic-id="{{ id }}">{{ title }}</span>
     {{/ifcond}}
+    {{#ifcond entity_kind "==" "Audio"}}
+    <span class="sidebar-icon icon-audio" data-audio-id="{{ content_id }}"></span>
+    <span class="sidebar-text" data-audio-id="{{ content_id }}">{{ title }}</span>
+    {{/ifcond}}
 </a>
 {{/ifcond}}

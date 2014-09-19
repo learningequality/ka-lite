@@ -397,6 +397,14 @@ window.TopicContainerOuter = Backbone.View.extend({
                 });
                 this.content_view.show_view(view);
                 break;
+
+            case "Audio":
+                view = new AudioPlayerView({
+                    content_id: id,
+                    context_id: this.model.get("id")
+                });
+                this.content_view.show_view(view);
+                break;
         }
     },
 
