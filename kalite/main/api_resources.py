@@ -296,3 +296,86 @@ class AssessmentItemResource(Resource):
 
     def rollback(self, request):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
+
+
+class Content:
+
+    def __init__(self, lang_code="en", **kwargs):
+
+        self.on_disk = False
+
+        for k, v in kwargs.iteritems():
+            setattr(self, k, v)
+
+        # the computed values
+        self.path = "/content/juicy.mp3"
+        self.title = "This"
+        self.description = "Something about the audio"
+        self.id = "test"
+        self.author_name = "Someone"
+        self.kind = "audio"
+        self.flex_attrs = "{}"
+        self.selected_language = lang_code
+
+
+class ContentResource(Resource):
+    description = fields.CharField(attribute='description')
+    id = fields.CharField(attribute='id')
+    kind = fields.CharField(attribute='kind')
+    on_disk = fields.BooleanField(attribute='on_disk')
+    path = fields.CharField(attribute='path')
+    selected_language = fields.CharField(attribute='selected_language')
+    title = fields.CharField(attribute='title')
+    flex_attrs = fields.CharField(attribute='flex_attrs')
+
+    class Meta:
+        resource_name = 'content'
+        object_class = Content
+
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
+        ]
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if getattr(bundle_or_obj, 'obj', None):
+            kwargs['pk'] = bundle_or_obj.obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.id
+        return kwargs
+
+    def get_object_list(self, request):
+        """
+        Get the list of videos.
+        """
+        raise NotImplemented("Operation not implemented yet for videos.")
+
+    def obj_get_list(self, bundle, **kwargs):
+        return self.get_object_list(bundle.request)
+
+    def obj_get(self, bundle, **kwargs):
+        content_id = kwargs.get("content_id", None)
+        content = {"content_id": content_id}
+
+        if content:
+            return Content(**content)
+        else:
+            raise NotFound('Content with id %s not found' % content_id)
+
+    def obj_create(self, request):
+        raise NotImplementedError
+
+    def obj_update(self, bundle, **kwargs):
+        raise NotImplementedError
+
+    def obj_delete_list(self, request):
+        raise NotImplementedError
+
+    def obj_delete(self, request):
+        raise NotImplementedError
+
+    def rollback(self, request):
+        raise NotImplementedError
