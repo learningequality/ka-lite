@@ -314,7 +314,7 @@ class Content:
         self.id = "test"
         self.author_name = "Someone"
         self.kind = "audio"
-        self.flex_attrs = "{}"
+        self.extra_fields = "{}"
         self.selected_language = lang_code
 
 
@@ -326,7 +326,7 @@ class ContentResource(Resource):
     path = fields.CharField(attribute='path')
     selected_language = fields.CharField(attribute='selected_language')
     title = fields.CharField(attribute='title')
-    flex_attrs = fields.CharField(attribute='flex_attrs')
+    extra_fields = fields.CharField(attribute='extra_fields')
 
     class Meta:
         resource_name = 'content'

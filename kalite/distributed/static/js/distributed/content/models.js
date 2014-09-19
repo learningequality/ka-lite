@@ -18,6 +18,31 @@ window.ContentDataModel = Backbone.Model.extend({
 
     url: function () {
         return "/api/content/" + this.get("content_id");
+    },
+
+    parse: function(response) {
+        var extra_fields = response.extra_fields;
+        delete response.extra_fields;
+        this.database_attrs = Object.keys(response);
+        if(extra_fields!==undefined) {
+            extra_fields = JSON.parse(extra_fields);
+            for (var field in extra_fields) {
+                response.field = extra_fields.field;
+            }
+        }
+    },
+
+    toJSON: function() {
+        var attributes = _.clone(this.attributes);
+        var extra_fields = {};
+        for (var property in attributes) {
+            if (!_.contains(this.database_attrs, property)) {
+                extra_fields[property] = attributes[property];
+                delete attributes.property;
+            }
+        }
+        attributes.extra_fields = JSON.stringify(extra_fields);
+        return attributes;
     }
 
 });
