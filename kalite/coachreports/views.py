@@ -156,9 +156,12 @@ def student_view_context(request):
     user = get_user_from_request(request=request)
     if not user:
         raise Http404("User not found.")
-    return {
+
+    context = {
+        "facility_id": user.facility.id,
         "student": user,
     }
+    return context
 
 
 @require_authorized_admin
@@ -174,7 +177,6 @@ def landing_page(request, facility):
 @render_to("coachreports/tabular_view.html")
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
-
     # important for setting the defaults for the coach nav bar
     facility, group_id, context = coach_nav_context(request, facility, "tabular")
 
@@ -199,7 +201,6 @@ def tabular_view(request, facility, report_type="exercise"):
     # No valid data; just show generic
     if not topic_id or not re.match("^[\w\-]+$", topic_id):
         return context
-
 
     if group_id:
         # Narrow by group
@@ -232,7 +233,7 @@ def tabular_view(request, facility, report_type="exercise"):
     if report_type == "exercise":
         # Fill in exercises
         exercises = get_topic_exercises(topic_id=topic_id)
-        exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
+        exercises = sorted(exercises, key=lambda e: (e["x_pos"], e["y_pos"]))
         context["exercises"] = exercises
 
         # More code, but much faster

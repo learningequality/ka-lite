@@ -1,7 +1,13 @@
-{% extends base_template %}
+{% extends "distributed/base_teach.html" %}
 {% load my_filters i18n i18n_filters staticfiles %}
 
+{% block title %}
+    {% trans "Learn" %}
+{% endblock title %}
+
 {% block learn_active %}active{% endblock learn_active %}
+{% block learn_subnav_active %}learn-active active-tab active-nav{% endblock learn_subnav_active %}
+
 
 {% block headcss %}{{ block.super }}
 
@@ -30,7 +36,6 @@
     <!-- END PERSEUS STUFF -->
 
 {% endblock headcss %}
-
 
 {% block headjs %}{{ block.super }}
     <!-- START PERSEUS STUFF -->
@@ -103,6 +108,7 @@
 {% endblock headjs %}
 
 {% block content %}
+    {{ block.super }}
     <div id="sidebar-container"> 
     </div>
     <div id="content-area">
