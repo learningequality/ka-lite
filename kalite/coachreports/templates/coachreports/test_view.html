@@ -42,18 +42,12 @@
     </div>
     <div style="clear: both;"></div>
 
-    {% if not results_table.keys %}
+    {% if not results_table.keys or not test_columns %}
         <p><div class="subtitle error" id="error_message">
-        {% if not groups.0.groups and not groups.1 and request.GET.topic %}
-            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+        {% if not results_table.keys %}
             {% trans "No student accounts have been created." %}
-        {% elif not results_table %}
-            {% comment %}Group was selected, but data not queried because a topic was not selected
-            (NOTE: this required knowledge of how the view queries data){% endcomment %}
-            {% trans "No exam results for this group." %}
         {% else %}
-            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
-            {% trans "No student accounts in this group have been created." %}
+            {% trans "No exam results for this group." %}
         {% endif %}
         </div></p>
 
