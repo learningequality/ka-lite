@@ -6,6 +6,8 @@
 {% endblock title %}
 
 {% block learn_active %}active{% endblock learn_active %}
+{% block learn_subnav_active %}learn-active active-tab active-nav{% endblock learn_subnav_active %}
+
 
 {% block headcss %}{{ block.super }}
 
@@ -100,6 +102,7 @@
 {% endblock headjs %}
 
 {% block content %}
+    {{ block.super }}
     <div id="sidebar-container"> 
     </div>
     <div id="content-area">

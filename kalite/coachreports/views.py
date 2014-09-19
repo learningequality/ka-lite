@@ -156,9 +156,12 @@ def student_view_context(request):
     user = get_user_from_request(request=request)
     if not user:
         raise Http404("User not found.")
-    return {
+
+    context = {
+        "facility_id": user.facility.id,
         "student": user,
     }
+    return context
 
 
 @require_authorized_admin
