@@ -22,6 +22,9 @@
 {% load my_filters %}
 {% load staticfiles %}
 
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+
 {% block headcss %} {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
@@ -35,12 +38,12 @@
         }
         .google-chart {
             width: 900px;
-            height: 500px;
+            height: 400px;
             float: left;
         }
         .subtitle {
             float: left;
-        }
+        }    
         #summary {
             border: 1px black solid;
             position: absolute;
@@ -93,6 +96,8 @@
     <script type="text/javascript" src="{% static 'js/coachreports/base_d3_visualization.js' %}"></script>
 {% endblock headjs %}
 
+
+
 {% block navbar_topics %}
     <div class="container">
         <div class="row">
@@ -104,8 +109,9 @@
         </div>
 {% endblock navbar_topics %}
 
-{% block content %}
-    {% block navbar %}{{ block.super }}{% endblock navbar %}
+
+
+{% block report_content %}
 
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->
@@ -135,8 +141,9 @@
         <div id="choose">
             <form id="select_data" name="select_data">
             {% block axis_dropdown %}
+            <h1>axis dropdown</h1>
             [You must fill me in!!]
-                {% comment "Stick this in here, as it will be silenced (but available as a block) %}{% endcomment %}
+                {% comment %} Stick this in here, as it will be silenced (but available as a block) %}{% endcomment %}
                 {% block data_options %}
                     <option value="">----</option>
                     {% for stat in stats %}
@@ -148,6 +155,5 @@
             {% endblock axis_dropdown %}
             </form>
         </div>
-    </div>
-{% endblock content %}
+{% endblock report_content %}
 

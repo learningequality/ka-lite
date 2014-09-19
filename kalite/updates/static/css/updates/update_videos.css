@@ -11,12 +11,10 @@ ul.dynatree-container li, .ui-widget-content {
 }
 
 .download-actions {
-    float: left;
     margin-right: 10px;
     margin-top: 5px;
-    height: 120px;
+    min-height: 109px;
     padding: 10px;
-    width: 48.5%;
 }
 
 #download-legend-selected, #download-videos, #delete-videos {
@@ -34,11 +32,11 @@ ul.dynatree-container li, .ui-widget-content {
 }
 
 #download-videos:enabled {
-    color: #52A852;
+    color: white;
 }
 
 #delete-videos:enabled {
-    color: #AC4343;
+    color: whitef;
 }
 
 #retry-video-download:enabled {
@@ -76,6 +74,6 @@ h4.videos {
     font-size: 11px;
 }
 
-@media only screen and (max-width: 991px) {
+@media only screen and (max-width: 680px) {
     .download-actions { display: block; float: none; width: 100%; }
 }

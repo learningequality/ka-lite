@@ -686,7 +686,7 @@ class Command(UpdatesStaticCommand):
             'kaserve',
             wait=False,
             manage_py_dir=manage_py_dir,
-            output_to_stdin=True,
+            output_to_stdout=True,
             production=True,
         )
 

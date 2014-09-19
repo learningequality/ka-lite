@@ -26,13 +26,14 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import kalite
+from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
 from kalite.version import VERSION
 from kalite.facility.models import Facility
 from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, Command as InitCommand
-from securesync.models import Zone
+from securesync.models import Zone, Device
 
 
 def raw_input_yn(prompt):
@@ -95,7 +96,7 @@ def get_hostname_and_description(hostname=None, description=None):
 
 
 class Command(BaseCommand):
-    help = "Create a zip file with all code, that can be unpacked anywhere."
+    help = "Initialize or update the database."
 
     option_list = BaseCommand.option_list + (
         # Basic options
@@ -130,8 +131,7 @@ class Command(BaseCommand):
             action='store_false',
             dest='interactive',
             default=True,
-            help='FILE to save zip to',
-            metavar="FILE"),
+            help='Run in non-interactive mode'),
     )
 
     def handle(self, *args, **options):
@@ -205,7 +205,7 @@ class Command(BaseCommand):
 
         if not install_clean and not database_file and not kalite.is_installed():
             # Make sure that, for non-sqlite installs, the database exists.
-            raise Exception("For databases not using SQLIte, you must set up your database before running setup.")
+            raise Exception("For databases not using SQLite, you must set up your database before running setup.")
 
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
@@ -247,12 +247,20 @@ class Command(BaseCommand):
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
-        # Install data
-        if install_clean:
-            # Create device, load on any zone data
+        # Individually generate any prerequisite models/state that is missing
+        if not Settings.get("private_key"):
             call_command("generatekeys", verbosity=options.get("verbosity"))
+        if not Device.objects.count():
             call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
+        if not Facility.objects.count():
             Facility.initialize_default_facility()
+
+        # Install data
+        # if install_clean:
+        #     # Create device, load on any zone data
+        #     call_command("generatekeys", verbosity=options.get("verbosity"))
+        #     call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
+        #     Facility.initialize_default_facility()
 
         #else:
             # Device exists; load data if required.

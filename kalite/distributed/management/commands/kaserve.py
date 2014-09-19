@@ -3,19 +3,18 @@ This is a command-line tool to execute functions helpful to testing.
 """
 import os
 import sys
+import time
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
-from django.utils.translation import ugettext as _
 
+from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
-from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
-from kalite.facility.models import Facility
 from kalite.topic_tools import get_topic_tree
 from kalite.updates import stamp_availability_on_topic
 from securesync.models import Device
@@ -70,30 +69,13 @@ class Command(BaseCommand):
     def setup_server_if_needed(self):
         """Run the setup command, if necessary."""
 
-        # Now, validate the server.
-        try:
-            if Settings.get("private_key") and Device.objects.count():
-                # The only success case
-                pass
-
-            elif not Device.objects.count():
-                # Nothing we can do to recover
-                raise CommandError("You are screwed, buddy--you went through setup but you have no devices defined!  Call for help!")
-
-            else:
-                # Force hitting recovery code, by raising a generic error
-                #   that gets us to the "except" clause
-                raise DatabaseError
-
-        except DatabaseError:
+        try: # Ensure that the database has been synced and a Device has been created
+            assert Settings.get("private_key") and Device.objects.count()
+        except (DatabaseError, AssertionError): # Otherwise, run the setup command
             self.stdout.write("Setting up KA Lite; this may take a few minutes; please wait!\n")
-
-            call_command("setup", interactive=False)  # show output to the user
-            #out = call_command_with_output("setup", interactive=False)
-            #if out[1] or out[2]:
-            #    # Failed; report and exit
-            #    self.stderr.write(out[1])
-            #    raise CommandError("Failed to setup/recover.")
+            call_command("setup", interactive=False)
+        # Double check that the setup process successfully created a Device
+        assert Settings.get("private_key") and Device.objects.count(), "There was an error configuring the server. Please report the output of this command to Learning Equality."
 
     def reinitialize_server(self):
         """Reset the server state."""
@@ -116,6 +98,11 @@ class Command(BaseCommand):
         # Eliminate irrelevant settings
         for opt in BaseCommand.option_list:
             del options[opt.dest]
+
+        # In case any chronograph threads were interrupted the last time
+        # the server was stopped, clear their is_running flags to allow
+        # them to be started up again as needed.
+        Job.objects.update(is_running=False)
 
         # Parse the crappy way that runcherrypy takes args,
         #   or the host/port
@@ -142,6 +129,11 @@ class Command(BaseCommand):
             self.reinitialize_server()
 
         call_command("collectstatic", interactive=False)
+
+        # set the BUILD_HASH to the current time, so assets get refreshed to their newest versions
+        build_hash = str(time.mktime(time.gmtime()))
+        logging.debug("Writing %s as BUILD_HASH" % build_hash)
+        Settings.set('BUILD_HASH', build_hash)
 
         # Now call the proper command
         if not options["production"]:

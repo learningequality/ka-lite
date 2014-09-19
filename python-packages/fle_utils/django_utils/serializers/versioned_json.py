@@ -38,6 +38,7 @@ class Serializer(json.Serializer):
         dest_version = options.pop("dest_version")  # We're serializing to send to a machine of this version.
 
         self.start_serialization()
+        self.first = True
         for obj in queryset:
             # See logic below.  We selectively skip serializing
             #   objects that have a (starting) version greater than the
@@ -73,6 +74,9 @@ class Serializer(json.Serializer):
                     if self.selected_fields is None or field.attname in self.selected_fields:
                         self.handle_m2m_field(obj, field)
             self.end_object(obj)
+
+            self.first = False
+
         self.end_serialization()
         return self.getvalue()
 

@@ -6,7 +6,6 @@ import uuid
 
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.messages.api import get_messages
 from django.db import models as db_models
 from django.http import HttpResponse
@@ -21,7 +20,7 @@ from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
-
+from kalite.shared.decorators.auth import require_admin
 
 def require_sync_session(handler):
     @api_handle_error_with_json
@@ -136,8 +135,8 @@ def device_upload(data, session):
         #   dest_version assumed to be this device's version
         result = save_serialized_models(data.get("devices", "[]"), src_version=session.client_version)
     except Exception as e:
-        logging.debug("Exception uploading devices: %s" % e)
-        result = { "error": e.args[0], "saved_model_count": 0 }
+        logging.debug("Exception uploading devices (in api_views): %s" % e)
+        result = { "error": e.message, "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
@@ -169,8 +168,8 @@ def model_upload(data, session):
         #   dest_version assumed to be this device's version
         result = save_serialized_models(data["models"], src_version=session.client_version)
     except Exception as e:
-        logging.debug("Exception uploading models: %s" % e)
-        result = { "error": e.args[0], "saved_model_count": 0 }
+        print "Exception uploading models (in api_views): %s, %s, %s" % (e.__class__.__name__, e.message, e.args)
+        result = { "error": e.message, "saved_model_count": 0 }
 
     session.models_uploaded += result["saved_model_count"]
     session.errors += result.has_key("error")
@@ -190,15 +189,15 @@ def model_download(data, session):
         # Return the objects serialized to the version of the other device.
         result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, dest_version=session.client_version)
     except Exception as e:
-        logging.debug("Exception downloading models: %s" % e)
-        result = { "error": e.args[0], "count": 0 }
+        print "Exception downloading models (in api_views): %s, %s, %s" % (e.__class__.__name__, e.message, e.args)
+        result = { "error": e.message, "count": 0 }
 
     session.models_downloaded += result["count"]
     session.errors += result.has_key("error")
     return JsonResponse(result)
 
 
-@login_required
+@require_admin
 @api_handle_error_with_json
 def force_sync(request):
     """

@@ -3,13 +3,13 @@
 
 from annoying.functions import get_object_or_None
 
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess, JsonResponseMessageError
+from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess
 from kalite.shared.decorators import require_authorized_admin
 
 
@@ -63,4 +63,4 @@ def group_delete(request, group_id=None):
     groups_to_delete = FacilityGroup.objects.filter(id__in=groups)
     count = groups_to_delete.count()
     groups_to_delete.soft_delete()
-    return JsonResponseMessageSuccess(_("Deleted %(num_groups)d groups successfully.") % {"num_groups": count})
+    return JsonResponseMessageSuccess(_("Deleted %(num_groups)d group(s) successfully.") % {"num_groups": count})

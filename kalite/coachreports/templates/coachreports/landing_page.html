@@ -6,13 +6,20 @@
 {% block navbar_topics %}{% endblock navbar_topics %}
 {% block navbar_makelink %}{% endblock navbar_makelink %}
 
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/landing-page.css' %}" />
+{% endblock headcss %}
+
 {% block content %}
+
     <div>
         {% block navbar %}{{ block.super }}{% endblock navbar %}
 
         <div class="container">
-            
+
             <div class="row">
+
+                
                 
                 <div class="col-md-4">
                     <div class="vertical-shadow suggested-action">
@@ -41,6 +48,7 @@
                     </div>
                 </div>
 
+                
             </div>
 
         </div>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers-arithmetic">
+<head>
+    <title>Converting fractions to decimals</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars" data-ensure="getGCD(NUMERATOR, DENOMINATOR) === 1">
+                <var id="DENOMINATOR">randFromArray([4, 5, 8, 10, 20, 25, 50])</var>
+                <var id="NUMERATOR">randRange(1, DENOMINATOR - 1)</var>
+                <var id="DECIMAL">roundTo(3, NUMERATOR / DENOMINATOR)</var>
+            </div>
+            <p>Express the fraction as a decimal.</p>
+            <p class="question"><code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>}</code></p>
+            <p class="solution" data-type="decimal"><var>DECIMAL</var></p>
+            <div class="hints">
+                <p>This fraction represents the result of dividing <code><var>NUMERATOR</var></code> by <code><var>DENOMINATOR</var></code>.</p>
+
+                <div class="graphie" id="numbers">
+                    graph.divider = new Divider(DENOMINATOR, NUMERATOR, 0, 0, true);
+                    graph.divider.show();
+                </div>
+
+                <div class="graphie" data-each="Divider.getNumberOfHints(DENOMINATOR, NUMERATOR, 0, 0, true) times" data-update="numbers">
+                    graph.divider.showHint();
+                </div>
+
+                <p><code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>} = <var>DECIMAL</var></code></p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

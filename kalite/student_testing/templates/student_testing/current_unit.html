@@ -1,0 +1,50 @@
+{% extends "distributed/base_teach.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block current_unit_active %}units-active active-tab active-nav{% endblock current_unit_active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+
+{% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
+
+{% block headcss %}
+    {{ block.super }}
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        var ALL_CURRENT_UNIT_URL = "{% url 'api_dispatch_list' resource_name='current_unit' %}";
+    </script>
+    <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
+    <script src="{% static 'js/student_testing/models.js' %}"></script>
+    <script src="{% static 'js/student_testing/current_unit.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.current_unit_app_view = new CurrentUnitAppView({
+                el: $("#current-unit-container")
+            });
+        });
+    </script>
+
+{% endblock headjs %}
+
+{% block content %}
+    {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>{% trans "Current Units" %}
+                    <small>
+                        <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% blocktrans %}This page shows the current unit selected for each Facility.{% endblocktrans %} {% blocktrans %}Click on the "Previous" or "Next" buttons or the number links to select the current unit for the facility.{% endblocktrans %}'></span>
+                    </small>
+                </h2>
+            </div>
+        </div>
+        <div id="current-unit-container">
+            {# Backbone magic here! #}
+        </div>
+    </div>
+{% endblock content %}

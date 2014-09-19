@@ -80,8 +80,8 @@ class SyncSession(ExtendedModel):
         #   to timestamp, making sure that whatever we do works for both
         #   distributed and central servers.
         if settings.SYNC_SESSIONS_MAX_RECORDS is not None and SyncSession.objects.count() > settings.SYNC_SESSIONS_MAX_RECORDS:
-            to_discard = SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]
-            to_discard.delete()
+            for model in list(SyncSession.objects.order_by("timestamp")[0:SyncSession.objects.count()-settings.SYNC_SESSIONS_MAX_RECORDS]):
+                model.delete()
 
 
 class SyncedModelQuerySet(QuerySet):
@@ -218,15 +218,23 @@ class SyncedModel(ExtendedModel):
                     obj.delete()
         self.save()
 
-    def full_clean(self, exclude=[]):
-        """
-        When I am deleted, don't validate my foreign keys anymore--they may fail.
+    def full_clean(self, exclude=None, imported=False):
+        """Django method for validating uniqueness constraints.
+        We can have uniqueness constraints that can't be expressed as a tuple of fields,
+        so need to override this to implement.
 
-        TODO(bcipolli): get validation to really work!
+        We can also have "soft" uniqueness constraints that may not be used when importing,
+        so we add that parameter here.
+
+        Also, when model is deleted, don't validate its foreign keys anymore--they may fail.
+
         """
+        exclude = exclude or []
+        if imported:
+            exclude = list(set(exclude + self._import_excluded_validation_fields))
         if self.deleted:
             exclude = exclude + [f.name for f in self._meta.fields if isinstance(f, models.ForeignKey) ]
-        super(SyncedModel, self).full_clean()
+        return super(SyncedModel, self).full_clean(exclude=exclude)
 
     def sign(self, device=None):
         """
@@ -326,19 +334,6 @@ class SyncedModel(ExtendedModel):
 
         return "&".join(chunks)
 
-    def full_clean(self, exclude=None, imported=False):
-        """Django method for validating uniqueness contraints.
-        We can have uniqueness constraints that can't be expressed as a tuple of fields,
-        so need to override this to implement.
-
-        We can also have "soft" uniqueness constraints that may not be used when importing,
-        so we add that parameter here.
-        """
-        exclude = exclude or []
-        if imported:
-            exclude = list(set(exclude + self._import_excluded_validation_fields))
-        return super(SyncedModel, self).full_clean(exclude=exclude)
-
     def save(self, imported=False, increment_counters=True, sign=True, *args, **kwargs):
         """
         Some of the heavy lifting happens here.  There are two saving scenarios:
@@ -378,7 +373,9 @@ class SyncedModel(ExtendedModel):
 
             if sign:
                 assert self.counter is not None, "Only sign data where count is set"
-                # Always sign on the central server.
+                # if we are a trusted (zoneless) device, i.e. the central server, then set the zone fallback
+                if own_device.is_trusted():
+                    self.zone_fallback = self.get_zone()
                 self.sign(device=own_device)
             else:
                 self.set_id()
@@ -448,7 +445,8 @@ class SyncedModel(ExtendedModel):
 
 class DeferredSignSyncedModel(SyncedModel):
     """
-    Synced model that we defer signing until it's time to sync.
+    Synced model that defers signing until it's time to sync. This helps with CPU efficency because
+    we don't need to recalculate the model signature every time the model is updated and saved.
     """
     def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
         super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
@@ -460,7 +458,8 @@ class DeferredSignSyncedModel(SyncedModel):
 
 class DeferredCountSyncedModel(DeferredSignSyncedModel):
     """
-    Defer incrementing counters until syncing.
+    Defer incrementing counters until syncing. This helps with IO efficiency because we don't need to
+    update the counter_position on our device's metadata model everytime this model is saved.
     """
     def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
         """

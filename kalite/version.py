@@ -1,10 +1,28 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
+# this is actually 0.12.5, but we need to update language pack version fallbacks before changing here
 VERSION = "0.12.0"
 VERSION_INFO = {
 
-    "0.12.0": {
-        "release_date": "2014/04/15",
-        "git_commit": "dabc123abc123abc123abc123",
+    "0.12.6": {
+        "release_date": "2014/09/08",
+        "git_commit": "9cf2f05",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer runningwhen server starts"],
+            "students": [],
+            "coaches": [],
+            "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],
+        },
+    },
+
+    "0.12.5": {
+        "release_date": "2014/08/08",
+        "git_commit": "19055bb",
         "new_features": {
             "all": [],
             "students": [],
@@ -13,6 +31,93 @@ VERSION_INFO = {
         },
         "bugs_fixed": {
             "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],
+        },
+    },
+
+    "0.12.4": {
+        "release_date": "2014/08/07",
+        "git_commit": "8c3c331",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": ["Stop opening new tabs when opening related videos from exercises"],
+            "coaches": [],
+            "admins": ["Run setup when database is not initialized on startup"],
+        },
+    },
+
+    "0.12.3": {
+        "release_date": "2014/08/02",
+        "git_commit": "90f8880",
+        "new_features": {
+            "all": [],
+            "students": ["Numpad for student exercises"],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Mac OS X startup fix", "language names in dubbed video mapping cannot be empty"],
+        },
+    },
+
+    "0.12.2": {
+        "release_date": "2014/07/16",
+        "git_commit": "ca13eb4",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["'register' management command for registering from command line",
+                       "added --verbose option to syncmodels command to facilitate debugging and error reporting"],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["deleted models should now be synced properly",
+                       "syncing no longer fails for duplicate names for users, groups, and facilities"],
+        },
+    },
+
+    "0.12.1": {
+        "release_date": "2014/07/01",
+        "git_commit": "3aaf4ea",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["bugs in data sync fixed"],
+        },
+    },
+
+    "0.12.0": {
+        "release_date": "2014/06/30",
+        "git_commit": "4f69360",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": ["transfer students between groups"],
+            "admins": ["Delete language", "Delete groups", "Delete students"],
+        },
+        "bugs_fixed": {
+            "all": ["tweaks to the i18n framework"],
             "students": [],
             "coaches": [],
             "admins": [],

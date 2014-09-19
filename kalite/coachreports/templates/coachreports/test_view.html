@@ -1,0 +1,130 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Test" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/test_view.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}
+    {{block.super}}
+    <script>
+        $(function(){
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
+        })
+    </script>
+{% endblock headjs %}
+
+{% block report_title %}
+    {% trans "Exam Results" %}
+{% endblock report_title %}
+
+{% block report_content %}
+
+    <div id="content">
+        <div id="legend">
+            <div class="legend"><span class="status-circle status-circle-md pass"></span>80-100%</div>
+            <div class="legend"><span class="status-circle status-circle-md borderline"></span>60-79%</div>
+            <div class="legend"><span class="status-circle status-circle-md fail"></span>0-59%</div>
+            <div class="legend"><span class="status-circle status-circle-md incomplete"></span>* {% trans "Incomplete" %}</div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+    {% if not results_table.keys or not test_columns %}
+        <p><div class="subtitle error" id="error_message">
+        {% if not results_table.keys %}
+            {% trans "No student accounts have been created." %}
+        {% else %}
+            {% trans "No exam results for this group." %}
+        {% endif %}
+        </div></p>
+
+    {% else %}
+
+        {# Student Table #}
+    <div class="table-container">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th class="student-header">
+                        {% trans "Student" %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in results_table.keys %}
+                <tr>
+                    <th>
+                        <a title="{{ student.name }} ({{ student.username }})" href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a>
+                    </th>
+                </tr>
+                {% endfor %} 
+                {% for stat in summary_stats %}
+                    <tr>
+                        <th class="summary-stat-header">
+                            {% trans stat %}
+                        </th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="results-table">
+            <table>
+                <thead>
+                    <tr>
+                        {% for t in test_columns %}
+                            <th class="data-header">
+                                <a class="changeable-link" href="{% url 'test_detail_view' t.test_id %}">{{ t.title }}</a>
+                            </th>
+                        {% endfor %}
+                        {% for s in summary_stats %}
+                            <th class="data-header summary-stat-header">
+                                {{ s }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for results in results_table.values %}
+                        <tr>
+                        {% for r in results %}
+                            {% if r.status != statistic %}
+                                <td title="{% trans r.title %}">
+                                    <span class="status-circle status-circle-sm {{ r.status }}"></span>
+                                    {{ r.cell_display }}
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ r.cell_display }}
+                                </td>
+                            {% endif%}
+                        {% endfor %}
+                        </tr>    
+                    {% endfor %}
+                    {% for stats in stats_dict.values %}
+                        <tr>
+                            {% for stat in stats %}
+                                <td>
+                                    {{stat}}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+{% endblock report_content %}

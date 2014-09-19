@@ -1,0 +1,138 @@
+{% load my_filters %}
+{% load i18n %}
+{% load staticfiles %}
+
+<!-- Begin Student -->
+{% if group_id or num_groups < 25 %}
+<div class="row" id="students">
+    <div class="col-md-12">
+        <h2>
+            {% trans "Students" %}
+            <small>
+                <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "This report contains information about recent student activity." %}'></span>
+            </small>
+        </h2>
+    </div>
+    <div class="col-md-12">
+        {% if not student_pages %}
+            <p class="no-data">{% trans "You currently have no student data available." %}</p>
+        {% else %}
+            <p>
+                <div class="form-inline">
+                {% if groups %}
+                    <div class="form-group">
+                        <button class="movegroup btn btn-success" disabled="disabled" value="#students">{% trans "Change Student Groups" %}</button>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control movegrouplist" value="#students">
+                                <option selected>----</option>
+                                {% for group in groups %}
+                                    {% if not group_id == group.id and group.id %}
+                                        <option value="{{ group.id }}">{{ group.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if group_id != ungrouped_id %}
+                                    <option value="">{{ ungrouped }}</option>
+                                {% endif %}
+                        </select>
+                    </div>
+                {% endif %}
+                    <div class="form-group">
+                        <button class="delete btn btn-success" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                    </div>
+                </div>
+            </p>
+        {% endif %}
+        <div class="table-responsive">
+            <table class="table selectable-table">
+                 <thead>
+                    <tr class="success">
+                        <th><input class="select-all" type="checkbox" value="#students"</th>
+                        <th>{% trans "Student Name" %}</th>
+                        <th>{% trans "Edit" %}</th>
+                        <th>{% trans "Coach" %}</th>
+                        <th>{% trans "Group" %}</th>
+                        <th>{% trans "Logins" %}</th>
+                        <th>{% trans "Login Time" %}</th>
+                        <th>{% trans "Videos Viewed" %}</th>
+                        <th>{% trans "Exercises Completed" %}</th>
+                        <th>{% trans "Mastery" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in student_pages %}
+                        <tr class="selectable" value="{{ student.id }}" type="students">
+                            <td><input type="checkbox" value="#students"></td>
+                            <td>
+                                {{ student|format_name:"last_first" }}
+                            </td>
+                            <td>
+                                <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </a>
+                            </td>
+
+                            <td>
+                                <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
+                                <div class="sparklines" sparkType="bar" sparkBarColor="green">
+                                <!--
+                                    {{ student.total_logins }},
+                                    {{ student.total_videos }},
+                                    {{ student.total_exercises }}
+                                -->
+                                </div></a>
+                            </td>
+                            <td>
+                                {% if student.group %}
+                                    {% if group_id %}
+                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'tabular_view' %}?facility={{ facility.id }}&group={{ student.group.id }}">
+                                    {% else %}
+                                    <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
+                                    {% endif %}
+                                    {{ student.group.name }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ student.total_logins }}</td>
+                            <td>{{ student.total_hours|floatformat }}</td>
+                            <td>{{ student.total_videos }}</td>
+                            <td>{{ student.total_exercises }}</td>
+                            <td>{{ student.pct_mastery|percent:1  }}</td>
+                        </tr>
+                    {% endfor %}
+                    {# 10x td for table formatting #}
+                    <tr>
+                        <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> 
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row table-bottom-options">
+    <div class="col-sm-4 col-xs-12">
+        <p class="add-new-table-item">
+            <a href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
+                <span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new student.' %}
+            </a>
+        </p>
+    </div>
+    <div class="col-sm-4 col-xs-12">
+        {% if student_pages.num_listed_pages > 1 %}
+            <ul class="pagination pagination-sm">
+                <li><a title="{% trans 'Browse to the previous page of students.' %}" {% if student_pages.has_previous %}href="{{ page_urls.students.prev_page }}#students"{% endif %}>&laquo;</a></li>
+                {% for listed_page in student_pages.listed_pages %}
+                    {% if listed_page == -1 %}
+                    <li><a disabled="disabled">&hellip;</a></li>
+                    {% elif listed_page == student_pages.number %}
+                    <li class="active"><a disabled="disabled">{{student_pages.number}}</a></li>
+                    {% else %}
+                    <li><a title="{% blocktrans %}Browse to page # {{ listed_page }} of students.{% endblocktrans %}" href="{{ page_urls.students|get_item:listed_page }}#students">{{ listed_page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                <li><a title="{% trans 'Browse to the next page of students.' %}" {% if student_pages.has_next %}href="{{ page_urls.students.next_page }}#students"{% endif %}>&raquo;</a></li>
+            </ul>
+        {% endif %}
+    </div>
+</div> 
+{% endif %}

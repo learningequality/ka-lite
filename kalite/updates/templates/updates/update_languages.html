@@ -2,7 +2,9 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block languages_active %}active{% endblock languages_active %}
+{% block languages_active %}languages-active active-tab active-nav{% endblock languages_active %}
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
 
 {% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
@@ -22,20 +24,20 @@
 {% endblock headjs %}
 
 {% block content %}
+
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+
     <div class="container">
         
-        <div class="col-sm-8 download-actions-languages get-language vertical-shadow">            
-
+        <div class="col-sm-8 col-md-7 col lg-5 download-actions-languages get-language vertical-shadow">            
             <div class="row">
                 <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
             </div>
-            
             <div class="row">
                 <p class="button_text">
                     {% trans "Language packs contain all available translations for the interface and video subtitles." %}
                 </p>
             </div>
-
             <!-- Some logic here to Show/Disable Buttons comparing data from show_language_packs to installed_languages
                 Assume we are getting something like:
                 [{"en": "percent_complete": 100, etc.}, {"fr": "percent_complete": 80, etc.}, etc.]
@@ -46,9 +48,8 @@
                         <select id="language-packs"></select>
                     </span>
 
-                    <button class="btn btn-default btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
+                    <button class="btn btn-success btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
                 </div>
-
                 <div id="langpack-details">
                     <span id="lp-num-srts"></span><label>&nbsp;{% trans "subtitle(s)" %}</label>
                     <span id="lp-pct-trans"></span><label>&nbsp;{% trans "translated" %}</label>
@@ -58,7 +59,6 @@
                     <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
                 </div>
             </div>       
- 
         </div>
 
         <div id="languagepackdownload-progressbar">
@@ -66,13 +66,13 @@
         </div>
         <div class="clear"></div>
 
-        <div id="installed-languages-div">
+        <div id="installed-languages-div" class="vertical-shadow col-sm-12 col-lg-12">
             <div class="row">
                 <h4>{% trans "Installed Languages" %}</h4>
             </div>
             
-            <div class="row">
-                <div class="installed-languages"></div>
+            <div class="row table-responsive language-table">
+                <table class="installed-languages table"></table>
             </div>
         </div>
 

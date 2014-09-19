@@ -1,0 +1,69 @@
+{% extends "distributed/base_teach.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block home_active %}active{% endblock home_active %}
+{% block playlist_active %}playlists-active active-tab active-nav{% endblock playlist_active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+{% block assign_playlists_active %}active{% endblock assign_playlists_active %}
+
+{% block headcss %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+  <script type="text/html" id="all-groups-list-entry-template">
+      <td student-grp-id="<%= id %>" draggable="true"> <%= name %> </td>
+  </script>
+
+  <script type="text/html" id="playlist-template">
+    <td playlist-id="<%= id %>"> <%= tag %>: <%= title %> <table class="playlist-groups"></table></td>
+  </script>
+  <script type="text/html" id="playlist-group-template">
+    <td playlist-group-id="<%= id%>"> <%= name %></td>
+    <td playlist-group-id="<%= id%>"><a class="remove" href="">[-]</a></td>
+  </script>
+
+  <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' %}"></script>
+
+  <script type="text/javascript">
+   var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
+   var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+  </script>
+{% endblock headjs %}
+
+{% block content %}
+
+  {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <h2>
+          {% trans "Assign Playlists" %}
+          <small>
+                <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "To assign a playlist to a group, drag that group and drop it onto the playlist." %}'></span>
+            </small>
+        </h2>
+      </div>
+
+      <div class="col-xs-3">
+        <table class="table table-hover" id="student-groups">
+          <tr>
+            <th>Student Groups</th>
+          </tr>
+        </table>
+      </div>
+      <div class="col-xs-9">
+        <table class="table table-hover" id="playlists">
+          <tr>
+            <th>Playlists</th>
+          </tr>
+        </table>
+       </div>
+    </div>
+  </div>
+
+  {% endblock content %}

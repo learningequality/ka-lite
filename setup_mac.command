@@ -1,2 +1,2 @@
 current_dir=`dirname "${BASH_SOURCE[0]}"`
-source "$current_dir/setup_linux.sh"
+source "$current_dir/setup_unix.sh"

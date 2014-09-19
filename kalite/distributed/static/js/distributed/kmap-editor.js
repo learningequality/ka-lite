@@ -182,6 +182,17 @@ var KMapEditor = {
         // add exercises
         if (this.zoomLevel === this.ZOOM_EXERCISES || this.zoomLevel === this.ZOOM_HYBRID) {
             _.each(this.exercises, function(ex) {
+                // Determine if status of exercise for image and title tag
+                var exerciseStatus = "not started";
+                var imageSrc = KMapEditor.IMG_NOT_STARTED;
+                if (KMapEditor.exercisesCompleted[ex.id] === "partial") {
+                    exerciseStatus = "partially completed";
+                    imageSrc = KMapEditor.IMG_PARTIAL;
+                } else if (KMapEditor.exercisesCompleted[ex.id] === "complete") {
+                    exerciseStatus = "completed";
+                    imageSrc = KMapEditor.IMG_COMPLETE;
+                }
+
                 var newDiv = $("<div>")
                     .appendTo($("#map"))
                     .css({
@@ -189,22 +200,16 @@ var KMapEditor = {
                         "top": (ex.v_position - KMapEditor.minY) * KMapEditor.Y_SPACING - KMapEditor.ICON_SIZE / 2,
                         "width": KMapEditor.LABEL_WIDTH
                     })
-                    .addClass("exercise");
+                    .addClass("exercise")
+                    .attr("title", exerciseStatus);
 
                 var newEx = $("<a>")
                     .attr("href", ex.path)
                     .appendTo(newDiv);
 
-                var image_src = KMapEditor.IMG_NOT_STARTED;
-                if (KMapEditor.exercisesCompleted[ex.id] === "partial") {
-                    image_src = KMapEditor.IMG_PARTIAL;
-                } else if (KMapEditor.exercisesCompleted[ex.id] === "complete") {
-                    image_src = KMapEditor.IMG_COMPLETE;
-                }
-
                 $("<img>")
                     .attr({
-                        src: image_src,
+                        src: imageSrc,
                         width: KMapEditor.ICON_SIZE,
                         height: KMapEditor.ICON_SIZE
                     })

@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "facility/facility.html" %}
 {% load i18n %}
 
 {% block headcss %}{{ block.super }}
@@ -22,13 +22,14 @@
             $("#id_facility").show();
         {% else %}
             // Show that there's only one facility, and it's being selected.
-            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text()).insertAfter($("#id_facility"));
+            $(sprintf("<span>%s</span>", $("#id_facility option:selected").text())).insertAfter($("#id_facility"));
         {% endif %}
         });
     </script>
 {% endblock headjs %}
 
 {% block content %}
+{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
     <h3 class="no-margin-top">{{ title }}</h3>
 
     <form method="post" class="basic-form">

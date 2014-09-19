@@ -2,14 +2,24 @@
     Global
 =================================== */
 html, body {
-    height: 100%;
-}
-body {
     margin: 0;
-    padding-top: 79px;
+    padding: 0;
+    height: 100% !important;  /* Necessary for sticky footer */
 }
-.row {
+#wrapper {
+    min-height: 100%;
+    position: relative;
+}
+#content-container {
+    padding-top: 20px;
+    padding-bottom: 80px;  /* Must be same height as footer */
+}
+footer {
     width: 100%;
+    height: 80px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 .container {
     max-width: 1000px;
@@ -30,17 +40,24 @@ ul.errorlist {
 input.submit {
     margin-top: 30px;
 }
-.table_responsive {
-    border-bottom: 1px solid #ddd;
-    overflow-x: auto;
-}
 table {
     margin-bottom: 0;
 }
 input[type="submit"] {
     margin-bottom: 15px;
 }
-
+.help-tooltip {
+    color: rgb(58, 58, 58);
+    position: relative; 
+    top: -5px;
+}
+.caret.caret-reversed {
+    border-top-width: 0;
+    border-bottom: 4px solid;
+}
+.display-inline {
+    display: inline;
+}
 
 /* ===================================
     Nav Bar
@@ -48,8 +65,12 @@ input[type="submit"] {
 .navbar {
     border-bottom: 1px solid #999;
 }
-.navbar-default {
+.faded-green-bg {
     background: #c6d1ad; /* Also controls footer color */
+}
+.kalite-navbar {
+    width: 100%;
+    border-radius: 0;
 }
 .navbar-brand img { 
     margin-top: -6px;
@@ -58,8 +79,11 @@ input[type="submit"] {
     color: #333 !important;
     text-transform: uppercase;
 }
-.navbar ul li a:hover, .navbar ul li a:focus {
-    background: #dcdcdc !important;
+.navbar ul li a:hover, 
+.navbar ul li a:focus,
+.navbar ul li a.active {
+    background-color: rgb(185, 196, 174) !important;
+    border-radius: 5px;
 }
 .navbar-right {
     display: none;
@@ -83,29 +107,38 @@ input#search.ui-autocomplete-input {
 #search-button:hover, #search-button:focus {
     background: #4cae4c !important;
 }
-.active {
-    background: #dcdcdc;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-}
 #language_selector {
     margin: 15px 15px 0;
     /*width: 75px;*/
 }
+/* Navbar collapse styles for hamburger */
+.navbar-toggle {
+    background-color: rgb(214, 214, 214);
+}
+.navbar-toggle:hover {
+    opacity: 0.7;
+}
+.navbar-toggle .icon-bar {
+    background-color: #858B78;
+}
 /* ======= Logged in student only ======== */
-    #sitepoints {
-        font-size: 0.85em;
-        opacity: 0.7;
-        position: absolute;
-        right: 10px;
-        top: 2px;
-    }
-    #sitepoints-xs {
-        font-size: 12px;
-        margin-top: -12px;
-        margin-left: 100px;
-        position: absolute;
-    }
+.relative-block{
+    position: relative;
+}
+.sitepoint {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    position: absolute;
+    opacity: 0.7;
+}
+#sitepoints {
+    font-size: 0.95em;
+    right: -0px;
+}
+#sitepoints-xs {
+    font-size: 0.7em;
+    top: 27px;
+    left: 110px;
+}
 
 
 /* ===================================
@@ -225,41 +258,19 @@ input#search.ui-autocomplete-input {
 /* ===================================
     Footer
 =================================== */
-#wrapper {
-    height: auto !important;
-    height: 100%;
-    margin: 0 auto -78px; 
-    min-height: 100%;
-}
-.footer-clearfix {
-    height: 100px;
-}
-footer, footer p:hover, footer p:focus {
-    color: #777;
-}
-footer a.navbar-brand {
-    padding: 0;
-}
 footer {
-    border-top: 1px solid #999 !important;
-    height: 77px;
+    border-top: 1px solid #999;
 }
-footer ul li {
-    margin-top: 19px;
-}
-footer ul li:nth-child(2) {
-    margin-right: 10px;
-}
-footer ul .pull-right {
-    margin-right: 15px;
+.footer-text { 
+    font-size: 11px; 
+    text-align: center;
+    margin: 0;
 }
 #fle-logo {
+    margin-top: 15px;
+    margin-bottom: 5px;
     height: 18px;
-    margin-top: 21px;
     width: 268px;
-}
-.tiny { 
-    font-size: 0.85em; 
 }
 #creative-commons-icon {
     height: 15px;
@@ -281,9 +292,6 @@ footer ul .pull-right {
     form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
     h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
     .suggested-action .topic-list a { font-size: 1.25em; }
-    #fle-logo { margin-top: 0; }
-    footer p:nth-child(2), footer p:nth-child(3), p.visible-xs { margin: 0; }
-    p.visible-xs:last-child { height: 17px; } /* Controls space below footer */
 }
 @media only screen and (max-width: 469px) {
     h3.suggested-action-title { font-size: 18px; padding-top: 0; }
@@ -294,7 +302,4 @@ footer ul .pull-right {
 }
 @media only screen and (min-width: 470px) and (max-width: 767px) {
     h3.suggested-action-title { margin-top: 0; }
-}
-@media only screen and (min-width: 768px) and (max-width: 991px) {
-    .navbar-brand img { width: 69px; }
 }

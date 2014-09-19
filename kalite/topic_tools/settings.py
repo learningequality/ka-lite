@@ -11,5 +11,3 @@ INSTALLED_APPS = (
 #######################
 # Set module settings
 #######################
-
-TOPICS_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

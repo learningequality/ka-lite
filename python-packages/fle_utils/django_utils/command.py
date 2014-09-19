@@ -148,7 +148,8 @@ def call_outside_command_with_output(command, *args, **kwargs):
 
     # some custom variables that have to be put inside kwargs
     # or else will mess up the way the command is called
-    output_to_stdin = kwargs.pop('output_to_stdin', False)
+    output_to_stdout = kwargs.pop('output_to_stdout', False)
+    output_to_stderr = kwargs.pop('output_to_stderr', False)
     wait = kwargs.pop('wait', True)
 
     # build the command
@@ -167,8 +168,8 @@ def call_outside_command_with_output(command, *args, **kwargs):
         cmd,
         shell=False,
         # cwd=os.path.split(cmd[0])[0],
-        stdout=None if output_to_stdin else subprocess.PIPE,
-        stderr=None if output_to_stdin else subprocess.PIPE,
+        stdout=None if output_to_stdout else subprocess.PIPE,
+        stderr=None if output_to_stderr else subprocess.PIPE,
     )
     out = p.communicate() if wait else (None, None)
 

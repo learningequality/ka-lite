@@ -12,7 +12,9 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 
 from . import api_urls
+import kalite.dynamic_assets.urls
 import kalite.coachreports.urls
+import kalite.playlist.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
@@ -48,6 +50,9 @@ urlpatterns += patterns(__package__ + '.views',
     # For teachers
     url(r'^coachreports/', include(kalite.coachreports.urls)),
 
+    # For playlists
+    url(r'^playlists/', include(kalite.playlist.urls)),
+
     # For admins
     url(r'^update/', include(kalite.updates.urls)),
 
@@ -60,6 +65,11 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'), # only one zone, so make an easy way to access it
     url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'), # only one device, so make an easy way to access it
     url(r'^management/', include(kalite.control_panel.urls)), # no org_id, but parameter needed for reverse url look-up
+)
+
+# Dynamic assets
+urlpatterns += patterns('',
+    url(r'^_generated/', include(kalite.dynamic_assets.urls)),
 )
 
 # Testing
@@ -76,15 +86,20 @@ urlpatterns += patterns('',
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
-    url(r'^watch/$', 'watch_home', {}, 'watch_home'),
-    url(r'^exercisedashboard/$', 'exercise_dashboard', {}, 'exercise_dashboard'),
     url(r'^search/$', 'search', {}, 'search'),
     url(r'^test/', include('student_testing.urls')),
+
+    url(r'^store/', include('store.urls')),
     # the following pattern is a catch-all, so keep it last:
+
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
-    url(r'^(?P<splat>.+)/$', 'splat_handler', {}, 'splat_handler'),
+    url(r'^perseus/$', 'perseus', {}, 'perseus'),
+
+    # the following has no "$", and thus catches anything starting with "learn/"
+    url(r'^learn/', 'learn', {}, 'learn'),
+    url(r'^exercisedashboard/', 'exercise_dashboard', {}, 'exercise_dashboard'),
 )
 
 handler403 = __package__ + '.views.handler_403'
