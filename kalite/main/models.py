@@ -492,6 +492,23 @@ class AttemptLog(DeferredCountSyncedModel):
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
+class ContentLog(DeferredCountSyncedModel):
+    user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
+    content_id = models.CharField(max_length=100, db_index=True)
+    points = models.IntegerField(default=0)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
+    complete = models.BooleanField(default=False)
+    completion_timestamp = models.DateTimeField(blank=True, null=True)
+    completion_counter = models.IntegerField(blank=True, null=True)
+    extra_fields = models.TextField(blank=True)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
+    @staticmethod
+    def get_points_for_user(user):
+        return ContentLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
 
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):

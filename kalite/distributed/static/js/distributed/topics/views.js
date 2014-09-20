@@ -480,6 +480,18 @@ window.PlaylistSidebarView = SidebarContentView.extend({
                 });
         }
 
+        // load progress data for all exercises
+        var content_ids = $.map(this.$("[data-content-id]"), function(el) { return $(el).data("content-id"); });
+        if (content_ids.length > 0) {
+            doRequest(GET_CONTENT_LOGS_URL, content_ids)
+                .success(function(data) {
+                    $.each(data, function(ind, content) {
+                        var newClass = content.complete ? "complete" : "partial";
+                        self.$("[data-content-id='" + content.exercise_id + "']").removeClass("complete partial").addClass(newClass);
+                    });
+                });
+        }
+
     }, 100)
 });
 

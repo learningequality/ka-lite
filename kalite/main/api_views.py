@@ -16,7 +16,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy, string_concat
 
 from .api_forms import ExerciseLogForm, VideoLogForm, AttemptLogForm
-from .models import VideoLog, ExerciseLog, AttemptLog
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
@@ -230,6 +230,23 @@ def get_video_logs(request):
     logs = VideoLog.objects \
         .filter(user=user, video_id__in=data) \
         .values("video_id", "complete", "total_seconds_watched", "points")
+
+    return JsonResponse(list(logs))
+
+@allow_api_profiling
+@student_log_api(logged_out_message=ugettext_lazy("Progress not loaded."))
+def get_content_logs(request):
+    """
+    Given a list of content_ids, retrieve a list of content logs for this user.
+    """
+    data = simplejson.loads(request.body or "[]")
+    if not isinstance(data, list):
+        return JsonResponseMessageError(_("Could not load ContentLog objects: Unrecognized input data format."))
+
+    user = request.session["facility_user"]
+    logs = ContentLog.objects \
+        .filter(user=user, content_id__in=data) \
+        .values("content_id", "complete", "points")
 
     return JsonResponse(list(logs))
 

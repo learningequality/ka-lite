@@ -1,3 +1,4 @@
+import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
@@ -5,7 +6,7 @@ from tastypie.exceptions import NotFound
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
 
-from .models import ExerciseLog, AttemptLog
+from .models import ExerciseLog, AttemptLog, ContentLog
 
 from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
@@ -40,6 +41,19 @@ class AttemptLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
+class ContentLogResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    class Meta:
+        queryset = ContentLog.objects.all()
+        resource_name = 'contentlog'
+        filtering = {
+            "content_id": ('exact', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()
 
 class Video:
 
