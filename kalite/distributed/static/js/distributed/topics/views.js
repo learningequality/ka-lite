@@ -400,7 +400,7 @@ window.TopicContainerOuter = Backbone.View.extend({
 
             case "Audio":
                 view = new AudioPlayerView({
-                    content_id: id,
+                    id: id,
                     context_id: this.model.get("id")
                 });
                 this.content_view.show_view(view);

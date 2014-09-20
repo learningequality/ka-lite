@@ -7,7 +7,7 @@ from django.conf.urls import url
 
 from .models import ExerciseLog, AttemptLog
 
-from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache
+from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -304,26 +304,28 @@ class Content:
 
         self.on_disk = False
 
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
+        standard_fields = ["title", "description", "id", "author_name", "kind"]
+
+        for k in standard_fields:
+            setattr(self, k, kwargs.pop(k, None))
+
+        extra_fields = {}
+
+        for k,v in kwargs.iteritems():
+            extra_fields[k] = v
 
         # the computed values
-        self.path = "/content/juicy.mp3"
-        self.title = "This"
-        self.description = "Something about the audio"
-        self.id = "test"
-        self.author_name = "Someone"
-        self.kind = "audio"
-        self.extra_fields = "{}"
+        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
+        self.extra_fields = json.dumps(extra_fields)
         self.selected_language = lang_code
 
 
 class ContentResource(Resource):
+    content_urls = fields.DictField(attribute='content_urls')
     description = fields.CharField(attribute='description')
     id = fields.CharField(attribute='id')
     kind = fields.CharField(attribute='kind')
     on_disk = fields.BooleanField(attribute='on_disk')
-    path = fields.CharField(attribute='path')
     selected_language = fields.CharField(attribute='selected_language')
     title = fields.CharField(attribute='title')
     extra_fields = fields.CharField(attribute='extra_fields')
@@ -349,16 +351,16 @@ class ContentResource(Resource):
 
     def get_object_list(self, request):
         """
-        Get the list of videos.
+        Get the list of content.
         """
-        raise NotImplemented("Operation not implemented yet for videos.")
+        raise NotImplemented("Operation not implemented yet for content.")
 
     def obj_get_list(self, bundle, **kwargs):
         return self.get_object_list(bundle.request)
 
     def obj_get(self, bundle, **kwargs):
-        content_id = kwargs.get("content_id", None)
-        content = {"content_id": content_id}
+        content_id = kwargs.get("id", None)
+        content = get_content_data(bundle.request, content_id)
 
         if content:
             return Content(**content)

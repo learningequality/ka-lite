@@ -7,8 +7,8 @@ window.AudioPlayerView = Backbone.View.extend({
         _.bindAll(this);
 
         // load the info about the exercise itself
-        this.data_model = new ContentDataModel({content_id: this.options.content_id});
-        if (this.data_model.get("content_id")) {
+        this.data_model = new ContentDataModel({id: this.options.id});
+        if (this.data_model.get("id")) {
             this.data_model.fetch().then(this.render);
         }
 
