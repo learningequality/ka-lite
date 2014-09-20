@@ -1,23 +1,9 @@
-window.ContentDataModel = Backbone.Model.extend({
-    /*
-    Contains data about a content resource itself, with no user-specific data.
-    */
-
-    defaults: {
-        description: "",
-        title: "",
-        author_name: "",
-        path: ""
-    },
+window.ExtraFieldsBaseModel = Backbone.Model.extend({
 
     initialize: function() {
 
         _.bindAll(this);
 
-    },
-
-    url: function () {
-        return "/api/content/" + this.get("content_id");
     },
 
     parse: function(response) {
@@ -30,6 +16,7 @@ window.ContentDataModel = Backbone.Model.extend({
                 response.field = extra_fields.field;
             }
         }
+        return response;
     },
 
     toJSON: function() {
@@ -44,10 +31,27 @@ window.ContentDataModel = Backbone.Model.extend({
         attributes.extra_fields = JSON.stringify(extra_fields);
         return attributes;
     }
+});
+
+window.ContentDataModel = ExtraFieldsBaseModel.extend({
+    /*
+    Contains data about a content resource itself, with no user-specific data.
+    */
+
+    defaults: {
+        description: "",
+        title: "",
+        author_name: "",
+        path: ""
+    },
+
+    url: function () {
+        return "/api/content/" + this.get("id");
+    }
 
 });
 
-window.ContentLogModel = Backbone.Model.extend({
+window.ContentLogModel = ExtraFieldsBaseModel.extend({
     /*
     Contains summary data about the user's history of interaction with the current exercise.
     */
@@ -56,20 +60,6 @@ window.ContentLogModel = Backbone.Model.extend({
         complete: false,
         points: 0,
         views: 0
-    },
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-    },
-
-    save: function() {
-
-        var self = this;
-
-        // call the super method that will actually do the saving
-        return Backbone.Model.prototype.save.call(this);
     },
 
     urlRoot: "/api/contentlog/"
@@ -87,7 +77,7 @@ window.ContentLogCollection = Backbone.Collection.extend({
 
     url: function() {
         return "/api/contentlog/?" + $.param({
-            "exercise_id": this.content_id,
+            "content_id": this.content_id,
             "user": window.statusModel.get("user_id")
         });
     },
