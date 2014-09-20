@@ -1,8 +1,16 @@
-{% extends base_template %}
+{% extends "distributed/base_manage.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
-{% block title %}{% trans "Edit Facility" %}{% endblock title %}
+{% block title %}
+    {% if form.instance.id %}
+        {% trans "Edit" %}
+    {% else %}
+        {% trans "Add" %}
+    {% endif %}
+    {% trans "Facility" %}
+{% endblock title %}
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
 {% block update_active %}active{% endblock update_active %}
 {% block users_active %}active{% endblock %}
 
@@ -170,6 +178,8 @@
 {% endblock headjs %}
 
 {% block content %}
+
+    {{ block.super }}
  
     <h3 class="no-margin-top">{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
     <div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>

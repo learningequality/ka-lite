@@ -1,8 +1,9 @@
-{% extends "facility/facility.html" %}
+{% extends "distributed/base_manage.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Edit User" %}{% endblock title %}
+{% block title %}{% trans title %}{% endblock title %}
 
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
 {% block users_active %}active{% endblock %}
 {% block signup_active %}active{% endblock signup_active %}
 
@@ -51,7 +52,8 @@
 {% endblock headjs %}
 
 {% block content %}
-{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
+    {{ block.super }}
+
     <div class="container">
         <h3 class="no-margin-top">{{ title }}</h3>
         <form method="post" class="basic-form">
