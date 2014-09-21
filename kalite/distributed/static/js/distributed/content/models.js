@@ -12,9 +12,7 @@ window.ExtraFieldsBaseModel = Backbone.Model.extend({
         this.database_attrs = Object.keys(response);
         if(extra_fields!==undefined) {
             extra_fields = JSON.parse(extra_fields);
-            for (var field in extra_fields) {
-                response.field = extra_fields.field;
-            }
+            response = _.extend(response, extra_fields);
         }
         return response;
     },
