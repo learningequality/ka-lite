@@ -59,8 +59,26 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
     defaults: {
         complete: false,
         points: 0,
-        views: 0
+        views: 0,
+        progress: 0,
+        time_spent: 0
     },
+
+    // Set this here, as models created on the client side do not have it set by parse.
+    database_attrs: [
+        "user",
+        "content_id",
+        "points",
+        "language",
+        "complete",
+        "completion_timestamp",
+        "completion_counter",
+        "time_spent",
+        "content_source",
+        "content_kind",
+        "progress",
+        "views"
+    ],
 
     urlRoot: "/api/contentlog/",
 
