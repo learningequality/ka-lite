@@ -895,4 +895,19 @@ div .col-xs-4 {
     font-style: normal;
     color: #999;
 }
+
+.audio-points-wrapper {
+    float: right;
+    padding-left: 5px;
+    display: inline;
+}
+
+.audio-description {
+    display: inline;
+}
+
+.audio-points-wrapper div {
+    display: inline;
+}
+
 /* END styles for audio player */

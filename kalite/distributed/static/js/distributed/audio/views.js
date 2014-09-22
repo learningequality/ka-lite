@@ -8,7 +8,7 @@ window.AudioPlayerView = Backbone.View.extend({
 
         var self = this;
 
-        this.possible_points = ds.distributed.points_per_audio;
+        this.possible_points = ds.distributed.points_per_audio || 750;
 
         this.REQUIRED_PERCENT_FOR_FULL_POINTS = 0.95;
 
@@ -47,6 +47,13 @@ window.AudioPlayerView = Backbone.View.extend({
 
         this.initialize_listeners();
 
+        this.points_view = new AudioPlayerPointsView({
+            model: this.log_model
+        });
+
+        this.points_view.render();
+
+        this.$(".audio-points-wrapper").append(this.points_view.el);
     },
 
     initialize_listeners: function() {
@@ -85,11 +92,13 @@ window.AudioPlayerView = Backbone.View.extend({
         } else {
             this.log_model.set({
                 time_spent: total_time,
-                points: this.possible_points * total_time/this.audio_object.duration,
+                points: Math.floor(this.possible_points * total_time/this.audio_object.duration),
                 progress: total_time/this.audio_object.duration
             });
         }
         this.log_model.save();
+
+        statusModel.set("newpoints", this.log_model.get("points") - this.starting_points);
 
     },
 
@@ -107,4 +116,15 @@ window.AudioPlayerView = Backbone.View.extend({
         this.remove();
     }
 
+});
+
+window.AudioPlayerPointsView = Backbone.View.extend({
+
+    initialize: function() {
+        this.listenTo(this.model, "change", this.render);
+    },
+
+    render: function() {
+        this.$el.html(Number(this.model.get("points")));
+    }
 });
