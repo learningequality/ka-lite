@@ -62,8 +62,9 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         views: 0
     },
 
-    urlRoot: "/api/contentlog/"
+    urlRoot: "/api/contentlog/",
 
+    save: _.throttle(function(){Backbone.Model.prototype.save.call(this);}, 30000)
 });
 
 
