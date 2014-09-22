@@ -40,7 +40,7 @@ window.AudioPlayerView = Backbone.View.extend({
         this.starting_points = this.log_model.get("points");
 
         if ((this.log_model.get("last_percent") || 0) > 0) {
-            this.audio_object.skipTp(this.log_model.get("last_percent"));
+            this.audio_object.skipTo(this.log_model.get("last_percent"));
         }
 
         this.log_model.set("views", this.log_model.get("views") + 1);
@@ -62,8 +62,10 @@ window.AudioPlayerView = Backbone.View.extend({
         var time_now = new Date().getTime();
         // In case of skipping around, only give credit for time actually passed.
         // In case of skipping backwards, make sure time_watched is always non-negative.
-        var time_engaged = Math.max(0, Math.min(time_now - this.last_time, (event.percent - this.log_model.get("last_percent"))*this.audio_object.duration));
-        this.log_model.set("last_percent", event.percent);
+        var percent = event.originalEvent.percent;
+        var time_engaged = Math.max(0, Math.min(time_now - this.last_time, (percent - this.log_model.get("last_percent"))*this.audio_object.duration));
+        time_engaged = isNaN(time_engaged) ? 0 : time_engaged;
+        this.log_model.set("last_percent", percent);
         this.last_time = time_now;
         var total_time = this.log_model.get("time_spent") + time_engaged;
         if (total_time/this.audio_object.duration > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
