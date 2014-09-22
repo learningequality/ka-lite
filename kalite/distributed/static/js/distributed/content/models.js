@@ -7,12 +7,14 @@ window.ExtraFieldsBaseModel = Backbone.Model.extend({
     },
 
     parse: function(response) {
-        var extra_fields = response.extra_fields;
-        delete response.extra_fields;
-        this.database_attrs = Object.keys(response);
-        if(extra_fields!==undefined) {
-            extra_fields = JSON.parse(extra_fields);
-            response = _.extend(response, extra_fields);
+        if (response!==undefined) {
+            var extra_fields = response.extra_fields;
+            delete response.extra_fields;
+            this.database_attrs = Object.keys(response);
+            if(extra_fields!==undefined) {
+                extra_fields = JSON.parse(extra_fields);
+                response = _.extend(response, extra_fields);
+            }
         }
         return response;
     },
@@ -70,12 +72,12 @@ window.ContentLogCollection = Backbone.Collection.extend({
     model: ContentLogModel,
 
     initialize: function(models, options) {
-        this.content_id = options.content_id;
+        this.content_model = options.content_model;
     },
 
     url: function() {
         return "/api/contentlog/?" + $.param({
-            "content_id": this.content_id,
+            "content_id": this.content_model.get("id"),
             "user": window.statusModel.get("user_id")
         });
     },
@@ -85,7 +87,9 @@ window.ContentLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new ContentLogModel({
-                "content_id": this.content_id,
+                "content_id": this.content_model.get("id"),
+                "content_source": this.content_model.get("source") || "",
+                "content_kind": this.content_model.get("kind"),
                 "user": window.statusModel.get("user_uri")
             });
         }
