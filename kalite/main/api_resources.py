@@ -1,3 +1,4 @@
+import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
@@ -5,9 +6,9 @@ from tastypie.exceptions import NotFound
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
 
-from .models import ExerciseLog, AttemptLog
+from .models import ExerciseLog, AttemptLog, ContentLog
 
-from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache
+from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -40,6 +41,19 @@ class AttemptLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
+class ContentLogResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    class Meta:
+        queryset = ContentLog.objects.all()
+        resource_name = 'contentlog'
+        filtering = {
+            "content_id": ('exact', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()
 
 class Video:
 
@@ -296,3 +310,88 @@ class AssessmentItemResource(Resource):
 
     def rollback(self, request):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
+
+
+class Content:
+
+    def __init__(self, lang_code="en", **kwargs):
+
+        self.on_disk = False
+
+        standard_fields = ["title", "description", "id", "author_name", "kind"]
+
+        for k in standard_fields:
+            setattr(self, k, kwargs.pop(k, None))
+
+        extra_fields = {}
+
+        for k,v in kwargs.iteritems():
+            extra_fields[k] = v
+
+        # the computed values
+        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
+        self.extra_fields = json.dumps(extra_fields)
+        self.selected_language = lang_code
+
+
+class ContentResource(Resource):
+    content_urls = fields.DictField(attribute='content_urls')
+    description = fields.CharField(attribute='description')
+    id = fields.CharField(attribute='id')
+    kind = fields.CharField(attribute='kind')
+    on_disk = fields.BooleanField(attribute='on_disk')
+    selected_language = fields.CharField(attribute='selected_language')
+    title = fields.CharField(attribute='title')
+    extra_fields = fields.CharField(attribute='extra_fields')
+
+    class Meta:
+        resource_name = 'content'
+        object_class = Content
+
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
+        ]
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if getattr(bundle_or_obj, 'obj', None):
+            kwargs['pk'] = bundle_or_obj.obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.id
+        return kwargs
+
+    def get_object_list(self, request):
+        """
+        Get the list of content.
+        """
+        raise NotImplemented("Operation not implemented yet for content.")
+
+    def obj_get_list(self, bundle, **kwargs):
+        return self.get_object_list(bundle.request)
+
+    def obj_get(self, bundle, **kwargs):
+        content_id = kwargs.get("id", None)
+        content = get_content_data(bundle.request, content_id)
+
+        if content:
+            return Content(**content)
+        else:
+            raise NotFound('Content with id %s not found' % content_id)
+
+    def obj_create(self, request):
+        raise NotImplementedError
+
+    def obj_update(self, bundle, **kwargs):
+        raise NotImplementedError
+
+    def obj_delete_list(self, request):
+        raise NotImplementedError
+
+    def obj_delete(self, request):
+        raise NotImplementedError
+
+    def rollback(self, request):
+        raise NotImplementedError

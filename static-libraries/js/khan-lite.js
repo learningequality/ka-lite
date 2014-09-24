@@ -1,3 +1,10 @@
+$.ajaxSetup({dataFilter: function(data, type) {
+    if (type === "json" && data === "") {
+        data = null;
+    }
+    return data;
+}});
+
 function assert(val, msg) {
     if (!val) {
         show_message("error", msg);
@@ -7,7 +14,7 @@ function assert(val, msg) {
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);

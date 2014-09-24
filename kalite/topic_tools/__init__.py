@@ -38,6 +38,7 @@ EXERCISES_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "exercises.json")
 VIDEOS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "videos.json")
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "assessmentitems.json")
 KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "map_topics.json")
+CONTENT_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "content.json")
 
 CACHE_VARS = []
 
@@ -101,7 +102,6 @@ def get_assessment_item_cache(force=False):
 
     return ASSESSMENT_ITEMS
 
-
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
@@ -110,6 +110,14 @@ def get_knowledgemap_topics(force=False):
         KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=True)
     return KNOWLEDGEMAP_TOPICS
 
+CONTENT          = None
+CACHE_VARS.append("CONTENT")
+def get_content_cache(force=False):
+    global CONTENT, CONTENT_FILEPATH
+    if CONTENT is None or force:
+        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=True)
+
+    return CONTENT
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -597,6 +605,46 @@ def get_assessment_item_data(request, assessment_item_id=None):
     # TODO (rtibbles): Enable internationalization for the assessment_items.
 
     return assessment_item
+
+def get_content_data(request, content_id=None):
+
+    content_cache = get_content_cache()
+    content = content_cache.get(content_id, None)
+
+    if not content:
+        return None
+
+    # TODO-BLOCKER(jamalex): figure out why this content data is not prestamped, and remove this:
+    from kalite.updates import stamp_availability_on_content
+    content = stamp_availability_on_content(content)
+
+    if not content["available"]:
+        if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
+            messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
+        elif request.is_logged_in:
+            messages.warning(request, _("This content was not found! Please contact your teacher or an admin to have it downloaded."))
+        elif not request.is_logged_in:
+            messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
+
+    # Fallback mechanism
+    available_urls = dict([(lang, avail) for lang, avail in content["availability"].iteritems() if avail["on_disk"]])
+    if content["available"] and not available_urls:
+        content_lang = "en"
+        messages.success(request, "Got content content from %s" % content["availability"]["en"]["stream"])
+    else:
+        content_lang = i18n.select_best_available_language(request.language, available_codes=available_urls.keys())
+
+    # TODO(jamalex): clean this up; we're flattening it here so handlebars can handle it more easily
+    content = content.copy()
+    content["content_urls"] = content["availability"].get(content_lang)
+    content["selected_language"] = content_lang
+    content["trans_available"] = len(content["availability"]) > 1
+    content["title"] = _(content["title"])
+    content["description"] = _(content["description"])
+    content["content_id"] = content["id"]
+
+    return content
 
 
 
