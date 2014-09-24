@@ -55,7 +55,11 @@ def _set_linux_mac_priority(priority, logging=logging):
         return False
 
     this_process = psutil.Process(os.getpid())
-    if "runcherrypyserver" in this_process.cmdline():
+    if isinstance(this_process.cmdline, list):
+        cmdline = this_process.cmdline
+    else:
+        cmdline = this_process.cmdline()
+    if "runcherrypyserver" in cmdline:
         logging.debug("Will not set priority, this is the webserver process")
         return False
 
