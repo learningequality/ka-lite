@@ -180,6 +180,11 @@ class DeviceManager(SyncedModelManager):
         return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
             Q(devicemetadata__is_trusted=True))
 
+    def by_zones(self, zones):
+        # get Devices that belong to a list of zone IDs, or are a trusted authority
+        return self.filter(Q(devicezone__zone__id__in=zones, devicezone__revoked=False) |
+            Q(devicemetadata__is_trusted=True))
+
 
 class Device(SyncedModel):
     name = models.CharField(max_length=100, blank=True)
