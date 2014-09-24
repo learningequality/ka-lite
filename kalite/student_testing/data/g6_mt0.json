@@ -1,0 +1,14 @@
+{
+  "id": "g6_mt0",
+  "title": "Grade VI Mid Year Exam",
+  "seed": 305,
+  "playlist_ids": [ "g6_m1" ],
+  "repeats": "3",
+  "ids": [
+    "distributive_property", "divisibility_tests", "exponents_1",
+    "greatest_common_divisor", "least_common_multiple",
+    "least_common_multiple_and_greatest_common_divisor_word_problems",
+    "order_of_operations", "prime_factorization", "square_roots"
+  ],
+  "is_practice": false
+}
