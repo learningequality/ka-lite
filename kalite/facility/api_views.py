@@ -3,6 +3,7 @@
 
 from annoying.functions import get_object_or_None
 
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
@@ -11,6 +12,9 @@ from django.utils.translation import ugettext as _
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess
 from kalite.shared.decorators import require_authorized_admin
+
+
+log = settings.LOG
 
 
 @require_authorized_admin
@@ -48,6 +52,9 @@ def delete_users(request):
 def facility_delete(request, facility_id=None):
     if not request.is_django_user:
         raise PermissionDenied("Teachers cannot delete facilities.")
+
+    if request.method != 'POST':
+        return JsonResponseMessageError(_("Method is not allowed."))
 
     facility_id = facility_id or simplejson.loads(request.body or "{}").get("facility_id")
     fac = get_object_or_404(Facility, id=facility_id)
