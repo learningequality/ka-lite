@@ -55,6 +55,11 @@ def _set_linux_mac_priority(priority, logging=logging):
         return False
 
     this_process = psutil.Process(os.getpid())
+    # Psutil is builtin to some python installations, and the versions
+    # may differ across devices. It affects the code below, b/c for the 
+    # 2.x psutil version. 'this_process.cmdline is a function that 
+    # returns a list; in the 1.x version it's just a list. 
+    # So we check what kind of cmdline we have, and go from there.
     if isinstance(this_process.cmdline, list):
         cmdline = this_process.cmdline
     else:
