@@ -43,6 +43,11 @@ def set_exam_mode_on(test_object):
         return test_object.set_exam_mode()
 
 
+def set_exam_mode_off():
+    """Switch off exam mode if it is on, do nothing if already off"""
+    Settings.set(SETTINGS_KEY_EXAM_MODE, '')
+    return 
+
 # ==========================
 # Some constants and helper functions to be used for the "Current Unit" feature.
 # ==========================
