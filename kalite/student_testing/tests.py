@@ -265,34 +265,25 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
     def test_exam_mode_shut_out(self):
-
         set_exam_mode_on(self.exam_id)
-
         self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True)
 
         # Start the quiz to create a test log
-
         self.wait_for_element(By.ID, 'start-test')
-
         self.browser.find_element_by_id("start-test").click()
 
         # Answer one question
-
         self.wait_for_element(By.ID, 'check-answer-button')
 
         # Turn off the exam
-
         set_exam_mode_on('')
-
         self.browser.find_element_by_css_selector("input").click()
-
         self.browser.find_element_by_id("check-answer-button").click()
 
         try:
             testlog = TestLog.objects.get(user=self.student, test=self.exam_id)
         except:
             pass
-            # import pdb; pdb.set_trace()
 
         # Check that the Test Log is started, but not advanced.
         self.assertEqual(testlog.started, True)
@@ -304,15 +295,26 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         self.browse_to(self.exam_page_url)
 
         # Start the quiz to create a test log
-
         self.wait_for_element(By.ID, 'start-test')
-
         self.browser.find_element_by_id("start-test").click()
-
         testlog = TestLog.objects.get(user=self.student, test=self.exam_id)
 
         # Check that the Test Log is started.
         self.assertEqual(testlog.started, True)
+
+    def exam_off_on_teacher_logout(self):
+        self.login_teacher_in_browser()
+        set_exam_mode_on(self.exam_id)
+        self.assertEqual(get_exam_mode_on(), self.exam_id)
+        self.browser_logout_user()
+        self.assertEqual(get_exam_mode_on(), '')
+
+    def exam_enabled_on_student_logout(self):
+        self.login_student_in_browser()
+        set_exam_mode_on(self.exam_id)
+        self.assertEqual(get_exam_mode_on(), self.exam_id)
+        self.browser_logout_user()
+        self.assertEqual(get_exam_mode_on(), self.exam_id)
 
 
 class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
