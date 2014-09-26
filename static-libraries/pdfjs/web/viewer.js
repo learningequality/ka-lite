@@ -58,6 +58,7 @@ PDFJS.imageResourcesPath = './images/';
   PDFJS.workerSrc = '../build/pdf.worker.js';
   PDFJS.cMapUrl = '../web/cmaps/';
   PDFJS.cMapPacked = true;
+  PDFJS.disableFontFace = true;
 
 var mozL10n = document.mozL10n || document.webL10n;
 
