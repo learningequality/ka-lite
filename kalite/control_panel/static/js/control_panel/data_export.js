@@ -57,9 +57,7 @@ var DataExportView = Backbone.View.extend({
 
     render: function() {
         // render container     
-        this.$el.html(this.template({
-            "is_central": this.model.get("is_central")
-        }));
+        this.$el.html(this.template(this.model.attributes));
 
         // append zone, facility & group select views.
         this.$('#student-select-container').append(this.zone_select_view.$el);
