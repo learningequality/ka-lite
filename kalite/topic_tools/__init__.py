@@ -30,8 +30,6 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.general import softload_json
 from kalite import i18n
-from kalite import khanload  # should be removed ASAP, to make more generic and separate apps.
-                             # Required because of odd KA URL structure that makes sibling detection impossible otherwise.
 
 TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
 EXERCISES_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "exercises.json")
@@ -448,17 +446,8 @@ def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
 
 def get_related_videos(exercise, limit_to_available=True):
     """
-    Return topic tree cached data for each related video,
-    favoring videos that are sibling nodes to the exercises.
+    Return topic tree cached data for each related video.
     """
-    def find_most_related_video(videos, exercise):
-        # Search for a sibling video node to add to related exercises.
-        for video in videos:
-            if is_sibling({"path": video["path"], "kind": "Video"}, exercise):
-                return video
-        # failed to find a sibling; just choose the first one.
-        return videos[0] if videos else None
-
     # Find related videos
     related_videos = {}
     for slug in exercise["related_video_slugs"]:
@@ -466,7 +455,7 @@ def get_related_videos(exercise, limit_to_available=True):
 
         # Make sure the IDs are recognized, and are available.
         if video_node and (not limit_to_available or video_node.get("available", False)):
-            related_videos[slug] = find_most_related_video(video_node, exercise)
+            related_videos[slug] = video_node
 
     return related_videos
 
@@ -478,17 +467,6 @@ def is_base_leaf(node, is_base_leaf=True):
         if child['kind'] == 'Topic':
             return False
     return is_base_leaf
-
-
-def is_sibling(node1, node2):
-    """
-    """
-    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])
-
-    parent_path1 = parse_path(node1)
-    parent_path2 = parse_path(node2)
-
-    return parent_path1 == parent_path2
 
 
 def get_neighbor_nodes(node, neighbor_kind=None):

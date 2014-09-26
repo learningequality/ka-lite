@@ -42,7 +42,7 @@ from kalite.shared.decorators import require_login
 from kalite.topic_tools import get_node_cache
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
-CENTRAL_UPDATE_ALL_PATH = "/api/khanload/update/central/"
+CENTRAL_UPDATE_ALL_PATH = "/api/contentload/update/central/"
 
 
 @require_login

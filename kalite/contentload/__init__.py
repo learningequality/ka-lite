@@ -12,4 +12,4 @@ kind_slugs = {
     "AssessmentItem": ""
 }
 
-KHANLOAD_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "../_khanload_cache")
+KHANLOAD_CACHE_DIR = os.path.join(settings.PROJECT_PATH, "../_contentload_cache")

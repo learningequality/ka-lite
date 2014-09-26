@@ -4,7 +4,7 @@
 
 INSTALLED_APPS = (
     "kalite.i18n",  # get_video_id
-    "kalite.khanload",  # because we have KA path weirdness in our topic tree.  TODO: remove for LEX
+    "kalite.contentload",  # because we have KA path weirdness in our topic tree.  TODO: remove for LEX
     "kalite.testing",
 )
 
