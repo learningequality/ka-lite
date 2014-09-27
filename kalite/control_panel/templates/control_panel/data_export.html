@@ -16,6 +16,7 @@
         var TEST_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='test_log_csv' %}";
         var ATTEMPT_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='attempt_log_csv' %}";
         var EXERCISE_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='exercise_log_csv' %}";
+        var DEVICE_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='device_log_csv' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
 
@@ -26,7 +27,9 @@
                 model: new DataExportStateModel({
                     zone_id: "{{ zone_id }}",
                     group_id: "{{ group_id }}",
-                    facility_id: "{{ facility_id }}",
+                    facility_id: "{{ facility_id }}", 
+                    // b/c we hardcode in template, initialize this for state model
+                    resource_id: "facility_user",  
                     is_central: {{ is_central|lower }}
                 }),
                 org_id: "{{ org_id }}"
