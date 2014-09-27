@@ -9,7 +9,7 @@ from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth import ObjectAdminAuthorization
 from kalite.student_testing.models import TestLog
-from securesync.models import Zone
+from securesync.models import Zone, Device, SyncSession
 
 from .api_serializers import CSVSerializer
 
@@ -222,6 +222,35 @@ class ExerciseLogResource(ParentFacilityUserResource):
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
             bundle.data.pop("user")
+
+        return to_be_serialized
+
+
+class DeviceLogResource(ParentFacilityUserResource):
+
+    class Meta:
+        queryset = Device.objects.all()
+        resource_name = 'device_log_csv'
+        authorization = ObjectAdminAuthorization()
+        excludes = ['signed_version', 'public_key', 'counter', 'signature']
+        serializer = CSVSerializer()
+
+    def _get_device_logs(self, bundle):
+        # requires at least one zone_id, which we pass as a list to zone_ids
+        zone_ids = bundle.request.GET.get("zone_id") or bundle.request.GET.get("zone_ids")
+        return Device.objects.by_zones(zone_ids.split(","))
+
+    def obj_get_list(self, bundle, **kwargs):
+        device_logs = self._get_device_logs(bundle)
+        return super(DeviceLogResource, self).authorized_read_list(device_logs, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """Add number of syncs and last sync to response"""
+        for bundle in to_be_serialized["objects"]:
+            all_sessions = SyncSession.objects.filter(client_device__id=bundle.data.get("id"))
+            last_sync = "Never" if not all_sessions else all_sessions.order_by("-timestamp")[0].timestamp
+            bundle.data["last_sync"] = last_sync
+            bundle.data["total_sync_sessions"] = len(all_sessions)
 
         return to_be_serialized
 
