@@ -1,6 +1,6 @@
 import datetime 
 
-from kalite.main.models import AttemptLog
+from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.student_testing.models import TestLog
 
 
@@ -37,8 +37,21 @@ class CreateAttemptLogMixin(object):
 
         return AttemptLog.objects.create(**fields)
 
+class CreateExerciseLogMixin(object):
+    DEFAULTS = {
+        'exercise_id': 'comparing_whole_numbers', 
+    }
+    
+    @classmethod
+    def create_exercise_log(cls, **kwargs):
+        fields = CreateExerciseLogMixin.DEFAULTS.copy()
+        fields['user'] = kwargs.get("user")
+
+        return ExerciseLog.objects.create(**fields)
+
 class StudentProgressMixin(CreateTestLogMixin,
-                           CreateAttemptLogMixin):
+                           CreateAttemptLogMixin,
+                           CreateExerciseLogMixin):
     '''
     Toplevel class that has all the mixin methods defined above
     '''
