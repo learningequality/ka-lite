@@ -25,6 +25,8 @@ from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
+from student_testing.utils import set_exam_mode_off
+
 
 from kalite.shared.decorators import require_authorized_admin
 from securesync.devices.models import Zone
@@ -283,6 +285,10 @@ def login(request, facility):
 
 
 def logout(request):
+    # TODO(dylanjbarth) this is Nalanda specific
+    if request.is_teacher:
+        set_exam_mode_off()
+
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":
