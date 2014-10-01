@@ -75,7 +75,7 @@ window.AudioPlayerView = Backbone.View.extend({
         this.log_model.set("last_percent", percent);
         this.last_time = time_now;
         var total_time = this.log_model.get("time_spent") + time_engaged;
-        if (total_time/this.audio_object.duration > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
+        if ((total_time/this.audio_object.duration - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
             this.log_model.set_complete();
             this.log_model.set({
                 time_spent: Math.max(this.audio_object.duration, total_time),
