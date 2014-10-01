@@ -31,12 +31,12 @@ from django.utils.translation import ugettext as _
 from fle_utils.general import softload_json
 from kalite import i18n
 
-TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
-EXERCISES_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "exercises.json")
-VIDEOS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "videos.json")
-ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "assessmentitems.json")
-KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "map_topics.json")
-CONTENT_FILEPATH = os.path.join(settings.KHAN_DATA_PATH, "content.json")
+TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
+VIDEOS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "videos.json")
+ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
+KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "map_topics.json")
+CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "content.json")
 
 CACHE_VARS = []
 
