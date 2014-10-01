@@ -3,23 +3,23 @@ from functools import partial
 import base
 
 slug_key = {
-    "Topic": "node_slug",
-    "Video": "readable_id",
+    "Topic": "name",
+    "Video": "name",
     "Exercise": "name",
-    "AssessmentItem": "id",
+    "AssessmentItem": "name",
 }
 
 title_key = {
     "Topic": "title",
     "Video": "title",
-    "Exercise": "display_name",
-    "AssessmentItem": "name"
+    "Exercise": "title",
+    "AssessmentItem": "title"
 }
 
 id_key = {
-    "Topic": "node_slug",
-    "Video": "youtube_id",
-    "Exercise": "name",
+    "Topic": "id",
+    "Video": "id",
+    "Exercise": "id",
     "AssessmentItem": "id"
 }
 
@@ -39,12 +39,12 @@ denormed_attribute_list = {
     "Exercise": ["kind", "description", "title", "display_name", "name", "id", "y_pos", "x_pos", "path", "slug"]
 }
 
-kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
+kind_blacklist = [None]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
+slug_blacklist = []
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
-temp_ok_atts = ["icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
+temp_ok_atts = []
 
 channel_data = {
     "slug_key": slug_key,
@@ -67,42 +67,21 @@ def build_full_cache(items, id_key="id"):
     Uses list of items retrieved from Khan Academy API to
     create an item cache with fleshed out meta-data.
     """
-    for item in items:
-        for attribute in item._API_attributes:
-            try:
-                dummy_variable_to_force_fetch = item.__getattr__(attribute)
-                if isinstance(item[attribute], list):
-                    for subitem in item[attribute]:
-                        if isinstance(subitem, dict):
-                            if subitem.has_key("kind"):
-                                subitem = whitewash_node_data(
-                                    {key: value for key, value in subitem.items()
-                                    if key in denormed_attribute_list[subitem["kind"]]})
-                elif isinstance(item[attribute], dict):
-                    if item[attribute].has_key("kind"):
-                        item[attribute] = whitewash_node_data(
-                            {key: value for key, value in item.attribute.items()
-                            if key in denormed_attribute_list[item[attribute]["kind"]]})
-            except APIError as e:
-                del item[attribute]
     return {item["id"]: whitewash_node_data(item) for item in items}
 
 hierarchy = ["Domain", "Subject", "Topic", "Tutorial"]
 
+path = ""
+
 def retrieve_API_data():
-    khan = Khan()
 
-    topic_tree = khan.get_topic_tree()
+    topic_tree = {}
 
-    exercises = khan.get_exercises()
+    exercises = []
 
-    videos = khan.get_videos()
+    videos = []
 
     assessment_items = []
-
-    for exercise in exercises:
-        for assessment_item in exercise.all_assessment_items:
-            assessment_items.append(khan.get_assessment_item(assessment_item["id"]))
 
     content = []
 

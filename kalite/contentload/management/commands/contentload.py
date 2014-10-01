@@ -99,7 +99,13 @@ class Command(BaseCommand):
 
         channel = options["channel"]
 
+        if options["import_files"]:
+            channel = "import_channel"
+
         channel_tools = importlib.import_module("kalite.contentload.management.commands.channels." + channel)
+
+        if options["import_files"]:
+            channel_tools.path = options["import_files"]
 
         channel_path = os.path.join(settings.CONTENT_DATA_PATH, channel)
 
