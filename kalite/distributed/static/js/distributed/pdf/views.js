@@ -63,7 +63,8 @@ window.PDFViewerView = Backbone.View.extend({
     page_loaded: function(ev) {
         console.log("Page successfully loaded!")
 
-        var pdfview = ev.target.PDFView;
+        var contextWindow = ev.target.defaultView;
+        var pdfview = contextWindow.PDFView;
         this.update_progress(pdfview);
     },
 
