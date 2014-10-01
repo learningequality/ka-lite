@@ -53,10 +53,10 @@ window.PDFViewerView = Backbone.View.extend({
     },
 
     page_changed: function(ev) {
-        var viewerWindow = ev.target;
-        if (viewerWindow.PDFView.previousPageNumber !== viewerWindow.currentPageNumber) { // the page actually changed
+        var contextWindow = ev.target;
+        if (contextWindow.PDFView.previousPageNumber !== contextWindow.currentPageNumber) { // the page actually changed
             console.log("page actually changed!");
-            this.update_progress(viewerWindow.PDFView);
+            this.update_progress(contextWindow.PDFView);
         }
     },
 
