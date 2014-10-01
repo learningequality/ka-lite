@@ -76,19 +76,11 @@ window.AudioPlayerView = Backbone.View.extend({
         this.last_time = time_now;
         var total_time = this.log_model.get("time_spent") + time_engaged;
         if (total_time/this.audio_object.duration > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
-            var already_complete = this.log_model.get("complete");
+            this.log_model.set_complete();
             this.log_model.set({
                 time_spent: Math.max(this.audio_object.duration, total_time),
-                points: this.possible_points,
-                progress: 1,
-                complete: true,
-                completion_counter: (this.log_model.get("completion_counter") || 0) + 1
+                points: this.possible_points
             });
-            if (!already_complete) {
-                this.log_model.set({
-                    completion_timestamp: window.statusModel.get_server_time()
-                });
-            }
         } else {
             this.log_model.set({
                 time_spent: total_time,
