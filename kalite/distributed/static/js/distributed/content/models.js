@@ -89,7 +89,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         this.set({
             progress: 1,
             complete: true,
-            completion_counter: (this.log_model.get("completion_counter") || 0) + 1
+            completion_counter: (this.get("completion_counter") || 0) + 1
         });
         if (!already_complete) {
             this.set({
