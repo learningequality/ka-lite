@@ -4,6 +4,8 @@ window.PDFViewerView = Backbone.View.extend({
 
     initialize: function() {
 
+        this.POINTS_PER_PAGE = 50;
+
         _.bindAll(this);
 
         var self = this;
@@ -35,6 +37,7 @@ window.PDFViewerView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template({pdf: "04TLVP4.pdf"}));
+        window.statusModel.set("points", this.log_model.get("points"));
         this.$(".pdf-iframe").load(this.initialize_listeners);
     },
 
@@ -83,9 +86,9 @@ window.PDFViewerView = Backbone.View.extend({
             return;
         }
 
-
         // check if our current page is is higher than the user's highest
         // page viewed. If so, do an update.
+        var numpages = pdfview.pages.length;
         var current_page = pdfview.page;
         var highest_page = this.log_model.get("highest_page");
 
@@ -93,14 +96,20 @@ window.PDFViewerView = Backbone.View.extend({
             console.log("Moved to a new page; updating progress!");
             this.log_model.set("highest_page", current_page);
             highest_page = current_page;
+
+            // increment the user's points
+            var current_points = this.log_model.get("points");
+            this.log_model.set("points", current_points + this.POINTS_PER_PAGE);
         }
 
         // also check if we are in the last page.
-        var numpages = pdfview.pages.length;
         if (highest_page === numpages) {
             console.log("Seen all pages; setting to complete!");
             this.log_model.set_complete();
         }
+
+        // for realtime updating of points
+        window.statusModel.set("points", this.log_model.get("points"));
 
         this.log_model.save();
     },
