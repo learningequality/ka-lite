@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import shutil
+import copy
 
 from django.conf import settings; logging = settings.LOG
 
@@ -75,11 +76,7 @@ channel_data = {
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
 def build_full_cache(items, id_key="id"):
-    """
-    Uses list of items retrieved from Khan Academy API to
-    create an item cache with fleshed out meta-data.
-    """
-    return {item["id"]: whitewash_node_data(item) for item in items}
+    return {item["id"]: item for item in items}
 
 file_kind_dictionary = {
     "Video": ["mp4", "mov", "3gp", "amv", "asf", "asx", "avi", "mpg", "swf", "wmv"],
@@ -161,6 +158,7 @@ def construct_node(location, parent_path, node_cache, channel):
         node.update({
             "id": id,
             "kind": kind,
+            "format": extension,
         })
 
         node.update(meta_data)
@@ -169,12 +167,13 @@ def construct_node(location, parent_path, node_cache, channel):
         shutil.copy(location, os.path.join(settings.CONTENT_ROOT, id + "." + extension))
         logging.debug("%s file %s to local content directory." % ("Copied", slug))
 
+        nodecopy = copy.deepcopy(node)
         if kind == "Video":
-            node_cache["Video"].append(node)
+            node_cache["Video"].append(nodecopy)
         elif kind == "Exercise":
-            node_cache["Video"].append(node)
+            node_cache["Video"].append(nodecopy)
         else:
-            node_cache["Content"].append(node)
+            node_cache["Content"].append(nodecopy)
 
     return node
 
