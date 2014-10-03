@@ -6,36 +6,28 @@ import sys
 import json
 import os
 import importlib
+import hashlib
 
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.text import slugify
 
 from kalite import topic_tools
+
+from fle_utils.general import ensure_dir
 
 # get the path to an exercise file, so we can check, below, which ones exist
 EXERCISE_FILEPATH_TEMPLATE = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s.html")
 
-def save_topic_tree(topic_tree=None, node_cache=None, data_path=None):
-    assert bool(topic_tree) + bool(node_cache) == 1, "Must specify either topic_tree or node_cache parameter"
-    # Dump the topic tree (again)
-    topic_tree = topic_tree or node_cache["Topic"]["root"]
-
-    dest_filepath = os.path.join(data_path, topic_tools.TOPICS_FILEPATH)
-    logging.debug("Saving topic tree to %s" % dest_filepath)
-    with open(dest_filepath, "w") as fp:
-        fp.write(json.dumps(dict(topic_tree)))
-
-
 def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=None):
     
-    cache_object = cache_object or node_cache[cache_object]
-
-    dest_filepath = os.path.join(data_path, cache_type.lower() + "s.json")
-    logging.debug("Saving %(cache_type)s to %(dest_filepath)s" % {"cache_type": cache_type, "dest_filepath": dest_filepath})
-    with open(dest_filepath, "w") as fp:
-        fp.write(json.dumps(cache_object))
+    if cache_object is not None:
+        dest_filepath = os.path.join(data_path, cache_type.lower() + "s.json")
+        logging.debug("Saving %(cache_type)s to %(dest_filepath)s" % {"cache_type": cache_type, "dest_filepath": dest_filepath})
+        with open(dest_filepath, "w") as fp:
+            fp.write(json.dumps(cache_object))
 
 def validate_data(topic_tree, node_cache, slug2id_map):
     # Validate related videos
@@ -59,11 +51,11 @@ def validate_data(topic_tree, node_cache, slug2id_map):
         if not topic_tools.get_topic_by_path(topic["path"], root_node=topic_tree).get("children"):
             sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
 
-def scrub_topic_tree(node_cache):
+def scrub_topic_tree(node_cache, channel_data):
     # Now, remove unnecessary values
     for kind_nodes in node_cache.values():
         for node in kind_nodes.values():
-            for att in temp_ok_atts:
+            for att in channel_data["temp_ok_atts"]:
                 if att in node:
                     if att == "hide" and node["id"] != "root":
                         assert node[att] == False, "All hidden nodes (%s) better be deleted by this point!" % node["id"]
@@ -97,7 +89,7 @@ class Command(BaseCommand):
         if len(args) != 0:
             raise CommandError("Unknown argument list: %s" % args)
 
-        channel = options["channel"]
+        channel_name = channel = options["channel"]
 
         if options["import_files"]:
             channel = "import_channel"
@@ -106,33 +98,46 @@ class Command(BaseCommand):
 
         if options["import_files"]:
             channel_tools.path = options["import_files"]
+            if not channel_name:
+                channel_name = os.path.basename(options["import_files"])
 
-        channel_path = os.path.join(settings.CONTENT_DATA_PATH, channel)
+        channel_path = os.path.join(settings.CONTENT_DATA_PATH, slugify(unicode(channel_name)))
 
-        topic_tree, exercises, videos, assessment_items, content = channel_tools.rebuild_topictree()
+        ensure_dir(channel_path)
+
+        channel_id = hashlib.md5(channel_name).hexdigest()
+
+        channel_dict = {
+            "id": channel_id,
+            "path": channel_path,
+        }
+
+        topic_tree, exercises, videos, assessment_items, content = channel_tools.rebuild_topictree(channel=channel_dict)
 
         exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"])
         video_cache = channel_tools.build_full_cache(videos, id_key=channel_tools.id_key["Video"])
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
-        content = channel_tools.build_full_cache(content)
+        content_cache = channel_tools.build_full_cache(content)
         
         node_cache = topic_tools.generate_node_cache(topic_tree)
         
-        node_cache["Exercise"] = channel_tools.exercise_cache
-        node_cache["Video"] = channel_tools.video_cache
+        node_cache["Exercise"] = exercise_cache
+        node_cache["Video"] = video_cache
+        node_cache["Content"] = content_cache
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
         
-        scrub_topic_tree(node_cache=node_cache)
+        if channel_tools.channel_data["temp_ok_atts"]:
+            scrub_topic_tree(node_cache=node_cache, channel_data=channel_tools.channel_data)
 
         validate_data(topic_tree, node_cache, slug2id_map)
 
         level_cache = channel_tools.recurse_topic_tree_to_create_hierarchy(topic_tree)
 
-        save_topic_tree(topic_tree, data_path=channel_path)
+        save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
         save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)
         save_cache_file("Video", cache_object=video_cache, data_path=channel_path)
         save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
-        save_cache_file("Content", cache_object=content, data_path=channel_path)
+        save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
         for level in channel_tools.hierarchy:
             save_cache_file("Map_" + level, cache_object=level_cache[level], data_path=channel_path)
 

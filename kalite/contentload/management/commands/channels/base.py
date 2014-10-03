@@ -12,7 +12,9 @@ from django.conf import settings; logging = settings.LOG
 
 from fle_utils.general import datediff
 
-def retrieve_API_data():
+from django.utils.text import slugify
+
+def retrieve_API_data(channel=None):
 
     topic_tree = {}
 
@@ -42,19 +44,24 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     node["y_pos"] = node.get("y_pos", 0) or node.get("v_position", 0)
 
     # Only keep key data we can use
-    for key in node.keys():
-        if key not in channel_data["attribute_whitelists"][kind]:
-            del node[key]
+    if channel_data["attribute_whitelists"].has_key(kind):
+        for key in node.keys():
+            if key not in channel_data["attribute_whitelists"][kind]:
+                del node[key]
 
     # Fix up data
     if channel_data["slug_key"][kind] not in node:
         node[channel_data["slug_key"][kind]] = node["id"]
 
     node["slug"] = node[channel_data["slug_key"][kind]] if node[channel_data["slug_key"][kind]] != "root" else ""
-    node["id"] = node[channel_data["id_key"][kind]]  # these used to be the same; now not. Easier if they stay the same (issue #233)
+    node["slug"] = slugify(unicode(node["slug"]))
+    if not node.has_key("id"):
+        node["id"] = node[channel_data["id_key"][kind]]
 
     node["path"] = path + node["slug"] + "/"
-    node["title"] = (node[channel_data["title_key"][kind]] or "").strip()
+    if not node.has_key("title"):
+        node["title"] = (node.get(channel_data["title_key"][kind], ""))
+    node["title"] = node["title"].strip()
 
     # Add some attribute that should have been on there to start with.
     node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
@@ -81,13 +88,14 @@ def rebuild_topictree(
     remove_disabled_topics=True,
     whitewash_node_data=whitewash_node_data,
     retrieve_API_data=retrieve_API_data,
-    channel_data={}
+    channel_data={},
+    channel=None
     ):
     """Downloads topictree (and supporting) data from Khan Academy and uses it to
     rebuild the KA Lite topictree cache (topics.json).
     """
 
-    topic_tree, exercises, videos, assessment_items, content = retrieve_API_data()
+    topic_tree, exercises, videos, assessment_items, content = retrieve_API_data(channel=channel)
 
     exercise_lookup = {exercise["id"]: exercise for exercise in exercises}
 
@@ -103,10 +111,11 @@ def rebuild_topictree(
 
         node = whitewash_node_data(node, path, ancestor_ids)
 
-        if kind == "Exercise" or kind == "Video":
-            for key in node.keys():
-                if key not in channel_data["denormed_attribute_list"][kind]:
-                    del node[key]
+        if kind != "Topic":
+            if channel_data["denormed_attribute_list"].has_key(kind):
+                for key in node.keys():
+                    if key not in channel_data["denormed_attribute_list"][kind]:
+                        del node[key]
 
         # Loop through children, remove exercises and videos to reintroduce denormed data
         children_to_delete = []
@@ -239,5 +248,5 @@ def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
                 del child["children"]
         level_cache[render_type].append(node_copy)
     for child in node.get("children", []):
-        recurse_topic_tree_to_create_DSTT_hierarchy(child, level_cache)
+        recurse_topic_tree_to_create_hierarchy(child, level_cache, hierarchy=hierarchy)
     return level_cache

@@ -89,7 +89,7 @@ def build_full_cache(items, id_key="id"):
 
 hierarchy = ["Domain", "Subject", "Topic", "Tutorial"]
 
-def retrieve_API_data():
+def retrieve_API_data(channel=None):
     khan = Khan()
 
     topic_tree = khan.get_topic_tree()
