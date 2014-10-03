@@ -297,22 +297,15 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.$el.append(new_topic.el);
 
         // Listeners
-        if(node.get("render_type")=="Tutorial"||node.get("entries")){
-            this.listenTo(new_topic, "entry_requested", this.entry_requested);
-        } else {
-            this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
-        }
+        this.listenTo(new_topic, "entry_requested", this.entry_requested);
+        this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
     },
 
     add_new_topic_view: function(node) {
-        if(node.get("render_type")=="Tutorial"||node.get("entries")){
-            ItemWrapper = PlaylistSidebarView;
-        } else {
-            ItemWrapper = TopicContainerInner;
-        }
+
         var data = {
             model: node,
             has_parent: this.inner_views.length >= 1,
@@ -320,7 +313,7 @@ window.TopicContainerOuter = Backbone.View.extend({
             entity_collection: this.options.entity_collection
         };
 
-        var new_topic = new ItemWrapper(data);
+        var new_topic = new PlaylistSidebarView(data);
 
         if (this.inner_views.length === 0){
             new_topic.model.set("has_parent", false);
@@ -348,7 +341,7 @@ window.TopicContainerOuter = Backbone.View.extend({
         for (i=0; i < paths.length; i++) {
             var node = this.inner_views[0].node_by_slug(paths[i]);
             if (node!==undefined) {
-                if (node.get("render_type")!==undefined) {
+                if (node.get("kind")==="Topic") {
                     this.show_new_topic(node);
                 } else {
                     this.entry_requested(node);
@@ -420,19 +413,24 @@ window.TopicContainerOuter = Backbone.View.extend({
 window.PlaylistSidebarView = SidebarContentView.extend({
 
     item_clicked: function(view) {
-        this.hide_sidebar();
-        // only trigger an entry_requested event if the item wasn't already active
-        if (!view.model.get("active")) {
-            this.trigger("entry_requested", view.model);
-            
-        }
-        // mark the clicked view as active, and unmark all the others
-        _.each(this._entry_views, function(v) {
-            if (v.model.get("active")) {
-                window.router.url_back();
+
+        if (view.model.get("kind")=="Topic") {
+            this.trigger('topic_node_clicked', view.model);
+        } else {
+            this.hide_sidebar();
+            // only trigger an entry_requested event if the item wasn't already active
+            if (!view.model.get("active")) {
+                this.trigger("entry_requested", view.model);
+                
             }
-            v.model.set("active", v == view);
-        });
+            // mark the clicked view as active, and unmark all the others
+            _.each(this._entry_views, function(v) {
+                if (v.model.get("active")) {
+                    window.router.url_back();
+                }
+                v.model.set("active", v == view);
+            });
+        }
 
         window.router.add_slug(view.model.get("slug"));
     },
@@ -493,13 +491,4 @@ window.PlaylistSidebarView = SidebarContentView.extend({
         }
 
     }, 100)
-});
-
-window.TopicContainerInner = SidebarContentView.extend({
-
-    item_clicked: function(view) {
-        this.trigger('topic_node_clicked', view.model);
-        window.router.add_slug(view.model.get("slug"));
-    }
-
 });
