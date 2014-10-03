@@ -153,7 +153,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                     return HttpResponseRedirect(next)
 
             # New user created by admin
-            elif request.is_admin:
+            elif request.is_admin or request.is_django_user:
                 messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
                 return HttpResponseRedirect(next)
 
