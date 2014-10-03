@@ -184,7 +184,10 @@ def learn(request):
     """
     Render the all-in-one sidebar navigation/content-viewing app.
     """
-    return {}
+    context = {
+        "topics_url": "data/" + settings.CHANNEL + "/topics.json"
+    }
+    return context
 
 
 @backend_cache_page
