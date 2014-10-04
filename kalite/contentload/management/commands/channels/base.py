@@ -114,7 +114,7 @@ def rebuild_topictree(
         if kind != "Topic":
             if channel_data["denormed_attribute_list"].has_key(kind):
                 for key in node.keys():
-                    if key not in channel_data["denormed_attribute_list"][kind]:
+                    if key not in channel_data["denormed_attribute_list"][kind] or not node.get(key, ""):
                         del node[key]
 
         # Loop through children, remove exercises and videos to reintroduce denormed data

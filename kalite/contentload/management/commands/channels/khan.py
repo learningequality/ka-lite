@@ -35,8 +35,8 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id", "id", "y_pos", "x_pos", "path", "slug"],
-    "Exercise": ["kind", "description", "title", "display_name", "name", "id", "y_pos", "x_pos", "path", "slug"]
+    "Video": ["kind", "description", "title", "id", "slug"],
+    "Exercise": ["kind", "description", "title", "id", "slug"]
 }
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
