@@ -8,6 +8,8 @@ import json
 import os
 import errno
 
+from distutils.version import StrictVersion
+
 
 class InvalidDateFormat(Exception):
 
@@ -220,5 +222,5 @@ def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="
 
 def sort_version_list(version_list, reverse):
     """Returns sorted version list - assumes strict version number"""
-    version_list.sort(reverse=reverse, key=lambda s: map(int, s.split('.')))
+    version_list.sort(reverse=reverse, key=lambda s: StrictVersion(s))
     return version_list
