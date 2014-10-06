@@ -217,3 +217,8 @@ def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="
         if raises:
             raise
         return default
+
+def sort_version_list(version_list, reverse):
+    """Returns sorted version list - assumes strict version number"""
+    version_list.sort(reverse=reverse, key=lambda s: map(int, s.split('.')))
+    return version_list
