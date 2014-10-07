@@ -231,14 +231,13 @@ def generate_node_cache(topictree=None):
     if not topictree:
         topictree = get_topic_tree()
     node_cache = {}
+    node_cache["Topic"] = {}
 
 
     def recurse_nodes(node):
         # Add the node to the node cache
-        kind = node["kind"]
+        kind = node.get("kind", None)
         if kind == "Topic":
-            node_cache[kind] = node_cache.get(kind, {})
-
             if node["id"] not in node_cache[kind]:
                 node_cache[kind][node["id"]] = node
 
