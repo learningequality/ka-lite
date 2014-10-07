@@ -6,7 +6,6 @@ import copy
 
 from django.conf import settings; logging = settings.LOG
 
-from khan_api_python.api_models import Khan, APIError
 from functools import partial
 
 import base
@@ -57,7 +56,7 @@ kind_blacklist = [None]
 slug_blacklist = []
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
-temp_ok_atts = []
+temp_ok_atts = ["x_pos", "y_pos"]
 
 channel_data = {
     "slug_key": slug_key,

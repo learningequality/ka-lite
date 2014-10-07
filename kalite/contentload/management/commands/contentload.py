@@ -11,7 +11,7 @@ import hashlib
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import NoArgsCommand, CommandError
 from django.utils.text import slugify
 
 from kalite import topic_tools
@@ -34,22 +34,29 @@ def validate_data(topic_tree, node_cache, slug2id_map):
     for exercise in node_cache['Exercise'].values():
         exercise_path = EXERCISE_FILEPATH_TEMPLATE % exercise["slug"]
         if not os.path.exists(exercise_path) and not exercise.get("uses_assessment_items", False):
-            sys.stderr.write("Could not find exercise HTML file: %s\n" % exercise_path)
+            logging.warning("Could not find exercise HTML file: %s\n" % exercise_path)
         for vid_slug in exercise.get("related_video_slugs", []):
             if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Video"]:
-                sys.stderr.write("Could not find related video %s in node_cache (from exercise %s)\n" % (vid_slug, exercise["slug"]))
+                logging.warning("Could not find related video %s in node_cache (from exercise %s)\n" % (vid_slug, exercise["slug"]))
 
     # Validate related exercises
     for video in node_cache["Video"].values():
         ex = video.get("related_exercise", None)
         if ex:
             if ex["slug"] not in node_cache["Exercise"]:
-                sys.stderr.write("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
+                logging.warning("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
 
     # Validate all topics have leaves
     for topic in node_cache["Topic"].values():
         if not topic_tools.get_topic_by_path(topic["path"], root_node=topic_tree).get("children"):
-            sys.stderr.write("Could not find any children for topic %s\n" % (topic["path"]))
+            logging.warning("Could not find any children for topic %s\n" % (topic["path"]))
+
+    # Validate related content
+    for content in node_cache["Content"].values():
+        cont = content.get("related_content", None)
+        if cont:
+            if cont["slug"] not in node_cache["Content"]:
+                logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["slug"], content["slug"]))
 
 def scrub_topic_tree(node_cache, channel_data):
     # Now, remove unnecessary values
@@ -65,14 +72,15 @@ def scrub_topic_tree(node_cache, channel_data):
 
 
 
-class Command(BaseCommand):
-    help = """**WARNING** not intended for use outside of the FLE; use at your own risk!
-    Update the topic tree caches from Khan Academy.
+class Command(NoArgsCommand):
+    help = """
+    **WARNING** not intended for use outside of the FLE; use at your own risk!
+    Update the topic tree caches.
     Options:
         [no args] - download from Khan Academy and refresh all files
     """
 
-    option_list = BaseCommand.option_list + (
+    option_list = NoArgsCommand.option_list + (
         # Basic options
         make_option('-c', '--channel',
             dest='channel',
@@ -86,15 +94,13 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if len(args) != 0:
-            raise CommandError("Unknown argument list: %s" % args)
 
         channel_name = channel = options["channel"]
 
         if options["import_files"]:
             channel = "import_channel"
 
-        channel_tools = importlib.import_module("kalite.contentload.management.commands.channels." + channel)
+        channel_tools = importlib.import_module("kalite.contentload.management.commands.channels.{channel}".format(channel=channel))
 
         if options["import_files"]:
             channel_tools.path = options["import_files"]

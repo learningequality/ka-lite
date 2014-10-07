@@ -14,6 +14,8 @@ from fle_utils.general import datediff
 
 from django.utils.text import slugify
 
+# For specification of channel_data dictionary, please see CHANNELDATA.md
+
 def retrieve_API_data(channel=None):
 
     topic_tree = {}
@@ -92,11 +94,16 @@ def rebuild_topictree(
     channel_data={},
     channel=None
     ):
-    """Downloads topictree (and supporting) data and uses it to
+    """
+    Downloads topictree (and supporting) data and uses it to
     rebuild the KA Lite topictree cache (topics.json).
+    Does this by collecting all relevant topic_tree and content data from data source.
+    Recurses over the entire topic tree to remove extraneous data.
+    Denorms content data to reduce the bulk of the topic tree.
+    Adds position data to every node in the topic tree.
     """
 
-    topic_tree, exercises, videos, assessment_items, content = retrieve_API_data(channel=channel)
+    topic_tree, exercises, videos, assessment_items, contents = retrieve_API_data(channel=channel)
 
     exercise_lookup = {exercise["id"]: exercise for exercise in exercises}
 
@@ -210,7 +217,7 @@ def rebuild_topictree(
 
     def recurse_nodes_to_add_position_data(node):
         """
-        Only execises have position data associated with them.
+        Only exercises have position data associated with them.
         To get position data for higher level topics, averaging of
         lower level positions can be used to give a center of mass.
         """
@@ -218,26 +225,26 @@ def rebuild_topictree(
             if node["kind"] == "Topic":
                 x_pos = []
                 y_pos = []
-                videos = []
+                contents = []
                 for child in node.get("children", []):
                     if not (child.get("x_pos", 0) and child.get("y_pos", 0)):
                         recurse_nodes_to_add_position_data(child)
                     if child.get("x_pos", 0) and child.get("y_pos", 0):
                         x_pos.append(child["x_pos"])
                         y_pos.append(child["y_pos"])
-                    elif child["kind"] == "Video":
-                        videos.append(child)
+                    elif child["kind"] in ["Video", "Audio", "Document"]:
+                        contents.append(child)
                 if len(x_pos) and len(y_pos):
                     node["x_pos"] = sum(x_pos)/float(len(x_pos))
                     node["y_pos"] = sum(y_pos)/float(len(y_pos))
-                    for i, video in enumerate(videos):
-                        video["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos))*i/float(len(videos))
-                        video["y_pos"] = min(y_pos) + (max(y_pos) - min(y_pos))*i/float(len(videos))
+                    for i, content in enumerate(contents):
+                        content["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos))*i/float(len(videos))
+                        content["y_pos"] = min(y_pos) + (max(y_pos) - min(y_pos))*i/float(len(videos))
 
 
     recurse_nodes_to_add_position_data(topic_tree)
 
-    return topic_tree, exercises, videos, assessment_items, content
+    return topic_tree, exercises, videos, assessment_items, contents
 
 def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
     if not level_cache:
