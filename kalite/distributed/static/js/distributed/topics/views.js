@@ -69,7 +69,7 @@ window.SidebarView = Backbone.View.extend({
 
     render: function() {
         var self = this;
-        
+
         this.$el.html(this.template());
 
         this.sidebar = this.$('').bigSlide({
@@ -167,7 +167,7 @@ window.SidebarContentView = Backbone.View.extend({
         var self = this;
 
         this.$el.html(this.template(this.model.attributes));
-        
+
         this.$(".sidebar").slimScroll({
             height: "auto",
             color: "#033000",
@@ -376,7 +376,7 @@ window.TopicContainerOuter = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
 
-            case "PDF":
+            case "Video":
                 view = new VideoWrapperView({
                     video_id: id
                 });
@@ -399,7 +399,7 @@ window.TopicContainerOuter = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
 
-            case "Video":
+            case "PDF":
                 view = new PDFViewerView({
                     id: id,
                     context_id: this.model.get("id")
@@ -429,7 +429,7 @@ window.PlaylistSidebarView = SidebarContentView.extend({
             // only trigger an entry_requested event if the item wasn't already active
             if (!view.model.get("active")) {
                 this.trigger("entry_requested", view.model);
-                
+
             }
             // mark the clicked view as active, and unmark all the others
             _.each(this._entry_views, function(v) {
