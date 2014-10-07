@@ -105,9 +105,9 @@ def rebuild_topictree(
 
     topic_tree, exercises, videos, assessment_items, contents = retrieve_API_data(channel=channel)
 
-    exercise_lookup = {exercise["id"]: exercise for exercise in exercises}
+    exercise_lookup = dict((exercise["id"], exercise) for exercise in exercises)
 
-    video_lookup = {video["id"]: video for video in videos}
+    video_lookup = dict((video["id"], video) for video in videos)
 
     def recurse_nodes(node, path="", ancestor_ids=[]):
         """

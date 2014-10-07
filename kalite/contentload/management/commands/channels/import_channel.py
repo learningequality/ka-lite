@@ -75,7 +75,7 @@ channel_data = {
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
 def build_full_cache(items, id_key="id"):
-    return {item["id"]: item for item in items}
+    return dict((item["id"], item) for item in items)
 
 file_kind_dictionary = {
     "Video": ["mp4", "mov", "3gp", "amv", "asf", "asx", "avi", "mpg", "swf", "wmv"],
