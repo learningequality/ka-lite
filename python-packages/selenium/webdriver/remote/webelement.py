@@ -1,4 +1,4 @@
-# Copyright 2008-2013 Software freedom conservancy
+# Copyright 2008-2014 Software freedom conservancy
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,22 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-"""WebElement implementation."""
+import hashlib
 import os
 import zipfile
 try:
-    from StringIO import StringIO
+    from StringIO import StringIO as IOStream
 except ImportError:  # 3+
-    from io import StringIO
+    from io import BytesIO as IOStream
 import base64
 
-
 from .command import Command
-from selenium.common.exceptions import WebDriverException 
+from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidSelectorException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
 
 try:
     str = basestring
@@ -36,10 +35,17 @@ except NameError:
 
 
 class WebElement(object):
-    """Represents an HTML element.
+    """Represents a DOM element.
 
-    Generally, all interesting operations to do with interacting with a page
-    will be performed through this interface."""
+    Generally, all interesting operations to do with interacting with a
+    document will be performed through this interface.
+
+    All method calls will do a freshness check to ensure that the element
+    reference is still valid.  This essentially determines whether or not the
+    element is still attached to the DOM.  If this test fails, then an
+    `StaleElementReferenceException` is thrown, and all future calls to this
+    instance will fail."""
+
     def __init__(self, parent, id_):
         self._parent = parent
         self._id = id_
@@ -67,17 +73,23 @@ class WebElement(object):
         self._execute(Command.CLEAR_ELEMENT)
 
     def get_attribute(self, name):
-        """Gets the attribute value.
-        
+        """Gets the given attribute or property of the element.
+
+        This method will return the value of the given property if this is set,
+        otherwise it returns the value of the attribute with the same name if
+        that exists, or None.
+
+        Values which are considered truthy, that is equals "true" or "false",
+        are returned as booleans.  All other non-None values are returned as
+        strings.  For attributes or properties which does not exist, None is returned.
+
         :Args:
-            - name - name of the attribute property to retieve.
+            - name - Name of the attribute/property to retrieve.
 
         Example::
 
-            # Check if the 'active' css class is applied to an element.
-            is_active = "active" in target_element.get_attribute("class")
-
-        """
+            # Check if the "active" CSS class is applied to an element.
+            is_active = "active" in target_element.get_attribute("class")"""
         resp = self._execute(Command.GET_ELEMENT_ATTRIBUTE, {'name': name})
         attributeValue = ''
         if resp['value'] is None:
@@ -86,7 +98,6 @@ class WebElement(object):
             attributeValue = resp['value']
             if name != 'value' and attributeValue.lower() in ('true', 'false'):
                 attributeValue = attributeValue.lower()
-
         return attributeValue
 
     def is_selected(self):
@@ -102,16 +113,16 @@ class WebElement(object):
 
     def find_element_by_id(self, id_):
         """Finds element within the child elements of this element.
-        
+
         :Args:
             - id_ - ID of child element to locate.
         """
         return self.find_element(by=By.ID, value=id_)
 
     def find_elements_by_id(self, id_):
-        """Finds a list of elements within the children of this element 
+        """Finds a list of elements within the children of this element
         with the matching ID.
-        
+
         :Args:
             - id_ - Id of child element to find.
         """
@@ -126,7 +137,7 @@ class WebElement(object):
 
     def find_elements_by_name(self, name):
         """Finds a list of elements with in this element's children by name.
-        
+
         :Args:
             - name - name property to search for.
         """
@@ -134,7 +145,7 @@ class WebElement(object):
 
     def find_element_by_link_text(self, link_text):
         """Finds element with in this element's children by visible link text.
-        
+
         :Args:
             - link_text - Link text string to search for.
         """
@@ -142,7 +153,7 @@ class WebElement(object):
 
     def find_elements_by_link_text(self, link_text):
         """Finds a list of elements with in this element's children by visible link text.
-        
+
         :Args:
             - link_text - Link text string to search for.
         """
@@ -150,7 +161,7 @@ class WebElement(object):
 
     def find_element_by_partial_link_text(self, link_text):
         """Finds element with in this element's children by parial visible link text.
-        
+
         :Args:
             - link_text - Link text string to search for.
         """
@@ -158,7 +169,7 @@ class WebElement(object):
 
     def find_elements_by_partial_link_text(self, link_text):
         """Finds a list of elements with in this element's children by link text.
-        
+
         :Args:
             - link_text - Link text string to search for.
         """
@@ -166,7 +177,7 @@ class WebElement(object):
 
     def find_element_by_tag_name(self, name):
         """Finds element with in this element's children by tag name.
-        
+
         :Args:
             - name - name of html tag (eg: h1, a, span)
         """
@@ -174,7 +185,7 @@ class WebElement(object):
 
     def find_elements_by_tag_name(self, name):
         """Finds a list of elements with in this element's children by tag name.
-        
+
         :Args:
             - name - name of html tag (eg: h1, a, span)
         """
@@ -182,7 +193,7 @@ class WebElement(object):
 
     def find_element_by_xpath(self, xpath):
         """Finds element by xpath.
-        
+
         :Args:
             xpath - xpath of element to locate.  "//input[@class='myelement']"
 
@@ -201,7 +212,7 @@ class WebElement(object):
 
     def find_elements_by_xpath(self, xpath):
         """Finds elements within the elements by xpath.
-        
+
         :Args:
             - xpath - xpath locator string.
 
@@ -219,7 +230,7 @@ class WebElement(object):
 
     def find_element_by_class_name(self, name):
         """Finds an element within this element's children by their class name.
-        
+
         :Args:
             - name - class name to search on.
         """
@@ -227,7 +238,7 @@ class WebElement(object):
 
     def find_elements_by_class_name(self, name):
         """Finds a list of elements within children of this element by their class name.
-        
+
         :Args:
             - name - class name to search on.
         """
@@ -235,16 +246,16 @@ class WebElement(object):
 
     def find_element_by_css_selector(self, css_selector):
         """Find and return an element that's a child of this element by CSS selector.
-        
+
         :Args:
             - css_selector - CSS selctor string, ex: 'a.nav#home'
         """
         return self.find_element(by=By.CSS_SELECTOR, value=css_selector)
 
     def find_elements_by_css_selector(self, css_selector):
-        """Find and return list of multiple elements within the children of this 
+        """Find and return list of multiple elements within the children of this
         element by CSS selector.
-        
+
         :Args:
             - css_selector - CSS selctor string, ex: 'a.nav#home'
         """
@@ -254,19 +265,19 @@ class WebElement(object):
         """Simulates typing into the element.
 
         :Args:
-            - value - A string for typing, or setting form fields.  For setting 
+            - value - A string for typing, or setting form fields.  For setting
             file inputs, this could be a local file path.
 
         Use this to send simple key events or to fill out form fields::
 
             form_textfield = driver.find_element_by_name('username')
             form_textfield.send_keys("admin")
-        
+
         This can also be used to set file inputs.::
 
             file_input = driver.find_element_by_name('profilePic')
             file_input.send_keys("path/to/profilepic.gif")
-            # Generally it's better to wrap the file path in one of the methods 
+            # Generally it's better to wrap the file path in one of the methods
             # in os.path to return the actual path to support cross OS testing.
             # file_input.send_keys(os.path.abspath("path/to/profilepic.gif"))
 
@@ -329,17 +340,22 @@ class WebElement(object):
         return new_loc
 
     @property
+    def rect(self):
+        """ Returns a dictionary with the size and location of the element"""
+        return self._execute(Command.GET_ELEMENT_RECT)['value']
+
+    @property
     def parent(self):
         """ Returns parent element is available. """
         return self._parent
 
     @property
     def id(self):
-        """ Returns internal id used by selenium. 
-        
-        This is mainly for internal use.  Simple use cases such as checking if 2 webelements 
+        """ Returns internal id used by selenium.
+
+        This is mainly for internal use.  Simple use cases such as checking if 2 webelements
         refer to the same element, can be done using '=='::
-        
+
             if element1 == element2:
                 print("These 2 are equal")
 
@@ -382,14 +398,20 @@ class WebElement(object):
         return self._execute(Command.FIND_CHILD_ELEMENTS,
                              {"using": by, "value": value})['value']
 
+    def __hash__(self):
+        return int(hashlib.md5(self._id.encode('utf-8')).hexdigest(), 16)
+
     def _upload(self, filename):
-        fp = StringIO()
+        fp = IOStream()
         zipped = zipfile.ZipFile(fp, 'w', zipfile.ZIP_DEFLATED)
         zipped.write(filename, os.path.split(filename)[1])
         zipped.close()
+        content = base64.encodestring(fp.getvalue())
+        if not isinstance(content, str):
+            content = content.decode('utf-8')
         try:
-            return self._execute(Command.UPLOAD_FILE, 
-                            {'file': base64.encodestring(fp.getvalue())})['value']
+            return self._execute(Command.UPLOAD_FILE,
+                            {'file': content})['value']
         except WebDriverException as e:
             if "Unrecognized command: POST" in e.__str__():
                 return filename
