@@ -126,12 +126,12 @@ class Command(BaseCommand):
         node_cache["Content"] = content_cache
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
         
+        level_cache = channel_tools.recurse_topic_tree_to_create_hierarchy(topic_tree)
+        
         if channel_tools.channel_data["temp_ok_atts"]:
             scrub_topic_tree(node_cache=node_cache, channel_data=channel_tools.channel_data)
 
         validate_data(topic_tree, node_cache, slug2id_map)
-
-        level_cache = channel_tools.recurse_topic_tree_to_create_hierarchy(topic_tree)
 
         save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
         save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)

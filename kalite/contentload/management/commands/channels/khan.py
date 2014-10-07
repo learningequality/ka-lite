@@ -44,14 +44,14 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
-temp_ok_atts = ["icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
+temp_ok_atts = ["x_pos", "y_pos", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
 
 channel_data = {
     "slug_key": slug_key,
     "title_key": title_key,
     "id_key": id_key,
     "iconfilepath": iconfilepath,
-   " iconextension":  iconextension,
+    "iconextension":  iconextension,
     "defaulticon": defaulticon,
     "attribute_whitelists": attribute_whitelists,
     "denormed_attribute_list": denormed_attribute_list,
@@ -61,6 +61,15 @@ channel_data = {
 }
 
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
+
+def denorm_data(node):
+    if node:
+        kind = node.get("kind", "")
+        if channel_data["denormed_attribute_list"].has_key(kind):
+            for key in node.keys():
+                if key not in channel_data["denormed_attribute_list"][kind] or not node.get(key, ""):
+                    del node[key]
+
 
 def build_full_cache(items, id_key="id"):
     """
@@ -76,13 +85,13 @@ def build_full_cache(items, id_key="id"):
                         if isinstance(subitem, dict):
                             if subitem.has_key("kind"):
                                 subitem = whitewash_node_data(
-                                    {key: value for key, value in subitem.items()
-                                    if key in denormed_attribute_list[subitem["kind"]]})
+                                    {key: value for key, value in subitem.items()})
+                                denorm_data(subitem)
                 elif isinstance(item[attribute], dict):
                     if item[attribute].has_key("kind"):
                         item[attribute] = whitewash_node_data(
-                            {key: value for key, value in item.attribute.items()
-                            if key in denormed_attribute_list[item[attribute]["kind"]]})
+                            {key: value for key, value in item.attribute.items()})
+                        denorm_data(item[attribute])
             except APIError as e:
                 del item[attribute]
     return {item["id"]: whitewash_node_data(item) for item in items}
@@ -100,9 +109,9 @@ def retrieve_API_data(channel=None):
 
     assessment_items = []
 
-    for exercise in exercises:
-        for assessment_item in exercise.all_assessment_items:
-            assessment_items.append(khan.get_assessment_item(assessment_item["id"]))
+    # for exercise in exercises:
+    #     for assessment_item in exercise.all_assessment_items:
+    #         assessment_items.append(khan.get_assessment_item(assessment_item["id"]))
 
     content = []
 

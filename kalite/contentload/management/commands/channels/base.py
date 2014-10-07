@@ -46,17 +46,18 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     # Only keep key data we can use
     if channel_data["attribute_whitelists"].has_key(kind):
         for key in node.keys():
-            if key not in channel_data["attribute_whitelists"][kind]:
+            if key not in channel_data["attribute_whitelists"][kind] and\
+            key not in channel_data["temp_ok_atts"]:
                 del node[key]
+
+    node["id"] = node.get(channel_data["id_key"][kind], node.get("id", ""))
 
     # Fix up data
     if channel_data["slug_key"][kind] not in node:
         node[channel_data["slug_key"][kind]] = node["id"]
 
-    node["slug"] = node[channel_data["slug_key"][kind]] if node[channel_data["slug_key"][kind]] != "root" else ""
+    node["slug"] = node[channel_data["slug_key"][kind]] if node[channel_data["slug_key"][kind]] != "root" else "khan"
     node["slug"] = slugify(unicode(node["slug"]))
-    if not node.has_key("id"):
-        node["id"] = node[channel_data["id_key"][kind]]
 
     node["path"] = path + node["slug"] + "/"
     if not node.has_key("title"):
@@ -69,7 +70,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
 
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
-        node["video_id"] = node["youtube_id"]
+        node["video_id"] = node.get("youtube_id", "")
 
     elif kind == "Exercise":
         # For each exercise, need to set the exercise_id
@@ -91,7 +92,7 @@ def rebuild_topictree(
     channel_data={},
     channel=None
     ):
-    """Downloads topictree (and supporting) data from Khan Academy and uses it to
+    """Downloads topictree (and supporting) data and uses it to
     rebuild the KA Lite topictree cache (topics.json).
     """
 
@@ -158,11 +159,11 @@ def rebuild_topictree(
             elif child[channel_data["slug_key"][child_kind]] in channel_data["slug_blacklist"]:
                 children_to_delete.append(i)
                 continue
-            elif not child.get("live", True) and remove_disabled_topics:  # node is not live
+            elif not child.get("live", True):  # node is not live
                 logging.debug("Removing non-live child: %s" % child[channel_data["slug_key"][child_kind]])
                 children_to_delete.append(i)
                 continue
-            elif child.get("hide", False) and remove_disabled_topics:  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
+            elif child.get("hide", False):  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
                 children_to_delete.append(i)
                 logging.debug("Removing hidden child: %s" % child[channel_data["slug_key"][child_kind]])
                 continue
@@ -213,24 +214,26 @@ def rebuild_topictree(
         To get position data for higher level topics, averaging of
         lower level positions can be used to give a center of mass.
         """
-        if node["kind"] == "Topic":
-            x_pos = []
-            y_pos = []
-            videos = []
-            for child in node.get("children", []):
-                if not (child.get("x_pos", 0) and child.get("y_pos", 0)):
-                    recurse_nodes_to_add_position_data(child)
-                if child.get("x_pos", 0) and child.get("y_pos", 0):
-                    x_pos.append(child["x_pos"])
-                    y_pos.append(child["y_pos"])
-                elif child["kind"] == "Video":
-                    videos.append(child)
-            if len(x_pos) and len(y_pos):
-                node["x_pos"] = sum(x_pos)/float(len(x_pos))
-                node["y_pos"] = sum(y_pos)/float(len(y_pos))
-                for i, video in enumerate(videos):
-                    video["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos))*i/float(len(videos))
-                    video["y_pos"] = min(y_pos) + (max(y_pos) - min(y_pos))*i/float(len(videos))
+        if node.has_key("kind") and node.get("hide", True):
+            if node["kind"] == "Topic":
+                x_pos = []
+                y_pos = []
+                videos = []
+                for child in node.get("children", []):
+                    if not (child.get("x_pos", 0) and child.get("y_pos", 0)):
+                        recurse_nodes_to_add_position_data(child)
+                    if child.get("x_pos", 0) and child.get("y_pos", 0):
+                        x_pos.append(child["x_pos"])
+                        y_pos.append(child["y_pos"])
+                    elif child["kind"] == "Video":
+                        videos.append(child)
+                if len(x_pos) and len(y_pos):
+                    node["x_pos"] = sum(x_pos)/float(len(x_pos))
+                    node["y_pos"] = sum(y_pos)/float(len(y_pos))
+                    for i, video in enumerate(videos):
+                        video["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos))*i/float(len(videos))
+                        video["y_pos"] = min(y_pos) + (max(y_pos) - min(y_pos))*i/float(len(videos))
+
 
     recurse_nodes_to_add_position_data(topic_tree)
 
