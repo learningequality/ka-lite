@@ -90,6 +90,9 @@ def facility_user_signup(request):
     """
     Anyone can sign up, unless we have set the restricted flag
     """
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse("homepage"))
+
     if settings.DISABLE_SELF_ADMIN:
         # Users cannot create/edit their own data when UserRestricted
         raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
@@ -217,6 +220,9 @@ def group_edit(request, facility, group_id):
 @facility_from_request
 @render_to("facility/login.html")
 def login(request, facility):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse("homepage"))
+
     facility_id = (facility and facility.id) or None
     facilities = list(Facility.objects.all())
 
