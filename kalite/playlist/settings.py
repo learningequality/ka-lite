@@ -7,7 +7,7 @@ API_LIMIT_PER_PAGE = 0   # no limit
 
 INSTALLED_APPS = (
     "tastypie",
-    "kalite.khanload",
+    "kalite.contentload",
     "kalite.main",
 )
 

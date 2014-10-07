@@ -47,7 +47,7 @@ INSTALLED_APPS = (
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
     "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
     "kalite.i18n",  #
-    "kalite.khanload",  # khan academy interactions
+    "kalite.contentload",  # content loading interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
     "kalite.playlist",
