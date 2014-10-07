@@ -5,18 +5,13 @@ import string
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.utils import unittest
 
-from .base import FacilityTestCase
-from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm, LoginForm
+from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm
 from ..models import Facility, FacilityUser, FacilityGroup
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
-from kalite.testing import KALiteTestCase
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from securesync.models import Zone, Device, DeviceMetadata
+from kalite.testing import KALiteTestCase, KALiteBrowserTestCase
+from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
 
 
 class FacilityTestCase(KALiteTestCase):
@@ -111,7 +106,8 @@ class DuplicateFacilityGroupTestCase(FacilityTestCase):
         self.assertTrue(group_form.is_valid(), "Form must be valid; instead: errors (%s)" % group_form.errors)
 
     def test_nonduplicate_group_name(self):
-        group_form = FacilityGroupForm(facility=self.facility, data={"facility": self.facility.id, "name": self.group.name + "-different"})
+        group_form = FacilityGroupForm(facility=self.facility,
+                                       data={"facility": self.facility.id, "name": self.group.name + "-different"})
         self.assertTrue(group_form.is_valid(), "Form must be valid; instead: errors (%s)" % group_form.errors)
 
 
@@ -220,7 +216,6 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         user_form.save()
 
         # Fails for a second; no userlist if not admin
-        old_username = self.data['username']
         self.data['username'] += '-different'
         user_form = FacilityUserForm(facility=self.facility, data=self.data)
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
@@ -230,7 +225,7 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
 
 
-class FormBrowserTests(FacilityMixins, KALiteDistributedBrowserTestCase):
+class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
     def setUp(self):
         self.facility = self.create_facility()
@@ -262,7 +257,7 @@ class FormBrowserTests(FacilityMixins, KALiteDistributedBrowserTestCase):
         self.assertTrue(group_label.is_displayed())
         group_select = self.browser.find_element_by_id('id_group')
         self.assertFalse(group_select.is_displayed())
-    
+
     def test_teacher_can_select_group(self):
         self.group = self.create_group(facility=self.facility)
         self.student = self.create_student(facility=self.facility, group=self.group)
@@ -273,4 +268,3 @@ class FormBrowserTests(FacilityMixins, KALiteDistributedBrowserTestCase):
         self.assertTrue(group_label.is_displayed())
         group_select = self.browser.find_element_by_id('id_group')
         self.assertTrue(group_select.is_displayed())
-        
