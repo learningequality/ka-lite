@@ -5,6 +5,7 @@ import shutil
 import copy
 
 from django.conf import settings; logging = settings.LOG
+from django.utils.text import slugify
 
 from functools import partial
 
@@ -113,13 +114,14 @@ def construct_node(location, parent_path, node_cache, channel):
     base_name = os.path.basename(location)
     if base_name.endswith(".json"):
         return None
-    slug = base_name.split(".")[0]
+    slug = slugify(unicode(base_name.split(".")[0]))
     current_path = os.path.join(parent_path, slug)
     try:
         with open(location + ".json", "r") as f:
             meta_data = json.load(f)
     except IOError:
         meta_data = {}
+        logging.warning("No metadata for file {base_name}".format(base_name=base_name))
     node = {
         "path": current_path,
         "parent_id": os.path.basename(parent_path[:-1]),
@@ -173,6 +175,11 @@ def construct_node(location, parent_path, node_cache, channel):
             node_cache["Video"].append(nodecopy)
         else:
             node_cache["Content"].append(nodecopy)
+
+    # Verify some required fields:
+    if "title" not in node:
+        logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))
+        node["title"] = base_name.split(".")[0]
 
     return node
 

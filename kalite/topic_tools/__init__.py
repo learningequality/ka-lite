@@ -618,7 +618,7 @@ def get_content_data(request, content_id=None):
     content["selected_language"] = content_lang
     content["trans_available"] = len(content["availability"]) > 1
     content["title"] = _(content["title"])
-    content["description"] = _(content["description"])
+    content["description"] = _(content.get("description", ""))
     content["content_id"] = content["id"]
 
     return content
