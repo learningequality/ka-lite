@@ -11,7 +11,8 @@ window.PDFViewerView = Backbone.View.extend({
     },
 
     render: function() {
-        this.$el.html(this.template({pdf: "04TLVP4.pdf"}));
+        var pdf_name = sprintf("%(id)s.pdf", {id: this.id});
+        this.$el.html(this.template({pdf: pdf_name}));
         window.statusModel.set("points", this.log_model.get("points"));
         this.$(".pdf-iframe").load(this.initialize_listeners);
     },
@@ -96,7 +97,7 @@ window.PDFViewerView = Backbone.View.extend({
         if (!this.log_model.get("highest_page")) {
             this.log_model.set("highest_page", 0);
         }
-        
+
         this.render();
     },
 
