@@ -50,7 +50,7 @@ window.AudioPlayerView = ContentBaseView.extend({
         var time_now = new Date().getTime();
         // In case of skipping around, only give credit for time actually passed.
         // In case of skipping backwards, make sure time_watched is always non-negative.
-        var percent = event.originalEvent.percent;
+        var percent = event.percent;
         var time_engaged = Math.max(0, Math.min(time_now - this.last_time, (percent - this.log_model.get("last_percent"))*this.audio_object.duration));
         time_engaged = isNaN(time_engaged) ? 0 : time_engaged;
         this.log_model.set("last_percent", percent);

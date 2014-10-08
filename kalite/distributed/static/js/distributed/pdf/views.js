@@ -1,4 +1,4 @@
-window.PDFViewerView = Backbone.View.extend({
+window.PDFViewerView = ContentBaseView.extend({
 
     template: HB.template("pdf/pdf-viewer"),
 

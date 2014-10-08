@@ -1,14 +1,14 @@
 window.BaseView = Backbone.View.extend({
     listenToDOM: function(DOMElement, event_name, callback) {
-        if (typeof el.get === "function") {
-            el = el.get(0);
+        if (typeof DOMElement.get === "function") {
+            DOMElement = DOMElement.get(0);
         }
         
         var listeners = [];
         
         this.listenTo({
             on: function(event, handler, context) {
-                el.addEventListener(event, handler, false);
+                DOMElement.addEventListener(event, handler, false);
                 listeners.push({
                     args: [event, handler],
                     context: context
@@ -17,7 +17,7 @@ window.BaseView = Backbone.View.extend({
             off: function(event, handler, context) {
                 listeners = listeners.filter(function(listener) {
                     if (listener.context === context) {
-                        el.removeEventListener.apply(el, listener.args);
+                        DOMElement.removeEventListener.apply(DOMElement, listener.args);
                         return true;
                     }
                 });
