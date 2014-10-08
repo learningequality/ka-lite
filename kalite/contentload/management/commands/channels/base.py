@@ -44,10 +44,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
             if (key not in channel_data["attribute_whitelists"][kind] and key not in channel_data["temp_ok_atts"]):
                 del node[key]
 
-    try:
-        node["id"] = node.get(channel_data["id_key"][kind], node.get("id", ""))
-    except:
-        import pdb; pdb.set_trace()
+    node["id"] = node.get(channel_data["id_key"].get(kind, ""), node.get("id", ""))
 
     # Fix up data
     if channel_data["slug_key"][kind] not in node:
