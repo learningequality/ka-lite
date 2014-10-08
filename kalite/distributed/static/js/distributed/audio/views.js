@@ -1,33 +1,14 @@
-window.AudioPlayerView = Backbone.View.extend({
+window.AudioPlayerView = ContentBaseView.extend({
 
     template: HB.template("audio/audio-player"),
 
     initialize: function() {
 
-        _.bindAll(this);
-
-        var self = this;
-
         this.possible_points = ds.distributed.points_per_audio || 750;
 
         this.REQUIRED_PERCENT_FOR_FULL_POINTS = 0.95;
 
-        window.statusModel.loaded.then(function() {
-            // load the info about the content itself
-            self.data_model = new ContentDataModel({id: self.options.id});
-            if (self.data_model.get("id")) {
-                self.data_model.fetch().then(function() {
-
-                    if (window.statusModel.get("is_logged_in")) {
-
-                        self.log_collection = new ContentLogCollection([], {content_model: self.data_model});
-                        self.log_collection.fetch().then(self.user_data_loaded);
-
-                    }
-                });
-            }
-
-        });
+        ContentBaseView.prototype.initialize.apply(this, arguments);
 
     },
 
@@ -47,7 +28,7 @@ window.AudioPlayerView = Backbone.View.extend({
 
         this.initialize_listeners();
 
-        this.points_view = new AudioPlayerPointsView({
+        this.points_view = new ContentPointsView({
             model: this.log_model
         });
 
@@ -108,15 +89,4 @@ window.AudioPlayerView = Backbone.View.extend({
         this.remove();
     }
 
-});
-
-window.AudioPlayerPointsView = Backbone.View.extend({
-
-    initialize: function() {
-        this.listenTo(this.model, "change", this.render);
-    },
-
-    render: function() {
-        this.$el.html(Number(this.model.get("points")));
-    }
 });

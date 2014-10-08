@@ -399,7 +399,7 @@ window.TopicContainerOuter = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
 
-            case "PDF":
+            case "Document":
                 view = new PDFViewerView({
                     id: id,
                     context_id: this.model.get("id")

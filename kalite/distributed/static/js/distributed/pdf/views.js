@@ -6,32 +6,7 @@ window.PDFViewerView = Backbone.View.extend({
 
         this.POINTS_PER_PAGE = 50;
 
-        _.bindAll(this);
-
-        var self = this;
-
-        // NOTE (aron): You know, this piece
-        // of code is shared between this view
-        // and AudioPlayerView. I'm thinking of
-        // putting this into a mixin, based
-        // on rico's blog post:
-        // http://ricostacruz.com/backbone-patterns/#mixins
-        window.statusModel.loaded.then(function() {
-            // load the info about the content itself
-            self.data_model = new ContentDataModel({id: self.options.id});
-            if (self.data_model.get("id")) {
-                self.data_model.fetch().then(function() {
-
-                    if (window.statusModel.get("is_logged_in")) {
-
-                        self.log_collection = new ContentLogCollection([], {content_model: self.data_model});
-                        self.log_collection.fetch().then(self.user_data_loaded);
-
-                    }
-                });
-            }
-
-        });
+        ContentBaseView.prototype.initialize.apply(this, arguments);
 
     },
 
