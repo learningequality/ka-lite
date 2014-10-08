@@ -13,7 +13,7 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": ["fix to handle multiple psutil versions", "fix to handle multiple psutil versions"],
+            "all": ["fix to handle multiple psutil versions", "use POST requests when deleting student groups"],
             "students": [],
             "coaches": [],
             "admins": [],
