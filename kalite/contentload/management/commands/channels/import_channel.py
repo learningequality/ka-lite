@@ -24,14 +24,16 @@ title_key = {
     "Topic": "title",
     "Video": "title",
     "Exercise": "title",
-    "AssessmentItem": "title"
+    "AssessmentItem": "title",
+    "Document": "slug",
 }
 
 id_key = {
     "Topic": "id",
     "Video": "id",
     "Exercise": "id",
-    "AssessmentItem": "id"
+    "AssessmentItem": "id",
+    "Document": "id",
 }
 
 iconfilepath = "/images/power-mode/badges/"
