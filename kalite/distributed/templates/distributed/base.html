@@ -152,6 +152,18 @@
                           <ul class="nav navbar-nav navbar-right">
                               {% block sitewide_navigation %}
                             {# Learn for all #}
+
+                            {# Search box #}
+                            <li>
+                              <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
+                                {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
+                                <div class="input-group">
+                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'video, topic, or exercise...' %}" />
+                                  <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                              </form>
+                            </li>
+
                             <li>
                               <a href="{% url 'homepage' %}" id="nav_home" class="home-navlink not-admin-only {% block learn_active %}{% endblock learn_active %}">
                                 {% trans "Learn" %}
@@ -164,7 +176,7 @@
                                 {% trans "Teach" %}
                               </a>
                             </li>
-                            
+
                             <li class="not-teacher-only">
                               <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only {% block teach_active_admins %}{% endblock teach_active_admins %}">
                                 {% trans "Teach" %}
@@ -176,7 +188,7 @@
                               <a href="{% url 'zone_redirect' %}" class="admin-only {% block manage_active_admins %}{% endblock manage_active_admins %}">
                                 {% trans "Manage" %}
                               </a>
-                            </li> 
+                            </li>
 
                               {# Teacher Manage #}
                             {% if request.session.facility_user.facility %}
@@ -186,7 +198,7 @@
                                 </a>
                               </li>
                             {% endif %}
-                            
+
                             {# Account management for students #}
                             <li class="motivational-feature">
                               <a href="{% url 'account_management' %}" id="nav_progress" class="student-only {% block progress_active %}{% endblock progress_active %}">
@@ -251,7 +263,7 @@
                     {% endblock content %}
                 {% endblock outer_content %}
             </div>
-    
+
             {# Footer #}
             {% include "distributed/partials/_footer.html" %}
 
