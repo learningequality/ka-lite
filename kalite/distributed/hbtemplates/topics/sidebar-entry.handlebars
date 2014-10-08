@@ -23,5 +23,9 @@
     <span class="sidebar-icon icon-audio" data-content-id="{{ content_id }}"></span>
     <span class="sidebar-text" data-content-id="{{ content_id }}">{{ title }}</span>
     {{/ifcond}}
+    {{#ifcond entity_kind "==" "Document"}}
+    <span class="sidebar-icon icon-document" data-content-id="{{ content_id }}"></span>
+    <span class="sidebar-text" data-content-id="{{ content_id }}">{{ title }}</span>
+    {{/ifcond}}
 </a>
 {{/ifcond}}

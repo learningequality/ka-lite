@@ -18,6 +18,9 @@ Icon Font
 .icon-audio:before {
     content: "\e604";
 }
+.icon-document:before {
+    content: "\e605";
+}
 
 .sidebar-icon.partial {
     opacity: 0.45;
