@@ -170,6 +170,12 @@ def construct_node(location, parent_path, node_cache, channel):
         shutil.copy(location, os.path.join(settings.CONTENT_ROOT, id + "." + extension))
         logging.debug("%s file %s to local content directory." % ("Copied", slug))
 
+    # Verify some required fields:
+    if "title" not in node:
+        logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))
+        node["title"] = base_name.split(".")[0]
+
+    if not os.path.isdir(location):
         nodecopy = copy.deepcopy(node)
         if kind == "Video":
             node_cache["Video"].append(nodecopy)
@@ -177,11 +183,6 @@ def construct_node(location, parent_path, node_cache, channel):
             node_cache["Video"].append(nodecopy)
         else:
             node_cache["Content"].append(nodecopy)
-
-    # Verify some required fields:
-    if "title" not in node:
-        logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))
-        node["title"] = base_name.split(".")[0]
 
     return node
 
