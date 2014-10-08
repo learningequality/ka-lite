@@ -353,6 +353,7 @@ window.TopicContainerOuter = Backbone.View.extend({
 
     back_to_parent: function() {
         // Simply pop the first in the stack and show the next one
+        this.inner_views[0].move_back();
         this.inner_views[0].remove();
         this.inner_views.shift();
         this.inner_views[0].show();
@@ -441,6 +442,14 @@ window.PlaylistSidebarView = SidebarContentView.extend({
         }
 
         window.router.add_slug(view.model.get("slug"));
+    },
+
+    move_back: function() {
+        for (i=0; i < this._entry_views.length; i++) {
+            if(this._entry_views[i].model.get("active")) {
+                window.router.url_back();
+            }
+        }
     },
 
     load_entry_progress: _.debounce(function() {
