@@ -13,7 +13,9 @@ from django.utils import unittest
 from .base import FacilityTestCase
 from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm, LoginForm
 from ..models import Facility, FacilityUser, FacilityGroup
+from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
 from kalite.testing import KALiteTestCase
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from securesync.models import Zone, Device, DeviceMetadata
 
 
@@ -202,3 +204,49 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         # Fails for a second; userlist if admin
         user_form = FacilityUserForm(facility=self.facility, data=self.data)
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
+
+
+class FormBrowserTests(FacilityMixins, KALiteDistributedBrowserTestCase):
+
+    def setUp(self):
+        self.facility = self.create_facility()
+        super(FormBrowserTests, self).setUp()
+
+    def test_no_groups_no_select(self):
+        signup_url = "%s%s%s" % (self.reverse('facility_user_signup'), "?&facility=", self.facility.id)
+        self.browse_to(signup_url)
+        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
+        self.assertFalse(group_label.is_displayed())
+        group_select = self.browser.find_element_by_id('id_group')
+        self.assertFalse(group_select.is_displayed())
+
+    def test_signup_cannot_select_group(self):
+        self.group = self.create_group(facility=self.facility)
+        signup_url = "%s%s%s" % (self.reverse('facility_user_signup'), "?&facility=", self.facility.id)
+        self.browse_to(signup_url)
+        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
+        self.assertTrue(group_label.is_displayed())
+        group_select = self.browser.find_element_by_id('id_group')
+        self.assertFalse(group_select.is_displayed())
+
+    def test_logged_in_student_cannot_select_group(self):
+        self.group = self.create_group(facility=self.facility)
+        self.student = self.create_student(facility=self.facility, group=self.group)
+        self.browser_login_student(username=self.student.username, password='password', facility_name=self.facility.name)
+        self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
+        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
+        self.assertTrue(group_label.is_displayed())
+        group_select = self.browser.find_element_by_id('id_group')
+        self.assertFalse(group_select.is_displayed())
+    
+    def test_teacher_can_select_group(self):
+        self.group = self.create_group(facility=self.facility)
+        self.student = self.create_student(facility=self.facility, group=self.group)
+        self.teacher = self.create_teacher(facility=self.facility)
+        self.browser_login_teacher(username=self.teacher.username, password='password', facility_name=self.facility.name)
+        self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
+        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
+        self.assertTrue(group_label.is_displayed())
+        group_select = self.browser.find_element_by_id('id_group')
+        self.assertTrue(group_select.is_displayed())
+        
