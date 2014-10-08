@@ -41,8 +41,8 @@ window.AudioPlayerView = ContentBaseView.extend({
 
         var self = this;
 
-        this.listenTo(this.audio_object.wrapper, "timeupdate", self.update_progress);
-        this.listenTo(this.audio_object.wrapper, "play", self.set_last_time);
+        $(this.audio_object.wrapper).on("timeupdate", self.update_progress);
+        $(this.audio_object.wrapper).on("play", self.set_last_time);
 
     },
 
