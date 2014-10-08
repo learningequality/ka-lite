@@ -1,4 +1,4 @@
-window.ContentBaseView = Backbone.View.Extend({
+window.ContentBaseView = Backbone.View.extend({
     initialize: function() {
 
         _.bindAll(this);
