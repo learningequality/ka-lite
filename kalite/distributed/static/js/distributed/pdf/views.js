@@ -20,14 +20,8 @@ window.PDFViewerView = Backbone.View.extend({
     initialize_listeners: function(ev) {
         var contentWindow = ev.target.contentWindow; // the window object inside the iframe
 
-        // NOTE (aron): I used addEventListener here since contentWindow
-        // is a plain JS object and not a JQuery object, which listenTo
-        // needs to function. I can't seem to coerce it cleanly into
-        // a JQuery object.
-
-        // TODO (aron): don't forget to clean these listeners up.
-        contentWindow.addEventListener("pageshow", this.page_loaded); // document loaded for the first time
-        contentWindow.addEventListener("pagechange", this.page_changed); // page changed
+        this.listenToDOM(contentWindow, "pageshow", this.page_loaded); // document loaded for the first time
+        this.listenToDOM(contentWindow, "pagechange", this.page_changed); // page changed
     },
 
     page_changed: function(ev) {
