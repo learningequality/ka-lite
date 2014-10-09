@@ -39,6 +39,17 @@
             $("#id_group").parent().hide();
         {% endif %}
 
+        {# Do not allow students to edit their own group #}
+        {% if not request.is_admin %}
+            $("#id_group").hide();
+            $('#id_group').siblings('.helptext').hide()
+            var group_name = $("#id_group option:selected").text()
+            if (group_name === "---------") {
+                group_name = "{% trans 'None' %}"
+            } 
+            $(sprintf("<span>%s</span>", group_name)).insertAfter($("#id_group"));
+        {% endif %}        
+
         {# Show facility info #}
         {% if request.session.facility_count > 1 %}
             // Show the dropdown

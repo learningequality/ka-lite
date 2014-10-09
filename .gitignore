@@ -46,3 +46,4 @@ writeup/
 .tags
 /kalite/i18n/static/
 /.vagrant/
+ghostdriver.log

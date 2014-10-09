@@ -13,7 +13,9 @@ $(function () {
         }
         else if (confirmDelete === facilityName) {
             var delete_facility_url = event.target.parentNode.getAttribute("value");
-            doRequest(delete_facility_url)
+            var data = {facility_id: null};
+            // MUST: provide the data argument to make this a POST request
+            doRequest(delete_facility_url, data)
                 .success(function() {
                     window.location.reload();
                 });
