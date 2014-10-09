@@ -82,7 +82,21 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
 
     urlRoot: "/api/contentlog/",
 
-    save: _.throttle(function(){Backbone.Model.prototype.save.call(this);}, 30000)
+    save: _.throttle(function(){Backbone.Model.prototype.save.call(this);}, 30000),
+
+    set_complete: function() {
+        var already_complete = this.get("complete");
+        this.set({
+            progress: 1,
+            complete: true,
+            completion_counter: (this.get("completion_counter") || 0) + 1
+        });
+        if (!already_complete) {
+            this.set({
+                completion_timestamp: window.statusModel.get_server_time()
+            });
+        }
+    }
 });
 
 

@@ -128,8 +128,8 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
         return {"stream": stream_url, "thumbnail": thumbnail_url}
 
     video_availability = video.get("availability", {}) if not force else {}
-    en_youtube_id = get_youtube_id(video["youtube_id"], lang_code=None)  # get base ID
-    video_map = get_id2oklang_map(video["youtube_id"]) or {}
+    en_youtube_id = video.get("youtube_id", video["id"])
+    video_map = get_id2oklang_map(en_youtube_id) or {}
 
     if not "on_disk" in video_availability:
         for lang_code in video_map.keys():
