@@ -256,6 +256,8 @@ def generate_node_cache(topictree=None):
 
     node_cache["Exercise"] = get_exercise_cache()
     node_cache["Video"] = get_video_cache()
+    node_cache["Document"] = get_content_cache(kind="Document")
+    node_cache["Video"] = get_content_cache(kind="Audio")
 
     return node_cache
 
@@ -366,7 +368,7 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
     topic_hierarchy = {
         "id": topic_node['id'],
         "title": topic_node['title'],
-        "description": topic_node['description'],    
+        "description": topic_node['description'],
     }
     if ("children" in topic_node) and ('Topic' in topic_node['contains']):
         topic_hierarchy["children"] = []
@@ -652,7 +654,7 @@ def video_dict_by_video_id(flat_topic_tree=None):
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
-    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1] 
+    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1]
     assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
     return leaf_id[0]
 
