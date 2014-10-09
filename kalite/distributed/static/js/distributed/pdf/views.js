@@ -4,7 +4,7 @@ window.PDFViewerView = ContentBaseView.extend({
 
     initialize: function() {
 
-        this.POINTS_PER_PAGE = 50;
+        this.MAX_POINTS_PER_PDF = 500;
 
         ContentBaseView.prototype.initialize.apply(this, arguments);
 
@@ -19,16 +19,12 @@ window.PDFViewerView = ContentBaseView.extend({
     initialize_listeners: function(ev) {
         var contentWindow = ev.target.contentWindow; // the window object inside the iframe
 
-        this.listenToDOM(contentWindow, "pageshow", this.page_loaded); // document loaded for the first time
         this.listenToDOM(contentWindow, "pagechange", this.page_changed); // page changed
     },
 
     page_changed: function(ev) {
         var contextWindow = ev.target;
-        if (contextWindow.PDFView.previousPageNumber !== contextWindow.currentPageNumber) { // the page actually changed
-            console.log("page actually changed!");
-            this.update_progress(contextWindow.PDFView);
-        }
+        this.update_progress(contextWindow.PDFView);
     },
 
     page_loaded: function(ev) {
@@ -61,6 +57,9 @@ window.PDFViewerView = ContentBaseView.extend({
         var current_page = pdfview.page;
         var highest_page = this.log_model.get("highest_page");
 
+        // calculate how much points the user gets
+        var points_increment = this.MAX_POINTS_PER_PDF / numpages;
+
         if (current_page > highest_page) {
             console.log("Moved to a new page; updating progress!");
             this.log_model.set("highest_page", current_page);
@@ -68,7 +67,7 @@ window.PDFViewerView = ContentBaseView.extend({
 
             // increment the user's points
             var current_points = this.log_model.get("points");
-            this.log_model.set("points", current_points + this.POINTS_PER_PAGE);
+            this.log_model.set("points", current_points + points_increment);
         }
 
         // also check if we are in the last page.
