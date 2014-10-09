@@ -11,8 +11,7 @@ window.PDFViewerView = ContentBaseView.extend({
     },
 
     render: function() {
-        var pdf_name = sprintf("%(id)s.pdf", {id: this.id});
-        this.$el.html(this.template({pdf: pdf_name}));
+        this.$el.html(this.template(this.data_model.attributes));
         window.statusModel.set("points", this.log_model.get("points"));
         this.$(".pdf-iframe").load(this.initialize_listeners);
     },
