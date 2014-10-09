@@ -12,6 +12,7 @@ from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.db.models.query_utils import Q
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -227,7 +228,7 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
     if not form.is_valid():
         raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
 
-    frequency = frequency or request.GET.get("frequency", "months")
+    frequency = frequency or request.GET.get ("frequency", "months")
     period_start = period_start or form.data["period_start"]
     period_end = period_end or form.data["period_end"]
     (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
@@ -387,12 +388,16 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     # filter results
     if period_start:
         exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
-        video_logs = video_logs.filter(completion_timestamp__gte=period_start)
-        login_logs = login_logs.filter(start_datetime__gte=period_start)
+        video_logs = video_logs.filter(Q(total_seconds_watched__gt=0) |
+                                       Q(completion_timestamp__gte=period_start))
+        login_logs = login_logs.filter(Q(total_seconds__gt=0) |
+                                       Q(start_datetime__gte=period_start))
     if period_end:
         exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
-        video_logs = video_logs.filter(completion_timestamp__lte=period_end)
-        login_logs = login_logs.filter(end_datetime__lte=period_end)
+        video_logs = video_logs.filter(Q(total_seconds_watched__gt=0) |
+                                       Q(completion_timestamp__lte=period_end))
+        login_logs = login_logs.filter(Q(total_seconds__gt=0) |
+                                       Q(start_datetime__gte=period_start))
 
 
     # Force results in a single query
