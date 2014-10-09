@@ -80,9 +80,9 @@ class VideoResource(Resource):
     # TODO(jamalex): this seems very un-DRY (since it's replicating all the model fields again). DRY it out!
     availability = fields.DictField(attribute='availability')
     description = fields.CharField(attribute='description')
-    download_urls = fields.DictField(attribute='download_urls')
+    download_urls = fields.DictField(attribute='download_urls', default={})
     dubs_available = fields.BooleanField(attribute='dubs_available')
-    duration = fields.IntegerField(attribute='duration')
+    duration = fields.IntegerField(attribute='duration', default=-1)
     id = fields.CharField(attribute='id')
     kind = fields.CharField(attribute='kind')
     on_disk = fields.BooleanField(attribute='on_disk')
@@ -93,7 +93,7 @@ class VideoResource(Resource):
     title = fields.CharField(attribute='title')
     video_id = fields.CharField(attribute='video_id')
     video_urls = fields.DictField(attribute='video_urls')
-    youtube_id = fields.CharField(attribute='youtube_id')
+    youtube_id = fields.CharField(attribute='youtube_id', default="no_youtube_id")
 
     class Meta:
         resource_name = 'video'

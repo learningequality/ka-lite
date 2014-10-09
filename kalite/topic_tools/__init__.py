@@ -568,7 +568,7 @@ def get_video_data(request, video_id=None):
     video["selected_language"] = vid_lang
     video["dubs_available"] = len(video["availability"]) > 1
     video["title"] = _(video["title"])
-    video["description"] = _(video["description"])
+    video["description"] = _(video.get("description", ""))
     video["video_id"] = video["id"]
 
     return video
