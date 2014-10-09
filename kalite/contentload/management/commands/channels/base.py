@@ -117,18 +117,22 @@ def rebuild_topictree(
                     if key not in channel_data["denormed_attribute_list"][kind] or not node.get(key, ""):
                         del node[key]
 
-        # Loop through children, remove exercises and videos to reintroduce denormed data
-        children_to_delete = []
-        child_kinds = set()
-        for i, child in enumerate(node.get("children", [])):
-            child_kind = child.get("kind", None)
+        if "child_data" in node:
+            # Loop through children, remove exercises and videos to reintroduce denormed data
+            # Only do this for data that has child_data (at the moment Khan Academy)
+            # Otherwise, repositories that have all their data directly in the topic tree
+            # Will lose their data - e.g. Videos from the channel_import tool.
+            children_to_delete = []
+            child_kinds = set()
+            for i, child in enumerate(node.get("children", [])):
+                child_kind = child.get("kind", None)
 
-            if child_kind == "Video" or child_kind == "Exercise":
-                children_to_delete.append(i)
+                if child_kind == "Video" or child_kind == "Exercise":
+                    children_to_delete.append(i)
 
-        for i in reversed(children_to_delete):
-            # Reversing means that earlier indices are unaffected by deletion of later ones.
-            del node["children"][i]
+            for i in reversed(children_to_delete):
+                # Reversing means that earlier indices are unaffected by deletion of later ones.
+                del node["children"][i]
 
         # Loop through child_data to populate children with denormed data of exercises and videos.
         for child_datum in node.get("child_data", []):
@@ -168,8 +172,8 @@ def rebuild_topictree(
             elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
-                logging.warn("No download link for video: %s\n" % child["youtube_id"])
-                children_to_delete.append(i)
+                logging.warn("No download link for video: %s\n" % child.get("youtube_id", child.get("id", "")))
+                # children_to_delete.append(i)
                 continue
 
             child_kinds = child_kinds.union(set([child_kind]))
