@@ -3,16 +3,6 @@ var _titles = [];    // keep an array (local memory only) around for fast filter
 var _timeout_length = 1000 * 20; // 20 seconds
 var _version = "7"; // increment this when you're invalidating old storage
 
-function prefixed_key(base_key) {
-    // Cross-app key (prefix with an app-specific prefix
-    return "kalite_search_" + base_key;
-}
-
-function ls_key(node_type, lang) {
-    // make them collide by language
-    return prefixed_key("nodes_" + node_type + "_" + "_v" + _version);
-}
-
 function fetchTopicTree(lang, force_reparse) {
     doRequest(SEARCH_TOPICS_URL, null, {  // already has language information embedded in it
         cache: true,
