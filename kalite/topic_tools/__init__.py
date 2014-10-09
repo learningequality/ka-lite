@@ -108,14 +108,22 @@ def get_knowledgemap_topics(force=False):
         KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=True)
     return KNOWLEDGEMAP_TOPICS
 
-CONTENT          = None
+CONTENT          = {}
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False):
+def get_content_cache(force=False, kind="all"):
     global CONTENT, CONTENT_FILEPATH
-    if CONTENT is None or force:
-        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=True)
 
-    return CONTENT
+    allowed_types = ["Document", "Audio", "all"]
+    assert kind in allowed_types, "Invalid kind %s given to get_content_cache" % kind
+
+    if not CONTENT.get(kind) or force:
+        CONTENT["all"] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=True)
+
+        if kind != "all":
+           CONTENT[kind] = dict((k, v) for k, v in CONTENT["all"].iteritems() if v["kind"] == kind)
+
+
+    return CONTENT[kind]
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
