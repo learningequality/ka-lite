@@ -104,7 +104,7 @@ class Command(NoArgsCommand):
 
         if options["import_files"]:
             channel_tools.path = options["import_files"]
-            if not channel_name:
+            if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
 
         channel_path = os.path.join(settings.CONTENT_DATA_PATH, slugify(unicode(channel_name)))
