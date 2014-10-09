@@ -40,6 +40,9 @@ CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
 
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
+
 
 # Globals that can be filled
 TOPICS          = None
@@ -47,7 +50,7 @@ CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
     global TOPICS, TOPICS_FILEPATH
     if TOPICS is None or force:
-        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=True)
+        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=False)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
 
         # Limit the memory footprint by unloading particular values
@@ -78,7 +81,7 @@ CACHE_VARS.append("EXERCISES")
 def get_exercise_cache(force=False):
     global EXERCISES, EXERCISES_FILEPATH
     if EXERCISES is None or force:
-        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=True)
+        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
 
     return EXERCISES
 
@@ -87,7 +90,7 @@ CACHE_VARS.append("VIDEOS")
 def get_video_cache(force=False):
     global VIDEOS, VIDEOS_FILEPATH
     if VIDEOS is None or force:
-        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=True)
+        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=False)
 
     return VIDEOS
 
@@ -96,7 +99,7 @@ CACHE_VARS.append("ASSESSMENT_ITEMS")
 def get_assessment_item_cache(force=False):
     global ASSESSMENT_ITEMS, ASSESSMENT_ITEMS_FILEPATH
     if ASSESSMENT_ITEMS is None or force:
-        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=True)
+        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=False)
 
     return ASSESSMENT_ITEMS
 
@@ -105,7 +108,7 @@ CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=True)
+        KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=False)
     return KNOWLEDGEMAP_TOPICS
 
 CONTENT          = None
@@ -113,7 +116,7 @@ CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False):
     global CONTENT, CONTENT_FILEPATH
     if CONTENT is None or force:
-        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=True)
+        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
 
     return CONTENT
 
