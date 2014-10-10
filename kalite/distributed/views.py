@@ -203,7 +203,9 @@ def exercise_dashboard(request):
 
     context = {
         "title": title,
+        "data_url": "data/" + settings.CHANNEL,
     }
+
     return context
 
 

@@ -43,11 +43,11 @@
     </script>
     <script type="text/javascript">
         var TOPIC_DATA_URLS = {
-            Domains: '{% static "data/map_domains.json" %}',
-            Subjects: '{% static "data/map_subjects.json" %}',
-            Topics: '{% static "data/map_topics.json" %}',
-            Tutorials: '{% static "data/map_tutorials.json" %}',
-            Exercises: '{% static "data/exercises.json" %}'
+            Domains: '{% static data_url %}/map_domains.json',
+            Subjects: '{% static data_url %}/map_subjects.json',
+            Topics: '{% static data_url %}/map_topics.json',
+            Tutorials: '{% static data_url %}/map_tutorials.json',
+            Exercises: '{% static data_url %}/exercises.json'
         }
     </script>
     <script src="{% static 'js/distributed/map/models.js' %}"></script>
