@@ -278,18 +278,18 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                 # Always create new
                 logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak on %s)" % (
                     facility_user.first_name,
-                    exercise["name"],
+                    exercise["id"],
                     points,
                     attempts,
                     streak_progress,
                     date_completed,
                 ))
                 try:
-                    elog = ExerciseLog.objects.get(user=facility_user, exercise_id=exercise["name"])
+                    elog = ExerciseLog.objects.get(user=facility_user, exercise_id=exercise["id"])
                 except ExerciseLog.DoesNotExist:
                     elog = ExerciseLog(
                         user=facility_user,
-                        exercise_id=exercise["name"],
+                        exercise_id=exercise["id"],
                         attempts=int(attempts),
                         streak_progress=streak_progress,
                         points=int(points),
