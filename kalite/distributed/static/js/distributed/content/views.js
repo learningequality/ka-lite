@@ -1,4 +1,7 @@
-window.ContentBaseView = BaseView.extend({
+window.ContentWrapperView = BaseView.extend({
+
+    template: HB.template("content/content-wrapper"),
+
     initialize: function() {
 
         _.bindAll(this);
@@ -21,16 +24,121 @@ window.ContentBaseView = BaseView.extend({
             }
 
         });
+    },
+
+    user_data_loaded: function() {
+        this.log_model = this.log_collection.get_first_log_or_new_log();
+
+        this.render();
+    },
+
+    render: function() {
+
+        this.$el.html(this.template(this.data_model.attributes));
+
+        var ContentView;
+
+        switch(this.data_model.get("kind")) {
+
+            case "Audio":
+                ContentView = AudioPlayerView;
+                break;
+
+            case "Document":
+                ContentView = PDFViewerView;
+                break;
+        }
+
+        this.content_view = new ContentView({
+            data_model: this.data_model,
+            log_model: this.log_model
+        });
+
+        this.content_view.render();
+
+        this.$(".content-player-container").append(this.content_view.el);
+
+        this.points_view = new ContentPointsView({
+            model: this.log_model
+        });
+
+        this.points_view.render();
+
+        this.$(".points-wrapper").append(this.points_view.el);
+
+        this.log_model.set("views", this.log_model.get("views") + 1);
+    }
+
+});
+
+window.ContentBaseView = BaseView.extend({
+    initialize: function(options) {
+
+        _.bindAll(this);
+
+        this.possible_points = 500;
+
+        this.REQUIRED_PERCENT_FOR_FULL_POINTS = 0.95;
+
+        this.data_model = options.data_model;
+        this.log_model = options.log_model;
+        this.render();
+    },
+
+    set_time_spent: function() {
+        var time_now = new Date().getTime();
+        
+        var time_engaged = Math.max(0, time_now - this.last_time);
+        time_engaged = isNaN(time_engaged) ? 0 : time_engaged;
+
+        this.log_model.set({
+            time_spent: this.log_model.get("time_spent") + time_engaged
+        });
+
+        this.last_time = time_now;
+    },
+
+    set_last_time: function() {
+        this.last_time = new Date().getTime();
+    },
+
+    set_progress: function(progress) {
+        if ((progress - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
+            this.log_model.set_complete();
+            this.log_model.set({
+                points: this.possible_points
+            });
+        } else {
+            this.log_model.set({
+                points: Math.floor(this.possible_points * progress)
+            });
+        }
+    },
+
+    update_progress: function() {
+        if (!window.statusModel.get("is_logged_in") ) {
+            return;
+        }
+
+        if (window.statusModel.get("is_django_user")) {
+            return;
+        }
+
+        this.set_time_spent();
     }
 });
 
 window.ContentPointsView = Backbone.View.extend({
 
+    template: HB.template("content/content-points"),
+
     initialize: function() {
+        this.starting_points = this.model.get("points") || 0;
         this.listenTo(this.model, "change", this.render);
     },
 
     render: function() {
-        this.$el.html(Number(this.model.get("points")));
+        this.$el.html(this.template(this.model.attributes));
+        statusModel.set("newpoints", this.model.get("points") - this.starting_points);
     }
 });
