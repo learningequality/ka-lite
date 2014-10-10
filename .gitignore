@@ -38,6 +38,7 @@ writeup/
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media
+/kalite/main/static/data
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static
