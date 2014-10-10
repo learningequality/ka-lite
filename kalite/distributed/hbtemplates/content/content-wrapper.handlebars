@@ -1,0 +1,29 @@
+    <div class="content-wrapper">
+
+        <h3 class="title-header">
+
+            {{#if dubs_available }}
+                <select class="content-language-selector">
+                    {{#each availability }}
+                    <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                        {{ language_name }}
+                    </option>
+                    {{/each}}
+                </select>
+            {{/if}}
+
+            <span class="title">{{ title }}</span>
+
+            {{#if description }}
+            <span class="long-description">{{ description }}</span>
+            {{/if}}
+
+            <div class="points-wrapper"></div>
+
+        </h3>
+
+        <div class="clear"></div>
+
+        <div class="content-player-container"></div>
+
+    </div>
