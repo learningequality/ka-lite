@@ -207,12 +207,12 @@ def exercise_dashboard(request):
     return context
 
 
-# @render_to("distributed/homepage.html")
+@render_to("distributed/homepage.html")
 def homepage(request):
     """
     Homepage.
     """
-    return HttpResponseRedirect(reverse("learn"))
+    return {}
 
 def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""
