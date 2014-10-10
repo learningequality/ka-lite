@@ -3,6 +3,7 @@
 import os
 import shutil
 import tempfile
+import random
 
 from django.conf import settings
 from django.core import cache
@@ -80,7 +81,7 @@ class MainTestCase(KALiteTestCase):
         """
         Helper function for testing video files.
         """
-        video_id = get_video_cache().keys()
+        video_id = random.choice(get_video_cache().keys())
         youtube_id = get_video_cache()[video_id]["youtube_id"]
         fake_video_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_video_file, "w") as fh:
