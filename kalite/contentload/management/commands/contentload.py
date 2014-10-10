@@ -48,8 +48,8 @@ def validate_data(topic_tree, node_cache, slug2id_map):
 
     # Validate all topics have leaves
     for topic in node_cache["Topic"].values():
-        if not topic_tools.get_topic_by_path(topic["path"], root_node=topic_tree).get("children"):
-            logging.warning("Could not find any children for topic %s\n" % (topic["path"]))
+        if not topic.get("children"):
+            logging.warning("Could not find any children for topic %s\n" % (topic["title"]))
 
     # Validate related content
     for content in node_cache["Content"].values():

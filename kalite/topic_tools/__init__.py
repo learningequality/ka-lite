@@ -294,33 +294,15 @@ def get_topic_by_path(path, root_node=None):
     path_withslash = path + ("/" if not path.endswith("/") else "")
     path_noslash = path_withslash[:-1]
 
-    # Make sure the root fits
-    if not root_node:
-        root_node = get_topic_tree()
-    if path_withslash == root_node["path"] or path_noslash == root_node["path"]:
-        return root_node
-    elif not path_withslash.startswith(root_node["path"]):
-        return {}
+    if path_noslash:
+        slug = path_noslash.split("/")[-1]
+    else:
+        slug = "root"
 
-    # split into parts (remove trailing slash first)
-    parts = path_noslash[len(root_node["path"]):].split("/")
-    cur_node = root_node
-    for part in parts:
-        out_node = None
-        for child in cur_node["children"]:
-            if child["slug"]==part:
-                out_node = child
-        if not out_node:
-            logging.warn("No topic found for slug %(part)s in path %(path)s"
-                % {
-                    "part": part,
-                    "path": "/".join(parts),
-                })
-            break
-        else:
-            cur_node = out_node
+    cur_node = get_node_cache()["Topic"].get(slug, {})
 
-    return cur_node or {}
+
+    return cur_node
 
 
 def get_all_leaves(topic_node=None, leaf_type=None):
