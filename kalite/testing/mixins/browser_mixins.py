@@ -1,5 +1,6 @@
 import time
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -83,12 +84,10 @@ class BrowserActionMixins(object):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        time.sleep(2)  # wait for the message to get created via AJAX
+        WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
 
         # Get messages (and limit by type)
         messages = self.browser.find_elements_by_class_name("alert")
-        if message_type:
-            messages = [m for m in messages if message_type in m.get_attribute("class")]
 
         # Check that we got as many as expected
         if num_messages is not None:
@@ -338,7 +337,7 @@ class BrowserActionMixins(object):
         # 2. Admin: #logout contains username
         browser = browser or self.browser
         try:
-            logged_in_name = browser.find_element_by_id("logged-in-name").text.strip()
+            logged_in_name = browser.find_element_by_css_selector("#sitepoints > span:nth-child(1)").text.strip()
             logout_text = browser.find_element_by_id("nav_logout").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
