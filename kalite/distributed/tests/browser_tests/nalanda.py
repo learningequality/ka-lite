@@ -39,7 +39,7 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
 
         set_current_unit_settings_value(self.facility.id, unit)
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[exercise_id][0]["path"])
+        self.browse_to(self.live_server_url + get_node_cache("Exercise")[exercise_id]["path"])
 
     def test_nalanda_control_exercise(self):
         """
