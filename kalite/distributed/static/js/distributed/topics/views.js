@@ -392,16 +392,8 @@ window.TopicContainerOuter = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
 
-            case "Audio":
-                view = new AudioPlayerView({
-                    id: id,
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-
-            case "Document":
-                view = new PDFViewerView({
+            default:
+                view = new ContentWrapperView({
                     id: id,
                     context_id: this.model.get("id")
                 });

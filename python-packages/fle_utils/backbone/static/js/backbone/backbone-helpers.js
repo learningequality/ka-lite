@@ -24,5 +24,9 @@ window.BaseView = Backbone.View.extend({
             }
         
         }, event_name, callback);
+    },
+
+    close: function() {
+        this.remove();
     }
 });
