@@ -1,29 +1,36 @@
     <div class="content-wrapper">
 
-        <h3 class="title-header">
+        <div class="row">
+            <div class="col-xs-12">
+                <h3 class="title-header">
 
-            {{#if dubs_available }}
-                <select class="content-language-selector">
-                    {{#each availability }}
-                    <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
-                        {{ language_name }}
-                    </option>
-                    {{/each}}
-                </select>
-            {{/if}}
+                    {{#if dubs_available }}
+                        <select class="content-language-selector">
+                            {{#each availability }}
+                            <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                                {{ language_name }}
+                            </option>
+                            {{/each}}
+                        </select>
+                    {{/if}}
 
-            <span class="title">{{ title }}</span>
+                    <span class="title">{{ title }}</span>
 
-            {{#if description }}
-            <span class="long-description">{{ description }}</span>
-            {{/if}}
+                    {{#if description }}
+                    </br><small class="long-description">{{ description }}</small>
+                    {{/if}}
+                    
+                    <div class="points-wrapper pull-right"></div>
 
-            <div class="points-wrapper"></div>
+                </h3>
+            </div>
+        </div>
 
-        </h3>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="content-player-container"></div>
+            </div>
+        </div>
 
-        <div class="clear"></div>
-
-        <div class="content-player-container"></div>
 
     </div>

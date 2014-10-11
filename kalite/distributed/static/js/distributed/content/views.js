@@ -118,7 +118,7 @@ window.ContentBaseView = BaseView.extend({
             this.log_model.set_complete();
         }
         this.log_model.set({
-            points: Math.max(this.possible_points, Math.floor(this.possible_points * progress))
+            points: Math.min(this.possible_points, Math.floor(this.possible_points * progress))
         });
     },
 
