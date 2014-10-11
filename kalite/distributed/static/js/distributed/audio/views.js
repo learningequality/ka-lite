@@ -20,23 +20,20 @@ window.AudioPlayerView = ContentBaseView.extend({
         var self = this;
 
         this.listenToDOM(this.audio_object.wrapper, "timeupdate", self.update_progress);
-        this.listenToDOM(this.audio_object.wrapper, "play", self.set_last_time);
+        this.listenToDOM(this.audio_object.wrapper, "play", self.activate);
+        this.listenToDOM(this.audio_object.wrapper, "pause", self.deactivate);
 
     },
 
-    update_progress: function(event) {
-
-        ContentBaseView.prototype.update_progress.call(this, arguments);
-        
+    content_specific_progress: function(event) {
+  
         var percent = event.percent;
 
         this.log_model.set("last_percent", percent);
 
-        var progress = this.log_model.get("total_time")/this.audio_object.duration;
+        var progress = this.log_model.get("time_spent")/this.audio_object.duration;
 
-        this.set_progress(progress);
-
-        this.log_model.save();
+        return progress;
 
     }
 

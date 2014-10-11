@@ -76,6 +76,8 @@ window.ContentBaseView = BaseView.extend({
 
         _.bindAll(this);
 
+        this.active = false;
+
         this.possible_points = 500;
 
         this.REQUIRED_PERCENT_FOR_FULL_POINTS = 0.95;
@@ -83,6 +85,15 @@ window.ContentBaseView = BaseView.extend({
         this.data_model = options.data_model;
         this.log_model = options.log_model;
         this.render();
+    },
+
+    activate: function () {
+        this.active = true;
+        this.set_last_time();
+    },
+
+    deactivate: function () {
+        this.active = false;
     },
 
     set_time_spent: function() {
@@ -105,14 +116,10 @@ window.ContentBaseView = BaseView.extend({
     set_progress: function(progress) {
         if ((progress - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
             this.log_model.set_complete();
-            this.log_model.set({
-                points: this.possible_points
-            });
-        } else {
-            this.log_model.set({
-                points: Math.floor(this.possible_points * progress)
-            });
         }
+        this.log_model.set({
+            points: Math.max(this.possible_points, Math.floor(this.possible_points * progress))
+        });
     },
 
     update_progress: function() {
@@ -124,7 +131,21 @@ window.ContentBaseView = BaseView.extend({
             return;
         }
 
+        if (!this.active) {
+            return;
+        }
+
         this.set_time_spent();
+
+        var progress = this.content_specific_progress.apply(this, arguments);
+
+        this.set_progress(progress);
+
+        this.log_model.save();
+    },
+
+    content_specific_progress: function() {
+        return;
     }
 });
 

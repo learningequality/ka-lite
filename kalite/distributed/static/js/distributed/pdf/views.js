@@ -27,9 +27,7 @@ window.PDFViewerView = ContentBaseView.extend({
         this.update_progress(pdfview);
     },
 
-    update_progress: function(pdfview) {
-
-        ContentBaseView.prototype.update_progress.call(this, arguments);
+    content_specific_progress: function(pdfview) {
 
         // check if our current page is is higher than the user's highest
         // page viewed. If so, do an update.
@@ -44,9 +42,7 @@ window.PDFViewerView = ContentBaseView.extend({
 
         var progress = highest_page/numpages;
 
-        this.set_progress(progress);
-
-        this.log_model.save();
+        return progress;
     }
 
 });
