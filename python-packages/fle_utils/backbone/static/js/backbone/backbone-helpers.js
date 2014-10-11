@@ -1,4 +1,12 @@
 window.BaseView = Backbone.View.extend({
+
+    add_subview: function(subview_type, options) {
+        this.subviews = this.subviews || [];
+        var subview = new subview_type(options);
+        this.subviews.push(subview);
+        return subview;
+    },
+
     listenToDOM: function(DOMElement, event_name, callback) {
         if (typeof DOMElement.get === "function") {
             DOMElement = DOMElement.get(0);
@@ -27,6 +35,11 @@ window.BaseView = Backbone.View.extend({
     },
 
     close: function() {
+        if (this.subviews!==undefined) {
+            for (i=0; i < this.subviews.length; i++) {
+                this.subviews[i].close();
+            }
+        }
         this.remove();
     }
 });

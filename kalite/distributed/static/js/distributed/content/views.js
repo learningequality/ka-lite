@@ -49,7 +49,7 @@ window.ContentWrapperView = BaseView.extend({
                 break;
         }
 
-        this.content_view = new ContentView({
+        this.content_view = this.add_subview(ContentView, {
             data_model: this.data_model,
             log_model: this.log_model
         });
@@ -58,7 +58,7 @@ window.ContentWrapperView = BaseView.extend({
 
         this.$(".content-player-container").append(this.content_view.el);
 
-        this.points_view = new ContentPointsView({
+        this.points_view = this.add_subview(ContentPointsView, {
             model: this.log_model
         });
 
@@ -100,7 +100,7 @@ window.ContentBaseView = BaseView.extend({
         var time_now = new Date().getTime();
         
         var time_engaged = Math.max(0, time_now - this.last_time);
-        time_engaged = isNaN(time_engaged) ? 0 : time_engaged;
+        time_engaged = (isNaN(time_engaged) ? 0 : time_engaged)/1000;
 
         this.log_model.set({
             time_spent: this.log_model.get("time_spent") + time_engaged
@@ -146,10 +146,15 @@ window.ContentBaseView = BaseView.extend({
 
     content_specific_progress: function() {
         return;
+    },
+
+    close: function() {
+        this.log_model.saveNow();
+        BaseView.prototype.close.call(this);
     }
 });
 
-window.ContentPointsView = Backbone.View.extend({
+window.ContentPointsView = BaseView.extend({
 
     template: HB.template("content/content-points"),
 
