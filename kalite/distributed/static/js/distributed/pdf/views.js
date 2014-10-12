@@ -13,6 +13,7 @@ window.PDFViewerView = ContentBaseView.extend({
     initialize_listeners: function(ev) {
         var contentWindow = ev.target.contentWindow; // the window object inside the iframe
 
+        this.listenToDOM(contentWindow, "pageshow", this.page_loaded);
         this.listenToDOM(contentWindow, "pagechange", this.page_changed); // page changed
     },
 
@@ -24,6 +25,7 @@ window.PDFViewerView = ContentBaseView.extend({
     page_loaded: function(ev) {
         var contextWindow = ev.target.defaultView;
         var pdfview = contextWindow.PDFView;
+        this.activate();
         this.update_progress(pdfview);
     },
 
