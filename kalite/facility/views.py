@@ -274,8 +274,8 @@ def login(request, facility):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
 
-            # Send them back from whence they came
-            landing_page = form.cleaned_data["callback_url"]
+            # Send them back from whence they came (unless it's the sign up page)
+            landing_page = form.cleaned_data["callback_url"] if form.cleaned_data["callback_url"] != reverse("facility_user_signup") else None
             if not landing_page:
                 # Just going back to the homepage?  We can do better than that.
                 landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
