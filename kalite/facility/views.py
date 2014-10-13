@@ -236,7 +236,7 @@ def login(request, facility):
     if request.method != 'POST':  # render the unbound login form
         referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
         # never use the homepage as the referer
-        if referer in [reverse("homepage"), reverse("add_facility_student")]:
+        if referer in [reverse("homepage"), reverse("add_facility_student"), reverse("add_facility_teacher"), reverse("facility_user_signup")]:
             referer = None
         form = LoginForm(initial={"facility": facility_id, "callback_url": referer})
 
@@ -278,10 +278,12 @@ def login(request, facility):
             landing_page = form.cleaned_data["callback_url"]
             if not landing_page:
                 # Just going back to the homepage?  We can do better than that.
-                landing_page = reverse("tabular_view") if form.get_user().is_teacher else None
-                landing_page = landing_page or (reverse("account_management") if False else reverse("homepage"))  # TODO: pass the redirect as a parameter.
+                if form.get_user().is_teacher:
+                    landing_page = reverse("tabular_view")
+                else:
+                    landing_page = reverse("learn")
 
-            return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
+            return HttpResponseRedirect(request.next or landing_page)
 
     return {
         "form": form,
