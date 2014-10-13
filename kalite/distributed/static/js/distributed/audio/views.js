@@ -6,11 +6,17 @@ window.AudioPlayerView = ContentBaseView.extend({
 
         this.$el.html(this.template(this.data_model.attributes));
 
-        this.audio_object = audiojs.create(this.$("audio"))[0];
+        this.audio_object = soundManager.createSound({
+            url: this.data_model.get("content_urls").stream,
+        });
 
-        if ((this.log_model.get("last_percent") || 0) > 0) {
-            this.audio_object.skipTo(this.log_model.get("last_percent"));
-        }
+        this.audio_object.play();
+
+        // This should be refactored to record 'last_time', rather than last_percent.
+        // The 'last_time' (in ms) can then be fed into the setup above as a 'position' argument.
+        // if ((this.log_model.get("last_percent") || 0) > 0) {
+        //     this.audio_object.skipTo(this.log_model.get("last_percent"));
+        // }
 
         this.initialize_listeners();
     },
@@ -19,9 +25,9 @@ window.AudioPlayerView = ContentBaseView.extend({
 
         var self = this;
 
-        this.listenToDOM(this.audio_object.wrapper, "timeupdate", self.update_progress);
-        this.listenToDOM(this.audio_object.wrapper, "play", self.activate);
-        this.listenToDOM(this.audio_object.wrapper, "pause", self.deactivate);
+        // this.listenToDOM(this.audio_object.wrapper, "timeupdate", self.update_progress);
+        // this.listenToDOM(this.audio_object.wrapper, "play", self.activate);
+        // this.listenToDOM(this.audio_object.wrapper, "pause", self.deactivate);
 
     },
 

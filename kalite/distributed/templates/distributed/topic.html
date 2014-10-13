@@ -110,7 +110,16 @@
     <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
-    <script src="{% static "audio-js/audio.min.js" %}"></script>
+    <script src="{% static "soundmanager/soundmanager2-nodebug-jsmin.js" %}"></script>
+
+    <script>
+    require(["SoundManager"], function(SoundManager) {
+    window.soundManager = SoundManager.soundManager;
+    window.soundManager.setup({
+      url: '{% static "soundmanager/" %}',
+      preferFlash: false
+    });});
+    </script>
 
     <script src="{% url 'handlebars_templates' module_name='content' %}"></script>
     <script src="{% static 'js/distributed/content/models.js' %}"></script>
