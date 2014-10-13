@@ -19,6 +19,7 @@ h2 {
     -ms-user-select:none;
     user-select:none;
     draggable: false;
+    margin-bottom: 0;
 }
 .selectable-table tbody tr {
     cursor: pointer;
@@ -30,13 +31,6 @@ h2 {
     margin-left: 2.5em;
     display: inline !important;
     margin: 5px;
-}
-@media (min-width: 768px ) {
-    .table-bottom-options {
-        position: relative;
-        top: -25px;
-        margin-bottom: 10px;
-    }
 }
 .add-new-table-item {
     margin-left: 8px;
