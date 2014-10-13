@@ -28,6 +28,8 @@ writeup/
 /content/*.mp4
 /content/*.mp4.part
 /content/*.srt
+/content/*.mp3
+/content/*.pdf
 /data/logs
 /data/i18n
 /data/subtitles
