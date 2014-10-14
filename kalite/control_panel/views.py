@@ -216,7 +216,6 @@ def group_report(request, facility, group_id=None, zone_id=None):
     return context
 
 
-@facility_required
 @require_authorized_admin
 @render_to_csv(["students"], key_label="user_id", order="stacked")
 def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
