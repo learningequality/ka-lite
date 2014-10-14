@@ -164,8 +164,13 @@
                                 </td>
                                 <td>
                                     {% if device.is_own_device %}
-                                        <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
-                                        <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
+
+                                        {% if device.is_registered %}
+                                            <button id="force-sync" class="btn btn-primary">{% trans "Sync Now!" %}</button>
+                                        {% else %}
+                                            <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
+                                        {% endif %}
+
                                         {% if clock_set %}
                                         /
                                         <a onclick="$('#clock_set').show()">set clock</a>
