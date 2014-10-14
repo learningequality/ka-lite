@@ -59,6 +59,10 @@ def get_accessible_objects_from_logged_in_user(request, facility):
 
     else:
         facilities = groups = None
+        # defaults to all facilities and groups
+        facilities = Facility.objects.all()
+        groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
+        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
 
     return (groups, facilities, ungrouped_available)
 
@@ -86,9 +90,9 @@ def coach_nav_context(request, facility, report_id):
     by default on page load
     """
     facility_id = request.GET.get("facility_id", None)
-    if not facility_id:
+    if not facility_id and isinstance(facility, Facility):
         facility_id = facility.id
-    else:
+    elif facility_id:
         facility = Facility.objects.get(id=facility_id)
     group_id = request.GET.get("group_id", "")
     context = {
@@ -102,11 +106,10 @@ def coach_nav_context(request, facility, report_id):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/timeline_view.html")
-def timeline_view(request, facility, xaxis="", yaxis=""):
+def timeline_view(request, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    facility, group_id, context = coach_nav_context(request, facility, "timeline")
+    facility, group_id, context = coach_nav_context(request, None, "timeline")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Timeline plot")
     try:
@@ -120,11 +123,10 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/scatter_view.html")
-def scatter_view(request, facility, xaxis="", yaxis=""):
+def scatter_view(request, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    facility, group_id, context = coach_nav_context(request, facility, "scatter")
+    facility, group_id, context = coach_nav_context(request, None, "scatter")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Scatter plot")
     try:
@@ -173,12 +175,12 @@ def landing_page(request, facility):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/tabular_view.html")
-def tabular_view(request, facility, report_type="exercise"):
+def tabular_view(request, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # important for setting the defaults for the coach nav bar
-    facility, group_id, context = coach_nav_context(request, facility, "tabular")
+
+    facility, group_id, context = coach_nav_context(request, None, "tabular")
 
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
@@ -223,6 +225,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     else:
         # Show all (including ungrouped)
+        search_groups = []
         for groups_dict in groups:
             search_groups += groups_dict["groups"]
         users = FacilityUser.objects.filter(
@@ -300,11 +303,10 @@ def tabular_view(request, facility, report_type="exercise"):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/test_view.html")
-def test_view(request, facility):
+def test_view(request):
     """Test view gets data server-side and displays exam results"""
-    facility, group_id, context = coach_nav_context(request, facility, "test")
+    facility, group_id, context = coach_nav_context(request, None, "test")
     # Get students
     users = get_user_queryset(request, facility, group_id)
 
@@ -406,12 +408,11 @@ def test_view(request, facility):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/test_detail_view.html")
-def test_detail_view(request, facility, test_id):
+def test_detail_view(request, test_id):
     """View details of student performance on specific exams"""
 
-    facility, group_id, context = coach_nav_context(request, facility, "test")
+    facility, group_id, context = coach_nav_context(request, None, "test")
     # get users in this facility and group
     users = get_user_queryset(request, facility, group_id)
 
@@ -533,6 +534,7 @@ def get_user_queryset(request, facility, group_id):
 
     else:
         # Show all (including ungrouped)
+        search_groups = []
         for groups_dict in groups:
             search_groups += groups_dict["groups"]
         users = FacilityUser.objects.filter(
