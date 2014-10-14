@@ -321,7 +321,7 @@ class Content:
         standard_fields = ["title", "description", "id", "author_name", "kind"]
 
         for k in standard_fields:
-            setattr(self, k, kwargs.pop(k, None))
+            setattr(self, k, kwargs.pop(k, ""))
 
         extra_fields = {}
 
@@ -332,6 +332,9 @@ class Content:
         self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.extra_fields = json.dumps(extra_fields)
         self.selected_language = lang_code
+        if self.description == "None":
+            self.description = ""
+
 
 
 class ContentResource(Resource):
