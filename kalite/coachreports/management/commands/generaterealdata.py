@@ -401,7 +401,8 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                 else:      # Slower students will use videos more.  Effort also important.
                     pct_completed = 100. * min(1., sqrt(random.random() * sqrt(user_settings["effort_level"] * user_settings["time_in_program"] / sqrt(user_settings["speed_of_learning"]))))
                 # Compute quantities based on sample
-                total_seconds_watched = int(video["duration"] * pct_completed / 100.)
+                video_duration = video.get("duration", 0)
+                total_seconds_watched = int(video_duration * pct_completed / 100.)
                 points = int(750 * pct_completed / 100.)
 
                 # Choose a rate of videos, based on their effort level.
@@ -418,8 +419,9 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     time_delta_completed = datetime.timedelta(seconds=random.randint(int(time_for_watching), int(datediff(date_diff_started, units="seconds"))))
                     date_completed = datetime.datetime.now() - time_delta_completed
 
+                video_id = video.get("id", "")
                 try:
-                    vlog = VideoLog.objects.get(user=facility_user, video_id=video["id"])
+                    vlog = VideoLog.objects.get(user=facility_user, video_id=video_id)
                 except VideoLog.DoesNotExist:
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
@@ -429,10 +431,11 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points,
                         " COMPLETE on %s!" % date_completed if pct_completed == 100 else "",
                     ))
+                    youtube_id = video.get("youtube_id", video_id)
                     vlog = VideoLog(
                         user=facility_user,
-                        video_id=video["id"],
-                        youtube_id=video["youtube_id"],
+                        video_id=video_id,
+                        youtube_id=youtube_id,
                         total_seconds_watched=total_seconds_watched,
                         points=points,
                         complete=(pct_completed == 100.),
