@@ -15,7 +15,7 @@ PLAYLIST_ID = "g3_p1"
 
 logging = settings.LOG
 
-@unittest.skipIf(settings.CONFIG_PACKAGE=="Nalanda", "Test only when testing RCT3")
+@unittest.skipIf(settings.CONFIG_PACKAGE!="Nalanda", "Test only when testing RCT3")
 class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """
     Tests that dynamic settings are properly set for different units.

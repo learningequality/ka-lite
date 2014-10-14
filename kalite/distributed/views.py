@@ -208,7 +208,7 @@ def exercise_dashboard(request):
 
     return context
 
-
+@check_setup_status
 @render_to("distributed/homepage.html")
 def homepage(request):
     """
