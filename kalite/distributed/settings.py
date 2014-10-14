@@ -172,8 +172,6 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     # The chosen cache
     CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
 
-# Whether we wanna load the perseus assets. Set to False for testing for now.
-LOAD_KHAN_RESOURCES = True
 
 ########################
 # RPi features
