@@ -84,7 +84,6 @@ window.ContentBaseView = BaseView.extend({
 
         this.data_model = options.data_model;
         this.log_model = options.log_model;
-        this.render();
     },
 
     activate: function () {
@@ -98,7 +97,7 @@ window.ContentBaseView = BaseView.extend({
 
     set_time_spent: function() {
         var time_now = new Date().getTime();
-        
+
         var time_engaged = Math.max(0, time_now - this.last_time);
         time_engaged = (isNaN(time_engaged) ? 0 : time_engaged)/1000;
 

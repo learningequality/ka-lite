@@ -100,6 +100,10 @@
     <!-- <![endif]-->
     <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
+
+    <link href="{% static "soundmanager/css/bar-ui.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "css/distributed/audio.css" %}" rel="stylesheet" type="text/css">
+
     <!--[if !IE]> -->
     <script src="{% static "video-js/video.js" %}"></script>
     <script src="{% static "video-js/video-speed.js" %}"></script>
@@ -111,14 +115,14 @@
     <script src="{% static "js/distributed/videoplayer.js" %}"></script>
 
     <script src="{% static "soundmanager/soundmanager2-nodebug-jsmin.js" %}"></script>
-
     <script>
     require(["SoundManager"], function(SoundManager) {
-    window.soundManager = SoundManager.soundManager;
-    window.soundManager.setup({
-      url: '{% static "soundmanager/" %}',
-      preferFlash: false
-    });});
+        window.soundManager = SoundManager.soundManager;
+        window.soundManager.setup({
+          url: '{% static "soundmanager/" %}',
+          preferFlash: false
+        });
+    });
     </script>
 
     <script src="{% url 'handlebars_templates' module_name='content' %}"></script>
