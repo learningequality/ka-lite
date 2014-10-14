@@ -149,7 +149,7 @@ window.ContentBaseView = BaseView.extend({
 
     close: function() {
         this.log_model.saveNow();
-        BaseView.prototype.close.call(this);
+        this.remove();
     }
 });
 
