@@ -11,6 +11,22 @@ window.AudioPlayerView = ContentBaseView.extend({
 
         this.$el.html(this.template(this.data_model.attributes));
 
+        this.initialize_sound_manager();
+    },
+
+    initialize_sound_manager: function() {
+        var self = this;
+        require(["SoundManager"], function(SoundManager) {
+            window.soundManager = SoundManager.soundManager;
+            window.soundManager.setup({
+              url: STATIC_URL + "soundmanager/",
+              preferFlash: false,
+              onready: self.create_audio_object
+            });
+        });
+    },
+
+    create_audio_object: function () {
         window.audio_object = this.audio_object = soundManager.createSound({
             url: this.data_model.get("content_urls").stream,
             onload: this.loaded.bind(this),
@@ -20,8 +36,6 @@ window.AudioPlayerView = ContentBaseView.extend({
             onfinish: this.finished.bind(this),
             whileplaying: this.progress.bind(this)
         });
-
-        this.audio_object.play();
 
         this.initialize_listeners();
     },
