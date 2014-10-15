@@ -386,13 +386,13 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # filter results
     if period_start:
-        exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
+        exercise_logs = exercise_logs.filter(Q(complete=True) | Q(completion_timestamp__gte=period_start))
         video_logs = video_logs.filter(Q(total_seconds_watched__gt=0) |
                                        Q(completion_timestamp__gte=period_start))
         login_logs = login_logs.filter(Q(total_seconds__gt=0) |
                                        Q(start_datetime__gte=period_start))
     if period_end:
-        exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
+        exercise_logs = exercise_logs.filter(Q(complete=True) | Q(completion_timestamp__lte=period_end))
         video_logs = video_logs.filter(Q(total_seconds_watched__gt=0) |
                                        Q(completion_timestamp__lte=period_end))
         login_logs = login_logs.filter(Q(total_seconds__gt=0) |
