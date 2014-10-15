@@ -35,7 +35,7 @@ from django.db import transaction
 from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
-from kalite.topic_tools import get_topic_videos, get_topic_exercises
+from kalite.topic_tools import get_topic_videos, get_topic_exercises, get_video_cache
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",
@@ -359,6 +359,9 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
 
         date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])  # when this user started in the program, relative to NOW
 
+        # contains the video duration key
+        video_cache = get_video_cache()
+
         for topic in topics:
             videos = get_topic_videos(topic_id=topic)
 
@@ -400,8 +403,17 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     pct_completed = 100.
                 else:      # Slower students will use videos more.  Effort also important.
                     pct_completed = 100. * min(1., sqrt(random.random() * sqrt(user_settings["effort_level"] * user_settings["time_in_program"] / sqrt(user_settings["speed_of_learning"]))))
+
+                # get the video duration on the video cache
+                video_id = video.get("id", "")
+                video_duration = 0
+                if video_id and video_cache:
+                    video_item = video_cache.get(video_id, None)
+                    if video_item:
+                        video_duration = video_item.get("duration", 0)
+
                 # Compute quantities based on sample
-                total_seconds_watched = int(video["duration"] * pct_completed / 100.)
+                total_seconds_watched = int(video_duration * pct_completed / 100.)
                 points = int(750 * pct_completed / 100.)
 
                 # Choose a rate of videos, based on their effort level.
@@ -419,7 +431,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                     date_completed = datetime.datetime.now() - time_delta_completed
 
                 try:
-                    vlog = VideoLog.objects.get(user=facility_user, video_id=video["id"])
+                    vlog = VideoLog.objects.get(user=facility_user, video_id=video_id)
                 except VideoLog.DoesNotExist:
 
                     logging.info("Creating video log: %-12s: %-45s (%4.1f%% watched, %d points)%s" % (
@@ -429,10 +441,11 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points,
                         " COMPLETE on %s!" % date_completed if pct_completed == 100 else "",
                     ))
+                    youtube_id = video.get("youtube_id", video_id)
                     vlog = VideoLog(
                         user=facility_user,
-                        video_id=video["id"],
-                        youtube_id=video["youtube_id"],
+                        video_id=video_id,
+                        youtube_id=youtube_id,
                         total_seconds_watched=total_seconds_watched,
                         points=points,
                         complete=(pct_completed == 100.),
