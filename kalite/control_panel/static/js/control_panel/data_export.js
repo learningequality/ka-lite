@@ -27,97 +27,7 @@ var GroupCollection = Backbone.Collection.extend({
 });
 
 
-// Views 
-var DataExportView = Backbone.View.extend({
-    // the containing view
-    template: HB.template('data_export/data-export-container'),
-
-    initialize: function() {
-
-        this.zone_select_view = new ZoneSelectView({
-            org_id: this.options.org_id,
-            model: this.model
-        });
-
-        this.facility_select_view  = new FacilitySelectView({
-            model: this.model
-        });
-
-        this.group_select_view = new GroupSelectView({
-            model: this.model
-        });
-
-        this.render();
-    },
-
-    events: {
-        "click #export-button": "export_data",
-        "change #resource-id": "resource_changed"
-    },
-
-    render: function() {
-        // render container     
-        this.$el.html(this.template(this.model.attributes));
-
-        // append zone, facility & group select views.
-        this.$('#student-select-container').append(this.zone_select_view.$el);
-        this.$('#student-select-container').append(this.facility_select_view.$el);
-        this.$('#student-select-container').append(this.group_select_view.$el);
-    },
-
-    resource_changed: function() {
-        this.model.set({
-            resource_id: this.$('#resource-id').val()
-        })
-    },
-
-    resource_endpoint: function() {
-        // Return the API url endpoint for the current resource id
-        var resource_id = this.model.get("resource_id");
-        switch  (resource_id) {
-            case "facility_user":
-                return FACILITY_USER_CSV_URL;
-            case "test_log":
-                return TEST_LOG_CSV_URL;
-            case "attempt_log":
-                return ATTEMPT_LOG_CSV_URL;
-            case "exercise_log":
-                return EXERCISE_LOG_CSV_URL;
-            case "device_log":
-                return DEVICE_LOG_CSV_URL;
-        }
-    },
-
-    export_data: function(ev) {
-        ev.preventDefault();
-
-        // Update export link based on currently selected paramters 
-        var zone_id = this.model.get("zone_id");
-        var facility_id = this.model.get("facility_id");
-        var group_id = this.model.get("group_id");
-        var resource_endpoint = this.resource_endpoint();
-
-        // If no zone_id, all is selected, so compile a comma seperated string
-        // of zone ids to pass to endpoint
-        var zone_ids = "";
-        if (zone_id===undefined || zone_id==="") {
-            zone_ids = _.map(this.zone_select_view.zone_list.models, function(zone) { return zone.get("id"); }).join();
-        }
-
-        var export_params = "?" + $.param({
-            group_id: group_id,
-            facility_id: facility_id,
-            zone_id: zone_id,
-            zone_ids: zone_ids,
-            format:"csv",
-            limit:0
-        });
-
-        var export_data_url = this.resource_endpoint() + export_params;
-        window.location = export_data_url;
-    }
-});
-
+// Views
 
 var ZoneSelectView = Backbone.View.extend({
 
@@ -173,7 +83,6 @@ var ZoneSelectView = Backbone.View.extend({
     }
 });
 
-
 var FacilitySelectView = Backbone.View.extend({
 
     template: HB.template('data_export/facility-select'),
@@ -219,7 +128,7 @@ var FacilitySelectView = Backbone.View.extend({
         // Helper function to quickly check whether the facility select input 
         // should be enabled or disabled based on conditions that matter to it. 
         if (this.model.get("resource_id") === "device_log"){
-            return true; 
+            return true;
         }
         return ((this.model.get("zone_id") === undefined || this.model.get("zone_id") === "") && this.model.get("is_central"));
     },
@@ -348,4 +257,92 @@ var GroupSelectView = Backbone.View.extend({
     }
 });
 
+var DataExportView = Backbone.View.extend({
+    // the containing view
+    template: HB.template('data_export/data-export-container'),
 
+    initialize: function() {
+
+        this.zone_select_view = new ZoneSelectView({
+            org_id: this.options.org_id,
+            model: this.model
+        });
+
+        this.facility_select_view  = new FacilitySelectView({
+            model: this.model
+        });
+
+        this.group_select_view = new GroupSelectView({
+            model: this.model
+        });
+
+        this.render();
+    },
+
+    events: {
+        "click #export-button": "export_data",
+        "change #resource-id": "resource_changed"
+    },
+
+    render: function() {
+        // render container     
+        this.$el.html(this.template(this.model.attributes));
+
+        // append zone, facility & group select views.
+        this.$('#student-select-container').append(this.zone_select_view.$el);
+        this.$('#student-select-container').append(this.facility_select_view.$el);
+        this.$('#student-select-container').append(this.group_select_view.$el);
+    },
+
+    resource_changed: function() {
+        this.model.set({
+            resource_id: this.$('#resource-id').val()
+        });
+    },
+
+    resource_endpoint: function() {
+        // Return the API url endpoint for the current resource id
+        var resource_id = this.model.get("resource_id");
+        switch  (resource_id) {
+            case "facility_user":
+                return FACILITY_USER_CSV_URL;
+            case "test_log":
+                return TEST_LOG_CSV_URL;
+            case "attempt_log":
+                return ATTEMPT_LOG_CSV_URL;
+            case "exercise_log":
+                return EXERCISE_LOG_CSV_URL;
+            case "device_log":
+                return DEVICE_LOG_CSV_URL;
+        }
+    },
+
+    export_data: function(ev) {
+        ev.preventDefault();
+
+        // Update export link based on currently selected paramters 
+        var zone_id = this.model.get("zone_id");
+        var facility_id = this.model.get("facility_id");
+        var group_id = this.model.get("group_id");
+        var resource_endpoint = this.resource_endpoint();
+
+        // If no zone_id, all is selected, so compile a comma seperated string
+        // of zone ids to pass to endpoint
+        var zone_ids = "";
+        if (zone_id===undefined || zone_id==="") {
+            zone_ids = _.map(this.zone_select_view.zone_list.models, function(zone) { return zone.get("id"); }).join();
+        }
+
+        var export_params = "?" + $.param({
+            group_id: group_id,
+            facility_id: facility_id,
+            zone_id: zone_id,
+            zone_ids: zone_ids,
+            format:"csv",
+            limit:0
+        });
+
+        var export_data_url = this.resource_endpoint() + export_params;
+        window.location = export_data_url;
+    }
+});
