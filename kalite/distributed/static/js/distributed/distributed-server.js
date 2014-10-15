@@ -33,6 +33,24 @@ function show_api_messages(messages) {
     }
 }
 
+function show_modal(msg_class, msg_text) {
+    clear_modal();
+    var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+
+    var msg_html = "<div class='alert alert-" + msg_class + "' id='overlay'";
+
+    msg_html += ">" + x_button + msg_text + "</div><div id='fade'></div>";
+    window.modal = $(msg_html).appendTo("body");
+    $(".close").click(clear_modal);
+    $("#fade").click(clear_modal);
+}
+
+function clear_modal() {
+    if (window.modal!==undefined) {
+        window.modal.remove();
+    }
+}
+
 
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
