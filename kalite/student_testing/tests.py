@@ -13,7 +13,7 @@ from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_value, set_current_unit_settings_value, set_exam_mode_off
+    get_current_unit_settings_value, set_current_unit_settings_value
 
 logging = settings.LOG
 
