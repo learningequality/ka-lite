@@ -1007,7 +1007,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1253,7 +1253,7 @@ window.ExerciseTestView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1372,7 +1372,7 @@ window.ExerciseQuizView = Backbone.View.extend({
                     item: "/api/store/storeitem/gift_card/",
                     purchased_at: window.statusModel.get_server_time(),
                     reversible: false,
-                    context_id: 0, // TODO-BLOCKER: put the current unit in here
+                    context_id: ds.ab_testing.unit || 0,
                     context_type: "unit",
                     user: window.statusModel.get("user_uri"),
                     value: this.points
@@ -1433,7 +1433,7 @@ window.ExerciseQuizView = Backbone.View.extend({
             seed: this.exercise_view.data_model.seed
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
