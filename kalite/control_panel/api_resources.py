@@ -41,7 +41,7 @@ class FacilityGroupResource(ModelResource):
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering groups by facility
         facility_id = bundle.request.GET.get('facility_id')
-        if facility_id:
+        if facility_id and facility_id != Facility.ID_NONE:
             group_list = FacilityGroup.objects.filter(facility__id=facility_id)
         else:
             group_list = FacilityGroup.objects.all()

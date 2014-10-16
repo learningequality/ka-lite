@@ -35,6 +35,9 @@ class Facility(DeferredCountSyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
+    # This constant is used as a key for the all facilties drop down in the frontend
+    ID_NONE = "None"
+
     class Meta:
         verbose_name_plural = _("Facilities")
         app_label = "securesync"  # for back-compat reasons
