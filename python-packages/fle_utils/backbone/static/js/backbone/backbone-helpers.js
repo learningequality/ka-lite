@@ -34,12 +34,16 @@ window.BaseView = Backbone.View.extend({
         }, event_name, callback);
     },
 
-    close: function() {
+    remove: function() {
         if (this.subviews!==undefined) {
             for (i=0; i < this.subviews.length; i++) {
-                this.subviews[i].close();
+                if (_.isFunction(this.subviews[i].close)) {
+                    this.subviews[i].close();
+                } else {
+                    this.subviews[i].remove();
+                }
             }
         }
-        this.remove();
+        Backbone.View.prototype.remove.call(this);
     }
 });

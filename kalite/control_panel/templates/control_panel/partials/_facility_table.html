@@ -29,7 +29,7 @@
                         {% for id,facility in facilities.items %}
                             <tr>
                                 <td>
-                                     <a href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+                                     <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
                                         {{ facility.name }}
                                     </a>
                                 </td>
@@ -50,9 +50,11 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    {% if request.is_django_user %}
                                     <a class="facility-delete-link" href="#">
                                         <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></span>
                                     </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

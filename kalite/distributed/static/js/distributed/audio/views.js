@@ -11,6 +11,22 @@ window.AudioPlayerView = ContentBaseView.extend({
 
         this.$el.html(this.template(this.data_model.attributes));
 
+        this.initialize_sound_manager();
+    },
+
+    initialize_sound_manager: function() {
+        var self = this;
+        require(["SoundManager"], function(SoundManager) {
+            window.soundManager = SoundManager.soundManager;
+            window.soundManager.setup({
+              url: STATIC_URL + "soundmanager/",
+              preferFlash: false,
+              onready: self.create_audio_object
+            });
+        });
+    },
+
+    create_audio_object: function () {
         window.audio_object = this.audio_object = soundManager.createSound({
             url: this.data_model.get("content_urls").stream,
             onload: this.loaded.bind(this),
@@ -20,8 +36,6 @@ window.AudioPlayerView = ContentBaseView.extend({
             onfinish: this.finished.bind(this),
             whileplaying: this.progress.bind(this)
         });
-
-        this.audio_object.play();
 
         this.initialize_listeners();
     },
@@ -58,10 +72,8 @@ window.AudioPlayerView = ContentBaseView.extend({
 
     loaded: function() {
         this.$(".sm2-inline-duration").text(this.get_time(this.audio_object.duration, true));
-        // This should be refactored to record 'last_time', rather than last_percent.
-        // The 'last_time' (in ms) can then be fed into the setup above as a 'position' argument.
         if ((this.log_model.get("last_percent") || 0) > 0) {
-            // this.set_position_percent(this.log_model.get("last_percent"));
+            this.set_position_percent(this.log_model.get("last_percent"));
         }
     },
 
@@ -85,13 +97,13 @@ window.AudioPlayerView = ContentBaseView.extend({
         // display the current position time
         this.$(".sm2-inline-time").text(this.get_time(this.audio_object.position, true));
         if (!this.dragging) {
-            var left = this.get_position_percent() * this.$(".sm2-progress-track").width()
+            var left = this.get_position_percent() * this.$(".sm2-progress-track").width();
             this.$(".sm2-progress-ball")[0].style.left = left + "px";
         }
     },
 
     play_pause_clicked: function() {
-        if (this.audio_object.playState == 0) {
+        if (this.audio_object.playState === 0) {
             this.audio_object.setPosition(0);
             this.audio_object.play();
         } else if (this.audio_object.paused) {
@@ -121,8 +133,6 @@ window.AudioPlayerView = ContentBaseView.extend({
             hh = Math.floor(nSec/3600),
             min = Math.floor(nSec/60) - Math.floor(hh * 60),
             sec = Math.floor(nSec -(hh*3600) -(min*60));
-
-        // if (min === 0 && sec === 0) return null; // return 0:00 as null
 
         return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : { 'min': min, 'sec': sec });
 

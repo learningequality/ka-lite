@@ -201,7 +201,7 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         # Logout and login student to check exam redirect no longer in place
         self.browser_logout_user(browser=self.student_browser)
         self.login_student_in_browser(browser=self.student_browser)
-        self.assertEqual(self.reverse("homepage"), self.student_browser.current_url)
+        self.assertEqual(self.reverse("learn"), self.student_browser.current_url)
         self.student_browser.quit()
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
@@ -243,14 +243,14 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         # Check that the Test Log is started.
         self.assertEqual(testlog.started, True)
 
-    def exam_off_on_teacher_logout(self):
+    def test_exam_off_on_teacher_logout(self):
         self.login_teacher_in_browser()
         set_exam_mode_on(self.exam_id)
         self.assertEqual(get_exam_mode_on(), self.exam_id)
         self.browser_logout_user()
         self.assertEqual(get_exam_mode_on(), '')
 
-    def exam_enabled_on_student_logout(self):
+    def test_exam_enabled_on_student_logout(self):
         self.login_student_in_browser()
         set_exam_mode_on(self.exam_id)
         self.assertEqual(get_exam_mode_on(), self.exam_id)

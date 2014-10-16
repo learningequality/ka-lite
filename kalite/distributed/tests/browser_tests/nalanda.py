@@ -4,6 +4,7 @@ These use a web-browser, along with selenium, to simulate user actions.
 import time
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
@@ -14,7 +15,7 @@ PLAYLIST_ID = "g3_p1"
 
 logging = settings.LOG
 
-
+@unittest.skipIf(settings.CONFIG_PACKAGE!="Nalanda", "Test only when testing RCT3")
 class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """
     Tests that dynamic settings are properly set for different units.
@@ -74,4 +75,4 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
             self.live_server_url +
             reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
         time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.playlist_view.content_view.currently_shown_view.model.get('possible_points')"), 0, "Video points should be zero")
+        self.assertEqual(self.browser.execute_script("return window.sidebar_view.content_view.currently_shown_view.model.get('possible_points')"), 0, "Video points should be zero")

@@ -532,7 +532,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
         // get the test log model from the queried collection
         if(!this.log_model){
-            this.log_model = this.log_colaection.get_first_log_or_new_log();
+            this.log_model = this.log_collection.get_first_log_or_new_log();
         }
 
         if(!this.log_model.get("started")){
