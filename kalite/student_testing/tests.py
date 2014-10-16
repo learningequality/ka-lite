@@ -22,7 +22,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
-    exam_id = 'g3_t1'  # needs to be the first exam in the test list UI
+    exam_id = 'g4_u3_t3'  # needs to be the first exam in the test list UI
     login_url = reverse('login')
     logout_url = reverse('logout')
     test_list_url = reverse('test_list')
@@ -185,7 +185,7 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         btn = self.get_button(is_on=True)
 
         # Do not logout teacher (because this disables exams)
-        # Instead, create a new browser instance and check the student redirects 
+        # Instead, create a new browser instance and check the student redirects
         self.student_browser = self.create_browser()
         self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True, browser=self.student_browser)
 
