@@ -88,7 +88,7 @@ file_kind_dictionary = {
     "Code": ["html", "js", "css", "py"],
     "Audio": ["mp3", "wma", "wav", "mid", "ogg"],
     "Document": ["pdf", "txt", "rtf", "html", "xml", "doc", "qxd", "docx"],
-    "Zip": ["zip"],
+    "Archive": ["zip", "bzip2", "cab", "gzip", "mar", "tar"],
 }
 
 file_kind_map = {}
@@ -96,6 +96,10 @@ file_kind_map = {}
 for key, value in file_kind_dictionary.items():
     for extension in value:
         file_kind_map[extension] = key
+
+file_meta_data_map = {
+    "length": "duration",
+}
 
 def file_md5(namespace, file_path):
     m = hashlib.md5()
@@ -155,6 +159,15 @@ def construct_node(location, parent_path, node_cache, channel):
 
         if not kind:
             return None
+        elif kind in ["Video", "Audio", "Image"]:
+            import kaa
+            from kaa import metadata as kaa_metadata
+            info = kaa_metadata.parse(location)
+            data_meta = {}
+            for data_key, meta_key in file_meta_data_map.items():
+                data_meta[meta_key] = info[data_key]
+            data_meta.update(meta_data)
+            meta_data = data_meta
 
         id = file_md5(channel["id"], location)
 
