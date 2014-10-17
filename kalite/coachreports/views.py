@@ -305,7 +305,7 @@ def tabular_view(request, report_type="exercise"):
 @render_to("coachreports/test_view.html")
 def test_view(request):
     """Test view gets data server-side and displays exam results"""
-    facility, group_id, context = coach_nav_context(reques, "test")
+    facility, group_id, context = coach_nav_context(request, "test")
     # Get students
     users = get_user_queryset(request, facility, group_id)
 
