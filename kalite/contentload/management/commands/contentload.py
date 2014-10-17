@@ -53,10 +53,11 @@ def validate_data(topic_tree, node_cache, slug2id_map):
 
     # Validate related content
     for content in node_cache["Content"].values():
-        cont = content.get("related_content", None)
-        if cont:
-            if cont["slug"] not in node_cache["Content"]:
-                logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["slug"], content["slug"]))
+        related = content.get("related_content", [])
+        if related:
+            for cont in related:
+                if cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Video"] and cont["id"] not in node_cache["Exercise"]:
+                    logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["id"], content["slug"]))
 
 def scrub_topic_tree(node_cache, channel_data):
     # Now, remove unnecessary values
