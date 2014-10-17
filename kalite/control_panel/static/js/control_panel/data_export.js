@@ -85,6 +85,8 @@ var DataExportView = Backbone.View.extend({
                 return EXERCISE_LOG_CSV_URL;
             case "device_log":
                 return DEVICE_LOG_CSV_URL;
+            case "store_log":
+                return STORE_LOG_CSV_URL;
         }
     },
 
