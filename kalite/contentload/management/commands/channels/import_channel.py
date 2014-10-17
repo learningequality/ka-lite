@@ -41,10 +41,6 @@ iconextension = "-40x40.png"
 defaulticon = "default"
 
 attribute_whitelists = {
-    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type", "path", "slug"],
-    "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "y_pos", "x_pos", "in_knowledge_map", "path", "slug"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "all_assessment_items", "uses_assessment_items", "path", "slug"],
-    "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"],
 }
 
 denormed_attribute_list = {
@@ -98,7 +94,14 @@ for key, value in file_kind_dictionary.items():
         file_kind_map[extension] = key
 
 file_meta_data_map = {
-    "length": "duration",
+    "duration": lambda x: getattr(x, "length", None),
+    "video_codec": lambda x: getattr(x, "video", [{}])[0].get("codec", None),
+    "audio_codec": lambda x: getattr(x, "audio", [{}])[0].get("codec", None),
+    "title": lambda x: getattr(x, "title", None),
+    "language": lambda x: getattr(x, "langcode", None),
+    "keywords": lambda x: getattr(x, "keywords", None),
+    "license": lambda x: getattr(x, "copyright", None),
+    "codec": lambda x: getattr(x, "codec", None),
 }
 
 def file_md5(namespace, file_path):
@@ -160,12 +163,15 @@ def construct_node(location, parent_path, node_cache, channel):
         if not kind:
             return None
         elif kind in ["Video", "Audio", "Image"]:
-            import kaa
             from kaa import metadata as kaa_metadata
             info = kaa_metadata.parse(location)
             data_meta = {}
-            for data_key, meta_key in file_meta_data_map.items():
-                data_meta[meta_key] = info[data_key]
+            for meta_key, data_fn in file_meta_data_map.items():
+                if data_fn(info):
+                    data_meta[meta_key] = data_fn(info)
+            if data_meta.get("codec", None):
+                data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
+                del data_meta["codec"]
             data_meta.update(meta_data)
             meta_data = data_meta
 
