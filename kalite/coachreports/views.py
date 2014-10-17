@@ -84,15 +84,14 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
         "ungrouped_available": ungrouped_available,
     }
 
-def coach_nav_context(request, facility, report_id):
+def coach_nav_context(request, report_id):
     """
     Updates the context of all coach reports with the facility, group, and report to have selected
     by default on page load
     """
     facility_id = request.GET.get("facility_id", None)
-    if not facility_id and isinstance(facility, Facility):
-        facility_id = facility.id
-    elif facility_id:
+    facility = None
+    if facility_id:
         facility = Facility.objects.get(id=facility_id)
     group_id = request.GET.get("group_id", "")
     context = {
@@ -109,7 +108,7 @@ def coach_nav_context(request, facility, report_id):
 @render_to("coachreports/timeline_view.html")
 def timeline_view(request, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    facility, group_id, context = coach_nav_context(request, None, "timeline")
+    facility, group_id, context = coach_nav_context(request, "timeline")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Timeline plot")
     try:
@@ -126,7 +125,7 @@ def timeline_view(request, xaxis="", yaxis=""):
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    facility, group_id, context = coach_nav_context(request, None, "scatter")
+    facility, group_id, context = coach_nav_context(request, "scatter")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Scatter plot")
     try:
@@ -180,7 +179,7 @@ def tabular_view(request, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # important for setting the defaults for the coach nav bar
 
-    facility, group_id, context = coach_nav_context(request, None, "tabular")
+    facility, group_id, context = coach_nav_context(request, "tabular")
 
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
@@ -306,7 +305,7 @@ def tabular_view(request, report_type="exercise"):
 @render_to("coachreports/test_view.html")
 def test_view(request):
     """Test view gets data server-side and displays exam results"""
-    facility, group_id, context = coach_nav_context(request, None, "test")
+    facility, group_id, context = coach_nav_context(reques, "test")
     # Get students
     users = get_user_queryset(request, facility, group_id)
 
@@ -419,7 +418,7 @@ def test_view(request):
 def test_detail_view(request, test_id):
     """View details of student performance on specific exams"""
 
-    facility, group_id, context = coach_nav_context(request, None, "test")
+    facility, group_id, context = coach_nav_context(request, "test")
     # get users in this facility and group
     users = get_user_queryset(request, facility, group_id)
 
