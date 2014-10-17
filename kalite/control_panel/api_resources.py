@@ -260,7 +260,7 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
         queryset = StoreTransactionLog.objects.all()
         resource_name = 'store_transaction_log_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = ['signed_version', 'counter', 'context_type', 'signature']
+        excludes = ['signed_version', 'counter', 'signature']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
