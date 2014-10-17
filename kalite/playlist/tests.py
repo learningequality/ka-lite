@@ -125,3 +125,23 @@ class PlaylistAPITests(FacilityMixins, CreateAdminMixin, KALiteClientTestCase):
                 val = entry.get(attribute)
                 errmsgtemplate = "val %s for attribute %s for entry %s is not of type %s; is actually of type %s"
                 self.assertTrue(isinstance(val, attrtype), errmsgtemplate % (val, attribute, entry, attrtype, type(val)))
+
+class PlaylistPageTests(FacilityMixins, KALiteClientTestCase):
+
+    def setUp(self):
+        super(PlaylistPageTests, self).setUp()
+        self.facility = self.create_facility()
+        self.facility2 = self.create_facility(name="facility 2")
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.group2 = self.create_group(name='group2', facility=self.facility2)
+        self.teacher = self.create_teacher(username="teacher", password="password", facility=self.facility)
+        self.api_group_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "group"})
+
+    def test_teacher_get_group_only_belonging_to_that_facility(self):
+        self.client.login(username='teacher', password='password', facility=self.facility.id)
+        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
+        objects = group_resp.get("objects")
+        self.assertEqual(len(objects), 1, "API response incorrect")
+        self.assertEqual(objects[0]["name"], "group1", "API response incorrect")
+        self.client.logout()
+

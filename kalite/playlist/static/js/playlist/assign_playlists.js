@@ -133,7 +133,7 @@ var AppView = Backbone.View.extend({
         this.listenTo(playlists, 'reset', this.addAllPlaylists);
 
         playlists.fetch();
-        groups.fetch();
+        groups.fetch({ data: $.param({ facility_id: CURRENT_FACILITY_ID }) });
     },
 
     addNewGroup: function(group) {

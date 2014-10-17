@@ -27,6 +27,7 @@
   <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' %}"></script>
 
   <script type="text/javascript">
+   var CURRENT_FACILITY_ID = "{{ facility_id }}"
    var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
    var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
   </script>
