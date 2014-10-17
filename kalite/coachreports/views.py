@@ -23,6 +23,7 @@ from .api_views import get_data_form, stats_dict
 from fle_utils.general import max_none
 from fle_utils.internet import StatusException
 from kalite.coachreports.models import PlaylistProgress
+from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
@@ -462,6 +463,24 @@ def test_detail_view(request, facility, test_id):
         "results_table": results_table,
         "stats_dict": stats_dict,
         "test_options": test_options,
+    })
+    return context
+
+
+@require_authorized_admin
+@facility_required
+@render_to("coachreports/student_spending_report_view.html")
+def student_spending_report(request, facility):
+    """View total points remaining for students"""
+    # TODO(dylanjbarth) add a detail view for students showing transaction logs
+    group_id = request.GET.get("group", "")
+    users = get_user_queryset(request, facility, group_id)
+    user_points = {}
+    for user in users:
+        user_points[user] = compute_total_points(user)
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
+        "user_points": user_points,
     })
     return context
 

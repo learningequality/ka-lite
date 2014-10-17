@@ -21,5 +21,7 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^test/$', 'test_view', {}, 'test_view'),
     url(r'^test/(?P<test_id>\w+)/$', 'test_detail_view', {}, 'test_detail_view'),
 
+    url(r'^spending_report/$', 'student_spending_report', {}, 'student_spending_report'),
+
     url(r'^api/', include(api_urls)),
 )
