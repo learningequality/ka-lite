@@ -2,6 +2,7 @@
 <select id="group-select">
     {{#if groups}}
         <option value="">{{_ "All" }}</option>
+        <option {{#ifcond ../selected "===" "all_ungrouped" }}selected{{/ifcond}} value="all_ungrouped">{{_ "Ungrouped" }}</option>
         {{#each groups}}
             <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
         {{/each}}
