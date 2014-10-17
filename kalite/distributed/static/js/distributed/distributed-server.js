@@ -18,7 +18,7 @@ function show_api_messages(messages) {
     }
     switch (typeof messages) {
         case "object":
-            for (msg_type in messages) {
+            for (var msg_type in messages) {
                 show_message(msg_type, messages[msg_type]);
             }
             break;
@@ -35,18 +35,16 @@ function show_api_messages(messages) {
 
 function show_modal(msg_class, msg_text) {
     clear_modal();
-    var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
-    var msg_html = "<div class='alert alert-" + msg_class + "' id='overlay'";
+    var msg_html = sprintf("<div class='alert alert-%1$s' id='overlay'><a class='close' data-dismiss='alert' href='#''>&times;</a>%2$s</div><div id='fade'></div>", msg_class, msg_text);
 
-    msg_html += ">" + x_button + msg_text + "</div><div id='fade'></div>";
     window.modal = $(msg_html).appendTo("body");
     $(".close").click(clear_modal);
     $("#fade").click(clear_modal);
 }
 
 function clear_modal() {
-    if (window.modal!==undefined) {
+    if (window.modal !== undefined) {
         window.modal.remove();
     }
 }
