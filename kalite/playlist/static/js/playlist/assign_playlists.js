@@ -133,7 +133,7 @@ var AppView = Backbone.View.extend({
         this.listenTo(playlists, 'reset', this.addAllPlaylists);
 
         playlists.fetch();
-        groups.fetch({ data: $.param({ facility_id: CURRENT_FACILITY_ID }) });
+        groups.fetch({ data: $.param({ facility_id: statusModel.get('facility_id') }) });
     },
 
     addNewGroup: function(group) {
@@ -159,6 +159,8 @@ $(function() {
 
     $("tr.title+tr").hide();
 
-    var app = new AppView;
+    statusModel.loaded.then(function() {
+        var app = new AppView;
+    });
 
 });

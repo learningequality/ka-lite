@@ -6,14 +6,8 @@ from kalite.shared.decorators import require_login
 @require_login
 @render_to("playlist/assign_playlists.html")
 def assign_playlists(request):
-    # admin doesn't have a facility
-    try:
-        facility_id = request.session['facility_user'].facility.id
-    except:
-        facility_id = ""
     context = {
         "title": "Playlists",
-        "facility_id" : facility_id,
     }
     return context
 
