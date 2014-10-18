@@ -29,7 +29,7 @@ def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
 
-    Make sure the returned `facilities` object is always a Facility queryset or an iterable.
+    Make sure the returned `facilities` object is always a Facility queryset or an empty list.
     """
 
     # Options to select.  Note that this depends on the user.
@@ -211,12 +211,13 @@ def tabular_view(request, report_type="exercise"):
 
     if group_id:
         # Narrow by group
-        if group_id == "Ungrouped":
-            users = FacilityUser.objects.filter(
-                facility=facility, group__isnull=True, is_teacher=False).order_by(*student_ordering)
-        # Narrow all ungroup facility user
-        elif group_id == "all_ungrouped":
-            users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False).order_by(*student_ordering)
+        from control_panel.api_resources import UNGROUPED_KEY
+        if group_id == UNGROUPED_KEY:
+            users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False)
+            if facility:
+                # filter only those ungrouped students for the facility
+                users = users.filter(facility=facility)
+            users = users.order_by(*student_ordering)
         else:
             users = FacilityUser.objects.filter(
                 group=group_id, is_teacher=False).order_by(*student_ordering)
