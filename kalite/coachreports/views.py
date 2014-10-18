@@ -28,41 +28,47 @@ SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Aver
 def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
+
+    Make sure the returned `facilities` object is always a Facility queryset or an iterable.
     """
-    ungrouped_available = False
 
     # Options to select.  Note that this depends on the user.
+    facilities = []
     if request.user.is_superuser:
         facilities = Facility.objects.all()
         # Groups is now a list of objects with a key for facility id, and a key
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
-        groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
-        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
+        groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
 
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
             facilities = Facility.objects.all()
             groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
-            ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
         else:
             # Students can only access their group
-            facilities = [user.facility]
+            if facility and isinstance(facility, Facility):
+                facilities = Facility.objects.filter(id=facility.id)
             if not user.group:
                 groups = []
             else:
-                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
+                groups = [{"facility": user.facility.id,
+                           "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
     elif facility:
-        facilities = [facility]
+        facilities = Facility.objects.filter(id=facility.id)
         groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
-
     else:
-        facilities = groups = None
         # defaults to all facilities and groups
         facilities = Facility.objects.all()
         groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
-        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
+
+    ungrouped_available = False
+    for f in facilities:
+        # Check if there is at least one facility with ungrouped students.
+        ungrouped_available = f.has_ungrouped_students
+        if ungrouped_available:
+            break
 
     return (groups, facilities, ungrouped_available)
 

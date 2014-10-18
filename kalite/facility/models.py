@@ -35,9 +35,6 @@ class Facility(DeferredCountSyncedModel):
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
     user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
-    # This constant is used as a key for the all facilties drop down in the frontend
-    ID_NONE = "None"
-
     class Meta:
         verbose_name_plural = _("Facilities")
         app_label = "securesync"  # for back-compat reasons
@@ -77,6 +74,13 @@ class Facility(DeferredCountSyncedModel):
         elif Settings.get("default_facility") not in [fac.id for fac in facilities.all()]:
             # Use an existing facility as the default, if one of them isn't the default already.
             Settings.set("default_facility", facilities[0].id)
+
+    @property
+    def has_ungrouped_students(self):
+        """
+        Checks if this facility has ungrouped students or not.
+        """
+        return len(FacilityUser.objects.filter(facility=self, is_teacher=False, group__isnull=True)) > 0
 
 
 class FacilityGroup(DeferredCountSyncedModel):
