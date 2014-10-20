@@ -84,10 +84,12 @@ var PlaylistView = Backbone.View.extend({
         var dataTransfer = ev.originalEvent.dataTransfer;
         var groupID = dataTransfer.getData('student-grp-id');
         var group = groups.get(groupID);
+        var groups_assigned = this.model.get('groups_assigned')
 
-        this.model.get('groups_assigned').add(group);
-        console.log(this.model);
-        this.model.save();
+        if (groups_assigned.findWhere({"id": group.get("id")}) == null) {
+            groups_assigned.add(group);
+            this.model.save();
+        }
     },
 
     allowDrop: function(ev) {
