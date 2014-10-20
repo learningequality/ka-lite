@@ -86,9 +86,8 @@ var PlaylistView = Backbone.View.extend({
         var group = groups.get(groupID);
         var groups_assigned = this.model.get('groups_assigned')
 
-        if (groups_assigned.pluck("id").indexOf(group.get("id")) == -1) {
+        if (groups_assigned.findWhere({"id": group.get("id")}) == null) {
             groups_assigned.add(group);
-            console.log(this.model);
             this.model.save();
         }
     },
