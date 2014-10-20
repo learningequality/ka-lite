@@ -5,7 +5,7 @@ from django.conf import settings
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin, StoreMixins
 
 logging = settings.LOG
 
@@ -114,6 +114,7 @@ class GroupControlTests(FacilityMixins,
 
 class CSVExportTestSetup(FacilityMixins,
                          StudentProgressMixin,
+                         StoreMixins,
                          CreateZoneMixin,
                          CreateAdminMixin,
                          KALiteTestCase):
@@ -142,6 +143,9 @@ class CSVExportTestSetup(FacilityMixins,
         self.exercise_log_1 = self.create_exercise_log(user=self.stu1)
         self.exercise_log_2 = self.create_exercise_log(user=self.stu2)
 
+        self.store_transaction_log_1 = self.create_store_transaction_log(user=self.stu1)
+        self.store_transaction_log_1 = self.create_store_transaction_log(user=self.stu2)
+
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
@@ -154,6 +158,7 @@ class CSVExportTestSetup(FacilityMixins,
         self.api_attempt_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "attempt_log_csv"})
         self.api_exercise_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "exercise_log_csv"})
         self.api_device_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "device_log_csv"})
+        self.api_store_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "store_transaction_log_csv"})
 
 
 class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
@@ -175,6 +180,8 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertTrue(exercise_log_csv.get("objects"), "Authorization error")
         device_log_csv_resp = json.loads(self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
         self.assertTrue(device_log_csv_resp.get("objects"), "Authorization error")
+        store_log_csv_resp = json.loads(self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id).content)
+        self.assertTrue(store_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_teacher(self):
@@ -194,6 +201,8 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertTrue(exercise_log_csv.get("objects"), "Authorization error")
         device_log_csv_resp = json.loads(self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
         self.assertTrue(device_log_csv_resp.get("objects"), "Authorization error")
+        store_log_csv_resp = json.loads(self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id).content)
+        self.assertTrue(store_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_student(self):
@@ -213,6 +222,8 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertFalse(exercise_log_csv.content, "Authorization error")
         device_log_csv_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id)
         self.assertFalse(device_log_csv_resp.get("objects"), "Authorization error")
+        store_log_csv_resp = self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id)
+        self.assertFalse(store_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_not_logged_in(self):
@@ -231,6 +242,8 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertFalse(exercise_log_csv.content, "Authorization error")
         device_log_csv_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id)
         self.assertFalse(device_log_csv_resp.get("objects"), "Authorization error")
+        store_log_csv_resp = self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id)
+        self.assertFalse(store_log_csv_resp.get("objects"), "Authorization error")
 
 
     def test_facility_endpoint(self):
@@ -304,6 +317,21 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
+
+
+    def test_store_log_csv_endpoint(self):
+        # Test filtering by facility
+        self.client.login(username='admin', password='admin')
+        facility_filtered_resp = self.client.get(self.api_store_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        rows = filter(None, facility_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 3, "API response incorrect")
+
+        # Test filtering by group
+        group_filtered_resp = self.client.get(self.api_store_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        rows = filter(None, group_filtered_resp.split("\n"))
+        self.assertEqual(len(rows), 2, "API response incorrect")
+        self.client.logout()
+
 
     def test_device_log_csv_endpoint(self):
         # Test filtering by zone

@@ -1,0 +1,79 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Student spending report" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
+
+    <style type="text/css">
+        th, #back-nav  {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        td {
+            font-size: 14px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block headjs %}
+    {{ block.super }}
+    <script>
+        $(function(){
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
+        });
+    </script>
+{% endblock headjs %}
+
+{% block content %}
+    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    <div id="content">
+        <div id="back-nav">
+            <a href="{% url 'coach_reports' %}">&larr; {% trans "Back" %}</a>
+        </div>
+        {% if not user_points %}
+            <p>
+                There are no students at this facility.
+            </p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            {% trans "Student" %}
+                        </th>
+                        <th>
+                            {% trans "Points Remaining" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student, points in user_points.items %}
+                        <tr>
+                            <td>
+                                <span title="{{ student.get_name }} ({{ student.username }})">
+                                    <a href="{% url 'spending_report_detail_view' user_id=student.id %}">{{ student.get_name }}</a>
+                                </span>
+                            </td>
+                            <td>
+                                {{ points }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock content %}
+

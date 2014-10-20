@@ -2,7 +2,7 @@ from datetime import datetime
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentProgressMixin
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentProgressMixin, StoreMixins
 
 
 from kalite.student_testing.models import TestLog
@@ -133,3 +133,32 @@ class PlaylistProgressTest(FacilityMixins,
         # Confirm lower-level progress appears
         playlist_details = self.browser_wait_for_element(css_selector='.progress-indicator-sm')
         self.assertTrue(playlist_details, "Didn't load details")
+
+
+class SpendingReportTests(FacilityMixins,
+                           CreateAdminMixin,
+                           StoreMixins,
+                           BrowserActionMixins,
+                           KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(SpendingReportTests, self).setUp()
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
+        self.student = self.create_student()
+        self.store_transaction = self.create_store_transaction_log(user=self.student)
+
+    def test_spending_report_displays(self):
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('spending_report_view'))
+        points_remaining = self.browser.find_element_by_xpath("//tbody/tr/td[2]")
+        self.assertEqual(points_remaining.text, '-10', "Remaining points incorrect")
+
+    def test_spending_report_detail_displays(self):
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('spending_report_detail_view', kwargs={"user_id": self.student.id}))
+        item_title = self.browser.find_element_by_xpath("//tbody/tr/td[2]")
+        self.assertEqual(item_title.text, 'Coloured Pencil', "Item title incorrect")
+        item_cost = self.browser.find_element_by_xpath("//tbody/tr/td[4]")
+        self.assertEqual(item_cost.text, '10', "Item cost incorrect")
