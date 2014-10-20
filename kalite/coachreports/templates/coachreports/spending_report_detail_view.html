@@ -37,10 +37,13 @@
                 <thead>
                     <tr>
                         <th>
-                            {% trans "Purchased at" %}
+                            {% trans "Date Purchased" %}
                         </th>
                         <th>
                             {% trans "Item" %}
+                        </th>
+                        <th>
+                            {% trans "Description" %}
                         </th>
                         <th>
                             {% trans "Cost" %}
@@ -54,14 +57,16 @@
                     {% for t in transactions %}
                         <tr>
                             <td>
-                                {{ t.purchased_at }}
+                                {{ t.purchased_at|date:"SHORT_DATE_FORMAT" }}
                             </td>
                             <td>
-                                {{ t.item }}
+                                {{ t.item.title }}
+                            </td>
+                            <td title="{{t.item.description}}">
+                                {{ t.item.description|truncatechars:30 }}
                             </td>
                             <td>
-                                <!-- Cut off the negative sign -->
-                                {{ t.value|stringformat:"+d"|slice:"1:" }} 
+                                {{ t.value }} 
                             </td>
                             <td>
                                 {{ t.context_id }}
