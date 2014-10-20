@@ -7,7 +7,9 @@ class CreateStoreTransactionLogMixin(object):
         'item': StoreItem.all().values()[0].storeitem_id,
         'value': -1*StoreItem.all().values()[0].cost,
         'purchased_at': datetime.datetime.now(),
-    }
+        'context_type': 'unit',
+        'context_id': 1,
+    }   
     
     @classmethod
     def create_store_transaction_log(cls, **kwargs):
