@@ -7,6 +7,8 @@ from kalite.dynamic_assets import DynamicSettingsBase, fields
 
 class DynamicSettings(DynamicSettingsBase):
     student_grade_level = fields.IntegerField(default=0)
+    unit = fields.IntegerField(default=1)
+
 
 # modify ds in-place. Use when you're modifying ds rather than defining new dynamic settings
 def modify_dynamic_settings(ds, request=None, user=None):

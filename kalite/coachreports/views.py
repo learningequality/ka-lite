@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.shortcuts import get_object_or_404 
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
@@ -29,6 +30,7 @@ from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.store.models import StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
@@ -469,10 +471,9 @@ def test_detail_view(request, facility, test_id):
 
 @require_authorized_admin
 @facility_required
-@render_to("coachreports/student_spending_report_view.html")
-def student_spending_report(request, facility):
+@render_to("coachreports/spending_report_view.html")
+def spending_report_view(request, facility):
     """View total points remaining for students"""
-    # TODO(dylanjbarth) add a detail view for students showing transaction logs
     group_id = request.GET.get("group", "")
     users = get_user_queryset(request, facility, group_id)
     user_points = {}
@@ -481,6 +482,20 @@ def student_spending_report(request, facility):
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "user_points": user_points,
+    })
+    return context
+
+
+@require_authorized_admin
+@render_to("coachreports/spending_report_detail_view.html")
+def spending_report_detail_view(request, user_id):
+    """View transaction logs for student"""
+    student = get_object_or_404(FacilityUser, id=user_id)
+    transactions = StoreTransactionLog.objects.filter(user=student, context_type='unit').order_by('purchased_at') # TODO(dylanjbarth): filter out gift cards?
+    context = plotting_metadata_context(request)
+    context.update({
+        "student": student,
+        "transactions": transactions,
     })
     return context
 
