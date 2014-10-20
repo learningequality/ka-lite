@@ -12,7 +12,6 @@ from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db.models.query_utils import Q
 from django.db.models import Sum, Max
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -378,26 +377,20 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     user_data = OrderedDict()
     group_data = OrderedDict()
 
-
     # Make queries efficiently
     exercise_logs = ExerciseLog.objects.filter(user__in=users, complete=True)
-    video_logs = VideoLog.objects.filter(user__in=users)
+    video_logs = VideoLog.objects.filter(user__in=users, total_seconds_watched__gt=0)
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
     if period_start:
-        exercise_logs = exercise_logs.filter(Q(complete=True) | Q(completion_timestamp__gte=period_start))
-        video_logs = video_logs.filter(Q(total_seconds_watched__gt=0) |
-                                       Q(completion_timestamp__gte=period_start))
-        login_logs = login_logs.filter(Q(total_seconds__gt=0) |
-                                       Q(start_datetime__gte=period_start))
+        exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
+        video_logs = video_logs.filter(completion_timestamp__gte=period_start)
+        login_logs = login_logs.filter(start_datetime__gte=period_start)
     if period_end:
-        exercise_logs = exercise_logs.filter(Q(complete=True) | Q(completion_timestamp__lte=period_end))
-        video_logs = video_logs.filter(Q(total_seconds_watched__gt=0) |
-                                       Q(completion_timestamp__lte=period_end))
-        login_logs = login_logs.filter(Q(total_seconds__gt=0) |
-                                       Q(start_datetime__gte=period_start))
-
+        exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
+        video_logs = video_logs.filter(completion_timestamp__lte=period_end)
+        login_logs = login_logs.filter(total_seconds__gt=0, start_datetime__lte=period_end)
 
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
@@ -411,7 +404,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         user_data[user.pk]["last_name"] = user.last_name
         user_data[user.pk]["username"] = user.username
         user_data[user.pk]["group"] = user.group
-
 
         user_data[user.pk]["total_report_views"] = 0#report_stats["count__sum"] or 0
         user_data[user.pk]["total_logins"] =0# login_stats["count__sum"] or 0
