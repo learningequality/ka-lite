@@ -279,24 +279,29 @@ window.TopicContainerInnerView = Backbone.View.extend({
 
     item_clicked: function(view) {
 
+        // if the clicked item is already active, there's nothing to do
+        if (view.model.get("active")) {
+            return;
+        }
+
         this.state_model.set("current_level", this.options.level);
 
         if (view.model.get("kind")=="Topic") {
             this.trigger('topic_node_clicked', view.model);
         } else {
             this.hide_sidebar();
-            // only trigger an entry_requested event if the item wasn't already active
-            if (!view.model.get("active")) {
-                this.trigger("entry_requested", view.model);
-            }
+            this.trigger("entry_requested", view.model);
+            // if we've already selected something at the content level, go back first
+            _.each(this._entry_views, function(v) {
+                if (v.model.get("active")) {
+                    window.router.url_back();
+                }
+            });
         }
 
         // mark the clicked view as active, and unmark all the others
         // TODO-BLOCKER(jamalex): this needs to be applied on nav, so it's visible on page load, also
         _.each(this._entry_views, function(v) {
-            // if (v.model.get("active")) {
-            //     window.router.url_back();
-            // }
             v.model.set("active", v == view);
         });
 
