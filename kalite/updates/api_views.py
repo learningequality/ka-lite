@@ -278,7 +278,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
         }
 
     elif node["kind"] == "Video":
-        video_id = node["youtube_id"]
+        video_id = node.get("youtube_id", node.get("id"))
         youtube_id = get_youtube_id(video_id, lang_code=lang_code)
 
         if not youtube_id:
