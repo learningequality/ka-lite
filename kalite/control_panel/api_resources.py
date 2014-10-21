@@ -24,7 +24,7 @@ from .api_serializers import CSVSerializer
 # This constant is used as a key for the all facilties drop down in the frontend
 ID_NONE = "None"
 
-ALL_KEY = "all"
+ALL_KEY = ""
 UNGROUPED_KEY = "ungrouped"
 
 
