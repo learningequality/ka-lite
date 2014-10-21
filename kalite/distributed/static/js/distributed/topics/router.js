@@ -5,6 +5,10 @@ TopicRouter = Backbone.Router.extend({
                 entity_key: "children",
                 entity_collection: TopicCollection
         });
+
+        if (options.splat!==undefined) {
+            this.navigate_topics(options.splat);
+        }
     },
 
     routes: {
@@ -30,10 +34,10 @@ TopicRouter = Backbone.Router.extend({
 
 ChannelRouter = Backbone.Router.extend({
     routes: {
-        ":channel/":    "navigate_channel"
+        ":channel/(*splat)":    "navigate_channel"
     },
 
-    navigate_channel: function(channel) {
-        window.topic_router = this.topic_router = new TopicRouter(channel);
+    navigate_channel: function(channel, splat) {
+        window.topic_router = this.topic_router = new TopicRouter({channel: channel, splat: splat});
     }
 });
