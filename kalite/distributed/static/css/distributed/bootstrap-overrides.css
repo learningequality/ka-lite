@@ -76,20 +76,28 @@ input[type="submit"] {
 .navbar-brand img { 
     margin-top: -6px;
 }
-.navbar-nav > li:first-child {
-    border-left: 1px solid rgba(79, 79, 79, 0.5);
-}
-.navbar-nav > li {
-    border-right: 1px solid rgba(79, 79, 79, 0.5);
-}
 .navbar ul li a {
     color: #333 !important;
     text-transform: uppercase;
 }
+.navbar ul li a.btn-fle-nav {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    border-color: rgba(128, 128, 128, 0.81);
+    background-color: rgba(255, 255, 255, 0.75);
+}
+ul.dropdown-menu li {
+    border-radius: 3px;
+    border: 1px solid transparent;
+}
 .navbar ul li a:hover, 
 .navbar ul li a:focus,
 .navbar ul li a.active {
-    background-color: rgb(185, 196, 174) !important;
+    background-color: rgba(158, 180, 136, 0.94) !important;
+    padding-bottom: 12px;
 }
 .navbar-right {
     display: none;
