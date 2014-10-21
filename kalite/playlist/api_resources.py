@@ -1,13 +1,13 @@
 from django.conf import settings
 
 from tastypie import fields
-from tastypie.exceptions import NotFound
+from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
 
 from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
 from kalite.topic_tools import video_dict_by_video_id, get_slug2id_map
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.student_testing.utils import get_current_unit_settings_value
 
@@ -85,6 +85,7 @@ class PlaylistResource(Resource):
     def obj_create(self, request):
         raise NotImplemented("Operation not implemented yet for playlists.")
 
+    @tastypie_require_admin
     def obj_update(self, bundle, **kwargs):
         new_group_ids = set([group['id'] for group in bundle.data['groups_assigned']])
         playlist = Playlist(**bundle.data)

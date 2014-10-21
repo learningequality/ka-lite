@@ -1,10 +1,26 @@
-
 import json
+from tastypie.exceptions import NotFound, Unauthorized
+
 from django.core.urlresolvers import reverse
 
 from .models import Playlist
-from kalite.testing.mixins import CreateAdminMixin, FacilityMixins
-from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
+from kalite.testing.mixins import CreateAdminMixin, CreateTeacherMixin, CreateStudentMixin, FacilityMixins
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase, KALiteClient
+
+class BaseTest(FacilityMixins, KALiteTestCase):
+
+    def setUp(self):
+
+        super(BaseTest, self).setUp()
+        self.facility = self.create_facility()
+        self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
+        self.student_data = CreateStudentMixin.DEFAULTS.copy()
+        self.teacher_data['facility'] = self.student_data['facility'] = self.facility
+
+        self.teacher = self.create_teacher(**self.teacher_data)
+        self.student = self.create_student(**self.student_data)
+
+        self.client = KALiteClient()
 
 
 class PlaylistTests(FacilityMixins, KALiteTestCase):
@@ -48,31 +64,51 @@ class PlaylistTests(FacilityMixins, KALiteTestCase):
         self.assertEqual(entries[2].reload().sort_order, 3)
 
 
-class PlaylistAPITests(FacilityMixins, CreateAdminMixin, KALiteClientTestCase):
+class PlaylistAPITests(CreateAdminMixin, BaseTest):
+
+    test_playlist_id = 'g3_p1'
+
     def _playlist_url(self, playlist_id=None):
         '''
         If no playlist_id is given, returns a url that gets all
         playlists. If playlist_id is given, returns a detail url for that playlist
         '''
-        if not playlist_id:
+        # If no playlist id was provided, return the collection-level API URL
+        # (Specifically compare against `None` in case `playlist_id` is `0`)
+        if playlist_id is None:
             return reverse("api_dispatch_list", kwargs={'resource_name': 'playlist'})
         else:
             return reverse("api_dispatch_detail", kwargs={'resource_name': 'playlist', 'pk': playlist_id})
 
     def setUp(self):
         super(PlaylistAPITests, self).setUp()
-
         self.admin = self.create_admin()
         self.group = self.create_group()
-        self.client.login(username='admin', password='admin')
 
     def test_playlist_list_url_exists(self):
         resp = self.client.get(self._playlist_url())
         self.assertEquals(resp.status_code, 200)
 
     def test_playlist_detail_url_exists(self):
-        resp = self.client.get(self._playlist_url(0))
+        resp = self.client.get(self._playlist_url(self.test_playlist_id))
         self.assertEquals(resp.status_code, 200)
+
+    def test_playlist_updating_auth_admin_only(self):
+
+        # get the existing data
+        self.client.login_student(self.student_data)
+        resp = self.client.get(self._playlist_url(self.test_playlist_id))
+        jsondata = resp.content
+
+        # try updating it as a student (should fail)
+        resp = self.client.put(self._playlist_url(self.test_playlist_id), data=jsondata, content_type="application/json")
+        self.assertEquals(resp.status_code, 401)
+
+        # try updating it as a teacher (should succeed)
+        self.client.login_teacher(self.teacher_data)
+        resp = self.client.put(self._playlist_url(self.test_playlist_id), data=jsondata, content_type="application/json")
+        self.assertEquals(resp.status_code, 204)
+
 
     def test_playlist_list_has_required_data(self):
         PLAYLIST_REQUIRED_ATTRIBUTES = [('description', unicode),
@@ -108,9 +144,8 @@ class PlaylistAPITests(FacilityMixins, CreateAdminMixin, KALiteClientTestCase):
                                               ('entity_kind', unicode),
                                               ('sort_order', int),
                                               ('description', unicode)]
-        playlist_id = 'g3_p1'
 
-        resp = self.client.get(self._playlist_url(playlist_id))
+        resp = self.client.get(self._playlist_url(self.test_playlist_id))
         playlist_dict = json.loads(resp.content)
 
         # check that the toplevel playlist attribute has the required data
