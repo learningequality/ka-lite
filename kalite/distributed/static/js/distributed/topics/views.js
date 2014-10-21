@@ -58,12 +58,14 @@ window.SidebarView = Backbone.View.extend({
         _.bindAll(this);
 
         this.state_model = new Backbone.Model({
-            open: false
+            open: false,
+            levels: 0
         });
 
         this.render();
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
+        this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
 
     },
 
@@ -75,7 +77,7 @@ window.SidebarView = Backbone.View.extend({
         this.sidebar = this.$('').bigSlide({
             menu: this.$(".panel"),
             // push: "#page-container, #footer, .sidebar-tab",
-            push: ".sidebar-tab",
+            // push: ".sidebar-tab",
             menuWidth: "220px"
         });
 
@@ -83,10 +85,11 @@ window.SidebarView = Backbone.View.extend({
             self.show_sidebar();
         });
 
-        this.topic_node_view = new TopicContainerOuter({
+        this.topic_node_view = new TopicContainerOuterView({
             model: this.model,
             entity_key: this.options.entity_key,
-            entity_collection: this.options.entity_collection
+            entity_collection: this.options.entity_collection,
+            state_model: this.state_model
         });
         this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
         this.listenTo(this.topic_node_view, "showSidebar", this.show_sidebar);
@@ -94,6 +97,23 @@ window.SidebarView = Backbone.View.extend({
         this.$('.sidebar-content').append(this.topic_node_view.el);
 
         return this;
+    },
+
+    current_level_changed: function() {
+        var current_level = this.state_model.get("current_level");
+        while (this.topic_node_view.inner_views.length > current_level) {
+            this.topic_node_view.back_to_parent();
+        }
+        this.resize_sidebar();
+    },
+
+    resize_sidebar: function() {
+        var current_level = this.state_model.get("current_level");
+        // TODO(jamalex): have this calculated dynamically
+        var column_width = 200; // this.$(".topic-container-inner").width();
+        var new_width = current_level * column_width + 10;
+        this.$(".panel").width(new_width);
+        this.$(".sidebar-tab").css({left: new_width});
     },
 
     toggle_sidebar: function(ev) {
@@ -109,9 +129,13 @@ window.SidebarView = Backbone.View.extend({
 
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
+            this.sidebar.show();
             this.sidebar.open();
+            this.resize_sidebar();
         } else {
-            this.sidebar.close();
+            this.sidebar.hide();
+            this.$(".sidebar-tab").css({left: 0});
+            // this.sidebar.close();
         }
     },
 
@@ -129,7 +153,9 @@ window.SidebarView = Backbone.View.extend({
 
 });
 
-window.SidebarContentView = Backbone.View.extend({
+window.TopicContainerInnerView = Backbone.View.extend({
+
+    className: "topic-container-inner",
 
     template: HB.template("topics/sidebar-content"),
 
@@ -142,6 +168,8 @@ window.SidebarContentView = Backbone.View.extend({
         var self = this;
 
         _.bindAll(this);
+
+        this.state_model = this.options.state_model;
 
         this.entity_key = this.options.entity_key;
 
@@ -161,6 +189,9 @@ window.SidebarContentView = Backbone.View.extend({
 
         this.add_all_entries();
 
+        this.listenTo(this.state_model, "change:levels", this.update_level_color);
+        this.state_model.set("current_level", this.options.level);
+
     },
 
     render: function() {
@@ -169,11 +200,11 @@ window.SidebarContentView = Backbone.View.extend({
         this.$el.html(this.template(this.model.attributes));
 
         this.$(".sidebar").slimScroll({
-            height: "auto",
-            color: "#033000",
-            size: "8px",
-            distance: "2px",
-            disableFadeOut: true
+            color: "#083505",
+            opacity: 0.2,
+            size: "6px",
+            distance: "1px",
+            alwaysVisible: true
         });
 
         // resize the scrollable part of sidebar to the page height
@@ -192,6 +223,11 @@ window.SidebarContentView = Backbone.View.extend({
         return this;
     },
 
+    update_level_color: function() {
+        var opacity = (this.options.level+1) / (this.state_model.get("levels")+1);
+        this.$el.css("opacity", opacity);
+    },
+
     add_new_entry: function(entry) {
         var view = new SidebarEntryView({model: entry});
         this._entry_views.push(view);
@@ -203,10 +239,6 @@ window.SidebarContentView = Backbone.View.extend({
     add_all_entries: function() {
         this.render();
         this.model.get(this.entity_key).map(this.add_new_entry);
-    },
-
-    load_entry_progress: function() {
-
     },
 
     show: function() {
@@ -232,206 +264,42 @@ window.SidebarContentView = Backbone.View.extend({
     node_by_slug: function(slug) {
         // Convenience method to return a node by a passed in slug
         return _.find(this.model.get(this.entity_key).models, function(model) {return model.get("slug")==slug;});
-    }
-
-});
-
-window.SidebarEntryView = Backbone.View.extend({
-
-    tagName: "li",
-
-    template: HB.template("topics/sidebar-entry"),
-
-    events: {
-        "click": "clicked"
     },
 
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.listenTo(this.model, "change:active", this.toggle_active);
-
-    },
-
-    render: function() {
-        this.$el.html(this.template(this.model.attributes));
-        return this;
-    },
-
-    clicked: function(ev) {
-        ev.preventDefault();
-        this.trigger("clicked", this);
-        return false;
-    },
-
-    toggle_active: function() {
-        this.$(".sidebar-entry").toggleClass("active-entry", this.model.get("active"));
-    }
-
-});
-
-
-window.TopicContainerOuter = Backbone.View.extend({
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.inner_views = [];
-        this.model =  this.model || new TopicNode();
-        this.model.fetch().then(this.render);
-        this.content_view = new ContentAreaView({
-            el: "#content-area"
+    close: function() {
+        _.each(this._entry_views, function(view) {
+            view.model.set("active", false);
         });
+        this.remove();
     },
-
-    render: function() {
-        this.show_new_topic(this.model);
-    },
-
-    show_new_topic: function(node) {
-
-        var new_topic = this.add_new_topic_view(node);
-
-        this.$el.append(new_topic.el);
-
-        // Listeners
-        this.listenTo(new_topic, "entry_requested", this.entry_requested);
-        this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
-        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
-        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
-        this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
-    },
-
-    add_new_topic_view: function(node) {
-
-        var data = {
-            model: node,
-            has_parent: this.inner_views.length >= 1,
-            entity_key: this.options.entity_key,
-            entity_collection: this.options.entity_collection
-        };
-
-        var new_topic = new PlaylistSidebarView(data);
-
-        if (this.inner_views.length === 0){
-            new_topic.model.set("has_parent", false);
-            this.inner_views.unshift(new_topic);
-            this.trigger("inner_view_added");
-        } else if (this.inner_views.length >= 1) {
-            this.inner_views[0].hide();
-            this.inner_views.unshift(new_topic);
-        }
-
-        return new_topic;
-    },
-
-    defer_navigate_paths: function(paths) {
-        if (this.inner_views.length === 0){
-            var self = this;
-            this.listenToOnce(this, "inner_view_added", function() {self.navigate_paths(paths);});
-        } else {
-            this.navigate_paths(paths);
-        }
-    },
-
-    navigate_paths: function(paths) {
-        paths = _.reject(paths, function(slug) {return slug===null;});
-        for (i=0; i < paths.length; i++) {
-            var node = this.inner_views[0].node_by_slug(paths[i]);
-            if (node!==undefined) {
-                if (node.get("kind")==="Topic") {
-                    this.show_new_topic(node);
-                } else {
-                    this.entry_requested(node);
-                    node.set("active", true);
-                }
-            }
-        }
-    },
-
-    back_to_parent: function() {
-        // Simply pop the first in the stack and show the next one
-        this.inner_views[0].move_back();
-        this.inner_views[0].remove();
-        this.inner_views.shift();
-        this.inner_views[0].show();
-        window.router.url_back();
-    },
-
-    entry_requested: function(entry) {
-        var kind = entry.get("kind") || entry.get("entity_kind");
-        var id = entry.get("id") || entry.get("entity_id");
-
-        var view;
-
-        switch(kind) {
-
-            case "Exercise":
-                view = new ExercisePracticeView({
-                    exercise_id: id,
-                    context_type: "playlist",
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-
-            case "Video":
-                view = new VideoWrapperView({
-                    video_id: id
-                });
-                this.content_view.show_view(view);
-                break;
-
-            case "Quiz":
-                view = new ExerciseQuizView({
-                    quiz_model: new QuizDataModel({entry: entry}),
-                    context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
-                });
-                this.content_view.show_view(view);
-                break;
-
-            default:
-                view = new ContentWrapperView({
-                    id: id,
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-        }
-    },
-
-    hide_sidebar: function() {
-        this.trigger("hideSidebar");
-    },
-
-    show_sidebar: function() {
-        this.trigger("showSidebar");
-    }
-});
-
-window.PlaylistSidebarView = SidebarContentView.extend({
 
     item_clicked: function(view) {
+
+        // if the clicked item is already active, there's nothing to do
+        if (view.model.get("active")) {
+            return;
+        }
+
+        this.state_model.set("current_level", this.options.level);
 
         if (view.model.get("kind")=="Topic") {
             this.trigger('topic_node_clicked', view.model);
         } else {
             this.hide_sidebar();
-            // only trigger an entry_requested event if the item wasn't already active
-            if (!view.model.get("active")) {
-                this.trigger("entry_requested", view.model);
-
-            }
-            // mark the clicked view as active, and unmark all the others
+            this.trigger("entry_requested", view.model);
+            // if we've already selected something at the content level, go back first
             _.each(this._entry_views, function(v) {
                 if (v.model.get("active")) {
                     window.router.url_back();
                 }
-                v.model.set("active", v == view);
             });
         }
+
+        // mark the clicked view as active, and unmark all the others
+        // TODO-BLOCKER(jamalex): this needs to be applied on nav, so it's visible on page load, also
+        _.each(this._entry_views, function(v) {
+            v.model.set("active", v == view);
+        });
 
         window.router.add_slug(view.model.get("slug"));
     },
@@ -500,4 +368,189 @@ window.PlaylistSidebarView = SidebarContentView.extend({
         }
 
     }, 100)
+
 });
+
+window.SidebarEntryView = Backbone.View.extend({
+
+    tagName: "li",
+
+    template: HB.template("topics/sidebar-entry"),
+
+    events: {
+        "click": "clicked"
+    },
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.listenTo(this.model, "change:active", this.toggle_active);
+
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+        return this;
+    },
+
+    clicked: function(ev) {
+        ev.preventDefault();
+        this.trigger("clicked", this);
+        return false;
+    },
+
+    toggle_active: function() {
+        this.$(".sidebar-entry").toggleClass("active-entry", this.model.get("active"));
+    }
+
+});
+
+
+window.TopicContainerOuterView = Backbone.View.extend({
+
+    initialize: function() {
+
+        _.bindAll(this);
+
+        this.state_model = this.options.state_model;
+
+        this.inner_views = [];
+        this.model =  this.model || new TopicNode();
+        this.model.fetch().then(this.render);
+        this.content_view = new ContentAreaView({
+            el: "#content-area"
+        });
+
+    },
+
+    render: function() {
+        this.show_new_topic(this.model);
+        this.trigger("render_complete");
+    },
+
+    show_new_topic: function(node) {
+
+        var new_topic = this.add_new_topic_view(node);
+
+        this.$el.append(new_topic.el);
+
+        // Listeners
+        this.listenTo(new_topic, "entry_requested", this.entry_requested);
+        this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
+        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
+        this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
+        this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
+    },
+
+    add_new_topic_view: function(node) {
+
+        this.state_model.set("levels", this.state_model.get("levels") + 1);
+
+        var data = {
+            model: node,
+            has_parent: this.inner_views.length >= 1,
+            entity_key: this.options.entity_key,
+            entity_collection: this.options.entity_collection,
+            state_model: this.state_model,
+            level: this.state_model.get("levels")
+        };
+
+        var new_topic = new TopicContainerInnerView(data);
+
+        if (this.inner_views.length === 0){
+            new_topic.model.set("has_parent", false);
+            this.inner_views.unshift(new_topic);
+        } else if (this.inner_views.length >= 1) {
+            // this.inner_views[0].hide();
+            this.inner_views.unshift(new_topic);
+        }
+
+        return new_topic;
+    },
+
+    defer_navigate_paths: function(paths) {
+        if (this.inner_views.length === 0){
+            var self = this;
+            this.listenToOnce(this, "render_complete", function() {self.navigate_paths(paths);});
+        } else {
+            this.navigate_paths(paths);
+        }
+    },
+
+    navigate_paths: function(paths) {
+        paths = _.reject(paths, function(slug) {return slug===null;});
+        for (i=0; i < paths.length; i++) {
+            var node = this.inner_views[0].node_by_slug(paths[i]);
+            if (node!==undefined) {
+                if (node.get("kind")==="Topic") {
+                    this.show_new_topic(node);
+                } else {
+                    this.entry_requested(node);
+                    node.set("active", true);
+                }
+            }
+        }
+    },
+
+    back_to_parent: function() {
+        // Simply pop the first in the stack and show the next one
+        this.inner_views[0].move_back();
+        this.inner_views[0].close();
+        this.inner_views.shift();
+        this.inner_views[0].show();
+        window.router.url_back();
+        this.state_model.set("levels", this.state_model.get("levels") - 1);
+    },
+
+    entry_requested: function(entry) {
+        var kind = entry.get("kind") || entry.get("entity_kind");
+        var id = entry.get("id") || entry.get("entity_id");
+
+        var view;
+
+        switch(kind) {
+
+            case "Exercise":
+                view = new ExercisePracticeView({
+                    exercise_id: id,
+                    context_type: "playlist",
+                    context_id: this.model.get("id")
+                });
+                this.content_view.show_view(view);
+                break;
+
+            case "Video":
+                view = new VideoWrapperView({
+                    video_id: id
+                });
+                this.content_view.show_view(view);
+                break;
+
+            case "Quiz":
+                view = new ExerciseQuizView({
+                    quiz_model: new QuizDataModel({entry: entry}),
+                    context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
+                });
+                this.content_view.show_view(view);
+                break;
+
+            default:
+                view = new ContentWrapperView({
+                    id: id,
+                    context_id: this.model.get("id")
+                });
+                this.content_view.show_view(view);
+                break;
+        }
+    },
+
+    hide_sidebar: function() {
+        this.trigger("hideSidebar");
+    },
+
+    show_sidebar: function() {
+        this.trigger("showSidebar");
+    }
+});
+
