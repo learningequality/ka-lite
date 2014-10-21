@@ -200,7 +200,6 @@ window.TopicContainerInnerView = Backbone.View.extend({
         this.$el.html(this.template(this.model.attributes));
 
         this.$(".sidebar").slimScroll({
-            height: "200px",
             color: "#033000",
             size: "8px",
             distance: "2px",
