@@ -141,6 +141,8 @@
         $(function() {
             window.channel_router = new ChannelRouter()
             Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
+            window.channel_router.navigate("{{ channel }}/");
+            Backbone.history.loadUrl("{{ channel }}/");
         });
     </script>
 

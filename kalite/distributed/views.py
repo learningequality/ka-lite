@@ -187,6 +187,7 @@ def learn(request):
     context = {
         "topics_url": "data/%(channel_name)s/topics.json",
         "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
+        "channel": settings.CHANNEL,
     }
     return context
 
