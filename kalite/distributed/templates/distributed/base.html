@@ -159,11 +159,11 @@
                           </div>
                       </div>
                       <div class="collapse navbar-collapse">
-                          <ul class="nav navbar-nav navbar-right">
+                          <ul class="nav navbar-nav navbar-right nav-tabs" role="tablist">
                             <!-- For all users -->
                             {# Learn for all #}
-                            <li>
-                              <a href="{% url 'learn' %}" id="nav_learn" class="btn btn-fle-nav not-admin-only home-navlink {% block learn_active %}{% endblock learn_active %}">
+                            <li class="{% block learn_active %}{% endblock learn_active %}">
+                              <a href="{% url 'learn' %}" id="nav_learn" class="not-admin-only home-navlink">
                                 {% trans "Learn" %}
                               </a>
                             </li>
@@ -171,15 +171,15 @@
 
                             <!-- For logged in admins -->
                             {# Teach for admins => assigning playlists #}
-                            <li>
-                              <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="btn btn-fle-nav admin-only {% block teach_active_admins %}{% endblock teach_active_admins %}">
+                            <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
+                              <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
 
                             {# Manage for admins => zone control panel #}
-                            <li>
-                              <a href="{% url 'zone_redirect' %}" class="btn btn-fle-nav admin-only {% block manage_active_admins %}{% endblock manage_active_admins %}">
+                            <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
+                              <a href="{% url 'zone_redirect' %}" class="admin-only">
                                 {% trans "Manage" %}
                               </a>
                             </li>
@@ -187,16 +187,16 @@
 
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
-                            <li>
-                              <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="btn btn-fle-nav teacher-only {% block teach_active_teachers %}{% endblock teach_active_teachers %}">
+                            <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
+                              <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
 
                             {# Manage for teachers => facility management #}
                             {% if request.session.facility_user.facility %}
-                              <li>
-                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="btn btn-fle-nav teacher-only {% block manage_active_teachers %}{% endblock manage_active_teachers %}">
+                              <li class="{% block manage_active_teachers %}{% endblock manage_active_teachers %}">
+                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only">
                                   {% trans "Manage" %}
                                 </a>
                               </li>
@@ -205,22 +205,21 @@
 
                             <!-- For logged out users  -->
                             {# Login #}
-                            <li>
-                              <a href="{% url 'login' %}" id="nav_login" class="btn btn-fle-nav not-logged-in-only {% block login_active %}{% endblock login_active %}" title="{% trans 'Login' %}">
+                            <li class="{% block login_active %}{% endblock login_active %}">
+                              <a href="{% url 'login' %}" id="nav_login" class="not-logged-in-only" title="{% trans 'Login' %}">
                                 {% trans "Login" %}
                               </a>
                             </li>
         
                             {% if not restricted %}
-                              <li>
-                                <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="btn btn-fle-nav not-logged-in-only {% block signup_active %}{% endblock signup_active %}" title="{% trans 'Register to start tracking your progress' %}">
+                              <li class="{% block signup_active %}{% endblock signup_active %}">
+                                <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only" title="{% trans 'Register to start tracking your progress' %}">
                                   {% trans "Sign Up" %}
                                 </a>
                               </li>
                             {% endif %}
-                            <li>
+                            <li class="not-logged-in-only">
                               {% if num_language_choices > 1 %}
-                              <a href="#" class="not-logged-in-only">
                               <select id="language_selector">
                               {% for lang_code, lang_meta in language_choices.iteritems %}
                                 <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
@@ -228,31 +227,30 @@
                                 </option>
                               {% endfor %}
                               </select>
-                              </a>
                               {% endif %}
                             </li>
                             <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown">
-                              <a href="#" class="logged-in-only dropdown-toggle btn btn-fle-nav" data-toggle="dropdown" id="user-management-menu">
+                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}">
+                              <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown">
                                   <span id="sitepoints">
                                     <!-- Username injected here w/ js -->
                                   </span>
                                 <span class="caret"></span>
                               </a>
-                              <ul class="dropdown-menu" role="menu" aria-labelledby="user-management-menu">
+                              <ul class="dropdown-menu" role="menu">
                                 {# Student account management #}
                                 <li role="presentation" class="motivational-feature">
-                                  <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="btn student-only {% block progress_active %}{% endblock progress_active %}">
+                                  <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">
                                     {% trans "My Progress" %}
                                   </a>
                                 </li>
                                 <li role="presentation">
-                                  <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help" class="btn {% block help_active %}{% endblock help_active %}">{% trans "Help" %}</a>
+                                  <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help">{% trans "Help" %}</a>
                                 </li>
                                 <li role="presentation" class="divider"></li>
                                 <!-- Logout goes at the bottom! -->
                                 <li role="presentation">
-                                  <a role="menuitem" tabindex="-1" id="nav_logout" class="btn logged-in-only" title="{% trans 'Logout'%}" href="{% url 'logout' %}">
+                                  <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="{% url 'logout' %}">
                                     {% trans "Logout" %}
                                   </a>
                                 </li>
