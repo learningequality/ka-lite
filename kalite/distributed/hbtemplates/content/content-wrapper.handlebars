@@ -31,6 +31,35 @@
                 <div class="content-player-container"></div>
             </div>
         </div>
+        <div class="row">
+            {{#each related_content }}
+                <div class="col-xs-3 info-box related-content">
+                    <a href="/learn/{{ path }}">
+                        <div>
+                            {{#ifcond kind "==" "Video"}}
+                            <span class="icon-video"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Exercise"}}
+                            <span class="icon-exercise"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Quiz"}}
+                            <span class="icon-quiz"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Topic"}}
+                            <span class="icon-list"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Audio"}}
+                            <span class="icon-audio"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Document"}}
+                            <span class="icon-document"></span>
+                            {{/ifcond}}
+                            <span>{{ title }}</span>
+                        </div>
+                    </a>
+                </div>
+            {{/each}}
+        </div>
 
 
     </div>
