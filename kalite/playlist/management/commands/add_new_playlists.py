@@ -54,5 +54,12 @@ class Command(BaseCommand):
             combined_playlists_dict.update(new_playlists_dict)
 
             with open(old_pl_file, "w") as f:
-                json.dump(combined_playlists_dict, f, sort_keys=True,
-                          indent=2, separators=(",", ": "))
+                vals = sorted(combined_playlists_dict.values(),
+                              key=lambda x: x["id"])
+                json.dump(
+                    vals,
+                    f,
+                    sort_keys=True,
+                    indent=2,
+                    separators=(",", ": ")
+                )

@@ -91,7 +91,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
     def test_query_logout_student(self):
         """"""
         self.test_query_login_student()
-        with self.assertNumQueries(FuzzyInt(4, 11) + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(4, 12) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_goto_math_logged_out(self):
