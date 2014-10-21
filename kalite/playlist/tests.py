@@ -73,6 +73,8 @@ class PlaylistAPITests(CreateAdminMixin, BaseTest):
         If no playlist_id is given, returns a url that gets all
         playlists. If playlist_id is given, returns a detail url for that playlist
         '''
+        # If no playlist id was provided, return the collection-level API URL
+        # (Specifically compare against `None` in case `playlist_id` is `0`)
         if playlist_id is None:
             return reverse("api_dispatch_list", kwargs={'resource_name': 'playlist'})
         else:
