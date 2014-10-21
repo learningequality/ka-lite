@@ -74,8 +74,6 @@ Nav Panel
     background: #5F832E;
     z-index: 9999;
     position: fixed;
-    left: -220px;
-    width: 220px;
     height: 130%;
 }
 
@@ -164,4 +162,9 @@ Nav Panel
     padding-left: 20px;
     padding-top: 21px;
     padding-right: 14px;
+}
+
+.topic-container-inner {
+    float: left;
+    width: 200px;
 }
