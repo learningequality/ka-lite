@@ -167,4 +167,5 @@ Nav Panel
 .topic-container-inner {
     float: left;
     width: 200px;
+    border-right: 2px solid #385428;
 }

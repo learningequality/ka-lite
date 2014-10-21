@@ -200,10 +200,11 @@ window.TopicContainerInnerView = Backbone.View.extend({
         this.$el.html(this.template(this.model.attributes));
 
         this.$(".sidebar").slimScroll({
-            color: "#033000",
-            size: "8px",
-            distance: "2px",
-            disableFadeOut: true
+            color: "#083505",
+            opacity: 0.2,
+            size: "6px",
+            distance: "1px",
+            alwaysVisible: true
         });
 
         // resize the scrollable part of sidebar to the page height
@@ -223,7 +224,8 @@ window.TopicContainerInnerView = Backbone.View.extend({
     },
 
     update_level_color: function() {
-        this.$el.css("opacity", this.options.level / this.state_model.get("levels"));
+        var opacity = (this.options.level+1) / (this.state_model.get("levels")+1);
+        this.$el.css("opacity", opacity);
     },
 
     add_new_entry: function(entry) {
