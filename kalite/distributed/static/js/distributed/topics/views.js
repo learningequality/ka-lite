@@ -241,10 +241,6 @@ window.TopicContainerInnerView = Backbone.View.extend({
         this.model.get(this.entity_key).map(this.add_new_entry);
     },
 
-    load_entry_progress: function() {
-
-    },
-
     show: function() {
         this.$el.show();
     },
