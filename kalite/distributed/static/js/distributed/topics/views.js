@@ -270,6 +270,12 @@ window.TopicContainerInnerView = Backbone.View.extend({
         return _.find(this.model.get(this.entity_key).models, function(model) {return model.get("slug")==slug;});
     },
 
+    close: function() {
+        _.each(this._entry_views, function(view) {
+            view.model.set("active", false);
+        });
+        this.remove();
+    },
 
     item_clicked: function(view) {
 
@@ -282,16 +288,17 @@ window.TopicContainerInnerView = Backbone.View.extend({
             // only trigger an entry_requested event if the item wasn't already active
             if (!view.model.get("active")) {
                 this.trigger("entry_requested", view.model);
-
             }
-            // mark the clicked view as active, and unmark all the others
-            _.each(this._entry_views, function(v) {
-                if (v.model.get("active")) {
-                    window.router.url_back();
-                }
-                v.model.set("active", v == view);
-            });
         }
+
+        // mark the clicked view as active, and unmark all the others
+        // TODO-BLOCKER(jamalex): this needs to be applied on nav, so it's visible on page load, also
+        _.each(this._entry_views, function(v) {
+            // if (v.model.get("active")) {
+            //     window.router.url_back();
+            // }
+            v.model.set("active", v == view);
+        });
 
         window.router.add_slug(view.model.get("slug"));
     },
@@ -488,7 +495,7 @@ window.TopicContainerOuterView = Backbone.View.extend({
     back_to_parent: function() {
         // Simply pop the first in the stack and show the next one
         this.inner_views[0].move_back();
-        this.inner_views[0].remove();
+        this.inner_views[0].close();
         this.inner_views.shift();
         this.inner_views[0].show();
         window.router.url_back();
