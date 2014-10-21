@@ -1,14 +1,18 @@
 TopicRouter = Backbone.Router.extend({
     initialize: function(options) {
-        this.control_view = options.control_view;
+        this.control_view = new SidebarView({
+                channel: options.channel,
+                entity_key: "children",
+                entity_collection: TopicCollection
+        });
     },
 
     routes: {
-        "(:domain/)(:subject/)(:topic/)(:tutorial/)(:content/)":    "navigate_topics"
+        "*splat":    "navigate_topics"
     },
 
-    navigate_topics: function() {
-        this.control_view.navigate_paths(arguments);
+    navigate_topics: function(splat) {
+        this.control_view.navigate_paths((splat || "").split("/"));
     },
 
     add_slug: function(slug) {
@@ -21,5 +25,15 @@ TopicRouter = Backbone.Router.extend({
         if (fragments.length > 0) {
             this.navigate(fragments.slice(0,-1).join("/") + "/");
         }
+    }
+});
+
+ChannelRouter = Backbone.Router.extend({
+    routes: {
+        ":channel/":    "navigate_channel"
+    },
+
+    navigate_channel: function(channel) {
+        window.topic_router = this.topic_router = new TopicRouter(channel);
     }
 });

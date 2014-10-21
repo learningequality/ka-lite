@@ -185,7 +185,7 @@ def learn(request):
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "topics_url": "data/" + settings.CHANNEL + "/topics.json",
+        "topics_url": "data/%(channel_name)s/topics.json",
         "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
     }
     return context

@@ -51,11 +51,13 @@ window.SidebarView = Backbone.View.extend({
         "click .sidebar-tab": "toggle_sidebar"
     },
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
 
         _.bindAll(this);
+
+        this.channel = options.channel;
 
         this.state_model = new Backbone.Model({
             open: false
@@ -84,6 +86,7 @@ window.SidebarView = Backbone.View.extend({
         });
 
         this.topic_node_view = new TopicContainerOuter({
+            channel: this.channel,
             model: this.model,
             entity_key: this.options.entity_key,
             entity_collection: this.options.entity_collection
@@ -274,12 +277,12 @@ window.SidebarEntryView = Backbone.View.extend({
 
 window.TopicContainerOuter = Backbone.View.extend({
 
-    initialize: function() {
+    initialize: function(options) {
 
         _.bindAll(this);
 
         this.inner_views = [];
-        this.model =  this.model || new TopicNode();
+        this.model =  this.model || new TopicNode({channel: options.channel});
         this.model.fetch().then(this.render);
         this.content_view = new ContentAreaView({
             el: "#content-area"
@@ -345,8 +348,8 @@ window.TopicContainerOuter = Backbone.View.extend({
                     this.show_new_topic(node);
                 } else {
                     this.entry_requested(node);
-                    node.set("active", true);
                 }
+                node.set("active", true);
             }
         }
     },
@@ -357,7 +360,7 @@ window.TopicContainerOuter = Backbone.View.extend({
         this.inner_views[0].remove();
         this.inner_views.shift();
         this.inner_views[0].show();
-        window.router.url_back();
+        window.topic_router.url_back();
     },
 
     entry_requested: function(entry) {
@@ -427,19 +430,19 @@ window.PlaylistSidebarView = SidebarContentView.extend({
             // mark the clicked view as active, and unmark all the others
             _.each(this._entry_views, function(v) {
                 if (v.model.get("active")) {
-                    window.router.url_back();
+                    window.topic_router.url_back();
                 }
                 v.model.set("active", v == view);
             });
         }
 
-        window.router.add_slug(view.model.get("slug"));
+        window.topic_router.add_slug(view.model.get("slug"));
     },
 
     move_back: function() {
         for (i=0; i < this._entry_views.length; i++) {
             if(this._entry_views[i].model.get("active")) {
-                window.router.url_back();
+                window.topic_router.url_back();
             }
         }
     },

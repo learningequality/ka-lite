@@ -65,6 +65,7 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+        <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
     {% if load_perseus_assets %}
         <!-- START PERSEUS STUFF -->
         <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
@@ -77,7 +78,6 @@
         <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
         <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
         <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
-        <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
         <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
         <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
             <script>
@@ -139,14 +139,7 @@
 
     <script type="text/javascript">
         $(function() {
-            window.sidebar_view = new SidebarView({
-                entity_key: "children",
-                entity_collection: TopicCollection
-            });
-            $("#sidebar-container").append(sidebar_view.el);
-            window.router = new TopicRouter({
-                control_view: window.sidebar_view
-            });
+            window.channel_router = new ChannelRouter()
             Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
         });
     </script>
