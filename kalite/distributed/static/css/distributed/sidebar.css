@@ -45,7 +45,9 @@ to items you want to have the icon appear with.
 .icon-document:before {
     content: "\e605";
 }
-
+.sidebar-icon {
+    padding-right: 10px;
+}
 .sidebar-icon.partial {
     opacity: 0.45;
 }
@@ -85,7 +87,7 @@ Nav Panel
 }
 
 .panel li {
-    border-bottom: 2px solid #587448;
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);
 }
 
 .panel .sidebar-entry {
@@ -168,5 +170,5 @@ Nav Panel
 .topic-container-inner {
     float: left;
     width: 200px;
-    border-right: 2px solid #385428;
+    box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;
 }
