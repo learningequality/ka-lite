@@ -155,7 +155,7 @@
                               <a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}">
                                   <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
                               </a>
-                              <div class="pull-right visible-xs sitepoint" id="sitepoints-xs"></div>
+                              <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
                           </div>
                       </div>
                       <div class="collapse navbar-collapse">
@@ -232,12 +232,18 @@
                             <!-- Farthest right nav is logged in user dropdown -->
                             <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}">
                               <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown">
-                                  <span id="sitepoints">
+                                  <span id="username">
                                     <!-- Username injected here w/ js -->
                                   </span>
                                 <span class="caret"></span>
                               </a>
                               <ul class="dropdown-menu" role="menu">
+                                <li role="presentation">
+                                  <span id="points">
+                                    <!-- Points injected here w/ js -->
+                                  </span>
+                                </li>
+                                <li role="presentation" class="divider"></li>
                                 {# Student account management #}
                                 <li role="presentation" class="motivational-feature">
                                   <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">

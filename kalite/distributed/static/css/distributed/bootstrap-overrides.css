@@ -90,10 +90,20 @@ input[type="submit"] {
     margin-top: 3px;
     top: -1px;
 }
+#points {
+    margin-left: 20px;
+}
+.navbar ul li a:hover,
 .navbar ul li a:focus,
 .navbar ul li a.active {
     background-color: white;
     border-bottom-color: white;
+}
+ul.dropdown-menu li a {
+    text-transform: none;
+}
+ul.dropdown-menu li a:hover {
+    background-color: rgb(237, 237, 237);
 }
 @media (min-width: 768px) {
     .navbar-right .dropdown-menu {
