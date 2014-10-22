@@ -88,8 +88,8 @@ input[type="submit"] {
     position: relative;
     border-bottom: none;
     margin-top: 3px;
+    top: -1px;
 }
-.navbar ul li a:hover, 
 .navbar ul li a:focus,
 .navbar ul li a.active {
     background-color: white;

@@ -71,6 +71,7 @@ Nav Panel
 }
 
 .panel {
+    margin-top: 55px;
     background: #5F832E;
     z-index: 9999;
     position: fixed;
