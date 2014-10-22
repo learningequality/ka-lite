@@ -450,27 +450,42 @@ window.TopicContainerOuterView = Backbone.View.extend({
     },
 
     navigate_paths: function(paths) {
-        paths = _.reject(paths, function(slug) {return slug===null;});
         for (i=0; i < paths.length; i++) {
-            var node = this.inner_views[0].node_by_slug(paths[i]);
-            if (node!==undefined) {
-                if (node.get("kind")==="Topic") {
-                    this.show_new_topic(node);
-                } else {
-                    this.entry_requested(node);
+            if (paths[i]!=="") {
+                var check_view = this.inner_views.slice(- (i + 2), this.inner_views.length - (i + 1))[0];
+                if (check_view!==undefined) {
+                    if (check_view.model.get("slug")==paths[i]) {
+                        continue;
+                    } else {
+                        check_view.model.set("active", false);
+                        this.remove_topic_views(this.inner_views.length - i - 1);
+                    }
                 }
-                node.set("active", true);
+                var node = this.inner_views[0].node_by_slug(paths[i]);
+                if (node!==undefined) {
+                    if (node.get("kind")==="Topic") {
+                        this.show_new_topic(node);
+                    } else {
+                        this.entry_requested(node);
+                    }
+                    node.set("active", true);
+                }
             }
         }
     },
 
+    remove_topic_views: function(number) {
+        for (var i=0; i < number; i++) {
+            this.inner_views[0].close();
+            this.inner_views.shift();
+        }
+        this.state_model.set("levels", this.state_model.get("levels") - number);
+    },
+
     back_to_parent: function() {
-        // Simply pop the first in the stack and show the next one
-        this.inner_views[0].close();
-        this.inner_views.shift();
-        this.inner_views[0].show();
+        this.remove_topic_views(1);
         window.channel_router.url_back();
-        this.state_model.set("levels", this.state_model.get("levels") - 1);
+        
     },
 
     entry_requested: function(entry) {

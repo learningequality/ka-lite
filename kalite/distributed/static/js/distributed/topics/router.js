@@ -19,6 +19,7 @@ ChannelRouter = Backbone.Router.extend({
                 entity_key: "children",
                 entity_collection: TopicCollection
             });
+            this.channel = channel;
         }
         this.control_view.navigate_paths((splat || "").split("/"));
     },
