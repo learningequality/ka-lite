@@ -475,6 +475,9 @@ window.TopicContainerOuterView = Backbone.View.extend({
     },
 
     remove_topic_views: function(number) {
+        if (number >= this.state_model.get("levels")) {
+            number = this.state_model.get("levels") -1;
+        }
         for (var i=0; i < number; i++) {
             this.inner_views[0].close();
             this.inner_views.shift();
