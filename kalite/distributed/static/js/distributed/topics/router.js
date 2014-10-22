@@ -1,21 +1,25 @@
-TopicRouter = Backbone.Router.extend({
+ChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
-        this.control_view = new SidebarView({
-                channel: options.channel,
-                entity_key: "children",
-                entity_collection: TopicCollection
-        });
-
-        if (options.splat!==undefined) {
-            this.navigate_topics(options.splat);
-        }
+        this.default_channel = options.default_channel;
     },
 
     routes: {
-        "*splat":    "navigate_topics"
+        "":   "navigate_default_channel",
+        ":channel/(*splat)":    "navigate_channel"
     },
 
-    navigate_topics: function(splat) {
+    navigate_default_channel: function() {
+        this.navigate(this.default_channel + "/", {trigger: true, replace: true});
+    },
+  
+    navigate_channel: function(channel, splat) {
+        if (this.channel!==channel) {
+            this.control_view = new SidebarView({
+                channel: channel,
+                entity_key: "children",
+                entity_collection: TopicCollection
+            });
+        }
         this.control_view.navigate_paths((splat || "").split("/"));
     },
 
@@ -29,15 +33,5 @@ TopicRouter = Backbone.Router.extend({
         if (fragments.length > 0) {
             this.navigate(fragments.slice(0,-1).join("/") + "/");
         }
-    }
-});
-
-ChannelRouter = Backbone.Router.extend({
-    routes: {
-        ":channel/(*splat)":    "navigate_channel"
-    },
-
-    navigate_channel: function(channel, splat) {
-        window.topic_router = this.topic_router = new TopicRouter({channel: channel, splat: splat});
     }
 });

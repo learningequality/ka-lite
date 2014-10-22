@@ -235,7 +235,6 @@ window.TopicContainerInnerView = Backbone.View.extend({
         var view = new SidebarEntryView({model: entry});
         this._entry_views.push(view);
         this.$(".sidebar").append(view.render().$el);
-        this.listenTo(view, "clicked", this.item_clicked);
         this.load_entry_progress();
     },
 
@@ -276,41 +275,10 @@ window.TopicContainerInnerView = Backbone.View.extend({
         this.remove();
     },
 
-    item_clicked: function(view) {
-
-        // if the clicked item is already active, there's nothing to do
-        if (view.model.get("active")) {
-            return;
-        }
-
-        this.state_model.set("current_level", this.options.level);
-
-        if (view.model.get("kind")=="Topic") {
-            this.trigger('topic_node_clicked', view.model);
-        } else {
-            this.hide_sidebar();
-            this.trigger("entry_requested", view.model);
-            // if we've already selected something at the content level, go back first
-            _.each(this._entry_views, function(v) {
-                if (v.model.get("active")) {
-                    window.topic_router.url_back();
-                }
-            });
-        }
-
-        // mark the clicked view as active, and unmark all the others
-        // TODO-BLOCKER(jamalex): this needs to be applied on nav, so it's visible on page load, also
-        _.each(this._entry_views, function(v) {
-            v.model.set("active", v == view);
-        });
-
-        window.topic_router.add_slug(view.model.get("slug"));
-    },
-
     move_back: function() {
         for (i=0; i < this._entry_views.length; i++) {
             if(this._entry_views[i].model.get("active")) {
-                window.topic_router.url_back();
+                window.channel_router.url_back();
             }
         }
     },
@@ -399,7 +367,9 @@ window.SidebarEntryView = Backbone.View.extend({
 
     clicked: function(ev) {
         ev.preventDefault();
-        this.trigger("clicked", this);
+        if (!this.model.get("active")) {
+            window.channel_router.navigate(this.model.get("path"), {trigger: true});
+        }
         return false;
     },
 
@@ -439,8 +409,6 @@ window.TopicContainerOuterView = Backbone.View.extend({
         this.$el.append(new_topic.el);
 
         // Listeners
-        this.listenTo(new_topic, "entry_requested", this.entry_requested);
-        this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
@@ -498,11 +466,10 @@ window.TopicContainerOuterView = Backbone.View.extend({
 
     back_to_parent: function() {
         // Simply pop the first in the stack and show the next one
-        this.inner_views[0].move_back();
         this.inner_views[0].close();
         this.inner_views.shift();
         this.inner_views[0].show();
-        window.topic_router.url_back();
+        window.channel_router.url_back();
         this.state_model.set("levels", this.state_model.get("levels") - 1);
     },
 
@@ -546,6 +513,7 @@ window.TopicContainerOuterView = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
         }
+        this.hide_sidebar();
     },
 
     hide_sidebar: function() {
