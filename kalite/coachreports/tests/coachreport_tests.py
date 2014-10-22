@@ -1,19 +1,88 @@
+import json
+
 from datetime import datetime
 
 from kalite.main.models import AttemptLog
-from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins, StudentProgressMixin
+from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, CreateZoneMixin, \
+    FacilityMixins, StudentProgressMixin
 
+from selenium.common.exceptions import NoSuchElementException
 
 from kalite.student_testing.models import TestLog
 from kalite.testing import KALiteTestCase
 
 
+
+class TestTabularView(FacilityMixins,
+                      StudentProgressMixin,
+                      BrowserActionMixins,
+                      CreateZoneMixin,
+                      CreateAdminMixin,
+                      KALiteBrowserTestCase,
+                      KALiteTestCase):
+
+    def setUp(self):
+        super(TestTabularView, self).setUp()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
+
+        self.api_facility_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "facility"})
+        self.api_group_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "group"})
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.facility = self.create_facility()
+
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.empty_group = self.create_group(name='empty_group', facility=self.facility)
+
+    def test_user_interface(self):
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('tabular_view'))
+        self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
+        self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
+
+        # test facilities
+        facility_select = self.browser.find_element_by_id("facility-select")
+        for option in facility_select.find_elements_by_tag_name('option'):
+            if option.text == "facility1":
+                option.click()
+
+        group_select = self.browser.find_element_by_id("group-select")
+        for option in group_select.find_elements_by_tag_name('option'):
+            option.click()
+
+        topic_select = self.browser.find_element_by_id("topic")
+        for option in topic_select.find_elements_by_tag_name('option'):
+                option.click()
+
+    def test_facility_endpoint(self):
+        self.client.login(username='admin', password='admin')
+        facility_resp = json.loads(self.client.get(self.api_facility_url + "?zone_id=" + self.zone.id).content)
+        objects = facility_resp.get("objects")
+        self.assertEqual(len(objects), 1, "API response incorrect")
+        self.assertEqual(objects[0]["name"], "facility1", "API response incorrect")
+        self.client.logout()
+
+    def test_group_endpoint(self):
+        self.client.login(username='admin', password='admin')
+        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
+        objects = group_resp.get("objects")
+        self.assertEqual(len(objects), 2, "API response incorrect")
+        self.assertEqual(objects[0]["name"], "group1", "API response incorrect")
+        self.assertEqual(objects[1]["name"], "empty_group", "API response incorrect")
+        self.client.logout()
+
+
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
+                      CreateZoneMixin,
                       CreateAdminMixin,
-                      KALiteBrowserTestCase):
+                      KALiteBrowserTestCase,
+                      KALiteTestCase):
 
     def setUp(self):
         super(TestReportTests, self).setUp()
@@ -21,6 +90,7 @@ class TestReportTests(FacilityMixins,
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
         self.facility = self.create_facility()
+
 
     def test_student_scores_display(self):
         """
