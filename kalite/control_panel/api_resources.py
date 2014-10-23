@@ -260,12 +260,12 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
         queryset = StoreTransactionLog.objects.all()
         resource_name = 'store_transaction_log_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = ['signed_version', 'counter', 'signature']
+        excludes = ['signed_version', 'counter', 'signature', 'deleted', 'reversible']
         serializer = CSVSerializer()
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
-        store_logs = StoreTransactionLog.objects.filter(user__id__in=self._facility_users.keys())
+        store_logs = StoreTransactionLog.objects.filter(user__id__in=self._facility_users.keys()).exclude(context_type="unit_points_reset")
         return super(StoreTransactionLogResource, self).authorized_read_list(store_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
@@ -274,9 +274,11 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
             bundle.data["user_id"] = user_id
+            bundle.data["person_name"] = user.first_name + " " + user.last_name
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["item"] = bundle.data["item"].strip("/").split("/")[-1]
             bundle.data.pop("user")
 
         return to_be_serialized
