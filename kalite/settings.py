@@ -28,7 +28,7 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 CENTRAL_SERVER = False  # Hopefully will be removed soon.
 
-BUILT = getattr(local_settings, False)  # whether this installation was processed by the build server
+BUILT = getattr(local_settings, "BUILT", False)  # whether this installation was processed by the build server
 
 
 ##############################
