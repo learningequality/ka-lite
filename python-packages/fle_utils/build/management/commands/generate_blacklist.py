@@ -35,7 +35,7 @@ def get_app_subdirectory_paths(subdir):
 def get_paths_matching_pattern(pattern, starting_directory=KA_LITE_PATH):
     paths = []
     for root, dirs, files in os.walk(KA_LITE_PATH):
-        root = make_path_relative(root)
+        # root = make_path_relative(root)
         paths += [os.path.join(root, d) for d in dirs if fnmatch.fnmatch(d, pattern)]
         paths += [os.path.join(root, f) for f in files if fnmatch.fnmatch(f, pattern)]
     return paths
@@ -101,6 +101,8 @@ def get_blacklist(removeunused=False, exclude_patterns=[], removestatic=False, r
         blacklist += get_paths_matching_pattern("khan-exercises")
         blacklist += get_paths_matching_pattern("perseus")
 
+    # I want my paths absolute
+    blacklist = [os.path.abspath(path) for path in blacklist]
     return blacklist
 
 
