@@ -475,6 +475,15 @@ div.exercises-card {
     text-overflow: ellipsis;
 }
 
+.info-box.related-content {
+    padding: 10px;
+    margin: 10px;
+    height: 100px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .basic-form label {
     font-weight: bold;
     padding-right: 12px;

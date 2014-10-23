@@ -1,14 +1,27 @@
-TopicRouter = Backbone.Router.extend({
+ChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
-        this.control_view = options.control_view;
+        this.default_channel = options.default_channel;
     },
 
     routes: {
-        "(:domain/)(:subject/)(:topic/)(:tutorial/)(:content/)":    "navigate_topics"
+        "":   "navigate_default_channel",
+        ":channel/(*splat)":    "navigate_channel"
     },
 
-    navigate_topics: function() {
-        this.control_view.navigate_paths(arguments);
+    navigate_default_channel: function() {
+        this.navigate(this.default_channel + "/", {trigger: true, replace: true});
+    },
+  
+    navigate_channel: function(channel, splat) {
+        if (this.channel!==channel) {
+            this.control_view = new SidebarView({
+                channel: channel,
+                entity_key: "children",
+                entity_collection: TopicCollection
+            });
+            this.channel = channel;
+        }
+        this.control_view.navigate_paths((splat || "").split("/"));
     },
 
     add_slug: function(slug) {

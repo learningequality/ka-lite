@@ -51,11 +51,13 @@ window.SidebarView = Backbone.View.extend({
         "click .sidebar-tab": "toggle_sidebar"
     },
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
 
         _.bindAll(this);
+
+        this.channel = options.channel;
 
         this.state_model = new Backbone.Model({
             open: false,
@@ -86,6 +88,7 @@ window.SidebarView = Backbone.View.extend({
         });
 
         this.topic_node_view = new TopicContainerOuterView({
+            channel: this.channel,
             model: this.model,
             entity_key: this.options.entity_key,
             entity_collection: this.options.entity_collection,
@@ -234,7 +237,6 @@ window.TopicContainerInnerView = Backbone.View.extend({
         var view = new SidebarEntryView({model: entry});
         this._entry_views.push(view);
         this.$(".sidebar").append(view.render().$el);
-        this.listenTo(view, "clicked", this.item_clicked);
         this.load_entry_progress();
     },
 
@@ -275,41 +277,10 @@ window.TopicContainerInnerView = Backbone.View.extend({
         this.remove();
     },
 
-    item_clicked: function(view) {
-
-        // if the clicked item is already active, there's nothing to do
-        if (view.model.get("active")) {
-            return;
-        }
-
-        this.state_model.set("current_level", this.options.level);
-
-        if (view.model.get("kind")=="Topic") {
-            this.trigger('topic_node_clicked', view.model);
-        } else {
-            this.hide_sidebar();
-            this.trigger("entry_requested", view.model);
-            // if we've already selected something at the content level, go back first
-            _.each(this._entry_views, function(v) {
-                if (v.model.get("active")) {
-                    window.router.url_back();
-                }
-            });
-        }
-
-        // mark the clicked view as active, and unmark all the others
-        // TODO-BLOCKER(jamalex): this needs to be applied on nav, so it's visible on page load, also
-        _.each(this._entry_views, function(v) {
-            v.model.set("active", v == view);
-        });
-
-        window.router.add_slug(view.model.get("slug"));
-    },
-
     move_back: function() {
         for (i=0; i < this._entry_views.length; i++) {
             if(this._entry_views[i].model.get("active")) {
-                window.router.url_back();
+                window.channel_router.url_back();
             }
         }
     },
@@ -398,7 +369,9 @@ window.SidebarEntryView = Backbone.View.extend({
 
     clicked: function(ev) {
         ev.preventDefault();
-        this.trigger("clicked", this);
+        if (!this.model.get("active")) {
+            window.channel_router.navigate(this.model.get("path"), {trigger: true});
+        }
         return false;
     },
 
@@ -411,14 +384,14 @@ window.SidebarEntryView = Backbone.View.extend({
 
 window.TopicContainerOuterView = Backbone.View.extend({
 
-    initialize: function() {
+    initialize: function(options) {
 
         _.bindAll(this);
 
         this.state_model = this.options.state_model;
 
         this.inner_views = [];
-        this.model =  this.model || new TopicNode();
+        this.model =  this.model || new TopicNode({channel: options.channel});
         this.model.fetch().then(this.render);
         this.content_view = new ContentAreaView({
             el: "#content-area"
@@ -438,8 +411,6 @@ window.TopicContainerOuterView = Backbone.View.extend({
         this.$el.append(new_topic.el);
 
         // Listeners
-        this.listenTo(new_topic, "entry_requested", this.entry_requested);
-        this.listenTo(new_topic, 'topic_node_clicked', this.show_new_topic);
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
@@ -481,28 +452,45 @@ window.TopicContainerOuterView = Backbone.View.extend({
     },
 
     navigate_paths: function(paths) {
-        paths = _.reject(paths, function(slug) {return slug===null;});
         for (i=0; i < paths.length; i++) {
-            var node = this.inner_views[0].node_by_slug(paths[i]);
-            if (node!==undefined) {
-                if (node.get("kind")==="Topic") {
-                    this.show_new_topic(node);
-                } else {
-                    this.entry_requested(node);
+            if (paths[i]!=="") {
+                var check_view = this.inner_views.slice(- (i + 2), this.inner_views.length - (i + 1))[0];
+                if (check_view!==undefined) {
+                    if (check_view.model.get("slug")==paths[i]) {
+                        continue;
+                    } else {
+                        check_view.model.set("active", false);
+                        this.remove_topic_views(this.inner_views.length - i - 1);
+                    }
+                }
+                var node = this.inner_views[0].node_by_slug(paths[i]);
+                if (node!==undefined) {
+                    if (node.get("kind")==="Topic") {
+                        this.show_new_topic(node);
+                    } else {
+                        this.entry_requested(node);
+                    }
                     node.set("active", true);
                 }
             }
         }
     },
 
+    remove_topic_views: function(number) {
+        if (number >= this.state_model.get("levels")) {
+            number = this.state_model.get("levels") -1;
+        }
+        for (var i=0; i < number; i++) {
+            this.inner_views[0].close();
+            this.inner_views.shift();
+        }
+        this.state_model.set("levels", this.state_model.get("levels") - number);
+    },
+
     back_to_parent: function() {
-        // Simply pop the first in the stack and show the next one
-        this.inner_views[0].move_back();
-        this.inner_views[0].close();
-        this.inner_views.shift();
-        this.inner_views[0].show();
-        window.router.url_back();
-        this.state_model.set("levels", this.state_model.get("levels") - 1);
+        this.remove_topic_views(1);
+        window.channel_router.url_back();
+        
     },
 
     entry_requested: function(entry) {
@@ -545,6 +533,7 @@ window.TopicContainerOuterView = Backbone.View.extend({
                 this.content_view.show_view(view);
                 break;
         }
+        this.hide_sidebar();
     },
 
     hide_sidebar: function() {
@@ -555,4 +544,3 @@ window.TopicContainerOuterView = Backbone.View.extend({
         this.trigger("showSidebar");
     }
 });
-
