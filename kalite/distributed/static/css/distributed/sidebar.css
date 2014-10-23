@@ -181,6 +181,7 @@ Nav Panel
     line-height: 1.1em; 
     margin-top: 15px;
     color: #A3CCA3; 
+    word-wrap: break-word;
 }
 
 .sidebar-entry-header {

@@ -46,6 +46,9 @@ Handlebars.registerHelper("_", function(i18n_key) {
 
 // from https://gist.github.com/TastyToast/5053642
 Handlebars.registerHelper ('truncate', function (str, len) {
+    if (!str) {
+        return "";
+    }
     if (str.length > len && str.length > 0) {
         var new_str = str + " ";
         new_str = str.substr (0, len);
