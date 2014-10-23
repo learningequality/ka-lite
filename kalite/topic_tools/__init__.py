@@ -113,20 +113,13 @@ def get_knowledgemap_topics(force=False):
 
 CONTENT          = {}
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False, kind="all"):
+def get_content_cache(force=False):
     global CONTENT, CONTENT_FILEPATH
 
-    allowed_types = ["Document", "Audio", "all"]
-    assert kind in allowed_types, "Invalid kind %s given to get_content_cache" % kind
-
-    if not CONTENT.get(kind) or force:
-        CONTENT["all"] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
-
-        if kind != "all":
-           CONTENT[kind] = dict((k, v) for k, v in CONTENT["all"].iteritems() if v["kind"] == kind)
-
-
-    return CONTENT[kind]
+    if CONTENT is None or force:
+        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
+ 
+    return CONTENT
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -260,8 +253,7 @@ def generate_node_cache(topictree=None):
 
     node_cache["Exercise"] = get_exercise_cache()
     node_cache["Video"] = get_video_cache()
-    node_cache["Document"] = get_content_cache(kind="Document")
-    node_cache["Video"] = get_content_cache(kind="Audio")
+    node_cache["Content"] = get_content_cache()
 
     return node_cache
 
