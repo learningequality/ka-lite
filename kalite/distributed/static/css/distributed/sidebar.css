@@ -172,3 +172,20 @@ Nav Panel
     width: 200px;
     box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;
 }
+
+.topic-container-inner .sidebar-description {
+    display: none;
+}
+
+.topic-container-inner:last-child {
+    width: 300px;
+}
+.topic-container-inner:last-child .sidebar-description {
+    display: block;
+    line-height: 1.1em; 
+    max-height: 4em;
+    margin-top: 5px;
+    color: #A3CCA3; 
+    overflow:hidden; 
+    text-overflow: ellipsis; 
+}

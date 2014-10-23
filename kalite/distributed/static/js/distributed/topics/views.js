@@ -111,7 +111,9 @@ window.SidebarView = Backbone.View.extend({
         var current_level = this.state_model.get("current_level");
         // TODO(jamalex): have this calculated dynamically
         var column_width = 200; // this.$(".topic-container-inner").width();
-        var new_width = current_level * column_width + 10;
+        // hack to give the last child of .topic-container-inner to be 1.5 times the 
+        // width of their parents. 
+        var new_width = (0.5+current_level) * column_width + 10;
         this.$(".panel").width(new_width);
         this.$(".sidebar-tab").css({left: new_width});
     },
