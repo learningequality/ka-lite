@@ -276,7 +276,7 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
             bundle.data["user_id"] = user_id
-            bundle.data["person_name"] = user.first_name + " " + user.last_name
+            bundle.data["person_name"] = user.get_name()
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
