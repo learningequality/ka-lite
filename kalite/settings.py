@@ -16,7 +16,6 @@ def package_selected(package_name):
 ##############################
 # Basic setup
 ##############################
-
 try:
     from local_settings import *
     import local_settings
@@ -28,6 +27,8 @@ except ImportError:
 DEBUG          = getattr(local_settings, "DEBUG", False)
 
 CENTRAL_SERVER = False  # Hopefully will be removed soon.
+
+BUILT = getattr(local_settings, False)  # whether this installation was processed by the build server
 
 
 ##############################
@@ -103,10 +104,15 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
-    "fle_utils.testing",
-    "kalite.testing",
     "kalite.distributed",
-) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+)
+
+if not BUILT:
+    INSTALLED_APPS += (
+        "fle_utils.testing",
+        "kalite.testing",
+    ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
     "django_snippets.session_timeout_middleware.SessionIdleTimeout",
