@@ -28,9 +28,6 @@ DEBUG          = getattr(local_settings, "DEBUG", False)
 
 CENTRAL_SERVER = False  # Hopefully will be removed soon.
 
-BUILT = getattr(local_settings, "BUILT", False)  # whether this installation was processed by the build server
-
-
 ##############################
 # Basic setup of logging
 ##############################
@@ -51,6 +48,9 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Not really a Django setting, but we treat it like one--it's eeeeverywhere.
 PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
+
+BUILD_INDICATOR_FILE = os.path.join(PROJECT_PATH, "_built.touch")
+BUILT = os.path.exists(BUILD_INDICATOR_FILE)  # whether this installation was processed by the build server
 
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])

@@ -29,9 +29,6 @@ if __name__ == "__main__":
     ]
     sys.path = [os.path.realpath(p) for p in PROJECT_PYTHON_PATHS] + sys.path
 
-    import settings
-
-
     ########################
     # kaserve
     ########################
