@@ -111,7 +111,7 @@ def get_knowledgemap_topics(force=False):
         KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=False)
     return KNOWLEDGEMAP_TOPICS
 
-CONTENT          = {}
+CONTENT          = None
 CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False):
     global CONTENT, CONTENT_FILEPATH
