@@ -87,6 +87,7 @@ def get_blacklist(removeunused=False, exclude_patterns=[], removestatic=False, r
         blacklist += [
             "kalite/static/khan-exercises/test",
             "python-packages/selenium",
+            "kalite/testing",
         ]
 
     if removei18n:
