@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from kalite.student_testing.models import TestLog
 from kalite.testing import KALiteTestCase
-
+import time
 class TestApiDropdown(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -94,54 +94,85 @@ class TestScatterReport(FacilityMixins,
         self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
 
 
-class TestTabularView(FacilityMixins,
-                      StudentProgressMixin,
-                      BrowserActionMixins,
-                      CreateZoneMixin,
-                      CreateAdminMixin,
-                      KALiteBrowserTestCase,
-                      KALiteTestCase):
+class CoachNavigationTest(FacilityMixins,
+                          StudentProgressMixin,
+                          BrowserActionMixins,
+                          CreateZoneMixin,
+                          CreateAdminMixin,
+                          KALiteBrowserTestCase,
+                          KALiteTestCase):
 
     def setUp(self):
-        super(TestTabularView, self).setUp()
+        super(CoachNavigationTest, self).setUp()
 
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
-        self.facility = self.create_facility()
 
-        self.api_facility_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "facility"})
-        self.api_group_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "group"})
-        self.zone = self.create_zone()
-        self.device_zone = self.create_device_zone(self.zone)
+    def test_case1(self):
+        """
+        Test Case  Scenario
+            Facilities       Groups             Student
+            -------------------------------------------
+            facility1      group1              student2
+                           group2              student3
+            default        Ungrouped           student1
+        1. Test a facility have a facility user and under a facility group.
+        2. Test a facility user that belongs on a ungroup user.
+        """
         self.facility = self.create_facility()
-
+        self.facility_name = "default"
+        self.default_facility = self.create_facility(name=self.facility_name)
         self.group = self.create_group(name='group1', facility=self.facility)
-        self.empty_group = self.create_group(name='empty_group', facility=self.facility)
-
-    def test_user_interface(self):
+        self.group2 = self.create_group(name='group2', facility=self.facility)
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('tabular_view'))
-        self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
-        self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
+        self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
+                                            facility=self.default_facility)
+        self.student2 = self.create_student(first_name="I", last_name="student2",
+                                            group=self.group, username="boo", facility=self.facility)
+        self.student3 = self.create_student(first_name="I", last_name="student3",
+                                            group=self.group, username="boo", facility=self.facility)
 
-        # test facilities
+        facility_list = ['All', 'default', 'facility1']
         facility_select = self.browser.find_element_by_id("facility-select")
-        for option in facility_select.find_elements_by_tag_name('option'):
-            option.click()
-            break
+        for facility_option in facility_select.find_elements_by_tag_name('option'):
+            self.assertIn(facility_option.text, facility_list, "API error")
 
+        group_list = ['All', 'group1', 'group2', 'Ungrouped']
         group_select = self.browser.find_element_by_id("group-select")
-        for option in group_select.find_elements_by_tag_name('option'):
-            option.click()
+        for group_option in group_select.find_elements_by_tag_name('option'):
+            self.assertIn(group_option.text, group_list, "API error")
 
+    def test_case2(self):
+        """
+        Test Case  Scenario
+            Facilities       Groups             Student
+            -------------------------------------------
+            default          Ungrouped         student2
+                                               student3
+                                               student1
+        Test when a facility dont have any group and there is a existing facility user.
+        """
+        self.facility = self.create_facility()
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('tabular_view'))
+        self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
+                                            facility=self.facility)
+        self.student2 = self.create_student(first_name="I", last_name="student2",
+                                            username="boo", facility=self.facility)
+        self.student3 = self.create_student(first_name="I", last_name="student3",
+                                            username="boo", facility=self.facility)
+
+        facility_list = ['All', 'default', 'facility1']
+        facility_select = self.browser.find_element_by_id("facility-select")
+        for facility_option in facility_select.find_elements_by_tag_name('option'):
+            self.assertIn(facility_option.text, facility_list, "API error")
+
+        group_list = ['Ungrouped', 'No groups']
+        group_select = self.browser.find_element_by_id("group-select")
+        for group_option in group_select.find_elements_by_tag_name('option'):
+            self.assertIn(group_option.text, group_list, "API error")
         self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
-
-
-        topic_select = self.browser.find_element_by_id("topic")
-        for option in topic_select.find_elements_by_tag_name('option'):
-            option.click()
-            break
-
 
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
