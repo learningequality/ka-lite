@@ -13,6 +13,7 @@ from kalite.student_testing.models import TestLog
 from securesync.models import Zone, Device, SyncSession
 
 from .api_serializers import CSVSerializer
+from store.models import StoreItem 
 
 
 class FacilityResource(ModelResource):
@@ -270,6 +271,7 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
         """Add username, facility name, and facility ID to responses"""
+        store_items = StoreItem.all()
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
@@ -278,7 +280,10 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
-            bundle.data["item"] = bundle.data["item"].strip("/").split("/")[-1]
+            item_id = bundle.data["item"].strip("/").split("/")[-1]
+            bundle.data["item"] = item_id
+            item = store_items.get(item_id)
+            bundle.data["item_name"] = item.title if item else None
             bundle.data.pop("user")
 
         return to_be_serialized
