@@ -119,6 +119,13 @@ window.SidebarView = Backbone.View.extend({
         var new_width = (0.5+current_level) * column_width + 10;
         this.$(".panel").width(new_width);
         this.$(".sidebar-tab").css({left: new_width});
+
+        // TODO(dylanjbarth): Resize sidebar to not cover top nav
+        // var body = document.body, html = document.documentElement;
+        // var height = Math.max(body.scrollHeight, body.offsetHeight, 
+        //                html.clientHeight, html.scrollHeight, html.offsetHeight)
+
+        // this.$(".panel").height(height - 55); // minus height of top nav
     },
 
     toggle_sidebar: function(ev) {

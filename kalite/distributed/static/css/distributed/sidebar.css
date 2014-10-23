@@ -47,6 +47,9 @@ to items you want to have the icon appear with.
 }
 .sidebar-icon {
     padding-right: 10px;
+    background-color: rgba(219, 219, 219, 0.19);
+    border-radius: 6px;
+    padding: 7px;
 }
 .sidebar-icon.partial {
     opacity: 0.45;
@@ -56,7 +59,7 @@ to items you want to have the icon appear with.
     opacity: 0.15;
 }
 
-.sidebar-text.complete {
+.sidebar-title.complete {
     opacity: 0.45;
 }
 
@@ -65,15 +68,8 @@ Nav Panel
 ======================================
 */
 
-.sidebar-entry-title {
-    display: block;
-    float: left;
-    width: 145px;
-    padding-left: 8px;
-}
-
 .panel {
-    margin-top: 55px;
+    
     background: #5F832E;
     z-index: 9999;
     position: fixed;
@@ -167,25 +163,50 @@ Nav Panel
     padding-right: 14px;
 }
 
+/* Sidebar panel & entry styling */
 .topic-container-inner {
     float: left;
     width: 200px;
     box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;
 }
-
-.topic-container-inner .sidebar-description {
-    display: none;
-}
-
 .topic-container-inner:last-child {
     width: 300px;
 }
+.topic-container-inner .sidebar-topic-description {
+    display: none;
+}
+/* applied to all in outermost expanded panel */
 .topic-container-inner:last-child .sidebar-description {
     display: block;
     line-height: 1.1em; 
-    max-height: 4em;
-    margin-top: 5px;
+    margin-top: 15px;
     color: #A3CCA3; 
+}
+
+.sidebar-entry-header {
+    max-height: 2.5em;
+    margin-bottom: -10px;
+    margin-top: -10px;
+}
+.topic-container-inner:last-child .sidebar-entry-header {
+    margin-bottom: -10px;
+}
+.sidebar-entry-header > .sidebar-icon {
+    height: 100%;
+    margin-top: 2px;
+}
+.sidebar-entry-header > .sidebar-title {
+    line-height: 1em;
+    display: block;
+    white-space: nowrap;
     overflow:hidden; 
     text-overflow: ellipsis; 
+    padding-left: 8px;
+    padding-top: 13px;
+    padding-bottom: 5px;
+}
+.topic-container-inner:last-child .sidebar-entry-header > .sidebar-title {
+    display: block;
+    white-space: inherit;
+    text-overflow: inherit; 
 }
