@@ -226,6 +226,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
                     'path': node['path'],
                     'kind': node['kind'],
                     'available': node.get('available', True),
+                    'keywords': node.get('keywords', []),
                 }
             result[category_name][node_name] = relevant_data
 
