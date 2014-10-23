@@ -28,7 +28,8 @@ def get_app_subdirectory_paths(subdir):
         app = import_module(appname)
         subdirpath = os.path.join(os.path.dirname(upath(app.__file__)), subdir)
         if os.path.exists(subdirpath):
-            paths.append(make_path_relative(subdirpath))
+            # paths.append(make_path_relative(subdirpath))
+            paths.append(subdirpath)
     return paths
 
 
@@ -44,7 +45,7 @@ def get_paths_matching_pattern(pattern, starting_directory=KA_LITE_PATH):
 def get_paths_ending_with(substring, starting_directory=KA_LITE_PATH):
     paths = []
     for root, dirs, files in os.walk(KA_LITE_PATH):
-        root = make_path_relative(root)
+        # root = make_path_relative(root)
         paths += [os.path.join(root, d) for d in dirs if os.path.join(root, d).endswith(substring)]
         paths += [os.path.join(root, f) for f in files if os.path.join(root, f).endswith(substring)]
     return paths
