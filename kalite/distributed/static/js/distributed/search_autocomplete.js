@@ -60,7 +60,7 @@ function flattenNodes() {
 
 function fetchLocalOrRemote() {
     $("#search").focus(null);  // disable re-fetching
-    fetchTopicTree(CURRENT_LANGUAGE, _nodes == null); // only parse the json if _nodes == null (or if something changed)
+    fetchTopicTree(CURRENT_LANGUAGE, _nodes === null); // only parse the json if _nodes == null (or if something changed)
 }
 
 
@@ -69,6 +69,7 @@ $(document).ready(function() {
     $("#search").focus(fetchLocalOrRemote);
 
     $("#search").autocomplete({
+        autoFocus: true,
         minLength: 3,
         html: true,  // extension allows html-based labels
         source: function(request, response) {
@@ -78,7 +79,7 @@ $(document).ready(function() {
             var titles_filtered = $.ui.autocomplete.filter(_titles, request.term);
 
             // sort the titles again, since ordering was lost when we did autocomplete.filter
-            var node_type_ordering = ["video", "exercise", "topic"]; // custom ordering, with the last in the array appearing first
+            var node_type_ordering = ["video", "exercise", "content", "topic"]; // custom ordering, with the last in the array appearing first
             titles_filtered.sort(function(title1, title2) {
                 var node1 = _nodes[title1];
                 var node2 = _nodes[title2];
@@ -99,7 +100,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<li class='autocomplete autocomplete-" + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</li>";
+                var label = "<span class='autocomplete icon-" + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</span>&nbsp;";
                 results.push({
                     label: label,
                     value: node.title
@@ -111,7 +112,7 @@ $(document).ready(function() {
             // When they click a specific item, just go there (if we recognize it)
             var title = ui.item.value;
             if (_nodes && title in _nodes && _nodes[title]) {
-                window.location.href = _nodes[title].path;
+                window.location.href = "/learn/" + _nodes[title].path;
             } else {
                 show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
