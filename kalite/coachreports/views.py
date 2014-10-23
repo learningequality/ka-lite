@@ -184,7 +184,7 @@ def tabular_view(request, facility, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics()]
+    topics = [tid for tid in get_knowledgemap_topics() if report_type.title() in tid["contains"]]
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
     
@@ -233,11 +233,10 @@ def tabular_view(request, facility, report_type="exercise"):
     if report_type == "exercise":
         # Fill in exercises
         exercises = get_topic_exercises(topic_id=topic_id)
-        exercises = sorted(exercises, key=lambda e: (e["x_pos"], e["y_pos"]))
         context["exercises"] = exercises
 
         # More code, but much faster
-        exercise_names = [ex["name"] for ex in context["exercises"]]
+        exercise_names = [ex["id"] for ex in context["exercises"]]
         # Get students
         context["students"] = []
         exlogs = ExerciseLog.objects \

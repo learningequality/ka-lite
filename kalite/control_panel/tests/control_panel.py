@@ -27,12 +27,9 @@ class FacilityControlTests(FacilityMixins,
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
 
-        # assert that our facility exists
-        selector = 'tr[facility-id="%s"] > td > a.facility-delete-link > span' % self.fac.id
+        selector = '.facility-delete-link'
         self.browser_click_and_accept(selector, text=facility_name)
 
-        with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
 
     def test_teachers_have_no_facility_delete_button(self):
         facility_name = 'should-not-be-deleted'
@@ -46,10 +43,9 @@ class FacilityControlTests(FacilityMixins,
                                    facility_name=self.teacher.facility.name)
 
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
-        facility_row = self.browser.find_element_by_xpath('//tr[@facility-id="%s"]' % self.fac.id)
 
         with self.assertRaises(NoSuchElementException):
-            facility_row.find_element_by_xpath('//a[@class="facility-delete-link"]')
+            self.browser.find_element_by_xpath('//a[@class="facility-delete-link"]')
 
 
 class GroupControlTests(FacilityMixins,

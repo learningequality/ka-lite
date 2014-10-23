@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 from kalite.main.tests.base import MainTestCase
-from kalite.contentload.management.commands.channels import import_channel
+from kalite.contentload.management.commands.channels import import_channel, base
 
 from fle_utils.general import ensure_dir
 
@@ -65,8 +65,8 @@ class TestContentImportTopicTree(MainTestCase):
                 json.dump(data, f)
             data["kind"] = "Topic"
             data["children"] = []
-        data["path"] = os.path.join(path, filename)
         data["slug"] = filename
+        data["path"] = os.path.join(path, data["slug"])
         return data
 
     def recursively_create_nodes(self, node):
@@ -83,13 +83,37 @@ class TestContentImportTopicTree(MainTestCase):
     def recursively_test_nodes(self, source, generated):
         for key, value in source.items():
             if key != "children":
-                self.assertEqual(value, generated.get(key, ""))
+                if key == "slug" or key == "path":
+                    value = unicode(value.lower())
+                self.assertEqual(value, generated.get(key, ""), "{key} not equal to generated {key}, {value} not equal {genvalue}".format(key=key, value=value, genvalue=generated.get(key, "")))
             else:
                 generated["children"] = sorted(generated["children"], key=operator.itemgetter("slug"))
                 for i, node in enumerate(value):
                     self.recursively_test_nodes(node, generated.get(key, [])[i])
 
+    def recursively_find_nodes(self, node, key, value, cache):
+        if key in node:
+            if node[key] == value:
+                cache.append(node)
+        if "children" in node:
+            for child in node["children"]:
+                self.recursively_find_nodes(child, key, value, cache)
+
     def test_create_topic_tree(self):
+        slug = os.path.basename(self.tempdir)
+        topic_tree = {
+            "slug": slug,
+            "children": [],
+            "kind": "Topic",
+            "path": slug,
+        }
+        self.recursively_create_nodes(topic_tree)
+        import_channel.path = self.tempdir
+        generated_topic_tree, exercises, videos, assessment_items, content = import_channel.retrieve_API_data(self.channel)
+
+        self.recursively_test_nodes(topic_tree, generated_topic_tree)
+
+    def test_rebuild_topic_tree_not_delete_videos(self):
         topic_tree = {
             "slug": os.path.basename(self.tempdir),
             "children": [],
@@ -97,7 +121,14 @@ class TestContentImportTopicTree(MainTestCase):
             "path": os.path.basename(self.tempdir),
         }
         self.recursively_create_nodes(topic_tree)
-        import_channel.path = self.tempdir
-        generated_topic_tree, exercises, videos, assessment_items, content = import_channel.retrieve_API_data(self.channel)
+        node_cache = []
+        self.recursively_find_nodes(topic_tree, "kind", "Video", node_cache)
 
-        self.recursively_test_nodes(topic_tree, generated_topic_tree)
+        retrieve_API_data = lambda channel: (topic_tree, [], [], [], [])
+
+        topic_tree, exercises, videos, assessment_items, contents = base.rebuild_topictree(whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=import_channel.channel_data)
+
+        new_node_cache = []
+        self.recursively_find_nodes(topic_tree, "kind", "Video", new_node_cache)
+
+        self.assertEqual(node_cache, new_node_cache, "Rebuild Topictree deletes videos!")

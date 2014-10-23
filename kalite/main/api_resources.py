@@ -80,9 +80,9 @@ class VideoResource(Resource):
     # TODO(jamalex): this seems very un-DRY (since it's replicating all the model fields again). DRY it out!
     availability = fields.DictField(attribute='availability')
     description = fields.CharField(attribute='description')
-    download_urls = fields.DictField(attribute='download_urls')
+    download_urls = fields.DictField(attribute='download_urls', default={})
     dubs_available = fields.BooleanField(attribute='dubs_available')
-    duration = fields.IntegerField(attribute='duration')
+    duration = fields.IntegerField(attribute='duration', default=-1)
     id = fields.CharField(attribute='id')
     kind = fields.CharField(attribute='kind')
     on_disk = fields.BooleanField(attribute='on_disk')
@@ -93,7 +93,7 @@ class VideoResource(Resource):
     title = fields.CharField(attribute='title')
     video_id = fields.CharField(attribute='video_id')
     video_urls = fields.DictField(attribute='video_urls')
-    youtube_id = fields.CharField(attribute='youtube_id')
+    youtube_id = fields.CharField(attribute='youtube_id', default="no_youtube_id")
 
     class Meta:
         resource_name = 'video'
@@ -179,7 +179,7 @@ class ExerciseResource(Resource):
     all_assessment_items = fields.ListField(attribute='all_assessment_items')
     display_name = fields.CharField(attribute='display_name')
     description = fields.CharField(attribute='description')
-    y_pos = fields.IntegerField(attribute='y_pos')
+    y_pos = fields.IntegerField(attribute='y_pos', default=0)
     title = fields.CharField(attribute='title')
     prerequisites = fields.ListField(attribute='prerequisites')
     name = fields.CharField(attribute='name')
@@ -188,7 +188,7 @@ class ExerciseResource(Resource):
     parent_id = fields.CharField(attribute='parent_id', null=True)
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
-    x_pos = fields.IntegerField(attribute='x_pos')
+    x_pos = fields.IntegerField(attribute='x_pos', default=0)
     slug = fields.CharField(attribute='slug')
     exercise_id = fields.CharField(attribute='exercise_id')
     uses_assessment_items = fields.BooleanField(attribute='uses_assessment_items')
@@ -321,7 +321,7 @@ class Content:
         standard_fields = ["title", "description", "id", "author_name", "kind"]
 
         for k in standard_fields:
-            setattr(self, k, kwargs.pop(k, None))
+            setattr(self, k, kwargs.pop(k, ""))
 
         extra_fields = {}
 
@@ -332,6 +332,9 @@ class Content:
         self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.extra_fields = json.dumps(extra_fields)
         self.selected_language = lang_code
+        if self.description == "None":
+            self.description = ""
+
 
 
 class ContentResource(Resource):

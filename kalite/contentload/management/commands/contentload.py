@@ -48,15 +48,16 @@ def validate_data(topic_tree, node_cache, slug2id_map):
 
     # Validate all topics have leaves
     for topic in node_cache["Topic"].values():
-        if not topic_tools.get_topic_by_path(topic["path"], root_node=topic_tree).get("children"):
-            logging.warning("Could not find any children for topic %s\n" % (topic["path"]))
+        if not topic.get("children"):
+            logging.warning("Could not find any children for topic %s\n" % (topic["title"]))
 
     # Validate related content
     for content in node_cache["Content"].values():
-        cont = content.get("related_content", None)
-        if cont:
-            if cont["slug"] not in node_cache["Content"]:
-                logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["slug"], content["slug"]))
+        related = content.get("related_content", [])
+        if related:
+            for cont in related:
+                if cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Video"] and cont["id"] not in node_cache["Exercise"]:
+                    logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["id"], content["slug"]))
 
 def scrub_topic_tree(node_cache, channel_data):
     # Now, remove unnecessary values
@@ -104,7 +105,7 @@ class Command(NoArgsCommand):
 
         if options["import_files"]:
             channel_tools.path = options["import_files"]
-            if not channel_name:
+            if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
 
         channel_path = os.path.join(settings.CONTENT_DATA_PATH, slugify(unicode(channel_name)))

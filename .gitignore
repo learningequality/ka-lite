@@ -7,6 +7,7 @@
 *.pid
 *.prof
 *.pyc
+*.pyo
 *~
 *.sublime-*
 *.zip
@@ -28,6 +29,8 @@ writeup/
 /content/*.mp4
 /content/*.mp4.part
 /content/*.srt
+/content/*.mp3
+/content/*.pdf
 /data/logs
 /data/i18n
 /data/subtitles
@@ -38,6 +41,7 @@ writeup/
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media
+/kalite/main/static/data
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static

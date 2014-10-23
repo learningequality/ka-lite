@@ -40,6 +40,9 @@ CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
 
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
+
 
 # Globals that can be filled
 TOPICS          = None
@@ -47,7 +50,7 @@ CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, props=None):
     global TOPICS, TOPICS_FILEPATH
     if TOPICS is None or force:
-        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=True)
+        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=False)
         validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
 
         # Limit the memory footprint by unloading particular values
@@ -78,7 +81,7 @@ CACHE_VARS.append("EXERCISES")
 def get_exercise_cache(force=False):
     global EXERCISES, EXERCISES_FILEPATH
     if EXERCISES is None or force:
-        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=True)
+        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
 
     return EXERCISES
 
@@ -87,7 +90,7 @@ CACHE_VARS.append("VIDEOS")
 def get_video_cache(force=False):
     global VIDEOS, VIDEOS_FILEPATH
     if VIDEOS is None or force:
-        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=True)
+        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=False)
 
     return VIDEOS
 
@@ -96,7 +99,7 @@ CACHE_VARS.append("ASSESSMENT_ITEMS")
 def get_assessment_item_cache(force=False):
     global ASSESSMENT_ITEMS, ASSESSMENT_ITEMS_FILEPATH
     if ASSESSMENT_ITEMS is None or force:
-        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=True)
+        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=False)
 
     return ASSESSMENT_ITEMS
 
@@ -105,7 +108,7 @@ CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=True)
+        KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=False)
     return KNOWLEDGEMAP_TOPICS
 
 CONTENT          = {}
@@ -117,7 +120,7 @@ def get_content_cache(force=False, kind="all"):
     assert kind in allowed_types, "Invalid kind %s given to get_content_cache" % kind
 
     if not CONTENT.get(kind) or force:
-        CONTENT["all"] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=True)
+        CONTENT["all"] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
 
         if kind != "all":
            CONTENT[kind] = dict((k, v) for k, v in CONTENT["all"].iteritems() if v["kind"] == kind)
@@ -301,33 +304,15 @@ def get_topic_by_path(path, root_node=None):
     path_withslash = path + ("/" if not path.endswith("/") else "")
     path_noslash = path_withslash[:-1]
 
-    # Make sure the root fits
-    if not root_node:
-        root_node = get_topic_tree()
-    if path_withslash == root_node["path"] or path_noslash == root_node["path"]:
-        return root_node
-    elif not path_withslash.startswith(root_node["path"]):
-        return {}
+    if path_noslash:
+        slug = path_noslash.split("/")[-1]
+    else:
+        slug = "root"
 
-    # split into parts (remove trailing slash first)
-    parts = path_noslash[len(root_node["path"]):].split("/")
-    cur_node = root_node
-    for part in parts:
-        out_node = None
-        for child in cur_node["children"]:
-            if child["slug"]==part:
-                out_node = child
-        if not out_node:
-            logging.warn("No topic found for slug %(part)s in path %(path)s"
-                % {
-                    "part": part,
-                    "path": "/".join(parts),
-                })
-            break
-        else:
-            cur_node = out_node
+    cur_node = get_node_cache()["Topic"].get(slug, {})
 
-    return cur_node or {}
+
+    return cur_node
 
 
 def get_all_leaves(topic_node=None, leaf_type=None):
@@ -578,7 +563,7 @@ def get_video_data(request, video_id=None):
     video["selected_language"] = vid_lang
     video["dubs_available"] = len(video["availability"]) > 1
     video["title"] = _(video["title"])
-    video["description"] = _(video["description"])
+    video["description"] = _(video.get("description", ""))
     video["video_id"] = video["id"]
 
     return video

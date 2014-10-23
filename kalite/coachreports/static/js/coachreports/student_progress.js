@@ -26,6 +26,23 @@ var PlaylistProgressDetailCollection = Backbone.Collection.extend({
 
 // Views
 
+var PlaylistProgressDetailView = Backbone.View.extend({
+
+    template: HB.template('student_progress/playlist-progress-details'),
+
+    initialize: function() {
+        this.listenTo(this.collection, 'sync', this.render);
+    },
+
+    render: function() {
+        this.$el.html(this.template({
+            data: this.collection.models
+        }));
+
+        return this;
+    }
+});
+
 var PlaylistProgressView = Backbone.View.extend({
 
     template: HB.template('student_progress/playlist-progress-container'),
@@ -75,23 +92,6 @@ var PlaylistProgressView = Backbone.View.extend({
         // Show or hide details
         this.$(".expand-collapse").toggleClass("glyphicon-chevron-down glyphicon-chevron-up");
         this.$(".playlist-progress-details").slideToggle();
-    }
-});
-
-var PlaylistProgressDetailView = Backbone.View.extend({
-
-    template: HB.template('student_progress/playlist-progress-details'),
-
-    initialize: function() {
-        this.listenTo(this.collection, 'sync', this.render);
-    },
-
-    render: function() {
-        this.$el.html(this.template({
-            data: this.collection.models
-        }));
-
-        return this;
     }
 });
 

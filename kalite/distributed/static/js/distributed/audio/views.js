@@ -2,91 +2,147 @@ window.AudioPlayerView = ContentBaseView.extend({
 
     template: HB.template("audio/audio-player"),
 
-    initialize: function() {
-
-        this.possible_points = ds.distributed.points_per_audio || 750;
-
-        this.REQUIRED_PERCENT_FOR_FULL_POINTS = 0.95;
-
-        ContentBaseView.prototype.initialize.apply(this, arguments);
-
+    events: {
+        "click .play-pause": "play_pause_clicked",
+        "click .sm2-progress-track": "progress_track_clicked"
     },
 
     render: function() {
 
         this.$el.html(this.template(this.data_model.attributes));
 
-        this.audio_object = audiojs.create(this.$("audio"))[0];
+        this.initialize_sound_manager();
+    },
 
-        this.starting_points = this.log_model.get("points");
+    initialize_sound_manager: function() {
+        var self = this;
+        require(["SoundManager"], function(SoundManager) {
+            window.soundManager = SoundManager.soundManager;
+            window.soundManager.setup({
+              url: STATIC_URL + "soundmanager/",
+              preferFlash: false,
+              onready: self.create_audio_object
+            });
+        });
+    },
 
-        if ((this.log_model.get("last_percent") || 0) > 0) {
-            this.audio_object.skipTo(this.log_model.get("last_percent"));
-        }
-
-        this.log_model.set("views", this.log_model.get("views") + 1);
-
-        this.initialize_listeners();
-
-        this.points_view = new ContentPointsView({
-            model: this.log_model
+    create_audio_object: function () {
+        window.audio_object = this.audio_object = soundManager.createSound({
+            url: this.data_model.get("content_urls").stream,
+            onload: this.loaded.bind(this),
+            onplay: this.played.bind(this),
+            onresume: this.played.bind(this),
+            onpause: this.paused.bind(this),
+            onfinish: this.finished.bind(this),
+            whileplaying: this.progress.bind(this)
         });
 
-        this.points_view.render();
-
-        this.$(".audio-points-wrapper").append(this.points_view.el);
+        this.initialize_listeners();
     },
 
     initialize_listeners: function() {
 
         var self = this;
 
-        this.listenToDOM(this.audio_object.wrapper, "timeupdate", self.update_progress);
-        this.listenToDOM(this.audio_object.wrapper, "play", self.set_last_time);
+        this.$(".sm2-progress-ball").draggable({
+            axis: "x",
+            start: function() {
+                self.dragging = true;
+            },
+            stop: function(ev) {
+                self.dragging = false;
+                self.progress_track_clicked({offsetX: self.$(".sm2-progress-ball").position().left});
+            }
+        }).css("position", "absolute");
+
 
     },
 
-    update_progress: function(event) {
-        var time_now = new Date().getTime();
-        // In case of skipping around, only give credit for time actually passed.
-        // In case of skipping backwards, make sure time_watched is always non-negative.
-        var percent = event.percent;
-        var time_engaged = Math.max(0, Math.min(time_now - this.last_time, (percent - this.log_model.get("last_percent"))*this.audio_object.duration));
-        time_engaged = isNaN(time_engaged) ? 0 : time_engaged;
+    content_specific_progress: function(event) {
+
+        var percent = this.audio_object.position / this.audio_object.duration;
+
         this.log_model.set("last_percent", percent);
-        this.last_time = time_now;
-        var total_time = this.log_model.get("time_spent") + time_engaged;
-        if ((total_time/this.audio_object.duration - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
-            this.log_model.set_complete();
-            this.log_model.set({
-                time_spent: Math.max(this.audio_object.duration, total_time),
-                points: this.possible_points
-            });
-        } else {
-            this.log_model.set({
-                time_spent: total_time,
-                points: Math.floor(this.possible_points * total_time/this.audio_object.duration),
-                progress: total_time/this.audio_object.duration
-            });
+
+        var progress = this.log_model.get("time_spent") / (this.audio_object.duration / 1000);
+
+        return progress;
+
+    },
+
+    loaded: function() {
+        this.$(".sm2-inline-duration").text(this.get_time(this.audio_object.duration, true));
+        if ((this.log_model.get("last_percent") || 0) > 0) {
+            this.set_position_percent(this.log_model.get("last_percent"));
         }
-        this.log_model.save();
-
-        statusModel.set("newpoints", this.log_model.get("points") - this.starting_points);
-
     },
 
-    set_last_time: function() {
-        this.last_time = new Date().getTime();
+    played: function() {
+        this.$el.addClass("playing");
+        this.activate();
     },
 
-    user_data_loaded: function() {
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+    paused: function() {
+        this.$el.removeClass("playing");
+        this.deactivate();
+    },
 
-        this.render();
+    finished: function() {
+        this.audio_object.setPosition(0);
+        this.paused();
+    },
+
+    progress: function() {
+        this.update_progress();
+        // display the current position time
+        this.$(".sm2-inline-time").text(this.get_time(this.audio_object.position, true));
+        if (!this.dragging) {
+            var left = this.get_position_percent() * this.$(".sm2-progress-track").width();
+            this.$(".sm2-progress-ball")[0].style.left = left + "px";
+        }
+    },
+
+    play_pause_clicked: function() {
+        if (this.audio_object.playState === 0) {
+            this.audio_object.setPosition(0);
+            this.audio_object.play();
+        } else if (this.audio_object.paused) {
+            this.audio_object.play();
+        } else {
+            this.audio_object.pause();
+        }
+    },
+
+    progress_track_clicked: function(ev) {
+        this.set_position_percent(ev.offsetX / this.$(".sm2-progress-track").width());
+    },
+
+    set_position_percent: function(percent) {
+        this.audio_object.setPosition(percent * this.audio_object.duration);
+    },
+
+    get_position_percent: function(percent) {
+        return this.audio_object.position / this.audio_object.duration;
+    },
+
+    get_time: function(msec, use_string) {
+
+        // convert milliseconds to hh:mm:ss, return as object literal or string
+
+        var nSec = Math.floor(msec/1000),
+            hh = Math.floor(nSec/3600),
+            min = Math.floor(nSec/60) - Math.floor(hh * 60),
+            sec = Math.floor(nSec -(hh*3600) -(min*60));
+
+        return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : { 'min': min, 'sec': sec });
+
     },
 
     close: function() {
+        this.audio_object.stop();
+        this.audio_object.destruct();
         this.remove();
     }
+
 
 });

@@ -82,7 +82,11 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
 
     urlRoot: "/api/contentlog/",
 
-    save: _.throttle(function(){Backbone.Model.prototype.save.call(this);}, 30000),
+    save: _.throttle(function(){this.saveNow();}, 30000),
+
+    saveNow: function (){
+        Backbone.Model.prototype.save.call(this);
+    },
 
     set_complete: function() {
         var already_complete = this.get("complete");

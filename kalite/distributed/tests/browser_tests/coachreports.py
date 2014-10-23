@@ -61,7 +61,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         fu.set_password(raw_password="not-blank")
         fu.save()
         self.browser_login_admin(**self.admin_data)
-        self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction&group=" + group.id)
+        self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction&group_id=" + group.id)
         self.browser.find_element_by_css_selector('#error_message')
         self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No student accounts in this group have been created."), "Error message with no users available.")
 

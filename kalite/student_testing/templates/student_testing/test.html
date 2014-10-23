@@ -21,11 +21,33 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-<script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-<script src="{% static 'khan-exercises/khan-exercise.js' %}?{{ BUILD_ID }}"></script>
-<script src="{% static 'js/seedrandom.min.js' %}"></script>
+<!-- START PERSEUS STUFF -->
+<script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+<script src="{% static "perseus/lib/marked.js" %}"></script>
+<script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
+<script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
+<script src="{% static "perseus/lib/katex/katex.js" %}"></script>
+<script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
+<script src="{% static "perseus/lib/kas.js" %}"></script>
+<script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
+<script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
+<script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
+<script src="{% static "perseus/ke/local-only/require.js" %}"></script>
 <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
-<script src="{% static 'js/distributed/exercises.js' %}"></script>
+<script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+    <script>
+    require.config({
+        paths: {
+            "seedrandom": "{% static 'js/seedrandom.min' %}"
+        }
+    });
+    require(["seedrandom"], function(){});
+</script>
+<script src="{% static 'js/distributed/exercises/models.js' %}"></script>
+<script src="{% static 'js/distributed/exercises/views.js' %}"></script>
+<script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
+<script src="{% static 'perseus/ke/interface.js' %}"></script>
+<!-- END PERSEUS STUFF -->
 <script>
         $(function() {
             statusModel.loaded.then(function() {

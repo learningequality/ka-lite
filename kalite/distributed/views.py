@@ -185,7 +185,9 @@ def learn(request):
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "topics_url": "data/" + settings.CHANNEL + "/topics.json"
+        "topics_url": "data/%(channel_name)s/topics.json",
+        "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
+        "channel": settings.CHANNEL,
     }
     return context
 
@@ -203,16 +205,18 @@ def exercise_dashboard(request):
 
     context = {
         "title": title,
+        "data_url": "data/" + settings.CHANNEL,
     }
+
     return context
 
-
-# @render_to("distributed/homepage.html")
+@check_setup_status
+@render_to("distributed/homepage.html")
 def homepage(request):
     """
     Homepage.
     """
-    return HttpResponseRedirect(reverse("learn"))
+    return {}
 
 def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""

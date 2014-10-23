@@ -56,6 +56,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 I18N_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 LANG_LOOKUP_FILEPATH = os.path.join(I18N_DATA_PATH, "languagelookup.json")
 
+# Whether to turn on crowdin's in-context localization feature
+IN_CONTEXT_LOCALIZED = getattr(local_settings, "IN_CONTEXT_LOCALIZED", False)
+
 # This is a bit more involved, as we need to hand out to a function to calculate
 #   the LANGUAGES settings. This LANGUAGES setting is basically a whitelist of
 #   languages. Anything not in here is not accepted by Django, and will simply show

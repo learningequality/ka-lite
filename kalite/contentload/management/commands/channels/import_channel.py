@@ -41,10 +41,6 @@ iconextension = "-40x40.png"
 defaulticon = "default"
 
 attribute_whitelists = {
-    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type", "path", "slug"],
-    "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "y_pos", "x_pos", "in_knowledge_map", "path", "slug"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "all_assessment_items", "uses_assessment_items", "path", "slug"],
-    "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"],
 }
 
 denormed_attribute_list = {
@@ -88,7 +84,7 @@ file_kind_dictionary = {
     "Code": ["html", "js", "css", "py"],
     "Audio": ["mp3", "wma", "wav", "mid", "ogg"],
     "Document": ["pdf", "txt", "rtf", "html", "xml", "doc", "qxd", "docx"],
-    "Zip": ["zip"],
+    "Archive": ["zip", "bzip2", "cab", "gzip", "mar", "tar"],
 }
 
 file_kind_map = {}
@@ -96,6 +92,17 @@ file_kind_map = {}
 for key, value in file_kind_dictionary.items():
     for extension in value:
         file_kind_map[extension] = key
+
+file_meta_data_map = {
+    "duration": lambda x: getattr(x, "length", None),
+    "video_codec": lambda x: getattr(x, "video", [{}])[0].get("codec", None),
+    "audio_codec": lambda x: getattr(x, "audio", [{}])[0].get("codec", None),
+    "title": lambda x: getattr(x, "title", None),
+    "language": lambda x: getattr(x, "langcode", None),
+    "keywords": lambda x: getattr(x, "keywords", None),
+    "license": lambda x: getattr(x, "copyright", None),
+    "codec": lambda x: getattr(x, "codec", None),
+}
 
 def file_md5(namespace, file_path):
     m = hashlib.md5()
@@ -155,6 +162,18 @@ def construct_node(location, parent_path, node_cache, channel):
 
         if not kind:
             return None
+        elif kind in ["Video", "Audio", "Image"]:
+            from kaa import metadata as kaa_metadata
+            info = kaa_metadata.parse(location)
+            data_meta = {}
+            for meta_key, data_fn in file_meta_data_map.items():
+                if data_fn(info):
+                    data_meta[meta_key] = data_fn(info)
+            if data_meta.get("codec", None):
+                data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
+                del data_meta["codec"]
+            data_meta.update(meta_data)
+            meta_data = data_meta
 
         id = file_md5(channel["id"], location)
 
@@ -173,7 +192,7 @@ def construct_node(location, parent_path, node_cache, channel):
     # Verify some required fields:
     if "title" not in node:
         logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))
-        node["title"] = base_name.split(".")[0]
+        node["title"] = os.path.splitext(base_name)[0]
 
     if not os.path.isdir(location):
         nodecopy = copy.deepcopy(node)
@@ -190,6 +209,33 @@ def construct_node(location, parent_path, node_cache, channel):
 hierarchy = []
 
 path = ""
+
+def annotate_related_content(node_cache):
+    slug_cache = {}
+    for cache in node_cache.values():
+        for item in cache:
+            slug_cache[item.get("slug")] = item
+    def annotate_cache(cache):
+        for item in cache:
+            for i, related_item in enumerate(item.get("related_content", [])):
+                content = slug_cache.get(slugify(unicode(related_item.split(".")[0])))
+                if content:
+                    item["related_content"][i] = {
+                        "id": content.get("id"),
+                        "kind": content.get("kind"),
+                        "path": content.get("path"),
+                        "title": content.get("title"),
+                    }
+                else:
+                    item["related_content"][i] = None
+            if item.get("related_content", []):
+                item["related_content"] = [related_item for related_item in item["related_content"] if related_item]
+                if not item["related_content"]:
+                    del item["related_content"]
+    for cache in node_cache.values():
+        annotate_cache(cache)
+
+
 
 def retrieve_API_data(channel=None):
 
@@ -211,6 +257,8 @@ def retrieve_API_data(channel=None):
     assessment_items = []
 
     content = node_cache["Content"]
+
+    annotate_related_content(node_cache)
 
     return topic_tree, exercises, videos, assessment_items, content
 

@@ -1,0 +1,65 @@
+    <div class="content-wrapper">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <h3 class="title-header">
+
+                    {{#if dubs_available }}
+                        <select class="content-language-selector">
+                            {{#each availability }}
+                            <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                                {{ language_name }}
+                            </option>
+                            {{/each}}
+                        </select>
+                    {{/if}}
+
+                    <span class="title">{{ title }}</span>
+
+                    {{#if description }}
+                    </br><small class="long-description">{{ description }}</small>
+                    {{/if}}
+                    
+                    <div class="points-wrapper pull-right"></div>
+
+                </h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="content-player-container"></div>
+            </div>
+        </div>
+        <div class="row">
+            {{#each related_content }}
+                <div class="col-xs-3 info-box related-content">
+                    <a href="/learn/{{ path }}">
+                        <div>
+                            {{#ifcond kind "==" "Video"}}
+                            <span class="icon-video"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Exercise"}}
+                            <span class="icon-exercise"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Quiz"}}
+                            <span class="icon-quiz"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Topic"}}
+                            <span class="icon-list"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Audio"}}
+                            <span class="icon-audio"></span>
+                            {{/ifcond}}
+                            {{#ifcond kind "==" "Document"}}
+                            <span class="icon-document"></span>
+                            {{/ifcond}}
+                            <span>{{ title }}</span>
+                        </div>
+                    </a>
+                </div>
+            {{/each}}
+        </div>
+
+
+    </div>
