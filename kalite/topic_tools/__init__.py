@@ -115,9 +115,10 @@ CONTENT          = None
 CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False):
     global CONTENT, CONTENT_FILEPATH
+
     if CONTENT is None or force:
         CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
-
+ 
     return CONTENT
 
 SLUG2ID_MAP = None
@@ -218,6 +219,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
                     'path': node['path'],
                     'kind': node['kind'],
                     'available': node.get('available', True),
+                    'keywords': node.get('keywords', []),
                 }
             result[category_name][node_name] = relevant_data
 
@@ -251,6 +253,7 @@ def generate_node_cache(topictree=None):
 
     node_cache["Exercise"] = get_exercise_cache()
     node_cache["Video"] = get_video_cache()
+    node_cache["Content"] = get_content_cache()
 
     return node_cache
 
@@ -343,7 +346,7 @@ def get_topic_hierarchy(topic_node=get_topic_tree()):
     topic_hierarchy = {
         "id": topic_node['id'],
         "title": topic_node['title'],
-        "description": topic_node['description'],    
+        "description": topic_node['description'],
     }
     if ("children" in topic_node) and ('Topic' in topic_node['contains']):
         topic_hierarchy["children"] = []
@@ -629,7 +632,7 @@ def video_dict_by_video_id(flat_topic_tree=None):
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
-    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1] 
+    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1]
     assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
     return leaf_id[0]
 
