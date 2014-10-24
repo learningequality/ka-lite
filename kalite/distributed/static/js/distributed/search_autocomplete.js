@@ -16,29 +16,7 @@ function fetchTopicTree(lang, force_reparse) {
         } else {
             console.log(sprintf("got the remote topic tree for %s and it wasn't cached; re-parsing.", lang));
 
-            _nodes = {};
-            for (var category_name in categories) { // category is either Video, Exercise or Topic
-                var category = categories[category_name];
-                for (var node_name in category) {
-                    node = category[node_name];
-                    title = node.title;
-
-                    if (title in _nodes) {
-                        continue;  // avoid duplicates
-                    }
-                    if (!(category_name in _nodes)) {
-                        // Store nodes by category
-                        _nodes[category_name] = {};
-                    }
-                    _nodes[category_name][node.title] = {
-                        title: node.title,
-                        type: category_name.toLowerCase(),
-                        path: node.path,
-                        available: node.available,
-                        keywords: node.keywords
-                    };
-                }
-            }
+            _nodes = categories;
 
             // But for now, for search purposes, flatten
             flattenNodes();
@@ -118,7 +96,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<span class='autocomplete icon-" + node.type + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</span>&nbsp;";
+                var label = "<span class='autocomplete icon-" + node.kind.toLowerCase() + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</span>&nbsp;";
                 results.push({
                     label: label,
                     value: node.title
