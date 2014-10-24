@@ -83,7 +83,7 @@ def get_blacklist(removeunused=False, exclude_patterns=[], removestatic=False, r
 
     if removetests:
         blacklist += get_app_subdirectory_paths("tests")
-        blacklist += get_app_subdirectory_paths("tests.py")
+        # blacklist += get_app_subdirectory_paths("tests.py")
         blacklist += get_paths_matching_pattern("__tests__")
         blacklist += [
             "kalite/static/khan-exercises/test",
