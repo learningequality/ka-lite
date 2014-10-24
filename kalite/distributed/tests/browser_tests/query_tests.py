@@ -105,5 +105,5 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         """Check the # of queries when browsing to the "Math" topic page"""
 
         self.test_query_login_student()
-        with self.assertNumQueries(FuzzyInt(0, 7)):
+        with self.assertNumQueries(FuzzyInt(0, 8)):
             self.browse_to(self.live_server_url + "/math/")
