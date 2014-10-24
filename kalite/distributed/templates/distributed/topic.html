@@ -65,7 +65,6 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-        <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
     {% if load_perseus_assets %}
         <!-- START PERSEUS STUFF -->
         <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
@@ -80,14 +79,7 @@
         <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
         <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
         <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-            <script>
-            require.config({
-                paths: {
-                    "seedrandom": "{% static 'js/seedrandom.min' %}"
-                }
-            });
-            require(["seedrandom"], function(){});
-        </script>
+        <script src="{% static 'js/seedrandom.min.js' %}"></script>
         <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
         <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
         <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
