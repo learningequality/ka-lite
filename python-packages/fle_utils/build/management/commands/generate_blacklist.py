@@ -103,7 +103,7 @@ def get_blacklist(removeunused=False, exclude_patterns=[], removestatic=False, r
         blacklist += get_paths_matching_pattern("perseus")
 
     # I want my paths absolute
-    blacklist = [os.path.abspath(path) for path in blacklist]
+    blacklist = [os.path.abspath(os.path.join("..", path)) for path in blacklist]
     return blacklist
 
 
