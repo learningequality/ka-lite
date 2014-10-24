@@ -77,7 +77,7 @@ window.SidebarView = Backbone.View.extend({
         this.$el.html(this.template());
 
         this.sidebar = this.$('').bigSlide({
-            menu: this.$(".panel"),
+            menu: this.$(".sidebar-panel"),
             // push: "#page-container, #footer, .sidebar-tab",
             // push: ".sidebar-tab",
             menuWidth: "220px"
@@ -117,7 +117,7 @@ window.SidebarView = Backbone.View.extend({
         // hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. 
         var new_width = (0.5+current_level) * column_width + 10;
-        this.$(".panel").width(new_width);
+        this.$(".sidebar-panel").width(new_width);
         this.$(".sidebar-tab").css({left: new_width});
 
         // TODO(dylanjbarth): Resize sidebar to not cover top nav
@@ -125,7 +125,7 @@ window.SidebarView = Backbone.View.extend({
         // var height = Math.max(body.scrollHeight, body.offsetHeight, 
         //                html.clientHeight, html.scrollHeight, html.offsetHeight)
 
-        // this.$(".panel").height(height - 55); // minus height of top nav
+        // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
     },
 
     toggle_sidebar: function(ev) {

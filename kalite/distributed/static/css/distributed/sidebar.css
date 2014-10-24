@@ -68,7 +68,7 @@ Nav Panel
 ======================================
 */
 
-.panel {
+.sidebar-panel {
     
     background: #5F832E;
     z-index: 9999;
@@ -76,34 +76,34 @@ Nav Panel
     height: 130%;
 }
 
-.panel ul {
+.sidebar-panel ul {
     border-top: 2px solid #587448;
     list-style-type: none;
     margin-left: -35px;
 }
 
-.panel li {
+.sidebar-panel li {
     box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);
 }
 
-.panel .sidebar-entry {
+.sidebar-panel .sidebar-entry {
     display: block;
     padding: 1.1em 1em;
     font-size: 1.2em;
 }
 
-.panel a:link,
-.panel a:visited {
+.sidebar-panel a:link,
+.sidebar-panel a:visited {
     color: #fff;
     display: block;
     margin: 2px 5px 2px 0;
 }
 
-.panel a.sidebar-entry-link:hover, .back-to-parent:hover {
+.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
     background: #8dc63f;
 }
 
-.panel .active-entry {
+.sidebar-panel .active-entry {
     background: #77AA31;
 }
 
