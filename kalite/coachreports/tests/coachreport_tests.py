@@ -1,5 +1,8 @@
 import json
 
+from django.conf import settings
+logging = settings.LOG
+
 from datetime import datetime
 
 from kalite.main.models import AttemptLog
@@ -103,76 +106,128 @@ class CoachNavigationTest(FacilityMixins,
                           KALiteTestCase):
 
     def setUp(self):
+        """
+        Sample data
+            Facilities      Groups           Student
+            -------------------------------------------
+            facility1       group1-1         student1-1
+                            group1-2         student1-2
+                            group2-1         student2-1
+            default                          student2-0
+        """
         super(CoachNavigationTest, self).setUp()
+
+        # setup default data
+        self.facility = self.create_facility(name="facility1")
+        self.group = self.create_group(name='group1-1', facility=self.facility)
+        self.group2 = self.create_group(name='group1-2', facility=self.facility)
+
+        self.facility_name = "default"
+        self.default_facility = self.create_facility(name=self.facility_name)
+
+        self.student11 = self.create_student(first_name="first1-1", last_name="last1-1",
+                                            username="s1-1",
+                                            facility=self.default_facility)
+        self.student12 = self.create_student(first_name="first1-2", last_name="last1-2",
+                                            username="s1-2", group=self.group, facility=self.facility)
+        self.student21 = self.create_student(first_name="first1-1", last_name="last2-1",
+                                            username="s2-1", group=self.group, facility=self.facility)
 
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
-
-    def test_case1(self):
-        """
-        Test Case  Scenario
-            Facilities       Groups             Student
-            -------------------------------------------
-            facility1      group1              student2
-                           group2              student3
-            default        Ungrouped           student1
-        1. Test a facility have a facility user and under a facility group.
-        2. Test a facility user that belongs on a ungroup user.
-        """
-        self.facility = self.create_facility()
-        self.facility_name = "default"
-        self.default_facility = self.create_facility(name=self.facility_name)
-        self.group = self.create_group(name='group1', facility=self.facility)
-        self.group2 = self.create_group(name='group2', facility=self.facility)
         self.browser_login_admin(**self.admin_data)
+
+    def test_dropdown_all_facilities(self):
         self.browse_to(self.reverse('tabular_view'))
-        self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
-                                            facility=self.default_facility)
-        self.student2 = self.create_student(first_name="I", last_name="student2",
-                                            group=self.group, username="boo", facility=self.facility)
-        self.student3 = self.create_student(first_name="I", last_name="student3",
-                                            group=self.group, username="boo", facility=self.facility)
-
-        facility_list = ['All', 'default', 'facility1']
         facility_select = self.browser.find_element_by_id("facility-select")
-        for facility_option in facility_select.find_elements_by_tag_name('option'):
-            self.assertIn(facility_option.text, facility_list, "API error")
+        result = facility_select.find_elements_by_tag_name('option')
+        result = [item.text for item in result]
+        expected = ['All', 'facility1', 'default']
+        self.assertEqual(expected, result)
 
-        group_list = ['All', 'group1', 'group2', 'Ungrouped']
-        group_select = self.browser.find_element_by_id("group-select")
-        for group_option in group_select.find_elements_by_tag_name('option'):
-            self.assertIn(group_option.text, group_list, "API error")
-
-    def test_case2(self):
-        """
-        Test Case  Scenario
-            Facilities       Groups             Student
-            -------------------------------------------
-            default          Ungrouped         student2
-                                               student3
-                                               student1
-        Test when a facility dont have any group and there is a existing facility user.
-        """
-        self.facility = self.create_facility()
-        self.browser_login_admin(**self.admin_data)
+    def test_dropdown_one_facility(self):
         self.browse_to(self.reverse('tabular_view'))
-        self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
-                                            facility=self.facility)
-        self.student2 = self.create_student(first_name="I", last_name="student2",
-                                            username="boo", facility=self.facility)
-        self.student3 = self.create_student(first_name="I", last_name="student3",
-                                            username="boo", facility=self.facility)
-
-        facility_list = ['All', 'default', 'facility1']
         facility_select = self.browser.find_element_by_id("facility-select")
-        for facility_option in facility_select.find_elements_by_tag_name('option'):
-            self.assertIn(facility_option.text, facility_list, "API error")
+        result = facility_select.find_elements_by_tag_name('option')
+        result = [item.text for item in result]
+        expected = ['All', 'facility1', 'default']
+        self.assertEqual(expected, result)
 
-        group_list = ['Ungrouped', 'No groups']
-        group_select = self.browser.find_element_by_id("group-select")
-        for group_option in group_select.find_elements_by_tag_name('option'):
-            self.assertIn(group_option.text, group_list, "API error")
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
+        # for facility_option in facility_select.find_elements_by_tag_name('option'):
+        #     self.assertIn(facility_option.text, facility_list, "API error")
+
+        # group_list = ['All', 'group1', 'group2', 'Ungrouped']
+        # group_select = self.browser.find_element_by_id("group-select")
+        # options = group_select.find_elements_by_tag_name('option')
+
+        # for group_option in group_select.find_elements_by_tag_name('option'):
+        #     self.assertIn(group_option.text, group_list, "API error")
+
+    # def test_case1(self):
+    #     """
+    #     Test Case  Scenario
+    #         Facilities       Groups             Student
+    #         -------------------------------------------
+    #         facility1      group1              student2
+    #                        group2              student3
+    #         default        Ungrouped           student1
+    #     1. Test a facility have a facility user and under a facility group.
+    #     2. Test a facility user that belongs on a ungroup user.
+    #     """
+    #     self.facility = self.create_facility()
+    #     self.facility_name = "default"
+    #     self.default_facility = self.create_facility(name=self.facility_name)
+    #     self.group = self.create_group(name='group1', facility=self.facility)
+    #     self.group2 = self.create_group(name='group2', facility=self.facility)
+    #     self.browser_login_admin(**self.admin_data)
+    #     self.browse_to(self.reverse('tabular_view'))
+    #     self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
+    #                                         facility=self.default_facility)
+    #     self.student2 = self.create_student(first_name="I", last_name="student2",
+    #                                         group=self.group, username="boo", facility=self.facility)
+    #     self.student3 = self.create_student(first_name="I", last_name="student3",
+    #                                         group=self.group, username="boo", facility=self.facility)
+    #
+    #     facility_list = ['All', 'default', 'facility1']
+    #     facility_select = self.browser.find_element_by_id("facility-select")
+    #     for facility_option in facility_select.find_elements_by_tag_name('option'):
+    #         self.assertIn(facility_option.text, facility_list, "API error")
+    #
+    #     group_list = ['All', 'group1', 'group2', 'Ungrouped']
+    #     group_select = self.browser.find_element_by_id("group-select")
+    #     for group_option in group_select.find_elements_by_tag_name('option'):
+    #         self.assertIn(group_option.text, group_list, "API error")
+    #
+    # def test_case2(self):
+    #     """
+    #     Test Case  Scenario
+    #         Facilities       Groups             Student
+    #         -------------------------------------------
+    #         default          Ungrouped         student2
+    #                                            student3
+    #                                            student1
+    #     Test when a facility dont have any group and there is a existing facility user.
+    #     """
+    #     self.facility = self.create_facility()
+    #     self.browser_login_admin(**self.admin_data)
+    #     self.browse_to(self.reverse('tabular_view'))
+    #     self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
+    #                                         facility=self.facility)
+    #     self.student2 = self.create_student(first_name="I", last_name="student2",
+    #                                         username="boo", facility=self.facility)
+    #     self.student3 = self.create_student(first_name="I", last_name="student3",
+    #                                         username="boo", facility=self.facility)
+    #
+    #     facility_list = ['All', 'default', 'facility1']
+    #     facility_select = self.browser.find_element_by_id("facility-select")
+    #     for facility_option in facility_select.find_elements_by_tag_name('option'):
+    #         self.assertIn(facility_option.text, facility_list, "API error")
+    #
+    #     group_list = ['Ungrouped', 'No groups']
+    #     group_select = self.browser.find_element_by_id("group-select")
+    #     for group_option in group_select.find_elements_by_tag_name('option'):
+    #         self.assertIn(group_option.text, group_list, "API error")
+    #     self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
 
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
