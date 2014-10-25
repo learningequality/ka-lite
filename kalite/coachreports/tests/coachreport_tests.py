@@ -191,6 +191,7 @@ class CoachNavigationTest(FacilityMixins,
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
         facility_select.find_elements_by_tag_name('option')[0].click()
+        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]').click()
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
         expected = ['first1-1 last1-1', 'first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
@@ -205,9 +206,10 @@ class CoachNavigationTest(FacilityMixins,
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
         facility_select.find_elements_by_tag_name('option')[1].click()
+        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]').click()
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
-        expected = ['first1-1 last1-1', 'first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
+        expected = ['first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
         student_list = self.browser.find_elements_by_class_name("student-name")
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
