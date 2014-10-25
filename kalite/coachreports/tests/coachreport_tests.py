@@ -139,7 +139,7 @@ class CoachNavigationTest(FacilityMixins,
 
     def test_dropdown_all_facilities(self):
         self.browse_to(self.reverse('tabular_view'))
-        facility_select = self.browser.find_element_by_id("facility-select")
+        facility_select = self.browser_wait_for_element(css_selector="#facility-select")
         result = facility_select.find_elements_by_tag_name('option')
         result = [item.text for item in result]
         expected = ['All', 'facility1', 'default']
@@ -148,20 +148,30 @@ class CoachNavigationTest(FacilityMixins,
     def test_dropdown_one_facility(self):
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
-        result = facility_select.find_elements_by_tag_name('option')
-        result = [item.text for item in result]
-        expected = ['All', 'facility1', 'default']
-        self.assertEqual(expected, result)
+        facility_options = facility_select.find_elements_by_tag_name('option')
 
-        # for facility_option in facility_select.find_elements_by_tag_name('option'):
-        #     self.assertIn(facility_option.text, facility_list, "API error")
+        def _check_group_options(facility_option, expected):
+            facility_option.click()
+            group_select = self.browser_wait_for_element(css_selector="#group-select")
+            group_options = group_select.find_elements_by_tag_name('option')
+            result = [group_option.text for group_option in group_options]
+            self.assertEqual(expected, result)
 
-        # group_list = ['All', 'group1', 'group2', 'Ungrouped']
-        # group_select = self.browser.find_element_by_id("group-select")
-        # options = group_select.find_elements_by_tag_name('option')
+        facility_option = facility_options[0]
+        self.assertEqual("All", facility_option.text)
+        expected = ['All', 'Ungrouped', 'group1-1', 'group1-2']
+        _check_group_options(facility_option, expected)
 
-        # for group_option in group_select.find_elements_by_tag_name('option'):
-        #     self.assertIn(group_option.text, group_list, "API error")
+        facility_option = facility_options[1]
+        self.assertEqual("facility1", facility_option.text)
+        expected = ['All', 'group1-1', 'group1-2']
+        _check_group_options(facility_option, expected)
+
+        facility_option = facility_options[2]
+        self.assertEqual("default", facility_option.text)
+        expected = ['All', 'Ungrouped']
+        _check_group_options(facility_option, expected)
+
 
     # def test_case1(self):
     #     """
