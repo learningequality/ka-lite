@@ -105,13 +105,19 @@ class CoachNavigationTest(FacilityMixins,
                           KALiteBrowserTestCase,
                           KALiteTestCase):
 
+    """
+    TODO(cpauya): If there is only one facility/group, the "All" option must not show.
+    TODO(cpauya): If there is an empty facility/group (no students assigned), that option must not show.
+    """
+
     def setUp(self):
         """
         Sample data
             Facilities      Groups           Student
             -------------------------------------------
             facility1       group1-1         student1-1
-                            group1-2         student1-2
+                            group1-2         student1-2a
+                            group1-2         student1-2b
                             group2-1         student2-1
             default                          student2-0
         """
@@ -119,8 +125,9 @@ class CoachNavigationTest(FacilityMixins,
 
         # setup default data
         self.facility = self.create_facility(name="facility1")
-        self.group = self.create_group(name='group1-1', facility=self.facility)
-        self.group2 = self.create_group(name='group1-2', facility=self.facility)
+        self.group11 = self.create_group(name='group1-1', facility=self.facility)
+        self.group12 = self.create_group(name='group1-2', facility=self.facility)
+        self.group2 = self.create_group(name='group2', facility=self.facility)
 
         self.facility_name = "default"
         self.default_facility = self.create_facility(name=self.facility_name)
@@ -128,10 +135,12 @@ class CoachNavigationTest(FacilityMixins,
         self.student11 = self.create_student(first_name="first1-1", last_name="last1-1",
                                             username="s1-1",
                                             facility=self.default_facility)
-        self.student12 = self.create_student(first_name="first1-2", last_name="last1-2",
-                                            username="s1-2", group=self.group, facility=self.facility)
+        self.student12a = self.create_student(first_name="first1-2a", last_name="last1-2",
+                                            username="s1-2a", group=self.group12, facility=self.facility)
+        self.student12b = self.create_student(first_name="first1-2b", last_name="last1-2",
+                                            username="s1-2b", group=self.group12, facility=self.facility)
         self.student21 = self.create_student(first_name="first1-1", last_name="last2-1",
-                                            username="s2-1", group=self.group, facility=self.facility)
+                                            username="s2-1", group=self.group2, facility=self.facility)
 
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
@@ -157,21 +166,23 @@ class CoachNavigationTest(FacilityMixins,
             result = [group_option.text for group_option in group_options]
             self.assertEqual(expected, result)
 
+        # select All option
         facility_option = facility_options[0]
         self.assertEqual("All", facility_option.text)
-        expected = ['All', 'Ungrouped', 'group1-1', 'group1-2']
+        expected = ['All', 'Ungrouped', 'group1-1', 'group1-2', 'group2']
         _check_group_options(facility_option, expected)
 
+        # select facility1 option
         facility_option = facility_options[1]
         self.assertEqual("facility1", facility_option.text)
-        expected = ['All', 'group1-1', 'group1-2']
+        expected = ['All', 'group1-1', 'group1-2', 'group2']
         _check_group_options(facility_option, expected)
 
+        # select default option
         facility_option = facility_options[2]
         self.assertEqual("default", facility_option.text)
         expected = ['All', 'Ungrouped']
         _check_group_options(facility_option, expected)
-
 
     # def test_case1(self):
     #     """
