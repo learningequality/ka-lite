@@ -184,71 +184,51 @@ class CoachNavigationTest(FacilityMixins,
         expected = ['All', 'Ungrouped']
         _check_group_options(facility_option, expected)
 
-    # def test_case1(self):
-    #     """
-    #     Test Case  Scenario
-    #         Facilities       Groups             Student
-    #         -------------------------------------------
-    #         facility1      group1              student2
-    #                        group2              student3
-    #         default        Ungrouped           student1
-    #     1. Test a facility have a facility user and under a facility group.
-    #     2. Test a facility user that belongs on a ungroup user.
-    #     """
-    #     self.facility = self.create_facility()
-    #     self.facility_name = "default"
-    #     self.default_facility = self.create_facility(name=self.facility_name)
-    #     self.group = self.create_group(name='group1', facility=self.facility)
-    #     self.group2 = self.create_group(name='group2', facility=self.facility)
-    #     self.browser_login_admin(**self.admin_data)
-    #     self.browse_to(self.reverse('tabular_view'))
-    #     self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
-    #                                         facility=self.default_facility)
-    #     self.student2 = self.create_student(first_name="I", last_name="student2",
-    #                                         group=self.group, username="boo", facility=self.facility)
-    #     self.student3 = self.create_student(first_name="I", last_name="student3",
-    #                                         group=self.group, username="boo", facility=self.facility)
-    #
-    #     facility_list = ['All', 'default', 'facility1']
-    #     facility_select = self.browser.find_element_by_id("facility-select")
-    #     for facility_option in facility_select.find_elements_by_tag_name('option'):
-    #         self.assertIn(facility_option.text, facility_list, "API error")
-    #
-    #     group_list = ['All', 'group1', 'group2', 'Ungrouped']
-    #     group_select = self.browser.find_element_by_id("group-select")
-    #     for group_option in group_select.find_elements_by_tag_name('option'):
-    #         self.assertIn(group_option.text, group_list, "API error")
-    #
-    # def test_case2(self):
-    #     """
-    #     Test Case  Scenario
-    #         Facilities       Groups             Student
-    #         -------------------------------------------
-    #         default          Ungrouped         student2
-    #                                            student3
-    #                                            student1
-    #     Test when a facility dont have any group and there is a existing facility user.
-    #     """
-    #     self.facility = self.create_facility()
-    #     self.browser_login_admin(**self.admin_data)
-    #     self.browse_to(self.reverse('tabular_view'))
-    #     self.student1 = self.create_student(first_name="I", last_name="student1", username="yay",
-    #                                         facility=self.facility)
-    #     self.student2 = self.create_student(first_name="I", last_name="student2",
-    #                                         username="boo", facility=self.facility)
-    #     self.student3 = self.create_student(first_name="I", last_name="student3",
-    #                                         username="boo", facility=self.facility)
-    #
-    #     facility_list = ['All', 'default', 'facility1']
-    #     facility_select = self.browser.find_element_by_id("facility-select")
-    #     for facility_option in facility_select.find_elements_by_tag_name('option'):
-    #         self.assertIn(facility_option.text, facility_list, "API error")
-    #
-    #     group_list = ['Ungrouped', 'No groups']
-    #     group_select = self.browser.find_element_by_id("group-select")
-    #     for group_option in group_select.find_elements_by_tag_name('option'):
-    #         self.assertIn(group_option.text, group_list, "API error")
-    #     self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
+    def test_all_facility_in_topic_dropdown(self):
+        """
+        Test all facility and its corresponding users in the topic dropdown functionality.
+        """
+        self.browse_to(self.reverse('tabular_view'))
+        facility_select = self.browser.find_element_by_id("facility-select")
+        facility_select.find_elements_by_tag_name('option')[0].click()
+        topic_select = self.browser_wait_for_element(css_selector="#topic")
+        topic_select.find_elements_by_tag_name('option')[1].click()
+        expected = ['first1-1 last1-1', 'first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
+        student_list = self.browser.find_elements_by_class_name("student-name")
+        result = [item.text for item in student_list]
+        self.assertEqual(expected, result)
+
+    def test_facility1_in_topic_dropdown(self):
+        """
+        Test facility1 and its corresponding users in the topic dropdown functionality.
+        """
+        self.browse_to(self.reverse('tabular_view'))
+        facility_select = self.browser.find_element_by_id("facility-select")
+        facility_select.find_elements_by_tag_name('option')[1].click()
+        topic_select = self.browser_wait_for_element(css_selector="#topic")
+        topic_select.find_elements_by_tag_name('option')[1].click()
+        expected = ['first1-1 last1-1', 'first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
+        student_list = self.browser.find_elements_by_class_name("student-name")
+        result = [item.text for item in student_list]
+        self.assertEqual(expected, result)
+
+    def test_default_in_topic_dropdown(self):
+        """
+        Test default and its corresponding ungroup users in the topic dropdown functionality.
+        """
+        self.browse_to(self.reverse('tabular_view'))
+        facility_select = self.browser.find_element_by_id("facility-select")
+        facility_select.find_elements_by_tag_name('option')[2].click()
+        group_select = self.browser_wait_for_element(css_selector="#group-select")
+        group_select.find_elements_by_tag_name('option')[1].click()
+        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]').click()
+        topic_select = self.browser_wait_for_element(css_selector="#topic")
+        topic_select.find_elements_by_tag_name('option')[1].click()
+        expected = ['first1-1 last1-1']
+        student_list = self.browser.find_elements_by_class_name("student-name")
+        result = [item.text for item in student_list]
+        self.assertEqual(expected, result)
+
 
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
