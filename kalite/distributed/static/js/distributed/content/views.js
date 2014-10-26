@@ -21,8 +21,7 @@ window.ContentWrapperView = BaseView.extend({
                         self.log_collection.fetch().then(self.user_data_loaded);
 
                     } else {
-                        self.log_model = self.log_collection.get_first_log_or_new_log();
-                        self.render();
+                        self.user_data_loaded();
                     }
                 });
             }
