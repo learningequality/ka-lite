@@ -136,6 +136,8 @@ def handle_unit_switch(sender, **kwargs):
     facility = Facility.objects.get(pk=facility_id)
     # Import here to avoid circular import
     from kalite.distributed.api_views import compute_total_points
+    from kalite.playlist.models import PlaylistToGroupMapping
+    from kalite.facility.models import FacilityGroup
     if old_unit != new_unit:
         if facility:
             users = FacilityUser.objects.filter(facility=facility_id)
@@ -147,3 +149,10 @@ def handle_unit_switch(sender, **kwargs):
                 old_unit_transaction_log.save()
                 new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
                 new_unit_transaction_log.soft_delete()
+
+            groups = FacilityGroup.objects.filter(facility=facility_id).values("id")
+            playlist_group = PlaylistToGroupMapping.objects.all()
+            for group in groups:
+                for assigned_group in playlist_group:
+                    if assigned_group.group_id == group['id']:
+                        assigned_group.delete()
