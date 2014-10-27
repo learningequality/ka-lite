@@ -144,6 +144,13 @@ class CoachNavigationTest(FacilityMixins,
 
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
+        # list of urls of all report types for the coach reports
+        self.urls = [
+            self.reverse('tabular_view'),
+            self.reverse('scatter_view'),
+            self.reverse('timeline_view'),
+            self.reverse('test_view')
+        ]
         self.browser_login_admin(**self.admin_data)
 
     def test_dropdown_all_facilities(self):
@@ -155,45 +162,45 @@ class CoachNavigationTest(FacilityMixins,
             result = [item.text for item in result]
             self.assertEqual(expected, result)
 
-        urls = [
-            self.reverse('tabular_view'),
-            self.reverse('scatter_view'),
-            self.reverse('timeline_view'),
-            self.reverse('test_view')
-        ]
         expected = ['All', 'facility1', 'default']
-        for url in urls:
+        for url in self.urls:
             _check_dropdown_values(url, expected)
 
     def test_dropdown_one_facility(self):
-        self.browse_to(self.reverse('tabular_view'))
-        facility_select = self.browser.find_element_by_id("facility-select")
-        facility_options = facility_select.find_elements_by_tag_name('option')
+        """
+        Test options for the group dropdown if a facility is selected.
 
-        def _check_group_options(facility_option, expected):
-            facility_option.click()
-            group_select = self.browser_wait_for_element(css_selector="#group-select")
-            group_options = group_select.find_elements_by_tag_name('option')
-            result = [group_option.text for group_option in group_options]
-            self.assertEqual(expected, result)
+        Loops thru each url per report types and checks the group options.
+        """
+        for url in self.urls:
+            self.browse_to(url)
+            facility_select = self.browser.find_element_by_id("facility-select")
+            facility_options = facility_select.find_elements_by_tag_name('option')
 
-        # select All option
-        facility_option = facility_options[0]
-        self.assertEqual("All", facility_option.text)
-        expected = ['All', 'Ungrouped', 'group1-1', 'group1-2', 'group2']
-        _check_group_options(facility_option, expected)
+            def _check_group_options(facility_option, expected):
+                facility_option.click()
+                group_select = self.browser_wait_for_element(css_selector="#group-select")
+                group_options = group_select.find_elements_by_tag_name('option')
+                result = [group_option.text for group_option in group_options]
+                self.assertEqual(expected, result)
 
-        # select facility1 option
-        facility_option = facility_options[1]
-        self.assertEqual("facility1", facility_option.text)
-        expected = ['All', 'group1-1', 'group1-2', 'group2']
-        _check_group_options(facility_option, expected)
+            # select All option
+            facility_option = facility_options[0]
+            self.assertEqual("All", facility_option.text)
+            expected = ['All', 'Ungrouped', 'group1-1', 'group1-2', 'group2']
+            _check_group_options(facility_option, expected)
 
-        # select default option
-        facility_option = facility_options[2]
-        self.assertEqual("default", facility_option.text)
-        expected = ['All', 'Ungrouped']
-        _check_group_options(facility_option, expected)
+            # select facility1 option
+            facility_option = facility_options[1]
+            self.assertEqual("facility1", facility_option.text)
+            expected = ['All', 'group1-1', 'group1-2', 'group2']
+            _check_group_options(facility_option, expected)
+
+            # select default option
+            facility_option = facility_options[2]
+            self.assertEqual("default", facility_option.text)
+            expected = ['All', 'Ungrouped']
+            _check_group_options(facility_option, expected)
 
     def test_all_facility_in_topic_dropdown(self):
         """
