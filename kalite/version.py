@@ -17,10 +17,28 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": [""],
+            "all": [],
             "students": [],
             "coaches": [],
             "admins": [],
+        },
+
+    },
+
+    "0.12.8": {
+        "release_date": "2014/10/27",
+        "git_commit": "b973ba1",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Mark registration process result immediately", ],
+            "students": [],
+            "coaches": [],
+            "admins": ["Fix Export CSV", "Validate username during installation for Windows"],
         },
 
     },
