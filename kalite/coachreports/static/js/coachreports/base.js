@@ -76,7 +76,10 @@ var GroupSelectView = Backbone.View.extend({
         // Get new facility ID and fetch
         this.group_list.fetch({
             data: $.param({
-                facility_id: this.model.get("facility_id")
+                facility_id: this.model.get("facility_id"),
+                // TODO(cpauya): Find a better way to set the kwargs argument of the tastypie endpoint
+                // instead of using GET variables.  This will set it as False on the endpoint.
+                groups_only: ""
             })
         });
     }
