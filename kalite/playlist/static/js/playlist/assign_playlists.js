@@ -106,7 +106,9 @@ var PlaylistGroupView = Backbone.View.extend({
 
     render: function() {
         var dict = this.model.toJSON();
-        this.$el.html(this.template(dict));
+        if (groups.findWhere({id: dict.id}) != null) {
+            this.$el.html(this.template(dict));
+        }
 
         return this;
     },
