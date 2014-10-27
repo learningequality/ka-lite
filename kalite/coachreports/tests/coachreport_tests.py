@@ -147,12 +147,23 @@ class CoachNavigationTest(FacilityMixins,
         self.browser_login_admin(**self.admin_data)
 
     def test_dropdown_all_facilities(self):
-        self.browse_to(self.reverse('tabular_view'))
-        facility_select = self.browser_wait_for_element(css_selector="#facility-select")
-        result = facility_select.find_elements_by_tag_name('option')
-        result = [item.text for item in result]
+
+        def _check_dropdown_values(url, expected):
+            self.browse_to(url)
+            facility_select = self.browser_wait_for_element(css_selector="#facility-select")
+            result = facility_select.find_elements_by_tag_name('option')
+            result = [item.text for item in result]
+            self.assertEqual(expected, result)
+
+        urls = [
+            self.reverse('tabular_view'),
+            self.reverse('scatter_view'),
+            self.reverse('timeline_view'),
+            self.reverse('test_view')
+        ]
         expected = ['All', 'facility1', 'default']
-        self.assertEqual(expected, result)
+        for url in urls:
+            _check_dropdown_values(url, expected)
 
     def test_dropdown_one_facility(self):
         self.browse_to(self.reverse('tabular_view'))
