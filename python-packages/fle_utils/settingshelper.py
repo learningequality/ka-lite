@@ -83,4 +83,3 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
                         processed_apps=processed_apps)
 
     global_vars.update({"__file__": this_filepath})  # Set __file__ back to the project settings file
-

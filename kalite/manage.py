@@ -5,8 +5,20 @@ import os
 import sys
 import warnings
 
+
+def clean_pyc(PROJECT_PATH):
+    for root, dirs, files in os.walk(os.path.join(PROJECT_PATH, "..")):
+        for pyc_file in glob.glob(os.path.join(root, "*.py[oc]")):
+            try:
+                os.remove(pyc_file)
+            except:
+                pass
+
 if __name__ == "__main__":
     import warnings
+
+    BUILD_INDICATOR_FILE = os.path.join(".", "_built.touch")
+    BUILT = os.path.exists(BUILD_INDICATOR_FILE)  # whether this installation was processed by the build server
 
     # We are overriding a few packages (like Django) from the system path.
     #   Suppress those warnings
@@ -19,7 +31,6 @@ if __name__ == "__main__":
         os.path.join(PROJECT_PATH, ".."),
     ]
     sys.path = [os.path.realpath(p) for p in PROJECT_PYTHON_PATHS] + sys.path
-
 
     ########################
     # kaserve
@@ -41,12 +52,8 @@ if __name__ == "__main__":
     ########################
 
     # Manually clean all pyc files before entering any real codepath
-    for root, dirs, files in os.walk(os.path.join(PROJECT_PATH, "..")):
-        for pyc_file in glob.glob(os.path.join(root, "*.pyc")):
-            try:
-                os.remove(pyc_file)
-            except:
-                pass
+    if not BUILT:
+        clean_pyc(PROJECT_PATH)
 
 
     ########################
