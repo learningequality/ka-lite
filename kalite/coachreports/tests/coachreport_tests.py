@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.conf import settings
 logging = settings.LOG
@@ -14,17 +15,17 @@ from selenium.common.exceptions import NoSuchElementException
 
 from kalite.student_testing.models import TestLog
 from kalite.testing import KALiteTestCase
-import time
-class TestApiDropdown(FacilityMixins,
+
+
+class APIDropdownTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
                       CreateZoneMixin,
                       CreateAdminMixin,
-                      KALiteBrowserTestCase,
-                      KALiteTestCase):
+                      KALiteBrowserTestCase):
 
     def setUp(self):
-        super(TestApiDropdown, self).setUp()
+        super(APIDropdownTests, self).setUp()
 
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
@@ -41,7 +42,7 @@ class TestApiDropdown(FacilityMixins,
 
     def test_facility_endpoint(self):
         self.client.login(username='admin', password='admin')
-        facility_resp = json.loads(self.client.get(self.api_facility_url + "?zone_id=" + self.zone.id).content)
+        facility_resp = json.loads(self.client.get("%s?zone_id=%s" % (self.api_facility_url, self.zone.id)).content)
         objects = facility_resp.get("objects")
         self.assertEqual(len(objects), 1, "API response incorrect")
         self.assertEqual(objects[0]["name"], "facility1", "API response incorrect")
@@ -49,7 +50,7 @@ class TestApiDropdown(FacilityMixins,
 
     def test_group_endpoint(self):
         self.client.login(username='admin', password='admin')
-        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
+        group_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.api_group_url, self.facility.id)).content)
         objects = group_resp.get("objects")
         self.assertEqual(len(objects), 2, "API response incorrect")
         self.assertEqual(objects[0]["name"], "group1", "API response incorrect")
@@ -57,13 +58,13 @@ class TestApiDropdown(FacilityMixins,
         self.client.logout()
 
 
-class TimeLineReport(FacilityMixins,
+class TimelineReportTests(FacilityMixins,
                      StudentProgressMixin,
                      BrowserActionMixins,
                      CreateAdminMixin,
                      KALiteBrowserTestCase):
     def setUp(self):
-        super(TimeLineReport, self).setUp()
+        super(TimelineReportTests, self).setUp()
 
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
