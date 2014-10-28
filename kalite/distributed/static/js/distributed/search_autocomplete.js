@@ -108,9 +108,9 @@ $(document).ready(function() {
         },
         select: function( event, ui ) {
             // When they click a specific item, just go there (if we recognize it)
-            var title = ui.item.value;
-            if (_nodes && title in _nodes && _nodes[title]) {
-                window.location.href = "/learn/" + _nodes[title].path;
+            var id = ui.item.value;
+            if (_nodes && id in _nodes && _nodes[id]) {
+                window.location.href = "/learn/" + _nodes[id].path;
             } else {
                 show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
