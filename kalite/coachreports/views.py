@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.shortcuts import get_object_or_404 
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
@@ -23,11 +24,14 @@ from .api_views import get_data_form, stats_dict
 from fle_utils.general import max_none
 from fle_utils.internet import StatusException
 from kalite.coachreports.models import PlaylistProgress
+from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.store.api_resources import StoreItemResource
+from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
@@ -462,6 +466,48 @@ def test_detail_view(request, facility, test_id):
         "results_table": results_table,
         "stats_dict": stats_dict,
         "test_options": test_options,
+    })
+    return context
+
+
+@require_authorized_admin
+@facility_required
+@render_to("coachreports/spending_report_view.html")
+def spending_report_view(request, facility):
+    """View total points remaining for students"""
+    group_id = request.GET.get("group", "")
+    users = get_user_queryset(request, facility, group_id)
+    user_points = {}
+    for user in users:
+        user_points[user] = compute_total_points(user)
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
+        "user_points": user_points,
+    })
+    return context
+
+
+@require_authorized_admin
+@render_to("coachreports/spending_report_detail_view.html")
+def spending_report_detail_view(request, user_id):
+    """View transaction logs for student"""
+    student = get_object_or_404(FacilityUser, id=user_id)
+    transactions = StoreTransactionLog.objects.filter(user=student, context_type='unit').order_by('purchased_at') # TODO(dylanjbarth): filter out gift cards?
+    context = plotting_metadata_context(request)
+    store_items = StoreItem.all()
+    humanized_transactions = []
+    for t in transactions:
+        # Hydrate the store item object
+        item_key = t.item.strip("/").split("/")[-1] 
+        humanized_transactions.append({
+            "purchased_at": t.purchased_at,
+            "item": store_items.get(item_key, ""),
+            "value": abs(t.value),
+            "context_id": t.context_id,
+        })
+    context.update({
+        "student": student,
+        "transactions": humanized_transactions,
     })
     return context
 

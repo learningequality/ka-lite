@@ -242,7 +242,13 @@ class CurrentUnitResource(Resource):
             raise Unauthorized(_("You cannot view these objects."))
 
         objects = []
-        for facility in Facility.objects.order_by('name'):
+
+        if bundle.request.is_django_user:
+            facilities = Facility.objects.order_by('name')
+        else:
+            facilities = [bundle.request.session["facility_user"].facility]
+
+        for facility in facilities:
             url = reverse('facility_management', args=[None, facility.id])
             data = {
                 'id': facility.id,

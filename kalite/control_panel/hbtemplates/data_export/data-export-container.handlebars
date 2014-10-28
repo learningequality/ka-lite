@@ -8,6 +8,10 @@
                 <option value="test_log">Test Logs</option>
                 <option value="attempt_log">Attempt Logs</option>
                 <option value="exercise_log">Exercise Logs</option>
+                <option value="store_log">Store Transaction Logs</option>
+                {{#if is_central}}
+                <option value="device_log">Device Logs</option>                
+                {{/if}}
             </select>
         </div>
     </div>

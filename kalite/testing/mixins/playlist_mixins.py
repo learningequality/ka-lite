@@ -8,8 +8,9 @@ class CreatePlaylistProgressMixin(object):
     @classmethod
     def create_playlist_progress(cls, user, quiz=True):
         default_playlist = "g3_p2"
-        playlist = Playlist.all()[1]
-        assert(playlist.id == default_playlist), "Unexpected playlist ID. Update tests to match new playlists.json"
+        playlist = [pl for pl in Playlist.all() if pl.id == "g3_p2"]
+        assert(playlist[0].id == default_playlist), "Unexpected playlist ID. Update tests to match new playlists.json"
+        playlist = playlist[0]
 
         # Creating one specific entry for a specific item in the playlist
         VideoLog(**{

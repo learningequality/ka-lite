@@ -923,6 +923,7 @@ window.ExercisePracticeView = Backbone.View.extend({
     },
 
     display_message: function() {
+        var msg;
 
         var context = {
             numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
@@ -931,9 +932,9 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         if (!this.log_model.get("complete")) {
             if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                var msg = "";
+                msg = "";
             } else {
-                var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
             }
         } else {
             context.remaining = ExerciseParams.FIXED_BLOCK_EXERCISES - this.log_model.attempts_since_completion();
@@ -941,11 +942,18 @@ window.ExercisePracticeView = Backbone.View.extend({
                 context.remaining++;
             }
             if (context.remaining > 1) {
-                var msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
+                if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
+                    show_modal("info", sprintf(msg, context));
+                }
             } else if (context.remaining == 1) {
-                var msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
+                if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
+                    show_modal("info", sprintf(msg, context));
+                }
             } else {
-                var msg = gettext("You have completed this exercise.");
+                msg = gettext("You have completed this exercise.");
+                show_modal("info", sprintf(msg, context));
             }
         }
 
@@ -1007,7 +1015,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1253,7 +1261,7 @@ window.ExerciseTestView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1372,7 +1380,7 @@ window.ExerciseQuizView = Backbone.View.extend({
                     item: "/api/store/storeitem/gift_card/",
                     purchased_at: window.statusModel.get_server_time(),
                     reversible: false,
-                    context_id: 0, // TODO-BLOCKER: put the current unit in here
+                    context_id: ds.ab_testing.unit || 0,
                     context_type: "unit",
                     user: window.statusModel.get("user_uri"),
                     value: this.points
@@ -1433,7 +1441,7 @@ window.ExerciseQuizView = Backbone.View.extend({
             seed: this.exercise_view.data_model.seed
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 

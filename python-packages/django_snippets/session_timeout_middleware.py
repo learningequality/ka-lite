@@ -15,8 +15,8 @@ class SessionIdleTimeout:
     def process_request(self, request):
         # Only do timeout if enabled
         if settings.SESSION_IDLE_TIMEOUT:
-            # Timeout is done only for authenticated logged in users.
-            if request.user.is_authenticated() or "facility_user" in request.session:
+            # Timeout is done only for authenticated logged in *student* users.
+            if (request.user.is_authenticated() or "facility_user" in request.session) and not request.is_admin:
                 current_datetime = datetime.datetime.now()
                 
                 # Timeout if idle time period is exceeded.

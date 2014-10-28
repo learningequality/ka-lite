@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from django.utils.translation import ugettext as _
 
-from ..browser import browse_to, wait_for_page_change
+from ..browser import browse_to, setup_browser, wait_for_page_change
 
 
 class BrowserActionMixins(object):
@@ -17,6 +17,9 @@ class BrowserActionMixins(object):
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset",
                         "legend", "select", "optgroup", "option", "button",
                         "datalist", "keygen", "output"]
+
+    def create_browser(self, browser_type="Firefox"):
+        return setup_browser(browser_type)
 
     def browse_to(self, *args, **kwargs):
         """
@@ -29,6 +32,11 @@ class BrowserActionMixins(object):
         3. reverse lookup of url_name argument.
 
         """
+        if kwargs.get("browser"):
+            browser = kwargs.get("browser")
+            del kwargs["browser"]
+        else:
+            browser = self.browser
         if args:
             assert "dest_url" not in kwargs
         elif "dest_url" in kwargs:
@@ -39,7 +47,7 @@ class BrowserActionMixins(object):
         else:
             raise Exception("Must specify the destination url.")
 
-        browse_to(self.browser, *args, **kwargs)
+        browse_to(browser, *args, **kwargs)
 
     def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
         """
@@ -50,25 +58,26 @@ class BrowserActionMixins(object):
             max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
-    def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None):
+    def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None):
         """
         Given the identifier to a page element, make it active.
         Currently done by clicking TODO(bcipolli): this won't work for buttons,
         so find another way when that becomes an issue.
         """
-
+        browser = browser or self.browser
         if not elem:
             if id:
-                elem = self.browser.find_element_by_id(id)
+                elem = browser.find_element_by_id(id)
             elif name:
-                elem = self.browser.find_element_by_name(name)
+                elem = browser.find_element_by_name(name)
             elif tag_name:
-                elem = self.browser.find_element_by_tag_name(tag_name)
+                elem = browser.find_element_by_tag_name(tag_name)
         elem.click()
 
-    def browser_send_keys(self, keys):
+    def browser_send_keys(self, keys, browser=None):
         """Convenience method to send keys to active_element in the browser"""
-        self.browser.switch_to_active_element().send_keys(keys)
+        browser = browser or self.browser
+        browser.switch_to_active_element().send_keys(keys)
 
     def browser_check_django_message(self, message_type=None, contains=None, exact=None, num_messages=1):
         """Both central and distributed servers use the Django messaging system.
@@ -101,25 +110,26 @@ class BrowserActionMixins(object):
                 else:
                     break
 
-    def browser_next_form_element(self, num_expected_links=None, max_tabs=10):
+    def browser_next_form_element(self, num_expected_links=None, max_tabs=10, browser=None):
         """
         Use keyboard navigation to traverse form elements.
         Skip any intervening elements that have tab stops (namely, links).
 
         If specified, validate the # links skipped, or the total # of tabs needed.
         """
+        browser = browser or self.browser
 
         # Move to the next actable element.
-        cur_element = self.browser.switch_to_active_element()
-        self.browser_send_keys(Keys.TAB)
+        cur_element = browser.switch_to_active_element()
+        self.browser_send_keys(Keys.TAB, browser=browser)
         num_tabs = 1
 
         # Loop until you've arrived at a form element
         num_links = 0
         while num_tabs <= max_tabs and \
-                self.browser.switch_to_active_element().tag_name not in self.HtmlFormElements:
-            num_links += self.browser.switch_to_active_element().tag_name == "a"
-            self.browser_send_keys(Keys.TAB)
+                browser.switch_to_active_element().tag_name not in self.HtmlFormElements:
+            num_links += browser.switch_to_active_element().tag_name == "a"
+            self.browser_send_keys(Keys.TAB, browser=browser)
             num_tabs += 1
 
         # self.assertLessEqual(num_tabs, max_tabs,
@@ -132,14 +142,15 @@ class BrowserActionMixins(object):
 
         return num_tabs
 
-    def browser_form_fill(self, keys=""):
+    def browser_form_fill(self, keys="", browser=None):
         """
         Convenience function to send some keys to a form element,
         then traverse to the next form element.
         """
+        browser = browser or self.browser
         if keys:
-            self.browser_send_keys(keys)
-        self.browser_next_form_element()
+            self.browser_send_keys(keys, browser=browser)
+        self.browser_next_form_element(browser=browser)
 
     def browser_wait_for_element(self, css_selector, max_wait_time=4, step_time=0.25):
         total_wait_time = 0
@@ -233,6 +244,8 @@ class BrowserActionMixins(object):
         self.browser_click(selector)
         alert = self.browser_accept_alert(sleep=sleep, text=text)
         return alert
+
+
     def browser_register_user(self, username, password, first_name="firstname",
                               last_name="lastname", facility_name=None,
                               stay_logged_in=False):
@@ -257,71 +270,76 @@ class BrowserActionMixins(object):
         self.browser_form_fill(password)  # password (again)
         self.browser.find_element_by_id("id_username").submit()
 
-    def browser_login_user(self, username, password, facility_name=None):
+    def browser_login_user(self, username, password, facility_name=None, browser=None):
         """
         Tests that an existing admin user can log in.
         """
+        browser = browser or self.browser
 
         login_url = self.reverse("login")
-        self.browse_to(login_url)  # Load page
+        self.browse_to(login_url, browser=browser)  # Load page
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
-        if facility_name and self.browser.find_element_by_id("id_facility").is_displayed():
+        if facility_name and browser.find_element_by_id("id_facility").is_displayed():
             self.browser_activate_element(id="id_facility")
             self.browser_send_keys(facility_name)
 
-        username_field = self.browser.find_element_by_id("id_username")
+        username_field = browser.find_element_by_id("id_username")
         username_field.clear()  # clear any data
         username_field.click()  # explicitly set the focus, to start
-        self.browser_form_fill(username)
-        self.browser_form_fill(password)
+        self.browser_form_fill(username, browser=browser)
+        self.browser_form_fill(password, browser=browser)
         username_field.submit()
         # self.browser_send_keys(Keys.RETURN)
 
         # wait for 5 seconds for the page to refresh
-        WebDriverWait(self.browser, 5).until(EC.staleness_of(username_field))
+        WebDriverWait(browser, 5).until(EC.staleness_of(username_field))
 
-    def browser_login_admin(self, username=None, password=None):
-        self.browser_login_user(username=username, password=password)
+    def browser_login_admin(self, username=None, password=None, browser=None):
+        self.browser_login_user(username=username, password=password, browser=browser)
 
-    def browser_login_teacher(self, username, password, facility_name=None):
+    def browser_login_teacher(self, username, password, facility_name=None, browser=None):
         self.browser_login_user(
             username=username,
             password=password,
             facility_name=facility_name,
+            browser=browser,
         )
 
-    def browser_login_student(self, username, password, facility_name=None, exam_mode_on=False):
+    def browser_login_student(self, username, password, facility_name=None, exam_mode_on=False, browser=None):
         """
         Consider that student may be redirected to the exam page when Settings.EXAM_MODE_ON is set.
         """
         self.browser_login_user(
             username=username,
             password=password,
-            facility_name=facility_name
+            facility_name=facility_name,
+            browser=browser,
         )
 
-    def browser_logout_user(self):
-        if self.browser_is_logged_in():
+    def browser_logout_user(self, browser=None):
+        browser = browser or self.browser
+        if self.browser_is_logged_in(browser=browser):
             # Since logout redirects to the homepage, browse_to will fail (with no good way to avoid).
             #   so be smarter in that case.
             homepage_url = self.reverse("homepage")
             logout_url = self.reverse("logout")
-            if homepage_url == self.browser.current_url:
-                self.browser.get(logout_url)
+            if homepage_url == browser.current_url:
+                browser.get(logout_url)
             else:
-                self.browse_to(logout_url)
-            self.assertEqual(homepage_url, self.browser.current_url, "Logout redirects to the homepage")
+                self.browse_to(logout_url, browser=browser)
+            self.assertEqual(homepage_url, browser.current_url, "Logout redirects to the homepage")
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
 
-    def browser_is_logged_in(self, expected_username=None):
+    def browser_is_logged_in(self, expected_username=None, browser=None):
         # Two ways to be logged in:
         # 1. Student: #logged-in-name is username
         # 2. Admin: #logout contains username
+        browser = browser or self.browser
         try:
-            logged_in_name = self.browser.find_element_by_id("logged-in-name").text.strip()
-            logout_text = self.browser.find_element_by_id("nav_logout").text.strip()
+            logged_in_name = browser.find_element_by_id("logged-in-name").text.strip()
+            logout_text = browser.find_element_by_id("nav_logout").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
             return False

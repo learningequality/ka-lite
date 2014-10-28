@@ -343,12 +343,13 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
 
 
 @override_settings(SESSION_IDLE_TIMEOUT=1)
-class TestSessionTimeout(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
+class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """
     Test webpage for timing out user sessions
     """
 
     def test_facility_user_logout_after_interval(self):
+        """Students should be auto-logged out"""
         student_username = 'test_student'
         student_password =  'socrates'
         self.student = self.create_student(username=student_username, password=student_password)
@@ -356,3 +357,20 @@ class TestSessionTimeout(BrowserActionMixins, FacilityMixins, KALiteBrowserTestC
         time.sleep(3)
         self.browse_to(self.reverse("exercise_dashboard"))
         self.browser_check_django_message(message_type="error", contains="Your session has been timed out.")
+
+    def test_admin_no_logout_after_interval(self):
+        """Admin should not be auto-logged out"""
+        admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**admin_data)
+        self.browser_login_admin(**admin_data)
+        time.sleep(3)
+        self.browse_to(self.reverse("homepage"))
+        self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout admin")
+
+    def test_teacher_no_logout_after_interval(self):
+        """Teacher should not be auto-logged out"""
+        self.teacher = self.create_teacher()
+        self.browser_login_teacher(username=self.teacher.username, password="password")
+        time.sleep(3)
+        self.browse_to(self.reverse("homepage"))
+        self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout teacher")
