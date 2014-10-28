@@ -63,7 +63,7 @@ class PlaylistResource(Resource):
             playlist_mappings_for_user_group = PlaylistToGroupMapping.objects.filter(group=group).values('playlist').values()
             playlist_ids_assigned = [mapping['playlist'] for mapping in playlist_mappings_for_user_group]
             unit = get_current_unit_settings_value(facility_id)
-            playlists = [pl for pl in playlists if (pl.id in playlist_ids_assigned and pl.unit == unit)]
+            playlists = [pl for pl in playlists if (pl.id in playlist_ids_assigned and pl.unit <= unit)]
 
         return playlists
 
