@@ -14,11 +14,14 @@ window.ContentWrapperView = BaseView.extend({
             if (self.data_model.get("id")) {
                 self.data_model.fetch().then(function() {
 
+                    self.log_collection = new ContentLogCollection([], {content_model: self.data_model});
+
                     if (window.statusModel.get("is_logged_in")) {
 
-                        self.log_collection = new ContentLogCollection([], {content_model: self.data_model});
                         self.log_collection.fetch().then(self.user_data_loaded);
 
+                    } else {
+                        self.user_data_loaded();
                     }
                 });
             }
@@ -27,6 +30,7 @@ window.ContentWrapperView = BaseView.extend({
     },
 
     user_data_loaded: function() {
+        console.log("loaded");
         this.log_model = this.log_collection.get_first_log_or_new_log();
 
         this.render();

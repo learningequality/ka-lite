@@ -173,7 +173,8 @@ def rebuild_topictree(
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
                 logging.warn("No download link for video: %s\n" % child.get("youtube_id", child.get("id", "")))
-                # children_to_delete.append(i)
+                if channel_data.get("require_download_link", False):
+                    children_to_delete.append(i)
                 continue
 
             child_kinds = child_kinds.union(set([child_kind]))

@@ -16,13 +16,10 @@ window.AudioPlayerView = ContentBaseView.extend({
 
     initialize_sound_manager: function() {
         var self = this;
-        require(["SoundManager"], function(SoundManager) {
-            window.soundManager = SoundManager.soundManager;
-            window.soundManager.setup({
-              url: STATIC_URL + "soundmanager/",
-              preferFlash: false,
-              onready: self.create_audio_object
-            });
+        window.soundManager.setup({
+          url: STATIC_URL + "soundmanager/",
+          preferFlash: false,
+          onready: self.create_audio_object
         });
     },
 

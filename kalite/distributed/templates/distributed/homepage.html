@@ -65,29 +65,18 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-6" id="suggested-action-div">
-                <div class="vertical-shadow suggested-action">
-                    <h3 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h3>
-                    <p class="topic-list">
-                        {% for subtopic in topics %}
-                            <a href="{{ subtopic.path }}" class="topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
-                                {% trans subtopic.title %}
-                            </a>
-                        <br />
-                        {% endfor %}
-                    </p>
-                </div>
-            </div>
-
+            <div class="col-sm-3"></div>
             <div class="col-sm-6">
                 <div class="vertical-shadow suggested-action">
-                    <a href="{% url 'exercise_dashboard' %}">
-                        <h3 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h3>
-                        <p id="suggested-action-p">{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-                        <div id="suggested-action-image-link-homepage" style="background-image: url({% static 'images/distributed/knowledge-map-derivative-intuition.png' %});"></div>
+                    <a href="{% url 'learn' %}">
+                        <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
+                        <p id="suggested-action-p"><span class="icon-document">{% trans "Read" %}</span><span class="icon-video">{% trans "Watch" %}</span><span class="icon-audio">{% trans "Listen" %}</span><span class="icon-topic">{% trans "LEARN!" %}</span></p>
+                        <div id="suggested-action-image-link-homepage" style="background-image: url({% static 'images/distributed/learning-icon.png' %});"></div>
                     </a>
                 </div>
             </div>
+            <div class="col-sm-3"></div>
+
 
             <div class="row col-sm-12" id="homepage-p-div">
                 <p class="homepage-p">{% trans "KA Lite is a lightweight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
@@ -101,9 +90,9 @@
 
             <img src="/static/images/loading.gif" class="float-center loading"/>
 
-            <div id="playlist-table-container">
+            <!--<div id="playlist-table-container">
 
-            </div>
+            </div> -->
 
         </div>
     </div>
