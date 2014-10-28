@@ -1,7 +1,7 @@
 """Classes used by the student progress tastypie API"""
 import json
 
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.core.exceptions import ObjectDoesNotExist
 
 from kalite.facility.models import FacilityUser
@@ -167,7 +167,6 @@ class PlaylistProgress(PlaylistProgressParent):
                 "title": p.get("title"),
                 "id": p.get("id"),
                 "tag": p.get("tag"),
-                "url": reverse("view_playlist", kwargs={"playlist_id": p.get("id")}),
                 "vid_pct_complete": vid_pct_complete,
                 "vid_pct_started": vid_pct_started,
                 "vid_status": vid_status,
@@ -181,6 +180,11 @@ class PlaylistProgress(PlaylistProgressParent):
                 "n_pl_videos": n_pl_videos,
                 "n_pl_exercises": n_pl_exercises,
             }
+
+            try:
+                progress["url"] = reverse("view_playlist", kwargs={"playlist_id": p.get("id")})
+            except NoReverseMatch:
+                progress["url"] = ""
 
             user_progress.append(cls(**progress))
                     
