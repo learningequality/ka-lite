@@ -49,6 +49,10 @@ class PlaylistResource(Resource):
         elif request.is_logged_in and request.is_admin:  # either actual admin, or a teacher
             # allow access to all playlists
             playlists = Playlist.all()
+            if 'facility_user' in request.session:
+                facility_id = request.session['facility_user'].facility.id
+                unit = get_current_unit_settings_value(facility_id)
+                playlists = [pl for pl in playlists if pl.unit <= unit]
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             # only allow them to access playlists that they're assigned to
