@@ -68,7 +68,7 @@ var DataExportView = Backbone.View.extend({
     resource_changed: function() {
         this.model.set({
             resource_id: this.$('#resource-id').val()
-        })
+        });
     },
 
     resource_endpoint: function() {
@@ -121,7 +121,7 @@ var DataExportView = Backbone.View.extend({
 });
 
 
-var ZoneSelectView = Backbone.View.extend({
+window.ZoneSelectView = Backbone.View.extend({
 
     template: HB.template('data_export/zone-select'),
 
@@ -175,7 +175,7 @@ var ZoneSelectView = Backbone.View.extend({
     }
 });
 
-var FacilitySelectView = Backbone.View.extend({
+window.FacilitySelectView = Backbone.View.extend({
 
     template: HB.template('data_export/facility-select'),
 
@@ -272,7 +272,7 @@ var FacilitySelectView = Backbone.View.extend({
     }
 });
 
-var GroupSelectView = Backbone.View.extend({
+window.GroupSelectView = Backbone.View.extend({
 
     template: HB.template('data_export/group-select'),
 
