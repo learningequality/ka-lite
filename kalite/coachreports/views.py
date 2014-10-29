@@ -28,37 +28,47 @@ SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Aver
 def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
     subject to the permissions of the user type.
+
+    Make sure the returned `facilities` object is always a Facility queryset or an empty list.
     """
-    ungrouped_available = False
 
     # Options to select.  Note that this depends on the user.
+    facilities = []
     if request.user.is_superuser:
         facilities = Facility.objects.all()
         # Groups is now a list of objects with a key for facility id, and a key
         # for the list of groups at that facility.
         # TODO: Make this more efficient.
-        groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
-        ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
+        groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
 
     elif "facility_user" in request.session:
         user = request.session["facility_user"]
         if user.is_teacher:
             facilities = Facility.objects.all()
-            groups = [{"facility": facilitie.id, "groups": FacilityGroup.objects.filter(facility=facilitie)} for facilitie in facilities]
-            ungrouped_available = len(FacilityUser.objects.filter(facility=facility, is_teacher=False, group__isnull=True)) > 0
+            groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
         else:
             # Students can only access their group
-            facilities = [user.facility]
+            if facility and isinstance(facility, Facility):
+                facilities = Facility.objects.filter(id=facility.id)
             if not user.group:
                 groups = []
             else:
-                groups = [{"facility": user.facility.id, "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
+                groups = [{"facility": user.facility.id,
+                           "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
     elif facility:
-        facilities = [facility]
+        facilities = Facility.objects.filter(id=facility.id)
         groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
-
     else:
-        facilities = groups = None
+        # defaults to all facilities and groups
+        facilities = Facility.objects.all()
+        groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
+
+    ungrouped_available = False
+    for f in facilities:
+        # Check if there is at least one facility with ungrouped students.
+        ungrouped_available = f.has_ungrouped_students
+        if ungrouped_available:
+            break
 
     return (groups, facilities, ungrouped_available)
 
@@ -80,15 +90,14 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
         "ungrouped_available": ungrouped_available,
     }
 
-def coach_nav_context(request, facility, report_id):
+def coach_nav_context(request, report_id):
     """
     Updates the context of all coach reports with the facility, group, and report to have selected
     by default on page load
     """
     facility_id = request.GET.get("facility_id", None)
-    if not facility_id:
-        facility_id = facility.id
-    else:
+    facility = None
+    if facility_id:
         facility = Facility.objects.get(id=facility_id)
     group_id = request.GET.get("group_id", "")
     context = {
@@ -102,11 +111,10 @@ def coach_nav_context(request, facility, report_id):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/timeline_view.html")
-def timeline_view(request, facility, xaxis="", yaxis=""):
+def timeline_view(request, xaxis="", yaxis=""):
     """timeline view (line plot, xaxis is time-related): just send metadata; data will be requested via AJAX"""
-    facility, group_id, context = coach_nav_context(request, facility, "timeline")
+    facility, group_id, context = coach_nav_context(request, "timeline")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Timeline plot")
     try:
@@ -120,11 +128,10 @@ def timeline_view(request, facility, xaxis="", yaxis=""):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/scatter_view.html")
-def scatter_view(request, facility, xaxis="", yaxis=""):
+def scatter_view(request, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
-    facility, group_id, context = coach_nav_context(request, facility, "scatter")
+    facility, group_id, context = coach_nav_context(request, "scatter")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Scatter plot")
     try:
@@ -173,12 +180,12 @@ def landing_page(request, facility):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/tabular_view.html")
-def tabular_view(request, facility, report_type="exercise"):
+def tabular_view(request, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # important for setting the defaults for the coach nav bar
-    facility, group_id, context = coach_nav_context(request, facility, "tabular")
+
+    facility, group_id, context = coach_nav_context(request, "tabular")
 
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
@@ -204,9 +211,17 @@ def tabular_view(request, facility, report_type="exercise"):
 
     if group_id:
         # Narrow by group
-        if group_id == "Ungrouped":
-            users = FacilityUser.objects.filter(
-                facility=facility, group__isnull=True, is_teacher=False).order_by(*student_ordering)
+        from control_panel.api_resources import UNGROUPED_KEY
+        if group_id == UNGROUPED_KEY:
+            users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False)
+            if facility:
+                # filter only those ungrouped students for the facility
+                users = users.filter(facility=facility)
+                users = users.order_by(*student_ordering)
+            else:
+                # filter all ungroup students
+                users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False).order_by(*student_ordering)
+
         else:
             users = FacilityUser.objects.filter(
                 group=group_id, is_teacher=False).order_by(*student_ordering)
@@ -223,6 +238,7 @@ def tabular_view(request, facility, report_type="exercise"):
 
     else:
         # Show all (including ungrouped)
+        search_groups = []
         for groups_dict in groups:
             search_groups += groups_dict["groups"]
         users = FacilityUser.objects.filter(
@@ -300,20 +316,36 @@ def tabular_view(request, facility, report_type="exercise"):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/test_view.html")
-def test_view(request, facility):
+def test_view(request):
     """Test view gets data server-side and displays exam results"""
-    facility, group_id, context = coach_nav_context(request, facility, "test")
+    facility, group_id, context = coach_nav_context(request, "test")
     # Get students
     users = get_user_queryset(request, facility, group_id)
 
     # Get the TestLog objects generated by this group of students
+    # TODO(cpauya): what about queryset for ungrouped students?
+    test_logs = None
+    from control_panel.api_resources import UNGROUPED_KEY
     if group_id:
         test_logs = TestLog.objects.filter(user__group=group_id)
-    else:
-        # covers the all groups case
+        # Narrow all by ungroup facility user
+        if group_id == UNGROUPED_KEY:
+            test_logs = TestLog.objects.filter(user__group__isnull=True)
+            if facility:
+                TestLog.objects.filter(user__facility=facility, user__group__isnull=True)
+            else:
+                TestLog.objects.filter(user__group__isnull=True)
+
+    elif facility:
         test_logs = TestLog.objects.filter(user__facility=facility)
+
+    else:
+        # filter by all facilities and groups for the user
+        (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
+        if facilities:
+            facility_ids = facilities.values_list("id", flat=True)
+            test_logs = TestLog.objects.filter(user__facility__id__in=facility_ids)
 
     # Get list of all test objects
     test_resource = TestResource()
@@ -406,12 +438,11 @@ def test_view(request, facility):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/test_detail_view.html")
-def test_detail_view(request, facility, test_id):
+def test_detail_view(request, test_id):
     """View details of student performance on specific exams"""
 
-    facility, group_id, context = coach_nav_context(request, facility, "test")
+    facility, group_id, context = coach_nav_context(request, "test")
     # get users in this facility and group
     users = get_user_queryset(request, facility, group_id)
 
@@ -421,7 +452,15 @@ def test_detail_view(request, facility, test_id):
 
     # get all of the test logs for this specific test object and generated by these specific users
     if group_id:
+        from control_panel.api_resources import UNGROUPED_KEY
         test_logs = TestLog.objects.filter(user__group=group_id, test=test_id)
+
+        # Narrow all by ungroup facility user
+        if group_id == UNGROUPED_KEY:
+            if facility:
+                test_logs = TestLog.objects.filter(user__group__isnull=True)
+            else:
+                test_logs = TestLog.objects.filter(facility=facility, user__group__isnull=True)
     else:
         # covers the all groups case
         test_logs = TestLog.objects.filter(user__facility=facility, test=test_id)
@@ -515,11 +554,17 @@ def get_user_queryset(request, facility, group_id):
     """Return set of users appropriate to the facility and group"""
     student_ordering = ["last_name", "first_name", "username"]
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
-
+    from control_panel.api_resources import UNGROUPED_KEY, ALL_KEY
     if group_id:
         # Narrow by group
         users = FacilityUser.objects.filter(
             group=group_id, is_teacher=False).order_by(*student_ordering)
+        # Narrow all by ungroup user
+        if group_id == UNGROUPED_KEY:
+            users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False).order_by(*student_ordering)
+            if facility:
+                users = FacilityUser.objects.filter(facility=facility, group__isnull=True,
+                                                    is_teacher=False).order_by(*student_ordering)
 
     elif facility:
         # Narrow by facility
@@ -533,6 +578,7 @@ def get_user_queryset(request, facility, group_id):
 
     else:
         # Show all (including ungrouped)
+        search_groups = []
         for groups_dict in groups:
             search_groups += groups_dict["groups"]
         users = FacilityUser.objects.filter(

@@ -35,8 +35,8 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "id", "slug"],
-    "Exercise": ["kind", "description", "title", "id", "slug"]
+    "Video": ["kind", "description", "title", "id", "slug", "path"],
+    "Exercise": ["kind", "description", "title", "id", "slug", "path"]
 }
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
@@ -58,6 +58,7 @@ channel_data = {
     "kind_blacklist": kind_blacklist,
     "slug_blacklist": slug_blacklist,
     "temp_ok_atts": temp_ok_atts,
+    "require_download_link": True,
 }
 
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)

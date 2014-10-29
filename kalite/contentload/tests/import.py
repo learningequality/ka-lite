@@ -32,8 +32,9 @@ class TestContentImportTopicTree(MainTestCase):
         self.tempdir = tempfile.mkdtemp()
         self.recursion_depth = 0
         self.channel = {
-            "id": "test",
-            "path": os.path.join(settings.CONTENT_DATA_PATH, "test")
+            "id": os.path.basename(self.tempdir),
+            "path": os.path.join(settings.CONTENT_DATA_PATH, os.path.basename(self.tempdir)),
+            "name": os.path.basename(self.tempdir),
         }
 
 

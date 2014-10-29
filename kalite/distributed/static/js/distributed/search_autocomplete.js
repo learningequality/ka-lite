@@ -1,5 +1,5 @@
 var _nodes = null;   // store info about each topic tree node (persists to local storage)
-var _titles = [];    // keep an array (local memory only) around for fast filtering
+var _titles = {};    // keep an array (local memory only) around for fast filtering
 var _keywords = {}; // keep a map of keywords to node titles for filtering on keywords
 var _timeout_length = 1000 * 20; // 20 seconds
 var _version = "7"; // increment this when you're invalidating old storage
@@ -31,16 +31,16 @@ function flattenNodes() {
         $.extend(flattened_nodes, _nodes[node_type]);
     }
     _nodes = flattened_nodes;
-    for (var title in _nodes) {
-        if($.inArray(title, _titles) == -1){
-            _titles.push(title);
-            if (_nodes[title]["keywords"]!==undefined){
-                for (var i = 0; i < _nodes[title]["keywords"].length; i++){
-                    if (_keywords[_nodes[title]["keywords"][i]]===undefined){
-                        _keywords[_nodes[title]["keywords"][i]] = [];
+    for (var id in _nodes) {
+        if(!_.has(_titles, _nodes[id]["title"])){
+            _titles[_nodes[id]["title"]] = id;
+            if (_nodes[id]["keywords"]!==undefined){
+                for (var i = 0; i < _nodes[id]["keywords"].length; i++){
+                    if (_keywords[_nodes[id]["keywords"][i]]===undefined){
+                        _keywords[_nodes[id]["keywords"][i]] = [];
                     }
-                    if($.inArray(title, _keywords[_nodes[title]["keywords"][i]]) == -1) {
-                        _keywords[_nodes[title]["keywords"][i]].push(title);
+                    if($.inArray(id, _keywords[_nodes[id]["keywords"][i]]) == -1) {
+                        _keywords[_nodes[id]["keywords"][i]].push(id);
                     }
                 }
             }
@@ -66,21 +66,23 @@ $(document).ready(function() {
             clear_messages();
 
             // Executed when we're requested to give a list of results
-            var titles_filtered = $.ui.autocomplete.filter(_titles, request.term);
+            var titles_filtered = $.ui.autocomplete.filter(_.keys(_titles), request.term);
+
+            titles_filtered = _.values(_.pick(_titles, titles_filtered));
 
             var keywords_filtered = $.ui.autocomplete.filter(_.keys(_keywords), request.term);
 
             keywords_filtered = _.flatten(_.values(_.pick(_keywords, keywords_filtered)));
 
-            titles_filtered = _.union(titles_filtered, keywords_filtered);
+            var ids_filtered = _.union(titles_filtered, keywords_filtered);
 
             // sort the titles again, since ordering was lost when we did autocomplete.filter
             var node_type_ordering = ["video", "exercise", "content", "topic"]; // custom ordering, with the last in the array appearing first
-            titles_filtered.sort(function(title1, title2) {
-                var node1 = _nodes[title1];
-                var node2 = _nodes[title2];
+            ids_filtered.sort(function(id1, id2) {
+                var node1 = _nodes[id1];
+                var node2 = _nodes[id2];
                 // we use the ordering of types found in node_types
-                var compvalue = node_type_ordering.indexOf(node2.type) - node_type_ordering.indexOf(node1.type);
+                var compvalue = node_type_ordering.indexOf(node2.kind.toLowerCase()) - node_type_ordering.indexOf(node1.kind.toLowerCase());
                 return compvalue;
             });
 
@@ -88,27 +90,27 @@ $(document).ready(function() {
             var results = [];
 
             var is_admin = window.statusModel.get("is_admin");
-            for (var idx in titles_filtered) {
-                var node = _nodes[titles_filtered[idx]];
+            for (var i = 0; i < ids_filtered.length; i++) {
+                var node = _nodes[ids_filtered[i]];
 
                 // exclude videos that aren't available
-                if (!is_admin && node.type == "video" && !node.available) {
+                if (!is_admin && node.kind.toLowerCase() == "video" && !node.available) {
                     continue;
                 }
 
                 var label = "<span class='autocomplete icon-" + node.kind.toLowerCase() + " " + (node.available ? "" : "un") + "available'>" + gettext(node.title) + "</span>&nbsp;";
                 results.push({
                     label: label,
-                    value: node.title
+                    value: ids_filtered[i]
                 });
             }
             response(results.slice(0, 15)); // slice after filtering, see #1563
         },
         select: function( event, ui ) {
             // When they click a specific item, just go there (if we recognize it)
-            var title = ui.item.value;
-            if (_nodes && title in _nodes && _nodes[title]) {
-                window.location.href = "/learn/" + _nodes[title].path;
+            var id = ui.item.value;
+            if (_nodes && id in _nodes && _nodes[id]) {
+                window.location.href = "/learn/" + _nodes[id].path;
             } else {
                 show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }

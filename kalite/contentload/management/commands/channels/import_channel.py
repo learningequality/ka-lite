@@ -123,6 +123,8 @@ def construct_node(location, parent_path, node_cache, channel):
     base_name = os.path.basename(location)
     if base_name.endswith(".json"):
         return None
+    if not parent_path:
+        base_name = channel["name"]
     slug = slugify(unicode(base_name.split(".")[0]))
     current_path = os.path.join(parent_path, slug)
     try:

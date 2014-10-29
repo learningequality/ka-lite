@@ -23,11 +23,11 @@
             {% for node in subresults %}
                 <li>
                 {% if node.kind == 'Topic' %}
-                    <a href="{{ node.path }}" class="topic-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
+                    <a href="{% url 'learn' %}{{ node.path }}" class="topic-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
                 {% elif node.kind == 'Video' %}
                     <a {% if node.available %}href="{{ node.path }}" {% endif %}class="video-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
                 {% else %}
-                    <a href="{{ node.path }}">{% trans node.title %}</a>
+                    <a href="{% url 'learn' %}{{ node.path }}">{% trans node.title %}</a>
                 {% endif %}
                 </li>
             {% endfor %}

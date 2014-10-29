@@ -116,6 +116,7 @@ class Command(NoArgsCommand):
 
         channel_dict = {
             "id": channel_id,
+            "name": channel_name,
             "path": channel_path,
         }
 

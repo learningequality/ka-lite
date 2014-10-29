@@ -1,17 +1,31 @@
+import logging
+
 from annoying.functions import get_object_or_None
 from datetime import datetime
+
 from django.http import HttpResponse
+from django.utils.translation import ugettext as _
+
 from tastypie import fields
 from tastypie.exceptions import NotFound, BadRequest
 from tastypie.resources import Resource, ModelResource
 
+from securesync.models import Zone, Device, SyncSession
+
+from kalite.coachreports.views import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth import ObjectAdminAuthorization
 from kalite.student_testing.models import TestLog
-from securesync.models import Zone, Device, SyncSession
 
 from .api_serializers import CSVSerializer
+
+
+# This constant is used as a key for the all facilties drop down in the frontend
+ID_NONE = "None"
+
+ALL_KEY = ""
+UNGROUPED_KEY = "ungrouped"
 
 
 class FacilityResource(ModelResource):
@@ -39,12 +53,51 @@ class FacilityGroupResource(ModelResource):
         authorization = ObjectAdminAuthorization()
 
     def obj_get_list(self, bundle, **kwargs):
-        # Allow filtering groups by facility
-        facility_id = bundle.request.GET.get('facility_id')
-        if facility_id:
-            group_list = FacilityGroup.objects.filter(facility__id=facility_id)
+        """
+        Default options will be "All" groups and if a facility has ungrouped students, also add an "Ungrouped" option.
+        Then we add the list of facilities after the above default options.
+
+        Must return no groups if there are no groups for the user.
+        """
+
+        # Call with facility=None argument to get all facilities and to determine if has ungrouped students.
+        (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(bundle.request,
+                                                                                               facility=None)
+
+        # Filter records only for all facilities accessible for the user
+        qs = []
+        if facilities:
+            facility_ids = facilities.values_list("id", flat=True)
+            # Get the facility requested by client, if there is any, and validate it
+            # from the list of facilities for the user.
+            facility_id = bundle.request.GET.get('facility_id')
+            if facility_id and facility_id != ID_NONE:
+                if facility_id in facility_ids:
+                    facility = Facility.objects.get(id=facility_id)
+                    ungrouped_available = facility.has_ungrouped_students
+                    qs = FacilityGroup.objects.filter(facility__id=facility_id)
+                else:
+                    raise BadRequest("No facility found with that facility_id.")
+            else:
+                qs = FacilityGroup.objects.filter(facility__id__in=facility_ids)
+
+        # Flag to return only the FacilityGroup objects and not including the "All" and "Ungrouped" options.
+        # TODO(cpauya): how to convert this into a kwargs above instead of a request.GET?
+        groups_only = bundle.request.GET.get("groups_only", True)
+        if groups_only:
+            group_list = list(qs)
         else:
-            group_list = FacilityGroup.objects.all()
+            default_list = []
+            if qs or ungrouped_available:
+                # add the "All" option
+                default_list = [FacilityGroup(id=ALL_KEY, name=_("All"))]
+
+                # add the "Ungrouped" option
+                if ungrouped_available:
+                    fg = FacilityGroup(id=UNGROUPED_KEY, name=_("Ungrouped"))
+                    default_list.append(fg)
+            # add all the facility group options for the user
+            group_list = default_list + list(qs)
 
         # call super to trigger auth
         return super(FacilityGroupResource, self).authorized_read_list(group_list, bundle)
