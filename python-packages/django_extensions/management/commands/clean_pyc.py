@@ -18,6 +18,11 @@ class Command(NoArgsCommand):
     requires_model_validation = False
 
     def handle_noargs(self, **options):
+        from django.conf import settings
+        if settings.BUILT:
+            settings.LOG.info("Installation built by build process; skipping clean_pyc")
+            return
+
         project_root = options.get("path", None)
         if not project_root:
             project_root = get_project_root()

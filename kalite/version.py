@@ -3,6 +3,24 @@
 VERSION = "0.12.0"
 VERSION_INFO = {
 
+    "0.12.7": {
+        "release_date": "2014/10/08",
+        "git_commit": "75591f",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["fix to handle multiple psutil versions", "use POST requests when deleting student groups"],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+
+    },
+
     "0.12.6": {
         "release_date": "2014/09/08",
         "git_commit": "9cf2f05",
