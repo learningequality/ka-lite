@@ -8,22 +8,25 @@ from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-
 from django.http import Http404
 from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
 
 from .api_views import get_data_form, stats_dict
+from django.shortcuts import get_object_or_404
+
+from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
-from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_exercise_cache
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_exercise_cache
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
+
 
 def get_accessible_objects_from_logged_in_user(request, facility):
     """Given a request, get all the facility/group/user objects relevant to the request,
@@ -89,6 +92,7 @@ def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kw
         "facilities": facilities,
         "ungrouped_available": ungrouped_available,
     }
+
 
 def coach_nav_context(request, report_id):
     """
@@ -194,7 +198,7 @@ def tabular_view(request, report_type="exercise"):
     topics = [tid for tid in get_knowledgemap_topics() if report_type.title() in tid["contains"]]
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
-    
+
     context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         # For translators: the following two translations are nouns
@@ -389,10 +393,8 @@ def test_view(request):
                         "status": status,
                         "cell_display": display_score,
                         "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
-                                           "%(n_remaining)d problems remaining",
-                                            n_remaining) % {
-                                            'n_remaining': n_remaining,
-                                           },
+                                                                   "%(n_remaining)d problems remaining",
+                                                                   n_remaining) % {'n_remaining': n_remaining},
                     })
             else:
                 # Case: has not started
@@ -550,11 +552,53 @@ def test_detail_view(request, test_id):
     return context
 
 
+@require_authorized_admin
+@facility_required
+@render_to("coachreports/spending_report_view.html")
+def spending_report_view(request, facility):
+    """View total points remaining for students"""
+    group_id = request.GET.get("group", "")
+    users = get_user_queryset(request, facility, group_id)
+    user_points = {}
+    for user in users:
+        user_points[user] = compute_total_points(user)
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
+        "user_points": user_points,
+    })
+    return context
+
+
+@require_authorized_admin
+@render_to("coachreports/spending_report_detail_view.html")
+def spending_report_detail_view(request, user_id):
+    """View transaction logs for student"""
+    student = get_object_or_404(FacilityUser, id=user_id)
+    transactions = StoreTransactionLog.objects.filter(user=student, context_type='unit').order_by('purchased_at') # TODO(dylanjbarth): filter out gift cards?
+    context = plotting_metadata_context(request)
+    store_items = StoreItem.all()
+    humanized_transactions = []
+    for t in transactions:
+        # Hydrate the store item object
+        item_key = t.item.strip("/").split("/")[-1]
+        humanized_transactions.append({
+            "purchased_at": t.purchased_at,
+            "item": store_items.get(item_key, ""),
+            "value": abs(t.value),
+            "context_id": t.context_id,
+        })
+    context.update({
+        "student": student,
+        "transactions": humanized_transactions,
+    })
+    return context
+
+
 def get_user_queryset(request, facility, group_id):
     """Return set of users appropriate to the facility and group"""
     student_ordering = ["last_name", "first_name", "username"]
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
-    from control_panel.api_resources import UNGROUPED_KEY, ALL_KEY
+    from control_panel.api_resources import UNGROUPED_KEY
     if group_id:
         # Narrow by group
         users = FacilityUser.objects.filter(

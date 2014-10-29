@@ -128,6 +128,18 @@ def handle_exam_unset(sender, **kwargs):
                 transaction_log.value = int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number))
                 transaction_log.save()
 
+
+def playlist_group_mapping_reset_for_a_facility(facility_id):
+    from kalite.playlist.models import PlaylistToGroupMapping
+    from kalite.facility.models import FacilityGroup
+
+    groups = FacilityGroup.objects.filter(facility=facility_id).values("id")
+    playlist_group = PlaylistToGroupMapping.objects.all()
+    for group in groups:
+        for assigned_group in playlist_group:
+            if assigned_group.group_id == group['id']:
+                assigned_group.delete()
+
 @receiver(unit_switch, dispatch_uid="unit_switch")
 def handle_unit_switch(sender, **kwargs):
     old_unit = kwargs.get("old_unit")
@@ -147,3 +159,5 @@ def handle_unit_switch(sender, **kwargs):
                 old_unit_transaction_log.save()
                 new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
                 new_unit_transaction_log.soft_delete()
+
+            playlist_group_mapping_reset_for_a_facility(facility_id)

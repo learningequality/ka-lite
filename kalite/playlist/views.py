@@ -1,9 +1,9 @@
 from annoying.decorators import render_to
 
-from kalite.shared.decorators import require_login
+from kalite.shared.decorators import require_admin
 
 
-@require_login
+@require_admin
 @render_to("playlist/assign_playlists.html")
 def assign_playlists(request):
     context = {

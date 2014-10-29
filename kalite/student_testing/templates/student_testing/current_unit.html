@@ -9,8 +9,15 @@
 
 {% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
 
-{% block headcss %}
-    {{ block.super }}
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+    {% if request.is_teacher %}
+    <style media="screen" type="text/css">
+    .previous {
+        display: none;
+    }
+    </style>
+    {% endif %}
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}

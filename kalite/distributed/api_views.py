@@ -143,6 +143,7 @@ def status(request):
         data["points"] = request.session["points"]
         data["user_id"] = user.id
         data["user_uri"] = reverse("api_dispatch_detail", kwargs={"resource_name": "user", "pk": user.id})
+        data["facility_id"] = user.facility.id
 
     # Override data using django data
     if request.user.is_authenticated():  # Django user

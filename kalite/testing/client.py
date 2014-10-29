@@ -7,7 +7,7 @@ from django.test import Client
 
 logging = settings.LOG
 
-
+# TODO(aronasorman): this is pretty confusing (e.g. student_data is defined here and on the test object)
 class KALiteClient(Client):
     facility = None
     teacher = None
@@ -47,6 +47,8 @@ class KALiteClient(Client):
             data['facility'] = facility.id
         elif use_default_facility and self.facility:
             data['facility'] = self.facility.id
+        elif data['facility']:
+            data['facility'] = data['facility'].id
         else:
             data['facility'] = None
         response = self.post(self.login_url, data=data, follow=follow)

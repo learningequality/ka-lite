@@ -366,7 +366,7 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         time.sleep(3)
         self.browse_to(self.reverse("homepage"))
         self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout admin")
-        
+
     def test_teacher_no_logout_after_interval(self):
         """Teacher should not be auto-logged out"""
         self.teacher = self.create_teacher()

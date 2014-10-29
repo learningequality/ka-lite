@@ -7,6 +7,8 @@ from kalite.dynamic_assets import DynamicSettingsBase, fields
 
 class DynamicSettings(DynamicSettingsBase):
     student_grade_level = fields.IntegerField(default=0)
+    unit = fields.IntegerField(default=1)
+
 
 # modify ds in-place. Use when you're modifying ds rather than defining new dynamic settings
 def modify_dynamic_settings(ds, request=None, user=None):
@@ -25,7 +27,8 @@ def modify_dynamic_settings(ds, request=None, user=None):
         # Set grade level on students to enable dynamic checking of student playlists within a unit.
         # TODO (richard): (doge) Much hardcode. Such hack. So get rid. Wow.
         ds["ab_testing"].student_grade_level = GRADE.get(facility.id, GRADE.get(facility.name, GRADE.get(facility.id[0:8], 0)))
-
+        ds["ab_testing"].unit = unit
+        
         # load the settings associated with the user's current condition
         new_settings = CONDITION_SETTINGS.get(condition, {})
 
