@@ -19,8 +19,8 @@
 
             <div class="row">
 
-                
-                
+
+
                 <div class="col-md-4">
                     <div class="vertical-shadow suggested-action">
                         <a href="{% url 'tabular_view' %}?{% block topic_paths %}{% for path in form.topic_path %}topic_path={{ path }}&{% endfor %}{% endblock topic_paths %}">
@@ -29,7 +29,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="vertical-shadow suggested-action" id="suggested-action-coachpage-effort">
                         <a href="{% url 'scatter_view' xaxis='pct_mastery' yaxis='effort' %}?{% repeatblock topic_paths %}">
@@ -38,7 +38,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="vertical-shadow suggested-action">
                         <a href="{% url 'timeline_view' xaxis='ex:completed_timestamp' yaxis='pct_mastery' %}?{% repeatblock topic_paths %}">
@@ -47,8 +47,15 @@
                         </a>
                     </div>
                 </div>
-
-                
+                <!-- TODO-BLOCKER (aron): figure out what to do with this for 0.13 -->
+                <!-- <div class="separate">
+                <div class="vertical-shadow suggested-action">
+                <a class="changeable-link" href="{% url 'spending_report_view' %}">
+                <div class="suggested-action-image-link" style="background-image: url({% static 'images/coachreports/coach-report-store-spending.png' %});"></div>
+                <h2 class="suggested-action-title">{% trans "Student Spending" %}</h2>
+                </a>
+                </div>
+                </div> -->
             </div>
 
         </div>

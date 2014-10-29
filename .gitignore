@@ -51,3 +51,4 @@ writeup/
 /kalite/i18n/static/
 /.vagrant/
 ghostdriver.log
+/kalite/_built.touch

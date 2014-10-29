@@ -1,0 +1,16 @@
+{
+  "id": "g6_u3_t3_practice",
+  "title": "Grade 6 Unit Test 3 - Practice",
+  "seed": 2200,
+  "playlist_ids": [ "g6_u3_p1", "g6_u3_p2" ],
+  "repeats": "3",
+  "ids": [
+    "angle_types", "complementary_and_supplementary_angles",
+    "congruent_angles", "exploring_angle_pairs_1", "measuring_angles",
+    "parallel_lines_1", "points_lines_and_planes",
+    "recognizing-rays-lines-linesegments", "vertical_angles",
+    "vertical_angles_2"
+  ],
+  "is_practice": true,
+  "show": true
+}

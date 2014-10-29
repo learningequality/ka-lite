@@ -173,7 +173,7 @@ a:hover {
     border-top-right-radius: 16px;
     font-weight: bold;
 }
-.active-tab { 
+.active-tab {
     height: 89px;
     width: 110px;
 }
@@ -306,7 +306,7 @@ a:hover {
     background-color: white !important;
     border-top-left-radius: 5px !important;
     border-top-right-radius: 16px !important;
-    font-weight: bold;            
+    font-weight: bold;
 }
 .active {
     background-color: #E9F1E4;
@@ -353,7 +353,7 @@ a:hover {
 }
 /********* End "Admin" Sub-Navigation bar **********/
 
- 
+
 /********* Coach Reports Sub-Navigation bar *********/
 .active {
     border: none !important;
@@ -393,7 +393,7 @@ a:hover {
 .subnav span {
     line-height: 1.6;
     font-size: 17px;
-} 
+}
 .progress-tab img,
 .effort-tab img,
 .mastery-tab img {
@@ -825,6 +825,7 @@ div .col-xs-4 {
 
 /* END styles for software-keyboard */
 
+<<<<<<< HEAD
 /*
 Icon Font
 ======================================
@@ -872,3 +873,32 @@ to items you want to have the icon appear with.
 .icon-document:before {
     content: "\e605";
 }
+/* BEGIN styles for modal dialog */
+
+div#overlay {
+    position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
+    margin: auto;
+    height: 30px;
+    width: 400px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1100; /* makes the div the top layer, so it’ll lay on top of the other content */
+}
+
+
+div#fade {
+    position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
+    left: 0%; /* makes the div span all the way across the viewing area */
+    top: 0%; /* makes the div span all the way across the viewing area */
+    background-color: black;
+    -moz-opacity: 0.7; /* makes the div transparent, so you have a cool overlay effect */
+    opacity: .70;
+    filter: alpha(opacity=70);
+    width: 100%;
+    height: 100%;
+    z-index: 1010; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
+}
+
+/* END styles for modal dialog */

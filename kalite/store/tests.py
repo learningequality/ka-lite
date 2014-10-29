@@ -10,7 +10,7 @@ from kalite.main.models import ExerciseLog
 from kalite.student_testing.models import Test, TestLog
 from kalite.student_testing.utils import set_exam_mode_on, set_current_unit_settings_value
 
-from .models import StoreTransactionLog
+from .models import StoreTransactionLog, playlist_group_mapping_reset_for_a_facility
 
 logging = settings.LOG
 
@@ -101,3 +101,14 @@ class SwitchTest(BaseTest):
         # Check that the original transactionlog has been deleted
         transactionlogs = StoreTransactionLog.objects.filter(user=self.student, context_id="2", context_type="unit_points_reset", item="gift_card")
         self.assertTrue(len(transactionlogs)==0)
+
+    @override_settings(CONFIG_PACKAGE=["Nalanda"])
+    def test_playlist_group_mapping_reset_for_a_facility(self):
+        from kalite.playlist.models import PlaylistToGroupMapping
+        from kalite.facility.models import FacilityGroup
+        group = FacilityGroup.objects.create(name='testgroup', facility=self.facility)
+        PlaylistToGroupMapping(playlist= "Playlist 1", group = group).save()
+        previous_count = PlaylistToGroupMapping.objects.count()
+        playlist_group_mapping_reset_for_a_facility(self.facility.id)
+        new_count = PlaylistToGroupMapping.objects.count()
+        self.assertTrue(previous_count > new_count)

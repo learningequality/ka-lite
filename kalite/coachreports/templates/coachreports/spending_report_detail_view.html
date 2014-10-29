@@ -1,0 +1,81 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Store Transactions" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
+
+    <style type="text/css">
+        th {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        td {
+            font-size: 14px;
+        }
+    </style>
+{% endblock headcss %}
+
+{% block content %}
+    {% block navbar_title %}
+        <h1>
+            <a href="{% url 'spending_report_view' %}">&larr; {% trans "Back" %}</a>&nbsp;|&nbsp;<span title="{{ user.get_name }}">Store transactions for {{ user.username }}</span>
+        </h1>
+    {% endblock navbar_title %}
+    <div id="content">
+        {% if not transactions %}
+            <p>
+                {% trans "This user has no store transactions." %}
+            </p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            {% trans "Date Purchased" %}
+                        </th>
+                        <th>
+                            {% trans "Item" %}
+                        </th>
+                        <th>
+                            {% trans "Description" %}
+                        </th>
+                        <th>
+                            {% trans "Cost" %}
+                        </th>
+                        <th>
+                            {% trans "Unit ID" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                        <tr>
+                            <td>
+                                {{ t.purchased_at|date:"SHORT_DATE_FORMAT" }}
+                            </td>
+                            <td>
+                                {{ t.item.title }}
+                            </td>
+                            <td title="{{t.item.description}}">
+                                {{ t.item.description|truncatechars:30 }}
+                            </td>
+                            <td>
+                                {{ t.value }} 
+                            </td>
+                            <td>
+                                {{ t.context_id }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock content %}
+

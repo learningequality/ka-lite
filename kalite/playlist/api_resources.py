@@ -4,11 +4,10 @@ from tastypie.resources import ModelResource, Resource
 
 from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
-
-from kalite.topic_tools import get_video_cache, get_slug2id_map
-
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.topic_tools import get_slug2id_map, get_video_cache
+from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
+from kalite.student_testing.utils import get_current_unit_settings_value
 
 
 class PlaylistResource(Resource):
@@ -19,6 +18,7 @@ class PlaylistResource(Resource):
     title = fields.CharField(attribute='title')
     groups_assigned = fields.ListField(attribute='groups_assigned')
     entries = fields.ListField(attribute='entries')
+    unit = fields.IntegerField(attribute='unit')
 
     class Meta:
         resource_name = 'playlist'
@@ -45,14 +45,21 @@ class PlaylistResource(Resource):
         elif request.is_logged_in and request.is_admin:  # either actual admin, or a teacher
             # allow access to all playlists
             playlists = Playlist.all()
+            if 'facility_user' in request.session:
+                facility_id = request.session['facility_user'].facility.id
+                unit = get_current_unit_settings_value(facility_id)
+                playlists = [pl for pl in playlists if pl.unit <= unit]
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             # only allow them to access playlists that they're assigned to
+            # and on the current unit
             playlists = Playlist.all()
             group = request.session['facility_user'].group
+            facility_id = request.session['facility_user'].facility.id
             playlist_mappings_for_user_group = PlaylistToGroupMapping.objects.filter(group=group).values('playlist').values()
             playlist_ids_assigned = [mapping['playlist'] for mapping in playlist_mappings_for_user_group]
-            playlists = [pl for pl in playlists if pl.id in playlist_ids_assigned]
+            unit = get_current_unit_settings_value(facility_id)
+            playlists = [pl for pl in playlists if (pl.id in playlist_ids_assigned and pl.unit <= unit)]
 
         return playlists
 
@@ -78,6 +85,7 @@ class PlaylistResource(Resource):
     def obj_create(self, request):
         raise NotImplemented("Operation not implemented yet for playlists.")
 
+    @tastypie_require_admin
     def obj_update(self, bundle, **kwargs):
         new_group_ids = set([group['id'] for group in bundle.data['groups_assigned']])
         playlist = Playlist(**bundle.data)

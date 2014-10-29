@@ -13,8 +13,8 @@ class VideoLogAdmin(admin.ModelAdmin):
 admin.site.register(VideoLog, VideoLogAdmin)
 
 class ExerciseLogAdmin(admin.ModelAdmin):
-    list_display = ("exercise_id", "user", "language", "streak_progress", "complete",)
-    list_filter = ("exercise_id", "user", "language", "complete",)
+    list_display = ("exercise_id", "user", "language", "streak_progress", "completion_timestamp", "complete",)
+    list_filter = ("completion_timestamp", "complete", "language", "exercise_id", "user",)
 admin.site.register(ExerciseLog, ExerciseLogAdmin)
 
 class UserLogAdmin(admin.ModelAdmin):
