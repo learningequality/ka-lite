@@ -63,7 +63,8 @@ input[type="submit"] {
     Nav Bar
 =================================== */
 .navbar {
-    border-bottom: 1px solid #999;
+    border-top: 1px solid #999;
+    border-bottom: none;
 }
 .faded-green-bg {
     background: #c6d1ad; /* Also controls footer color */
@@ -78,16 +79,38 @@ input[type="submit"] {
 .navbar ul li a {
     color: #333 !important;
     text-transform: uppercase;
+    border-radius: 4px 4px 0 0;
+    border-color: rgba(196, 196, 196, 1);
+    border-bottom-color: transparent;
+    background-color: rgba(255, 255, 255, 0.25);
 }
-.navbar ul li a:hover, 
+.nav.navbar-nav.nav-tabs {
+    position: relative;
+    border-bottom: none;
+    margin-top: 3px;
+    top: -1px;
+}
+#points {
+    margin-left: 20px;
+}
+.navbar ul li a:hover,
 .navbar ul li a:focus,
 .navbar ul li a.active {
-    background-color: rgb(185, 196, 174) !important;
-    border-radius: 5px;
+    background-color: white;
+    border-bottom-color: white;
 }
-.navbar-right {
-    display: none;
+ul.dropdown-menu li a {
+    text-transform: none;
 }
+ul.dropdown-menu li a:hover {
+    background-color: rgb(237, 237, 237);
+}
+@media (min-width: 768px) {
+    .navbar-right .dropdown-menu {
+        left: 0;
+    }    
+}
+
 .glyphicon-search:hover, .glyphicon-search:focus {
     cursor: pointer;
 }
@@ -107,9 +130,12 @@ input#search.ui-autocomplete-input {
 #search-button:hover, #search-button:focus {
     background: #4cae4c !important;
 }
+/* Language selector */
 #language_selector {
-    margin: 15px 15px 0;
-    /*width: 75px;*/
+    position: relative;
+    vertical-align: middle;
+    top: 15px;
+    margin-left: 10px;
 }
 /* Navbar collapse styles for hamburger */
 .navbar-toggle {
@@ -127,17 +153,7 @@ input#search.ui-autocomplete-input {
 }
 .sitepoint {
     font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
-    position: absolute;
     opacity: 0.7;
-}
-#sitepoints {
-    font-size: 0.95em;
-    right: -0px;
-}
-#sitepoints-xs {
-    font-size: 0.7em;
-    top: 27px;
-    left: 110px;
 }
 
 

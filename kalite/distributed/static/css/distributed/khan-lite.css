@@ -83,17 +83,6 @@ a:hover {
     display: none;
 }
 
-#logged-in-name {
-    display: inline-block;
-    min-width: 10px;
-    max-width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: bottom;
-    *vertical-align: middle; /*Hack to properly align Username in IE6 & IE7 */
-}
-
 /********** End of Top Navigation bar ***********/
 
 /********** "Teacher" Sub-Navigation bar ***********/
@@ -307,9 +296,6 @@ a:hover {
     border-top-left-radius: 5px !important;
     border-top-right-radius: 16px !important;
     font-weight: bold;            
-}
-.active {
-    background-color: #E9F1E4;
 }
 .users {
     background: url("../../images/distributed/users-icon.png") no-repeat;
