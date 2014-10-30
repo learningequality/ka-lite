@@ -1,4 +1,5 @@
 import os
+import json
 
 try:
     import local_settings
@@ -32,6 +33,7 @@ USER_LOG_SUMMARY_FREQUENCY = getattr(local_settings, "USER_LOG_SUMMARY_FREQUENCY
 CHANNEL = getattr(local_settings, "CHANNEL", "khan")
 CONTENT_DATA_PATH = os.path.join(os.path.dirname(__file__), "static/data")
 CHANNEL_DATA_PATH = os.path.join(CONTENT_DATA_PATH, CHANNEL)
+CHANNEL_DATA = json.load(open(os.path.join(CHANNEL_DATA_PATH, "channel_data.json"), 'r'))
 
 # Whether we wanna load the perseus assets. Set to False for testing for now.
 LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == "khan")

@@ -95,7 +95,7 @@
          var GET_CONTENT_LOGS_URL       = "{% url 'get_content_logs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var USER_LOGIN_URL              = "{% url 'login' %}";
-         var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}"
+         var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}";
          var DELETE_USERS_URL            = "{% url 'delete_users' %}";
          var DELETE_GROUPS_URL           = "{% url 'group_delete' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
@@ -153,8 +153,8 @@
                               <span class="icon-bar"></span>
                           </button>
                           <div class="navbar-brand">
-                              <a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}">
-                                  <img src="{% static "images/distributed/horizontal-logo-small.png" %}" alt="{% trans 'KA Lite logo' %}">
+                              <a href="{% url 'learn' %}" title="{{ channel_data.channel_name }} {% trans 'Home' %}">
+                                  <img src="{% static "data/" True %}{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
                           </div>

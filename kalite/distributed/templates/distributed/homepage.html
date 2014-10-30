@@ -61,7 +61,7 @@
     <div class="container">
 
         <div class="row">
-            <h2 class="main-headline hidden-xs">{% trans "A free world-class education for anyone anywhere." %}</h2>
+            <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>
         </div>
 
         <div class="row">
@@ -70,8 +70,7 @@
                 <div class="vertical-shadow suggested-action">
                     <a href="{% url 'learn' %}">
                         <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
-                        <p id="suggested-action-p"><span class="icon-document">{% trans "Read" %}</span><span class="icon-video">{% trans "Watch" %}</span><span class="icon-audio">{% trans "Listen" %}</span><span class="icon-topic">{% trans "LEARN!" %}</span></p>
-                        <div id="suggested-action-image-link-homepage" style="background-image: url({% static 'images/distributed/learning-icon.png' %});"></div>
+                        <img id="suggested-action-image-link-homepage" src="{% static "data/" True %}{{ channel }}/images/learning-image.png">
                     </a>
                 </div>
             </div>
@@ -79,7 +78,7 @@
 
 
             <div class="row col-sm-12" id="homepage-p-div">
-                <p class="homepage-p">{% trans "KA Lite is a lightweight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
+                <p class="homepage-p">{{ channel_data.tag_line }}</p>
             </div>
         </div>
     
