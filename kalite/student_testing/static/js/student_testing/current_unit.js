@@ -37,7 +37,15 @@ window.CurrentUnitRowView = Backbone.View.extend({
     },
 
     increment_current_unit: function(amount) {
-        var new_unit = this.model.get("current_unit") + amount;
+        var current_unit = this.model.get("current_unit")
+        var new_unit = 0
+        if (current_unit == 7 && amount == 1) {
+            new_unit = 101
+        } else if (current_unit == 101 && amount == -1) {
+            new_unit = 7
+        } else {
+            new_unit = current_unit  + amount;
+        }
         if ((new_unit >= this.model.get("min_unit")) && (new_unit <= this.model.get("max_unit"))) {
             this.set_unit(new_unit);
         }
