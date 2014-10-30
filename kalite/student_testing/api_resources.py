@@ -195,10 +195,10 @@ class CurrentUnit():
         self.facility_id = kwargs.get('facility_id', '')
         self.facility_name = kwargs.get('facility_name', '<facility_name>')
         self.facility_url = kwargs.get('facility_url', '<facility_url>')
-        self.unit_list = kwargs.get('unit_list', UNITS)
+        self.unit_list = [unit for unit in kwargs.get('unit_list', UNITS) if unit >= 100]
         self.current_unit = kwargs.get('current_unit', self._get_current_unit())
-        self.max_unit = max(UNITS)
-        self.min_unit = min(UNITS)
+        self.max_unit = max(self.unit_list)
+        self.min_unit = min(self.unit_list)
 
     def __unicode__(self):
         return self.facility_name
@@ -217,9 +217,9 @@ class CurrentUnitResource(Resource):
     facility_id = fields.CharField(attribute='facility_id')
     facility_name = fields.CharField(attribute='facility_name')
     facility_url = fields.CharField(attribute='facility_url')
-    current_unit = fields.IntegerField(attribute='current_unit', default=1)
-    min_unit = fields.IntegerField(attribute='min_unit', default=1)
-    max_unit = fields.IntegerField(attribute='max_unit', default=8)
+    current_unit = fields.IntegerField(attribute='current_unit', default=101)
+    min_unit = fields.IntegerField(attribute='min_unit', default=101)
+    max_unit = fields.IntegerField(attribute='max_unit', default=108)
     unit_list = fields.ListField(attribute='unit_list')
 
     class Meta:
