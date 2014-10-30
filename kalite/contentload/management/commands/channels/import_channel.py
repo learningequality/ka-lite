@@ -212,6 +212,8 @@ hierarchy = []
 
 path = ""
 
+channel_data_path = None
+
 def annotate_related_content(node_cache):
     slug_cache = {}
     for cache in node_cache.values():
@@ -267,3 +269,16 @@ def retrieve_API_data(channel=None):
 recurse_topic_tree_to_create_hierarchy = partial(base.recurse_topic_tree_to_create_hierarchy, hierarchy=hierarchy)
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
+
+def channel_data_files(dest=None):
+    channel_data_filename = "channel_data.json"
+    if dest:
+        if not channel_data_path:
+            sourcedir = os.path.dirname(path)
+            sourcefile = os.path.basename(path) + ".json" if os.path.exists(os.path.basename(path) + ".json") else channel_data_filename
+        else:
+            source = channel_data_path
+            sourcefile = channel_data_filename
+        shutil.copy(os.path.join(sourcedir, sourcefile), os.path.join(dest, channel_data_filename))
+        shutil.rmtree(os.path.join(dest, "images"), ignore_errors=True)
+        shutil.copytree(os.path.join(sourcedir, "images"), os.path.join(dest, "images"))
