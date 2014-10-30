@@ -10,7 +10,7 @@ from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from kalite.topic_tools import get_node_cache
 from kalite.student_testing.utils import set_current_unit_settings_value
 
-PLAYLIST_ID = "g3_p1"
+PLAYLIST_ID = "g4_u403_p1"
 
 logging = settings.LOG
 
@@ -70,7 +70,7 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
         Test video points in input unit.
         """
-        set_current_unit_settings_value(self.facility.id, 2)
+        set_current_unit_settings_value(self.facility.id, 103)
         self.browse_to(
             self.live_server_url +
             reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
