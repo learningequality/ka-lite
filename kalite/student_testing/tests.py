@@ -33,7 +33,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
         super(BaseTest, self).setUp()
 
-        self.facility = self.create_facility()
+        self.facility = self.create_facility(name="facility1")
         self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
         self.student_data = CreateStudentMixin.DEFAULTS.copy()
         self.teacher_data['facility'] = self.student_data['facility'] = self.facility
@@ -122,6 +122,9 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
 
         # super(KALiteBrowserTestCase, self).setUp()
         super(BrowserTests, self).setUp()
+
+        # set the unit to 101
+        set_current_unit_settings_value(self.facility.id, 101)
 
         # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
         # or use the KALiteTestCase.reverse() method.
