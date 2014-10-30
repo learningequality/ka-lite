@@ -185,7 +185,7 @@ def learn(request):
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "topics_url": "data/%(channel_name)s/topics.json",
+        "topics_url": settings.CONTENT_DATA_URL + "%(channel_name)s/topics.json",
         "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
         "channel": settings.CHANNEL,
     }
@@ -205,7 +205,7 @@ def exercise_dashboard(request):
 
     context = {
         "title": title,
-        "data_url": "data/" + settings.CHANNEL,
+        "data_url": settings.CONTENT_DATA_URL + settings.CHANNEL,
     }
 
     return context

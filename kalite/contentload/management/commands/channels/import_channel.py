@@ -215,12 +215,19 @@ path = ""
 channel_data_path = None
 
 def annotate_related_content(node_cache):
+
     slug_cache = {}
+
     for cache in node_cache.values():
         for item in cache:
             slug_cache[item.get("slug")] = item
-    def annotate_cache(cache):
+
+    for cache in node_cache.values():
         for item in cache:
+            # allow related_content to be a single item as a string
+            if isinstance(item.get("related_content", []), basestring):
+                item["related_content"] = [item["related_content"]]
+            # or a list of several related items
             for i, related_item in enumerate(item.get("related_content", [])):
                 content = slug_cache.get(slugify(unicode(related_item.split(".")[0])))
                 if content:
@@ -236,9 +243,6 @@ def annotate_related_content(node_cache):
                 item["related_content"] = [related_item for related_item in item["related_content"] if related_item]
                 if not item["related_content"]:
                     del item["related_content"]
-    for cache in node_cache.values():
-        annotate_cache(cache)
-
 
 
 def retrieve_API_data(channel=None):
