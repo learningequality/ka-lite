@@ -100,9 +100,9 @@ window.KnowledgeMapView = Backbone.View.extend({
 
     navigate_paths: function(paths) {
         var exercise = false;
-        paths = _.reject(paths, function(slug) {return slug===null;});
+        paths = _.reject(paths, function(slug) {return slug===null || slug==="";});
         this.zoomLevel = paths.length;
-        if (this.zoomLevel > this.zoomLevels.length - 1) {
+        if (this.zoomLevel >= this.zoomLevels.length - 1) {
             this.zoomLevel = this.zoomLevels.length - 1;
             exercise = true;
         }
@@ -186,6 +186,7 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
 
     show_exercise_by_slug: function(slug) {
         /* Note: this will break if used for anything other than the exercise item layer */
+        console.log(this.collection.models, slug);
         model = _.find(this.collection.models, function(model) {return model.get("slug")===slug;});
         this.subviews[model.get("id")].show_exercise();
     }

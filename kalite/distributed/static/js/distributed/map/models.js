@@ -19,8 +19,10 @@ window.TopicCollection = Backbone.Collection.extend({
     model: TopicNode,
 
     center_of_mass: function() {
-        var x = _.reduce(this.models, function(memo, model){return memo + model.get("x_pos");}, 0)/this.length;
-        var y = _.reduce(this.models, function(memo, model){return memo + model.get("y_pos");}, 0)/this.length;
+        var x = _.reduce(this.models, function(memo, model){return memo + model.get("x_pos") || 0;}, 0)/this.length;
+        var y = _.reduce(this.models, function(memo, model){return memo + model.get("y_pos") || 0;}, 0)/this.length;
+        x = (x !== x) ? 0 : x;
+        y = (y !== y) ? 0 : y;
         return [x,y];
     },
 
