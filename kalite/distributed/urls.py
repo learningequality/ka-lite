@@ -40,6 +40,9 @@ urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
     }),
+    url(r'^%s(?P<path>.*)$' % settings.CONTENT_DATA_URL[1:], 'django.views.static.serve', {
+        'document_root': settings.CONTENT_DATA_PATH,
+    }),
     url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),

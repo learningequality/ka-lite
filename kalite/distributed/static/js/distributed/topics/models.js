@@ -1,7 +1,7 @@
 // Models
 window.TopicNode = Backbone.Model.extend({
     url: function() {
-        return ("ALL_TOPICS_URL" in window)? sprintf(decodeURIComponent(ALL_TOPICS_URL), {channel_name: this.channel}) : null;
+        return ("ALL_TOPICS_URL" in window)? sprintf(ALL_TOPICS_URL, {channel_name: this.channel}) : null;
     },
 
     initialize: function(options) {
