@@ -19,12 +19,12 @@ class BaseTest(FacilityMixins, KALiteTestCase):
 
     client_class = KALiteClient
 
-    exam_id = 'g4_t1_practice'
+    exam_id = 'g4_u404_t4_practice'
 
     def setUp(self):
 
         super(BaseTest, self).setUp()
-        self.facility = self.create_facility()
+        self.facility = self.create_facility(name="facility1")
         self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
         self.student_data = CreateStudentMixin.DEFAULTS.copy()
         self.teacher_data['facility'] = self.student_data['facility'] = self.facility
@@ -35,10 +35,12 @@ class BaseTest(FacilityMixins, KALiteTestCase):
 
 class SwitchTest(BaseTest):
 
-    def setup(self):
+    def setUp(self):
         super(SwitchTest, self).setUp()
 
-        set_current_unit_settings_value(self.facility.id, 1)
+        self.unit = 103
+
+        set_current_unit_settings_value(self.facility.id, self.unit)
 
     def tearDown(self):
         super(SwitchTest, self).tearDown()
@@ -53,17 +55,16 @@ class SwitchTest(BaseTest):
         """
         test_object = Test.all().get(self.exam_id, None)
         self.assertTrue(test_object)
-        testlog = TestLog(user=self.student, test=self.exam_id, index=20, started=True, complete=True, total_correct=10, total_number=20)
+        testlog = TestLog(user=self.student, test=self.exam_id, index=20, started=True, complete=True, total_correct=15, total_number=21)
         testlog.save()
-        # Set to unit 3 for output condition for facility1.
-        set_current_unit_settings_value(self.facility.id, 3)
+        set_current_unit_settings_value(self.facility.id, self.unit)
         # Set and unset exam mode to trigger signal.
         set_exam_mode_on(test_object)
         set_exam_mode_on(test_object)
-        transactionlogs = StoreTransactionLog.objects.filter(user=self.student, context_id="3", context_type="output_condition", item="gift_card")
+        transactionlogs = StoreTransactionLog.objects.filter(user=self.student, context_id=str(self.unit), context_type="output_condition", item="gift_card")
         self.assertTrue(len(transactionlogs))
         for transactionlog in transactionlogs:
-            self.assertTrue(transactionlog.value==int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number)))
+            self.assertTrue(transactionlog.value == int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number)))
 
 
     @override_settings(CONFIG_PACKAGE=["Nalanda"])
