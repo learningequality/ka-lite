@@ -65,14 +65,3 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         self.set_unit_navigate_to_exercise(3, "conditional_statements_2")
         time.sleep(5)
         self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 0, "Basepoints should be zero in output")
-
-    def test_nalanda_input_video(self):
-        """
-        Test video points in input unit.
-        """
-        set_current_unit_settings_value(self.facility.id, 103)
-        self.browse_to(
-            self.live_server_url +
-            reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
-        time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.playlist_view.content_view.currently_shown_view.model.get('possible_points')"), 0, "Video points should be zero")
