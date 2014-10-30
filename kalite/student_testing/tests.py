@@ -22,7 +22,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
-    exam_id = 'g4_u3_t3'  # needs to be the first exam in the test list UI
+    exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
     login_url = reverse('login')
     logout_url = reverse('logout')
     test_list_url = reverse('test_list')

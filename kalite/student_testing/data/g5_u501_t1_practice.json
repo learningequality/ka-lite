@@ -1,8 +1,8 @@
 {
-  "id": "g5_u1_t1",
-  "title": "Grade 5 Unit Test 1",
-  "seed": 394,
-  "playlist_ids": [ "g5_u1_p1", "g5_u1_p2" ],
+  "id": "g5_u501_t1_practice",
+  "title": "Grade 5 Unit 501 Test - Practice",
+  "seed": 255,
+  "playlist_ids": [ "g5_u501_p1", "g5_u501_p2" ],
   "repeats": "2",
   "ids": [
     "adding_and_subtracting_fractions", "adding_fractions",
@@ -12,6 +12,6 @@
     "fractions_on_the_number_line_3", "ordering_fractions",
     "simplifying_fractions", "subtracting_fractions"
   ],
-  "is_practice": false,
+  "is_practice": true,
   "show": true
 }

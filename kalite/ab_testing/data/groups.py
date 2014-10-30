@@ -3,6 +3,7 @@ CONDITION_BY_FACILITY_AND_UNIT = {
         "1": "nalanda_control",
         "2": "nalanda_input",
         "3": "nalanda_output",
+        "101": "nalanda_input",
     },
     "facility2": {
         "1": "nalanda_output",

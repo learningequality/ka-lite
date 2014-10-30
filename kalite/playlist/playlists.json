@@ -38,7 +38,6 @@
       }
     ],
     "id": "g3_p1",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 1: Read/write 4 digit numbers, place value and face value, expanded form of numbers",
     "unit": 1
@@ -59,7 +58,6 @@
       }
     ],
     "id": "g3_p10",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 10: Word problems with one or more operations",
     "unit": 5
@@ -139,7 +137,6 @@
       }
     ],
     "id": "g3_p11",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 11: Multi digit multiplication without carryover",
     "unit": 6
@@ -188,7 +185,6 @@
       }
     ],
     "id": "g3_p12",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 12: Telling time",
     "unit": 6
@@ -238,7 +234,6 @@
       }
     ],
     "id": "g3_p13",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 13: Represent fractions using numerator/denominator format",
     "unit": 6
@@ -299,7 +294,6 @@
       }
     ],
     "id": "g3_p2",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 2: Identify numbers that are <, >, =- ascending and descending numbers",
     "unit": 1
@@ -378,7 +372,6 @@
       }
     ],
     "id": "g3_p3",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 3: Write place value/face value and expanded form of 3/4 digit numbes",
     "unit": 1
@@ -410,7 +403,6 @@
       }
     ],
     "id": "g3_p4",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 4: Addition without carryover",
     "unit": 2
@@ -489,7 +481,6 @@
       }
     ],
     "id": "g3_p5",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 5: Write and retell multiplication tables",
     "unit": 2
@@ -580,7 +571,6 @@
       }
     ],
     "id": "g3_p6",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 6: Identify sides, vertices, edges",
     "unit": 3
@@ -624,7 +614,6 @@
       }
     ],
     "id": "g3_p7",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 7: Subtraction without borrowing",
     "unit": 3
@@ -691,7 +680,6 @@
       }
     ],
     "id": "g3_p8",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 8: Addition with carryover",
     "unit": 4
@@ -770,7 +758,6 @@
       }
     ],
     "id": "g3_p9",
-    "show": true,
     "tag": "Grade 3",
     "title": "Playlist 9: Subtraction with borowing",
     "unit": 5
@@ -2480,11 +2467,11 @@
         "sort_order": 2
       }
     ],
-    "id": "g4_u1_p1",
+    "id": "g4_u401_p1",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4 :Unit 1- Playlist 1: Telling time",
-    "unit": 1
+    "title": "Playlist 1: Telling time",
+    "unit": 101
   },
   {
     "entries": [
@@ -2519,11 +2506,11 @@
         "sort_order": 4
       }
     ],
-    "id": "g4_u1_p2",
+    "id": "g4_u401_p2",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4 :Unit 1- Playlist 2: Bar Graphs",
-    "unit": 1
+    "title": "Playlist 2: Bar Graphs",
+    "unit": 101
   },
   {
     "entries": [
@@ -2534,7 +2521,7 @@
         "sort_order": 0
       },
       {
-        "entity_id": "/e/identifying-numerators-and-denominators/",
+        "entity_id": "/e/recognizing_fractions/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
@@ -2552,11 +2539,11 @@
         "sort_order": 3
       }
     ],
-    "id": "g4_u2_p1",
+    "id": "g4_u402_p1",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4 : Unit 2- Playlist 1: Fractions Basics",
-    "unit": 2
+    "title": "Playlist 1: Fractions Basics",
+    "unit": 102
   },
   {
     "entries": [
@@ -2591,55 +2578,55 @@
         "sort_order": 4
       }
     ],
-    "id": "g4_u2_p2",
+    "id": "g4_u402_p2",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4 : Unit 2- Playlist 2: Fractions Operations and Types of Fractions",
-    "unit": 2
+    "title": "Playlist 2: Fractions Operations and Types of Fractions",
+    "unit": 102
   },
   {
     "entries": [
       {
-        "entity_id": "/e/multiplication-without-carrying",
+        "entity_id": "/e/multiplication_1.5/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/multiplication-with-carrying/",
+        "entity_id": "/e/multiplication_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id": "/e/multiplying-2digits-by-2digts/",
+        "entity_id": "/e/multiplication_3/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id": "/e/multi-digit-division-without-remainders/",
+        "entity_id": "/e/division_1.5/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 3
       }
     ],
-    "id": "g4_u3_p1",
+    "id": "g4_u403_p1",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4 : Unit 3- Playlist 1: Multiplication and division",
-    "unit": 3
+    "title": "Playlist 1: Multiplication and division",
+    "unit": 103
   },
   {
     "entries": [
       {
-        "entity_id": "/e/division-with-remainders/",
+        "entity_id": "/e/division_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/division-by-2digits/",
+        "entity_id": "e/division_3/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
@@ -2657,10 +2644,10 @@
         "sort_order": 3
       }
     ],
-    "id": "g4_u3_p2",
+    "id": "g4_u403_p2",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4:Unit 3 - Playlist 2 : Division with remainders and Word Problems",
+    "title": "Playlist 2: Division with remainders and Word Problems",
     "unit": 3
   },
   {
@@ -2678,34 +2665,34 @@
         "sort_order": 1
       },
       {
-        "entity_id": "/e/Triangle-types/",
+        "entity_id": "/e/triangle_types/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id": "/e/axis-of-symmetry/",
+        "entity_id": "/e/axis_of_symmetry/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 3
       }
     ],
-    "id": "g4_u4_p1",
+    "id": "g4_u404_p1",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4: Unit 4 - Playlist 1: Angles , Triangles, Transformations",
-    "unit": 4
+    "title": "Playlist 1: Angles , Triangles, Transformations",
+    "unit": 104
   },
   {
     "entries": [
       {
-        "entity_id": "/e/perimeter-1/",
+        "entity_id": "/e/perimeter_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/practicing-finding-perimeter/",
+        "entity_id": "/e/perimeter_of_squares_and_rectangles/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
@@ -2717,11 +2704,11 @@
         "sort_order": 2
       }
     ],
-    "id": "g4_u4_p2",
+    "id": "g4_u404_p2",
     "show": true,
     "tag": "Grade 4",
-    "title": "Grade 4: Unit 4 -Playlist 2: Perimeter, Circles",
-    "unit": 4
+    "title": "Playlist 2: Perimeter, Circles",
+    "unit": 104
   },
   {
     "entries": [
@@ -5076,11 +5063,11 @@
         "sort_order": 4
       }
     ],
-    "id": "g5_u1_p1",
+    "id": "g5_u501_p1",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 1: Playlist 1-Equivalent Fractions",
-    "unit": 1
+    "title": "Playlist 1: Equivalent Fractions",
+    "unit": 101
   },
   {
     "entries": [
@@ -5109,23 +5096,23 @@
         "sort_order": 3
       },
       {
-        "entity_id": "e/adding_subtracting_mixed_numbers_0.5/",
+        "entity_id": "/e/adding_subtracting_mixed_numbers_0.5/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 4
       },
       {
-        "entity_id": "e/adding_subtracting_mixed_numbers_1/",
+        "entity_id": "/e/adding_subtracting_mixed_numbers_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 5
       }
     ],
-    "id": "g5_u1_p2",
+    "id": "g5_u501_p2",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 1: Playlist 2- Fractions Addition and Subtraction",
-    "unit": 1
+    "title": "Playlist 2: Fractions Addition and Subtraction",
+    "unit": 101
   },
   {
     "entries": [
@@ -5166,11 +5153,11 @@
         "sort_order": 5
       }
     ],
-    "id": "g5_u2_p1",
+    "id": "g5_u502_p1",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 2: Playlist 2: Fractions Multiplication and Division",
-    "unit": 2
+    "title": "Playlist 2: Fractions Multiplication and Division",
+    "unit": 102
   },
   {
     "entries": [
@@ -5187,7 +5174,7 @@
         "sort_order": 1
       },
       {
-        "entity_id": "e/converting_decimals_to_fractions_1/",
+        "entity_id": "/e/converting_decimals_to_fractions_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
@@ -5199,22 +5186,22 @@
         "sort_order": 3
       }
     ],
-    "id": "g5_u2_p2",
+    "id": "g5_u502_p2",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 2: Playlist 3: Fractions conversion",
-    "unit": 2
+    "title": "Playlist 3: Fractions conversion",
+    "unit": 102
   },
   {
     "entries": [
       {
-        "entity_id": "/e/comparing-decimals-1/",
+        "entity_id": "/e/comparing_decimals_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/comparing-decimals-2/",
+        "entity_id": "/e/comparing_decimals_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
@@ -5238,11 +5225,11 @@
         "sort_order": 4
       }
     ],
-    "id": "g5_u3_p1",
+    "id": "g5_u503_p1",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 3 : Playlist 1: Comparing and Adding Decimals",
-    "unit": 3
+    "title": "Playlist 1: Comparing and Adding Decimals",
+    "unit": 103
   },
   {
     "entries": [
@@ -5259,28 +5246,28 @@
         "sort_order": 1
       },
       {
-        "entity_id": "/e/adding-and-subtracting-word-problems/",
+        "entity_id": "/e/adding_and_subtracting_decimals_word_problems/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id": "/e/multiplying-decimals/",
+        "entity_id": "/e/multiplying_decimals/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 3
       }
     ],
-    "id": "g5_u3_p2",
+    "id": "g5_u503_p2",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 3: Playlist 2- Subtracting and Multiplying Decimals",
-    "unit": 3
+    "title": "Playlist 2: Subtracting and Multiplying Decimals",
+    "unit": 103
   },
   {
     "entries": [
       {
-        "entity_id": "/e/recognizing-rays-lines-linesegments/",
+        "entity_id": "/e/recognizing_rays_lines_and_line_segments/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
@@ -5304,38 +5291,38 @@
         "sort_order": 3
       }
     ],
-    "id": "g5_u4_p1",
+    "id": "g5_u504_p1",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 4: Playlist 1-Lines, Segments and Angles",
-    "unit": 4
+    "title": "Playlist 1: Lines, Segments and Angles",
+    "unit": 104
   },
   {
     "entries": [
       {
-        "entity_id": "/e/Triangle-types/",
+        "entity_id": "/e/triangle_types/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/radius-diameter-circumference/",
+        "entity_id": "/e/radius_diameter_circumference/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id": "/e/area-of-a-circle/",
+        "entity_id": "/e/area_of_a_circle/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       }
     ],
-    "id": "g5_u4_p2",
+    "id": "g5_u504_p2",
     "show": true,
     "tag": "Grade 5",
-    "title": "Grade 5 Unit 4: Playlist 2- Triangles, Circles",
-    "unit": 4
+    "title": "Playlist 2: Triangles, Circles",
+    "unit": 104
   },
   {
     "entries": [
@@ -7411,22 +7398,22 @@
         "sort_order": 6
       }
     ],
-    "id": "g6_u1_p1",
+    "id": "g6_u601_p1",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 1: Playlist 1 -Negative Number",
-    "unit": 1
+    "title": "Playlist 1: Negative Number",
+    "unit": 101
   },
   {
     "entries": [
       {
-        "entity_id": "/e/writing-expressions/",
+        "entity_id": "/e/writing_expressions_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/writing-expressions-2/",
+        "entity_id": "/e/writing_expressions_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
@@ -7438,56 +7425,56 @@
         "sort_order": 2
       }
     ],
-    "id": "g6_u1_p2",
+    "id": "g6_u601_p2",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 1 Playlist 2 - Algebraic expressions",
-    "unit": 1
+    "title": "Playlist 2: Algebraic expressions",
+    "unit": 101
   },
   {
     "entries": [
       {
-        "entity_id": "/e/evaluating-expressions_in_2_variables/",
+        "entity_id": "/e/evaluating_expressions_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/combining-like-terms/",
+        "entity_id": "/e/combining_like_terms_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id": "/e/combining-like-terms-with-distribution/",
+        "entity_id": "/e/combining_like_terms_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id": "/e/one-step-equations/",
+        "entity_id": "/e/one_step_equations/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 3
       },
       {
-        "entity_id": "/e/2-step-equations/",
+        "entity_id": "/e/2_step_equations/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 4
       },
       {
-        "entity_id": "/e/ One-step equations-with-multiplication/",
+        "entity_id": "/e/one_step_equations_with_multiplication/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 5
       }
     ],
-    "id": "g6_u2_p1",
+    "id": "g6_u602_p1",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 2 Playlist 1: Algebraic Equations",
-    "unit": 2
+    "title": "Playlist 1: Algebraic Equations",
+    "unit": 102
   },
   {
     "entries": [
@@ -7528,16 +7515,16 @@
         "sort_order": 5
       }
     ],
-    "id": "g6_u2_p2",
+    "id": "g6_u602_p2",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 2 Playlist 2 Conversion of Fractions to Decimal and percentage",
-    "unit": 2
+    "title": "Playlist 2: Conversion of Fractions to Decimal and percentage",
+    "unit": 102
   },
   {
     "entries": [
       {
-        "entity_id": "/recognizing-rays-lines-linesegments/",
+        "entity_id": "/e/recognizing_rays_lines_and_line_segments/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 0
@@ -7567,11 +7554,11 @@
         "sort_order": 4
       }
     ],
-    "id": "g6_u3_p1",
+    "id": "g6_u603_p1",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 3 Playlist 1: Angles,lines and rays Part 1",
-    "unit": 3
+    "title": "Playlist 1: Angles,lines and rays Part 1",
+    "unit": 103
   },
   {
     "entries": [
@@ -7606,11 +7593,11 @@
         "sort_order": 4
       }
     ],
-    "id": "g6_u3_p2",
+    "id": "g6_u603_p2",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 3 Playlist 2: Angles Part 2",
-    "unit": 3
+    "title": "Playlist 2: Angles Part 2",
+    "unit": 103
   },
   {
     "entries": [
@@ -7621,13 +7608,13 @@
         "sort_order": 0
       },
       {
-        "entity_id": "/e/triangle-types/",
+        "entity_id": "/e/triangle_types/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id": "/e/triangle-angles-1/",
+        "entity_id": "/e/triangle_angles_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
@@ -7645,11 +7632,11 @@
         "sort_order": 4
       }
     ],
-    "id": "g6_u4_p1",
+    "id": "g6_u604_p1",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 4 Playlist 1: Triangles and Circles",
-    "unit": 4
+    "title": "Playlist 1: Triangles and Circles",
+    "unit": 104
   },
   {
     "entries": [
@@ -7666,28 +7653,28 @@
         "sort_order": 1
       },
       {
-        "entity_id": "/e/writing-proportions/",
+        "entity_id": "/e/writing_proportions/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id": "/e/proportions-1/",
+        "entity_id": "/e/proportions_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 3
       },
       {
-        "entity_id": "/e/proportions-2/",
+        "entity_id": "/e/proportions_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 4
       }
     ],
-    "id": "g6_u4_p2",
+    "id": "g6_u604_p2",
     "show": true,
     "tag": "Grade 6",
-    "title": "Grade 6 Unit 4 Playlist 2 Ratio and Proportions",
-    "unit": 4
+    "title": "Playlist 2: Ratio and Proportions",
+    "unit": 104
   }
 ]

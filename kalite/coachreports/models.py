@@ -34,25 +34,25 @@ class PlaylistProgressParent:
         user_vid_logs = list(VideoLog.objects \
             .filter(user=user) \
             .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
-        
+
         if pl_video_ids and pl_exercise_ids:
             user_ex_logs = [ex_log for ex_log in user_ex_logs if ex_log.get("exercise_id") in pl_exercise_ids]
             user_vid_logs = [vid_log for vid_log in user_vid_logs if vid_log.get("video_id") in pl_video_ids]
 
         return (user_vid_logs, user_ex_logs)
 
-    @classmethod 
+    @classmethod
     def get_quiz_log(cls, user, playlist_entries, playlist_id):
         exists = True if [entry for entry in playlist_entries if entry["entity_kind"] == "Quiz"] else False
         try:
             quiz = QuizLog.objects.get(user=user, quiz=playlist_id)
         except ObjectDoesNotExist:
             quiz = None
-        
+
         if quiz:
             score = int(float(json.loads(quiz.response_log)[quiz.attempts-1]) / float(quiz.total_number) * 100)
         else:
-            score = 0 
+            score = 0
 
         return (exists, quiz, score)
 
@@ -91,8 +91,8 @@ class PlaylistProgress(PlaylistProgressParent):
         exercise_ids = set([ex_log["exercise_id"] for ex_log in user_ex_logs])
         video_ids = set([ID2SLUG_MAP.get(vid_log["video_id"]) for vid_log in user_vid_logs])
         quiz_log_ids = [ql_id["quiz"] for ql_id in QuizLog.objects.filter(user=user).values("quiz")]
-        # Build a list of playlists for which the user has at least one data point 
-        ## TODO(dylanjbarth) this won't pick up playlists the user is assigned but has not started yet. 
+        # Build a list of playlists for which the user has at least one data point
+        ## TODO(dylanjbarth) this won't pick up playlists the user is assigned but has not started yet.
         user_playlists = list()
         for p in all_playlists:
             for e in p.get("entries"):
@@ -112,7 +112,7 @@ class PlaylistProgress(PlaylistProgressParent):
         user_progress = list()
         for i, p in enumerate(user_playlists):
             # Playlist entry totals
-            pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(p) 
+            pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(p)
             n_pl_videos = float(len(pl_video_ids))
             n_pl_exercises = float(len(pl_exercise_ids))
 
@@ -120,32 +120,32 @@ class PlaylistProgress(PlaylistProgressParent):
             pl_ex_logs = [ex_log for ex_log in user_ex_logs if ex_log["exercise_id"] in pl_exercise_ids]
             pl_vid_logs = [vid_log for vid_log in user_vid_logs if vid_log["video_id"] in pl_video_ids]
 
-            # Compute video stats 
+            # Compute video stats
             n_vid_complete = len([vid for vid in pl_vid_logs if vid["complete"]])
             n_vid_started = len([vid for vid in pl_vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])
-            vid_pct_complete = int(float(n_vid_complete) / n_pl_videos * 100)
-            vid_pct_started = int(float(n_vid_started) / n_pl_videos * 100) 
+            vid_pct_complete = int(float(n_vid_complete) / n_pl_videos * 100) if n_pl_videos else 0
+            vid_pct_started = int(float(n_vid_started) / n_pl_videos * 100) if n_pl_videos else 0
             if vid_pct_complete == 100:
                 vid_status = "complete"
             elif n_vid_started > 0:
                 vid_status = "inprogress"
             else:
-                vid_status = "notstarted" 
+                vid_status = "notstarted"
 
-            # Compute exercise stats 
+            # Compute exercise stats
             n_ex_mastered = len([ex for ex in pl_ex_logs if ex["complete"]])
             n_ex_started = len([ex for ex in pl_ex_logs if ex["attempts"] > 0])
             n_ex_incomplete = len([ex for ex in pl_ex_logs if (ex["attempts"] > 0 and not ex["complete"])])
             n_ex_struggling = len([ex for ex in pl_ex_logs if ex["struggling"]])
-            ex_pct_mastered = int(float(n_ex_mastered) / n_pl_exercises * 100) 
-            ex_pct_incomplete = int(float(n_ex_incomplete) / n_pl_exercises * 100) 
-            ex_pct_struggling = int(float(n_ex_struggling) / n_pl_exercises * 100) 
+            ex_pct_mastered = int(float(n_ex_mastered) / n_pl_exercises * 100)
+            ex_pct_incomplete = int(float(n_ex_incomplete) / n_pl_exercises * 100)
+            ex_pct_struggling = int(float(n_ex_struggling) / n_pl_exercises * 100)
             if not n_ex_started:
                 ex_status = "notstarted"
             elif ex_pct_struggling > 0:
                 # note: we want to help students prioritize areas they need to focus on
-                # therefore if they are struggling in this exercise group, we highlight it for them 
-                ex_status = "struggling" 
+                # therefore if they are struggling in this exercise group, we highlight it for them
+                ex_status = "struggling"
             elif ex_pct_mastered < 99:
                 ex_status = "inprogress"
             else:
@@ -187,7 +187,7 @@ class PlaylistProgress(PlaylistProgressParent):
                 progress["url"] = ""
 
             user_progress.append(cls(**progress))
-                    
+
         return user_progress
 
 class PlaylistProgressDetail(PlaylistProgressParent):
@@ -208,7 +208,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                 topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
             elif kind == "Exercise":
                 topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
-            title = topic_node["title"] 
+            title = topic_node["title"]
             path = topic_node["path"][1:] # remove pre-prended slash
         else:
             title = playlist["title"]
@@ -219,7 +219,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
             "status": "notstarted",
             "score": 0,
             "title": title,
-            "path": path, 
+            "path": path,
         }
 
         return entry
@@ -227,14 +227,14 @@ class PlaylistProgressDetail(PlaylistProgressParent):
     @classmethod
     def user_progress_detail(cls, user_id, playlist_id):
         """
-        Return a list of video, exercise, and quiz log PlaylistProgressDetail 
+        Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
         """
         user = FacilityUser.objects.get(id=user_id)
         playlist = next((pl for pl in Playlist.all() if pl.id == playlist_id), None)
         playlist = playlist.__dict__
 
-        pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist) 
+        pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user, pl_video_ids, pl_exercise_ids)
@@ -243,7 +243,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, playlist.get("entries"), playlist.get("id"))
 
         # Finally, sort an ordered list of the playlist entries, with user progress
-        # injected where it exists. 
+        # injected where it exists.
         progress_details = list()
         for ent in playlist.get("entries"):
             entry = {}

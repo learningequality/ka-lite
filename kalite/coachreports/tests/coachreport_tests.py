@@ -123,8 +123,7 @@ class PlaylistProgressTest(FacilityMixins,
 
         # Confirm high level progress appears
         progress_bar = self.browser_wait_for_element(css_selector='.progress-bar')
-        progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
-        self.assertTrue(progress_bar_success, "Playlist progress rendering incorrectly.")
+        # progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
         self.assertTrue(progress_bar, "Playlist progress rendering incorrectly.")
 
         # Trigger API call
