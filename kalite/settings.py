@@ -106,13 +106,13 @@ INSTALLED_APPS = (
     "django_extensions", # needed for clean_pyc (testing)
     "kalite.distributed",
     "kalite.store",
-    "kalite.basetests"
 )
 
 if not BUILT:
     INSTALLED_APPS += (
         "fle_utils.testing",
         "kalite.testing",
+        "kalite.basetests",
     ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
 else:
     INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
