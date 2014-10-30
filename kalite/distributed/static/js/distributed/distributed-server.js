@@ -35,6 +35,22 @@ function show_api_messages(messages) {
     }
 }
 
+function show_modal(msg_class, msg_text) {
+    clear_modal();
+
+    var msg_html = sprintf("<div class='alert alert-%1$s' id='overlay'><a class='close' data-dismiss='alert' href='#''>&times;</a>%2$s</div><div id='fade'></div>", msg_class, msg_text);
+
+    window.modal = $(msg_html).appendTo("body");
+    $(".close").click(clear_modal);
+    $("#fade").click(clear_modal);
+}
+
+function clear_modal() {
+    if (window.modal !== undefined) {
+        window.modal.remove();
+    }
+}
+
 
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
@@ -126,15 +142,41 @@ var TotalPointView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this);
         this.model.bind("change:totalpoints", this.render);
-        this.model.bind("change:username", this.render);
         this.render();
     },
 
     render: function() {
 
         var points = this.model.get("totalpoints");
-        var username_span = sprintf("<span id='logged-in-name'>%s</span>", this.model.get("username"));
         var message = null;
+
+        // only display the points if they are greater than zero, and the user is logged in
+        if (!this.model.get("is_logged_in")) {
+            return;
+        }
+
+        message = sprintf(gettext("Points: %(points)d "), { points : points });
+        if (ds.store.show_store_link_once_points_earned) {
+            message += " | <a href='/store/'>Store!</a>";
+        }
+
+        this.$el.html(message);
+        this.$el.show();
+    }
+
+});
+
+var UsernameView = Backbone.View.extend({
+
+    initialize: function() {
+        _.bindAll(this);
+        this.model.bind("change:username", this.render);
+        this.render();
+    },
+
+    render: function() {
+
+        var username_span = this.model.get("username");
 
         // only display the points if they are greater than zero, and the user is logged in
         if (!this.model.get("is_logged_in")) {
@@ -146,16 +188,7 @@ var TotalPointView = Backbone.View.extend({
             username_span += sprintf(" (%s)", this.model.get("user_id").slice(0, 8));
         }
 
-        if (points > 0) {
-            message = sprintf("%s<span> | %s</span>", username_span, sprintf(gettext("Total Points: %(points)d "), { points : points }));
-            if (ds.store.show_store_link_once_points_earned) {
-                message += " | <a href='/store/'>Store!</a>";
-            }
-        } else {
-            message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
-        }
-
-        this.$el.html(message);
+        this.$el.html(username_span);
         this.$el.show();
     }
 
@@ -169,10 +202,11 @@ function sanitize_string(input_string) {
 $(function(){
 
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-    var totalPointView = new TotalPointView({model: statusModel, el: "#sitepoints"});
+    var usernameView = new UsernameView({model: statusModel, el: "#username"});
+    var totalPointView = new TotalPointView({model: statusModel, el: "#points"});
 
     // For mobile (Bootstrap xs) view
-    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#sitepoints-xs"});
+    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#points-xs"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {

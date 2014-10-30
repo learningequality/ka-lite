@@ -1,11 +1,10 @@
 import json
-import os 
+import os
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand
 
 from kalite.topic_tools import video_dict_by_video_id, get_flat_topic_tree
-from ...models import VanillaPlaylist as Playlist
 
 
 MALFORMED_IDS = []
@@ -31,11 +30,11 @@ class Command(BaseCommand):
             video_entry_slugs = [enforce_and_strip_slug(pl.get("id"), e['entity_id']) for e in entries if e['entity_kind'] == 'Video']
             nonexistent_video_slugs = set(filter(None, video_entry_slugs)) - video_slugs
 
-            # Find exercise ids in the playlists that are not in the topic tree            
+            # Find exercise ids in the playlists that are not in the topic tree
             ex_entry_slugs = [enforce_and_strip_slug(pl.get("id"), e['entity_id']) for e in entries if e['entity_kind'] == 'Exercise']
             nonexistent_ex_slugs = set(filter(None, ex_entry_slugs)) - exercise_slugs
 
-            # Print malformed videos 
+            # Print malformed videos
             for slug in nonexistent_video_slugs:
                 errormsg = "Video slug in playlist {0} not found in videos: {1}"
                 # print errormsg.format(pl.id, slug)
@@ -51,12 +50,12 @@ class Command(BaseCommand):
             for m in MALFORMED_IDS:
                 errormsg = "Malformed slug in playlist {0}. Please investigate: {1}"
                 # print errormsg.format(pl.id, slug)
-                print errormsg.format(pl.get("id"), m)    
-            MALFORMED_IDS = []            
+                print errormsg.format(pl.get("id"), m)
+            MALFORMED_IDS = []
 
 def enforce_and_strip_slug(playlist_id, slug):
-        split_slug = [x for x in slug.split("/") if len(x) > 1] 
+        split_slug = [x for x in slug.split("/") if len(x) > 1]
         if len(split_slug) != 1:
             print "Malformed slug in playlist %s, slug: %s" % (playlist_id, slug)
-        else: 
+        else:
             return split_slug[0]

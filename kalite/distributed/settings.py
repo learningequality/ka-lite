@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     "fle_utils.django_utils",  # templatetags
     "fle_utils.handlebars",
     "fle_utils.backbone",
+    "fle_utils.build",
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel

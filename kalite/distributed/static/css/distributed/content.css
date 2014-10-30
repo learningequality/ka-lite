@@ -1,0 +1,47 @@
+/* Styles for the generic content container */
+
+.content-wrapper {
+    border: 2px solid rgb(240, 240, 240);
+    border-radius: 5px;
+    padding: 20px;
+    background-color: rgb(248, 248, 248);
+}   
+.points-wrapper span.points-container {
+    /* Most of this is overriding the styles from video css */
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    float: none;
+    position: relative;
+    top: -25px;
+}
+/*.related-content-container {
+    background-color: rgba(141, 198, 63, 0.5);
+}
+.related-content-container > a {
+    color: rgb(109, 109, 109);
+}
+.related-content-container:hover {
+    background-color: rgba(141, 198, 63, 1);
+}
+.related-content-container > a:hover {
+    color: white;
+}*/
+.btn-related-content {
+    text-align: left;
+    white-space: normal;
+    background-color: #8dc63f;
+    border-color: #8dc63f;
+}
+.btn-related-content:hover {
+    background-color: #8dc63f;
+}
+.related-content-header {
+    font-size: 24px;
+    padding-bottom: 5px;
+}
+.related-content-title {
+    margin-left: 10px;
+    position: relative;
+    top: 5px;
+}

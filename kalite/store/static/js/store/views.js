@@ -12,8 +12,8 @@ window.StoreWrapperView = Backbone.View.extend({
 
         this.render();
 
-        this.available_items = new AvailableStoreItemCollection;
-        this.purchased_items = new PurchasedStoreItemCollection;
+        this.available_items = new AvailableStoreItemCollection();
+        this.purchased_items = new PurchasedStoreItemCollection();
 
         this.available_item_view = new AvailableStoreItemListView({
             collection: this.available_items,
@@ -59,7 +59,7 @@ window.StoreWrapperView = Backbone.View.extend({
             item: item.id,
             purchased_at: statusModel.get_server_time(),
             reversible: item.get("returnable"),
-            context_id: 0, // TODO-BLOCKER: put the current unit in here
+            context_id: ds.ab_testing.unit || 0,
             context_type: "unit",
             user: statusModel.get("user_uri"),
             value: -cost

@@ -14,21 +14,21 @@
 {% endblock headcss %}
 
 {% block content %}
-    <form method="post" class="basic-form">
-        {% csrf_token %}
     <div class="container">
-        <h3 class="no-margin-top">{% trans "Log in" %}</h3>
+        <form method="post" class="basic-form">
+            {% csrf_token %}
+            <h3 class="no-margin-top">{% trans "Log in" %}</h3>
 
-        {{ form.as_p }}
+            {{ form.as_p }}
 
-        <input type="submit" value="{% trans 'Log in' %}" class="submit btn btn-default btn-sm" />
-    </form>
+            <input type="submit" value="{% trans 'Log in' %}" class="submit btn btn-success btn-md" />
+        </form>
         <div id="info_block">
-        {% if not restricted %}
-            {% blocktrans %}If you don't have a login, please <a href="{{ sign_up_url }}">sign up</a>.{% endblocktrans %}
-        {% else %}
-            {% blocktrans %}If you don't have a login, please contact your administrator.{% endblocktrans %}
-        {% endif %}
+            {% if not restricted %}
+                {% blocktrans %}If you don't have a login, please <a href="{{ sign_up_url }}">sign up</a>.{% endblocktrans %}
+            {% else %}
+                {% blocktrans %}If you don't have a login, please contact your administrator.{% endblocktrans %}
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

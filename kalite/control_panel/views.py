@@ -274,9 +274,8 @@ def group_report(request, facility, group_id=None, zone_id=None):
     return context
 
 
-@facility_required
 @require_authorized_admin
-@render_to_csv(["students", "coaches"], key_label="user_id", order="stacked")
+@render_to_csv(["students"], key_label="user_id", order="stacked")
 def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
     """NOTE: THIS IS NOT A VIEW FUNCTION"""
     assert request.method == "POST", "facility_management_csv must be accessed via POST"
@@ -286,7 +285,7 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
     if not form.is_valid():
         raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
 
-    frequency = frequency or request.GET.get("frequency", "months")
+    frequency = frequency or request.GET.get ("frequency", "months")
     period_start = period_start or form.data["period_start"]
     period_end = period_end or form.data["period_end"]
     (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
@@ -296,15 +295,15 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
     group = group_id and get_object_or_None(FacilityGroup, id=group_id)
     groups = FacilityGroup.objects.filter(facility=context["facility"]).order_by("name")
-    coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
+    # coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
     (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
-    (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
+    # (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
 
     context.update({
         "students": student_data,  # raw data
-        "coaches": coach_data,  # raw data
+        # "coaches": coach_data,  # raw data
     })
     return context
 
@@ -437,10 +436,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     user_data = OrderedDict()
     group_data = OrderedDict()
 
-
     # Make queries efficiently
     exercise_logs = ExerciseLog.objects.filter(user__in=users, complete=True)
-    video_logs = VideoLog.objects.filter(user__in=users)
+    video_logs = VideoLog.objects.filter(user__in=users, total_seconds_watched__gt=0)
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
@@ -451,8 +449,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     if period_end:
         exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
         video_logs = video_logs.filter(completion_timestamp__lte=period_end)
-        login_logs = login_logs.filter(end_datetime__lte=period_end)
-
+        login_logs = login_logs.filter(total_seconds__gt=0, start_datetime__lte=period_end)
 
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
@@ -466,7 +463,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         user_data[user.pk]["last_name"] = user.last_name
         user_data[user.pk]["username"] = user.username
         user_data[user.pk]["group"] = user.group
-
 
         user_data[user.pk]["total_report_views"] = 0#report_stats["count__sum"] or 0
         user_data[user.pk]["total_logins"] =0# login_stats["count__sum"] or 0
