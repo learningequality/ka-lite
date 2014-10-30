@@ -205,7 +205,7 @@ class CurrentUnit():
 
     def _get_current_unit(self):
         # get active unit for the Facility from Settings
-        current_unit = 1
+        current_unit = 101
         if self.facility_id:
             current_unit = get_current_unit_settings_value(self.facility_id)
         return current_unit
