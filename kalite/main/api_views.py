@@ -273,18 +273,21 @@ def exercise(request, ds, exercise_id):
 
             if ds["distributed"].turn_off_points_for_exercises:
                 exercise["basepoints"] = 0
-            elif ds["distributed"].turn_off_points_for_noncurrent_unit and exercise["exercise_id"] not in current_unit_exercises:
-                exercise["basepoints"] = 0
-            else:
-                # TODO-BLOCKER(rtibbles): Revisit this if we add quizzes back in at some point
-                # (or, we could just dynamically check for quizzes, and factor them in)
-                questions_per_exercise = ds["distributed"].streak_correct_needed \
-                                       + ds["distributed"].fixed_block_exercises #\
-                                       # + ds["distributed"].quiz_repeats
-                total_question_count = len(current_unit_exercises) * questions_per_exercise
-                uncorrected_basepoints = settings.UNIT_POINTS / float(total_question_count)
-                # pre-correct for the adjustments to be made by calculate_points_per_question
-                exercise["basepoints"] = math.ceil(uncorrected_basepoints / 10.0 * settings.STREAK_CORRECT_NEEDED)
+            elif ds["distributed"].turn_off_points_for_noncurrent_unit:
+                # No points if it's not in the current unit
+                if not current_unit_exercises or exercise["exercise_id"] not in current_unit_exercises:
+                    exercise["basepoints"] = 0
+                # Otherwise, give the appropriate fraction of UNIT_POINTS to this question
+                else:
+                    # TODO-BLOCKER(rtibbles): Revisit this if we add quizzes back in at some point
+                    # (or, we could just dynamically check for quizzes, and factor them in)
+                    questions_per_exercise = ds["distributed"].streak_correct_needed \
+                                           + ds["distributed"].fixed_block_exercises #\
+                                           # + ds["distributed"].quiz_repeats
+                    total_question_count = len(current_unit_exercises) * questions_per_exercise
+                    uncorrected_basepoints = settings.UNIT_POINTS / float(total_question_count)
+                    # pre-correct for the adjustments to be made by calculate_points_per_question
+                    exercise["basepoints"] = math.ceil(uncorrected_basepoints / 10.0 * settings.STREAK_CORRECT_NEEDED)
 
     return JsonResponse(exercise)
 
