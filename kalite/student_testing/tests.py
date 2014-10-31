@@ -346,6 +346,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
         self.login_url = self.reverse('login')
         self.logout_url = self.reverse('logout')
         self.current_unit_url = self.reverse('current_unit')
+        set_current_unit_settings_value(self.facility.id, 101)
 
     def tearDown(self):
         super(CurrentUnitBrowserTests, self).tearDown()
