@@ -125,7 +125,10 @@ def handle_exam_unset(sender, **kwargs):
             ds = load_dynamic_settings(user=facility_user)
             if ds["student_testing"].turn_on_points_for_practice_exams:
                 transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item="gift_card")
-                transaction_log.value = int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number))
+                try:
+                    transaction_log.value = int(round(settings.UNIT_POINTS * float(testlog.total_correct)/testlog.total_number))
+                except ZeroDivisionError:  # one of the students just hasn't started answering a test when we turn it off
+                    continue
                 transaction_log.save()
 
 
