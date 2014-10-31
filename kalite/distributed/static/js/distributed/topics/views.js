@@ -68,6 +68,7 @@ window.SidebarView = Backbone.View.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
+        $(document).click(self.check_external_click);
 
     },
 
@@ -126,6 +127,14 @@ window.SidebarView = Backbone.View.extend({
         //                html.clientHeight, html.scrollHeight, html.offsetHeight)
 
         // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
+    },
+
+    check_external_click: function(ev) {
+        if(!$(event.target).closest('#sidebar-container').length) {
+            if (this.state_model.get("open")) {
+                this.state_model.set("open", !this.state_model.get("open"));
+            }
+        }
     },
 
     toggle_sidebar: function(ev) {
