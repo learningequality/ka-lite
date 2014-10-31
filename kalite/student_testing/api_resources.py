@@ -165,15 +165,11 @@ class TestResource(Resource):
         """
         if not bundle.request.is_admin:
             raise Unauthorized(_("You cannot set this test into exam mode."))
-        try:
-            test_id = kwargs['test_id']
-            testscache = Test.all()
-            set_exam_mode_on(testscache[test_id])
-            return bundle
-        except Exception as e:
-            logging.error("TestResource exception: %s" % e)
-            pass
-        raise NotImplemented("Operation not implemented yet for tests.")
+
+        test_id = kwargs['test_id']
+        testscache = Test.all()
+        set_exam_mode_on(testscache[test_id])
+        return bundle
 
     def obj_delete_list(self, request):
         raise NotImplemented("Operation not implemented yet for tests.")
