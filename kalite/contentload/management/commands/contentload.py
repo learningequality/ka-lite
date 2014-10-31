@@ -92,6 +92,11 @@ class Command(NoArgsCommand):
             dest='import_files',
             default=None,
             help="Import a file structure as a topic tree and move over the appropriate content"),
+        make_option('-d', '--data',
+            action='store',
+            dest='channel_data',
+            default=None,
+            help="Add custom path to channel data files"),
     )
 
     def handle(self, *args, **options):
@@ -107,6 +112,9 @@ class Command(NoArgsCommand):
             channel_tools.path = options["import_files"]
             if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
+
+        if options["channel_data"]:
+            channel_tools.channel_data_path = options["channel_data"]
 
         channel_path = os.path.join(settings.CONTENT_DATA_PATH, slugify(unicode(channel_name)))
 
@@ -148,6 +156,9 @@ class Command(NoArgsCommand):
         save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
         for level in channel_tools.hierarchy:
             save_cache_file("Map_" + level, cache_object=level_cache[level], data_path=channel_path)
+
+        if channel_tools.channel_data_files:
+            channel_tools.channel_data_files(dest=channel_path)
 
         sys.stdout.write("Downloaded topic_tree data for %d topics, %d videos, %d exercises\n" % (
             len(node_cache["Topic"]),

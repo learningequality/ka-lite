@@ -202,11 +202,7 @@ input#search.ui-autocomplete-input {
     font-weight: bold;
 }
 #suggested-action-image-link-homepage {
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-bottom: 1px solid #DCE0B3;
-    height: 130px;
-    margin: -5px -14px -15px;
+    width: 350px;
 }
 .topic-list {
     line-height: 35px;
