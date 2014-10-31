@@ -66,4 +66,3 @@ class Command(BaseCommand):
         with open(items_file, "w") as f:
             f.write(data)
 
-
