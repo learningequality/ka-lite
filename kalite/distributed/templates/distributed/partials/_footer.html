@@ -10,12 +10,14 @@
                     <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="{% trans 'Foundation for Learning Equality logo' %}"/>
                 </p>
                 <p class="footer-text">
-                    {% trans "Creators of KA Lite" %} &copy; 2014
+                    {% trans "Creators of Papyrus" %} &copy; 2014
                 </p>
+                {% if channel_data.footer_text %}
                 <p class="footer-text">
-                    {% trans "Videos and Exercises" %} &copy; 2014 Khan Academy
-                    <img id="creative-commons-icon" src="{% static 'images/distributed/creative-commons.png' %}">
+                    {{ channel_data.footer_text }}
+                    <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png">
                 </p>
+                {% endif %}
             </div>
         </div>
     </div>
