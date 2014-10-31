@@ -1,8 +1,8 @@
 import json
 import os
 import shutil
-from slugify import slugify
 import xlrd
+from slugify import slugify
 
 from django.core.management.base import BaseCommand
 
