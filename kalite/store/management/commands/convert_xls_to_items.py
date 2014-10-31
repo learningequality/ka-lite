@@ -1,9 +1,9 @@
 import json
 import os
 import shutil
-import xlrd
-import json
 from slugify import slugify
+import xlrd
+
 from django.core.management.base import BaseCommand
 
 
@@ -58,7 +58,7 @@ class Command(BaseCommand):
         )       
  
         if raw_input("Are you sure you want to continue? (y/n)") == "y":
-            # backup the old playlists json first
+            # backup the old index.py first
             backup_items_file_path = os.path.join(items_path, "items.py.bak")
             shutil.move(items_file, backup_items_file_path)
 
