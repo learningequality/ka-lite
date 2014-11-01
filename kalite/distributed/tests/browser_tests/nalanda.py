@@ -56,7 +56,7 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         self.set_unit_navigate_to_exercise(101, "telling_time")
         time.sleep(5)
         actual_points = self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
-        expected_points = 11
+        expected_points = 13
         self.assertEqual(actual_points, expected_points, "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
 
     def test_nalanda_output_exercise(self):
