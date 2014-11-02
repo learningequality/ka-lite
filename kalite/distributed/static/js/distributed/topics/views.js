@@ -153,12 +153,12 @@ window.SidebarView = Backbone.View.extend({
             this.sidebar.show();
             this.sidebar.open();
             this.resize_sidebar();
-            this.$(".sidebar-tab").html("&lt")
+            this.$(".sidebar-tab").html("&lt");
         } else {
             this.sidebar.hide();
             this.$(".sidebar-tab").css({left: 0});
             // this.sidebar.close();
-            this.$(".sidebar-tab").html("&gt")
+            this.$(".sidebar-tab").html("&gt");
         }
     },
 
