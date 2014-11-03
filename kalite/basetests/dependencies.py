@@ -14,8 +14,6 @@ if __name__ == '__main__':
 
 
 import unittest2
-import django
-import kalite
 
 # set environment variable for django's settings
 os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"
@@ -27,32 +25,57 @@ def _tuple_to_str(t, delim="."):
 
 class DependenciesTests(unittest2.TestCase):
     """
+    Base class for checking dependencies.
+
     Have a map of python and sqlite3 versions per django version released.
+
+    TODO(cpauya): i18n for strings?
     """
 
+    PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
+
     DJANGO_VERSION = (1, 5, 1,)  # TODO(cpauya): get from our django package
+    DJANGO_VERSION_STR = _tuple_to_str(DJANGO_VERSION)
 
     # REF: https://docs.djangoproject.com/en/1.5/releases/1.5/#python-compatibility
     MINIMUM_PYTHON_VERSION = (2, 6, 5,)
+    MINIMUM_PYTHON_VERSION_STR = _tuple_to_str(MINIMUM_PYTHON_VERSION)
 
     # REF: https://docs.djangoproject.com/en/1.5/ref/databases/#sqlite-3-3-6-or-newer-strongly-recommended
     MINIMUM_SQLITE_VERSION = (3, 3, 6,)
+    MINIMUM_SQLITE_VERSION_STR = _tuple_to_str(MINIMUM_SQLITE_VERSION)
+
+    OK = "OK!"
+    FAIL = "FAIL!"
 
     # Custom logging functions so we can customize the output.
     def _log(self, msg, delay=0):
         sys.stdout.write(msg)
         sys.stdout.flush()  # REF: https://answers.yahoo.com/question/index?qid=20110506145612AA1oU5Q
-        if delay:
+        if delay:  # delay in seconds
             import time
             time.sleep(delay)
 
-    def _fail(self, msg=" FAIL!\n", raise_fail=True):
-        self._log(msg)
+    def _fail(self, msg="", raise_fail=True):
+        self._log("%s %s\n" % (msg, self.FAIL,))
         if raise_fail:
             self.fail(msg)
 
-    def _pass(self, msg=" OK!\n"):
-        self._log(msg)
+    def _pass(self, msg=OK):
+        self._log("%s\n" % msg)
+
+    def check_path(self, path, mode=os.W_OK, msg=None, delay=0):
+        try:
+            self._log(msg, delay)
+            is_ok = os.access(path, mode)
+            if is_ok:
+                self._pass()
+            else:
+                self._fail()
+        except Exception as exc:
+            msg = "%s access to %s path failed: %s" % (mode, path, exc,)
+            logging.critical(msg)
+            self.fail(msg)
 
 
 class SqliteTests(DependenciesTests):
@@ -73,7 +96,7 @@ class SqliteTests(DependenciesTests):
 
     def test_minimum_sqlite_version(self):
         self._log("Testing minimum SQLite3 version %s for Django version %s..." %
-                  (_tuple_to_str(self.MINIMUM_SQLITE_VERSION), _tuple_to_str(self.DJANGO_VERSION),), 1)
+                  (self.MINIMUM_SQLITE_VERSION_STR, self.DJANGO_VERSION_STR,), 1)
         from sqlite3 import sqlite_version_info
         if self.MINIMUM_SQLITE_VERSION <= sqlite_version_info:
             self._pass()
@@ -85,17 +108,7 @@ class SqliteTests(DependenciesTests):
             from django.conf import settings
             sqlite_path = settings.DATABASES["default"]["NAME"]
             msg = 'Testing writable SQLite3 database "%s"...' % sqlite_path
-            try:
-                self._log(msg, 1)
-                is_ok = os.access(sqlite_path, os.W_OK)
-                if is_ok:
-                    self._pass()
-                else:
-                    self._fail()
-            except Exception as exc:
-                msg = "SQLite database path is not writable: %s" % exc
-                logging.critical(msg)
-                self.fail(msg)
+            self.check_path(sqlite_path, os.W_OK, msg=msg, delay=1)
         except ImportError as exc:
             self.fail("Settings cannot be imported: %s" % exc)
 
@@ -111,20 +124,23 @@ class DjangoTests(DependenciesTests):
             self._fail()
 
     def test_django_version(self):
-        self._log("Testing Django %s version..." % _tuple_to_str(self.DJANGO_VERSION), 1)
+        self._log("Testing Django %s version..." % self.DJANGO_VERSION_STR, 1)
         try:
             from django.utils.version import get_version
-            self._pass()
+            if get_version() == self.DJANGO_VERSION_STR:
+                self._pass()
+            else:
+                self._fail(" found version %s instead..." % get_version())
         except ImportError:
             self._fail()
 
     def test_minimum_python_version(self):
         self._log("Testing minimum Python version %s for Django version %s..." %
-                  (_tuple_to_str(self.MINIMUM_PYTHON_VERSION), _tuple_to_str(self.DJANGO_VERSION),), 1)
+                  (self.MINIMUM_PYTHON_VERSION_STR, self.DJANGO_VERSION_STR,), 1)
         if sys.version_info >= self.MINIMUM_PYTHON_VERSION:
             self._pass()
         else:
-            self._fail()
+            self._fail(" found version %s instead..." % (_tuple_to_str(sys.version_info),))
 
 
 class PackagesTests(unittest2.TestCase):
@@ -138,17 +154,26 @@ class PackagesTests(unittest2.TestCase):
         self.assertTrue(False)
 
 
-class PathsTests(unittest2.TestCase):
+class PathsTests(DependenciesTests):
     """
-    Check that we have access to all paths we need read or write access.
+    Check that we have access to all paths we need read or write access to.
     """
 
     def test_sqlite_path(self):
-        logging.info('Testing write access to SQLite3 database path...')
-        self.assertTrue(False)
+        try:
+            from django.conf import settings
+            sqlite_path = settings.DATABASES["default"]["NAME"]
+            msg = 'Testing writable SQLite3 database "%s"...' % sqlite_path
+            self.check_path(sqlite_path, os.W_OK, msg=msg, delay=1)
+        except ImportError as exc:
+            self.fail("Settings cannot be imported: %s" % exc)
 
     def test_content(self):
+        content_path = os
         logging.info('Test read-only access to "content" folder...')
+        self.assertTrue(False)
+
+    def test_exercise_json(self):
         self.assertTrue(False)
 
 
