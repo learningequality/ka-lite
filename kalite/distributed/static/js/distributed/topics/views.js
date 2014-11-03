@@ -68,6 +68,7 @@ window.SidebarView = Backbone.View.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
+        $(document).click(self.check_external_click);
 
     },
 
@@ -128,6 +129,14 @@ window.SidebarView = Backbone.View.extend({
         // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
     },
 
+    check_external_click: function(ev) {
+        if(!$(event.target).closest('#sidebar-container').length) {
+            if (this.state_model.get("open")) {
+                this.state_model.set("open", !this.state_model.get("open"));
+            }
+        }
+    },
+
     toggle_sidebar: function(ev) {
         // this.$(".sidebar-tab").css("color", this.state_model.get("open") ? "red" : "blue")
         this.state_model.set("open", !this.state_model.get("open"));
@@ -144,10 +153,12 @@ window.SidebarView = Backbone.View.extend({
             this.sidebar.show();
             this.sidebar.open();
             this.resize_sidebar();
+            this.$(".sidebar-tab").html("&lt");
         } else {
             this.sidebar.hide();
             this.$(".sidebar-tab").css({left: 0});
             // this.sidebar.close();
+            this.$(".sidebar-tab").html("&gt");
         }
     },
 
