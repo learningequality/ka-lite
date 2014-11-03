@@ -1,5 +1,8 @@
+import collections
 import os
 import sys
+
+import six
 
 try:
     from functools import wraps
@@ -132,3 +135,129 @@ except ImportError:
             if category.__name__:
                 self._category_name = category.__name__
 
+# Copied from 3.5
+########################################################################
+###  ChainMap (helper for configparser and string.Template)
+########################################################################
+
+class ChainMap(collections.MutableMapping):
+    ''' A ChainMap groups multiple dicts (or other mappings) together
+    to create a single, updateable view.
+
+    The underlying mappings are stored in a list.  That list is public and can
+    accessed or updated using the *maps* attribute.  There is no other state.
+
+    Lookups search the underlying mappings successively until a key is found.
+    In contrast, writes, updates, and deletions only operate on the first
+    mapping.
+
+    '''
+
+    def __init__(self, *maps):
+        '''Initialize a ChainMap by setting *maps* to the given mappings.
+        If no mappings are provided, a single empty dictionary is used.
+
+        '''
+        self.maps = list(maps) or [{}]          # always at least one map
+
+    def __missing__(self, key):
+        raise KeyError(key)
+
+    def __getitem__(self, key):
+        for mapping in self.maps:
+            try:
+                return mapping[key]             # can't use 'key in mapping' with defaultdict
+            except KeyError:
+                pass
+        return self.__missing__(key)            # support subclasses that define __missing__
+
+    def get(self, key, default=None):
+        return self[key] if key in self else default
+
+    def __len__(self):
+        return len(set().union(*self.maps))     # reuses stored hash values if possible
+
+    def __iter__(self):
+        return iter(set().union(*self.maps))
+
+    def __contains__(self, key):
+        return any(key in m for m in self.maps)
+
+    def __bool__(self):
+        return any(self.maps)
+
+    if getattr(collections, '_recursive_repr', None):
+        @collections._recursive_repr()
+        def __repr__(self):
+            return '{0.__class__.__name__}({1})'.format(
+                self, ', '.join(map(repr, self.maps)))
+    else:
+        def __repr__(self):
+            return '{0.__class__.__name__}({1})'.format(
+                self, ', '.join(map(repr, self.maps)))
+
+    @classmethod
+    def fromkeys(cls, iterable, *args):
+        'Create a ChainMap with a single dict created from the iterable.'
+        return cls(dict.fromkeys(iterable, *args))
+
+    def copy(self):
+        'New ChainMap or subclass with a new copy of maps[0] and refs to maps[1:]'
+        return self.__class__(self.maps[0].copy(), *self.maps[1:])
+
+    __copy__ = copy
+
+    def new_child(self, m=None):                # like Django's Context.push()
+        '''
+        New ChainMap with a new map followed by all previous maps. If no
+        map is provided, an empty dict is used.
+        '''
+        if m is None:
+            m = {}
+        return self.__class__(m, *self.maps)
+
+    @property
+    def parents(self):                          # like Django's Context.pop()
+        'New ChainMap from maps[1:].'
+        return self.__class__(*self.maps[1:])
+
+    def __setitem__(self, key, value):
+        self.maps[0][key] = value
+
+    def __delitem__(self, key):
+        try:
+            del self.maps[0][key]
+        except KeyError:
+            raise KeyError('Key not found in the first mapping: {!r}'.format(key))
+
+    def popitem(self):
+        'Remove and return an item pair from maps[0]. Raise KeyError is maps[0] is empty.'
+        try:
+            return self.maps[0].popitem()
+        except KeyError:
+            raise KeyError('No keys found in the first mapping.')
+
+    def pop(self, key, *args):
+        'Remove *key* from maps[0] and return its value. Raise KeyError if *key* not in maps[0].'
+        try:
+            return self.maps[0].pop(key, *args)
+        except KeyError:
+            raise KeyError('Key not found in the first mapping: {!r}'.format(key))
+
+    def clear(self):
+        'Clear maps[0], leaving maps[1:] intact.'
+        self.maps[0].clear()
+
+if sys.version_info[:2] < (3, 4):
+    collections.ChainMap = ChainMap
+
+
+# support raise_from on 3.x:
+# submitted to six: https://bitbucket.org/gutworth/six/issue/102/raise-foo-from-bar-is-a-syntax-error-on-27
+if sys.version_info[:2] > (3, 2):
+    six.exec_("""def raise_from(value, from_value):
+    raise value from from_value
+""")
+else:
+    def raise_from(value, from_value):
+        raise value

@@ -1,7 +1,9 @@
 import datetime
 import sys
+import weakref
 
 import unittest2
+import unittest2 as unittest
 
 
 class Test_Assertions(unittest2.TestCase):
@@ -44,6 +46,14 @@ class Test_Assertions(unittest2.TestCase):
         self.assertNotAlmostEqual(1.1, 1.0, delta=0.05)
         self.assertNotAlmostEqual(1.0, 1.1, delta=0.05)
 
+        self.assertAlmostEqual(1.0, 1.0, delta=0.5)
+        self.assertRaises(self.failureException, self.assertNotAlmostEqual,
+                          1.0, 1.0, delta=0.5)
+
+        self.assertAlmostEqual(1.0, 1.0, delta=0.5)
+        self.assertRaises(self.failureException, self.assertNotAlmostEqual,
+                          1.0, 1.0, delta=0.5)
+
         self.assertRaises(self.failureException, self.assertAlmostEqual,
                           1.1, 1.0, delta=0.05)
         self.assertRaises(self.failureException, self.assertNotAlmostEqual,
@@ -60,6 +70,38 @@ class Test_Assertions(unittest2.TestCase):
                                delta=datetime.timedelta(seconds=20))
         self.assertNotAlmostEqual(first, second,
                                   delta=datetime.timedelta(seconds=5))
+
+    @unittest.skipIf(
+        getattr(sys, 'pypy_version_info', None),
+        "pypy doesn't use refcounting."
+        )
+    def test_assertRaises_frames_survival(self):
+        # Issue #9815: assertRaises should avoid keeping local variables
+        # in a traceback alive.
+        class A:
+            pass
+        log = []
+        class Foo(unittest.TestCase):
+
+            def foo(self):
+                a = A()
+                log.append(weakref.ref(a))
+                try:
+                    raise IOError
+                except IOError:
+                    raise ValueError
+
+            def test_functional(self):
+                self.assertRaises(ValueError, self.foo)
+
+            def test_with(self):
+                with self.assertRaises(ValueError):
+                    self.foo()
+
+        Foo("test_functional").run()
+        self.assertIsNone(log.pop()())
+        Foo("test_with").run()
+        self.assertIsNone(log.pop()())
 
     def testAssertNotRegex(self):
         self.assertNotRegex('Ala ma kota', r'r+')

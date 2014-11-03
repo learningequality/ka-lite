@@ -13,8 +13,11 @@ __unittest = True
 class BaseTestSuite(unittest.TestSuite):
     """A simple test suite that doesn't provide class or module shared fixtures.
     """
+    _cleanup = True
+
     def __init__(self, tests=()):
         self._tests = []
+        self._removed_tests = 0
         self.addTests(tests)
 
     def __repr__(self):
@@ -35,9 +38,10 @@ class BaseTestSuite(unittest.TestSuite):
         return iter(self._tests)
 
     def countTestCases(self):
-        cases = 0
+        cases = self._removed_tests
         for test in self:
-            cases += test.countTestCases()
+            if test:
+                cases += test.countTestCases()
         return cases
 
     def addTest(self, test):
@@ -57,11 +61,27 @@ class BaseTestSuite(unittest.TestSuite):
             self.addTest(test)
 
     def run(self, result):
-        for test in self:
+        for index, test in enumerate(self):
             if result.shouldStop:
                 break
             test(result)
+            if self._cleanup:
+                self._removeTestAtIndex(index)
         return result
+
+    def _removeTestAtIndex(self, index):
+        """Stop holding a reference to the TestCase at index."""
+        try:
+            test = self._tests[index]
+        except TypeError:
+            # support for suite implementations that have overriden self._tests
+            pass
+        else:
+            # Some unittest tests add non TestCase/TestSuite objects to
+            # the suite.
+            if hasattr(test, 'countTestCases'):
+                self._removed_tests += test.countTestCases()
+            self._tests[index] = None
 
     def __call__(self, *args, **kwds):
         return self.run(*args, **kwds)
@@ -88,7 +108,7 @@ class TestSuite(BaseTestSuite):
         if getattr(result, '_testRunEntered', False) is False:
             result._testRunEntered = topLevel = True
 
-        for test in self:
+        for index, test in enumerate(self):
             if result.shouldStop:
                 break
 
@@ -106,6 +126,9 @@ class TestSuite(BaseTestSuite):
                 test(result)
             else:
                 test.debug()
+
+            if self._cleanup:
+                self._removeTestAtIndex(index)
 
         if topLevel:
             self._tearDownPreviousClass(None, result)

@@ -31,7 +31,7 @@ __all__ = ['TestResult', 'TestCase', 'TestSuite',
            'defaultTestLoader', 'SkipTest', 'skip', 'skipIf', 'skipUnless',
            'expectedFailure', 'TextTestResult', '__version__', 'collector']
 
-__version__ = '0.6.0'
+__version__ = '0.7.1'
 
 # Expose obsolete functions for backwards compatibility
 __all__.extend(['getTestCaseNames', 'makeSuite', 'findTestCases'])
@@ -48,7 +48,7 @@ from unittest2.loader import (
     TestLoader, defaultTestLoader, makeSuite, getTestCaseNames,
     findTestCases
 )
-from unittest2.main import TestProgram, main, main_
+from unittest2.main import TestProgram, main
 from unittest2.runner import TextTestRunner, TextTestResult
 
 try:
@@ -66,3 +66,13 @@ else:
 _TextTestResult = TextTestResult
 
 __unittest = True
+
+def load_tests(loader, tests, pattern):
+    # All our tests are in test/ - the test objects found in unittest2 itself
+    # are base classes not intended to be executed. This load_tests intercepts
+    # discovery to prevent that.
+    import unittest2.test
+    result = loader.suiteClass()
+    for path in unittest2.test.__path__:
+        result.addTests(loader.discover(path, pattern=pattern))
+    return result

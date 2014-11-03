@@ -15,6 +15,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.check_sqlite()
+        self.check_django()
+        self.check_minimum_python_version()
+        self.check_paths()
 
     def _log(self, msg, is_ok=False):
         status = _("OK.")
@@ -52,3 +55,15 @@ class Command(BaseCommand):
             self._log(msg, is_ok=is_ok)
         except Exception:
             self._log_fail(msg)
+
+    def check_django(self):
+        self._log_fail("Testing django...")
+        pass
+
+    def check_minimum_python_version(self):
+        self._log_fail("Testing minimum Python version based on Django version used...")
+        pass
+
+    def check_paths(self):
+        self._log_fail("Testing paths...")
+        pass

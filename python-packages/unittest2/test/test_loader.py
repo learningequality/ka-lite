@@ -1,11 +1,38 @@
 import sys
 import types
+import warnings
 
 import unittest2
+import unittest2 as unittest
 from unittest2 import util
 
 
+# Decorator used in the deprecation tests to reset the warning registry for
+# test isolation and reproducibility.
+def warningregistry(func):
+    def wrapper(*args, **kws):
+        missing = object()
+        saved = getattr(warnings, '__warningregistry__', missing).copy()
+        try:
+            return func(*args, **kws)
+        finally:
+            if saved is missing:
+                try:
+                    del warnings.__warningregistry__
+                except AttributeError:
+                    pass
+            else:
+                warnings.__warningregistry__ = saved
+
+
 class Test_TestLoader(unittest2.TestCase):
+
+    ### Basic object tests
+    ################################################################
+
+    def test___init__(self):
+        loader = unittest.TestLoader()
+        self.assertEqual([], loader.errors)
 
     ### Tests for TestLoader.loadTestsFromTestCase
     ################################################################
@@ -150,6 +177,7 @@ class Test_TestLoader(unittest2.TestCase):
 
     # Check that loadTestsFromModule honors (or not) a module
     # with a load_tests function.
+    @warningregistry
     def test_loadTestsFromModule__load_tests(self):
         m = types.ModuleType('m')
         class MyTestCase(unittest2.TestCase):
@@ -168,10 +196,144 @@ class Test_TestLoader(unittest2.TestCase):
         suite = loader.loadTestsFromModule(m)
         self.assertIsInstance(suite, unittest2.TestSuite)
         self.assertEqual(load_tests_args, [loader, suite, None])
+        # With Python 3.5, the undocumented and unofficial use_load_tests is
+        # ignored (and deprecated).
+        load_tests_args = []
+        with warnings.catch_warnings(record=False):
+            warnings.simplefilter('never')
+            suite = loader.loadTestsFromModule(m, use_load_tests=False)
+            self.assertEqual(load_tests_args, [loader, suite, None])
+
+    @warningregistry
+    def test_loadTestsFromModule__use_load_tests_deprecated_positional(self):
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            def test(self):
+                pass
+        m.testcase_1 = MyTestCase
 
         load_tests_args = []
-        suite = loader.loadTestsFromModule(m, use_load_tests=False)
-        self.assertEqual(load_tests_args, [])
+        def load_tests(loader, tests, pattern):
+            self.assertIsInstance(tests, unittest.TestSuite)
+            load_tests_args.extend((loader, tests, pattern))
+            return tests
+        m.load_tests = load_tests
+        # The method still works.
+        loader = unittest.TestLoader()
+        # use_load_tests=True as a positional argument.
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            suite = loader.loadTestsFromModule(m, False)
+            self.assertIsInstance(suite, unittest.TestSuite)
+            # load_tests was still called because use_load_tests is deprecated
+            # and ignored.
+            self.assertEqual(load_tests_args, [loader, suite, None])
+        # We got a warning.
+        self.assertIs(w[-1].category, DeprecationWarning)
+        self.assertEqual(str(w[-1].message),
+                             'use_load_tests is deprecated and ignored')
+
+    @warningregistry
+    def test_loadTestsFromModule__use_load_tests_deprecated_keyword(self):
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            def test(self):
+                pass
+        m.testcase_1 = MyTestCase
+
+        load_tests_args = []
+        def load_tests(loader, tests, pattern):
+            self.assertIsInstance(tests, unittest.TestSuite)
+            load_tests_args.extend((loader, tests, pattern))
+            return tests
+        m.load_tests = load_tests
+        # The method still works.
+        loader = unittest.TestLoader()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            suite = loader.loadTestsFromModule(m, use_load_tests=False)
+            self.assertIsInstance(suite, unittest.TestSuite)
+            # load_tests was still called because use_load_tests is deprecated
+            # and ignored.
+            self.assertEqual(load_tests_args, [loader, suite, None])
+            # We got a warning.
+            self.assertIs(w[-1].category, DeprecationWarning)
+            self.assertEqual(str(w[-1].message),
+                                 'use_load_tests is deprecated and ignored')
+
+    @warningregistry
+    def test_loadTestsFromModule__too_many_positional_args(self):
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            def test(self):
+                pass
+        m.testcase_1 = MyTestCase
+
+        load_tests_args = []
+        def load_tests(loader, tests, pattern):
+            self.assertIsInstance(tests, unittest.TestSuite)
+            load_tests_args.extend((loader, tests, pattern))
+            return tests
+        m.load_tests = load_tests
+        loader = unittest.TestLoader()
+        with self.assertRaises(TypeError) as cm:
+            with warnings.catch_warning(record=True) as w:
+                loader.loadTestsFromModule(m, False, 'testme.*')
+                # We still got the deprecation warning.
+                self.assertIs(w[-1].category, DeprecationWarning)
+                self.assertEqual(str(w[-1].message),
+                                     'use_load_tests is deprecated and ignored')
+                # We also got a TypeError for too many positional arguments.
+                self.assertEqual(type(cm.exception), TypeError)
+                self.assertEqual(
+                    str(cm.exception),
+                    'loadTestsFromModule() takes 1 positional argument but 3 were given')
+
+    @warningregistry
+    def test_loadTestsFromModule__use_load_tests_other_bad_keyword(self):
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            def test(self):
+                pass
+        m.testcase_1 = MyTestCase
+
+        load_tests_args = []
+        def load_tests(loader, tests, pattern):
+            self.assertIsInstance(tests, unittest.TestSuite)
+            load_tests_args.extend((loader, tests, pattern))
+            return tests
+        m.load_tests = load_tests
+        loader = unittest.TestLoader()
+        with warnings.catch_warnings():
+            warnings.simplefilter('never')
+            with self.assertRaises(TypeError) as cm:
+                loader.loadTestsFromModule(
+                    m, use_load_tests=False, very_bad=True, worse=False)
+        self.assertEqual(type(cm.exception), TypeError)
+        # The error message names the first bad argument alphabetically,
+        # however use_load_tests (which sorts first) is ignored.
+        self.assertEqual(
+            str(cm.exception),
+            "loadTestsFromModule() got an unexpected keyword argument 'very_bad'")
+
+    def test_loadTestsFromModule__pattern(self):
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            def test(self):
+                pass
+        m.testcase_1 = MyTestCase
+
+        load_tests_args = []
+        def load_tests(loader, tests, pattern):
+            self.assertIsInstance(tests, unittest.TestSuite)
+            load_tests_args.extend((loader, tests, pattern))
+            return tests
+        m.load_tests = load_tests
+
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromModule(m, pattern='testme.*')
+        self.assertIsInstance(suite, unittest.TestSuite)
+        self.assertEqual(load_tests_args, [loader, suite, 'testme.*'])
 
     def test_loadTestsFromModule__faulty_load_tests(self):
         m = types.ModuleType('m')
@@ -184,6 +346,13 @@ class Test_TestLoader(unittest2.TestCase):
         suite = loader.loadTestsFromModule(m)
         self.assertIsInstance(suite, unittest2.TestSuite)
         self.assertEqual(suite.countTestCases(), 1)
+        # Errors loading the suite are also captured for introspection.
+        self.assertNotEqual([], loader.errors)
+        self.assertEqual(1, len(loader.errors))
+        error = loader.errors[0]
+        self.assertTrue(
+            'Failed to call load_tests:' in error,
+            'missing error string in %r' % error)
         test = list(suite)[0]
 
         self.assertRaisesRegex(TypeError, "some failure", test.m)
@@ -221,47 +390,79 @@ class Test_TestLoader(unittest2.TestCase):
     def test_loadTestsFromName__malformed_name(self):
         loader = unittest2.TestLoader()
 
-        # XXX Should this raise ValueError or ImportError?
-        try:
-            loader.loadTestsFromName('abc () //')
-        except ValueError:
-            pass
-        except ImportError:
-            pass
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise ValueError")
+        suite = loader.loadTestsFromName('abc () //')
+        error, test = self.check_deferred_error(loader, suite)
+        expected = "Failed to import test module: abc () //"
+        expected_regex = "Failed to import test module: abc \(\) //"
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(
+            ImportError, expected_regex, getattr(test, 'abc () //'))
 
     # "The specifier name is a ``dotted name'' that may resolve ... to a
     # module"
     #
     # What happens when a module by that name can't be found?
     def test_loadTestsFromName__unknown_module_name(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
+        suite = loader.loadTestsFromName('sdasfasfasdf')
+        error, test = self.check_deferred_error(loader, suite)
+        self.check_module_import_error(error, test)
+
+    def _check_module_lookup_error(self, error, test, exc_class, expected, attr, regex):
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(exc_class, regex, getattr(test, attr))
+
+    def check_module_lookup_error(self, error, test, name,
+        attr='sdasfasfasdf', regex='sdasfasfasdf'):
         try:
-            loader.loadTestsFromName('sdasfasfasdf')
-        except ImportError:
-            e = sys.exc_info()[1]
-            self.assertRegex(str(e), "No module named '?sdasfasfasdf'?")
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise ImportError")
+            self._check_module_lookup_error(
+                error, test, AttributeError,
+                "'module' object has no attribute '%s'" % attr, attr, regex)
+        except self.failureException:
+            self._check_module_lookup_error(
+                error, test, AttributeError,
+                "module '%s' has no attribute '%s'" % (name, regex), attr, regex)
+
+    def check_module_import_error(self, error, test, attr='sdasfasfasdf', regex='(unittest2)?sdasfasfasdf'):
+        try:
+            self._check_module_lookup_error(
+                error, test, ImportError,
+                "No module named ", attr, regex)
+        except self.failureException:
+            self._check_module_lookup_error(
+                error, test, ImportError,
+                "No module named ", attr, regex)
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
     # within a test case class, or a callable object which returns a
     # TestCase or TestSuite instance."
     #
-    # What happens when the module is found, but the attribute can't?
-    def test_loadTestsFromName__unknown_attr_name(self):
-        loader = unittest2.TestLoader()
+    # What happens when the module is found, but the attribute isn't?
+    def test_loadTestsFromName__unknown_attr_name_on_module(self):
+        loader = unittest.TestLoader()
 
-        try:
-            loader.loadTestsFromName('unittest2.sdasfasfasdf')
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
+        suite = loader.loadTestsFromName('unittest2.loader.sdasfasfasdf')
+        error, test = self.check_deferred_error(loader, suite)
+        self.check_module_lookup_error(error, test, 'unittest2.loader')
+
+    # "The specifier name is a ``dotted name'' that may resolve either to
+    # a module, a test case class, a TestSuite instance, a test method
+    # within a test case class, or a callable object which returns a
+    # TestCase or TestSuite instance."
+    #
+    # What happens when the module is found, but the attribute isn't?
+    def test_loadTestsFromName__unknown_attr_name_on_package(self):
+        loader = unittest.TestLoader()
+
+        suite = loader.loadTestsFromName('unittest2.sdasfasfasdf')
+        error, test = self.check_deferred_error(loader, suite)
+        self.check_module_import_error(error, test)
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -273,13 +474,9 @@ class Test_TestLoader(unittest2.TestCase):
     def test_loadTestsFromName__relative_unknown_name(self):
         loader = unittest2.TestLoader()
 
-        try:
-            loader.loadTestsFromName('sdasfasfasdf', unittest2)
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
+        suite = loader.loadTestsFromName('sdasfasfasdf', unittest)
+        error, test = self.check_deferred_error(loader, suite)
+        self.check_module_lookup_error(error, test, 'unittest2')
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -293,14 +490,15 @@ class Test_TestLoader(unittest2.TestCase):
     #
     # XXX Should probably raise a ValueError instead of an AttributeError
     def test_loadTestsFromName__relative_empty_name(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
-        try:
-            loader.loadTestsFromName('', unittest2)
-        except AttributeError:
-            pass
-        else:
-            self.fail("Failed to raise AttributeError")
+        suite = loader.loadTestsFromName('', unittest)
+        error, test = self.check_deferred_error(loader, suite)
+        expected = "has no attribute ''"
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(AttributeError, expected, getattr(test, ''))
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -312,24 +510,19 @@ class Test_TestLoader(unittest2.TestCase):
     # What happens when an impossible name is given, relative to the provided
     # `module`?
     def test_loadTestsFromName__relative_malformed_name(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
-        # XXX Should this raise AttributeError or ValueError?
-        try:
-            loader.loadTestsFromName('abc () //', unittest2)
-        except ValueError:
-            pass
-        except AttributeError:
-            pass
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise ValueError")
+        suite = loader.loadTestsFromName('abc () //', unittest)
+        error, test = self.check_deferred_error(loader, suite)
+        self.check_module_lookup_error(
+            error, test, 'unittest2', 'abc () //', 'abc \(\) //')
 
     # "The method optionally resolves name relative to the given module"
     #
     # Does loadTestsFromName raise TypeError when the `module` argument
     # isn't a module object?
     #
-    # XXX Accepts the not-a-module object, ignorning the object's type
+    # XXX Accepts the not-a-module object, ignoring the object's type
     # This should raise an exception or the method name should be changed
     #
     # XXX Some people are relying on this, so keep it for now
@@ -427,14 +620,14 @@ class Test_TestLoader(unittest2.TestCase):
                 pass
         m.testcase_1 = MyTestCase
 
-        loader = unittest2.TestLoader()
-        try:
-            loader.loadTestsFromName('testcase_1.testfoo', m)
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "type object 'MyTestCase' has no attribute 'testfoo'")
-        else:
-            self.fail("Failed to raise AttributeError")
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromName('testcase_1.testfoo', m)
+        expected = "type object 'MyTestCase' has no attribute 'testfoo'"
+        error, test = self.check_deferred_error(loader, suite)
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(AttributeError, expected, test.testfoo)
 
     # "The specifier name is a ``dotted name'' that may resolve ... to
     # ... a callable object which returns a ... TestSuite instance"
@@ -552,6 +745,23 @@ class Test_TestLoader(unittest2.TestCase):
     ### Tests for TestLoader.loadTestsFromNames()
     ################################################################
 
+    def check_deferred_error(self, loader, suite):
+        """Helper function for checking that errors in loading are reported.
+
+        :param loader: A loader with some errors.
+        :param suite: A suite that should have a late bound error.
+        :return: The first error message from the loader and the test object
+            from the suite.
+        """
+        self.assertIsInstance(suite, unittest.TestSuite)
+        self.assertEqual(suite.countTestCases(), 1)
+        # Errors loading the suite are also captured for introspection.
+        self.assertNotEqual([], loader.errors)
+        self.assertEqual(1, len(loader.errors))
+        error = loader.errors[0]
+        test = list(suite)[0]
+        return error, test
+
     # "Similar to loadTestsFromName(), but takes a sequence of names rather
     # than a single name."
     #
@@ -605,14 +815,15 @@ class Test_TestLoader(unittest2.TestCase):
         loader = unittest2.TestLoader()
 
         # XXX Should this raise ValueError or ImportError?
-        try:
-            loader.loadTestsFromNames(['abc () //'])
-        except ValueError:
-            pass
-        except ImportError:
-            pass
-        else:
-            self.fail("TestLoader.loadTestsFromNames failed to raise ValueError")
+        suite = loader.loadTestsFromNames(['abc () //'])
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        expected = "Failed to import test module: abc () //"
+        expected_regex = "Failed to import test module: abc \(\) //"
+        self.assertIn(
+            expected,  error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(
+            ImportError, expected_regex, getattr(test, 'abc () //'))
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -621,15 +832,15 @@ class Test_TestLoader(unittest2.TestCase):
     #
     # What happens when no module can be found for the given name?
     def test_loadTestsFromNames__unknown_module_name(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
-        try:
-            loader.loadTestsFromNames(['sdasfasfasdf'])
-        except ImportError:
-            e = sys.exc_info()[1]
-            self.assertRegex(str(e), "No module named '?sdasfasfasdf'?")
-        else:
-            self.fail("TestLoader.loadTestsFromNames failed to raise ImportError")
+        suite = loader.loadTestsFromNames(['sdasfasfasdf'])
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        expected = "Failed to import test module: sdasfasfasdf"
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(ImportError, expected, test.sdasfasfasdf)
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -638,15 +849,12 @@ class Test_TestLoader(unittest2.TestCase):
     #
     # What happens when the module can be found, but not the attribute?
     def test_loadTestsFromNames__unknown_attr_name(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
-        try:
-            loader.loadTestsFromNames(['unittest2.sdasfasfasdf', 'unittest2'])
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
-        else:
-            self.fail("TestLoader.loadTestsFromNames failed to raise AttributeError")
+        suite = loader.loadTestsFromNames(
+            ['unittest2.loader.sdasfasfasdf', 'unittest2.result'])
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        self.check_module_lookup_error(error, test, 'unittest2.loader')
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -658,15 +866,11 @@ class Test_TestLoader(unittest2.TestCase):
     # What happens when given an unknown attribute on a specified `module`
     # argument?
     def test_loadTestsFromNames__unknown_name_relative_1(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
-        try:
-            loader.loadTestsFromNames(['sdasfasfasdf'], unittest2)
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
+        suite = loader.loadTestsFromNames(['sdasfasfasdf'], unittest)
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        self.check_module_lookup_error(error, test, 'unittest2')
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -678,15 +882,11 @@ class Test_TestLoader(unittest2.TestCase):
     # Do unknown attributes (relative to a provided module) still raise an
     # exception even in the presence of valid attribute names?
     def test_loadTestsFromNames__unknown_name_relative_2(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
-        try:
-            loader.loadTestsFromNames(['TestCase', 'sdasfasfasdf'], unittest2)
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "'module' object has no attribute 'sdasfasfasdf'")
-        else:
-            self.fail("TestLoader.loadTestsFromName failed to raise AttributeError")
+        suite = loader.loadTestsFromNames(['TestCase', 'sdasfasfasdf'], unittest)
+        error, test = self.check_deferred_error(loader, list(suite)[1])
+        self.check_module_lookup_error(error, test, 'unittest2')
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -702,12 +902,13 @@ class Test_TestLoader(unittest2.TestCase):
     def test_loadTestsFromNames__relative_empty_name(self):
         loader = unittest2.TestLoader()
 
-        try:
-            loader.loadTestsFromNames([''], unittest2)
-        except AttributeError:
-            pass
-        else:
-            self.fail("Failed to raise ValueError")
+        suite = loader.loadTestsFromNames([''], unittest)
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        expected = "has no attribute ''"
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(AttributeError, expected, getattr(test, ''))
 
     # "The specifier name is a ``dotted name'' that may resolve either to
     # a module, a test case class, a TestSuite instance, a test method
@@ -718,17 +919,13 @@ class Test_TestLoader(unittest2.TestCase):
     #
     # What happens when presented with an impossible attribute name?
     def test_loadTestsFromNames__relative_malformed_name(self):
-        loader = unittest2.TestLoader()
+        loader = unittest.TestLoader()
 
         # XXX Should this raise AttributeError or ValueError?
-        try:
-            loader.loadTestsFromNames(['abc () //'], unittest2)
-        except AttributeError:
-            pass
-        except ValueError:
-            pass
-        else:
-            self.fail("TestLoader.loadTestsFromNames failed to raise ValueError")
+        suite = loader.loadTestsFromNames(['abc () //'], unittest)
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        self.check_module_lookup_error(
+            error, test, 'unittest2', 'abc () //', 'abc \(\) //')
 
     # "The method optionally resolves name relative to the given module"
     #
@@ -817,6 +1014,22 @@ class Test_TestLoader(unittest2.TestCase):
         ref_suite = unittest2.TestSuite([MyTestCase('test')])
         self.assertEqual(list(suite), [ref_suite])
 
+    # #14971: Make sure the dotted name resolution works even if the actual
+    # function doesn't have the same name as is used to find it.
+    def test_loadTestsFromName__function_with_different_name_than_method(self):
+        # lambdas have the name '<lambda>'.
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            test = lambda: 1
+        m.testcase_1 = MyTestCase
+
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromNames(['testcase_1.test'], m)
+        self.assertIsInstance(suite, loader.suiteClass)
+
+        ref_suite = unittest.TestSuite([MyTestCase('test')])
+        self.assertEqual(list(suite), [ref_suite])
+
     # "The specifier name is a ``dotted name'' that may resolve ... to ... a
     # test method within a test case class"
     #
@@ -829,14 +1042,14 @@ class Test_TestLoader(unittest2.TestCase):
                 pass
         m.testcase_1 = MyTestCase
 
-        loader = unittest2.TestLoader()
-        try:
-            loader.loadTestsFromNames(['testcase_1.testfoo'], m)
-        except AttributeError:
-            e = sys.exc_info()[1]
-            self.assertEqual(str(e), "type object 'MyTestCase' has no attribute 'testfoo'")
-        else:
-            self.fail("Failed to raise AttributeError")
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromNames(['testcase_1.testfoo'], m)
+        error, test = self.check_deferred_error(loader, list(suite)[0])
+        expected = "type object 'MyTestCase' has no attribute 'testfoo'"
+        self.assertIn(
+            expected, error,
+            'missing error string in %r' % error)
+        self.assertRaisesRegex(AttributeError, expected, test.testfoo)
 
     # "The specifier name is a ``dotted name'' that may resolve ... to
     # ... a callable object which returns a ... TestSuite instance"
@@ -1290,9 +1503,24 @@ class Test_TestLoader(unittest2.TestCase):
 
     # "The default value is the TestSuite class"
     def test_suiteClass__default_value(self):
-        loader = unittest2.TestLoader()
-        self.assertTrue(loader.suiteClass is unittest2.TestSuite)
+        loader = unittest.TestLoader()
+        self.assertIs(loader.suiteClass, unittest.TestSuite)
 
+    # Make sure the dotted name resolution works even if the actual
+    # function doesn't have the same name as is used to find it.
+    def test_loadTestsFromName__function_with_different_name_than_method(self):
+        # lambdas have the name '<lambda>'.
+        m = types.ModuleType('m')
+        class MyTestCase(unittest.TestCase):
+            test = lambda: 1
+        m.testcase_1 = MyTestCase
+
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromNames(['testcase_1.test'], m)
+        self.assertIsInstance(suite, loader.suiteClass)
+
+        ref_suite = unittest.TestSuite([MyTestCase('test')])
+        self.assertEqual(list(suite), [ref_suite])
 
 if __name__ == '__main__':
     unittest2.main()

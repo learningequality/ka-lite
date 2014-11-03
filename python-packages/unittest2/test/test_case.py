@@ -1,18 +1,29 @@
+import contextlib
 from copy import deepcopy
 import difflib
+import gc
 import pickle
 import pprint
 import re
 import sys
+import logging
 
 import six
 from six import b, u
 
 import unittest2
+import unittest2 as unittest
 
 from unittest2.test.support import (
-    OldTestResult, EqualityMixin, HashingMixin, LoggingResult
+    OldTestResult, EqualityMixin, HashingMixin, LoggingResult,
+    LegacyLoggingResult
 )
+from .support import captured_stderr
+
+
+log_foo = logging.getLogger('foo')
+log_foobar = logging.getLogger('foo.bar')
+log_quux = logging.getLogger('quux')
 
 
 class MyException(Exception):
@@ -288,6 +299,98 @@ class Test_TestCase(unittest2.TestCase, EqualityMixin, HashingMixin):
 
         Foo('test').run()
 
+    def _check_call_order__subtests(self, result, events, expected_events):
+        class Foo(Test.LoggingTestCase):
+            def test(self):
+                super(Foo, self).test()
+                for i in [1, 2, 3]:
+                    with self.subTest(i=i):
+                        if i == 1:
+                            self.fail('failure')
+                        for j in [2, 3]:
+                            with self.subTest(j=j):
+                                if i * j == 6:
+                                    raise RuntimeError('raised by Foo.test')
+                1 / 0
+
+        # Order is the following:
+        # i=1 => subtest failure
+        # i=2, j=2 => subtest success
+        # i=2, j=3 => subtest error
+        # i=3, j=2 => subtest error
+        # i=3, j=3 => subtest success
+        # toplevel => error
+        Foo(events).run(result)
+        self.assertEqual(events, expected_events)
+
+    def test_run_call_order__subtests(self):
+        events = []
+        result = LoggingResult(events)
+        expected = ['startTest', 'setUp', 'test', 'tearDown',
+                    'addSubTestFailure', 'addSubTestSuccess',
+                    'addSubTestFailure', 'addSubTestFailure',
+                    'addSubTestSuccess', 'addError', 'stopTest']
+        self._check_call_order__subtests(result, events, expected)
+
+    def test_run_call_order__subtests_legacy(self):
+        # With a legacy result object (without a addSubTest method),
+        # text execution stops after the first subtest failure.
+        events = []
+        result = LegacyLoggingResult(events)
+        expected = ['startTest', 'setUp', 'test', 'tearDown',
+                    'addFailure', 'stopTest']
+        self._check_call_order__subtests(result, events, expected)
+
+    def _check_call_order__subtests_success(self, result, events, expected_events):
+        class Foo(Test.LoggingTestCase):
+            def test(self):
+                super(Foo, self).test()
+                for i in [1, 2]:
+                    with self.subTest(i=i):
+                        for j in [2, 3]:
+                            with self.subTest(j=j):
+                                pass
+
+        Foo(events).run(result)
+        self.assertEqual(events, expected_events)
+
+    def test_run_call_order__subtests_success(self):
+        events = []
+        result = LoggingResult(events)
+        # The 6 subtest successes are individually recorded, in addition
+        # to the whole test success.
+        expected = (['startTest', 'setUp', 'test', 'tearDown']
+                    + 6 * ['addSubTestSuccess']
+                    + ['addSuccess', 'stopTest'])
+        self._check_call_order__subtests_success(result, events, expected)
+
+    def test_run_call_order__subtests_success_legacy(self):
+        # With a legacy result, only the whole test success is recorded.
+        events = []
+        result = LegacyLoggingResult(events)
+        expected = ['startTest', 'setUp', 'test', 'tearDown',
+                    'addSuccess', 'stopTest']
+        self._check_call_order__subtests_success(result, events, expected)
+
+    def test_run_call_order__subtests_failfast(self):
+        events = []
+        result = LoggingResult(events)
+        result.failfast = True
+
+        class Foo(Test.LoggingTestCase):
+            def test(self):
+                super(Foo, self).test()
+                with self.subTest(i=1):
+                    self.fail('failure')
+                with self.subTest(i=2):
+                    self.fail('failure')
+                self.fail('failure')
+
+        expected = ['startTest', 'setUp', 'test', 'tearDown',
+                    'addSubTestFailure', 'stopTest']
+        Foo(events).run(result)
+        self.assertEqual(events, expected)
+
     # "This class attribute gives the exception raised by the test() method.
     # If a test framework needs to use a specialized exception, possibly to
     # carry additional information, it must subclass this exception in
@@ -298,7 +401,7 @@ class Test_TestCase(unittest2.TestCase, EqualityMixin, HashingMixin):
             def test(self):
                 pass
 
-        self.assertTrue(Foo('test').failureException is AssertionError)
+        self.assertIs(Foo('test').failureException, AssertionError)
 
     # "This class attribute gives the exception raised by the test() method.
     # If a test framework needs to use a specialized exception, possibly to
@@ -316,7 +419,7 @@ class Test_TestCase(unittest2.TestCase, EqualityMixin, HashingMixin):
 
             failureException = RuntimeError
 
-        self.assertTrue(Foo('test').failureException is RuntimeError)
+        self.assertIs(Foo('test').failureException, RuntimeError)
 
 
         Foo('test').run(result)
@@ -339,7 +442,7 @@ class Test_TestCase(unittest2.TestCase, EqualityMixin, HashingMixin):
 
             failureException = RuntimeError
 
-        self.assertTrue(Foo('test').failureException is RuntimeError)
+        self.assertIs(Foo('test').failureException, RuntimeError)
 
 
         Foo('test').run(result)
@@ -590,6 +693,35 @@ class Test_TestCase(unittest2.TestCase, EqualityMixin, HashingMixin):
         self.assertRaises(self.failureException, self.assertDictEqual, [], d)
         self.assertRaises(self.failureException, self.assertDictEqual, 1, 1)
 
+    def testAssertEqual_shorten(self):
+        # set a lower threshold value and add a cleanup to restore it
+        old_threshold = self._diffThreshold
+        self._diffThreshold = 0
+        self.addCleanup(lambda: setattr(self, '_diffThreshold', old_threshold))
+
+        s = 'x' * 100
+        s1, s2 = s + 'a', s + 'b'
+        with self.assertRaises(self.failureException) as cm:
+            self.assertEqual(s1, s2)
+        c = 'xxxx[35 chars]' + 'x' * 61
+        self.assertEqual(str(cm.exception), "'%sa' != '%sb'" % (c, c))
+        self.assertEqual(s + 'a', s + 'a')
+
+        p = 'y' * 50
+        s1, s2 = s + 'a' + p, s + 'b' + p
+        with self.assertRaises(self.failureException) as cm:
+            self.assertEqual(s1, s2)
+        c = 'xxxx[85 chars]xxxxxxxxxxx'
+        self.assertEqual(str(cm.exception), "'%sa%s' != '%sb%s'" % (c, p, c, p))
+
+        p = 'y' * 100
+        s1, s2 = s + 'a' + p, s + 'b' + p
+        with self.assertRaises(self.failureException) as cm:
+            self.assertEqual(s1, s2)
+        c = 'xxxx[91 chars]xxxxx'
+        d = 'y' * 40 + '[56 chars]yyyy'
+        self.assertEqual(str(cm.exception), "'%sa%s' != '%sb%s'" % (c, d, c, d))
+
     def testAssertItemsEqual(self):
         self.assertItemsEqual([1, 2, 3], [3, 2, 1])
         self.assertItemsEqual(['foo', 'bar', 'baz'], ['bar', 'baz', 'foo'])
@@ -782,11 +914,7 @@ test case
                     error = error_lines[1]
                 else:
                     error = error_lines[0]
-
-                # assertMultiLineEqual is hooked up as the default for
-                # unicode strings - so we can't use it for this check
-                self.assertTrue(sample_text_error == error,
-                    "error %r not in sample_text %r" % (error_str, sample_text_error))
+                self.assertEqual(sample_text_error, error)
 
     def testAssertSequenceEqualMaxDiff(self):
         self.assertEqual(self.maxDiff, 80*8)
@@ -805,7 +933,7 @@ test case
             msg = e.args[0]
         else:
             self.fail('assertSequenceEqual did not fail.')
-        self.assertTrue(len(msg) < len(diff))
+        self.assertLess(len(msg), len(diff))
         self.assertIn(omitted, msg)
 
         self.maxDiff = len(diff) * 2
@@ -816,7 +944,7 @@ test case
             msg = e.args[0]
         else:
             self.fail('assertSequenceEqual did not fail.')
-        self.assertTrue(len(msg) > len(diff))
+        self.assertGreater(len(msg), len(diff))
         self.assertNotIn(omitted, msg)
 
         self.maxDiff = None
@@ -827,7 +955,7 @@ test case
             msg = e.args[0]
         else:
             self.fail('assertSequenceEqual did not fail.')
-        self.assertTrue(len(msg) > len(diff))
+        self.assertGreater(len(msg), len(diff))
         self.assertNotIn(omitted, msg)
 
     def testTruncateMessage(self):
@@ -870,6 +998,21 @@ test case
         else:
             self.fail('assertMultiLineEqual did not fail')
 
+    def testAssertEqualSingleLine(self):
+        sample_text = "laden swallows fly slowly"
+        revised_sample_text = "unladen swallows fly quickly"
+        sample_text_error = """\
+- laden swallows fly slowly
+?                    ^^^^
++ unladen swallows fly quickly
+? ++                   ^^^^^
+"""
+        try:
+            self.assertEqual(sample_text, revised_sample_text)
+        except self.failureException as e:
+            error = str(e).split('\n', 1)[1]
+            self.assertEqual(sample_text_error, error)
+
     def testAssertIsNone(self):
         self.assertIsNone(None)
         self.assertRaises(self.failureException, self.assertIsNone, False)
@@ -906,6 +1049,30 @@ test case
                 self.assertRaisesRegex, Exception, u('x'),
                 lambda: None)
 
+    def testAssertRaisesRegexInvalidRegex(self):
+        # Issue 20145.
+        class MyExc(Exception):
+            pass
+        self.assertRaises(TypeError, self.assertRaisesRegex, MyExc, lambda: True)
+
+    def testAssertWarnsRegexInvalidRegex(self):
+        # Issue 20145.
+        class MyWarn(Warning):
+            pass
+        self.assertRaises(TypeError, self.assertWarnsRegex, MyWarn, lambda: True)
+
+    def testAssertRaisesRegexInvalidRegex(self):
+        # Issue 20145.
+        class MyExc(Exception):
+            pass
+        self.assertRaises(TypeError, self.assertRaisesRegex, MyExc, lambda: True)
+
+    def testAssertWarnsRegexInvalidRegex(self):
+        # Issue 20145.
+        class MyWarn(Warning):
+            pass
+        self.assertRaises(TypeError, self.assertWarnsRegex, MyWarn, lambda: True)
+
     def testAssertRaisesRegexMismatch(self):
         def Stub():
             raise Exception('Unexpected')
@@ -925,6 +1092,94 @@ test case
                 r'"\^Expected\$" does not match "Unexpected"',
                 self.assertRaisesRegex, Exception,
                 re.compile('^Expected$'), Stub)
+
+    @contextlib.contextmanager
+    def assertNoStderr(self):
+        with captured_stderr() as buf:
+            yield
+        self.assertEqual(buf.getvalue(), "")
+
+    def assertLogRecords(self, records, matches):
+        self.assertEqual(len(records), len(matches))
+        for rec, match in zip(records, matches):
+            self.assertIsInstance(rec, logging.LogRecord)
+            for k, v in match.items():
+                self.assertEqual(getattr(rec, k), v)
+
+    def testAssertLogsDefaults(self):
+        # defaults: root logger, level INFO
+        with self.assertNoStderr():
+            with self.assertLogs() as cm:
+                log_foo.info("1")
+                log_foobar.debug("2")
+            self.assertEqual(cm.output, ["INFO:foo:1"])
+            self.assertLogRecords(cm.records, [{'name': 'foo'}])
+
+    def testAssertLogsTwoMatchingMessages(self):
+        # Same, but with two matching log messages
+        with self.assertNoStderr():
+            with self.assertLogs() as cm:
+                log_foo.info("1")
+                log_foobar.debug("2")
+                log_quux.warning("3")
+            self.assertEqual(cm.output, ["INFO:foo:1", "WARNING:quux:3"])
+            self.assertLogRecords(cm.records,
+                                   [{'name': 'foo'}, {'name': 'quux'}])
+
+    def checkAssertLogsPerLevel(self, level):
+        # Check level filtering
+        with self.assertNoStderr():
+            with self.assertLogs(level=level) as cm:
+                log_foo.warning("1")
+                log_foobar.error("2")
+                log_quux.critical("3")
+            self.assertEqual(cm.output, ["ERROR:foo.bar:2", "CRITICAL:quux:3"])
+            self.assertLogRecords(cm.records,
+                                   [{'name': 'foo.bar'}, {'name': 'quux'}])
+
+    def testAssertLogsPerLevel(self):
+        self.checkAssertLogsPerLevel(logging.ERROR)
+        self.checkAssertLogsPerLevel('ERROR')
+
+    def checkAssertLogsPerLogger(self, logger):
+        # Check per-logger filtering
+        with self.assertNoStderr():
+            with self.assertLogs(level='DEBUG') as outer_cm:
+                with self.assertLogs(logger, level='DEBUG') as cm:
+                    log_foo.info("1")
+                    log_foobar.debug("2")
+                    log_quux.warning("3")
+                self.assertEqual(cm.output, ["INFO:foo:1", "DEBUG:foo.bar:2"])
+                self.assertLogRecords(cm.records,
+                                       [{'name': 'foo'}, {'name': 'foo.bar'}])
+            # The outer catchall caught the quux log
+            self.assertEqual(outer_cm.output, ["WARNING:quux:3"])
+
+    def testAssertLogsPerLogger(self):
+        self.checkAssertLogsPerLogger(logging.getLogger('foo'))
+        self.checkAssertLogsPerLogger('foo')
+
+    def testAssertLogsFailureNoLogs(self):
+        # Failure due to no logs
+        with self.assertNoStderr():
+            with self.assertRaises(self.failureException):
+                with self.assertLogs():
+                    pass
+
+    def testAssertLogsFailureLevelTooHigh(self):
+        # Failure due to level too high
+        with self.assertNoStderr():
+            with self.assertRaises(self.failureException):
+                with self.assertLogs(level='WARNING'):
+                    log_foo.info("1")
+
+    def testAssertLogsFailureMismatchingLogger(self):
+        # Failure due to mismatching logger (and the logged message is
+        # passed through)
+        with self.assertLogs('quux', level='ERROR'):
+            with self.assertRaises(self.failureException):
+                with self.assertLogs('foo'):
+                    log_quux.error("1")
 
 
     def testDeepcopy(self):
@@ -1035,6 +1290,33 @@ test case
             klass('test_something').run(result)
             self.assertEqual(len(result.errors), 1)
             self.assertEqual(result.testsRun, 1)
+
+    def test_no_exception_leak(self):
+        # Issue #19880: TestCase.run() should not keep a reference
+        # to the exception
+        class MyException(Exception):
+            ninstance = 0
+
+            def __init__(self):
+                MyException.ninstance += 1
+                Exception.__init__(self)
+
+            def __del__(self):
+                MyException.ninstance -= 1
+
+        class TestCase(unittest.TestCase):
+            def test1(self):
+                raise MyException()
+
+            @unittest.expectedFailure
+            def test2(self):
+                raise MyException()
+
+        for method_name in ('test1', 'test2'):
+            testcase = TestCase(method_name)
+            testcase.run()
+            gc.collect()
+            self.assertEqual(MyException.ninstance, 0)
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ class TestResult(unittest.TestResult):
     _previousTestClass = None
     _moduleSetUpFailed = False
 
-    def __init__(self):
+    def __init__(self, stream=None, descriptions=None, verbosity=None):
         self.failfast = False
         self.failures = []
         self.errors = []
@@ -115,6 +115,22 @@ class TestResult(unittest.TestResult):
         self.failures.append((test, self._exc_info_to_string(err, test)))
         self._mirrorOutput = True
 
+    @failfast
+    def addSubTest(self, test, subtest, err):
+        """Called at the end of a subtest.
+        'err' is None if the subtest ended successfully, otherwise it's a
+        tuple of values as returned by sys.exc_info().
+        """
+        # By default, we don't do anything with successful subtests, but
+        # more sophisticated test results might want to record them.
+        if err is not None:
+            if issubclass(err[0], test.failureException):
+                errors = self.failures
+            else:
+                errors = self.errors
+            errors.append((subtest, self._exc_info_to_string(err, test)))
+            self._mirrorOutput = True
+
     def addSuccess(self, test):
         "Called when a test has completed successfully"
         pass
@@ -134,11 +150,16 @@ class TestResult(unittest.TestResult):
         self.unexpectedSuccesses.append(test)
 
     def wasSuccessful(self):
-        "Tells whether or not this result was a success"
-        return (len(self.failures) + len(self.errors) == 0)
+        """Tells whether or not this result was a success."""
+        # The hasattr check is for test_result's OldResult test.  That
+        # way this method works on objects that lack the attribute.
+        # (where would such result intances come from? old stored pickles?)
+        return ((len(self.failures) == len(self.errors) == 0) and
+                (not hasattr(self, 'unexpectedSuccesses') or
+                 len(self.unexpectedSuccesses) == 0))
 
     def stop(self):
-        "Indicates that the tests should be aborted"
+        """Indicates that the tests should be aborted."""
         self.shouldStop = True
 
     def _exc_info_to_string(self, err, test):

@@ -1,12 +1,20 @@
-import os
+import os.path
+from os.path import abspath
 import re
 import sys
+import types
+try:
+    import builtins
+except ImportError:
+    import __builtin__ as builtins
 
 import unittest2
+import unittest2 as unittest
+from unittest2.test import support
 
 
 class TestableTestProgram(unittest2.TestProgram):
-    module = '__main__'
+    module = None
     exit = True
     defaultTest = failfast = catchbreak = buffer = None
     verbosity = 1
@@ -48,9 +56,9 @@ class TestDiscovery(unittest2.TestCase):
         def restore_isdir():
             os.path.isdir = original_isdir
 
-        path_lists = [['test1.py', 'test2.py', 'not_a_test.py', 'test_dir',
+        path_lists = [['test2.py', 'test1.py', 'not_a_test.py', 'test_dir',
                        'test.foo', 'test-not-a-module.py', 'another_dir'],
-                      ['test3.py', 'test4.py', ]]
+                      ['test4.py', 'test3.py', ]]
         os.listdir = lambda path: path_lists.pop(0)
         self.addCleanup(restore_listdir)
 
@@ -66,15 +74,23 @@ class TestDiscovery(unittest2.TestCase):
         self.addCleanup(restore_isfile)
 
         loader._get_module_from_name = lambda path: path + ' module'
-        loader.loadTestsFromModule = lambda module: module + ' tests'
+        orig_load_tests = loader.loadTestsFromModule
+        def loadTestsFromModule(module, pattern=None):
+            # This is where load_tests is called.
+            base = orig_load_tests(module, pattern=pattern)
+            return base + [module + ' tests']
+        loader.loadTestsFromModule = loadTestsFromModule
+        loader.suiteClass = lambda thing: thing
 
         top_level = os.path.abspath('/foo')
         loader._top_level_dir = top_level
         suite = list(loader._find_tests(top_level, 'test*.py'))
 
-        expected = [name + ' module tests' for name in
-                    ('test1', 'test2')]
-        expected.extend([('test_dir.%s' % name) + ' module tests' for name in
+        # The test suites found should be sorted alphabetically for reliable
+        # execution order.
+        expected = [[name + ' module tests'] for name in
+                    ('test1', 'test2', 'test_dir')]
+        expected.extend([[('test_dir.%s' % name) + ' module tests'] for name in
                     ('test3', 'test4')])
         self.assertEqual(suite, expected)
 
@@ -112,7 +128,7 @@ class TestDiscovery(unittest2.TestCase):
                 if os.path.basename(path) == 'test_directory':
                     def load_tests(loader, tests, pattern):
                         self.load_tests_args.append((loader, tests, pattern))
-                        return 'load_tests'
+                        return [self.path + ' load_tests']
                     self.load_tests = load_tests
 
             def __eq__(self, other):
@@ -122,26 +138,197 @@ class TestDiscovery(unittest2.TestCase):
             __hash__ = None
 
         loader._get_module_from_name = lambda name: Module(name)
-        def loadTestsFromModule(module, use_load_tests):
-            if use_load_tests:
-                raise self.failureException('use_load_tests should be False for packages')
-            return module.path + ' module tests'
+        orig_load_tests = loader.loadTestsFromModule
+        def loadTestsFromModule(module, pattern=None):
+            # This is where load_tests is called.
+            base = orig_load_tests(module, pattern=pattern)
+            return base + [module.path + ' module tests']
         loader.loadTestsFromModule = loadTestsFromModule
+        loader.suiteClass = lambda thing: thing
 
         loader._top_level_dir = '/foo'
         # this time no '.py' on the pattern so that it can match
         # a test package
         suite = list(loader._find_tests('/foo', 'test*'))
 
-        # We should have loaded tests from the test_directory package by calling load_tests
-        # and directly from the test_directory2 package
+        # We should have loaded tests from the a_directory and test_directory2
+        # directly and via load_tests for the test_directory package, which
+        # still calls the baseline module loader.
         self.assertEqual(suite,
-                         ['load_tests', 'test_directory2' + ' module tests'])
-        self.assertEqual(Module.paths, ['test_directory', 'test_directory2'])
+                         [['a_directory module tests'],
+                          ['test_directory load_tests',
+                           'test_directory module tests'],
+                          ['test_directory2 module tests']])
+
+
+        # The test module paths should be sorted for reliable execution order
+        self.assertEqual(Module.paths,
+                         ['a_directory', 'test_directory', 'test_directory2'])
+
+        # load_tests should have been called once with loader, tests and pattern
+        # (but there are no tests in our stub module itself, so thats [] at the
+        # time of call.
+        self.assertEqual(Module.load_tests_args,
+                         [(loader, [], 'test*')])
+
+    def test_find_tests_default_calls_package_load_tests(self):
+        loader = unittest.TestLoader()
+
+        original_listdir = os.listdir
+        def restore_listdir():
+            os.listdir = original_listdir
+        original_isfile = os.path.isfile
+        def restore_isfile():
+            os.path.isfile = original_isfile
+        original_isdir = os.path.isdir
+        def restore_isdir():
+            os.path.isdir = original_isdir
+
+        directories = ['a_directory', 'test_directory', 'test_directory2']
+        path_lists = [directories, [], [], []]
+        os.listdir = lambda path: path_lists.pop(0)
+        self.addCleanup(restore_listdir)
+
+        os.path.isdir = lambda path: True
+        self.addCleanup(restore_isdir)
+
+        os.path.isfile = lambda path: os.path.basename(path) not in directories
+        self.addCleanup(restore_isfile)
+
+        class Module(object):
+            paths = []
+            load_tests_args = []
+
+            def __init__(self, path):
+                self.path = path
+                self.paths.append(path)
+                if os.path.basename(path) == 'test_directory':
+                    def load_tests(loader, tests, pattern):
+                        self.load_tests_args.append((loader, tests, pattern))
+                        return [self.path + ' load_tests']
+                    self.load_tests = load_tests
+
+            def __eq__(self, other):
+                return self.path == other.path
+
+        loader._get_module_from_name = lambda name: Module(name)
+        orig_load_tests = loader.loadTestsFromModule
+        def loadTestsFromModule(module, pattern=None):
+            # This is where load_tests is called.
+            base = orig_load_tests(module, pattern=pattern)
+            return base + [module.path + ' module tests']
+        loader.loadTestsFromModule = loadTestsFromModule
+        loader.suiteClass = lambda thing: thing
+
+        loader._top_level_dir = '/foo'
+        # this time no '.py' on the pattern so that it can match
+        # a test package
+        suite = list(loader._find_tests('/foo', 'test*.py'))
+
+        # We should have loaded tests from the a_directory and test_directory2
+        # directly and via load_tests for the test_directory package, which
+        # still calls the baseline module loader.
+        self.assertEqual(suite,
+                         [['a_directory module tests'],
+                          ['test_directory load_tests',
+                           'test_directory module tests'],
+                          ['test_directory2 module tests']])
+        # The test module paths should be sorted for reliable execution order
+        self.assertEqual(Module.paths,
+                         ['a_directory', 'test_directory', 'test_directory2'])
+
 
         # load_tests should have been called once with loader, tests and pattern
         self.assertEqual(Module.load_tests_args,
-                         [(loader, 'test_directory' + ' module tests', 'test*')])
+                         [(loader, [], 'test*.py')])
+
+    def test_find_tests_customise_via_package_pattern(self):
+        # This test uses the example 'do-nothing' load_tests from
+        # https://docs.python.org/3/library/unittest.html#load-tests-protocol
+        # to make sure that that actually works.
+        # Housekeeping
+        original_listdir = os.listdir
+        def restore_listdir():
+            os.listdir = original_listdir
+        self.addCleanup(restore_listdir)
+        original_isfile = os.path.isfile
+        def restore_isfile():
+            os.path.isfile = original_isfile
+        self.addCleanup(restore_isfile)
+        original_isdir = os.path.isdir
+        def restore_isdir():
+            os.path.isdir = original_isdir
+        self.addCleanup(restore_isdir)
+        self.addCleanup(sys.path.remove, abspath('/foo'))
+
+        # Test data: we expect the following:
+        # a listdir to find our package, and a isfile and isdir check on it.
+        # a module-from-name call to turn that into a module
+        # followed by load_tests.
+        # then our load_tests will call discover() which is messy
+        # but that finally chains into find_tests again for the child dir -
+        # which is why we don't have a infinite loop.
+        # We expect to see:
+        # the module load tests for both package and plain module called,
+        # and the plain module result nested by the package module load_tests
+        # indicating that it was processed and could have been mutated.
+        vfs = {abspath('/foo'): ['my_package'],
+               abspath('/foo/my_package'): ['__init__.py', 'test_module.py']}
+        def list_dir(path):
+            return list(vfs[path])
+        os.listdir = list_dir
+        os.path.isdir = lambda path: not path.endswith('.py')
+        os.path.isfile = lambda path: path.endswith('.py')
+
+        class Module(object):
+            paths = []
+            load_tests_args = []
+
+            def __init__(self, path):
+                self.path = path
+                self.paths.append(path)
+                if path.endswith('test_module'):
+                    def load_tests(loader, tests, pattern):
+                        self.load_tests_args.append((loader, tests, pattern))
+                        return [self.path + ' load_tests']
+                else:
+                    def load_tests(loader, tests, pattern):
+                        self.load_tests_args.append((loader, tests, pattern))
+                        # top level directory cached on loader instance
+                        __file__ = '/foo/my_package/__init__.py'
+                        this_dir = os.path.dirname(__file__)
+                        pkg_tests = loader.discover(
+                            start_dir=this_dir, pattern=pattern)
+                        return [self.path + ' load_tests', tests
+                            ] + pkg_tests
+                self.load_tests = load_tests
+
+            def __eq__(self, other):
+                return self.path == other.path
+
+        loader = unittest.TestLoader()
+        loader._get_module_from_name = lambda name: Module(name)
+        loader.suiteClass = lambda thing: thing
+
+        loader._top_level_dir = abspath('/foo')
+        # this time no '.py' on the pattern so that it can match
+        # a test package
+        suite = list(loader._find_tests(abspath('/foo'), 'test*.py'))
+
+        # We should have loaded tests from both my_package and
+        # my_pacakge.test_module, and also run the load_tests hook in both.
+        # (normally this would be nested TestSuites.)
+        self.assertEqual(suite,
+                         [['my_package load_tests', [],
+                          ['my_package.test_module load_tests']]])
+        # Parents before children.
+        self.assertEqual(Module.paths,
+                         ['my_package', 'my_package.test_module'])
+
+        # load_tests should have been called twice with loader, tests and pattern
+        self.assertEqual(Module.load_tests_args,
+                         [(loader, [], 'test*.py'),
+                          (loader, [], 'test*.py')])
 
     def test_discover(self):
         loader = unittest2.TestLoader()
@@ -175,7 +362,7 @@ class TestDiscovery(unittest2.TestCase):
         self.addCleanup(restore_isdir)
 
         _find_tests_args = []
-        def _find_tests(start_dir, pattern):
+        def _find_tests(start_dir, pattern, namespace=None):
             _find_tests_args.append((start_dir, pattern))
             return ['tests']
         loader._find_tests = _find_tests
@@ -190,11 +377,9 @@ class TestDiscovery(unittest2.TestCase):
         self.assertEqual(_find_tests_args, [(start_dir, 'pattern')])
         self.assertIn(top_level_dir, sys.path)
 
-    def test_discover_with_modules_that_fail_to_import(self):
-        loader = unittest2.TestLoader()
-
+    def setup_import_issue_tests(self, fakefile):
         listdir = os.listdir
-        os.listdir = lambda _: ['test_this_does_not_exist.py']
+        os.listdir = lambda _: [fakefile]
         isfile = os.path.isfile
         os.path.isfile = lambda _: True
         orig_sys_path = sys.path[:]
@@ -204,52 +389,165 @@ class TestDiscovery(unittest2.TestCase):
             sys.path[:] = orig_sys_path
         self.addCleanup(restore)
 
+    def setup_import_issue_package_tests(self, vfs):
+        self.addCleanup(setattr, os, 'listdir', os.listdir)
+        self.addCleanup(setattr, os.path, 'isfile', os.path.isfile)
+        self.addCleanup(setattr, os.path, 'isdir', os.path.isdir)
+        self.addCleanup(sys.path.__setitem__, slice(None), list(sys.path))
+        def list_dir(path):
+            return list(vfs[path])
+        os.listdir = list_dir
+        os.path.isdir = lambda path: not path.endswith('.py')
+        os.path.isfile = lambda path: path.endswith('.py')
+
+    def test_discover_with_modules_that_fail_to_import(self):
+        loader = unittest.TestLoader()
+
+        self.setup_import_issue_tests('test_this_does_not_exist.py')
+
         suite = loader.discover('.')
         self.assertIn(os.getcwd(), sys.path)
         self.assertEqual(suite.countTestCases(), 1)
+        # Errors loading the suite are also captured for introspection.
+        self.assertNotEqual([], loader.errors)
+        self.assertEqual(1, len(loader.errors))
+        error = loader.errors[0]
+        self.assertTrue(
+            'Failed to import test module: test_this_does_not_exist' in error,
+            'missing error string in %r' % error)
         test = list(list(suite)[0])[0] # extract test from suite
 
         self.assertRaises(ImportError,
             lambda: test.test_this_does_not_exist())
+
+    def test_discover_with_init_modules_that_fail_to_import(self):
+        vfs = {abspath('/foo'): ['my_package'],
+               abspath('/foo/my_package'): ['__init__.py', 'test_module.py']}
+        self.setup_import_issue_package_tests(vfs)
+        import_calls = []
+        def _get_module_from_name(name):
+            import_calls.append(name)
+            raise ImportError("Cannot import Name")
+        loader = unittest.TestLoader()
+        loader._get_module_from_name = _get_module_from_name
+        suite = loader.discover(abspath('/foo'))
+
+        self.assertIn(abspath('/foo'), sys.path)
+        self.assertEqual(suite.countTestCases(), 1)
+        # Errors loading the suite are also captured for introspection.
+        self.assertNotEqual([], loader.errors)
+        self.assertEqual(1, len(loader.errors))
+        error = loader.errors[0]
+        self.assertTrue(
+            'Failed to import test module: my_package' in error,
+            'missing error string in %r' % error)
+        test = list(list(suite)[0])[0] # extract test from suite
+        with self.assertRaises(ImportError):
+            test.my_package()
+        self.assertEqual(import_calls, ['my_package'])
+
+    def test_discover_with_module_that_raises_SkipTest_on_import(self):
+        loader = unittest.TestLoader()
+
+        def _get_module_from_name(name):
+            raise unittest.SkipTest('skipperoo')
+        loader._get_module_from_name = _get_module_from_name
+
+        self.setup_import_issue_tests('test_skip_dummy.py')
+
+        suite = loader.discover('.')
+        self.assertEqual(suite.countTestCases(), 1)
+
+        result = unittest.TestResult()
+        suite.run(result)
+        self.assertEqual(len(result.skipped), 1)
+
+    def test_discover_with_init_module_that_raises_SkipTest_on_import(self):
+        vfs = {abspath('/foo'): ['my_package'],
+               abspath('/foo/my_package'): ['__init__.py', 'test_module.py']}
+        self.setup_import_issue_package_tests(vfs)
+        import_calls = []
+        def _get_module_from_name(name):
+            import_calls.append(name)
+            raise unittest.SkipTest('skipperoo')
+        loader = unittest.TestLoader()
+        loader._get_module_from_name = _get_module_from_name
+        suite = loader.discover(abspath('/foo'))
+
+        self.assertIn(abspath('/foo'), sys.path)
+        self.assertEqual(suite.countTestCases(), 1)
+        result = unittest.TestResult()
+        suite.run(result)
+        self.assertEqual(len(result.skipped), 1)
+        self.assertEqual(result.testsRun, 1)
+        self.assertEqual(import_calls, ['my_package'])
 
     def test_command_line_handling_parseArgs(self):
         # Haha - take that uninstantiable class
         program = TestableTestProgram()
 
         args = []
-        def do_discovery(argv):
-            args.extend(argv)
-        program._do_discovery = do_discovery
+        program._do_discovery = args.append
         program.parseArgs(['something', 'discover'])
-        self.assertEqual(args, [])
+        self.assertEqual(args, [[]])
 
+        args[:] = []
         program.parseArgs(['something', 'discover', 'foo', 'bar'])
-        self.assertEqual(args, ['foo', 'bar'])
+        self.assertEqual(args, [['foo', 'bar']])
 
     def test_command_line_handling_discover_by_default(self):
         program = TestableTestProgram()
-        program.module = None
-
-        self.called = False
-        def do_discovery(argv):
-            self.called = True
-            self.assertEqual(argv, [])
-        program._do_discovery = do_discovery
+        
+        args = []
+        program._do_discovery = args.append
         program.parseArgs(['something'])
-        self.assertTrue(self.called)
+        self.assertEqual(args, [[]])
+        self.assertEqual(program.verbosity, 1)
+        self.assertIs(program.buffer, False)
+        self.assertIs(program.catchbreak, False)
+        self.assertIs(program.failfast, False)
+
+    def test_command_line_handling_discover_by_default_with_options(self):
+        program = TestableTestProgram()
+ 
+        args = []
+        program._do_discovery = args.append
+        program.parseArgs(['something', '-v', '-b', '-v', '-c', '-f'])
+        self.assertEqual(args, [[]])
+        self.assertEqual(program.verbosity, 2)
+        self.assertIs(program.buffer, True)
+        self.assertIs(program.catchbreak, True)
+        self.assertIs(program.failfast, True)
+
 
     def test_command_line_handling_do_discovery_too_many_arguments(self):
-        class Stop(Exception):
-            pass
-        def usageExit():
-            raise Stop
-
         program = TestableTestProgram()
-        program.usageExit = usageExit
+        program.testLoader = None
 
-        self.assertRaises(Stop,
-            # too many args
-            lambda: program._do_discovery(['one', 'two', 'three', 'four']))
+        with support.captured_stderr() as stderr:
+            with self.assertRaises(SystemExit) as cm:
+                # too many args
+                program._do_discovery(['one', 'two', 'three', 'four'])
+        if type(cm.exception) is int:
+            # Python 2.6. WAT.
+            self.assertEqual(cm.exception, 2)
+        else:
+            self.assertEqual(cm.exception.args, (2,))
+        self.assertIn('usage:', stderr.getvalue())
+
+    def test_command_line_handling_do_discovery_uses_default_loader(self):
+        program = object.__new__(unittest.TestProgram)
+        program._initArgParsers()
+
+        class Loader(object):
+            args = []
+            def discover(self, start_dir, pattern, top_level_dir):
+                self.args.append((start_dir, pattern, top_level_dir))
+                return 'tests'
+
+        program.testLoader = Loader()
+        program._do_discovery(['-v'])
+        self.assertEqual(Loader.args, [('.', 'test*.py', None)])
 
 
     def test_command_line_handling_do_discovery_calls_loader(self):
@@ -333,7 +631,7 @@ class TestDiscovery(unittest2.TestCase):
         if signal is not None:
             self.assertTrue(program.catchbreak)
 
-    def test_detect_module_clash(self):
+    def setup_module_clash(self):
         class Module(object):
             __file__ = 'bar/foo.py'
         sys.modules['foo'] = Module
@@ -360,7 +658,10 @@ class TestDiscovery(unittest2.TestCase):
         os.listdir = listdir
         os.path.isfile = isfile
         os.path.isdir = isdir
-
+        return full_path
+ 
+    def test_detect_module_clash(self):
+        full_path = self.setup_module_clash()
         loader = unittest2.TestLoader()
 
         mod_dir = os.path.abspath('bar')
@@ -373,6 +674,25 @@ class TestDiscovery(unittest2.TestCase):
         )
         self.assertEqual(sys.path[0], full_path)
 
+    def test_module_symlink_ok(self):
+        full_path = self.setup_module_clash()
+
+        original_realpath = os.path.realpath
+
+        mod_dir = os.path.abspath('bar')
+        expected_dir = os.path.abspath('foo')
+
+        def cleanup():
+            os.path.realpath = original_realpath
+        self.addCleanup(cleanup)
+
+        def realpath(path):
+            if path == os.path.join(mod_dir, 'foo.py'):
+                return os.path.join(expected_dir, 'foo.py')
+            return path
+        os.path.realpath = realpath
+        loader = unittest.TestLoader()
+        loader.discover(start_dir='foo', pattern='foo.py')
 
     def test_discovery_from_dotted_path(self):
         loader = unittest2.TestLoader()
@@ -381,7 +701,7 @@ class TestDiscovery(unittest2.TestCase):
         expectedPath = os.path.abspath(os.path.dirname(unittest2.test.__file__))
 
         self.wasRun = False
-        def _find_tests(start_dir, pattern):
+        def _find_tests(start_dir, pattern, namespace=None):
             self.wasRun = True
             self.assertEqual(start_dir, expectedPath)
             return tests
@@ -389,6 +709,84 @@ class TestDiscovery(unittest2.TestCase):
         suite = loader.discover('unittest2.test')
         self.assertTrue(self.wasRun)
         self.assertEqual(suite._tests, tests)
+
+    # https://bitbucket.org/pypy/pypy/issue/1259/builtin-module-__file__-attribute-shows
+    @unittest.skipIf(
+        hasattr(sys, '__file__'), "builtin module with __file__ attribute.")
+    def test_discovery_from_dotted_path_builtin_modules(self):
+
+        loader = unittest.TestLoader()
+
+        listdir = os.listdir
+        os.listdir = lambda _: ['test_this_does_not_exist.py']
+        isfile = os.path.isfile
+        isdir = os.path.isdir
+        os.path.isdir = lambda _: False
+        orig_sys_path = sys.path[:]
+        def restore():
+            os.path.isfile = isfile
+            os.path.isdir = isdir
+            os.listdir = listdir
+            sys.path[:] = orig_sys_path
+        self.addCleanup(restore)
+
+        with self.assertRaises(TypeError) as cm:
+            loader.discover('sys')
+        self.assertEqual(str(cm.exception),
+                         'Can not use builtin modules '
+                         'as dotted module names')
+
+    def test_discovery_from_dotted_namespace_packages(self):
+        if not getattr(types, 'SimpleNamespace', None):
+            raise unittest.SkipTest('Namespaces not supported')
+        loader = unittest.TestLoader()
+
+        orig_import = __import__
+        package = types.ModuleType('package')
+        package.__path__ = ['/a', '/b']
+        package.__spec__ = types.SimpleNamespace(
+           loader=None,
+           submodule_search_locations=['/a', '/b']
+        )
+
+        def _import(packagename, *args, **kwargs):
+            sys.modules[packagename] = package
+            return package
+
+        def cleanup():
+            builtins.__import__ = orig_import
+        self.addCleanup(cleanup)
+        builtins.__import__ = _import
+
+        _find_tests_args = []
+        def _find_tests(start_dir, pattern, namespace=None):
+            _find_tests_args.append((start_dir, pattern))
+            return ['%s/tests' % start_dir]
+
+        loader._find_tests = _find_tests
+        loader.suiteClass = list
+        suite = loader.discover('package')
+        self.assertEqual(suite, ['/a/tests', '/b/tests'])
+
+    def test_discovery_failed_discovery(self):
+        loader = unittest.TestLoader()
+        package = types.ModuleType('package')
+        orig_import = __import__
+
+        def _import(packagename, *args, **kwargs):
+            sys.modules[packagename] = package
+            return package
+
+        def cleanup():
+            builtins.__import__ = orig_import
+        self.addCleanup(cleanup)
+        builtins.__import__ = _import
+
+        with self.assertRaises(TypeError) as cm:
+            loader.discover('package')
+        self.assertEqual(str(cm.exception),
+                         'don\'t know how to discover from {0!r}'
+                         .format(package))
 
 
 if __name__ == '__main__':

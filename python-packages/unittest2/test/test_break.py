@@ -11,12 +11,16 @@ except ImportError:
     signal = None
 
 import unittest2
+import unittest2 as unittest
 
 
 class TestBreak(unittest2.TestCase):
+    int_handler = None
 
     def setUp(self):
         self._default_handler = signal.getsignal(signal.SIGINT)
+        if self.int_handler is not None:
+            signal.signal(signal.SIGINT, self.int_handler)
 
     def tearDown(self):
         signal.signal(signal.SIGINT, self._default_handler)
@@ -73,6 +77,10 @@ class TestBreak(unittest2.TestCase):
 
 
     def testSecondInterrupt(self):
+        # Can't use skipIf decorator because the signal handler may have
+        # been changed after defining this method.
+        if signal.getsignal(signal.SIGINT) == signal.SIG_IGN:
+            self.skipTest("test requires SIGINT to not be ignored")
         result = unittest2.TestResult()
         unittest2.installHandler()
         unittest2.registerResult(result)
@@ -122,6 +130,10 @@ class TestBreak(unittest2.TestCase):
 
 
     def testHandlerReplacedButCalled(self):
+        # Can't use skipIf decorator because the signal handler may have
+        # been changed after defining this method.
+        if signal.getsignal(signal.SIGINT) == signal.SIG_IGN:
+            self.skipTest("test requires SIGINT to not be ignored")
         # If our handler has been replaced (is no longer installed) but is
         # called by the *new* handler, then it isn't safe to delay the
         # SIGINT and we should immediately delegate to the default handler
@@ -250,6 +262,49 @@ class TestBreak(unittest2.TestCase):
 
         test()
         self.assertNotEqual(signal.getsignal(signal.SIGINT), default_handler)
+
+@unittest.skipUnless(hasattr(os, 'kill'), "Test requires os.kill")
+@unittest.skipIf(sys.platform =="win32", "Test cannot run on Windows")
+@unittest.skipIf(sys.platform == 'freebsd6', "Test kills regrtest on freebsd6 "
+    "if threads have been used")
+class TestBreakDefaultIntHandler(TestBreak):
+    int_handler = signal.default_int_handler
+
+@unittest.skipUnless(hasattr(os, 'kill'), "Test requires os.kill")
+@unittest.skipIf(sys.platform =="win32", "Test cannot run on Windows")
+@unittest.skipIf(sys.platform == 'freebsd6', "Test kills regrtest on freebsd6 "
+    "if threads have been used")
+class TestBreakSignalIgnored(TestBreak):
+    int_handler = signal.SIG_IGN
+
+@unittest.skipUnless(hasattr(os, 'kill'), "Test requires os.kill")
+@unittest.skipIf(sys.platform =="win32", "Test cannot run on Windows")
+@unittest.skipIf(sys.platform == 'freebsd6', "Test kills regrtest on freebsd6 "
+    "if threads have been used")
+class TestBreakSignalDefault(TestBreak):
+    int_handler = signal.SIG_DFL
+
+
+@unittest.skipUnless(hasattr(os, 'kill'), "Test requires os.kill")
+@unittest.skipIf(sys.platform =="win32", "Test cannot run on Windows")
+@unittest.skipIf(sys.platform == 'freebsd6', "Test kills regrtest on freebsd6 "
+    "if threads have been used")
+class TestBreakDefaultIntHandler(TestBreak):
+    int_handler = signal.default_int_handler
+
+@unittest.skipUnless(hasattr(os, 'kill'), "Test requires os.kill")
+@unittest.skipIf(sys.platform =="win32", "Test cannot run on Windows")
+@unittest.skipIf(sys.platform == 'freebsd6', "Test kills regrtest on freebsd6 "
+    "if threads have been used")
+class TestBreakSignalIgnored(TestBreak):
+    int_handler = signal.SIG_IGN
+
+@unittest.skipUnless(hasattr(os, 'kill'), "Test requires os.kill")
+@unittest.skipIf(sys.platform =="win32", "Test cannot run on Windows")
+@unittest.skipIf(sys.platform == 'freebsd6', "Test kills regrtest on freebsd6 "
+    "if threads have been used")
+class TestBreakSignalDefault(TestBreak):
+    int_handler = signal.SIG_DFL
 
 
 # Should also skip some tests on Jython

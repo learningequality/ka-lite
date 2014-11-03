@@ -1,4 +1,5 @@
 import io
+import os
 import pickle
 
 from six.moves import StringIO
@@ -6,6 +7,8 @@ from six import u
 
 from unittest2.test.support import LoggingResult, OldTestResult
 import unittest2
+import unittest2 as unittest
+from unittest2.case import _Outcome
 
 
 class TestCleanUp(unittest2.TestCase):
@@ -44,12 +47,8 @@ class TestCleanUp(unittest2.TestCase):
             def testNothing(self):
                 pass
 
-        class MockOutcome(object):
-            success = True
-            errors = []
-
         test = TestableTest('testNothing')
-        test._outcomeForDoCleanups = MockOutcome
+        outcome = test._outcome = _Outcome()
 
         exc1 = Exception('foo')
         exc2 = Exception('bar')
@@ -63,9 +62,10 @@ class TestCleanUp(unittest2.TestCase):
         test.addCleanup(cleanup2)
 
         self.assertFalse(test.doCleanups())
-        self.assertFalse(MockOutcome.success)
+        self.assertFalse(outcome.success)
 
-        (Type1, instance1, _), (Type2, instance2, _) = reversed(MockOutcome.errors)
+        ((_, (Type1, instance1, _)),
+         (_, (Type2, instance2, _))) = reversed(outcome.errors)
         self.assertEqual((Type1, instance1), (Exception, exc1))
         self.assertEqual((Type2, instance2), (Exception, exc2))
 
@@ -141,6 +141,18 @@ class TestCleanUp(unittest2.TestCase):
 class Test_TextTestRunner(unittest2.TestCase):
     """Tests for TextTestRunner."""
 
+    def setUp(self):
+        # clean the environment from pre-existing PYTHONWARNINGS to make
+        # test_warnings results consistent
+        self.pythonwarnings = os.environ.get('PYTHONWARNINGS')
+        if self.pythonwarnings:
+            del os.environ['PYTHONWARNINGS']
+
+    def tearDown(self):
+        # bring back pre-existing PYTHONWARNINGS if present
+        if self.pythonwarnings:
+            os.environ['PYTHONWARNINGS'] = self.pythonwarnings
+
     def test_init(self):
         runner = unittest2.TextTestRunner()
         self.assertFalse(runner.failfast)
@@ -148,6 +160,19 @@ class Test_TextTestRunner(unittest2.TestCase):
         self.assertEqual(runner.verbosity, 1)
         self.assertTrue(runner.descriptions)
         self.assertEqual(runner.resultclass, unittest2.TextTestResult)
+
+
+    def test_multiple_inheritance(self):
+        class AResult(unittest.TestResult):
+            def __init__(self, stream, descriptions, verbosity):
+                super(AResult, self).__init__(stream, descriptions, verbosity)
+
+        class ATextResult(unittest.TextTestResult, AResult):
+            pass
+
+        # This used to raise an exception due to TextTestResult not passing
+        # on arguments in its __init__ super call
+        ATextResult(None, None, 1)
 
 
     def testBufferAndFailfast(self):
