@@ -63,7 +63,7 @@ class SqliteTests(DependenciesTests):
     REF: https://docs.djangoproject.com/en/1.5/ref/databases/#using-newer-versions-of-the-sqlite-db-api-2-0-driver
     """
 
-    def test_sqlite_is_installed(self):
+    def test_if_sqlite_is_installed(self):
         try:
             self._log("Testing if SQLite3 is installed...", 1)
             import sqlite3
@@ -74,8 +74,8 @@ class SqliteTests(DependenciesTests):
     def test_minimum_sqlite_version(self):
         self._log("Testing minimum SQLite3 version %s for Django version %s..." %
                   (_tuple_to_str(self.MINIMUM_SQLITE_VERSION), _tuple_to_str(self.DJANGO_VERSION),), 1)
-        from sqlite3 import version_info
-        if self.MINIMUM_SQLITE_VERSION <= version_info:
+        from sqlite3 import sqlite_version_info
+        if self.MINIMUM_SQLITE_VERSION <= sqlite_version_info:
             self._pass()
         else:
             self._fail()
@@ -91,7 +91,7 @@ class SqliteTests(DependenciesTests):
                 if is_ok:
                     self._pass()
                 else:
-                    self._fail(self)
+                    self._fail()
             except Exception as exc:
                 msg = "SQLite database path is not writable: %s" % exc
                 logging.critical(msg)
@@ -108,7 +108,7 @@ class DjangoTests(DependenciesTests):
             import django
             self._pass()
         except ImportError:
-            self._fail(self)
+            self._fail()
 
     def test_django_version(self):
         self._log("Testing Django %s version..." % _tuple_to_str(self.DJANGO_VERSION), 1)
@@ -116,7 +116,7 @@ class DjangoTests(DependenciesTests):
             from django.utils.version import get_version
             self._pass()
         except ImportError:
-            self._fail(self)
+            self._fail()
 
     def test_minimum_python_version(self):
         self._log("Testing minimum Python version %s for Django version %s..." %
@@ -124,7 +124,7 @@ class DjangoTests(DependenciesTests):
         if sys.version_info >= self.MINIMUM_PYTHON_VERSION:
             self._pass()
         else:
-            self._fail(self)
+            self._fail()
 
 
 class PackagesTests(unittest2.TestCase):
@@ -152,33 +152,8 @@ class PathsTests(unittest2.TestCase):
         self.assertTrue(False)
 
 
-class VersionTests(unittest2.TestCase):
-    """
-    Checks versions of python, packages we need to run smoothly.
-    """
-
-    def test_python_version(self):
-        logging.info('Testing minimum version of Python...')
-        self.assertTrue(False)
-
-    def test_django_version(self):
-        logging.info('Test version of Django')
-        self.assertTrue(False)
-
-
-class TestHandler(logging.StreamHandler):
-
-    def __init__(self):
-        logging.Handler.__init__(self)
-
-    @property
-    def stream(self):
-        """Use which ever stream sys.stderr is referencing."""
-        return sys.stderr
-
-
-test_cases = (SqliteTests, DjangoTests, VersionTests, PathsTests, PackagesTests)
-test_cases = (SqliteTests, DjangoTests,)
+test_cases = (SqliteTests, DjangoTests, PathsTests, PackagesTests)
+# test_cases = (SqliteTests, DjangoTests,)
 
 
 def load_tests(loader, tests, pattern):
