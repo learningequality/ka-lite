@@ -500,7 +500,7 @@ window.TopicContainerOuterView = BaseView.extend({
             number = this.state_model.get("levels") -1;
         }
         for (var i=0; i < number; i++) {
-            this.inner_views[0].close();
+            this.inner_views[0].remove();
             this.inner_views.shift();
         }
         this.state_model.set("levels", this.state_model.get("levels") - number);

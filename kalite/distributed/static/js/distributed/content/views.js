@@ -30,7 +30,6 @@ window.ContentWrapperView = BaseView.extend({
     },
 
     user_data_loaded: function() {
-        console.log("loaded");
         this.log_model = this.log_collection.get_first_log_or_new_log();
 
         this.render();
@@ -152,7 +151,9 @@ window.ContentBaseView = BaseView.extend({
     },
 
     close: function() {
-        this.log_model.saveNow();
+        if (window.statusModel.get("is_logged_in")) {
+            this.log_model.saveNow();
+        }
         this.remove();
     }
 });
