@@ -74,7 +74,6 @@ class DependenciesTests(unittest2.TestCase):
                 self._fail()
         except Exception as exc:
             msg = "%s access to %s path failed: %s" % (mode, path, exc,)
-            logging.critical(msg)
             self.fail(msg)
 
 
@@ -169,9 +168,10 @@ class PathsTests(DependenciesTests):
             self.fail("Settings cannot be imported: %s" % exc)
 
     def test_content(self):
-        content_path = os
-        logging.info('Test read-only access to "content" folder...')
-        self.assertTrue(False)
+        content_path = os.path.join(self.PROJECT_PATH, "..", "..", "content")
+        content_path = os.path.realpath(content_path)
+        msg = 'Testing read-only access to content folder "%s"...' % content_path
+        self.check_path(content_path, os.R_OK, msg=msg, delay=1)
 
     def test_exercise_json(self):
         self.assertTrue(False)
