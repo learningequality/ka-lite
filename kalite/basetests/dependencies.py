@@ -141,6 +141,10 @@ class DjangoTests(DependenciesTests):
         else:
             self._fail(" found version %s instead..." % (_tuple_to_str(sys.version_info),))
 
+    def test_django_can_serve_on_port(self):
+        logging.info("Testing if Django can serve on production port...")
+        self.assertTrue(False)
+
 
 class PackagesTests(unittest2.TestCase):
 
@@ -150,6 +154,10 @@ class PackagesTests(unittest2.TestCase):
 
     def test_packages_version(self):
         logging.info("Testing required Python packages versions...")
+        self.assertTrue(False)
+
+    def test_packages_dependencies(self):
+        logging.info("Testing dependencies of the required Python packages...")
         self.assertTrue(False)
 
 
