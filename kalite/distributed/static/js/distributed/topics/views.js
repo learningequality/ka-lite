@@ -68,7 +68,7 @@ window.SidebarView = BaseView.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
-        this.listenToDOM($("#fade"), "click", self.check_external_click);
+        this.listenToDOM(this.$(".fade"), "click", self.check_external_click);
 
     },
 
@@ -132,7 +132,7 @@ window.SidebarView = BaseView.extend({
 
     check_external_click: function(ev) {
         if (this.state_model.get("open")) {
-            this.state_model.set("open", !this.state_model.get("open"));
+            this.state_model.set("open", false);
         }
     },
 
@@ -153,13 +153,13 @@ window.SidebarView = BaseView.extend({
             this.sidebar.open();
             this.resize_sidebar();
             this.$(".sidebar-tab").html("&lt");
-            this.$("#fade").show();
+            this.$(".fade").show();
         } else {
             this.sidebar.hide();
             this.$(".sidebar-tab").css({left: 0});
             // this.sidebar.close();
             this.$(".sidebar-tab").html("&gt");
-            this.$("#fade").hide();
+            this.$(".fade").hide();
         }
     },
 

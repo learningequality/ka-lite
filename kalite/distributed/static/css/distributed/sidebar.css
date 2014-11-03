@@ -29,7 +29,7 @@ Nav Panel
     height: 130%;
 }
 
-div#fade {
+div.fade {
     position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
     left: 0%; /* makes the div span all the way across the viewing area */
     top: 0%; /* makes the div span all the way across the viewing area */
