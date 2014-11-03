@@ -1,6 +1,6 @@
 // Views
 
-window.ContentAreaView = Backbone.View.extend({
+window.ContentAreaView = BaseView.extend({
 
     template: HB.template("topics/content-area"),
 
@@ -41,7 +41,7 @@ window.ContentAreaView = Backbone.View.extend({
 
 });
 
-window.SidebarView = Backbone.View.extend({
+window.SidebarView = BaseView.extend({
 
     el: "#sidebar-container",
 
@@ -68,7 +68,7 @@ window.SidebarView = Backbone.View.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
-        $(document).click(self.check_external_click);
+        this.listenToDOM($("#fade"), "click", self.check_external_click);
 
     },
 
@@ -131,10 +131,8 @@ window.SidebarView = Backbone.View.extend({
     },
 
     check_external_click: function(ev) {
-        if(!$(event.target).closest('#sidebar-container').length) {
-            if (this.state_model.get("open")) {
-                this.state_model.set("open", !this.state_model.get("open"));
-            }
+        if (this.state_model.get("open")) {
+            this.state_model.set("open", !this.state_model.get("open"));
         }
     },
 
@@ -155,11 +153,13 @@ window.SidebarView = Backbone.View.extend({
             this.sidebar.open();
             this.resize_sidebar();
             this.$(".sidebar-tab").html("&lt");
+            this.$("#fade").show();
         } else {
             this.sidebar.hide();
             this.$(".sidebar-tab").css({left: 0});
             // this.sidebar.close();
             this.$(".sidebar-tab").html("&gt");
+            this.$("#fade").hide();
         }
     },
 
@@ -177,7 +177,7 @@ window.SidebarView = Backbone.View.extend({
 
 });
 
-window.TopicContainerInnerView = Backbone.View.extend({
+window.TopicContainerInnerView = BaseView.extend({
 
     className: "topic-container-inner",
 
@@ -363,7 +363,7 @@ window.TopicContainerInnerView = Backbone.View.extend({
 
 });
 
-window.SidebarEntryView = Backbone.View.extend({
+window.SidebarEntryView = BaseView.extend({
 
     tagName: "li",
 
@@ -401,7 +401,7 @@ window.SidebarEntryView = Backbone.View.extend({
 });
 
 
-window.TopicContainerOuterView = Backbone.View.extend({
+window.TopicContainerOuterView = BaseView.extend({
 
     initialize: function(options) {
 
