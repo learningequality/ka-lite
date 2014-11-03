@@ -15,12 +15,13 @@
                             </select>
                         {{/if}}
 
+                        <a href="{{ content_urls.stream }}" class="btn btn-lg btn-primary download-link">{{_ "Download" }}</a>
                         <span class="title">{{ title }}</span>
 
                         {{#if description }}
                         </br><small class="long-description">{{ description }}</small>
                         {{/if}}
-                        
+
                         <div class="points-wrapper pull-right"></div>
 
                     </h3>
@@ -73,5 +74,5 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
 </div>
