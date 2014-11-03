@@ -1,6 +1,6 @@
 // Views
 
-window.ContentAreaView = Backbone.View.extend({
+window.ContentAreaView = BaseView.extend({
 
     template: HB.template("topics/content-area"),
 
@@ -41,7 +41,7 @@ window.ContentAreaView = Backbone.View.extend({
 
 });
 
-window.SidebarView = Backbone.View.extend({
+window.SidebarView = BaseView.extend({
 
     el: "#sidebar-container",
 
@@ -68,6 +68,7 @@ window.SidebarView = Backbone.View.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
+        this.listenToDOM($("#fade"), "click", self.check_external_click);
 
     },
 
@@ -114,9 +115,10 @@ window.SidebarView = Backbone.View.extend({
         var current_level = this.state_model.get("current_level");
         // TODO(jamalex): have this calculated dynamically
         var column_width = 200; // this.$(".topic-container-inner").width();
+        var last_column_width = 400;
         // hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. 
-        var new_width = (0.5+current_level) * column_width + 10;
+        var new_width = (current_level-1) * column_width + last_column_width + 10;
         this.$(".sidebar-panel").width(new_width);
         this.$(".sidebar-tab").css({left: new_width});
 
@@ -126,6 +128,12 @@ window.SidebarView = Backbone.View.extend({
         //                html.clientHeight, html.scrollHeight, html.offsetHeight)
 
         // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
+    },
+
+    check_external_click: function(ev) {
+        if (this.state_model.get("open")) {
+            this.state_model.set("open", !this.state_model.get("open"));
+        }
     },
 
     toggle_sidebar: function(ev) {
@@ -144,10 +152,14 @@ window.SidebarView = Backbone.View.extend({
             this.sidebar.show();
             this.sidebar.open();
             this.resize_sidebar();
+            this.$(".sidebar-tab").html("&lt");
+            this.$("#fade").show();
         } else {
             this.sidebar.hide();
             this.$(".sidebar-tab").css({left: 0});
             // this.sidebar.close();
+            this.$(".sidebar-tab").html("&gt");
+            this.$("#fade").hide();
         }
     },
 
@@ -165,7 +177,7 @@ window.SidebarView = Backbone.View.extend({
 
 });
 
-window.TopicContainerInnerView = Backbone.View.extend({
+window.TopicContainerInnerView = BaseView.extend({
 
     className: "topic-container-inner",
 
@@ -351,7 +363,7 @@ window.TopicContainerInnerView = Backbone.View.extend({
 
 });
 
-window.SidebarEntryView = Backbone.View.extend({
+window.SidebarEntryView = BaseView.extend({
 
     tagName: "li",
 
@@ -389,7 +401,7 @@ window.SidebarEntryView = Backbone.View.extend({
 });
 
 
-window.TopicContainerOuterView = Backbone.View.extend({
+window.TopicContainerOuterView = BaseView.extend({
 
     initialize: function(options) {
 
