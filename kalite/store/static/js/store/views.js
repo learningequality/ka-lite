@@ -122,11 +122,17 @@ window.PurchasedStoreItemListView = Backbone.View.extend({
 
         this.listenTo(this.collection, "add", this.add_item);
         this.listenTo(this.collection, "reset", this.add_all_items);
+        this.last_unit = 0;
     },
 
     add_item: function(model) {
-        var item = this.options.available_items.get(model.get("item"))
+        var item = this.options.available_items.get(model.get("item"));
         if (item && item.get("shown")) {
+            if (model.get("context_id") != this.last_unit) {
+                // TODO(jamalex): hack-hack
+                this.$el.append("<div class='clear'></div><h2 class='unit-header'>Unit " + model.get("context_id") + "</h2>");
+                this.last_unit = model.get("context_id");
+            }
             var view = new PurchasedStoreItemView({
                 model: model,
                 available_items: this.options.available_items
@@ -175,7 +181,10 @@ window.PurchasedStoreItemView = Backbone.View.extend({
     render: function() {
         // retrieve the item object itself, for rendering
         var item = this.options.available_items.get(this.model.get("item"));
-        this.$el.html(this.template(item.attributes));
+        this.$el.html(this.template({
+            item: item.attributes,
+            transaction: this.model.attributes
+        }));
         return this;
     }
 

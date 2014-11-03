@@ -132,6 +132,10 @@ window.ExerciseLogModel = Backbone.Model.extend({
         return this.get("attempts") - this.get("attempts_before_completion");
     },
 
+    fixed_block_questions_remaining: function() {
+        return ExerciseParams.FIXED_BLOCK_EXERCISES - this.attempts_since_completion();
+    },
+
     urlRoot: "/api/exerciselog/"
 
 });
@@ -259,7 +263,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     calculate_points_per_question: function(basepoints) {
         // for comparability with the original algorithm (when a streak of 10 was needed),
         // we calibrate the points awarded for each question (note that there are no random bonuses now)
-        return Math.round((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
+        return Math.floor((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
     }
 
 });
@@ -937,23 +941,25 @@ window.ExercisePracticeView = Backbone.View.extend({
                 msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
             }
         } else {
-            context.remaining = ExerciseParams.FIXED_BLOCK_EXERCISES - this.log_model.attempts_since_completion();
+            context.remaining = this.log_model.fixed_block_questions_remaining();
             if (!this.current_attempt_log.get("correct") && !this.current_attempt_log.get("complete")) {
                 context.remaining++;
             }
             if (context.remaining > 1) {
-                msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("Answer %(remaining)d additional questions to finish this exercise.");
                 if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
                     show_modal("info", sprintf(msg, context));
                 }
             } else if (context.remaining == 1) {
-                msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("Answer 1 additional question to finish this exercise.");
                 if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
                     show_modal("info", sprintf(msg, context));
                 }
             } else {
-                msg = gettext("You have completed this exercise.");
-                show_modal("info", sprintf(msg, context));
+                msg = gettext("You have finished this exercise!");
+                if (context.remaining == 0) {
+                    show_modal("info", sprintf(msg, context));
+                }
             }
         }
 
@@ -1044,8 +1050,9 @@ window.ExercisePracticeView = Backbone.View.extend({
             // update and save the exercise and attempt logs
             this.update_and_save_log_models("answer_given", data);
 
-            this.display_message();
-
+            if (data.correct) {
+                this.display_message();
+            }
         }
 
     },
@@ -1076,14 +1083,22 @@ window.ExercisePracticeView = Backbone.View.extend({
                 points: data.correct ? this.get_points_per_question() : 0,
                 time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp"))
             });
-            this.attempt_collection.add_new(this.current_attempt_log);
 
             // only change the streak progress and points if we're not already complete
             if (!this.log_model.get("complete")) {
+                this.attempt_collection.add_new(this.current_attempt_log);
                 this.log_model.set({
                     streak_progress: this.attempt_collection.get_streak_progress_percent(),
                     points: this.attempt_collection.get_streak_points()
                 });
+            // or if we're still in a fixed block
+            } else if (this.log_model.fixed_block_questions_remaining() > 0) {
+                // increment points from where they currently are to account for a new correct answer
+                if (data.correct) {
+                    this.log_model.set({
+                        points: this.log_model.get("points") + this.get_points_per_question()
+                    });
+                }
             }
 
             this.log_model.set({
@@ -1121,8 +1136,24 @@ window.ExercisePracticeView = Backbone.View.extend({
 
                 // if this is the first attempt, or the previous attempt was complete, start a new attempt log
                 if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
+
                     self.exercise_view.load_question(); // will generate a new random seed to use
-                    self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+
+                    // determine the suffix to add to context_type, to indicate what stage we're in
+                    var context_type_suffix = "";
+                    if (self.log_model.get("complete")) {
+                        if (self.log_model.fixed_block_questions_remaining() > 0) {
+                            context_type_suffix = "_fixedblock";
+                        } else {
+                            context_type_suffix = "_completed";
+                        }
+                    }
+
+                    self.initialize_new_attempt_log({
+                        seed: self.exercise_view.data_model.get("seed"),
+                        context_type: self.options.context_type + context_type_suffix
+                    });
+
                 } else { // use the seed already established for this attempt
                     self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
                 }
