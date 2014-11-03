@@ -99,14 +99,27 @@ window.KnowledgeMapView = Backbone.View.extend({
     },
 
     navigate_paths: function(paths) {
-        var exercise = false;
+        var self = this;
         paths = _.reject(paths, function(slug) {return slug===null || slug==="";});
         this.zoomLevel = paths.length;
+
+        current_layer = this.show_current_layer();
+
+        if (current_layer.rendered === true) {
+            this.continue_navigation(paths, current_layer);
+        } else {
+            this.listenToOnce(current_layer, "rendered", function() {self.continue_navigation(paths, current_layer);});
+        }
+
+
+    },
+
+    continue_navigation: function(paths, current_layer) {
+        var exercise = false;
         if (this.zoomLevel >= this.zoomLevels.length - 1) {
             this.zoomLevel = this.zoomLevels.length - 1;
             exercise = true;
         }
-        current_layer = this.show_current_layer();
         collection = new TopicCollection(_.filter(current_layer.collection.models, function(model){
             return model.get("ancestor_ids").slice(-1)===paths.slice(-1);
         }));
@@ -178,7 +191,7 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
     defer_show_exercise_by_slug: function(slug) {
         var self = this;
         if (this.rendered) {
-            show_exercise_by_slug(slug);
+            this.show_exercise_by_slug(slug);
         } else {
             this.listenToOnce(this, "rendered", function() {self.show_exercise_by_slug(slug);});
         }
@@ -186,7 +199,6 @@ window.KnowledgeMapLayerView = Backbone.View.extend({
 
     show_exercise_by_slug: function(slug) {
         /* Note: this will break if used for anything other than the exercise item layer */
-        console.log(this.collection.models, slug);
         model = _.find(this.collection.models, function(model) {return model.get("slug")===slug;});
         this.subviews[model.get("id")].show_exercise();
     }
@@ -210,22 +222,21 @@ window.KnowledgeMapItemView = Backbone.View.extend({
 
     render: function() {
         this.marker = L.marker(this.model.coordinates(), {icon: L.divIcon({className: 'map-icon', html: "<div>" + this.model.get("title") + "</div>", iconSize: [100,100]}), title: this.model.get("title")});
-        if (this.zoomLevel=="Exercises") {
-            this.marker.on("click", this.navigate_to_exercise);
-        } else {
-            this.marker.on("click", this.zoom_to_sub_layer);
-        }
+        this.marker.on("click", this.clicked);
+    },
+
+    clicked: function(ev) {
+        window.router.navigate(this.model.get("path"), {trigger: true});
+        return false;
     },
 
     zoom_to_sub_layer: function() {
         this.map.panTo(this.model.coordinates());
         window.router.add_slug(this.model.get("slug"));
-        this.map.fire("zoomend", {slug_modified: true, zoomtype: "zoom_in"});
     },
 
     navigate_to_exercise: function() {
         window.router.add_slug(this.model.get("slug"));
-        this.show_exercise();
     },
 
     show_exercise: function() {

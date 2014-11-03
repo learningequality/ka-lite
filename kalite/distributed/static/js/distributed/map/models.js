@@ -2,14 +2,9 @@
 window.TopicNode = Backbone.Model.extend({
 
     coordinates: function () {
-        var x_pos = this.get("x_pos") || 0;
-        var y_pos = this.get("y_pos") || 0;
-        if (x_pos!==0 && y_pos!==0) {
-            return [Number(this.get("x_pos")), Number(this.get("y_pos"))];
-        } else {
-            return null;
-        }
-        
+        var x_pos = Number(this.get("x_pos")) || 0;
+        var y_pos = Number(this.get("y_pos")) || 0;
+        return [ x_pos, y_pos ];
     }
 });
 
