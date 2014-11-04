@@ -51,6 +51,11 @@ class Command(BaseCommand):
 
             # overwrite the old pl file with the combined pl file
             combined_playlists_dict = old_playlists_dict.copy()
+
+            # mark all the old playlists as show: False
+            for k, v in combined_playlists_dict.iteritems():
+                v['show'] = False
+
             combined_playlists_dict.update(new_playlists_dict)
 
             with open(old_pl_file, "w") as f:

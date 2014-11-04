@@ -1,15 +1,14 @@
 {
   "id": "g4_u402_t2_practice",
-  "title": "Grade 4: Unit 402 Test - Practice",
+  "title": "Grade 4: Unit 102 Test - Practice",
   "seed": 3801,
-  "playlist_ids": [ "g4_u402_p1", "g4_u402_p2" ],
-  "repeats": "3",
+  "playlist_ids": [ "g4_u402_p1" ],
+  "repeats": "2",
   "ids": [
     "adding_fractions_with_common_denominators", "comparing_fractions_1",
     "converting_mixed_numbers_and_improper_fractions",
     "fraction_word_problems_1", "fractions_on_the_number_line_1",
-    "fractions_on_the_number_line_2", "recognizing_fractions",
-    "recognizing_fractions_0.5",
+    "recognizing_fractions", "recognizing_fractions_0.5",
     "subtracting_fractions_with_common_denominators"
   ],
   "is_practice": true,
