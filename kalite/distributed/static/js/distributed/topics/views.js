@@ -24,7 +24,18 @@ window.ContentAreaView = BaseView.extend({
         // hide any messages being shown for the old view
         clear_messages();
 
-        // close the currently shown view, if possible
+        this.close();
+        // set the new view as the current view
+        this.currently_shown_view = view;
+        // show the view
+        this.$(".content").html("").append(view.$el);
+    },
+
+    close: function() {
+        // This does not actually close this view. If you *really* want to get rid of this view,
+        // you should call .remove()!
+        // This is to allow the child view currently_shown_view to act consistently with other
+        // inner_views for the sidebar InnerTopicsView.
         if (this.currently_shown_view) {
             // try calling the close method if available, otherwise remove directly
             if (_.isFunction(this.currently_shown_view.close)) {
@@ -33,10 +44,8 @@ window.ContentAreaView = BaseView.extend({
                 this.currently_shown_view.remove();
             }
         }
-        // set the new view as the current view
-        this.currently_shown_view = view;
-        // show the view
-        this.$(".content").html("").append(view.$el);
+
+        this.model.set("active", false);
     }
 
 });
@@ -61,7 +70,7 @@ window.SidebarView = BaseView.extend({
 
         this.state_model = new Backbone.Model({
             open: false,
-            levels: 0
+            current_level: 0
         });
 
         this.render();
@@ -213,7 +222,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
         this.add_all_entries();
 
-        this.listenTo(this.state_model, "change:levels", this.update_level_color);
+        this.listenTo(this.state_model, "change:current_level", this.update_level_color);
         this.state_model.set("current_level", this.options.level);
 
     },
@@ -248,7 +257,7 @@ window.TopicContainerInnerView = BaseView.extend({
     },
 
     update_level_color: function() {
-        var opacity = (this.options.level+1) / (this.state_model.get("levels")+1);
+        var opacity = (this.options.level+1) / (this.state_model.get("current_level")+1);
         this.$el.css("opacity", opacity);
     },
 
@@ -437,7 +446,7 @@ window.TopicContainerOuterView = BaseView.extend({
 
     add_new_topic_view: function(node) {
 
-        this.state_model.set("levels", this.state_model.get("levels") + 1);
+        this.state_model.set("current_level", this.state_model.get("current_level") + 1);
 
         var data = {
             model: node,
@@ -445,7 +454,7 @@ window.TopicContainerOuterView = BaseView.extend({
             entity_key: this.options.entity_key,
             entity_collection: this.options.entity_collection,
             state_model: this.state_model,
-            level: this.state_model.get("levels")
+            level: this.state_model.get("current_level")
         };
 
         var new_topic = new TopicContainerInnerView(data);
@@ -471,9 +480,13 @@ window.TopicContainerOuterView = BaseView.extend({
     },
 
     navigate_paths: function(paths) {
+        var check_views = [];
+        for (i=this.inner_views.length - 2; i >=0; i--) {
+            check_views.push(this.inner_views[i]);
+        }
         for (i=0; i < paths.length; i++) {
+            var check_view = check_views[i];
             if (paths[i]!=="") {
-                var check_view = this.inner_views.slice(- (i + 2), this.inner_views.length - (i + 1))[0];
                 if (check_view!==undefined) {
                     if (check_view.model.get("slug")==paths[i]) {
                         continue;
@@ -491,19 +504,29 @@ window.TopicContainerOuterView = BaseView.extend({
                     }
                     node.set("active", true);
                 }
+            } else {
+                if (check_view!==undefined) {
+                    this.remove_topic_views(this.inner_views.length - i - 1);
+                }
             }
         }
     },
 
     remove_topic_views: function(number) {
-        if (number >= this.state_model.get("levels")) {
-            number = this.state_model.get("levels") -1;
+        if (number >= this.state_model.get("current_level")) {
+            number = this.state_model.get("current_level") -1;
         }
         for (var i=0; i < number; i++) {
-            this.inner_views[0].close();
+            if (_.isFunction(this.inner_views[0].close)) {
+                this.inner_views[0].close();
+            } else {
+                this.inner_views[0].remove();
+            }
             this.inner_views.shift();
         }
-        this.state_model.set("levels", this.state_model.get("levels") - number);
+        this.state_model.set("current_level", this.state_model.get("current_level") - number);
+        this.show_sidebar();
+
     },
 
     back_to_parent: function() {
@@ -552,6 +575,9 @@ window.TopicContainerOuterView = BaseView.extend({
                 this.content_view.show_view(view);
                 break;
         }
+        this.content_view.model = entry;
+        this.inner_views.unshift(this.content_view);
+        this.state_model.set("current_level", this.state_model.get("current_level") + 1);
         this.hide_sidebar();
     },
 
