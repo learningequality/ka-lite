@@ -265,7 +265,9 @@ window.TopicContainerInnerView = BaseView.extend({
         var view = new SidebarEntryView({model: entry});
         this._entry_views.push(view);
         this.$(".sidebar").append(view.render().$el);
-        this.load_entry_progress();
+        if (window.statusModel.get("is_logged_in")) {
+            this.load_entry_progress();
+        }
     },
 
     add_all_entries: function() {
