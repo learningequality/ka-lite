@@ -1,14 +1,13 @@
 {
   "id": "g6_u604_t4_practice",
-  "title": "Grade 6 Unit 604 Test - Practice",
+  "title": "Grade 6 Unit 104 Test - Practice",
   "seed": 2931,
-  "playlist_ids": [ "g6_u604_p1", "g6_u604_p2" ],
-  "repeats": "3",
+  "playlist_ids": [ "g6_u604_p1" ],
+  "repeats": "2",
   "ids": [
-    "angles_1", "areas_of_circles_and_sectors", "circles_and_arcs",
-    "expressing_ratios_as_fractions", "proportions_1", "proportions_2",
-    "ratio_word_problems", "triangle_angles_1", "triangle_types",
-    "writing_proportions"
+    "angles_1", "expressing_ratios_as_fractions", "proportions_2",
+    "radius_diameter_and_circumference", "triangle_angles_1",
+    "triangle_types"
   ],
   "is_practice": true,
   "show": true

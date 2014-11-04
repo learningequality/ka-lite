@@ -1,9 +1,9 @@
 {
   "id": "g4_u403_t3",
-  "title": "Grade 4: Unit 403 Test",
+  "title": "Grade 4: Unit 103 Test",
   "seed": 3787,
-  "playlist_ids": [ "g4_u403_p1", "g4_u403_p2" ],
-  "repeats": "3",
+  "playlist_ids": [ "g4_u403_p1" ],
+  "repeats": "2",
   "ids": [
     "arithmetic_word_problems", "arithmetic_word_problems_2", "division_1.5",
     "division_2", "division_3", "multiplication_1.5", "multiplication_2",
