@@ -46,7 +46,7 @@ class DependenciesTests(unittest2.TestCase):
 
     TODO(cpauya): i18n for strings?
     """
-    NO_VERSION = "-.-.-"
+    NO_VERSION = "<no version>"
 
     DJANGO_VERSION = (1, 5, 1,)  # TODO(cpauya): get from our django package
     DJANGO_VERSION_STR = _tuple_to_str(DJANGO_VERSION)
@@ -78,19 +78,21 @@ class DependenciesTests(unittest2.TestCase):
             self.fail(msg)
 
     def _pass(self, msg="", end_chars="\n"):
-        self._log(" %s %s%s" % (msg, self.OK, end_chars,))
+        self._log("%s %s%s" % (msg, self.OK, end_chars,))
 
-    def check_path(self, path, mode=os.W_OK, msg=None, delay=0):
+    def check_path(self, path, mode=os.W_OK, msg=None, delay=0, raise_fail=True, end_chars="\n"):
         try:
             self._log(msg, delay)
             is_ok = os.access(path, mode)
             if is_ok:
-                self._pass()
+                self._pass(end_chars=end_chars)
+                return True
             else:
-                self._fail()
+                self._fail(raise_fail=raise_fail, end_chars=end_chars)
         except Exception as exc:
             msg = "%s access to %s path failed: %s" % (mode, path, exc,)
             self.fail(msg)
+        return False
 
     def get_version(self, module):
         version = getattr(module, "version",
@@ -232,14 +234,14 @@ class PackagesTests(DependenciesTests):
             self._log("\n...importing %s..." % app)
             try:
                 __import__(app)
-                self._log("%s" % self.OK)
+                self._log(" %s" % self.OK)
             except ImportError as exc:
                 fail_count += 1
                 self._fail("Exception: %s..." % exc, raise_fail=False, end_chars="")
         if fail_count > 0:
             self._fail("\n...Result: %s app/s failed import..." % fail_count)
         else:
-            self._pass("\n...Result: all apps can be imported")
+            self._pass("\n...Result: all apps can be imported...")
 
     def test_required_packages_and_versions(self):
         try:
@@ -249,9 +251,9 @@ class PackagesTests(DependenciesTests):
                 self._log("\n...importing %s..." % package)
                 p = __import__(package)
                 imported_version = self.get_version(p)
-                self._log("version %s == found %s..." % (version, imported_version,))
+                self._log("need version %s, found %s..." % (version, imported_version,))
                 if version == imported_version:
-                    self._log(self.OK)
+                    self._log(" %s" % self.OK)
                 else:
                     fail_count += 1
                     self._fail(raise_fail=False, end_chars="")
@@ -269,23 +271,58 @@ class PackagesTests(DependenciesTests):
 
 class PathsTests(DependenciesTests):
     """
-    Check that we have access to all paths we need read or write access to.
+    Check that we have access to all paths and files we need read or write access to.
     """
+
+    JSON_FILES = ("assessmentitems.json", "channel_data.json", "content.json", "contents.json", "exercises.json",
+                  "map_domains.json", "map_subjects.json", "map_topics.json", "map_tutorials.json",
+                  "topic_hierarchy.json", "topics.json", "videos.json",)
 
     def test_database_path(self):
         sqlite_path = settings.DATABASES["default"]["NAME"]
-        msg = 'Testing writable SQLite3 database "%s"...' % sqlite_path
+        msg = 'Testing write access to SQLite3 database "%s"...' % sqlite_path
         self.check_path(sqlite_path, os.W_OK, msg=msg, delay=1)
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
-        msg = 'Testing read-only access to content folder "%s"...' % content_path
-        self.check_path(content_path, os.R_OK, msg=msg)
+        msg = 'Testing write access to content folder "%s"...' % content_path
+        self.check_path(content_path, os.W_OK, msg=msg)
 
     def test_data_path(self):
         khan_path = os.path.realpath(os.path.join(PROJECT_PATH, "data", "khan"))
         msg = 'Testing read-only access to data folder "%s"...' % khan_path
         self.check_path(khan_path, os.R_OK, msg=msg)
+
+    def test_json_path(self):
+        khan_path = os.path.realpath(os.path.join(PROJECT_PATH, "data", "khan"))
+        msg = 'Testing access to and format of json files at "%s"...' % khan_path
+        self._log(msg)
+        fail_count = 0
+        for json_file in self.JSON_FILES:
+            json_path = os.path.realpath(os.path.join(khan_path, json_file)) + ''
+            msg = '\n...checking access to "%s"...' % json_path
+            if not self.check_path(json_path, os.R_OK, msg=msg, raise_fail=False, end_chars=""):
+                fail_count += 1
+            else:
+                # attempt to load .json file to validate format
+                self._log("\n......loading json file...")
+                from fle_utils.general import softload_json
+                json_content = softload_json(json_path)
+                if json_content == {}:
+                    msg = "file has invalid json format or is empty..."
+                    self._fail(msg, raise_fail=False, end_chars="")
+                    fail_count += 1
+                else:
+                    self._pass(end_chars="")
+        if fail_count > 0:
+            self._fail("\n...Result: %s json file/s failed test..." % fail_count)
+        else:
+            self._pass("\n...Result: all json file/s are ok...")
+
+    def test_scripts_path(self):
+        scripts_path = os.path.realpath(os.path.join(PROJECT_PATH, "scripts"))
+        msg = 'Testing execute access for the scripts folder "%s"...' % scripts_path
+        self.check_path(scripts_path, os.X_OK, msg=msg)
 
 
 test_cases = (SqliteTests, DjangoTests, PathsTests, PackagesTests)
