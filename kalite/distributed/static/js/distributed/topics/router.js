@@ -21,7 +21,7 @@ ChannelRouter = Backbone.Router.extend({
             });
             this.channel = channel;
         }
-        splat = splat || "";
+        splat = splat || "/";
         if (splat.indexOf("/", splat.length - 1)==-1) {
             splat += "/";
             this.navigate(Backbone.history.getFragment() + "/");
