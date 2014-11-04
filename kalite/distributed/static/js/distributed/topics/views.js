@@ -492,7 +492,6 @@ window.TopicContainerOuterView = BaseView.extend({
                 var node = this.inner_views[0].node_by_slug(paths[i]);
                 if (node!==undefined) {
                     if (node.get("kind")==="Topic") {
-                        console.log("topic");
                         this.show_new_topic(node);
                     } else {
                         this.entry_requested(node);
@@ -522,7 +521,6 @@ window.TopicContainerOuterView = BaseView.extend({
         }
         this.state_model.set("current_level", this.state_model.get("current_level") - number);
         this.show_sidebar();
-
     },
 
     back_to_parent: function() {

@@ -21,7 +21,12 @@ ChannelRouter = Backbone.Router.extend({
             });
             this.channel = channel;
         }
-        this.control_view.navigate_paths((splat || "").split("/"));
+        splat = splat || "";
+        if (splat.indexOf("/", splat.length - 1)==-1) {
+            splat += "/";
+            this.navigate(Backbone.history.getFragment() + "/");
+        }
+        this.control_view.navigate_paths(splat.split("/"));
     },
 
     add_slug: function(slug) {
