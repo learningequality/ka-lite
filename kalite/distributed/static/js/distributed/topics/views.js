@@ -255,6 +255,8 @@ window.TopicContainerInnerView = BaseView.extend({
 
     add_new_entry: function(entry) {
         var view = new SidebarEntryView({model: entry});
+        this.listenTo(view, "hideSidebar", this.hide_sidebar);
+        this.listenTo(view, "showSidebar", this.show_sidebar);
         this._entry_views.push(view);
         this.$(".sidebar").append(view.render().$el);
         if (window.statusModel.get("is_logged_in")) {
@@ -393,6 +395,8 @@ window.SidebarEntryView = BaseView.extend({
         ev.preventDefault();
         if (!this.model.get("active")) {
             window.channel_router.navigate(this.model.get("path"), {trigger: true});
+        } else if (this.model.get("kind") !== "Topic") {
+            this.trigger("hideSidebar");
         }
         return false;
     },
