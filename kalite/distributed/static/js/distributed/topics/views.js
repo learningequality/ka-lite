@@ -76,7 +76,7 @@ window.SidebarView = BaseView.extend({
         this.render();
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
-        this.listenTo(this.state_model, "change:current_level", this.current_level_changed);
+        this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
         this.listenToDOM(this.$(".fade"), "click", self.check_external_click);
 
     },
@@ -110,14 +110,6 @@ window.SidebarView = BaseView.extend({
         this.$('.sidebar-content').append(this.topic_node_view.el);
 
         return this;
-    },
-
-    current_level_changed: function() {
-        var current_level = this.state_model.get("current_level");
-        while (this.topic_node_view.inner_views.length > current_level) {
-            this.topic_node_view.back_to_parent();
-        }
-        this.resize_sidebar();
     },
 
     resize_sidebar: function() {
@@ -483,10 +475,10 @@ window.TopicContainerOuterView = BaseView.extend({
 
     navigate_paths: function(paths) {
         var check_views = [];
-        for (i=this.inner_views.length - 2; i >=0; i--) {
+        for (var i = this.inner_views.length - 2; i >=0; i--) {
             check_views.push(this.inner_views[i]);
         }
-        for (i=0; i < paths.length; i++) {
+        for (i = 0; i < paths.length - 1; i++) {
             var check_view = check_views[i];
             if (paths[i]!=="") {
                 if (check_view!==undefined) {
@@ -494,12 +486,13 @@ window.TopicContainerOuterView = BaseView.extend({
                         continue;
                     } else {
                         check_view.model.set("active", false);
-                        this.remove_topic_views(this.inner_views.length - i - 1);
+                        this.remove_topic_views(check_views.length - i);
                     }
                 }
                 var node = this.inner_views[0].node_by_slug(paths[i]);
                 if (node!==undefined) {
                     if (node.get("kind")==="Topic") {
+                        console.log("topic");
                         this.show_new_topic(node);
                     } else {
                         this.entry_requested(node);
@@ -508,16 +501,13 @@ window.TopicContainerOuterView = BaseView.extend({
                 }
             } else {
                 if (check_view!==undefined) {
-                    this.remove_topic_views(this.inner_views.length - i - 1);
+                    this.remove_topic_views(check_views.length - i);
                 }
             }
         }
     },
 
     remove_topic_views: function(number) {
-        if (number >= this.state_model.get("current_level")) {
-            number = this.state_model.get("current_level") -1;
-        }
         for (var i=0; i < number; i++) {
             if (_.isFunction(this.inner_views[0].close)) {
                 this.inner_views[0].close();
@@ -525,6 +515,10 @@ window.TopicContainerOuterView = BaseView.extend({
                 this.inner_views[0].remove();
             }
             this.inner_views.shift();
+        }
+        if (this.state_model.get("content_displayed")) {
+            number--;
+            this.state_model.set("content_displayed", false);
         }
         this.state_model.set("current_level", this.state_model.get("current_level") - number);
         this.show_sidebar();
@@ -579,7 +573,7 @@ window.TopicContainerOuterView = BaseView.extend({
         }
         this.content_view.model = entry;
         this.inner_views.unshift(this.content_view);
-        this.state_model.set("current_level", this.state_model.get("current_level") + 1);
+        this.state_model.set("content_displayed", true);
         this.hide_sidebar();
     },
 
