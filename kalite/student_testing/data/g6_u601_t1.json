@@ -1,16 +1,14 @@
 {
   "id": "g6_u601_t1",
-  "title": "Grade 6 Unit 601 Test",
+  "title": "Grade 6 Unit 101 Test",
   "seed": 3646,
-  "playlist_ids": [ "g6_u601_p1", "g6_u601_p2" ],
+  "playlist_ids": [ "g6_u601_p1" ],
   "repeats": "2",
   "ids": [
     "adding_and_subtracting_negative_numbers", "adding_negative_numbers",
-    "evaluating_expressions_in_one_variable",
-    "multiplying_and_dividing_negative_numbers",
-    "negative_number_word_problems", "number_line_2", "number_line_3",
-    "ordering_negative_numbers", "writing_expressions_1",
-    "writing_expressions_2"
+    "combining_like_terms_1", "evaluating_expressions_1", "number_line_2",
+    "one_step_equations", "ordering_negative_numbers",
+    "writing_expressions_1"
   ],
   "is_practice": false,
   "show": true
