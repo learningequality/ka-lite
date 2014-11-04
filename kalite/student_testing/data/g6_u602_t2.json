@@ -1,16 +1,14 @@
 {
   "id": "g6_u602_t2",
-  "title": "Grade 6 Unit 602 Test",
+  "title": "Grade 6 Unit 102 Test",
   "seed": 3201,
-  "playlist_ids": [ "g6_u602_p1", "g6_u602_p2" ],
-  "repeats": "3",
+  "playlist_ids": [ "g6_u602_p1" ],
+  "repeats": "2",
   "ids": [
-    "2_step_equations", "combining_like_terms_1", "combining_like_terms_2",
-    "converting_decimals_to_fractions_1",
-    "converting_decimals_to_fractions_2", "converting_decimals_to_percents",
+    "adding_decimals_2", "comparing_decimals_2",
+    "converting_decimals_to_fractions_1", "converting_decimals_to_percents",
     "converting_fractions_to_decimals", "converting_percents_to_decimals",
-    "evaluating_expressions_2", "finding_percents", "one_step_equations",
-    "one_step_equations_with_multiplication"
+    "dividing_decimals_1", "subtracting_decimals"
   ],
   "is_practice": false,
   "show": true
