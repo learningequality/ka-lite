@@ -1,15 +1,3 @@
-"""
-REF: http://stackoverflow.com/a/17966818/845481
-
-locale.getlocale() problems on OSX
-==================================
-From here: Try adding or editing the ~/.profile or ~/.bash_profile file for it to correctly
-export your locale settings upon initiating a new session.
-
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-"""
-
 import logging
 import os
 import sys
@@ -26,12 +14,22 @@ if __name__ == '__main__':
     ]
     sys.path = [os.path.realpath(p) for p in PROJECT_PYTHON_PATHS] + sys.path
 
+# Import this here so we get the module from the `python-packages` folder.
 import unittest2
 
 # set environment variable for django's settings
 os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"
 
+# REF: http://stackoverflow.com/a/17966818/845481
+# locale.getlocale() problems on OSX
+EN_US_UTF_8 = "en_US.UTF-8"
+if sys.platform == 'darwin':
+    os.environ["LC_ALL"] = EN_US_UTF_8
+    os.environ["LANG"] = EN_US_UTF_8
+
+# Import this here after setting the above environment variables.
 from django.conf import settings
+from fle_utils.general import softload_json
 
 
 def _tuple_to_str(t, delim="."):
@@ -64,6 +62,8 @@ class DependenciesTests(unittest2.TestCase):
 
     OK = "OK!"
     FAIL = "FAIL!"
+
+    SQLITE_ON_MEMORY = ":memory:"
 
     # Custom logging functions so we can customize the output.
     def _log(self, msg, delay=0):
@@ -139,7 +139,10 @@ class SqliteTests(DependenciesTests):
     def test_sqlite_path_is_writable(self):
         sqlite_path = settings.DATABASES["default"]["NAME"]
         msg = 'Testing writable SQLite3 database "%s"...' % sqlite_path
-        self.check_path(sqlite_path, os.W_OK, msg=msg)
+        if sqlite_path != self.SQLITE_ON_MEMORY:
+            self.check_path(sqlite_path, os.W_OK, msg=msg)
+        else:
+            self._pass(msg='%s set to "%s" when running tests...' % (msg, self.SQLITE_ON_MEMORY,))
 
 
 class DjangoTests(DependenciesTests):
@@ -184,8 +187,7 @@ class PackagesTests(DependenciesTests):
 
     # make a dictionary of package and it's version?
     NO_VERSION = DependenciesTests.NO_VERSION
-    # TODO(cpauya): add more packages from `python-packages` here
-    packages = {
+    PACKAGES = {
         "announcements": "1.0.2",
         "annoying": NO_VERSION,
         "async": NO_VERSION,
@@ -228,12 +230,12 @@ class PackagesTests(DependenciesTests):
         "polib": "1.0.3",
         "six": "1.8.0",
     }
-    apps = getattr(settings, "INSTALLED_APPS", [])
+    INSTALLED_APPS = getattr(settings, "INSTALLED_APPS", [])
 
     def test_apps_are_importable(self):
         self._log("Testing if apps are importable...")
         fail_count = 0
-        for app in self.apps:
+        for app in self.INSTALLED_APPS:
             self._log("\n...importing %s..." % app)
             try:
                 __import__(app)
@@ -250,7 +252,7 @@ class PackagesTests(DependenciesTests):
         try:
             self._log("Testing required Python packages and their versions...")
             fail_count = 0
-            for package, version in sorted(self.packages.iteritems()):
+            for package, version in sorted(self.PACKAGES.iteritems()):
                 self._log("\n...importing %s..." % package)
                 p = __import__(package)
                 imported_version = self.get_version(p)
@@ -267,9 +269,10 @@ class PackagesTests(DependenciesTests):
         except ImportError as exc:
             self._fail("Exception: %s" % exc)
 
-    def test_packages_dependencies(self):
-        logging.info("Testing dependencies of the required Python packages...")
-        self.assertTrue(False)
+    # TODO(cpauya): must verify if we need this unit test
+    # def test_packages_dependencies(self):
+    #     logging.info("Testing dependencies of the required Python packages...")
+    #     self.assertTrue(False)
 
 
 class PathsTests(DependenciesTests):
@@ -284,7 +287,10 @@ class PathsTests(DependenciesTests):
     def test_database_path(self):
         sqlite_path = settings.DATABASES["default"]["NAME"]
         msg = 'Testing write access to SQLite3 database "%s"...' % sqlite_path
-        self.check_path(sqlite_path, os.W_OK, msg=msg, delay=1)
+        if sqlite_path != self.SQLITE_ON_MEMORY:
+            self.check_path(sqlite_path, os.W_OK, msg=msg)
+        else:
+            self._pass(msg='%s set to "%s" when running tests...' % (msg, self.SQLITE_ON_MEMORY,))
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
@@ -307,11 +313,11 @@ class PathsTests(DependenciesTests):
             if not self.check_path(json_path, os.R_OK, msg=msg, raise_fail=False, end_chars=""):
                 fail_count += 1
             else:
-                # attempt to load .json file to validate format
+                # Attempt to load .json file to validate format.
+                # TODO(cpauya): Check if .json file is large to prevent delays.
                 self._log("\n......loading json file...")
-                from fle_utils.general import softload_json
-                json_content = softload_json(json_path)
-                if json_content == {}:
+                json_content = softload_json(json_path, default=None)
+                if json_content is None:
                     msg = "file has invalid json format or is empty..."
                     self._fail(msg, raise_fail=False, end_chars="")
                     fail_count += 1
@@ -328,20 +334,21 @@ class PathsTests(DependenciesTests):
         self.check_path(scripts_path, os.X_OK, msg=msg)
 
 
-test_cases = (SqliteTests, DjangoTests, PathsTests, PackagesTests)
-
-
-def load_tests(loader, tests, pattern):
-    suite = unittest2.TestSuite()
-    for test_case in test_cases:
-        suite.addTests(loader.loadTestsFromTestCase(test_case))
-    return suite
+# NOTE: Enable these if we want to run the tests in specified order.
+# TEST_CASES = (SqliteTests, DjangoTests, PathsTests, PackagesTests)
+#
+#
+# def load_tests(loader, tests, pattern):
+#     suite = unittest2.TestSuite()
+#     for test_case in TEST_CASES:
+#         suite.addTests(loader.loadTestsFromTestCase(test_case))
+#     return suite
+# ENDNOTE:
 
 
 if __name__ == '__main__':
 
     # turn-off logging warnings
-    import logging
     logger = logging.getLogger(None)
     logger.setLevel(logging.ERROR)
 
