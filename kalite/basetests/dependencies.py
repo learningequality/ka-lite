@@ -1,3 +1,15 @@
+"""
+REF: http://stackoverflow.com/a/17966818/845481
+
+locale.getlocale() problems on OSX
+==================================
+From here: Try adding or editing the ~/.profile or ~/.bash_profile file for it to correctly
+export your locale settings upon initiating a new session.
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+"""
+
 import logging
 import os
 import sys
@@ -60,13 +72,13 @@ class DependenciesTests(unittest2.TestCase):
             import time
             time.sleep(delay)
 
-    def _fail(self, msg="", raise_fail=True):
-        self._log("%s %s\n" % (msg, self.FAIL,))
+    def _fail(self, msg="", raise_fail=True, end_chars="\n"):
+        self._log("%s %s%s" % (msg, self.FAIL, end_chars))
         if raise_fail:
             self.fail(msg)
 
-    def _pass(self, msg=OK):
-        self._log(" %s\n" % msg)
+    def _pass(self, msg="", end_chars="\n"):
+        self._log(" %s %s%s" % (msg, self.OK, end_chars,))
 
     def check_path(self, path, mode=os.W_OK, msg=None, delay=0):
         try:
@@ -85,7 +97,12 @@ class DependenciesTests(unittest2.TestCase):
                           getattr(module, "__version__",
                                   getattr(module, "VERSION",
                                           getattr(module, "__VERSION__", self.NO_VERSION))))
-        return version
+        if isinstance(version, basestring):
+            return version
+        if isinstance(version, tuple):
+            return _tuple_to_str(version)
+        # attribute found is a python module like `youtube_dl.version`, so we recurse
+        return self.get_version(version)
 
 
 class SqliteTests(DependenciesTests):
@@ -180,34 +197,68 @@ class PackagesTests(DependenciesTests):
         "httplib2": "0.8",
         "ifcfg": NO_VERSION,
         "importlib": NO_VERSION,
-        "iso8601": NO_VERSION
+        "iso8601": NO_VERSION,
+        "kaa": "0.99.2dev",
+        "khan_api_python": NO_VERSION,
+        "khanacademy": NO_VERSION,
+        "playground": NO_VERSION,
+        "postmark": "0.1.6",
+        "pyasn1": "0.1.4",
+        "pytz": "2012d",
+        "requests": "0.14.2",
+        "rsa": "3.1.1",
+        "securesync": "0.12.0",
+        "smmap": "0.8.2",
+        "south": "0.7.6",
+        "tastypie": "0.11.0",
+        "unittest2": "0.7.1",
+        "werkzeug": "0.8.3",
+        "youtube_dl": "2014.02.21.1",
+        "collections_local_copy": NO_VERSION,
+        "memory_profiler": "0.26",
+        "mimeparse": "0.1.4",
+        "mock": "1.0.1",
+        "oauth": "1.0",
+        "pbkdf2": "1.3",
+        "polib": "1.0.3",
+        "six": "1.8.0",
     }
     apps = getattr(settings, "INSTALLED_APPS", [])
 
     def test_apps_are_importable(self):
-        try:
-            self._log("Testing if apps are importable...")
-            for app in self.apps:
-                self._log("\n...importing %s..." % app)
+        self._log("Testing if apps are importable...")
+        fail_count = 0
+        for app in self.apps:
+            self._log("\n...importing %s..." % app)
+            try:
                 __import__(app)
                 self._log("%s" % self.OK)
-            self._pass("\n...all apps can be imported... %s" % self.OK)
-        except ImportError as exc:
-            self._fail("Exception: %s" % exc)
+            except ImportError as exc:
+                fail_count += 1
+                self._fail("Exception: %s..." % exc, raise_fail=False, end_chars="")
+        if fail_count > 0:
+            self._fail("\n...Result: %s app/s failed import..." % fail_count)
+        else:
+            self._pass("\n...Result: all apps can be imported")
 
     def test_required_packages_and_versions(self):
         try:
             self._log("Testing required Python packages and their versions...")
-            for package, version in self.packages.iteritems():
+            fail_count = 0
+            for package, version in sorted(self.packages.iteritems()):
                 self._log("\n...importing %s..." % package)
                 p = __import__(package)
                 imported_version = self.get_version(p)
-                if isinstance(imported_version, tuple):
-                    imported_version = _tuple_to_str(imported_version)
-                self._log("version %s == %s..." % (version, imported_version,))
-                self.assertEqual(version, imported_version)
-                self._log(self.OK)
-            self._pass("\n...all required Python packages can be imported... %s" % self.OK)
+                self._log("version %s == found %s..." % (version, imported_version,))
+                if version == imported_version:
+                    self._log(self.OK)
+                else:
+                    fail_count += 1
+                    self._fail(raise_fail=False, end_chars="")
+            if fail_count > 0:
+                self._fail("\n...Result: %s required Python package/s failed import..." % fail_count)
+            else:
+                self._pass("\n...Result: all required Python packages can be imported...")
         except ImportError as exc:
             self._fail("Exception: %s" % exc)
 
