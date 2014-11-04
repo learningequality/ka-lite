@@ -2,7 +2,6 @@ import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
-
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
 
@@ -26,6 +25,53 @@ class ExerciseLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+    def __init__(self, *args, **kwargs):
+        print '==> ExerciseLogResource.__init__'
+        super(ExerciseLogResource, self).__init__(*args, **kwargs)
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        print '==> ExerciseLogResource.detail_uri_kwargs'
+        return super(ExerciseLogResource, self).detail_uri_kwargs(bundle_or_obj)
+
+    def obj_get(self, bundle, **kwargs):
+        print '==> ExerciseLogResource.obj_get --> kwargs == ', kwargs
+        return super(ExerciseLogResource, self).obj_get(bundle, **kwargs)
+
+    def obj_get_list(self, bundle, **kwargs):
+        print '==> ExerciseLogResource.obj_get_list', bundle.request.is_admin, 'kwargs ==', kwargs
+        return super(ExerciseLogResource, self).obj_get_list(bundle, **kwargs)
+
+    def get_object_list(self, request, force=False):
+        is_admin = getattr(request, 'is_admin', False)
+        print '==> ExerciseLogResource.get_object_list --> is_admin', is_admin
+        return super(ExerciseLogResource, self).get_object_list(request)
+
+    def obj_create(self, bundle, **kwargs):
+        is_admin = getattr(bundle.request, "is_admin", False)
+        user = getattr(bundle.request, "user", None)
+        print '==> ExerciseLogResource.obj_create --> is_admin ==', is_admin
+        if is_admin:
+            if user and getattr(user, 'is_superuser', False):
+                print '==> ExerciseLogResource.obj_create --> super user'
+                return None
+        return super(ExerciseLogResource, self).obj_create(bundle, **kwargs)
+
+    def obj_update(self, bundle, **kwargs):
+        print '==> ExerciseLogResource.obj_update'
+        return super(ExerciseLogResource, self).obj_update(bundle, **kwargs)
+
+    def obj_delete_list(self, bundle, **kwargs):
+        print '==> ExerciseLogResource.obj_delete_list'
+        return super(ExerciseLogResource, self).obj_delete_list(bundle, **kwargs)
+
+    def obj_delete(self, bundle, **kwargs):
+        print '==> ExerciseLogResource.obj_delete'
+        return super(ExerciseLogResource, self).obj_delete(bundle, **kwargs)
+
+    def rollback(self, bundles):
+        print '==> ExerciseLogResource.rollback'
+        return super(ExerciseLogResource, self).rollback(bundles)
+
 
 class AttemptLogResource(ModelResource):
 
@@ -41,6 +87,54 @@ class AttemptLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+    def __init__(self, *args, **kwargs):
+        print '==> AttemptLogResource.__init__'
+        super(AttemptLogResource, self).__init__(*args, **kwargs)
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        print '==> AttemptLogResource.detail_uri_kwargs'
+        return super(AttemptLogResource, self).detail_uri_kwargs(bundle_or_obj)
+
+    def obj_get(self, bundle, **kwargs):
+        print '==> AttemptLogResource.obj_get --> kwargs == ', kwargs
+        return super(AttemptLogResource, self).obj_get(bundle, **kwargs)
+
+    def obj_get_list(self, bundle, **kwargs):
+        print '==> AttemptLogResource.obj_get_list', bundle.request.is_admin, 'kwargs ==', kwargs
+        return super(AttemptLogResource, self).obj_get_list(bundle, **kwargs)
+        # return []
+
+    def get_object_list(self, request, force=False):
+        is_admin = getattr(request, 'is_admin', False)
+        print '==> AttemptLogResource.get_object_list --> is_admin', is_admin
+        return super(AttemptLogResource, self).get_object_list(request)
+
+    def obj_create(self, bundle, **kwargs):
+        is_admin = getattr(bundle.request, "is_admin", False)
+        user = getattr(bundle.request, "user", None)
+        print '==> AttemptLogResource.obj_create --> is_admin ==', is_admin
+        if is_admin:
+            if user and getattr(user, 'is_superuser', False):
+                print '==> AttemptLogResource.obj_create --> super user'
+                return None
+        return super(AttemptLogResource, self).obj_create(bundle, **kwargs)
+
+    def obj_update(self, bundle, **kwargs):
+        print '==> AttemptLogResource.obj_update'
+        return super(AttemptLogResource, self).obj_update(bundle, **kwargs)
+
+    def obj_delete_list(self, bundle, **kwargs):
+        print '==> AttemptLogResource.obj_delete_list'
+        return super(AttemptLogResource, self).obj_delete_list(bundle, **kwargs)
+
+    def obj_delete(self, bundle, **kwargs):
+        print '==> AttemptLogResource.obj_delete'
+        return super(AttemptLogResource, self).obj_delete(bundle, **kwargs)
+
+    def rollback(self, bundles):
+        print '==> AttemptLogResource.rollback'
+        return super(AttemptLogResource, self).rollback(bundles)
+
 
 class ContentLogResource(ModelResource):
 
@@ -54,6 +148,7 @@ class ContentLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
+
 
 class Video:
 
@@ -132,19 +227,19 @@ class VideoResource(Resource):
         else:
             raise NotFound('Video with id %s not found' % id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplementedError
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplementedError
 
 
@@ -170,6 +265,7 @@ class Exercise():
         self.slug = kwargs.get('slug')
         self.exercise_id = kwargs.get('exercise_id')
         self.uses_assessment_items = kwargs.get('uses_assessment_items')
+
 
 class ExerciseResource(Resource):
 
@@ -226,19 +322,19 @@ class ExerciseResource(Resource):
         else:
             raise NotFound('Exercise with id %s not found' % id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
 
@@ -261,7 +357,6 @@ class AssessmentItemResource(Resource):
     author_names = fields.CharField(attribute='author_names')
     sha = fields.CharField(attribute='sha')
     id = fields.CharField(attribute='id')
-
 
     class Meta:
         resource_name = 'assessment_item'
@@ -296,19 +391,19 @@ class AssessmentItemResource(Resource):
         else:
             raise NotFound('AssessmentItem with id %s not found' % id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
 
@@ -325,7 +420,7 @@ class Content:
 
         extra_fields = {}
 
-        for k,v in kwargs.iteritems():
+        for k, v in kwargs.iteritems():
             extra_fields[k] = v
 
         # the computed values
@@ -334,7 +429,6 @@ class Content:
         self.selected_language = lang_code
         if self.description == "None":
             self.description = ""
-
 
 
 class ContentResource(Resource):
@@ -384,17 +478,17 @@ class ContentResource(Resource):
         else:
             raise NotFound('Content with id %s not found' % content_id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplementedError
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplementedError
