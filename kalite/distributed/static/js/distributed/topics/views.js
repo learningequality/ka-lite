@@ -478,7 +478,9 @@ window.TopicContainerOuterView = BaseView.extend({
         for (var i = this.inner_views.length - 2; i >=0; i--) {
             check_views.push(this.inner_views[i]);
         }
-        for (i = 0; i < paths.length - 1; i++) {
+        // Should only ever remove a bunch of inner_views once during the whole iteration
+        var pruned = false;
+        for (i = 0; i < paths.length; i++) {
             var check_view = check_views[i];
             if (paths[i]!=="") {
                 if (check_view!==undefined) {
@@ -486,7 +488,10 @@ window.TopicContainerOuterView = BaseView.extend({
                         continue;
                     } else {
                         check_view.model.set("active", false);
-                        this.remove_topic_views(check_views.length - i);
+                        if (!pruned) {
+                            this.remove_topic_views(check_views.length - i);
+                            pruned = true;
+                        }
                     }
                 }
                 var node = this.inner_views[0].node_by_slug(paths[i]);
@@ -498,8 +503,9 @@ window.TopicContainerOuterView = BaseView.extend({
                     }
                     node.set("active", true);
                 }
-            } else {
+            } else if (!pruned) {
                 if (check_view!==undefined) {
+                    check_view.model.set("active", false);
                     this.remove_topic_views(check_views.length - i);
                 }
             }
