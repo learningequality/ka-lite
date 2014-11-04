@@ -345,9 +345,18 @@ a:hover {
     border: none !important;
 }
 .sub-active {
+    border: 0;
+    margin: 0;
     background-color: #5C8547;
-    color: white !important;
-    border-radius: 6px;
+    color: white;
+    padding: 0;
+}
+.dropdown.sub-active {
+    padding: 0;
+    border-radius: 5px 15px 0 0;
+}
+.sub-active.open {
+    color: black;
 }
 .subnav {
     text-align: center;
@@ -371,14 +380,31 @@ a:hover {
     -o-transition: all 115ms ease-out !important;
     transition: all 115ms ease-out !important;
 }
-.subnav li a:hover {
-    background-color: #5C8547 !important;
-    border-radius: 6px !important;
-    color: white;
-}
 .subnav span {
     line-height: 1.6;
     font-size: 17px;
+}
+.sub-active.open ul.dropdown-menu {
+    padding: 9px 0;
+}
+.sub-active.open ul.dropdown-menu li {
+    padding: 0;
+}
+.sub-active.open ul.dropdown-menu li a {
+    text-transform: none;
+    background-color: white;
+    color: black;
+    border-radius: 0;
+    border: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+.sub-active.open ul.dropdown-menu li a:hover {
+    background-color: rgb(237, 237, 237);
+}
+.sub-active.open a.dropdown-toggle,
+.sub-active.open a.dropdown-toggle:hover {
+    color: black;
 }
 .progress-tab img,
 .effort-tab img,
@@ -391,10 +417,6 @@ a:hover {
 }
 
 /********* End Coach Reports Sub-Navigation bar **********/
-
-/*h2 {
-    margin-bottom: 10px;
-}*/
 
 .title-header .long-description {
     color: #666;
