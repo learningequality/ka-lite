@@ -51,6 +51,7 @@ class DependenciesTests(unittest2.TestCase):
     DJANGO_VERSION = (1, 5, 1,)  # TODO(cpauya): get from our django package
     DJANGO_VERSION_STR = _tuple_to_str(DJANGO_VERSION)
 
+    DJANGO_HOST = '127.0.0.1'
     DJANGO_PRODUCTION_PORT = getattr(settings, "PRODUCTION_PORT", 8008)
 
     # REF: https://docs.djangoproject.com/en/1.5/releases/1.5/#python-compatibility
@@ -105,6 +106,9 @@ class DependenciesTests(unittest2.TestCase):
             return _tuple_to_str(version)
         # attribute found is a python module like `youtube_dl.version`, so we recurse
         return self.get_version(version)
+
+    def make_url(self):
+        return "http://%s:%s/" % (self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT,)
 
 
 class SqliteTests(DependenciesTests):
@@ -167,14 +171,13 @@ class DjangoTests(DependenciesTests):
         else:
             self._fail(" found version %s instead..." % (_tuple_to_str(sys.version_info),))
 
-    def test_django_can_serve_on_port(self):
-        self._log("Testing if Django can serve on production port %s..." % self.DJANGO_PRODUCTION_PORT)
-        from django.core.management import call_command
-        # self._log('calling command "kaserve"...')
-        # result = call_command("kaserve")
-        # self._log('result %s...' % result)
-        self._fail()
-        self.assertTrue(False)
+    def test_django_webserver_can_serve_on_port(self):
+        self._log("Testing if Django can serve on %s..." % self.make_url())
+        from kalite.django_cherrypy_wsgiserver.management.commands.runcherrypyserver import port_is_available
+        result = port_is_available(self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT)
+        if not result:
+            self._fail()
+        self._pass()
 
 
 class PackagesTests(DependenciesTests):
@@ -326,7 +329,6 @@ class PathsTests(DependenciesTests):
 
 
 test_cases = (SqliteTests, DjangoTests, PathsTests, PackagesTests)
-# test_cases = (SqliteTests, DjangoTests,)
 
 
 def load_tests(loader, tests, pattern):
@@ -337,6 +339,11 @@ def load_tests(loader, tests, pattern):
 
 
 if __name__ == '__main__':
+
+    # turn-off logging warnings
+    import logging
+    logger = logging.getLogger(None)
+    logger.setLevel(logging.ERROR)
 
     # Don't display any messages, we will customize the output.
     unittest2.main(verbosity=0)
