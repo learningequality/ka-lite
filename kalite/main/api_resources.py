@@ -28,10 +28,8 @@ class ExerciseLogResource(ModelResource):
     def obj_create(self, bundle, **kwargs):
         is_admin = getattr(bundle.request, "is_admin", False)
         user = getattr(bundle.request, "user", None)
-        print '==> ExerciseLogResource.obj_create --> is_admin ==', is_admin
         if is_admin:
             if user and getattr(user, 'is_superuser', False):
-                print '==> ExerciseLogResource.obj_create --> super user'
                 return None
         return super(ExerciseLogResource, self).obj_create(bundle, **kwargs)
 
@@ -53,10 +51,8 @@ class AttemptLogResource(ModelResource):
     def obj_create(self, bundle, **kwargs):
         is_admin = getattr(bundle.request, "is_admin", False)
         user = getattr(bundle.request, "user", None)
-        print '==> AttemptLogResource.obj_create --> is_admin ==', is_admin
         if is_admin:
             if user and getattr(user, 'is_superuser', False):
-                print '==> AttemptLogResource.obj_create --> super user'
                 return None
         return super(AttemptLogResource, self).obj_create(bundle, **kwargs)
 
