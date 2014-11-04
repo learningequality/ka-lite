@@ -201,7 +201,11 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         # Logout and login student to check exam redirect no longer in place
         self.browser_logout_user(browser=self.student_browser)
         self.login_student_in_browser(browser=self.student_browser)
-        self.assertEqual(self.reverse("learn") + "{channel}/".format(channel=settings.CHANNEL), self.student_browser.current_url)
+        # If current url endswith a "//" (pretty weird how it got there), make it a "/".
+        current_url = self.student_browser.current_url
+        if current_url.endswith('//'):
+            current_url = current_url[:-1]
+        self.assertEqual(self.reverse("learn") + "{channel}/".format(channel=settings.CHANNEL), current_url)
         self.student_browser.quit()
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
