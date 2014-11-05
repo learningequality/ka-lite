@@ -65,9 +65,9 @@ window.BaseView = Backbone.View.extend({
         if (typeof DOMElement.get === "function") {
             DOMElement = DOMElement.get(0);
         }
-        
+
         var listeners = [];
-        
+
         this.listenTo({
             on: function(event, handler, context) {
                 DOMElement.addEventListener(event, handler, false);
@@ -79,12 +79,23 @@ window.BaseView = Backbone.View.extend({
             off: function(event, handler, context) {
                 listeners = listeners.filter(function(listener) {
                     if (listener.context === context) {
-                        DOMElement.removeEventListener.apply(DOMElement, listener.args);
+                        // Note (aron): For some devices,
+                        // whenever we navigate out of a content view
+                        // and remove the view's dom element, the
+                        // garbage collector garbage collects the
+                        // element before this callback is called, so
+                        // we really only want to run this when the
+                        // DOMElement is still not null, aka not
+                        // garbage collected yet.
+                        if (DOMElement) {
+                            DOMElement.removeEventListener.apply(DOMElement, listener.args);
+                        }
+
                         return true;
                     }
                 });
             }
-        
+
         }, event_name, callback);
     },
 
