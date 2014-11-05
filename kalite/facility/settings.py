@@ -63,3 +63,5 @@ PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
 
 
 DISABLE_SELF_ADMIN = getattr(local_settings, "DISABLE_SELF_ADMIN", False)  #
+
+RESTRICTED_TEACHER_PERMISSIONS = False  # setting this to True will disable creating/editing/deleting facilties/students for teachers
