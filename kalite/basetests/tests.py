@@ -28,7 +28,7 @@ if sys.platform == 'darwin':
     os.environ["LANG"] = EN_US_UTF_8
 
 # Import these here after setting the above environment variables.
-from pip._vendor.distlib.version import NormalizedVersion, _suggest_normalized_version
+from pkg_resources import parse_version
 
 from django.conf import settings
 
@@ -109,20 +109,10 @@ class DependenciesTests(unittest2.TestCase):
         # attribute found is a python module like `youtube_dl.version`, so we recurse
         return self.get_version(version)
 
-    def check_versions_are_equal(self, expected_version, package_version, show_log=True):
-        """
-        We followed the advise for comparing versions here
-        http://legacy.python.org/dev/peps/pep-0386/#the-new-versioning-algorithm - however, it was superseded by
-        http://legacy.python.org/dev/peps/pep-0440/ - Version Identification and Dependency Specification
-        so we must look at it later for more robust and updated specs.
-        """
-        v1 = _suggest_normalized_version(expected_version)
-        v2 = _suggest_normalized_version(package_version)
-        if v1 is None or v2 is None:
-            if show_log:
-                self._log(" comparing as string...")
-            return expected_version == package_version
-        return NormalizedVersion(v1) == NormalizedVersion(v2)
+    def check_versions_are_equal(self, expected_version, package_version):
+        v1 = parse_version(expected_version)
+        v2 = parse_version(package_version)
+        return v1 == v2
 
     def make_url(self):
         return "http://%s:%s/" % (self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT,)
