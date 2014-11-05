@@ -46,8 +46,7 @@ class DependenciesTests(unittest2.TestCase):
     """
     NO_VERSION = "<no version>"
 
-    DJANGO_VERSION = (1, 5, 1,)  # TODO(cpauya): get from our django package
-    DJANGO_VERSION_STR = _tuple_to_str(DJANGO_VERSION)
+    DJANGO_VERSION_STR = "1.5.1.final.0"
 
     DJANGO_HOST = '127.0.0.1'
     DJANGO_PRODUCTION_PORT = getattr(settings, "PRODUCTION_PORT", 8008)
@@ -155,17 +154,6 @@ class DjangoTests(DependenciesTests):
         except ImportError:
             self._fail()
 
-    def test_django_version(self):
-        self._log("Testing Django %s version..." % self.DJANGO_VERSION_STR)
-        try:
-            from django.utils.version import get_version
-            if get_version() == self.DJANGO_VERSION_STR:
-                self._pass()
-            else:
-                self._fail(" found version %s instead..." % get_version())
-        except ImportError:
-            self._fail()
-
     def test_minimum_python_version(self):
         self._log("Testing minimum Python version %s for Django version %s..." %
                   (self.MINIMUM_PYTHON_VERSION_STR, self.DJANGO_VERSION_STR,))
@@ -195,7 +183,7 @@ class PackagesTests(DependenciesTests):
         "dateutil": "1.5",
         "debug_toolbar": "unknown",
         "decorator": NO_VERSION,
-        "django": "1.5.1.final.0",
+        "django": DependenciesTests.DJANGO_VERSION_STR,
         "django_extensions": "1.0.1",
         "django_snippets": "1.0.1",
         "fle_utils": NO_VERSION,
@@ -269,11 +257,6 @@ class PackagesTests(DependenciesTests):
         except ImportError as exc:
             self._fail("Exception: %s" % exc)
 
-    # TODO(cpauya): must verify if we need this unit test
-    # def test_packages_dependencies(self):
-    #     logging.info("Testing dependencies of the required Python packages...")
-    #     self.assertTrue(False)
-
 
 class PathsTests(DependenciesTests):
     """
@@ -283,14 +266,6 @@ class PathsTests(DependenciesTests):
     JSON_FILES = ("assessmentitems.json", "channel_data.json", "content.json", "contents.json", "exercises.json",
                   "map_domains.json", "map_subjects.json", "map_topics.json", "map_tutorials.json",
                   "topic_hierarchy.json", "topics.json", "videos.json",)
-
-    def test_database_path(self):
-        sqlite_path = settings.DATABASES["default"]["NAME"]
-        msg = 'Testing write access to SQLite3 database "%s"...' % sqlite_path
-        if sqlite_path != self.SQLITE_ON_MEMORY:
-            self.check_path(sqlite_path, os.W_OK, msg=msg)
-        else:
-            self._pass(msg='%s set to "%s" when running tests...' % (msg, self.SQLITE_ON_MEMORY,))
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
