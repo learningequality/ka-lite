@@ -26,7 +26,18 @@ Introduced in Python-RSA 3.1.
 
 from __future__ import print_function
 
-import multiprocessing as mp
+#import multiprocessing as mp
+# try:
+#     import multiprocessing as mp
+# except ImportError:
+#     import multiprocessing.dummy as mp
+
+# TODO-BLOCKER(66eli77): fix these so that multiprocessing will work (using the thread fallback) even on Android
+try:
+    from multiprocessing import Process, Pipe
+except ImportError:
+    from multiprocessing.dummy import Process, Pipe
+#from multiprocessing import Process, Pipe
 
 import rsa.prime
 import rsa.randnum
@@ -62,10 +73,10 @@ def getprime(nbits, poolsize):
     
     '''
 
-    (pipe_recv, pipe_send) = mp.Pipe(duplex=False)
+    (pipe_recv, pipe_send) = Pipe(duplex=False)
 
     # Create processes
-    procs = [mp.Process(target=_find_prime, args=(nbits, pipe_send))
+    procs = [Process(target=_find_prime, args=(nbits, pipe_send))
              for _ in range(poolsize)]
     [p.start() for p in procs]
 

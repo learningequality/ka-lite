@@ -1,4 +1,15 @@
-import multiprocessing
+# try:
+#     import multiprocessing
+# except ImportError:
+#     import multiprocessing.dummy as multiprocessing
+
+
+# TODO-BLOCKER(66eli77): fix these so that multiprocessing will work (using the thread fallback) even on Android
+try:
+    from multiprocessing import Process
+except ImportError:
+    from multiprocessing.dummy import Process
+#from multiprocessing import Process
 import os
 import re
 import subprocess
@@ -81,15 +92,16 @@ def call_command_subprocess(cmd, *args, **kwargs):
         p.communicate()
     return p
 
-class CommandProcess(multiprocessing.Process):
-    def __init__(self, cmd, *args, **kwargs):
-        super(CommandProcess, self).__init__()
-        self.cmd = cmd
-        self.args = args
-        self.kwargs = kwargs
+#class CommandProcess(multiprocessing.Process):
+# class CommandProcess(Process):
+#     def __init__(self, cmd, *args, **kwargs):
+#         super(CommandProcess, self).__init__()
+#         self.cmd = cmd
+#         self.args = args
+#         self.kwargs = kwargs
 
-    def run(self):
-        call_command(self.cmd, *self.args, **self.kwargs)
+#     def run(self):
+#         call_command(self.cmd, *self.args, **self.kwargs)
 
 class CommandThread(threading.Thread):
     def __init__(self, cmd, *args, **kwargs):
