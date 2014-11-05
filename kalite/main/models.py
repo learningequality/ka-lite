@@ -471,7 +471,7 @@ class AttemptLog(DeferredCountSyncedModel):
     """
 
     # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
-    minversion = "0.12.0"
+    minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
