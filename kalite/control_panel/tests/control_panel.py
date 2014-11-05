@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+from django.test.utils import override_settings
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -110,6 +111,34 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
+
+
+@override_settings(RESTRICTED_TEACHER_PERMISSIONS=True)
+class RestrictedTeacherTests(KALiteBrowserTestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_teacher_cant_delete_facilities(self):
+        pass
+
+    def teacher_cant_edit_facilities(self):
+        pass
+
+    def teacher_cant_create_facilities(self):
+        pass
+
+    def teacher_cant_create_students(self):
+        pass
+
+    def teacher_cant_edit_students(self):
+        pass
+
+    def teacher_cant_delete_students(self):
+        pass
 
 
 class CSVExportTestSetup(FacilityMixins,
